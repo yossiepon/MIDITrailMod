@@ -1,28 +1,19 @@
 //******************************************************************************
 //
-// MIDITrail / MTNoteRipple
+// MIDITrail / MTNoteLyrics
 //
-// ノート波紋描画クラス
+// ノート歌詞描画クラス
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
-
-// MEMO:
-// 波紋は、位置とサイズが個別に変化する。
-// このため初回リリース前は、DrawPrimitiveUPで描画していた。
-// つまり描画のたびに波紋の頂点をGPU側に流し込んでいた。
-// しかし演奏開始後の初回の波紋描画時に限り、処理が引っかかる（FPSが
-// 落ちる）現象が発生したため、この方式を取りやめた。
-// 代わりに頂点バッファを使用し、描画のたびにバッファをロックして頂点
-// を書き換える方式に切り替えた。
-// もっとエレガントな方法があるかもしれない・・・。
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTParam.h"
 #include "MTConfFile.h"
-#include "MTNoteRipple.h"
+#include "MTNoteLyrics.h"
 #include <new>
 
 using namespace YNBaseLib;
@@ -31,9 +22,8 @@ using namespace YNBaseLib;
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-MTNoteRipple::MTNoteRipple(void)
+MTNoteLyrics::MTNoteLyrics(void)
 {
-	m_pTexture = NULL;
 	m_pNoteStatus = NULL;
 	m_PlayTimeMSec = 0;
 	m_CurTickTime = 0;
@@ -43,21 +33,21 @@ MTNoteRipple::MTNoteRipple(void)
 	ZeroMemory(&m_Material, sizeof(D3DMATERIAL9));
 	m_isEnable = true;
 	m_isSkipping = false;
-	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTERIPPLE_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
+	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTELYRICS_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 }
 
 //******************************************************************************
 // デストラクタ
 //******************************************************************************
-MTNoteRipple::~MTNoteRipple(void)
+MTNoteLyrics::~MTNoteLyrics(void)
 {
 	Release();
 }
 
 //******************************************************************************
-// ノート波紋生成
+// ノート歌詞生成
 //******************************************************************************
-int MTNoteRipple::Create(
+int MTNoteLyrics::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
@@ -71,10 +61,6 @@ int MTNoteRipple::Create(
 
 	//ノートデザインオブジェクト初期化
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
-
-	//テクスチャ生成
-	result = _CreateTexture(pD3DDevice, pSceneName);
 	if (result != 0) goto EXIT;
 
 	//トラック取得
@@ -106,7 +92,7 @@ EXIT:;
 //******************************************************************************
 // 移動
 //******************************************************************************
-int MTNoteRipple::Transform(
+int MTNoteLyrics::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		D3DXVECTOR3 camVector,
 		float rollAngle
@@ -120,8 +106,8 @@ int MTNoteRipple::Transform(
 
 	m_CamVector = camVector;
 
-	//波紋の頂点更新
-	result = _TransformRipple(pD3DDevice);
+	//歌詞の頂点更新
+	result = _TransformLyrics(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//行列初期化
@@ -130,7 +116,8 @@ int MTNoteRipple::Transform(
 	D3DXMatrixIdentity(&worldMatrix);
 
 	//回転行列
-	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle + 180.0f));
+	//D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle + 180.0f));
+	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
 	//移動行列
 	moveVector = m_NoteDesign.GetWorldMoveVector();
@@ -147,9 +134,9 @@ EXIT:;
 }
 
 //******************************************************************************
-// 波紋の頂点更新
+// 歌詞の頂点更新
 //******************************************************************************
-int MTNoteRipple::_TransformRipple(
+int MTNoteLyrics::_TransformLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice
    )
 {
@@ -158,12 +145,12 @@ int MTNoteRipple::_TransformRipple(
 	//スキップ中なら何もしない
 	if (m_isSkipping) goto EXIT;
 
-	//波紋の状態更新
-	result = _UpdateStatusOfRipple(pD3DDevice);
+	//歌詞の状態更新
+	result = _UpdateStatusOfLyrics(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//波紋の頂点更新
-	result = _UpdateVertexOfRipple(pD3DDevice);
+	//歌詞の頂点更新
+	result = _UpdateVertexOfLyrics(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -171,9 +158,9 @@ EXIT:;
 }
 
 //******************************************************************************
-// 波紋の状態更新
+// 歌詞の状態更新
 //******************************************************************************
-int MTNoteRipple::_UpdateStatusOfRipple(
+int MTNoteLyrics::_UpdateStatusOfLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice
 	)
 {
@@ -183,12 +170,12 @@ int MTNoteRipple::_UpdateStatusOfRipple(
 	bool isRegist = false;
 	SMNote note;
 
-	//波紋ディケイ・リリース時間(msec)
+	//歌詞ディケイ・リリース時間(msec)
 	unsigned long decayDuration = m_NoteDesign.GetRippleDecayDuration();
 	unsigned long releaseDuration   = m_NoteDesign.GetRippleReleaseDuration();
 
 	//ノート情報を更新する
-	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
 			//ノート情報取得
 			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
@@ -229,7 +216,7 @@ int MTNoteRipple::_UpdateStatusOfRipple(
 		if (isRegist) {
 			//すでに同一インデックスで登録済みの場合は何もしない
 			isFound = false;
-			for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+			for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 				if ((m_pNoteStatus[i].isActive)
 				 && (m_pNoteStatus[i].index == m_CurNoteIndex)) {
 					isFound = true;
@@ -238,12 +225,15 @@ int MTNoteRipple::_UpdateStatusOfRipple(
 			}
 			//空いているところに追加する
 			if (!isFound) {
-				for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+				for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 					if (!(m_pNoteStatus[i].isActive)) {
 						m_pNoteStatus[i].isActive = true;
 						m_pNoteStatus[i].keyStatus = BeforeNoteON;
 						m_pNoteStatus[i].index = m_CurNoteIndex;
 						m_pNoteStatus[i].keyDownRate = 0.0f;
+
+						m_pNoteStatus[i].fontTexture.SetFont(_T("HGSSoeiKakugothicUB"), 64, 0x00FFFFFF, false);
+						m_pNoteStatus[i].fontTexture.CreateTexture(pD3DDevice, note.lyric);
 						break;
 					}
 				}
@@ -268,7 +258,7 @@ EXIT:;
 //******************************************************************************
 // 発音中ノート状態更新
 //******************************************************************************
-int MTNoteRipple::_UpdateNoteStatus(
+int MTNoteLyrics::_UpdateNoteStatus(
 		unsigned long playTimeMSec,
 		unsigned long decayDuration,
 		unsigned long releaseDuration,
@@ -285,6 +275,7 @@ int MTNoteRipple::_UpdateNoteStatus(
 		pNoteStatus->keyStatus = BeforeNoteON;
 		pNoteStatus->index = 0;
 		pNoteStatus->keyDownRate = 0.0f;
+		pNoteStatus->fontTexture.Clear();
 
 		goto EXIT;
 	}
@@ -295,7 +286,7 @@ int MTNoteRipple::_UpdateNoteStatus(
 	float sustainRatio = 0.4f;
 	float releaseRatio = 0.3f;
 
-	//波紋ディケイ時間が発音長より長い場合、ディケイを消音時間までに修正する
+	//歌詞ディケイ時間が発音長より長い場合、ディケイを消音時間までに修正する
 	if(noteLen < decayDuration) {
 
 		//decayDuration = noteLen;
@@ -305,7 +296,7 @@ int MTNoteRipple::_UpdateNoteStatus(
 		//sustainRatio = 0.0f;
 		//releaseRatio = 0.0f;
 	}
-	//波紋ディケイ＋リリース時間が発音長より長い場合、リリース開始時間をディケイ時間経過直後に修正する
+	//歌詞ディケイ＋リリース時間が発音長より長い場合、リリース開始時間をディケイ時間経過直後に修正する
 	else if(noteLen < (decayDuration + releaseDuration)) {
 
 		releaseDuration = noteLen - decayDuration;
@@ -313,7 +304,7 @@ int MTNoteRipple::_UpdateNoteStatus(
 		sustainRatio = 0.0f;
 		releaseRatio = 0.5f;
 	}
-	//発音長が（波紋ディケイ＋リリース時間）×２以内の場合、切り替え点をディケイ終了時間とリリース開始時間の中間にする
+	//発音長が（歌詞ディケイ＋リリース時間）×２以内の場合、切り替え点をディケイ終了時間とリリース開始時間の中間にする
 	else if(noteLen < (decayDuration + releaseDuration) * 2) {
 
 		unsigned long midTime = (note.startTime + decayDuration) / 2 + (note.endTime - releaseDuration) / 2;
@@ -366,14 +357,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// 波紋の頂点更新
+// 歌詞の頂点更新
 //******************************************************************************
-int MTNoteRipple::_UpdateVertexOfRipple(
+int MTNoteLyrics::_UpdateVertexOfLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice
 	)
 {
 	int result = 0;
-	MTNOTERIPPLE_VERTEX* pVertex = NULL;
+	MTNOTELYRICS_VERTEX* pVertex = NULL;
 	D3DXMATRIX mtxWorld;
 	unsigned long i = 0;
 	unsigned long activeNoteNum = 0;
@@ -388,10 +379,10 @@ int MTNoteRipple::_UpdateVertexOfRipple(
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
-	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTERIPPLE_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
+	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTELYRICS_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
-	//発音中ノートの波紋について頂点を更新
-	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+	//発音中ノートの歌詞について頂点を更新
+	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
 			//ノート情報取得
 			SMNote note;
@@ -401,30 +392,17 @@ int MTNoteRipple::_UpdateVertexOfRipple(
 			//発音対象キーを回転
 			//  すでに同一ノートに対して頂点を更新している場合
 			//  押下率が前回よりも上回る場合に限り頂点を更新する
-			if ((note.portNo < MTNOTERIPPLE_MAX_PORT_NUM)
+			if ((note.portNo < MTNOTELYRICS_MAX_PORT_NUM)
 			 && (m_KeyDownRate[note.portNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate)) {
-				//頂点更新：波紋の描画位置とサイズを変える
+				//頂点更新：歌詞の描画位置とサイズを変える
 				_SetVertexPosition(
 						&(pVertex[activeNoteNum*6]),	//頂点バッファ書き込み位置
 						note,							//ノート情報
 						&(m_pNoteStatus[i]),			//ノート状態
 						i								//ノート状態登録インデックス位置
 					);
+				m_pTextures[activeNoteNum] = m_pNoteStatus[i].fontTexture.GetTexture();
 		 		activeNoteNum++;
-				_SetVertexPosition(
-						&(pVertex[activeNoteNum*6]),	//頂点バッファ書き込み位置
-						note,							//ノート情報
-						&(m_pNoteStatus[i]),			//ノート状態
-						i								//ノート状態登録インデックス位置
-					);
-		 		activeNoteNum++;
-				_SetVertexPosition(
-						&(pVertex[activeNoteNum*6]),	//頂点バッファ書き込み位置
-						note,							//ノート情報
-						&(m_pNoteStatus[i]),			//ノート状態
-						i								//ノート状態登録インデックス位置
-					);
-				activeNoteNum++;
 
 				m_KeyDownRate[note.portNo][note.chNo][note.noteNo] = m_pNoteStatus[i].keyDownRate;
 			}
@@ -444,7 +422,7 @@ EXIT:;
 //******************************************************************************
 // 描画
 //******************************************************************************
-int MTNoteRipple::Draw(
+int MTNoteLyrics::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
    )
 {
@@ -477,8 +455,8 @@ int MTNoteRipple::Draw(
 
 	//プリミティブ描画
 	if (m_ActiveNoteNum > 0) {
-		//バッファ全体でなく波紋の数に合わせて描画するプリミティブを減らす
-		result = m_Primitive.Draw(pD3DDevice, m_pTexture, 2 * m_ActiveNoteNum);
+		//バッファ全体でなく歌詞の数に合わせて描画するプリミティブを減らす
+		result = m_Primitive.DrawLyrics(pD3DDevice, m_pTextures, 2 * m_ActiveNoteNum);
 		if (result != 0) goto EXIT;
 	}
 
@@ -493,94 +471,34 @@ EXIT:;
 //******************************************************************************
 // 解放
 //******************************************************************************
-void MTNoteRipple::Release()
+void MTNoteLyrics::Release()
 {
 	m_Primitive.Release();
-
-	if (m_pTexture != NULL) {
-		m_pTexture->Release();
-		m_pTexture = NULL;
-	}
 
 	delete [] m_pNoteStatus;
 	m_pNoteStatus = NULL;
 }
 
 //******************************************************************************
-// テクスチャ生成
-//******************************************************************************
-int MTNoteRipple::_CreateTexture(
-		LPDIRECT3DDEVICE9 pD3DDevice,
-		const TCHAR* pSceneName
-	)
-{
-	int result = 0;
-	HRESULT hresult = D3D_OK;
-	TCHAR imgFilePath[_MAX_PATH] = {_T('\0')};
-	TCHAR bmpFileName[_MAX_PATH] = {_T('\0')};
-	MTConfFile confFile;
-
-	result = confFile.Initialize(pSceneName);
-	if (result != 0) goto EXIT;
-
-	//ビットマップファイル名
-	result = confFile.SetCurSection(_T("Bitmap"));
-	if (result != 0) goto EXIT;
-	result = confFile.GetStr(_T("Ripple"), bmpFileName, _MAX_PATH, MT_IMGFILE_RIPPLE);
-	if (result != 0) goto EXIT;
-
-	//プロセス実行ファイルディレクトリパス取得
-	result = YNPathUtil::GetModuleDirPath(imgFilePath, _MAX_PATH);
-	if (result != 0) goto EXIT;
-
-	//画像ファイルパス
-	_tcscat_s(imgFilePath, _MAX_PATH, bmpFileName);
-
-	hresult = D3DXCreateTextureFromFileEx(
-					pD3DDevice,			//デバイス
-					imgFilePath,		//ファイルパス
-					0,					//幅：ファイルから取得
-					0,					//高さ：ファイルから取得
-					0,					//ミップレベル
-					0,					//使用方法
-					D3DFMT_A8R8G8B8,	//ピクセルフォーマット
-					D3DPOOL_MANAGED,	//テクスチャ配置先メモリクラス
-					D3DX_FILTER_LINEAR,	//フィルタリング指定
-					D3DX_FILTER_LINEAR,	//フィルタリング指定（ミップ）
-					0xFF000000,			//透明色の指定：不透明黒
-					NULL,				//ソースイメージ情報
-					NULL,				//256パレット情報
-					&m_pTexture			//作成したテクスチャオブジェクト
-				);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
 // ノート情報配列生成
 //******************************************************************************
-int MTNoteRipple::_CreateNoteStatus()
+int MTNoteLyrics::_CreateNoteStatus()
 {
 	int result = 0;
 	unsigned long i = 0;
 
 	//ノート情報配列生成
 	try {
-		m_pNoteStatus = new NoteStatus[MTNOTERIPPLE_MAX_RIPPLE_NUM];
+		m_pNoteStatus = new NoteStatus[MTNOTELYRICS_MAX_LYRICS_NUM];
 	}
 	catch (std::bad_alloc) {
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 		goto EXIT;
 	}
 
-	ZeroMemory(m_pNoteStatus, sizeof(NoteStatus) * MTNOTERIPPLE_MAX_RIPPLE_NUM);
+	//ZeroMemory(m_pNoteStatus, sizeof(NoteStatus) * MTNOTELYRICS_MAX_LYRICS_NUM);
 
-	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 		m_pNoteStatus[i].isActive = false;
 		m_pNoteStatus[i].keyStatus = BeforeNoteON;
 		m_pNoteStatus[i].index = 0;
@@ -594,24 +512,24 @@ EXIT:;
 //******************************************************************************
 // 頂点生成
 //******************************************************************************
-int MTNoteRipple::_CreateVertex(
+int MTNoteLyrics::_CreateVertex(
 		LPDIRECT3DDEVICE9 pD3DDevice
 	)
 {
 	int result = 0;
 	unsigned long vertexNum = 0;
-	MTNOTERIPPLE_VERTEX* pVertex = NULL;
+	MTNOTELYRICS_VERTEX* pVertex = NULL;
 
 	//プリミティブ初期化
 	result = m_Primitive.Initialize(
-					sizeof(MTNOTERIPPLE_VERTEX),//頂点サイズ
+					sizeof(MTNOTELYRICS_VERTEX),//頂点サイズ
 					_GetFVFFormat(),			//頂点FVFフォーマット
 					D3DPT_TRIANGLELIST			//プリミティブ種別
 				);
 	if (result != 0) goto EXIT;
 
 	//頂点バッファ生成
-	vertexNum = 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * 3;
+	vertexNum = 6 * MTNOTELYRICS_MAX_LYRICS_NUM;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
@@ -619,7 +537,7 @@ int MTNoteRipple::_CreateVertex(
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
-	ZeroMemory(pVertex, sizeof(MTNOTERIPPLE_VERTEX) * 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * 3);
+	ZeroMemory(pVertex, sizeof(MTNOTELYRICS_VERTEX) * 6 * MTNOTELYRICS_MAX_LYRICS_NUM);
 
 	//バッファのロック解除
 	result = m_Primitive.UnlockVertex();
@@ -632,8 +550,8 @@ EXIT:;
 //******************************************************************************
 // 頂点の座標設定
 //******************************************************************************
-int MTNoteRipple::_SetVertexPosition(
-		MTNOTERIPPLE_VERTEX* pVertex,
+int MTNoteLyrics::_SetVertexPosition(
+		MTNOTELYRICS_VERTEX* pVertex,
 		SMNote note,
 		NoteStatus* pNoteStatus,
 		unsigned long rippleNo
@@ -661,17 +579,19 @@ int MTNoteRipple::_SetVertexPosition(
 					pbSensitivity
 				);
 
-	//波紋サイズ
-	rh = m_NoteDesign.GetRippleHeight(pNoteStatus->keyDownRate);
-	rw = m_NoteDesign.GetRippleWidth(pNoteStatus->keyDownRate);
+	//歌詞サイズ
+	unsigned long tx, ty;
+	pNoteStatus->fontTexture.GetTextureSize(&tx, &ty);
+	rh = tx * m_NoteDesign.GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
+	rw = ty * m_NoteDesign.GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
 
 	//描画終了確認
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
 		goto EXIT;
 	}
 
-	//波紋を再生平面上からカメラ側に少しだけ浮かせて描画する
-	//また波紋同士が同一平面上で重ならないように描画する
+	//歌詞を再生平面上からカメラ側に少しだけ浮かせて描画する
+	//また歌詞同士が同一平面上で重ならないように描画する
 	//  Zファイティングによって発生するちらつきやかすれを回避する
 	//  グラフィックカードによって現象が異なる
 	if (center.x < m_CamVector.x) {
@@ -682,13 +602,18 @@ int MTNoteRipple::_SetVertexPosition(
 	}
 
 	//頂点座標
-	pVertex[0].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z+(rw/2.0f));
-	pVertex[1].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z-(rw/2.0f));
+	//pVertex[0].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z+(rw/2.0f));
+	//pVertex[1].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z-(rw/2.0f));
+	//pVertex[2].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z+(rw/2.0f));
+	//pVertex[3].p = pVertex[2].p;
+	//pVertex[4].p = pVertex[1].p;
+	//pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
+	pVertex[0].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z-(rw/2.0f));
+	pVertex[1].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z+(rw/2.0f));
 	pVertex[2].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z+(rw/2.0f));
-	pVertex[3].p = pVertex[2].p;
-	pVertex[4].p = pVertex[1].p;
+	pVertex[3].p = pVertex[0].p;
+	pVertex[4].p = pVertex[2].p;
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
-
 	//法線
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
@@ -708,11 +633,17 @@ int MTNoteRipple::_SetVertexPosition(
 	}
 
 	//テクスチャ座標
-	pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
-	pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
+	//pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
+	//pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
+	//pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
+	//pVertex[3].t = pVertex[2].t;
+	//pVertex[4].t = pVertex[1].t;
+	//pVertex[5].t = D3DXVECTOR2(1.0f, 1.0f);
+	pVertex[0].t = D3DXVECTOR2(1.0f, 0.0f);
+	pVertex[1].t = D3DXVECTOR2(0.0f, 0.0f);
 	pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
-	pVertex[3].t = pVertex[2].t;
-	pVertex[4].t = pVertex[1].t;
+	pVertex[3].t = pVertex[0].t;
+	pVertex[4].t = pVertex[2].t;
 	pVertex[5].t = D3DXVECTOR2(1.0f, 1.0f);
 
 EXIT:
@@ -722,7 +653,7 @@ EXIT:
 //******************************************************************************
 // マテリアル作成
 //******************************************************************************
-void MTNoteRipple::_MakeMaterial(
+void MTNoteLyrics::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
 	)
 {
@@ -752,64 +683,10 @@ void MTNoteRipple::_MakeMaterial(
 	pMaterial->Emissive.a = 1.0f;
 }
 
-////******************************************************************************
-//// ノートOFF登録
-////******************************************************************************
-//void MTNoteRipple::SetNoteOff(
-//		unsigned char portNo,
-//		unsigned char chNo,
-//		unsigned char noteNo
-//	)
-//{
-//	unsigned long i = 0;
-//
-//	//該当のノート情報を無効化
-//	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
-//		if ((m_pNoteStatus[i].isActive)
-//		 && (m_pNoteStatus[i].portNo == portNo)
-//		 && (m_pNoteStatus[i].chNo == chNo)
-//		 && (m_pNoteStatus[i].noteNo == noteNo)) {
-//			m_pNoteStatus[i].isActive = false;
-//			break;
-//		}
-//	}
-//
-//	return;
-//}
-//
-////******************************************************************************
-//// ノートON登録
-////******************************************************************************
-//void MTNoteRipple::SetNoteOn(
-//		unsigned char portNo,
-//		unsigned char chNo,
-//		unsigned char noteNo,
-//		unsigned char velocity
-//	)
-//{
-//	unsigned long i = 0;
-//
-//	//空きスペースにノート情報を登録
-//	//空きが見つからなければ波紋の表示はあきらめる
-//	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
-//		if (!(m_pNoteStatus[i].isActive)) {
-//			m_pNoteStatus[i].isActive = true;
-//		 	m_pNoteStatus[i].portNo = portNo;
-//		 	m_pNoteStatus[i].chNo = chNo;
-//		 	m_pNoteStatus[i].noteNo = noteNo;
-//		 	m_pNoteStatus[i].velocity = velocity;
-//		 	m_pNoteStatus[i].regTime = timeGetTime();
-//			break;
-//		}
-//	}
-//
-//	return;
-//}
-
 //******************************************************************************
 // カレントチックタイム設定
 //******************************************************************************
-void MTNoteRipple::SetCurTickTime(
+void MTNoteLyrics::SetCurTickTime(
 		unsigned long curTickTime
 	)
 {
@@ -819,7 +696,7 @@ void MTNoteRipple::SetCurTickTime(
 //******************************************************************************
 // 演奏時間設定
 //******************************************************************************
-void MTNoteRipple::SetPlayTimeMSec(
+void MTNoteLyrics::SetPlayTimeMSec(
 		unsigned long playTimeMsec
 	)
 {
@@ -829,7 +706,7 @@ void MTNoteRipple::SetPlayTimeMSec(
 //******************************************************************************
 // リセット
 //******************************************************************************
-void MTNoteRipple::Reset()
+void MTNoteLyrics::Reset()
 {
 	unsigned long i = 0;
 
@@ -838,11 +715,12 @@ void MTNoteRipple::Reset()
 	m_CurNoteIndex = 0;
 	m_ActiveNoteNum = 0;
 
-	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 		m_pNoteStatus[i].isActive = false;
 		m_pNoteStatus[i].keyStatus = BeforeNoteON;
 		m_pNoteStatus[i].index = 0;
 		m_pNoteStatus[i].keyDownRate = 0.0f;
+		m_pNoteStatus[i].fontTexture.Clear();
 	}
 
 	return;
@@ -851,7 +729,7 @@ void MTNoteRipple::Reset()
 //******************************************************************************
 // 表示設定
 //******************************************************************************
-void MTNoteRipple::SetEnable(
+void MTNoteLyrics::SetEnable(
 		bool isEnable
 	)
 {
@@ -861,7 +739,7 @@ void MTNoteRipple::SetEnable(
 //******************************************************************************
 // スキップ状態設定
 //******************************************************************************
-void MTNoteRipple::SetSkipStatus(
+void MTNoteLyrics::SetSkipStatus(
 		bool isSkipping
 	)
 {

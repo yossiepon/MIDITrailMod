@@ -43,7 +43,7 @@ using namespace SMIDILib;
 #define WM_SEQUENCER_MESSAGE (WM_USER + 1)
 
 //メニュースタイル制御
-#define MT_MENU_NUM        (28)
+#define MT_MENU_NUM        (29)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -215,6 +215,7 @@ private:
 
 	//メニューイベント処理
 	int _OnMenuFileOpen();
+	int _OnMenuFileAdd();
 	int _OnMenuPlay();
 	int _OnMenuStop();
 	int _OnMenuRepeat();
@@ -242,6 +243,7 @@ private:
 
 	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const TCHAR* pFilePath);
+	int _AddMIDIFile(const TCHAR* pFilePath);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
 	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);

@@ -134,10 +134,15 @@ public:
 				D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
 			);
 
-	//波紋サイズ取得：経過時間（ミリ秒）は省略可
-	float GetRippleHeight(unsigned long elapsedTime = 0);
-	float GetRippleWidth(unsigned long elapsedTime = 0);
-	float GetRippleAlpha(unsigned long elapsedTime = 0);
+	//波紋表示時間取得
+	unsigned long GetRippleDecayDuration();
+	unsigned long GetRippleReleaseDuration();
+
+	//波紋サイズ取得
+	float GetRippleHeight(float rate);
+	float GetRippleWidth(float rate);
+	float GetRippleAlpha(float rate);
+	float GetDecayCoefficient(float rate);
 
 	//ピクチャボード相対位置取得
 	float GetPictBoardRelativePos();
@@ -161,7 +166,7 @@ public:
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				unsigned long elapsedTime
+				float rate
 			);
 
 	//発音中ノートボックスエミッシブ取得（マテリアル用）
@@ -196,6 +201,8 @@ private:
 	float m_ActiveNoteWhiteRate;
 
 	int m_RippleDuration;
+	int m_RippleDecayDuration;
+	int m_RippleReleaseDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
