@@ -26,7 +26,7 @@ namespace SMIDILib {
 //******************************************************************************
 SMTrack::SMTrack(void)
 // >>> modify 20120728 yossiepon begin
- : m_List(sizeof(SMDataSet), 1000), overwritePortNo(-1)
+ : m_List(sizeof(SMDataSet), 1000), m_OverwritePortNo(-1)
 // <<< modify 20120728 yossiepon end
 {
 }
@@ -54,7 +54,7 @@ void SMTrack::Clear()
 	m_ExDataMap.clear();
 
 // >>> add 20120728 yossiepon begin
-	overwritePortNo = -1;
+	m_OverwritePortNo = -1;
 // <<< add 20120728 yossiepon end
 
 	return;
@@ -162,10 +162,10 @@ int SMTrack::GetDataSet(
 	//ƒ|[ƒg”Ô†
 	if (pProtNo != NULL) {
 // >>> modify 20120728 yossiepon begin
-		if(overwritePortNo == -1) {
+		if(m_OverwritePortNo == -1) {
 			*pProtNo = dataSet.portNo;
 		} else {
-			*pProtNo = (unsigned char)overwritePortNo;
+			*pProtNo = (unsigned char)m_OverwritePortNo;
 		}
 // <<< modify 20120728 yossiepon end	
 	}
@@ -232,7 +232,7 @@ int SMTrack::OverwritePortNo(short portNo)
 {
 	int result = 0;
 
-	overwritePortNo = portNo;
+	m_OverwritePortNo = portNo;
 
 	return result;
 }
@@ -513,8 +513,8 @@ unsigned long SMTrack::_GetNoteKey(
 	)
 {
 // >>> add 20120728 yossiepon begin
-	if(overwritePortNo != -1) {
-		portNo = (unsigned char)overwritePortNo;
+	if(m_OverwritePortNo != -1) {
+		portNo = (unsigned char)m_OverwritePortNo;
 	}
 // <<< add 20120728 yossiepon end
 

@@ -16,8 +16,10 @@
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
 #include "MTSceneTitle.h"
+// >>> modify 20120729 yossiepon begin
 #include "MTScenePianoRoll3DMod.h"
 #include "MTScenePianoRoll2DMod.h"
+// <<< modify 20120729 yossiepon end
 #include "MTScenePianoRollRain.h"
 #include "MTScenePianoRoll3DLive.h"
 #include "MTScenePianoRoll2DLive.h"
@@ -2066,10 +2068,14 @@ int MIDITrailApp::_CreateScene(
 			//プレイヤ用シーン生成
 			if (pSeqData != NULL) {
 				if (type == PianoRoll3D) {
+// >>> modify 20120729 yossiepon begin
 					m_pScene = new MTScenePianoRoll3DMod();
+// <<< modify 20120729 yossiepon end
 				}
 				else if (type == PianoRoll2D) {
+// >>> modify 20120729 yossiepon begin
 					m_pScene = new MTScenePianoRoll2DMod();
+// <<< modify 20120729 yossiepon end
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain();

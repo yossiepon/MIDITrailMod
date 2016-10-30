@@ -47,7 +47,9 @@ public:
 	virtual ~MTNoteBox(void);
 
 	//生成
+// >>> modify 20120728 yossiepon begin
 	virtual int Create(
+// <<< modify 20120728 yossiepon end
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -55,23 +57,30 @@ public:
 		);
 
 	//更新
+// >>> modify 20120728 yossiepon begin
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+// <<< modify 20120728 yossiepon end
 
 	//描画
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
+// >>> modify 20120728 yossiepon begin
 	virtual void Release();
+// <<< modify 20120728 yossiepon end
 
 	//演奏チックタイム登録
 	void SetCurTickTime(unsigned long curTickTime);
 
 	//リセット
+// >>> modify 20120728 yossiepon begin
 	virtual void Reset();
+// <<< modify 20120728 yossiepon end
 
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
+// >>> modify 20120728 yossiepon begin
 protected:
 
 	//頂点バッファ構造体
@@ -111,13 +120,15 @@ protected:
 			unsigned long elapsedTime = 0xFFFFFFFF,
 			bool isEnablePitchBend = false
 		);
-	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 
+	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	int _HideNoteBox(unsigned long index);
 	int _ShowNoteBox(unsigned long index);
+
+// <<< modify 20120728 yossiepon end
 
 private:
 
@@ -129,6 +140,7 @@ private:
 		unsigned long startTime;
 	};
 
+// >>> modify 20120728 yossiepon begin
 private:
 
 	//発音中ノートボックス
@@ -147,6 +159,8 @@ private:
 
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	void _MakeMaterialForActiveNote(D3DMATERIAL9* pMaterial);
+
+// <<< modify 20120728 yossiepon end
 
 };
 

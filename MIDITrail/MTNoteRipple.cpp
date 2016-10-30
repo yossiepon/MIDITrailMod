@@ -263,10 +263,12 @@ void MTNoteRipple::Release()
 		m_pTexture = NULL;
 	}
 
+// >>> modify 20120728 yossiepon begin
 	if(m_pNoteStatus != NULL) {
 		delete [] m_pNoteStatus;
 		m_pNoteStatus = NULL;
 	}
+// <<< modify 20120728 yossiepon end
 }
 
 //******************************************************************************
