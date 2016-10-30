@@ -1,10 +1,11 @@
 //******************************************************************************
 //
-// MIDITrail / MTNoteRipple
+// MIDITrail / MTNoteLyrics
 //
-// ノート波紋描画クラス
+// ノート歌詞描画クラス
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -14,8 +15,9 @@
 #include <d3dx9.h>
 #include "SMIDILib.h"
 #include "DXPrimitive.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesignMod.h"
 #include "MTNotePitchBend.h"
+#include "MTFontTexture.h"
 
 using namespace SMIDILib;
 
@@ -23,28 +25,31 @@ using namespace SMIDILib;
 //******************************************************************************
 // パラメータ定義
 //******************************************************************************
-//最大波紋描画数
-#define MTNOTERIPPLE_MAX_RIPPLE_NUM  (100)
+//最大ポート数
+#define MTNOTELYRICS_MAX_PORT_NUM  (8)
 
-// TODO: 最大波紋描画数を可変にする
+//最大歌詞描画数
+#define MTNOTELYRICS_MAX_LYRICS_NUM  (100)
+
+// TODO: 最大歌詞描画数を可変にする
 //   事前にシーケンスデータの最大同時発音数を調査しておけば
 //   確保するバッファサイズを変更できる
 //   現状でもバッファサイズは初期化時点で動的に変更可能である
 
 
 //******************************************************************************
-// ノート波紋描画クラス
+// ノート歌詞描画クラス
 //******************************************************************************
-class MTNoteRipple
+class MTNoteLyrics
 {
 public:
 
 	//コンストラクタ／デストラクタ
-	MTNoteRipple(void);
-	virtual ~MTNoteRipple(void);
+	MTNoteLyrics(void);
+	virtual ~MTNoteLyrics(void);
 
 	//生成
-	virtual int Create(
+	int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -52,34 +57,22 @@ public:
 		);
 
 	//更新
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
+	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
 	//描画
-	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
-	virtual void Release();
-
-	//ノートOFF登録
-	void SetNoteOff(
-			unsigned char portNo,
-			unsigned char chNo,
-			unsigned char noteNo
-		);
-
-	//ノートON登録
-	void SetNoteOn(
-			unsigned char portNo,
-			unsigned char chNo,
-			unsigned char noteNo,
-			unsigned char velocity
-		);
+	void Release();
 
 	//演奏チックタイム登録
 	void SetCurTickTime(unsigned long curTickTime);
 
+	//演奏時間設定
+	void SetPlayTimeMSec(unsigned long playTimeMsec);
+
 	//リセット
-	virtual void Reset();
+	void Reset();
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -87,20 +80,26 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-protected:
+private:
 
-	//ノート発音状態構造体
+	//キー状態
+	enum KeyStatus {
+		BeforeNoteON,
+		NoteON,
+		AfterNoteOFF
+	};
+
+	//発音ノート情報構造体
 	struct NoteStatus {
 		bool isActive;
-		unsigned char portNo;
-		unsigned char chNo;
-		unsigned char noteNo;
-		unsigned char velocity;
-		unsigned long regTime;
+		KeyStatus keyStatus;
+		unsigned long index;
+		float keyDownRate;
+		MTFontTexture fontTexture;
 	};
 
 	//頂点バッファ構造体
-	struct MTNOTERIPPLE_VERTEX {
+	struct MTNOTELYRICS_VERTEX {
 		D3DXVECTOR3 p;	//頂点座標
 		D3DXVECTOR3 n;	//法線
 		DWORD		c;	//ディフューズ色
@@ -110,25 +109,33 @@ protected:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-protected:
+private:
 
 	//描画系
 	DXPrimitive m_Primitive;
-	LPDIRECT3DTEXTURE9 m_pTexture;
-
-	//再生時刻
-	unsigned long m_CurTickTime;
+	LPDIRECT3DTEXTURE9 m_pTextures[MTNOTELYRICS_MAX_LYRICS_NUM];
+	D3DMATERIAL9 m_Material;
 
 	//カメラ
 	D3DXVECTOR3 m_CamVector;
 
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesignMod m_NoteDesign;
 
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
+	//ノートリスト
+	SMNoteList m_NoteListRT;
+
+	//発音中ノート管理
+	unsigned long m_PlayTimeMSec;
+	unsigned long m_CurTickTime;
+	unsigned long m_CurNoteIndex;
+	float m_KeyDownRate[MTNOTELYRICS_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
+
 	//ノート発音状態情報
+	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
 	//表示可否
@@ -137,28 +144,26 @@ protected:
 	//スキップ状態
 	bool m_isSkipping;
 
-	virtual int _CreateNoteStatus();
-	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
-	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-
-private:
-
-	//描画系
-	D3DMATERIAL9 m_Material;
-
-	//ノート発音状態情報
-	NoteStatus* m_pNoteStatus;
-
-	int _CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
+	int _CreateNoteStatus();
+	int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _SetVertexPosition(
-				MTNOTERIPPLE_VERTEX* pVertex,
+				MTNOTELYRICS_VERTEX* pVertex,
+				SMNote note,
 				NoteStatus* pNoteStatus,
-				unsigned long rippleNo,
-				unsigned long curTime,
-				bool* pIsTimeout
+				unsigned long rippleNo
 			);
+	void _MakeMaterial(D3DMATERIAL9* pMaterial);
+	int _TransformLyrics(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _UpdateStatusOfLyrics(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _UpdateNoteStatus(
+				unsigned long playTimeMSec,
+				unsigned long decayDuration,
+				unsigned long releaseDuration,
+				SMNote note,
+				NoteStatus* pNoteStatus
+			);
+	int _UpdateVertexOfLyrics(LPDIRECT3DDEVICE9 pD3DDevice);
+
 };
 
 

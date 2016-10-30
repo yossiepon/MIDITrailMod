@@ -509,8 +509,10 @@ void MTNoteBox::Release()
 	m_PrimitiveActiveNotes.Release();
 	m_NoteList.Clear();
 
-	delete [] m_pNoteStatus;
-	m_pNoteStatus = NULL;
+	if(m_pNoteStatus != NULL) {
+		delete [] m_pNoteStatus;
+		m_pNoteStatus = NULL;
+	}
 }
 
 //******************************************************************************

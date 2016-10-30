@@ -144,7 +144,7 @@ public:
 
 	//ポート原点座標取得
 	float GetPortOriginY(unsigned char portNo);
-	float GetPortOriginZ(unsigned char portNo);
+	virtual float GetPortOriginZ(unsigned char portNo);
 
 	//世界座標配置移動ベクトル取得
 	D3DXVECTOR3 GetWorldMoveVector();
@@ -173,6 +173,19 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
+protected:
+
+	float m_RippleHeight;
+	float m_RippleWidth;
+
+	SMPortList m_PortList;
+	unsigned char m_PortIndex[256];
+
+	float m_ActiveNoteWhiteRate;
+
+	virtual void _Clear();
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
+
 private:
 
 	unsigned long m_TimeDivision;
@@ -181,11 +194,7 @@ private:
 	float m_NoteBoxWidth;
 	float m_NoteStep;
 	float m_ChStep;
-	float m_RippleHeight;
-	float m_RippleWidth;
 	float m_PictBoardRelativePos;
-	SMPortList m_PortList;
-	unsigned char m_PortIndex[256];
 
 	D3DXCOLOR m_NoteColor[16];
 	D3DXCOLOR m_ActiveNoteEmissive;
@@ -193,15 +202,10 @@ private:
 	D3DXCOLOR m_PlaybackSectionColor;
 
 	int m_ActiveNoteDuration;
-	float m_ActiveNoteWhiteRate;
-
 	int m_RippleDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
-
-	void _Clear();
-	int _LoadConfFile(const TCHAR* pSceneName);
 
 };
 

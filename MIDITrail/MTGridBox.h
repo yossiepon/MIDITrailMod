@@ -45,12 +45,15 @@ public:
 	//解放
 	void Release();
 
-private:
+protected:
 
 	DXPrimitive m_Primitive;
+	MTNoteDesign m_NoteDesign;
+
+private:
+
 	unsigned long m_BarNum;
 	SMPortList m_PortList;
-	MTNoteDesign m_NoteDesign;
 	bool m_isVisible;
 
 	//頂点バッファ構造体

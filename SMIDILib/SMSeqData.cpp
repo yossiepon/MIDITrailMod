@@ -249,6 +249,33 @@ void SMSeqData::Clear()
 	return;
 }
 
+// >>> add 20120728 yossiepon begin
+
+//******************************************************************************
+// シーケンス追加
+//******************************************************************************
+void SMSeqData::AddSequence(SMSeqData &other, short portNo, short chNo)
+{
+	SMTrackListItr itr = other.m_TrackList.begin();
+	std::advance(itr, 1);
+
+	for (; itr != other.m_TrackList.end(); itr++) {
+
+		(*itr)->OverwritePortNo(portNo);
+		(*itr)->OverwriteChNo(chNo);
+
+		m_TrackList.push_back(*itr);
+	}
+
+	other.m_TrackList.clear();
+
+	CloseTrack();
+
+	return;
+}
+
+// <<< add 20120728 yossiepon end
+
 //******************************************************************************
 // SMFフォーマット取得
 //******************************************************************************

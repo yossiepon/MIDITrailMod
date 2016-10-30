@@ -47,7 +47,7 @@ public:
 	virtual ~MTNoteBox(void);
 
 	//生成
-	int Create(
+	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -55,32 +55,24 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
 	//描画
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
-	void Release();
+	virtual void Release();
 
 	//演奏チックタイム登録
 	void SetCurTickTime(unsigned long curTickTime);
 
 	//リセット
-	void Reset();
+	virtual void Reset();
 
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-private:
-
-	//発音ノート情報構造体
-	struct NoteStatus {
-		bool isActive;
-		bool isHide;
-		unsigned long index;
-		unsigned long startTime;
-	};
+protected:
 
 	//頂点バッファ構造体
 	struct MTNOTEBOX_VERTEX {
@@ -89,7 +81,7 @@ private:
 		DWORD		c;	//ディフューズ色
 	};
 
-private:
+protected:
 
 	//ノートデザイン
 	MTNoteDesign m_NoteDesign;
@@ -105,20 +97,11 @@ private:
 	unsigned long m_CurTickTime;
 	unsigned long m_CurNoteIndex;
 	unsigned long m_ActiveNoteNum;
-	NoteStatus* m_pNoteStatus;
 
-	//スキップ状態
-	bool m_isSkipping;
-
-		//ピッチベンド情報
+	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//頂点バッファFVFフォーマット
-	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
-
-	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _CreateNoteStatus();
+	virtual int _CreateNoteStatus();
 
 	int _CreateVertexOfNote(
 			SMNote note,
@@ -128,17 +111,42 @@ private:
 			unsigned long elapsedTime = 0xFFFFFFFF,
 			bool isEnablePitchBend = false
 		);
+	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	int _HideNoteBox(unsigned long index);
+	int _ShowNoteBox(unsigned long index);
+
+private:
+
+	//発音ノート情報構造体
+	struct NoteStatus {
+		bool isActive;
+		bool isHide;
+		unsigned long index;
+		unsigned long startTime;
+	};
+
+private:
+
+	//発音中ノートボックス
+	NoteStatus* m_pNoteStatus;
+
+	//スキップ状態
+	bool m_isSkipping;
+
+	//頂点バッファFVFフォーマット
+	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
+
+	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+
 	unsigned long _GetVertexIndexOfNote(unsigned long index);
 
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	void _MakeMaterialForActiveNote(D3DMATERIAL9* pMaterial);
-
-	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-
-	int _HideNoteBox(unsigned long index);
-	int _ShowNoteBox(unsigned long index);
 
 };
 

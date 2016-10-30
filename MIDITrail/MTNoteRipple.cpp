@@ -263,8 +263,10 @@ void MTNoteRipple::Release()
 		m_pTexture = NULL;
 	}
 
-	delete [] m_pNoteStatus;
-	m_pNoteStatus = NULL;
+	if(m_pNoteStatus != NULL) {
+		delete [] m_pNoteStatus;
+		m_pNoteStatus = NULL;
+	}
 }
 
 //******************************************************************************

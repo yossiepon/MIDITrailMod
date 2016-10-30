@@ -1572,6 +1572,21 @@ int MTPianoKeyboard::Transform(
 }
 
 //******************************************************************************
+// 移動
+//******************************************************************************
+int MTPianoKeyboard::Transform(
+		LPDIRECT3DDEVICE9 pD3DDevice,
+		D3DXVECTOR3 moveVector1,
+		D3DXVECTOR3 moveVector2,
+		float scale,
+		float z,
+		float rollAngle
+	)
+{
+	return YN_SET_ERR("Program error.", 0, 0);
+}
+
+//******************************************************************************
 // キーのリセット
 //******************************************************************************
 int MTPianoKeyboard::ResetKey(
@@ -1627,6 +1642,19 @@ EXIT:;
 }
 
 //******************************************************************************
+// キーの押し込み
+//******************************************************************************
+int MTPianoKeyboard::PushKey(
+		unsigned char chNo,
+		unsigned char noteNo,
+		float keyDownRate,
+		unsigned long elapsedTime
+	)
+{
+	return YN_SET_ERR("Program error.", 0, 0);
+}
+
+//******************************************************************************
 // 描画
 //******************************************************************************
 int MTPianoKeyboard::Draw(
@@ -1640,7 +1668,7 @@ int MTPianoKeyboard::Draw(
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	// アルファ演算：引数1を使用  引数1：ポリゴン
+	// アルファ演算：乗算  引数1：テクスチャ  引数2：ポリゴン
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
