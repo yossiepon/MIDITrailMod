@@ -60,6 +60,13 @@ public:
 	//クリア
 	void Clear();
 
+// >>> add 20120728 yossiepon begin
+
+	//シーケンス追加
+	void AddSequence(SMSeqData &other, short portNo = -1, short chNo = -1);
+
+// <<< add 20120728 yossiepon end
+
 	//----------------------------------------------------------------
 	//データ取得系
 	//----------------------------------------------------------------

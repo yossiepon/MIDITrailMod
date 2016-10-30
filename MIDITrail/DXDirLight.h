@@ -43,6 +43,15 @@ public:
 			BOOL isLightON
 		);
 
+// >>> add 20121229 yossiepon begin
+	//デバイスへのライト登録
+	int SetDevice(
+			LPDIRECT3DDEVICE9 pD3DDevice,
+			DWORD index,
+			BOOL isLightON
+		);
+// <<< add 20121229 yossiepon end
+
 private:
 
 	D3DLIGHT9 m_Light;

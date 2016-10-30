@@ -44,7 +44,9 @@ public:
 	virtual ~MTNoteRipple(void);
 
 	//生成
-	int Create(
+// >>> modify 20120728 yossiepon begin
+	virtual int Create(
+// <<< modify 20120728 yossiepon end
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -52,13 +54,19 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
+// >>> modify 20120728 yossiepon begin
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
+// <<< modify 20120728 yossiepon end
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// >>> modify 20120728 yossiepon begin
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//解放
-	void Release();
+// >>> modify 20120728 yossiepon begin
+	virtual void Release();
+// <<< modify 20120728 yossiepon end
 
 	//ノートOFF登録
 	void SetNoteOff(
@@ -79,7 +87,9 @@ public:
 	void SetCurTickTime(unsigned long curTickTime);
 
 	//リセット
-	void Reset();
+// >>> modify 20120728 yossiepon begin
+	virtual void Reset();
+// <<< modify 20120728 yossiepon end
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -87,7 +97,8 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-private:
+// >>> modify 20120728 yossiepon begin
+protected:
 
 	//ノート発音状態構造体
 	struct NoteStatus {
@@ -110,12 +121,11 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-private:
+protected:
 
 	//描画系
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
-	D3DMATERIAL9 m_Material;
 
 	//再生時刻
 	unsigned long m_CurTickTime;
@@ -130,7 +140,6 @@ private:
 	MTNotePitchBend* m_pNotePitchBend;
 
 	//ノート発音状態情報
-	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
 	//表示可否
@@ -139,9 +148,24 @@ private:
 	//スキップ状態
 	bool m_isSkipping;
 
+	virtual int _CreateNoteStatus();
+	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
+	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+
+// <<< modify 20120728 yossiepon end
+
+private:
+
+// >>> modify 20120728 yossiepon begin
+	//描画系
+	D3DMATERIAL9 m_Material;
+
+	//ノート発音状態情報
+	NoteStatus* m_pNoteStatus;
+
 	int _CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
-	int _CreateNoteStatus();
-	int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,
 				NoteStatus* pNoteStatus,
@@ -149,9 +173,8 @@ private:
 				unsigned long curTime,
 				bool* pIsTimeout
 			);
-	void _MakeMaterial(D3DMATERIAL9* pMaterial);
-	int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+
+// <<< modify 20120728 yossiepon end
 
 };
 

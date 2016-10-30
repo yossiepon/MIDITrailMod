@@ -203,6 +203,16 @@ int MTTimeIndicator::Draw(
 {
 	int result = 0;
 
+// >>> add 20120728 yossiepon begin
+
+	//テクスチャステージ設定
+	//  カラー演算：無効
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_DISABLE);
+	// アルファ演算：無効
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
+
+// <<< add 20120728 yossiepon end
+
 	if (m_isEnableLine) {
 		result = m_PrimitiveLine.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;

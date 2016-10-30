@@ -16,8 +16,8 @@
 //******************************************************************************
 
 //バージョン文字列
-#define MIDITRAIL_VERSION_STRING_X86  _T("Version 1.2.1b")
-#define MIDITRAIL_VERSION_STRING_X64  _T("Version 1.2.1b (x64)")
+#define MIDITRAIL_VERSION_STRING_X86  _T("Version 1.2.1b mod. yossiepon_20140920")
+#define MIDITRAIL_VERSION_STRING_X64  _T("Version 1.2.1b (x64) mod. yossiepon_20140920")
 
 //コピーライト
 #define MIDITRAIL_COPYRIGHT          _T("Copyright (C) 2010-2014 WADA Masashi");

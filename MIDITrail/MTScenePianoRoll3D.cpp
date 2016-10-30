@@ -100,7 +100,9 @@ int MTScenePianoRoll3D::Create(
 	m_DirLight.SetDirection(D3DXVECTOR3(1.0f, -1.0f, 2.0f));
 
 	//ライトのデバイス登録
-	result = m_DirLight.SetDevice(pD3DDevice, m_IsEnableLight);
+// >>> moidfy 20121229 yossiepon begin
+	result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+// <<< moidfy 20121229 yossiepon end
 	if (result != 0) goto EXIT;
 
 	//----------------------------------

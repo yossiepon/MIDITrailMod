@@ -39,7 +39,9 @@ public:
 
 	//コンストラクタ／デストラクタl
 	MTScenePianoRoll3D();
-	~MTScenePianoRoll3D();
+// >>> modify 20120728 yossiepon begin
+	virtual ~MTScenePianoRoll3D();
+// <<< modify 20120728 yossiepon end
 
 	//名称取得
 	const TCHAR* GetName();
@@ -52,13 +54,19 @@ public:
 		);
 
 	//変換
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+// >>> modify 20120728 yossiepon begin
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// >>> modify 20120728 yossiepon begin
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//破棄
-	void Release();
+// >>> modify 20120728 yossiepon begin
+	virtual void Release();
+// <<< modify 20120728 yossiepon end
 
 	//ウィンドウクリックイベント受信
 	int OnWindowClicked(
@@ -74,7 +82,9 @@ public:
 	int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//シーケンサメッセージ受信
-	int OnRecvSequencerMsg(
+// >>> modify 20120728 yossiepon begin
+	virtual int OnRecvSequencerMsg(
+// <<< modify 20120728 yossiepon end
 			unsigned long param1,
 			unsigned long param2
 		);
@@ -91,22 +101,20 @@ public:
 	void ResetViewpoint();
 
 	//エフェクト設定
-	void SetEffect(MTScene::EffectType type, bool isEnable);
+// >>> modify 20120728 yossiepon begin
+	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
+// <<< modify 20120728 yossiepon end
 
 	//演奏速度設定
 	void SetPlaySpeedRatio(unsigned long ratio);
 
+// >>> modify 20120728 yossiepon begin
 protected:
 
 	//ライト有無
 	BOOL m_IsEnableLight;
 
-private:
-
-	//ライト
-	DXDirLight m_DirLight;
-
-	//一人称カメラ
+	////一人称カメラ
 	MTFirstPersonCam m_FirstPersonCam;
 
 	//描画オブジェクト
@@ -120,6 +128,25 @@ private:
 	MTTimeIndicator m_TimeIndicator;
 	MTMeshCtrl m_MeshCtrl;
 
+	//スキップ状態
+	bool m_IsSkipping;
+
+	virtual void _Reset();
+
+// >>> modify access level to protected 20121229 yossiepon begin
+	void _SetLightColor(DXDirLight* pLight);
+// <<< modify 20121229 yossiepon end
+
+// <<< modify 20120728 yossiepon end
+
+private:
+
+// >>> modify 20120728 yossiepon begin
+	//ライト
+	DXDirLight m_DirLight;
+
+// <<< modify 20120728 yossiepon end
+
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
 
@@ -132,11 +159,8 @@ private:
 	//ノートデザインオブジェクト
 	MTNoteDesign m_NoteDesign;
 
-	//スキップ状態
-	bool m_IsSkipping;
-
-	void _Reset();
-	void _SetLightColor(DXDirLight* pLight);
+// >>> modify 20120728 yossiepon begin
+// <<< modify 20120728 yossiepon end
 	int _LoadConf();
 
 };

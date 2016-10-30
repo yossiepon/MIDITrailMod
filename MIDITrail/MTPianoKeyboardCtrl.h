@@ -37,7 +37,9 @@ public:
 	virtual ~MTPianoKeyboardCtrl(void);
 
 	//生成
-	int Create(
+// >>> modify 20120728 yossiepon begin
+	virtual int Create(
+// <<< modify 20120728 yossiepon end
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -46,10 +48,14 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+// >>> modify 20120728 yossiepon begin
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+// <<< modify 20120728 yossiepon end
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// >>> modify 20120728 yossiepon begin
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//解放
 	void Release();
@@ -61,7 +67,9 @@ public:
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
 	//リセット
-	void Reset();
+// >>> modify 20120728 yossiepon begin
+	virtual void Reset();
+// <<< modify 20120728 yossiepon end
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -69,7 +77,8 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-private:
+// >>> modify 20120728 yossiepon begin
+protected:
 
 	//キー状態
 	enum KeyStatus {
@@ -86,7 +95,13 @@ private:
 		float keyDownRate;
 	};
 
-private:
+// >>> modify 20140920 yossiepon begin
+protected:
+	//シングルキーボードフラグ
+	bool m_isSingleKeyboard;
+// <<< modify 20120920 yossiepon end
+
+protected:
 
 	//ノートデザイン
 	MTNoteDesign m_NoteDesign;
@@ -107,32 +122,38 @@ private:
 	NoteStatus* m_pNoteStatus;
 	float m_KeyDownRate[SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
-	//スキップ状態
-	bool m_isSkipping;
-
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
 	//表示可否
 	bool m_isEnable;
 
-	//シングルキーボードフラグ
-	bool m_isSingleKeyboard;
-
 	int _CreateNoteStatus();
-	int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
+	virtual int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateNoteStatus(
+	virtual int _UpdateNoteStatus(
 				unsigned long playTimeMSec,
 				unsigned long keyDownDuration,
 				unsigned long keyUpDuration,
 				SMNote note,
 				NoteStatus* pNoteStatus
 			);
-	int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 	float _GetPichBendShiftPosX(unsigned char portNo, unsigned char chNo);
+
+// <<< modify 20120728 yossiepon end
+
+private:
+
+// >>> modify 20120728 yossiepon begin
+	//スキップ状態
+	bool m_isSkipping;
+// <<< modify 20120728 yossiepon end
+
+// >>> modify 20120728 yossiepon begin
+	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 };
 
