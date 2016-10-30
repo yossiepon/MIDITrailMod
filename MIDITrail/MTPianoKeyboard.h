@@ -43,7 +43,7 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector, float rollAngle);
+	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector1, D3DXVECTOR3 moveVector2, float scale, float z, float rollAngle);
 
 	//描画
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
@@ -53,7 +53,7 @@ public:
 
 	//キー状態変更
 	int ResetKey(unsigned char noteNo);
-	int PushKey(unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
+	int PushKey(unsigned char chNo, unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
 
 	//共有用テクスチャ取得
 	LPDIRECT3DTEXTURE9 GetTexture();
