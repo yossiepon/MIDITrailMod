@@ -4,7 +4,7 @@
 //
 // カラーユーティリティクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -62,4 +62,35 @@ EXIT:;
 	return D3DXCOLOR(cr, cg, cb, alpha);
 }
 
+//******************************************************************************
+// RGB（16進数文字列）からの数値変換
+//******************************************************************************
+D3DCOLOR DXColorUtil::MakeColorFromHexRGB(
+		const TCHAR* pHexRGB
+	)
+{
+	long cr, cg, cb = 0;
+	TCHAR* stopped = NULL;
+	TCHAR buf[3];
+
+	if (pHexRGB == NULL) goto EXIT;
+	if (_tcslen(pHexRGB) < 6) goto EXIT;
+
+	buf[2] = _T('\0');
+
+	buf[0] = pHexRGB[0];
+	buf[1] = pHexRGB[1];
+	cr     = _tcstol(buf, &stopped, 16);
+
+	buf[0] = pHexRGB[2];
+	buf[1] = pHexRGB[3];
+	cg     = _tcstol(buf, &stopped, 16);
+
+	buf[0] = pHexRGB[4];
+	buf[1] = pHexRGB[5];
+	cb     = _tcstol(buf, &stopped, 16);
+
+EXIT:;
+	return D3DCOLOR_XRGB(cr, cg, cb);
+}
 

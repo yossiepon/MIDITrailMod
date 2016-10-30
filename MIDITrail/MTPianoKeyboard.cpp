@@ -4,7 +4,7 @@
 //
 // ピアノキーボード描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -208,6 +208,14 @@ int MTPianoKeyboard::_CreateVertexOfKeyboard(
 		if (result != 0) goto EXIT;
 	}
 
+	//表示範囲外のキーを隠す
+	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+		if (!(m_KeyboardDesign.IsKeyDisp(noteNo))) {
+			result = _HideKey(noteNo);
+			if (result != 0) goto EXIT;
+		}
+	}
+
 	//マテリアル作成
 	_MakeMaterial(&material);
 	m_PrimitiveKeyboard.SetMaterial(material);
@@ -341,6 +349,11 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	pVertex[4].p = D3DXVECTOR3(nextCenterX - (blackKeyWidth/2.0f) - spc, heightY, deltaKeyLen - spc);
 	pVertex[5].p = D3DXVECTOR3(nextCenterX - (blackKeyWidth/2.0f) - spc, heightY, whiteKeyLen);
 	pVertex[6].p = D3DXVECTOR3(centerX - (whiteKeyWidth/2.0f),           heightY, whiteKeyLen);
+
+	if (m_KeyboardDesign.GetKeyDispRangeEnd() == noteNo) {
+		pVertex[4].p = pVertex[2].p;
+		pVertex[5].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
+	}
 
 	//法線／色
 	for (i = 0; i < 7; i++) {
@@ -629,6 +642,15 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	pVertex[5].p = D3DXVECTOR3(nextCenterX - (blackKeyWidth/2.0f) - spc, heightY, whiteKeyLen);
 	pVertex[6].p = D3DXVECTOR3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, whiteKeyLen);
 	pVertex[7].p = D3DXVECTOR3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, deltaKeyLen - spc);
+
+	if (m_KeyboardDesign.GetKeyDispRangeStart() == noteNo) {
+		pVertex[7].p = pVertex[3].p;
+		pVertex[6].p = D3DXVECTOR3(centerX - (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
+	}
+	if (m_KeyboardDesign.GetKeyDispRangeEnd() == noteNo) {
+		pVertex[4].p = pVertex[2].p;
+		pVertex[5].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
+	}
 
 	//法線／色
 	for (i = 0; i < 8; i++) {
@@ -943,6 +965,11 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	pVertex[4].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, whiteKeyLen);
 	pVertex[5].p = D3DXVECTOR3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, whiteKeyLen);
 	pVertex[6].p = D3DXVECTOR3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, deltaKeyLen - spc);
+
+	if (m_KeyboardDesign.GetKeyDispRangeStart() == noteNo) {
+		pVertex[5].p = D3DXVECTOR3(centerX - (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
+		pVertex[6].p = pVertex[3].p;
+	}
 
 	//法線／色
 	for (i = 0; i < 7; i++) {
@@ -1598,7 +1625,8 @@ EXIT:;
 int MTPianoKeyboard::PushKey(
 		unsigned char noteNo,
 		float keyDownRate,
-		unsigned long elapsedTime
+		unsigned long elapsedTime,
+		D3DXCOLOR* pNoteColor
 	)
 {
 	int result = 0;
@@ -1618,7 +1646,7 @@ int MTPianoKeyboard::PushKey(
 	}
 	else {
 		//キーが押下状態の場合は色を変更して回転させる
-		color = m_KeyboardDesign.GetActiveKeyColor(noteNo, elapsedTime);
+		color = m_KeyboardDesign.GetActiveKeyColor(noteNo, elapsedTime, pNoteColor);
 		_RotateKey(noteNo, angle, &color);
 	}
 
@@ -1692,6 +1720,11 @@ int MTPianoKeyboard::_RotateKey(
 
 	if (noteNo >= SM_MAX_NOTE_NUM) {
 		result = YN_SET_ERR("Program error.", noteNo, 0);
+		goto EXIT;
+	}
+
+	//表示範囲外のキーなら何もしない
+	if (!(m_KeyboardDesign.IsKeyDisp(noteNo))) {
 		goto EXIT;
 	}
 
@@ -1781,6 +1814,40 @@ D3DXVECTOR3 MTPianoKeyboard::_RotateYZ(
 LPDIRECT3DTEXTURE9 MTPianoKeyboard::GetTexture()
 {
 	return m_pTexture;
+}
+
+//******************************************************************************
+// キー隠蔽
+//******************************************************************************
+int MTPianoKeyboard::_HideKey(
+		unsigned char noteNo
+	)
+{
+	int result = 0;
+	unsigned long i = 0;
+	MTPIANOKEYBOARD_VERTEX* pVertex = NULL;
+	unsigned long offset = 0;
+	unsigned long size = 0;
+
+	//頂点バッファのロック
+	offset = m_BufInfo[noteNo].vertexPos * sizeof(MTPIANOKEYBOARD_VERTEX);
+	size   = m_BufInfo[noteNo].vertexNum * sizeof(MTPIANOKEYBOARD_VERTEX);
+	result = m_PrimitiveKeyboard.LockVertex((void**)&pVertex, offset, size);
+	if (result != 0) goto EXIT;
+
+	for (i = 0; i < m_BufInfo[noteNo].vertexNum; i++) {
+		pVertex[i].p = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+		pVertex[i].c = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f); //R,G,B,A
+		pVertex[i].t = D3DXVECTOR2(0.0f, 0.0f);
+	}
+
+	//頂点バッファのロック解除
+	result = m_PrimitiveKeyboard.UnlockVertex();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
 }
 
 

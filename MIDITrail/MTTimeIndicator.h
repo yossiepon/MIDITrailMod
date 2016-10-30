@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -53,6 +53,9 @@ public:
 
 	//現在位置取得
 	float GetPos();
+
+	//移動ベクトル取得
+	D3DXVECTOR3 GetMoveVector();
 
 private:
 

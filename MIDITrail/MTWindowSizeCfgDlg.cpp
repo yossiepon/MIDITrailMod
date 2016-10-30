@@ -4,7 +4,7 @@
 //
 // ウィンドウサイズ設定ダイアログクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -99,9 +99,9 @@ int MTWindowSizeCfgDlg::Show(
 	m_isSaved = false;
 
 	//アプリケーションインスタンスハンドルを取得
-	hInstance = (HINSTANCE)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
+	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hParentWnd);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
@@ -113,7 +113,7 @@ int MTWindowSizeCfgDlg::Show(
 					_WndProc							//ダイアログボックスプロシージャ
 				);
 	if ((dresult == 0) || (dresult == -1)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hInstance);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 
@@ -242,12 +242,12 @@ int MTWindowSizeCfgDlg::_InitSizeList()
 			//ウィンドウサイズをリストボックスに追加
 			lresult = SendMessage(m_hSizeList, LB_ADDSTRING, 0, (LPARAM)caption);
 			if ((lresult == LB_ERR) || (lresult == LB_ERRSPACE)) {
-				result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)m_hSizeList);
+				result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hSizeList);
 				goto EXIT;
 			}
 
 			if ((item.width == curWidth) && (item.height == curHeight)) {
-				selectedIndex = m_SizeList.size() - 1;
+				selectedIndex = (int)(m_SizeList.size() - 1);
 			}
 		}
 	}
@@ -282,10 +282,10 @@ int MTWindowSizeCfgDlg::_Save()
 	//選択項目のインデックスを取得
 	lresult = SendMessage(m_hSizeList, LB_GETCURSEL, 0, 0);
 	if ((lresult == LB_ERR) || (lresult < 0)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)m_hSizeList);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hSizeList);
 		goto EXIT;
 	}
-	selectedIndex = lresult;
+	selectedIndex = (unsigned long)lresult;
 
 	itr = m_SizeList.begin();
 	advance(itr, selectedIndex);

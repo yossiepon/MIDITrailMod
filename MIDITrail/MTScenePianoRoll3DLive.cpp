@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,6 +12,8 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include "YNBaseLib.h"
+#include "DXColorUtil.h"
+#include "MTConfFile.h"
 #include "MTScenePianoRoll3DLive.h"
 
 using namespace YNBaseLib;
@@ -41,7 +43,7 @@ MTScenePianoRoll3DLive::~MTScenePianoRoll3DLive()
 //******************************************************************************
 const TCHAR* MTScenePianoRoll3DLive::GetName()
 {
-	return _T("PianoRoll3D");
+	return _T("PianoRoll3DLive");
 }
 
 //******************************************************************************
@@ -63,6 +65,10 @@ int MTScenePianoRoll3DLive::Create(
 		result =  YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
+	
+	//設定ファイル読み込み
+	result = _LoadConf();
+	if (result != 0) goto EXIT;
 	
 	//ノートデザインオブジェクト初期化
 	result = m_NoteDesign.Initialize(GetName(), pSeqData);
@@ -131,6 +137,10 @@ int MTScenePianoRoll3DLive::Create(
 	result = m_TimeIndicator.Create(pD3DDevice, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
 	
+	//メッシュ制御生成
+	result = m_MeshCtrl.Create(pD3DDevice, GetName());
+	if (result != 0) goto EXIT;
+
 	//----------------------------------
 	// レンダリングステート
 	//----------------------------------
@@ -201,6 +211,10 @@ int MTScenePianoRoll3DLive::Transform(
 	result = m_Stars.Transform(pD3DDevice, camVector);
 	if (result != 0) goto EXIT;
 	
+	//メッシュ更新
+	result = m_MeshCtrl.Transform(pD3DDevice, m_TimeIndicator.GetMoveVector());
+	if (result != 0) goto EXIT;
+
 	//タイムインジケータ更新
 	result = m_TimeIndicator.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
@@ -247,6 +261,10 @@ int MTScenePianoRoll3DLive::Draw(
 	result = m_Stars.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
+	//メッシュ描画
+	result = m_MeshCtrl.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//タイムインジケータ描画
 	result = m_TimeIndicator.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -275,15 +293,16 @@ void MTScenePianoRoll3DLive::Release()
 	m_Stars.Release();
 	m_TimeIndicator.Release();
 	m_NoteRipple.Release();
+	m_MeshCtrl.Release();
 }
 
 //******************************************************************************
 // ウィンドウクリックイベント受信
 //******************************************************************************
 int MTScenePianoRoll3DLive::OnWindowClicked(
-		unsigned long button,
-		unsigned long wParam,
-		unsigned long lParam
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
 	)
 {
 	int result = 0;
@@ -354,14 +373,14 @@ int MTScenePianoRoll3DLive::OnPlayEnd(
 // シーケンサメッセージ受信
 //******************************************************************************
 int MTScenePianoRoll3DLive::OnRecvSequencerMsg(
-		unsigned long wParam,
-		unsigned long lParam
+		unsigned long param1,
+		unsigned long param2
 	)
 {
 	int result = 0;
 	SMMsgParser parser;
 	
-	parser.Parse(wParam, lParam);
+	parser.Parse(param1, param2);
 	
 	//演奏状態通知
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
@@ -628,4 +647,27 @@ void MTScenePianoRoll3DLive::SetEffect(
 	return;
 }
 
+//******************************************************************************
+// 設定ファイル読み込み
+//******************************************************************************
+int MTScenePianoRoll3DLive::_LoadConf()
+{
+	int result = 0;
+	TCHAR hexColor[16] = {_T('\0')};
+	MTConfFile confFile;
+
+	result = confFile.Initialize(GetName());
+	if (result != 0) goto EXIT;
+
+	result = confFile.SetCurSection(_T("Color"));
+	if (result != 0) goto EXIT;
+
+	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000"));
+	if (result != 0) goto EXIT;
+
+	SetBGColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
+
+EXIT:;
+	return result;
+}
 

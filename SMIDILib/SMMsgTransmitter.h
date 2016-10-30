@@ -4,7 +4,7 @@
 //
 // メッセージ転送クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,6 +17,7 @@
 #endif
 
 #include "SMEvent.h"
+#include "SMMsgQueue.h"
 
 namespace SMIDILib {
 
@@ -59,7 +60,7 @@ public:
 	virtual ~SMMsgTransmitter(void);
 
 	//初期化
-	int Initialize(HWND hTargetWnd, unsigned long msgId);
+	int Initialize(SMMsgQueue* pMsgQueue);
 
 	//演奏状態
 	int PostPlayStatus(unsigned long playStatus);
@@ -116,8 +117,7 @@ public:
 
 private:
 
-	HWND m_hTargetWnd;
-	unsigned long m_MsgId;
+	SMMsgQueue* m_pMsgQueue;
 
 	int _Post(
 			unsigned char msg,

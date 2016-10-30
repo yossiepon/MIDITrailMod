@@ -4,7 +4,7 @@
 //
 // ピアノキーボードデザインクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -47,6 +47,12 @@ public:
 		KeyWhiteA,	//白鍵A
 		KeyWhiteB,	//白鍵B
 		KeyBlack	//黒鍵
+	};
+
+	//発音中キー色種別
+	enum ActiveKeyColorType {
+		DefaultColor,	//デフォルト色
+		NoteColor		//ノート色
 	};
 
 public:
@@ -120,7 +126,11 @@ public:
 	D3DXCOLOR GetBlackKeyColor();
 
 	//発音中キーカラー取得
-	D3DXCOLOR GetActiveKeyColor(unsigned char noteNo, unsigned long elapsedTime);
+	D3DXCOLOR GetActiveKeyColor(
+			unsigned char noteNo,
+			unsigned long elapsedTime,
+			D3DXCOLOR* pNoteColor = NULL
+		);
 
 	//白鍵テクスチャ座標取得
 	void GetWhiteKeyTexturePosTop(
@@ -173,6 +183,11 @@ public:
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
 
+	//キー表示範囲取得
+	unsigned char GetKeyDispRangeStart();
+	unsigned char GetKeyDispRangeEnd();
+	bool IsKeyDisp(unsigned char noteNo);
+
 private:
 
 	//キー情報
@@ -224,6 +239,11 @@ private:
 	D3DXCOLOR m_ActiveKeyColor;
 	int m_ActiveKeyColorDuration;
 	float m_ActiveKeyColorTailRate;
+	ActiveKeyColorType m_ActiveKeyColorType;
+
+	//キー表示範囲
+	int m_KeyDispRangeStart;
+	int m_KeyDispRangeEnd;
 
 	void _Initialize();
 	void _InitKeyType();

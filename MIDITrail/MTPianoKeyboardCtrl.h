@@ -4,7 +4,7 @@
 //
 // ピアノキーボード制御クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -41,7 +41,8 @@ public:
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
-			MTNotePitchBend* pNotePitchBend
+			MTNotePitchBend* pNotePitchBend,
+			bool isSingleKeyboard
 		);
 
 	//更新
@@ -114,6 +115,9 @@ private:
 
 	//表示可否
 	bool m_isEnable;
+
+	//シングルキーボードフラグ
+	bool m_isSingleKeyboard;
 
 	int _CreateNoteStatus();
 	int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);

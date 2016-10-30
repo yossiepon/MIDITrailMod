@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -39,11 +39,11 @@ using namespace SMIDILib;
 //    WS_MAXIMIZEBOX  最大化ボタン
 #define MIDITRAIL_WINDOW_STYLE  (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
 
-//シーケンサメッセージID
-#define WM_SEQUENCER_MESSAGE (WM_USER + 1)
+//後続起動プロセスのファイルパスポスト通知
+#define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-#define MT_MENU_NUM        (28)
+#define MT_MENU_NUM        (30)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -51,6 +51,12 @@ using namespace SMIDILib;
 
 //タイマーID
 #define MIDITRAIL_TIMER_CHECK_KEY  (1)
+
+//二重起動抑止用ミューテクス名称
+#define MIDITRAIL_MUTEX     _T("yknk.MIDITrail")
+
+//メールスロット名称
+#define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
 
 
 //******************************************************************************
@@ -89,17 +95,19 @@ private:
 	};
 
 	//シーン種別
+	//TAG:シーン追加
 	enum SceneType {
 		Title,			//タイトル
 		PianoRoll3D,	//ピアノロール3D
 		PianoRoll2D,	//ピアノロール2D
-		PianoRollRain	//ピアノロールレイン
+		PianoRollRain,	//ピアノロールレイン
+		PianoRollRain2D	//ピアノロールレイン2D
 	};
 
 	//シーケンサメッセージ
 	typedef struct {
-		unsigned long wParam;
-		unsigned long lParam;
+		unsigned long param1;
+		unsigned long param2;
 	} MTSequencerMsg;
 
 	//最新シーケンサメッセージ
@@ -125,6 +133,11 @@ private:
 	//アプリケーションインスタンス
 	HINSTANCE m_hInstance;
 
+	//アプリケーション二重起動抑止制御
+	HANDLE m_hAppMutex;
+	HANDLE m_hMailSlot;
+	bool m_isExitApp;
+
 	//コマンドラインパーサ
 	MTCmdLineParser m_CmdLineParser;
 
@@ -147,12 +160,14 @@ private:
 	SMSeqData m_SeqData;
 	SMSequencer m_Sequencer;
 	SMRcpConv m_RcpConv;
+	SMMsgQueue m_MsgQueue;
 	SMLiveMonitor m_LiveMonitor;
 
 	//演奏状態
 	PlayStatus m_PlayStatus;
 	bool m_isRepeat;
 	bool m_isRewind;
+	bool m_isOpenFileAfterStop;
 	MTSequencerLastMsg m_SequencerLastMsg;
 	unsigned long m_PlaySpeedRatio;
 
@@ -162,6 +177,7 @@ private:
 	bool m_isEnablePitchBend;
 	bool m_isEnableStars;
 	bool m_isEnableCounter;
+	bool m_isEnableFileName;
 
 	//シーン種別
 	SceneType m_SceneType;
@@ -190,6 +206,10 @@ private:
 	YNConfFile m_ViewConf;
 	YNConfFile m_GraphicConf;
 
+	//プレーヤー制御
+	int m_AllowMultipleInstances;
+	int m_AutoPlaybackAfterOpenFile;
+
 	//スキップ制御
 	int m_SkipBackTimeSpanInMsec;
 	int m_SkipForwardTimeSpanInMsec;
@@ -197,6 +217,12 @@ private:
 	//演奏スピード制御
 	unsigned long m_SpeedStepInPercent;
 	unsigned long m_MaxSpeedInPercent;
+
+	//自動視点保存
+	bool m_isAutoSaveViewpoint;
+
+	//次回オープン対象ファイルパス
+	TCHAR m_NextFilePath[_MAX_PATH];
 
 	//----------------------------------------------------------------
 	//メソッド定義
@@ -224,6 +250,7 @@ private:
 	int _OnMenuPlaySpeedUp();
 	int _OnMenuStartMonitoring();
 	int _OnMenuStopMonitoring();
+	int _OnMenuAutoSaveViewpoint();
 	int _OnMenuResetViewpoint();
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
@@ -233,12 +260,14 @@ private:
 	int _OnMenuOptionGraphic();
 	int _OnMenuManual();
 	int _OnMenuSelectSceneType(SceneType type);
+	int _OnFilePathPosted();
 
 	//その他イベント処理
+	int _SequencerMsgProc();
 	int _OnRecvSequencerMsg(unsigned long wParam, unsigned long lParam);
-	int _OnMouseButtonDown(unsigned long button, unsigned long wParam, unsigned long lParam);
-	int _OnKeyDown(unsigned long wParam, unsigned long lParam);
-	int _OnDropFiles(unsigned long wParam, unsigned long lParam);
+	int _OnMouseButtonDown(UINT button, WPARAM wParam, LPARAM lParam);
+	int _OnKeyDown(WPARAM wParam, LPARAM lParam);
+	int _OnDropFiles(WPARAM wParam, LPARAM lParam);
 
 	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const TCHAR* pFilePath);
@@ -251,6 +280,8 @@ private:
 	int _CreateScene(SceneType type, SMSeqData* pSeqData);
 	int _LoadSceneType();
 	int _SaveSceneType();
+	int _LoadSceneConf();
+	int _SaveSceneConf();
 	int _LoadViewpoint();
 	int _SaveViewpoint();
 	int _LoadGraphicConf();
@@ -268,6 +299,11 @@ private:
 	int _CheckRenderer();
 	int _AutoConfigMIDIOUT();
 	int _SearchMicrosoftWavetableSynth(std::string& productName);
-	
+	int _CheckMultipleInstances(bool* pIsExitApp);
+	int _CreateMailSlot();
+	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
+	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
+	int _FileOpenProc(TCHAR* pFilePath);
+
 };
 

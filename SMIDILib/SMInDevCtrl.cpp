@@ -4,7 +4,7 @@
 //
 // MIDI入力デバイス制御クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -108,7 +108,7 @@ EXIT:;
 //******************************************************************************
 unsigned long SMInDevCtrl::GetDevNum()
 {
-	return m_InDevList.size();
+	return (unsigned long)m_InDevList.size();
 }
 
 //******************************************************************************
@@ -338,9 +338,9 @@ EXIT:;
 void SMInDevCtrl::_InReadCallBack(
 		HMIDIIN hMidiIn,
 		UINT wMsg,
-		DWORD dwInstance,
-		DWORD dwParam1,
-		DWORD dwParam2
+		DWORD_PTR dwInstance,
+		DWORD_PTR dwParam1,
+		DWORD_PTR dwParam2
 	)
 {
 	SMInDevCtrl* pInDevCtrl = NULL;
@@ -357,8 +357,8 @@ void SMInDevCtrl::_InReadCallBack(
 void SMInDevCtrl::_InReadProc(
 		HMIDIIN hMidiIn,
 		UINT wMsg,
-		DWORD dwParam1,
-		DWORD dwParam2
+		DWORD_PTR dwParam1,
+		DWORD_PTR dwParam2
 	)
 {
 	int result = 0;
@@ -418,8 +418,8 @@ EXIT:;
 // MIDIメッセージ読み込み処理
 //******************************************************************************
 int SMInDevCtrl::_InReadProcMIDI(
-		DWORD midiMessage,
-		DWORD timestamp,
+		DWORD_PTR midiMessage,
+		DWORD_PTR timestamp,
 		SMEvent* pEvent
 	)
 {
@@ -460,7 +460,7 @@ EXIT:;
 //******************************************************************************
 int SMInDevCtrl::_InReadProcSysEx(
 		MIDIHDR* pMIDIHDR,
-		DWORD timestamp,
+		DWORD_PTR timestamp,
 		bool* pIsContinueSysEx,
 		SMEvent* pEvent
 	)

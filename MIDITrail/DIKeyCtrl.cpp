@@ -4,7 +4,7 @@
 //
 // DirectInput キー入力制御クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -47,9 +47,9 @@ int DIKeyCtrl::Initialize(
 	Terminate();
 
 	//アプリケーションインスタンスハンドルを取得
-	hInstance = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
+	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hWnd);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hWnd);
 		goto EXIT;
 	}
 
@@ -62,7 +62,7 @@ int DIKeyCtrl::Initialize(
 				NULL					//IUnknownインターフェイスポインタ
 			);
 	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD)hInstance);
+		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hInstance);
 		goto EXIT;
 	}
 
@@ -91,7 +91,7 @@ int DIKeyCtrl::Initialize(
 					| DISCL_NONEXCLUSIVE	//協調レベル：非排他的アクセス権
 				);
 	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD)hWnd);
+		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hWnd);
 		goto EXIT;
 	}
 

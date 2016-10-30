@@ -4,7 +4,7 @@
 //
 // プリミティブ描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -186,7 +186,7 @@ int DXPrimitive::SetAllVertex(
 		memcpy(pBuf, pVertex, (m_VertexSize * m_VertexNum));
 	}
 	catch (...) {
-		result = YN_SET_ERR("Memory access error.", (DWORD)pVertex, m_VertexNum);
+		result = YN_SET_ERR("Memory access error.", (DWORD64)pVertex, m_VertexNum);
 		goto EXIT;
 	}
 
@@ -215,7 +215,7 @@ int DXPrimitive::SetAllIndex(
 		memcpy(pBuf, pIndex, (sizeof(unsigned long)* m_IndexNum));
 	}
 	catch (...) {
-		result = YN_SET_ERR("Memory access error.", (DWORD)pIndex, m_IndexNum);
+		result = YN_SET_ERR("Memory access error.", (DWORD64)pIndex, m_IndexNum);
 		goto EXIT;
 	}
 
@@ -281,7 +281,7 @@ int DXPrimitive::Draw(
 	if (m_pIndexBuffer != NULL) {
 		hresult = pD3DDevice->SetIndices(m_pIndexBuffer);
 		if (FAILED(hresult)) {
-			result = YN_SET_ERR("DirectX API error.", (DWORD)hresult, (DWORD)m_pIndexBuffer);
+			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)m_pIndexBuffer);
 			goto EXIT;
 		}
 	}
@@ -303,7 +303,7 @@ int DXPrimitive::Draw(
 	//レンダリングパイプラインにテクスチャを設定：ステージ0
 	hresult = pD3DDevice->SetTexture(0, pTexture);
 	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, (DWORD)pTexture);
+		result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pTexture);
 		goto EXIT;
 	}
 
@@ -391,7 +391,7 @@ int DXPrimitive::LockVertex(
 						0			//ロッキングフラグ
 					);
 		if (FAILED(hresult)) {
-			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD)pPtrVertex);
+			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pPtrVertex);
 			goto EXIT;
 		}
 	}
@@ -456,7 +456,7 @@ int DXPrimitive::LockIndex(
 						0			//ロッキングフラグ
 					);
 		if (FAILED(hresult)) {
-			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD)pPtrIndex);
+			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pPtrIndex);
 			goto EXIT;
 		}
 	}

@@ -4,7 +4,7 @@
 //
 // エラー制御クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -59,8 +59,8 @@ public:
 			unsigned long lineNo,
 			const TCHAR* pFuncName,
 			const TCHAR* pMessage,
-			unsigned long errInfo1,
-			unsigned long errInfo2
+			unsigned long long errInfo1,
+			unsigned long long errInfo2
 		);
 
 	//エラー情報取得

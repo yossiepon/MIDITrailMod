@@ -4,7 +4,7 @@
 //
 // フォント＞ビットマップ変換クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -214,14 +214,14 @@ int MTFont2Bmp::_CreateGlyphBmp(
 	//デバイスコンテキストに論理フォントを設定
 	hOldFont = (HFONT)SelectObject(hDC, m_hFont);
 	if (hOldFont == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hDC);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
 	//テキストメトリクス取得
 	bresult = GetTextMetrics(hDC, &m_TextMetric);
 	if (!bresult) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hDC);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
@@ -236,7 +236,7 @@ int MTFont2Bmp::_CreateGlyphBmp(
 					&mat				//変換行列
 				);
 	if (size < 0) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hDC);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 	
@@ -431,6 +431,10 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 		//コピー元グリフBMPの座標は4の倍数制限があるBMPサイズを意識せず
 		//実データの範囲でスキャンする
 		for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
+			//Ticket #33695 対策
+			//コピー先の領域外になる場合はスキップする
+			if (y >= m_BmpHeight) continue;
+
 			for (x = 0; x < (itr->glyphMetric.gmBlackBoxX); x++) {
 
 				//コピー先の領域外になる場合はスキップする
@@ -447,8 +451,11 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 
 				//確保したバッファを越えて書き込もうとしていないかチェックする
 				if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
-					result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
-					goto EXIT;
+					//result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
+					//goto EXIT;
+					//Ticket #33695 対策
+					//エラーとせずスキップする
+					continue;
 				}
 
 				//ピクセルコピー
@@ -458,7 +465,7 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 		offsetX += (itr->glyphMetric.gmCellIncX);
 	}
 
-EXIT:;
+//EXIT:;
 	return result;
 }
 

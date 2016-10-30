@@ -4,7 +4,7 @@
 //
 // ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -24,6 +24,7 @@
 #include "MTDashboard.h"
 #include "MTStars.h"
 #include "MTTimeIndicator.h"
+#include "MTMeshCtrl.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -61,9 +62,9 @@ public:
 
 	//ウィンドウクリックイベント受信
 	int OnWindowClicked(
-			unsigned long button,
-			unsigned long wParam,
-			unsigned long lParam
+			UINT button,
+			WPARAM wParam,
+			LPARAM lParam
 		);
 
 	//演奏開始イベント受信
@@ -74,8 +75,8 @@ public:
 
 	//シーケンサメッセージ受信
 	int OnRecvSequencerMsg(
-			unsigned long wParam,
-			unsigned long lParam
+			unsigned long param1,
+			unsigned long param2
 		);
 
 	//巻き戻し
@@ -117,6 +118,7 @@ private:
 	MTDashboard m_Dashboard;
 	MTStars m_Stars;
 	MTTimeIndicator m_TimeIndicator;
+	MTMeshCtrl m_MeshCtrl;
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
@@ -135,6 +137,7 @@ private:
 
 	void _Reset();
 	void _SetLightColor(DXDirLight* pLight);
+	int _LoadConf();
 
 };
 

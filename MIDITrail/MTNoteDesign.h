@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -175,6 +175,11 @@ public:
 
 private:
 
+	enum NoteColorType {
+		Channel,
+		Scale
+	};
+
 	unsigned long m_TimeDivision;
 	float m_QuarterNoteLength;
 	float m_NoteBoxHeight;
@@ -187,7 +192,9 @@ private:
 	SMPortList m_PortList;
 	unsigned char m_PortIndex[256];
 
+	NoteColorType m_NoteColorType;
 	D3DXCOLOR m_NoteColor[16];
+	D3DXCOLOR m_NoteColorOfScale[12];
 	D3DXCOLOR m_ActiveNoteEmissive;
 	D3DXCOLOR m_GridLineColor;
 	D3DXCOLOR m_PlaybackSectionColor;
