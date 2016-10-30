@@ -1,0 +1,315 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// “ú–{Œê resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+#ifdef _WIN32
+LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_MIDITRAIL           ICON                    "MIDITrail.ico"
+IDI_SMALL               ICON                    "small.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_MIDITRAIL MENU 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Open...\tCtrl + O",           IDM_OPEN_FILE
+        MENUITEM "Exit",                        IDM_EXIT
+    END
+    POPUP "Playback"
+    BEGIN
+        MENUITEM "Play / Pause\tSpace",         IDM_PLAY
+        MENUITEM "Stop\tEsc",                   IDM_STOP
+        MENUITEM "Repeat",                      IDM_REPEAT
+        MENUITEM SEPARATOR
+        MENUITEM "Skip Back\t1",                IDM_SKIP_BACK
+        MENUITEM "Skip Forward\t2",             IDM_SKIP_FORWARD
+        MENUITEM SEPARATOR
+        MENUITEM "Speed Down\t4",               IDM_PLAY_SPEED_DOWN
+        MENUITEM "Speed Up\t5",                 IDM_PLAY_SPEED_UP
+        MENUITEM SEPARATOR
+        MENUITEM "Start Monitoring\tShift + Space", IDM_START_MONITORING
+        MENUITEM "Stop Monitoring\tEsc",        IDM_STOP_MONITORING
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "Piano Roll 3D",               IDM_VIEW_3DPIANOROLL
+        MENUITEM "Piano Roll 2D",               IDM_VIEW_2DPIANOROLL
+        MENUITEM "Piano Roll Rain",             IDM_VIEW_PIANOROLLRAIN
+        MENUITEM SEPARATOR
+        MENUITEM "Reset viewpoint",             IDM_RESET_VIEWPOINT
+        MENUITEM "Save viewpoint",              IDM_SAVE_VIEWPOINT
+        MENUITEM SEPARATOR
+        MENUITEM "Piano keyboard",              IDM_ENABLE_PIANOKEYBOARD
+        MENUITEM "Ripple",                      IDM_ENABLE_RIPPLE
+        MENUITEM "Pitch Bend Motion",           IDM_ENABLE_PITCHBEND
+        MENUITEM "Stars",                       IDM_ENABLE_STARS
+        MENUITEM "Counter",                     IDM_ENABLE_COUNTER
+        MENUITEM SEPARATOR
+        MENUITEM "Window size...",              IDM_WINDOWSIZE
+    END
+    POPUP "Option"
+    BEGIN
+        MENUITEM "MIDI OUT...",                 IDM_OPTION_MIDIOUT
+        MENUITEM "MIDI IN...",                  IDM_OPTION_MIDIIN
+        MENUITEM "Graphic...",                  IDM_OPTION_GRAPHIC
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "How to view...",              IDM_HOWTOVIEW
+        MENUITEM "Manual...",                   IDM_MANUAL
+        MENUITEM SEPARATOR
+        MENUITEM "About...",                    IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_MIDITRAIL ACCELERATORS 
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 172, 133
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MIDITrail"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    ICON            IDI_MIDITRAIL,IDC_STATIC,74,12,20,20
+    CTEXT           "MIDITrail",IDC_STATIC,16,42,138,8,SS_NOPREFIX
+    CTEXT           "Version 1.2.0",IDC_STATIC,16,63,138,8
+    CTEXT           "Copyright (C) 2010-2012 WADA Masashi",IDC_STATIC,1,84,168,8
+    DEFPUSHBUTTON   "OK",IDOK,58,108,53,14,WS_GROUP
+END
+
+IDD_MIDIOUT_CFG DIALOGEX 0, 0, 304, 219
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MIDI OUT configuration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Default Port",IDC_STATIC,12,6,276,42
+    LTEXT           "Port A",IDC_STATIC,24,26,30,8
+    COMBOBOX        IDC_COMBO_PORT_A,54,24,216,84,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Optional Port",IDC_STATIC,12,52,276,138
+    LTEXT           "Port B",IDC_STATIC,24,72,30,8
+    COMBOBOX        IDC_COMBO_PORT_B,54,70,216,84,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Port C",IDC_STATIC,24,96,30,8
+    COMBOBOX        IDC_COMBO_PORT_C,54,94,216,84,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Port D",IDC_STATIC,24,120,30,8
+    COMBOBOX        IDC_COMBO_PORT_D,54,118,216,78,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Port E",IDC_STATIC,24,144,30,8
+    COMBOBOX        IDC_COMBO_PORT_E,54,142,216,84,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Port F",IDC_STATIC,24,168,30,8
+    COMBOBOX        IDC_COMBO_PORT_F,54,166,216,84,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,174,198,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,228,198,50,14
+END
+
+IDD_WINDOWSIZE_CFG DIALOGEX 0, 0, 160, 183
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Window size configuration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_WINDOWSIZE_LIST,12,18,138,138,LBS_NOINTEGRALHEIGHT | LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,42,162,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,96,162,50,14
+    LTEXT           "Window size",IDC_STATIC,12,6,84,8
+END
+
+IDD_HOWTOVIEW DIALOGEX 0, 0, 412, 291
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "How to view"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,10,267,50,14,NOT WS_VISIBLE | NOT WS_TABSTOP
+    PUSHBUTTON      "Cancel",IDCANCEL,70,267,50,14,NOT WS_VISIBLE | NOT WS_TABSTOP
+    CONTROL         "",IDC_HOWTO_PICTURE,"Static",SS_BLACKFRAME,11,9,390,245
+    PUSHBUTTON      "Previous",IDC_BTN_PREVIOUS,216,267,54,14
+    PUSHBUTTON      "Next",IDC_BTN_NEXT,281,267,54,14
+    PUSHBUTTON      "Close",IDC_BTN_CLOSE,346,267,54,14
+END
+
+IDD_GRAPHIC_CFG DIALOGEX 0, 0, 178, 75
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Graphic configuration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,60,54,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,114,54,50,14
+    LTEXT           "Anti-aliasing",IDC_STATIC,18,20,54,8
+    COMBOBOX        IDC_COMBO_MULTISAMPLETYPE,72,18,78,54,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MIDIIN_CFG DIALOGEX 0, 0, 304, 99
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "MIDI IN configuration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,174,78,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,228,78,50,14
+    GROUPBOX        "Monitoring Port",IDC_STATIC,12,6,276,60
+    LTEXT           "MIDI IN",IDC_STATIC,24,26,30,8
+    COMBOBOX        IDC_COMBO_PORT_A,54,24,216,78,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "MIDITHRU",IDC_CHECK_MIDITHRU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,54,48,120,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 165
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 126
+    END
+
+    IDD_MIDIOUT_CFG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 212
+    END
+
+    IDD_WINDOWSIZE_CFG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 153
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 176
+    END
+
+    IDD_HOWTOVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 405
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 284
+    END
+
+    IDD_GRAPHIC_CFG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 171
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 68
+    END
+
+    IDD_MIDIIN_CFG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "MIDITrail"
+    IDC_MIDITRAIL           "MIDITRAIL"
+END
+
+#endif    // “ú–{Œê resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
