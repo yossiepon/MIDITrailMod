@@ -48,6 +48,23 @@ int MTScenePianoRoll3DMod::Create(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
+	// ライト2
+	//----------------------------------
+	//ライト2初期化
+	result = m_DirLightBack.Initialize();
+	if (result != 0) goto EXIT;
+
+	//ライト2色
+	_SetLightColor(&m_DirLightBack);
+
+	//ライト2方向
+	m_DirLightBack.SetDirection(D3DXVECTOR3(-1.0f, 1.0f, -2.0f));
+
+	//ライトのデバイス登録
+	result = m_DirLightBack.SetDevice(pD3DDevice, 1, m_IsEnableLight);
+	if (result != 0) goto EXIT;
+
+	//----------------------------------
 	// 描画オブジェクト
 	//----------------------------------
 
