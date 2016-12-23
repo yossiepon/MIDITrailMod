@@ -43,7 +43,9 @@ using namespace SMIDILib;
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-#define MT_MENU_NUM        (31)
+// >>> modify 20161223 yossiepon begin
+#define MT_MENU_NUM        (32)
+// <<< modify 20161223 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -242,6 +244,9 @@ private:
 
 	//メニューイベント処理
 	int _OnMenuFileOpen();
+// >>> add 20120728 yossiepon begin
+	int _OnMenuFileAdd();
+// <<< add 20120728 yossiepon end
 	int _OnMenuPlay();
 	int _OnMenuStop();
 	int _OnMenuRepeat();
@@ -272,6 +277,9 @@ private:
 
 	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const TCHAR* pFilePath);
+// >>> add 20120728 yossiepon begin
+	int _AddMIDIFile(const TCHAR* pFilePath);
+// <<< add 20120728 yossiepon end
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
 	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);
@@ -305,6 +313,6 @@ private:
 	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
 	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
 	int _FileOpenProc(TCHAR* pFilePath);
-
+	
 };
 

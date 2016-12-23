@@ -16,8 +16,10 @@
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
 #include "MTSceneTitle.h"
-#include "MTScenePianoRoll3D.h"
-#include "MTScenePianoRoll2D.h"
+// >>> modify 20120729 yossiepon begin
+#include "MTScenePianoRoll3DMod.h"
+#include "MTScenePianoRoll2DMod.h"
+// <<< modify 20120729 yossiepon end
 #include "MTScenePianoRollRain.h"
 #include "MTScenePianoRollRain2D.h"
 #include "MTScenePianoRoll3DLive.h"
@@ -343,7 +345,10 @@ int MIDITrailApp::_RegisterClass(
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MIDITRAIL));
 															//アイコンリソースハンドル
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//カーソルリソースハンドル
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);			//背景用ブラシハンドル
+// >>> modify 20120728 yossiepon begin
+	// COLOR+WINDOW+1だとちらつき時に白一色になって目立つので、背景色を黒にしてちらつきを抑える
+	wcex.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH); //(COLOR_WINDOW+1);			//背景用ブラシハンドル
+// <<< modify 20120728 yossiepon end
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MIDITRAIL);	//メニューリソース名称
 	wcex.lpszClassName	= m_WndClassName;					//ウィンドウクラス名称
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -556,6 +561,13 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuFileOpen();
 					if (result != 0) goto EXIT;
 					break;
+// >>> add 20120728 yossiepon begin
+				case IDM_ADD_FILE:
+					//ファイル追加
+					result = _OnMenuFileAdd();
+					if (result != 0) goto EXIT;
+					break;
+// <<< add 20120728 yossiepon end
 				case IDM_EXIT:
 					//終了
 					DestroyWindow(hWnd);
@@ -792,6 +804,43 @@ int MIDITrailApp::_OnMenuFileOpen()
 EXIT:;
 	return result;
 }
+
+// >>> add 20120728 yossiepon begin
+
+//******************************************************************************
+// ファイル追加
+//******************************************************************************
+int MIDITrailApp::_OnMenuFileAdd()
+{
+	int result = 0;
+	TCHAR filePath[MAX_PATH] = {_T('\0')};
+	bool isSelected = false;
+
+	//演奏中はファイルオープンさせない
+	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//ファイルオープンOK
+	}
+	else {
+		//ファイルオープンNG
+		goto EXIT;
+	}
+
+	//ファイル選択ダイアログ表示
+	result = _SelectMIDIFile(filePath, MAX_PATH, &isSelected);
+	if (result != 0) goto EXIT;
+
+	//ファイル選択時の処理
+	if (isSelected) {
+		//MIDIファイル読み込み処理
+		result = _AddMIDIFile(filePath);
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // メニュー選択：再生／一時停止／再開
@@ -1654,7 +1703,7 @@ int MIDITrailApp::_OnDropFiles(
 
 	//演奏/モニタ停止とファイルオープン処理
 	result = _StopPlaybackAndOpenFile(path);
-	if (result != 0) goto EXIT;
+		if (result != 0) goto EXIT;
 
 EXIT:;
 	if (hDrop != NULL) {
@@ -1768,6 +1817,92 @@ EXIT:;
 	}
 	return result;
 }
+
+// >>> add 20120728 yossiepon begin
+
+//******************************************************************************
+// MIDIファイル追加読み込み
+// ファイル名に「portX」が含まれる場合、Xをポート番号とみなす（a-Z:大小同一視）
+// ファイル名に「chXX」が含まれる場合、XXをチャンネル番号と見なす（00-99)
+//******************************************************************************
+int MIDITrailApp::_AddMIDIFile(
+		const TCHAR* pFilePath
+	)
+{
+	int result = 0;
+	TCHAR* pPath = NULL;
+	TCHAR smfTempPath[_MAX_PATH] = {_T('\0')};
+	TCHAR smfDumpPath[_MAX_PATH] = {_T('\0')};
+	SMSeqData tmpSeqData;
+	SMFileReader smfReader;
+	short portNo = -1;
+	short chNo = -1;
+
+	//拡張子が*.midの場合
+	if (YNPathUtil::IsFileExtMatch(pFilePath, _T(".mid"))) {
+		pPath = (TCHAR*)pFilePath;
+	}
+	//拡張子が*.mid以外の場合
+	else {
+		//レコンポーザのデータファイルとみなしてSMFに変換する
+		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, _T("RCP"));
+		if (result != 0) goto EXIT;
+		result = m_RcpConv.Convert(pFilePath, smfTempPath);
+		if (result != 0) goto EXIT;
+		pPath = smfTempPath;
+	}
+
+	//デバッグモードであればMIDIファイル解析結果をダンプする
+	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
+		_tcscat_s(smfDumpPath, _MAX_PATH, pPath);
+		_tcscat_s(smfDumpPath, _MAX_PATH, _T(".dump.txt"));
+		smfReader.SetLogPath(smfDumpPath);
+	}
+
+	//ファイルを一時シーケンスに読み込み
+	result = smfReader.Load(pPath, &tmpSeqData);
+	if (result != 0) goto EXIT;
+
+	//ファイル名にポート番号が含まれていれば抽出
+	char *pPortNo = strstr(pPath, "port");
+	if(pPortNo != NULL) {
+		portNo = tolower(*(pPortNo + 4)) - 'a';
+	}
+
+	//ファイル名にチャンネル番号が含まれていれば抽出
+	char *pChNo = strstr(pPath, "ch");
+	if(pChNo != NULL) {
+		char bufChNo[3];
+		strncpy_s(bufChNo, 3, pChNo + 2, 2);
+		bufChNo[2] = '\0';
+		chNo = atoi(bufChNo) - 1;
+	}
+
+	//一時シーケンスをマージ
+	m_SeqData.AddSequence(tmpSeqData, portNo, chNo);
+
+	//ファイル読み込み時に再生スピードを100%に戻す：_CreateSceneでカウンタに反映
+	m_PlaySpeedRatio = 100;
+
+	//シーンオブジェクト生成
+	m_SceneType = m_SelectedSceneType;
+	result = _CreateScene(m_SceneType, &m_SeqData);
+	if (result != 0) goto EXIT;
+
+	//演奏状態変更
+	result = _ChangePlayStatus(Stop);
+	if (result != 0) goto EXIT;
+
+	m_isRewind = false;
+
+EXIT:;
+	if (_tcslen(smfTempPath) != 0) {
+		DeleteFile(smfTempPath);
+	}
+	return result;
+}
+
+// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // FPS更新
@@ -1954,7 +2089,7 @@ int MIDITrailApp::_ChangePlayStatus(
 	//}
 
 	//常にファイルドラッグ許可
-	DragAcceptFiles(m_hWnd, TRUE);
+		DragAcceptFiles(m_hWnd, TRUE);
 
 	//メニュースタイル更新
 	result = _ChangeMenuStyle();
@@ -1978,6 +2113,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 	//TAG:シーン追加
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
+// >>> add 20120728 yossiepon begin
+		IDM_ADD_FILE,
+// <<< add 20120728 yossiepon end
 		IDM_EXIT,
 		IDM_PLAY,
 		IDM_STOP,
@@ -2014,6 +2152,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
 		//データ無, 停止, 再生中, 一時停止, モニタ停止, モニタ中
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FILE
+// >>> add 20120728 yossiepon begin
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
+// <<< add 20120728 yossiepon end
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_EXIT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_STOP
@@ -2091,10 +2232,14 @@ int MIDITrailApp::_CreateScene(
 			//プレイヤ用シーン生成
 			if (pSeqData != NULL) {
 				if (type == PianoRoll3D) {
-					m_pScene = new MTScenePianoRoll3D();
+// >>> modify 20120729 yossiepon begin
+					m_pScene = new MTScenePianoRoll3DMod();
+// <<< modify 20120729 yossiepon end
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll2D();
+// >>> modify 20120729 yossiepon begin
+					m_pScene = new MTScenePianoRoll2DMod();
+// <<< modify 20120729 yossiepon end
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain();

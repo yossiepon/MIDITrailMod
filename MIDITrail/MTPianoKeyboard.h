@@ -35,7 +35,9 @@ public:
 	virtual ~MTPianoKeyboard(void);
 
 	//生成
-	int Create(
+// >>> modify 20120728 yossiepon begin
+	virtual int Create(
+// <<< modify 20120728 yossiepon end
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -44,6 +46,10 @@ public:
 
 	//更新
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector, float rollAngle);
+// >>> add 20120729 yossiepon begin
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector1, D3DXVECTOR3 moveVector2, float scale, float z, float rollAngle);
+// <<< add 20120729 yossiepon end
+
 
 	//描画
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
@@ -59,9 +65,33 @@ public:
 			unsigned long elapsedTime,
 			D3DXCOLOR* pActiveKeyColor = NULL
 		);
+// >>> add 20120728 yossiepon begin
+// >>> modify 20140920 yossiepon begin
+	virtual int PushKey(
+			unsigned char chNo,
+			unsigned char noteNo,
+			float keyDownRate,
+			unsigned long elapsedTime,
+			D3DXCOLOR* pActiveKeyColor = NULL
+		);
+// <<< modify 20140920 yossiepon end
+// <<< add 20120728 yossiepon end
 
 	//共有用テクスチャ取得
 	LPDIRECT3DTEXTURE9 GetTexture();
+
+// >>> modify 20120728 yossiepon begin
+protected:
+
+	//キーボードプリミティブ
+	DXPrimitive m_PrimitiveKeyboard;
+
+	//キーボードデザイン
+	MTPianoKeyboardDesign m_KeyboardDesign;
+
+	int _RotateKey(unsigned char noteNo, float angle, D3DXCOLOR* pColor = NULL);
+
+// <<< modify 20120728 yossiepon end
 
 private:
 
@@ -83,15 +113,12 @@ private:
 
 private:
 
-	//キーボードプリミティブ
-	DXPrimitive m_PrimitiveKeyboard;
-
+// >>> modify 20120728 yossiepon begin
 	//テクスチャ
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DXIMAGE_INFO m_ImgInfo;
 
-	//キーボードデザイン
-	MTPianoKeyboardDesign m_KeyboardDesign;
+// <<< modify 20120728 yossiepon end
 
 	//バッファ情報
 	MTBufInfo m_BufInfo[SM_MAX_NOTE_NUM];
@@ -130,8 +157,9 @@ private:
 	int _LoadTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 
-	int _RotateKey(unsigned char noteNo, float angle, D3DXCOLOR* pColor = NULL);
+// >>> modify 20120728 yossiepon begin
 	D3DXVECTOR3 _RotateYZ(float centerY, float centerZ, D3DXVECTOR3 p1, float angle);
+// <<< modify 20120728 yossiepon end
 
 	int _HideKey(unsigned char noteNo);
 

@@ -46,6 +46,9 @@ BEGIN
     POPUP "File"
     BEGIN
         MENUITEM "Open...\tCtrl + O",           IDM_OPEN_FILE
+// >>> add 20120728 yossiepon begin
+        MENUITEM "Add...\tCtrl + A",            IDM_ADD_FILE
+// <<< add 20120728 yossiepon end
         MENUITEM "Exit",                        IDM_EXIT
     END
     POPUP "Playback"
@@ -306,7 +309,9 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_APP_TITLE           "MIDITrail"
+// >>> modify 20140920 yossiepon begin
+    IDS_APP_TITLE           "MIDITrail 1.2.2 mod. yossiepon_20161223"
+// <<< modify 20140920 yossiepon end
     IDC_MIDITRAIL           "MIDITRAIL"
 END
 

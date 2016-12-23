@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -144,7 +144,9 @@ public:
 
 	//ポート原点座標取得
 	float GetPortOriginY(unsigned char portNo);
-	float GetPortOriginZ(unsigned char portNo);
+// >>> modify 20120728 yossiepon begin
+	virtual float GetPortOriginZ(unsigned char portNo);
+// <<< modify 20120728 yossiepon end
 
 	//世界座標配置移動ベクトル取得
 	D3DXVECTOR3 GetWorldMoveVector();
@@ -173,6 +175,22 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
+// >>> modify 20120728 yossiepon begin
+protected:
+
+	float m_RippleHeight;
+	float m_RippleWidth;
+
+	SMPortList m_PortList;
+	unsigned char m_PortIndex[256];
+
+	float m_ActiveNoteWhiteRate;
+
+	virtual void _Clear();
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
+
+// <<< modify 20120728 yossiepon end
+
 private:
 
 	enum NoteColorType {
@@ -180,17 +198,16 @@ private:
 		Scale
 	};
 
+// >>> modify 20120728 yossiepon begin
 	unsigned long m_TimeDivision;
 	float m_QuarterNoteLength;
 	float m_NoteBoxHeight;
 	float m_NoteBoxWidth;
 	float m_NoteStep;
 	float m_ChStep;
-	float m_RippleHeight;
-	float m_RippleWidth;
 	float m_PictBoardRelativePos;
-	SMPortList m_PortList;
-	unsigned char m_PortIndex[256];
+
+// <<< modify 20120728 yossiepon end
 
 	NoteColorType m_NoteColorType;
 	D3DXCOLOR m_NoteColor[16];
@@ -199,16 +216,14 @@ private:
 	D3DXCOLOR m_GridLineColor;
 	D3DXCOLOR m_PlaybackSectionColor;
 
+// >>> modify 20120728 yossiepon begin
 	int m_ActiveNoteDuration;
-	float m_ActiveNoteWhiteRate;
-
 	int m_RippleDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
 
-	void _Clear();
-	int _LoadConfFile(const TCHAR* pSceneName);
+// <<< modify 20120728 yossiepon end
 
 };
 

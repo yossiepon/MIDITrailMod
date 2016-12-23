@@ -45,12 +45,20 @@ public:
 	//解放
 	void Release();
 
-private:
+// >>> modify 20120728 yossiepon begin
+protected:
 
 	DXPrimitive m_Primitive;
+	MTNoteDesign m_NoteDesign;
+
+// <<< modify 20120728 yossiepon end
+
+private:
+
+// >>> modify 20120728 yossiepon begin
 	unsigned long m_BarNum;
 	SMPortList m_PortList;
-	MTNoteDesign m_NoteDesign;
+// <<< modify 20120728 yossiepon end
 	bool m_isVisible;
 
 	//頂点バッファ構造体
