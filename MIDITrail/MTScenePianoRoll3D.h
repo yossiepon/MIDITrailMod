@@ -4,7 +4,7 @@
 //
 // ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -25,6 +25,7 @@
 #include "MTStars.h"
 #include "MTTimeIndicator.h"
 #include "MTMeshCtrl.h"
+#include "MTBackgroundImage.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -119,6 +120,7 @@ private:
 	MTStars m_Stars;
 	MTTimeIndicator m_TimeIndicator;
 	MTMeshCtrl m_MeshCtrl;
+	MTBackgroundImage m_BackgroundImage;
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;

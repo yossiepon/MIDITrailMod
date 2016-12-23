@@ -4,7 +4,7 @@
 //
 // MIDITrail シーン基底クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -33,6 +33,7 @@ public:
 		EffectPitchBend,
 		EffectStars,
 		EffectCounter,
+		EffectBackgroundImage,
 		EffectFileName
 	};
 

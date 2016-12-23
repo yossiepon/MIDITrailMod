@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -137,6 +137,10 @@ int MTScenePianoRollRain::Create(
 	result = m_MeshCtrl.Create(pD3DDevice, GetName());
 	if (result != 0) goto EXIT;
 
+	//背景画像生成
+	result = m_BackgroundImage.Create(pD3DDevice, hWnd);
+	if (result != 0) goto EXIT;
+
 	//----------------------------------
 	// レンダリングステート
 	//----------------------------------
@@ -233,6 +237,10 @@ int MTScenePianoRollRain::Draw(
 	result = Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//背景画像描画
+	result = m_BackgroundImage.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//ピアノキーボード描画
 	result = m_PianoKeyboardCtrl.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -267,6 +275,7 @@ void MTScenePianoRollRain::Release()
 	m_Dashboard.Release();
 	m_Stars.Release();
 	m_MeshCtrl.Release();
+	m_BackgroundImage.Release();
 }
 
 //******************************************************************************
@@ -619,6 +628,9 @@ void MTScenePianoRollRain::SetEffect(
 			break;
 		case EffectFileName:
 			m_Dashboard.SetEnableFileName(isEnable);
+			break;
+		case EffectBackgroundImage:
+			m_BackgroundImage.SetEnable(isEnable);
 			break;
 		default:
 			break;
