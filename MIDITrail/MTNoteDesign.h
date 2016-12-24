@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -175,22 +175,6 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
-// >>> modify 20120728 yossiepon begin
-protected:
-
-	float m_RippleHeight;
-	float m_RippleWidth;
-
-	SMPortList m_PortList;
-	unsigned char m_PortIndex[256];
-
-	float m_ActiveNoteWhiteRate;
-
-	virtual void _Clear();
-	virtual int _LoadConfFile(const TCHAR* pSceneName);
-
-// <<< modify 20120728 yossiepon end
-
 private:
 
 	enum NoteColorType {
@@ -198,16 +182,36 @@ private:
 		Scale
 	};
 
-// >>> modify 20120728 yossiepon begin
 	unsigned long m_TimeDivision;
 	float m_QuarterNoteLength;
 	float m_NoteBoxHeight;
 	float m_NoteBoxWidth;
 	float m_NoteStep;
 	float m_ChStep;
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	float m_RippleHeight;
+	float m_RippleWidth;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	float m_PictBoardRelativePos;
 
-// <<< modify 20120728 yossiepon end
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	SMPortList m_PortList;
+	unsigned char m_PortIndex[256];
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
 
 	NoteColorType m_NoteColorType;
 	D3DXCOLOR m_NoteColor[16];
@@ -216,13 +220,30 @@ private:
 	D3DXCOLOR m_GridLineColor;
 	D3DXCOLOR m_PlaybackSectionColor;
 
-// >>> modify 20120728 yossiepon begin
 	int m_ActiveNoteDuration;
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	float m_ActiveNoteWhiteRate;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	int m_RippleDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
 
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+// >>> modify 20120728 yossiepon begin
+	virtual void _Clear();
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
 // <<< modify 20120728 yossiepon end
 
 };

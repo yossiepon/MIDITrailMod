@@ -77,8 +77,9 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-// >>> modify 20120728 yossiepon begin
+// >>> modify access level to protected 20161224 yossiepon begin
 protected:
+// <<< modify 20161224 yossiepon end
 
 	//キー状態
 	enum KeyStatus {
@@ -95,13 +96,8 @@ protected:
 		float keyDownRate;
 	};
 
-// >>> modify 20140920 yossiepon begin
-protected:
-	//シングルキーボードフラグ
-	bool m_isSingleKeyboard;
-// <<< modify 20120920 yossiepon end
-
-protected:
+// >>> modify access level to protected 20161224 yossiepon begin
+// <<< modify 20161224 yossiepon end
 
 	//ノートデザイン
 	MTNoteDesign m_NoteDesign;
@@ -122,16 +118,44 @@ protected:
 	NoteStatus* m_pNoteStatus;
 	float m_KeyDownRate[SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
+	//スキップ状態
+	bool m_isSkipping;
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
 	//表示可否
 	bool m_isEnable;
 
+	//シングルキーボードフラグ
+	bool m_isSingleKeyboard;
+
 	int _CreateNoteStatus();
+// >>> modify 20120728 yossiepon begin
 	virtual int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
+// <<< modify 20120728 yossiepon end
 
 	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
+	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+// >>> modify 20120728 yossiepon begin
 	virtual int _UpdateNoteStatus(
 				unsigned long playTimeMSec,
 				unsigned long keyDownDuration,
@@ -140,20 +164,8 @@ protected:
 				NoteStatus* pNoteStatus
 			);
 	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 	float _GetPichBendShiftPosX(unsigned char portNo, unsigned char chNo);
-
-// <<< modify 20120728 yossiepon end
-
-private:
-
-// >>> modify 20120728 yossiepon begin
-	//スキップ状態
-	bool m_isSkipping;
-// <<< modify 20120728 yossiepon end
-
-// >>> modify 20120728 yossiepon begin
-	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-// <<< modify 20120728 yossiepon end
 
 };
 
