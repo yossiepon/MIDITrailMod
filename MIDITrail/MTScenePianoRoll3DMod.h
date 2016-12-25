@@ -70,7 +70,7 @@ private:
 	MTNoteBoxMod m_NoteBoxMod;
 	MTNoteRippleMod m_NoteRippleMod;
 	MTNoteLyrics m_NoteLyrics;
-	MTPianoKeyboardCtrlMod m_PianoKeyboardCtrl;
+	MTPianoKeyboardCtrlMod m_PianoKeyboardCtrlMod;
 
 };
 

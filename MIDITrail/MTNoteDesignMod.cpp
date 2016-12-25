@@ -30,6 +30,29 @@ MTNoteDesignMod::~MTNoteDesignMod(void)
 }
 
 //******************************************************************************
+// 初期化
+//******************************************************************************
+int MTNoteDesignMod::Initialize(
+		const TCHAR* pSceneName,
+		SMSeqData* pSeqData
+	)
+{
+	int result = 0;
+
+	OutputDebugString(_T("MTNoteDesignMod::Initialize\n"));
+
+	//基底クラスの初期化処理を呼び出す
+	MTNoteDesign::Initialize(pSceneName, pSeqData);
+
+	//パラメータ設定ファイル読み込み
+	result = _LoadConfFile(pSceneName);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // 波紋ディケイ時間取得(msec)
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleDecayDuration()

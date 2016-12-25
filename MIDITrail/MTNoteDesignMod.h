@@ -22,6 +22,9 @@ public:
 	MTNoteDesignMod(void);
 	virtual ~MTNoteDesignMod(void);
 
+	//‰Šú‰»
+	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
+
 	//”g–ä•\¦ŠÔæ“¾
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();

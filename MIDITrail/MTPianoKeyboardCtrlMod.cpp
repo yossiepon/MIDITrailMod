@@ -66,7 +66,7 @@ int MTPianoKeyboardCtrlMod::Create(
 	}
 
 	//ノートデザインオブジェクト初期化
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
+	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 	//キーボードデザイン初期化
@@ -175,7 +175,7 @@ int MTPianoKeyboardCtrlMod::Transform(
 	if (result != 0) goto EXIT;
 
 	//再生面頂点座標取得
-	m_NoteDesign.GetPlaybackSectionVirtexPos(
+	m_NoteDesignMod.GetPlaybackSectionVirtexPos(
 			0,
 			&vectorLU,
 			&vectorRU,
@@ -187,8 +187,8 @@ int MTPianoKeyboardCtrlMod::Transform(
 	float keyboardWidth = m_KeyboardDesignMod.GetPortOriginX(0) * -2.0f;
 
 	//移動ベクトル：再生面に追従する
-	moveVector2 = m_NoteDesign.GetWorldMoveVector();
-	moveVector2.x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+	moveVector2 = m_NoteDesignMod.GetWorldMoveVector();
+	moveVector2.x += m_NoteDesignMod.GetPlayPosX(m_CurTickTime);
 
 	unsigned char lastPortNo = 0;
 
@@ -355,7 +355,7 @@ int MTPianoKeyboardCtrlMod::_UpdateVertexOfActiveNotes(
 		}
 
 		//ノートの色
-		noteColor = m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+		noteColor = m_NoteDesignMod.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 		
 		//発音対象キーを回転
 		//  すでに同一ノートに対して頂点を更新している場合
