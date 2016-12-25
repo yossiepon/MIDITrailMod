@@ -54,9 +54,7 @@ public:
 		);
 
 	//XV
-// >>> modify 20120728 yossiepon begin
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
-// <<< modify 20120728 yossiepon end
+	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
 	//•`‰æ
 // >>> modify 20120728 yossiepon begin

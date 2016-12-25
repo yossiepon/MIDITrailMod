@@ -40,9 +40,6 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//çXêV
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
-
 	//ï`âÊ
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 

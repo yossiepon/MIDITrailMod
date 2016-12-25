@@ -39,8 +39,6 @@ int MTNoteDesignMod::Initialize(
 {
 	int result = 0;
 
-	OutputDebugString(_T("MTNoteDesignMod::Initialize\n"));
-
 	//Šî’êƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—‚ğŒÄ‚Ño‚·
 	MTNoteDesign::Initialize(pSceneName, pSeqData);
 
@@ -66,6 +64,22 @@ unsigned long MTNoteDesignMod::GetRippleDecayDuration()
 unsigned long MTNoteDesignMod::GetRippleReleaseDuration()
 {
 	return (unsigned long)m_RippleReleaseDuration;
+}
+
+//******************************************************************************
+// ”g–äã‘‚«‰ñ”
+//******************************************************************************
+unsigned long MTNoteDesignMod::GetRippleOverwriteTimes()
+{
+	return (unsigned long)m_RippleOverwriteTimes;
+}
+
+//******************************************************************************
+// ”g–ä•`‰æŠÔŠu
+//******************************************************************************
+float MTNoteDesignMod::GetRippleSpacing()
+{
+	return m_RippleSpacing;
 }
 
 //******************************************************************************
@@ -234,6 +248,14 @@ int MTNoteDesignMod::_LoadConfFile(
 
 	//”g–äƒŠƒŠ[ƒXŠÔ(msec)
 	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
+	if (result != 0) goto EXIT;
+
+	//”g–äã‘‚«‰ñ”
+	result = confFile.GetInt(_T("OverwriteTimes"), &m_RippleOverwriteTimes, 3);
+	if (result != 0) goto EXIT;
+
+	//”g–ä•`‰æŠÔŠu
+	result = confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
 	if (result != 0) goto EXIT;
 
 EXIT:;

@@ -46,9 +46,9 @@ public:
 	virtual ~MTNoteDesign(void);
 
 	//‰Šú‰»
-// >>> modify 20120728 yossiepon begin
+// >>> modify 20161225 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
-// <<< modify 20120728 yossiepon end
+// <<< modify 20161225 yossiepon end
 
 	//‰‰‘tˆÊ’uŽæ“¾
 	float GetPlayPosX(unsigned long curTickTime);

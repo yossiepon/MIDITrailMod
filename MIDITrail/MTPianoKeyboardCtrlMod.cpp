@@ -186,6 +186,8 @@ int MTPianoKeyboardCtrlMod::Transform(
 	float boardHeight = vectorLU.y - vectorLD.y;
 	float keyboardWidth = m_KeyboardDesignMod.GetPortOriginX(0) * -2.0f;
 
+	float rippleSpacing = m_NoteDesignMod.GetRippleSpacing();
+
 	//移動ベクトル：再生面に追従する
 	moveVector2 = m_NoteDesignMod.GetWorldMoveVector();
 	moveVector2.x += m_NoteDesignMod.GetPlayPosX(m_CurTickTime);
@@ -243,7 +245,7 @@ int MTPianoKeyboardCtrlMod::Transform(
 			moveVector1.y -= m_KeyboardDesignMod.GetWhiteKeyHeight() / 4.0f;
 
 			//鍵盤の長さ＋リップルマージン＋歌詞マージンだけ手前に
-			moveVector1.z -= m_KeyboardDesignMod.GetWhiteKeyLen() + 0.002f * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM) * (keyboardWidth / boardHeight);
+			moveVector1.z -= m_KeyboardDesignMod.GetWhiteKeyLen() + rippleSpacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM) * (keyboardWidth / boardHeight);
 
 		} else {
 
