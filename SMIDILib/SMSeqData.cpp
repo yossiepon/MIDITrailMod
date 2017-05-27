@@ -427,6 +427,12 @@ const char* SMSeqData::GetCopyRight()
 //******************************************************************************
 const char* SMSeqData::GetTitle()
 {
+// >>> add 20170528 yossiepon begin
+	if (m_Title.length() == 0) {
+		return m_FileName.c_str();
+	}
+// <<< add 20170528 yossiepon end
+
 	return m_Title.c_str();
 }
 
