@@ -30,6 +30,8 @@ public:
 	unsigned long GetRippleReleaseDuration();
 
 	//波紋描画情報取得
+	D3DBLEND GetRippleSrcBlend();
+	D3DBLEND GetRippleDestBlend();
 	unsigned long GetRippleOverwriteTimes();
 	float GetRippleSpacing();
 
@@ -76,6 +78,11 @@ private:
 	int m_RippleDecayDuration;
 	//リリース時間
 	int m_RippleReleaseDuration;
+
+	//描画元（リップル画像）ブレンド指定 
+	D3DBLEND m_RippleSrcBlend;
+	//描画先（背景画像）ブレンド指定
+	D3DBLEND m_RippleDestBlend;
 
 	//上書き回数
 	int m_RippleOverwriteTimes;

@@ -391,9 +391,9 @@ int MTNoteRippleMod::Draw(
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//レンダリングステート設定：加算合成
-	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	//レンダリングステート設定：ブレンド指定値
+	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, m_NoteDesignMod.GetRippleSrcBlend());
+	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, m_NoteDesignMod.GetRippleDestBlend());
 
 	//プリミティブ描画
 	if (m_ActiveNoteNum > 0) {
@@ -403,8 +403,8 @@ int MTNoteRippleMod::Draw(
 	}
 
 	//レンダリングステート設定：通常のアルファ合成
-	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 EXIT:;
 	return result;
