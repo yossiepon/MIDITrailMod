@@ -916,6 +916,16 @@ unsigned long MTPianoKeyboardDesign::GetKeyboardMaxDispNum()
 	return (unsigned long)m_KeyboardMaxDispNum;
 }
 
+// >>> add 20180404 yossiepon begin
+//******************************************************************************
+// キーボード表示数設定
+//******************************************************************************
+void MTPianoKeyboardDesign::SetKeyboardSingle()
+{
+	m_KeyboardMaxDispNum = 1;
+}
+// <<< add 20180404 yossiepon end
+
 //******************************************************************************
 // キー表示範囲：開始
 //******************************************************************************

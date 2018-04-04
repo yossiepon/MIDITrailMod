@@ -189,6 +189,10 @@ public:
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
 
+// >>> add 20180404 yossiepon begin
+	void SetKeyboardSingle();
+// <<< add 20180404 yossiepon end
+
 	//キー表示範囲取得
 	unsigned char GetKeyDispRangeStart();
 	unsigned char GetKeyDispRangeEnd();

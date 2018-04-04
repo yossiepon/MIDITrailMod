@@ -58,8 +58,13 @@ private:
 
 	//ポートリスト
 	SMPortList m_PortList;
-	int m_PortIndex[SM_MAX_PORT_NUM];
-	unsigned char m_MaxPortIndex;
+
+	//アクティブポートフラグ
+	bool m_isActivePort[SM_MAX_PORT_NUM];
+
+	//キーボードインデックス
+	int m_KeyboardIndex[SM_MAX_PORT_NUM];
+	unsigned char m_MaxKeyboardIndex;
 
 	//キー押下率配列
 	float m_KeyDownRateMod[SM_MAX_CH_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
@@ -73,6 +78,9 @@ private:
 			);
 	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 
+	int _GetKeyboardIndexFromNote(const SMNote &note);
+
+	float GetMaxPitchBendShift(unsigned char portNo);
 };
 
 
