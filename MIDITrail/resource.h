@@ -68,7 +68,13 @@
 #define IDM_ADD_FILE                    32837
 // <<< add 20120728 yossiepon end
 #define IDM_AUTO_SAVE_VIEWPOINT         32838
+// >>> add 20180404 yossiepon begin
+#define IDM_ENABLE_GRIDBOX              32839
+// <<< add 20180404 yossiepon end
 #define IDM_VIEW_PIANOROLLRAIN2D        32840
+// >>> add 20180404 yossiepon begin
+#define IDM_ENABLE_TIMEINDICATOR        32841
+// <<< add 20180404 yossiepon end
 #define IDM_ENABLE_BACKGROUNDIMAGE      32842
 #define IDC_STATIC                      -1
 

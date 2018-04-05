@@ -27,5 +27,15 @@ public:
 	//更新
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
+	//描画
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	//表示設定
+	void SetEnable(bool isEnable);
+
+private:
+
+	//表示可否
+	bool m_isEnable;
 };
 

@@ -76,6 +76,10 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnableCounter = true;
 	m_isEnableFileName = false;
 	m_isEnableBackgroundImage = true;
+// >>> add 20180404 yossiepon begin
+	m_isEnableTimeIndicator = true;
+	m_isEnableGridBox = true;
+// <<< add 20180404 yossiepon end
 
 	//シーン種別
 	m_SceneType = Title;
@@ -683,6 +687,18 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
 					if (result != 0) goto EXIT;
 					break;
+// >>> add 20180404 yossiepon begin
+				case IDM_ENABLE_TIMEINDICATOR:
+					//表示効果：タイムインジケータ
+					result = _OnMenuEnableEffect(MTScene::EffectTimeIndicator);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_GRIDBOX:
+					//表示効果：グリッドボックス
+					result = _OnMenuEnableEffect(MTScene::EffectGridBox);
+					if (result != 0) goto EXIT;
+					break;
+// <<< add 20180404 yossiepon end
 				case IDM_WINDOWSIZE:
 					//ウィンドウサイズ設定
 					result = _OnMenuWindowSize();
@@ -1275,6 +1291,14 @@ int MIDITrailApp::_OnMenuEnableEffect(
 		case MTScene::EffectBackgroundImage:
 			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
 			break;
+// >>> add 20180404 yossiepon begin
+		case MTScene::EffectTimeIndicator:
+			m_isEnableTimeIndicator = !m_isEnableTimeIndicator;
+			break;
+		case MTScene::EffectGridBox:
+			m_isEnableGridBox = !m_isEnableGridBox;
+			break;
+// <<< add 20180404 yossiepon end
 		default:
 			break;
 	}
@@ -2138,7 +2162,10 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_ENABLE_PITCHBEND,
 		IDM_ENABLE_STARS,
 		IDM_ENABLE_COUNTER,
-		IDM_ENABLE_BACKGROUNDIMAGE,
+// >>> add 20180404 yossiepon begin
+		IDM_ENABLE_TIMEINDICATOR,
+		IDM_ENABLE_GRIDBOX,
+// <<< add 20180404 yossiepon end
 		IDM_WINDOWSIZE,
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
@@ -2178,6 +2205,10 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_STARS
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_COUNTER
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_BACKGROUNDIMAGE
+// >>> add 20180404 yossiepon begin
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_TIMEINDICATOR
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_GRIDBOX
+// <<< add 20180404 yossiepon end
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_WINDOWSIZE
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
@@ -2798,6 +2829,14 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	//背景画像表示
 	_CheckMenuItem(IDM_ENABLE_BACKGROUNDIMAGE, m_isEnableBackgroundImage);
 
+// >>> add 20180404 yossiepon begin
+	//タイムインジケータ表示
+	_CheckMenuItem(IDM_ENABLE_TIMEINDICATOR, m_isEnableTimeIndicator);
+
+	//グリッドボックス表示
+	_CheckMenuItem(IDM_ENABLE_GRIDBOX, m_isEnableGridBox);
+// <<< add 20180404 yossiepon end
+
 	//自動視点保存
 	_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
 
@@ -2840,6 +2879,10 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
 		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
 		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
+// >>> add 20180404 yossiepon begin
+		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
+		m_pScene->SetEffect(MTScene::EffectGridBox, m_isEnableGridBox);
+// <<< add 20180404 yossiepon end
 	}
 	return;
 }

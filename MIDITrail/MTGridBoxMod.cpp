@@ -20,6 +20,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTGridBoxMod::MTGridBoxMod(void)
 {
+	m_isEnable = true;
 }
 
 //******************************************************************************
@@ -70,4 +71,32 @@ int MTGridBoxMod::Transform(
 	m_Primitive.Transform(worldMatrix);
 
 	return result;
+}
+
+//******************************************************************************
+// ï`âÊ
+//******************************************************************************
+int MTGridBoxMod::Draw(
+		LPDIRECT3DDEVICE9 pD3DDevice
+	)
+{
+	int result = 0;
+
+	if (!m_isEnable) goto EXIT;
+
+	result = MTGridBox::Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ï\é¶ê›íË
+//******************************************************************************
+void MTGridBoxMod::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
 }

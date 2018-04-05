@@ -79,6 +79,10 @@ BEGIN
         MENUITEM "Stars",                       IDM_ENABLE_STARS
         MENUITEM "Counter",                     IDM_ENABLE_COUNTER
         MENUITEM "Background Image",            IDM_ENABLE_BACKGROUNDIMAGE
+// >>> add 20180404 yossiepon begin
+        MENUITEM "Time Indicator",              IDM_ENABLE_TIMEINDICATOR
+        MENUITEM "Grid Box",                    IDM_ENABLE_GRIDBOX
+// <<< add 20180404 yossiepon end
         MENUITEM SEPARATOR
         MENUITEM "Auto save viewpoint",         32838
         MENUITEM SEPARATOR
