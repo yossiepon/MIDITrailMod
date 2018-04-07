@@ -201,14 +201,12 @@ int MTPianoKeyboardCtrlMod::Transform(
 		);
 
 	float boardHeight = portWindowLU.y - portWindowLD.y;
-	float keyboardWidth = m_KeyboardDesignMod.GetPortOriginX(0) * -2.0f;
-	float portWidth =  m_KeyboardDesignMod.GetChStep() * 16.0f;
+	float keyboardWidth = m_KeyboardDesignMod.GetPortOriginX() * -2.0f;
 
 	float resizeSacle = boardHeight / keyboardWidth;
-	float antiResizeScale = keyboardWidth / boardHeight;
 
 	float rippleSpacing = m_NoteDesignMod.GetRippleSpacing();
-	float rippleMargin = rippleSpacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM) * antiResizeScale;
+	float rippleMargin = rippleSpacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM); // * antiResizeScale;
 
 	//移動ベクトル：再生面に追従する
 	playbackPosVector = m_NoteDesignMod.GetWorldMoveVector();
@@ -236,42 +234,10 @@ int MTPianoKeyboardCtrlMod::Transform(
 		}
 
 		//移動ベクトル：キーボード基準座標
-		transformVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, 0, antiResizeScale);
+		transformVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rippleMargin, boardHeight, rollAngle);
 
 		//移動ベクトル：ピッチベンドシフトを反映
 		transformVector.x += GetMaxPitchBendShift(portNo);
-
-		if(rollAngle < 0.0f) {
-			rollAngle += 360.0f;
-		}
-
-		float portOriginY = portWidth * (m_PortList.GetSize() - keyboardIndex - 1) * antiResizeScale;
-
-		//鍵盤の1/2の幅だけ高音側に
-		transformVector.x += m_KeyboardDesignMod.GetWhiteKeyStep() / 2.0f;
-
-		//鍵盤の1/4の高さだけ下に
-		transformVector.y -= m_KeyboardDesignMod.GetWhiteKeyHeight() / 4.0f;
-
-		if((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-
-			//ポート原点Y
-			transformVector.y -= portOriginY;
-
-			//鍵盤の原点をCh15に
-			transformVector.y -= m_KeyboardDesignMod.GetChStep() * 15.0f * antiResizeScale;
-
-			//鍵盤の長さ＋リップルマージン＋歌詞マージンだけ手前に
-			transformVector.z -= m_KeyboardDesignMod.GetWhiteKeyLen() + rippleMargin;
-
-		} else {
-
-			//ポート原点Y
-			transformVector.y += portOriginY;
-
-			//リップルマージン＋歌詞マージンだけ奥に
-			transformVector.z += rippleMargin;
-		}
 
 		//キーボード移動
 		result = m_pPianoKeyboard[keyboardIndex]->Transform(pD3DDevice, transformVector, playbackPosVector, resizeSacle, portWindowLU.z, rollAngle);

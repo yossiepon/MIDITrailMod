@@ -28,8 +28,9 @@ public:
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 	//ポート原点座標取得
-	virtual float GetPortOriginY(unsigned char portNo);
-	virtual float GetPortOriginZ(unsigned char portNo);
+	float GetPortOriginX();
+	float GetPortOriginY(int keyboardIndex, float antiResizeScale, bool flip);
+	float GetPortOriginZ(int keyboardIndex, float rippleMargin, float antiResizeScale, bool flip);
 
 	//チャンネル間隔取得
 	float GetChStep();
@@ -43,7 +44,7 @@ public:
 		);
 
 	//キーボード基準座標取得
-	virtual D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo, float scale);
+	D3DXVECTOR3 GetKeyboardBasePos(int keyboardIndex, float rippleMargin, float boardHeight, float angle);
 
 protected:
 

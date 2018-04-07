@@ -92,8 +92,7 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMATRIX moveMatrix1;
 	D3DXMATRIX moveMatrix2;
 	D3DXMATRIX moveMatrix3;
-	D3DXMATRIX worldMatrix1;
-	D3DXMATRIX worldMatrix2;
+	D3DXMATRIX worldMatrix;
 
 	//s—ñ‰Šú‰»
 	D3DXMatrixIdentity(&scaleMatrix);
@@ -102,8 +101,7 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMatrixIdentity(&rotateMatrix3);
 	D3DXMatrixIdentity(&moveMatrix1);
 	D3DXMatrixIdentity(&moveMatrix2);
-	D3DXMatrixIdentity(&worldMatrix1);
-	D3DXMatrixIdentity(&worldMatrix2);
+	D3DXMatrixIdentity(&worldMatrix);
 
 	//‰ñ“]s—ñ
 
@@ -112,11 +110,11 @@ int MTPianoKeyboardMod::Transform(
 	}
 
 	if((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-		D3DXMatrixRotationX(&rotateMatrix1, D3DXToRadian(90.0f));
-		D3DXMatrixRotationZ(&rotateMatrix2, D3DXToRadian(90.0f));
+		D3DXMatrixRotationX(&rotateMatrix1, D3DX_PI / 2.0f);
+		D3DXMatrixRotationZ(&rotateMatrix2, D3DX_PI / 2.0f);
 	} else {
-		D3DXMatrixRotationX(&rotateMatrix1, D3DXToRadian(-90.0f));
-		D3DXMatrixRotationZ(&rotateMatrix2, D3DXToRadian(90.0f));
+		D3DXMatrixRotationX(&rotateMatrix1, -D3DX_PI / 2.0f);
+		D3DXMatrixRotationZ(&rotateMatrix2, D3DX_PI / 2.0f);
 	}
 
 	D3DXMatrixRotationX(&rotateMatrix3, D3DXToRadian(rollAngle));
@@ -130,15 +128,16 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMatrixScaling(&scaleMatrix, scale, scale, scale);
 
 	//s—ñ‚Ì‡¬Fƒsƒbƒ`ƒxƒ“ƒhˆÚ“®‚P¨Œ®”ÕŒü‚«•â³‰ñ“]‚PE‚Q¨ƒOƒŠƒbƒh–Ê‚Ü‚ÅˆÚ“®‚R¨ƒzƒC[ƒ‹‰ñ“]‚R¨ƒXƒP[ƒ‹¨Ä¶–Ê’Ç]ˆÚ“®‚Q
-	D3DXMatrixMultiply(&worldMatrix1, &moveMatrix1, &rotateMatrix1);
-	D3DXMatrixMultiply(&worldMatrix2, &worldMatrix1, &rotateMatrix2);
-	D3DXMatrixMultiply(&worldMatrix1, &worldMatrix2, &moveMatrix3);
-	D3DXMatrixMultiply(&worldMatrix2, &worldMatrix1, &rotateMatrix3);
-	D3DXMatrixMultiply(&worldMatrix1, &worldMatrix2, &scaleMatrix);
-	D3DXMatrixMultiply(&worldMatrix2, &worldMatrix1, &moveMatrix2);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &moveMatrix1);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix1);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix2);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &moveMatrix3);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix3);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &moveMatrix2);
 
 	//•ÏŠ·s—ñÝ’è
-	m_PrimitiveKeyboard.Transform(worldMatrix2);
+	m_PrimitiveKeyboard.Transform(worldMatrix);
 
 //EXIT:;
 	return result;

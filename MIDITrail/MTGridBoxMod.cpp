@@ -49,14 +49,6 @@ int MTGridBoxMod::Transform(
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	if(rollAngle < 0.0f) {
-		rollAngle += 360.0f;
-	}
-
-	if((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-		rollAngle -= 180.0f;
-	}
-
 	//‰ñ“]s—ñ
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 

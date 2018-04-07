@@ -75,24 +75,162 @@ void MTPianoKeyboardDesignMod::_Initialize()
 }
 
 //******************************************************************************
+// ポート原点X座標取得
+//******************************************************************************
+float MTPianoKeyboardDesignMod::GetPortOriginX()
+{
+	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
+	//             +z
+	//              |
+	// -x<----------0---------->+x
+	//              | -RippleMargin
+	//         +----+----+
+	//         |    |    |  @:OriginX
+	//         |    |    |
+	//         |    |    |
+	//         |    |    |
+	//         @----+----+
+	//    Note #0   |  #127
+	//             -z
+
+	// angle: 0°～120°or 300°～360°(rotateX: -90°, rotateZ: 90°)
+	//             +z
+	//              |
+	//    Note #0   |  #127
+	//         +----+----+
+	//         |    |    |  @:OriginX
+	//         |    |    |
+	//         |    |    |
+	//         |    |    |
+	//         @----+----+
+	//              | +RippleMargin
+	// -x<----------0---------->+x
+	//              |
+	//             -z
+
+	float originX = MTPianoKeyboardDesign::GetPortOriginX(0);
+
+	//鍵盤の1/2の幅だけ高音側に移動
+	return originX + GetWhiteKeyStep() / 2.0f;
+}
+
+//******************************************************************************
 // ポート原点Y座標取得
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginY(
-		unsigned char portNo
+		int keyboardIndex,
+		float antiResizeScale,
+		bool flip
 	)
 {
-	return 0;
+	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
+	//      +y                                    
+	//       |                                    
+	// +z<---0-----------------------------Ch.15------------>-z
+	//       |                                    
+	//       |            +--------------+        
+	//       |      portC +--------------@ Ch.0   
+	//       |                             Ch.15  
+	//       |                                    
+	//       |            +--------------+        
+	//       |      portB +--------------@ Ch.0   
+	//       |                             Ch.15  
+	//       |                                    
+	//       |            +--------------+          @:OriginY(for portA,B,C)
+	//       |      portA +--------------@ Ch.0   
+	//       |                                    
+	//      -y                                    
+
+	// angle: 0°～120°or 300°～360°(rotateX: -90°, rotateZ: 90°)
+	//                                           +y
+	//                                     Ch.15  |
+	//                                            |
+	//                    +--------------+        |
+	//              portA +--------------@ Ch.0   |
+	//                                     Ch.15  |
+	//                                            |
+	//                    +--------------+        |
+	//              portB +--------------@ Ch.0   |
+	//                                     Ch.15  |
+	//                                            |
+	//                    +--------------+        |
+	// +z<----------portC +--------------@ Ch.0---0-------------->-z
+	//                                            |
+	//                                            | @:OriginY(for portA,B,C)
+	//                                           -y
+
+	float portWidth = GetChStep() * 16.0f;
+
+	// TODO シングルキーボードの判定方法を再検討
+	int keyboardDispNum = GetKeyboardMaxDispNum() > 1 ? m_PortList.GetSize() : 1;
+
+	float originY = portWidth * (keyboardDispNum - keyboardIndex - 1);
+
+	if (!flip) {
+		originY = -(originY + GetChStep() * 15.0f);
+	}
+
+	//キーボードリサイズ後に正しいポート間隔となるよう逆比をかける
+	originY *= antiResizeScale;
+
+	//鍵盤の1/4の高さだけ下に
+	originY -= GetWhiteKeyHeight() / 4.0f;
+
+	return originY;
 }
 
 //******************************************************************************
 // ポート原点Z座標取得
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginZ(
-		unsigned char portNo
+		int keyboardIndex,
+		float rippleMargin,
+		float antiResizeScale,
+		bool flip
 	)
 {
+	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
+	//             +z
+	//              |
+	// -x<----------0---------->+x
+	//              | -RippleMargin
+	//         +----+----+
+	//         |    |    |  @:OriginZ
+	//         |    |    |
+	//         |    |    |
+	//         |    |    |
+	//         @----+----+
+	//    Note #0   |  #127
+	//             -z
 
-	return 0;
+	// angle: 0°～120°or 300°～360°(rotateX: -90°, rotateZ: 90°)
+	//             +z
+	//              |
+	//    Note #0   |  #127
+	//         +----+----+
+	//         |    |    |  @:OriginZ
+	//         |    |    |
+	//         |    |    |
+	//         |    |    |
+	//         @----+----+
+	//              | +RippleMargin
+	// -x<----------0---------->+x
+	//              |
+	//             -z
+
+	float originZ;
+
+	//キーボードリサイズ後に正しいリップルマージンとなるよう逆比をかける
+	rippleMargin *= antiResizeScale;
+
+	if (!flip) {
+		originZ = -(GetWhiteKeyLen() + rippleMargin);
+	}
+	else {
+		originZ = rippleMargin;
+	}
+
+	return originZ;
 }
 
 //******************************************************************************
@@ -171,17 +309,28 @@ D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 // キーボード基準座標取得
 //******************************************************************************
 D3DXVECTOR3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
-		unsigned char portNo,
-		unsigned char chNo,
-		float scale
+		int keyboardIndex,
+		float rippleMargin,
+		float boardHeight,
+		float angle
 	)
 {
 	float ox, oy, oz = 0.0f;
 
+	//ロール角度によって描画方法を切り替える
+	angle += angle < 0.0f ? 360.0f : 0.0f;
+	bool flip = !((angle > 120.0f) && (angle < 300.0f));
+
+	float keyboardWidth = MTPianoKeyboardDesign::GetPortOriginX(0) * -2.0f;
+
+	//キーボード描画時にリサイズがかかってはならない相対座標用の逆リサイズ比
+	//対象：ポート間隔、リップルマージン
+	float antiResizeScale = keyboardWidth / boardHeight;
+
 	//ポート単位の原点座標
-	ox = GetPortOriginX(portNo);
-	oy = GetPortOriginY(portNo);
-	oz = GetPortOriginZ(portNo);
+	ox = GetPortOriginX();
+	oy = GetPortOriginY(keyboardIndex, antiResizeScale, flip);
+	oz = GetPortOriginZ(keyboardIndex, rippleMargin, antiResizeScale, flip);
 
 	return D3DXVECTOR3(ox, oy, oz);
 }
