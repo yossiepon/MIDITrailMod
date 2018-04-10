@@ -74,19 +74,19 @@ protected:
 
 private:
 
-	//ディケイ時間
+	//波紋ディケイ時間
 	int m_RippleDecayDuration;
-	//リリース時間
+	//波紋リリース時間
 	int m_RippleReleaseDuration;
 
-	//描画元（リップル画像）ブレンド指定 
+	//波紋描画元（リップル画像）ブレンド指定 
 	D3DBLEND m_RippleSrcBlend;
-	//描画先（背景画像）ブレンド指定
+	//波紋描画先（背景画像）ブレンド指定
 	D3DBLEND m_RippleDestBlend;
 
-	//上書き回数
+	//波紋上書き回数
 	int m_RippleOverwriteTimes;
-	//描画間隔
+	//波紋描画間隔
 	float m_RippleSpacing;
 };
 

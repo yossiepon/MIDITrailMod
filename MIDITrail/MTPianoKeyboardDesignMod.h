@@ -27,13 +27,41 @@ public:
 	//初期化
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
+	//キーボード基準座標取得
+	D3DXVECTOR3 GetKeyboardBasePos(int keyboardIndex, float angle);
+
 	//ポート原点座標取得
 	float GetPortOriginX();
 	float GetPortOriginY(int keyboardIndex, float antiResizeScale, bool flip);
-	float GetPortOriginZ(int keyboardIndex, float rippleMargin, float antiResizeScale, bool flip);
+	float GetPortOriginZ(int keyboardIndex, float antiResizeScale, bool flip);
+
+	//ノートボックス高さ・幅取得
+	float GetNoteBoxHeight();
+	float GetNoteBoxWidth();
+
+	//ノート間隔取得
+	float GetNoteStep();
 
 	//チャンネル間隔取得
 	float GetChStep();
+
+	//キーボード高さ・幅取得
+	float GetKeyboardHeight();
+	float GetKeyboardWidth();
+
+	//グリッド高さ・幅取得
+	float GetGridHeight();
+	float GetGridWidth();
+
+	//再生面高さ・幅取得
+	float GetPlaybackSectionHeight();
+	float GetPlaybackSectionWidth();
+
+	//波紋描画間隔取得
+	float GetRippleSpacing();
+
+	//波紋描画マージン取得
+	float GetRippleMargin();
 
 	//発音中キーカラー取得
 	D3DXCOLOR GetActiveKeyColor(
@@ -43,9 +71,6 @@ public:
 			D3DXCOLOR* pNoteColor = NULL
 		);
 
-	//キーボード基準座標取得
-	D3DXVECTOR3 GetKeyboardBasePos(int keyboardIndex, float rippleMargin, float boardHeight, float angle);
-
 protected:
 
 	virtual void _Initialize();
@@ -53,8 +78,17 @@ protected:
 
 private:
 
+	//ノートボックス高さ
+	float m_NoteBoxHeight;
+	//ノートボックス幅
+	float m_NoteBoxWidth;
+	//ノート間隔
+	float m_NoteStep;
 	//チャンネル間隔
 	float m_ChStep;
+
+	//波紋描画間隔
+	float m_RippleSpacing;
 
 	//発音中キー色情報
 	D3DXCOLOR m_ActiveKeyColorList[16];

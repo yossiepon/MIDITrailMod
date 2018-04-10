@@ -12,8 +12,6 @@
 #include "YNBaseLib.h"
 #include "MTPianoKeyboardCtrlMod.h"
 #include "MTPianoKeyboardMod.h"
-#include "MTNoteRippleMod.h"
-#include "MTNoteLyrics.h"
 
 using namespace YNBaseLib;
 
@@ -200,13 +198,10 @@ int MTPianoKeyboardCtrlMod::Transform(
 			&portWindowRD
 		);
 
-	float boardHeight = portWindowLU.y - portWindowLD.y;
-	float keyboardWidth = m_KeyboardDesignMod.GetPortOriginX() * -2.0f;
+	float boardHeight = m_KeyboardDesignMod.GetPlaybackSectionHeight();
+	float keyboardWidth = m_KeyboardDesignMod.GetKeyboardWidth();
 
 	float resizeSacle = boardHeight / keyboardWidth;
-
-	float rippleSpacing = m_NoteDesignMod.GetRippleSpacing();
-	float rippleMargin = rippleSpacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM); // * antiResizeScale;
 
 	//移動ベクトル：再生面に追従する
 	playbackPosVector = m_NoteDesignMod.GetWorldMoveVector();
@@ -234,7 +229,7 @@ int MTPianoKeyboardCtrlMod::Transform(
 		}
 
 		//移動ベクトル：キーボード基準座標
-		transformVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rippleMargin, boardHeight, rollAngle);
+		transformVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rollAngle);
 
 		//移動ベクトル：ピッチベンドシフトを反映
 		transformVector.x += GetMaxPitchBendShift(portNo);
