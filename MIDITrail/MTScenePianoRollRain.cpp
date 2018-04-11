@@ -326,7 +326,7 @@ int MTScenePianoRollRain::OnRecvSequencerMsg(
 	}
 	//演奏チックタイム通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeSec());
+		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeMSec());
 		m_PianoKeyboardCtrl.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRain.SetCurTickTime(parser.GetPlayTickTime());
 		m_CurTickTime = parser.GetPlayTickTime();

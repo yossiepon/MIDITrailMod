@@ -104,6 +104,10 @@ int MTScenePianoRoll3D::Create(
 	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
+	//ピアノキーボード制御
+	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+
 	//ノートボックス生成
 	result = m_NoteBox.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
@@ -119,6 +123,7 @@ int MTScenePianoRoll3D::Create(
 	//ピクチャボード生成
 	result = m_PictBoard.Create(pD3DDevice, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
+	m_PictBoard.SetEnable(false);
 
 	//ダッシュボード生成
 	result = m_Dashboard.Create(pD3DDevice, GetName(), pSeqData, hWnd);
@@ -182,6 +187,10 @@ int MTScenePianoRoll3D::Transform(
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
 
+	//ピアノキーボード更新
+	result = m_PianoKeyboardCtrl.Transform(pD3DDevice, rollAngle);
+	if (result != 0) goto EXIT;
+
 	//ノートボックス更新
 	result = m_NoteBox.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
@@ -244,6 +253,10 @@ int MTScenePianoRoll3D::Draw(
 	result = m_PictBoard.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//ピアノキーボード描画
+	result = m_PianoKeyboardCtrl.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//星描画
 	result = m_Stars.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -269,6 +282,7 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRoll3D::Release()
 {
+	m_PianoKeyboardCtrl.Release();
 	m_NoteBox.Release();
 	m_GridBox.Release();
 	m_PictBoard.Release();
@@ -369,7 +383,9 @@ int MTScenePianoRoll3D::OnRecvSequencerMsg(
 	}
 	//演奏チックタイム通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeSec());
+		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeMSec());
+		m_PianoKeyboardCtrl.SetPlayTimeMSec(parser.GetPlayTimeMSec());
+		m_PianoKeyboardCtrl.SetCurTickTime(parser.GetPlayTickTime());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
 		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRipple.SetCurTickTime(parser.GetPlayTickTime());
@@ -406,6 +422,8 @@ int MTScenePianoRoll3D::OnRecvSequencerMsg(
 		if (parser.GetSkipStartDirection() == SMMsgParser::SkipBack) {
 			m_NotePitchBend.Reset();
 		}
+		m_PianoKeyboardCtrl.Reset();
+		m_PianoKeyboardCtrl.SetSkipStatus(true);
 		m_NoteBox.Reset();
 		m_NoteBox.SetSkipStatus(true);
 		m_NoteRipple.Reset();
@@ -415,6 +433,7 @@ int MTScenePianoRoll3D::OnRecvSequencerMsg(
 	//スキップ終了通知
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
 		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
+		m_PianoKeyboardCtrl.SetSkipStatus(false);
 		m_NoteBox.SetSkipStatus(false);
 		m_NoteRipple.SetSkipStatus(false);
 		m_IsSkipping = false;
@@ -446,6 +465,7 @@ void MTScenePianoRoll3D::_Reset()
 {
 	m_Dashboard.Reset();
 	m_FirstPersonCam.Reset();
+	m_PianoKeyboardCtrl.Reset();
 	m_TimeIndicator.Reset();
 	m_PictBoard.Reset();
 	m_NoteBox.Reset();
@@ -627,7 +647,8 @@ void MTScenePianoRoll3D::SetEffect(
 {
 	switch (type) {
 		case EffectPianoKeyboard:
-			m_PictBoard.SetEnable(isEnable);
+			m_PianoKeyboardCtrl.SetEnable(isEnable);
+			//m_PictBoard.SetEnable(isEnable);
 			break;
 		case EffectRipple:
 			m_NoteRipple.SetEnable(isEnable);

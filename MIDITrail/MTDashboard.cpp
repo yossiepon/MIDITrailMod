@@ -111,7 +111,7 @@ int MTDashboard::Create(
 	m_Counter.SetColor(m_CaptionColor);
 
 	//‘S‘Ì‰‰‘tŽžŠÔ
-	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime()/1000);
+	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
 
 	//ƒeƒ“ƒ|(BPM)
 	SetTempoBPM(pSeqData->GetTempoBPM());
@@ -365,11 +365,13 @@ int MTDashboard::_GetCounterStr(
 	eresult = _stprintf_s(
 				pStr,
 				bufSize,
-				_T("TIME:%02d:%02d/%02d:%02d BPM:%03d BEAT:%d/%d BAR:%03d/%03d NOTES:%05d/%05d"),
-				m_PlayTimeSec / 60,
-				m_PlayTimeSec % 60,
-				m_TotalPlayTimeSec / 60,
-				m_TotalPlayTimeSec % 60,
+				_T("TIME:%02d:%02d.%03d/%02d:%02d.%03d BPM:%03d BEAT:%d/%d BAR:%03d/%03d NOTES:%05d/%05d"),
+				m_PlayTimeSec / 60000,
+				(m_PlayTimeSec % 60000) / 1000,
+				m_PlayTimeSec % 1000,
+				m_TotalPlayTimeSec / 60000,
+				(m_TotalPlayTimeSec % 60000) / 1000,
+				m_TotalPlayTimeSec % 1000,
 				m_TempoBPM,
 				m_BeatNumerator,
 				m_BeatDenominator,

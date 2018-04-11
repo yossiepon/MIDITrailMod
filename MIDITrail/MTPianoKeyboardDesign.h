@@ -120,7 +120,7 @@ public:
 	D3DXCOLOR GetBlackKeyColor();
 
 	//発音中キーカラー取得
-	D3DXCOLOR GetActiveKeyColor(unsigned char noteNo, unsigned long elapsedTime);
+	D3DXCOLOR GetActiveKeyColor(unsigned char chNo, unsigned char noteNo, unsigned long elapsedTime);
 
 	//白鍵テクスチャ座標取得
 	void GetWhiteKeyTexturePosTop(
@@ -221,6 +221,7 @@ private:
 	D3DXCOLOR m_BlackKeyColor;
 
 	//発音中キー色情報
+	D3DXCOLOR m_NoteColor[16];
 	D3DXCOLOR m_ActiveKeyColor;
 	int m_ActiveKeyColorDuration;
 	float m_ActiveKeyColorTailRate;

@@ -326,7 +326,7 @@ float MTPianoKeyboardDesign::GetPortOriginY(
 	totalHeight = portHeight * ((float)chNum / (float)SM_MAX_CH_NUM);
 	originY = (portHeight * portIndex) - (totalHeight / 2.0f);
 
-	return originY;
+	return 0; //originY;
 }
 
 //******************************************************************************
@@ -378,7 +378,7 @@ float MTPianoKeyboardDesign::GetPortOriginZ(
 	totalLen = portLen * ((float)chNum / (float)SM_MAX_CH_NUM);
 	originZ = (portLen * portIndex) - (totalLen / 2.0f);
 
-	return originZ;
+	return 0; //originZ;
 }
 
 //******************************************************************************
@@ -583,6 +583,7 @@ D3DXCOLOR MTPianoKeyboardDesign::GetBlackKeyColor()
 // 発音中キーカラー取得
 //******************************************************************************
 D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
+		unsigned char chNo,
 		unsigned char noteNo,
 		unsigned long elapsedTime
 	)
@@ -608,7 +609,7 @@ D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 	//      |   on :   off
 	//          <-->duration
 
-	color    = m_ActiveKeyColor;
+	color    = m_NoteColor[chNo];
 	duration = (unsigned long)m_ActiveKeyColorDuration;
 	rate     = m_ActiveKeyColorTailRate;
 
@@ -845,9 +846,9 @@ D3DXVECTOR3 MTPianoKeyboardDesign::GetKeyboardBasePos(
 	oz = GetPortOriginZ(portNo);
 
 	//チャンネルを考慮した配置座標
-	moveVector.x = ox + 0.0f;
+	moveVector.x = ox + GetWhiteKeyStep() / 2.0f;
 	moveVector.y = oy + ((float)chNo * m_KeyboardStepY);
-	moveVector.z = oz + ((float)chNo * m_KeyboardStepZ);
+	moveVector.z = oz; // + ((float)chNo * m_KeyboardStepZ);
 
 	return moveVector;
 }
@@ -868,7 +869,9 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	)
 {
 	int result = 0;
+	TCHAR key[16] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
+	unsigned long i = 0;
 	MTConfFile confFile;
 
 	result = confFile.Initialize(pSceneName);
@@ -913,6 +916,18 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	}
 	if (m_KeyboardMaxDispNum < 0) {
 		m_KeyboardMaxDispNum = 0;
+	}
+
+	//----------------------------------
+	//色情報
+	//----------------------------------
+	//ノート色情報を取得
+	for (i = 0; i < 16; i++) {
+		_stprintf_s(key, 16, _T("Ch-%02d-NoteRGBA"), i+1);
+		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
+		if (result != 0) goto EXIT;
+
+		m_NoteColor[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 	}
 
 EXIT:;
