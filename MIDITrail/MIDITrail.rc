@@ -123,9 +123,9 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     ICON            IDI_MIDITRAIL,IDC_STATIC,74,12,20,20
     CTEXT           "MIDITrail",IDC_STATIC,16,42,138,8,SS_NOPREFIX
-// >>> modify 20120728 yossiepon begin
-    CTEXT           "Version 1.2.0 mod. yossiepon_20120728",IDC_STATIC,16,63,138,8
-// <<< modify 20120728 yossiepon end
+// >>> modify 20121229 yossiepon begin
+    CTEXT           "Version 1.2.0 mod. yossiepon_20121229",IDC_STATIC,16,63,138,8
+// <<< modify 20121229 yossiepon end
     CTEXT           "Copyright (C) 2010-2012 WADA Masashi",IDC_STATIC,1,84,168,8
     DEFPUSHBUTTON   "OK",IDOK,58,108,53,14,WS_GROUP
 END
@@ -299,9 +299,9 @@ END
 
 STRINGTABLE 
 BEGIN
-// >>> modify 20120728 yossiepon begin
-    IDS_APP_TITLE           "MIDITrail 1.2.0 mod. yossiepon_20120728"
-// <<< modify 20120728 yossiepon end
+// >>> modify 20121229 yossiepon begin
+    IDS_APP_TITLE           "MIDITrail 1.2.0 mod. yossiepon_20121229"
+// <<< modify 20121229 yossiepon end
     IDC_MIDITRAIL           "MIDITRAIL"
 END
 

@@ -133,6 +133,10 @@ protected:
 
 	virtual void _Reset();
 
+// >>> modify access level to protected 20121229 yossiepon begin
+	void _SetLightColor(DXDirLight* pLight);
+// <<< modify 20121229 yossiepon end
+
 // <<< modify 20120728 yossiepon end
 
 private:
@@ -156,7 +160,6 @@ private:
 	MTNoteDesign m_NoteDesign;
 
 // >>> modify 20120728 yossiepon begin
-	void _SetLightColor(DXDirLight* pLight);
 // <<< modify 20120728 yossiepon end
 
 };
