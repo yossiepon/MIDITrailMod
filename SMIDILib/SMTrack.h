@@ -113,7 +113,7 @@ private:
 
 // >>> add 20120728 yossiepon begin
 
-	short overwritePortNo;
+	short m_OverwritePortNo;
 
 // <<< add 20120728 yossiepon end
 

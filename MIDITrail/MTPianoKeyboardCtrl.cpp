@@ -501,16 +501,13 @@ void MTPianoKeyboardCtrl::Release()
 		}
 	}
 
-// >>> add 20120728 yossiepon begin
-	if(m_pNoteStatus != NULL) {
-// <<< add 20120728 yossiepon end
 // >>> modify 20120728 yossiepon begin
+	if(m_pNoteStatus != NULL) {
+		//20120728 yossiepon: delete Ç delete[] Ç…èCê≥
 		delete[] m_pNoteStatus;
-// <<< modify 20120728 yossiepon end
 		m_pNoteStatus = NULL;
-// >>> add 20120728 yossiepon begin
 	}
-// <<< add 20120728 yossiepon end
+// <<< modify 20120728 yossiepon end
 }
 
 //******************************************************************************

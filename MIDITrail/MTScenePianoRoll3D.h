@@ -38,7 +38,9 @@ public:
 
 	//コンストラクタ／デストラクタl
 	MTScenePianoRoll3D();
+// >>> modify 20120728 yossiepon begin
 	virtual ~MTScenePianoRoll3D();
+// <<< modify 20120728 yossiepon end
 
 	//名称取得
 	const TCHAR* GetName();
@@ -51,13 +53,19 @@ public:
 		);
 
 	//変換
+// >>> modify 20120728 yossiepon begin
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//描画
+// >>> modify 20120728 yossiepon begin
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//破棄
+// >>> modify 20120728 yossiepon begin
 	virtual void Release();
+// <<< modify 20120728 yossiepon end
 
 	//ウィンドウクリックイベント受信
 	int OnWindowClicked(
@@ -73,7 +81,9 @@ public:
 	int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//シーケンサメッセージ受信
+// >>> modify 20120728 yossiepon begin
 	virtual int OnRecvSequencerMsg(
+// <<< modify 20120728 yossiepon end
 			unsigned long wParam,
 			unsigned long lParam
 		);
@@ -90,15 +100,15 @@ public:
 	void ResetViewpoint();
 
 	//エフェクト設定
+// >>> modify 20120728 yossiepon begin
 	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
+// <<< modify 20120728 yossiepon end
 
 	//演奏速度設定
 	void SetPlaySpeedRatio(unsigned long ratio);
 
+// >>> modify 20120728 yossiepon begin
 protected:
-
-	////ライト
-	//DXDirLight m_DirLight;
 
 	////一人称カメラ
 	MTFirstPersonCam m_FirstPersonCam;
@@ -115,18 +125,6 @@ protected:
 	//ピッチベンド情報
 	MTNotePitchBend m_NotePitchBend;
 
-	////マウス視線移動モード
-	//bool m_IsMouseCamMode;
-
-	////自動回転モード
-	//bool m_IsAutoRollMode;
-
-	////視点情報
-	//MTViewParamMap m_ViewParamMap;
-
-	////ノートデザインオブジェクト
-	//MTNoteDesign m_NoteDesign;
-
 	//スキップ状態
 	bool m_IsSkipping;
 
@@ -135,10 +133,15 @@ protected:
 
 	virtual void _Reset();
 
+// <<< modify 20120728 yossiepon end
+
 private:
 
+// >>> modify 20120728 yossiepon begin
 	//ライト
 	DXDirLight m_DirLight;
+
+// <<< modify 20120728 yossiepon end
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
@@ -152,7 +155,9 @@ private:
 	//ノートデザインオブジェクト
 	MTNoteDesign m_NoteDesign;
 
+// >>> modify 20120728 yossiepon begin
 	void _SetLightColor(DXDirLight* pLight);
+// <<< modify 20120728 yossiepon end
 
 };
 

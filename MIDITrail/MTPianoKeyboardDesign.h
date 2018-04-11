@@ -55,12 +55,16 @@ public:
 	virtual ~MTPianoKeyboardDesign(void);
 
 	//初期化
+// >>> modify 20120728 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
+// <<< modify 20120728 yossiepon end
 
 	//ポート原点座標取得
 	float GetPortOriginX(unsigned char portNo);
+// >>> modify 20120728 yossiepon begin
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
+// <<< modify 20120728 yossiepon end
 
 	//キー種別取得
 	KeyType GetKeyType(unsigned char noteNo);
@@ -168,11 +172,14 @@ public:
 		);
 
 	//キーボード基準座標取得
+// >>> modify 20120728 yossiepon begin
 	virtual D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
+// <<< modify 20120728 yossiepon end
 
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
 
+// >>> modify 20120728 yossiepon begin
 protected:
 
 	//ポート情報
@@ -189,6 +196,8 @@ protected:
 	virtual void _Initialize();
 	virtual int _LoadConfFile(const TCHAR* pSceneName);
 
+// <<< modify 20120728 yossiepon end
+
 private:
 
 	//キー情報
@@ -197,8 +206,13 @@ private:
 		float keyCenterPosX;
 	} MTKeyInfo;
 
+private:
+
+// >>> modify 20120728 yossiepon begin
 	//キー情報配列
 	MTKeyInfo m_KeyInfo[SM_MAX_NOTE_NUM];
+
+// <<< modify 20120728 yossiepon end
 
 	//スケール情報
 	float m_WhiteKeyStep;
@@ -222,18 +236,24 @@ private:
 	int m_KeyUpDuration;
 
 	//キーボード配置情報
+// >>> modify 20120728 yossiepon begin
 	float m_KeyboardStepZ;
 	int m_KeyboardMaxDispNum;
+// <<< modify 20120728 yossiepon end
 
 	//キー色情報
 	D3DXCOLOR m_WhiteKeyColor;
 	D3DXCOLOR m_BlackKeyColor;
 
 	//発音中キー色情報
+// >>> modify 20120728 yossiepon begin
 	D3DXCOLOR m_ActiveKeyColor;
+// <<< modify 20120728 yossiepon end
 
+// >>> modify 20120728 yossiepon begin
 	void _InitKeyType();
 	void _InitKeyPos();
+// <<< modify 20120728 yossiepon end
 
 };
 
