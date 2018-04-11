@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,6 +21,7 @@
 #include "MTDashboard.h"
 #include "MTNotePitchBend.h"
 #include "MTMeshCtrl.h"
+#include "MTBackgroundImage.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -115,6 +116,7 @@ private:
 	MTNotePitchBend m_NotePitchBend;
 	MTDashboard m_Dashboard;
 	MTMeshCtrl m_MeshCtrl;
+	MTBackgroundImage m_BackgroundImage;
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;

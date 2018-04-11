@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -75,6 +75,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnableStars = true;
 	m_isEnableCounter = true;
 	m_isEnableFileName = false;
+	m_isEnableBackgroundImage = true;
 
 	//シーン種別
 	m_SceneType = Title;
@@ -422,6 +423,7 @@ int MIDITrailApp::_SetWindowSize()
 	int height = 0;
 	RECT wrect, crect;
 	int ww, wh, cw, ch, framew, frameh;
+	int applyToViewArea = 0;
 
 	//ユーザ選択ウィンドウサイズ取得
 	result = m_ViewConf.SetCurSection(_T("WindowSize"));
@@ -429,6 +431,8 @@ int MIDITrailApp::_SetWindowSize()
 	result = m_ViewConf.GetInt(_T("Width"), &width, 0);
 	if (result != 0) goto EXIT;
 	result = m_ViewConf.GetInt(_T("Height"), &height, 0);
+	if (result != 0) goto EXIT;
+	result = m_ViewConf.GetInt(_T("ApplyToViewArea"), &applyToViewArea, 0);
 	if (result != 0) goto EXIT;
 
 	//初回起動時のウィンドウサイズ
@@ -451,10 +455,11 @@ int MIDITrailApp::_SetWindowSize()
 	framew = ww - cw;
 	frameh = wh - ch;
 
-	//フルスクリーンモードでなければ枠を含めたサイズとする
-	//TODO: フルスクリーンモード対応
-	framew = 0;
-	frameh = 0;
+	//描画領域に指定サイズを適用する場合
+	if (applyToViewArea != 0) {
+		width = width + framew;
+		height = height + frameh;
+	}
 
 	//ウィンドウサイズ変更
 	bresult = SetWindowPos(
@@ -462,8 +467,8 @@ int MIDITrailApp::_SetWindowSize()
 					HWND_TOP,		//配置順序：Zオーダー先頭
 					0,				//横方向の位置
 					0,				//縦方向の位置
-					width + framew,	//幅
-					height + frameh,//高さ
+					width,			//幅
+					height,			//高さ
 					SWP_NOMOVE		//ウィンドウ位置指定
 				);
 	if (!bresult) {
@@ -671,6 +676,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				case IDM_ENABLE_COUNTER:
 					//表示効果：カウンタ
 					result = _OnMenuEnableEffect(MTScene::EffectCounter);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_BACKGROUNDIMAGE:
+					//表示効果：背景画像
+					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_WINDOWSIZE:
@@ -1262,6 +1272,9 @@ int MIDITrailApp::_OnMenuEnableEffect(
 		case MTScene::EffectCounter:
 			m_isEnableCounter = m_isEnableCounter ? false : true;
 			break;
+		case MTScene::EffectBackgroundImage:
+			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
+			break;
 		default:
 			break;
 	}
@@ -1285,7 +1298,7 @@ int MIDITrailApp::_OnMenuWindowSize()
 	if (result != 0) goto EXIT;
 
 	//変更された場合はウィンドウサイズを更新
-	if (m_WindowSizeCfgDlg.IsCahnged()) {
+	if (m_WindowSizeCfgDlg.IsChanged()) {
 		result = _ChangeWindowSize();
 		if (result != 0) goto EXIT;
 	}
@@ -1346,7 +1359,7 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	if (result != 0) goto EXIT;
 
 	//変更された場合はレンダラとシーンオブジェクトを再生成
-	if (m_GraphicCfgDlg.IsCahnged()) {
+	if (m_GraphicCfgDlg.IsChanged()) {
 		result = _LoadGraphicConf();
 		if (result != 0) goto EXIT;
 		result = _ChangeWindowSize();
@@ -2125,6 +2138,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_ENABLE_PITCHBEND,
 		IDM_ENABLE_STARS,
 		IDM_ENABLE_COUNTER,
+		IDM_ENABLE_BACKGROUNDIMAGE,
 		IDM_WINDOWSIZE,
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
@@ -2163,6 +2177,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_STARS
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_COUNTER
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_BACKGROUNDIMAGE
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_WINDOWSIZE
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
@@ -2780,6 +2795,9 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	//カウンタ表示
 	_CheckMenuItem(IDM_ENABLE_COUNTER, m_isEnableCounter);
 
+	//背景画像表示
+	_CheckMenuItem(IDM_ENABLE_BACKGROUNDIMAGE, m_isEnableBackgroundImage);
+
 	//自動視点保存
 	_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
 
@@ -2821,6 +2839,7 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTScene::EffectStars, m_isEnableStars);
 		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
 		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
+		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
 	}
 	return;
 }

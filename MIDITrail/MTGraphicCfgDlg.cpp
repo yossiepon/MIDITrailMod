@@ -4,12 +4,13 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "resource.h"
+#include "Commdlg.h"
 #include "MTParam.h"
 #include "MTGraphicCfgDlg.h"
 
@@ -27,8 +28,12 @@ MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 	unsigned long type = 0;
 
 	m_pThis = this;
+	m_hWnd = NULL;
 	m_MultiSampleType = 0;
-	m_isCahnged = false;
+	m_hComboMultiSampleType = NULL;
+	m_hEditImageFilePath = NULL;
+	m_ImageFilePath[0] = _T('\0');
+	m_isChanged = false;
 
 	for (type = 0; type < DX_MULTI_SAMPLE_TYPE_MAX; type++) {
 		m_MultSampleTypeSupport[type] = false;
@@ -42,7 +47,6 @@ MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 //******************************************************************************
 MTGraphicCfgDlg::~MTGraphicCfgDlg(void)
 {
-	m_hComboMultiSampleType = NULL;
 }
 
 //******************************************************************************
@@ -84,6 +88,10 @@ INT_PTR MTGraphicCfgDlg::_WndProcImpl(
 			else if (LOWORD(wParam) == IDCANCEL) {
 				EndDialog(hDlg, LOWORD(wParam));
 				bresult = TRUE;
+			}
+			else if (LOWORD(wParam) == IDC_BTN_BROWSE) {
+				result = _OnBtnBrowse();
+				if (result != 0) goto EXIT;
 			}
 			break;
 	}
@@ -153,7 +161,8 @@ int MTGraphicCfgDlg::_OnInitDlg(
 {
 	int result = 0;
 
-	m_isCahnged = false;
+	m_hWnd = hDlg;
+	m_isChanged = false;
 
 	//設定ファイル初期化
 	result = _InitConfFile();
@@ -166,6 +175,11 @@ int MTGraphicCfgDlg::_OnInitDlg(
 	//マルチサンプル種別選択コンボボックス初期化
 	m_hComboMultiSampleType = GetDlgItem(hDlg, IDC_COMBO_MULTISAMPLETYPE);
 	result = _InitComboMultiSampleType(m_hComboMultiSampleType, m_MultiSampleType);
+	if (result != 0) goto EXIT;
+
+	//背景画像ファイルパス初期化
+	m_hEditImageFilePath = GetDlgItem(hDlg, IDC_EDIT_IMAGE_FILE_PATH);
+	result = _InitBackgroundImageFilePath();
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -201,6 +215,7 @@ int MTGraphicCfgDlg::_LoadConf()
 	int result = 0;
 	int multiSampleType = 0;
 
+	//アンチエイリアス設定値取得
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
 
@@ -219,6 +234,13 @@ int MTGraphicCfgDlg::_LoadConf()
 	else {
 		m_MultiSampleType = 0;
 	}
+
+	//背景画像ファイルパス設定値取得
+	result = m_ConfFile.SetCurSection(_T("Background-image"));
+	if (result != 0) goto EXIT;
+
+	result = m_ConfFile.GetStr(_T("ImageFilePath"), m_ImageFilePath, _MAX_PATH, _T(""));
+	if (result != 0) goto EXIT;
 
 EXIT:;
 	return result;
@@ -306,14 +328,38 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイス選択情報保存
+// 背景画像ファイルパス初期化
+//******************************************************************************
+int MTGraphicCfgDlg::_InitBackgroundImageFilePath()
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+
+	//エディットボックスに入力可能最大文字数を設定
+	SendMessage(m_hEditImageFilePath, EM_SETLIMITTEXT, (WPARAM)_MAX_PATH, 0);
+
+	//エディットボックスにファイルパスを設定
+	bresult = SetWindowText(m_hEditImageFilePath, m_ImageFilePath);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 設定情報保存
 //******************************************************************************
 int MTGraphicCfgDlg::_Save()
 {
 	int result = 0;
+	int apiresult = 0;
 	LRESULT lresult = 0;
 	unsigned long selectedIndex = 0;
 	unsigned long selectedMultiSampleType = 0;
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
 
 	//選択項目のインデックスを取得
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETCURSEL, 0, 0);
@@ -331,16 +377,36 @@ int MTGraphicCfgDlg::_Save()
 	}
 	selectedMultiSampleType = (unsigned long)lresult;
 
-	//設定保存
+	//アンチエイリアス設定保存
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("MultiSampleType"), selectedMultiSampleType);
 	if (result != 0) goto EXIT;
 
+	//変更確認
 	if (m_MultiSampleType != selectedMultiSampleType) {
-		m_isCahnged = true;
+		m_isChanged = true;
 	}
 	m_MultiSampleType = selectedMultiSampleType;
+
+	//背景画像ファイルパスをエディットボックスから取得
+	apiresult = GetWindowText(m_hEditImageFilePath, filePath, _MAX_PATH);
+	if (apiresult == 0) {
+		//テキスト無しまたはウィンドウハンドル無効の場合
+		filePath[0] = _T('\0');
+	}
+
+	//背景画像ファイルパス設定保存
+	result = m_ConfFile.SetCurSection(_T("Background-image"));
+	if (result != 0) goto EXIT;
+	result = m_ConfFile.SetStr(_T("ImageFilePath"), filePath);
+	if (result != 0) goto EXIT;
+
+	//変更確認
+	if (_tcscmp(m_ImageFilePath, filePath) != 0) {
+		m_isChanged = true;
+	}
+	_tcscpy_s(m_ImageFilePath, _MAX_PATH, filePath);
 
 EXIT:;
 	return result;
@@ -349,9 +415,78 @@ EXIT:;
 //******************************************************************************
 // パラメータ変更確認
 //******************************************************************************
-bool MTGraphicCfgDlg::IsCahnged()
+bool MTGraphicCfgDlg::IsChanged()
 {
-	return m_isCahnged;
+	return m_isChanged;
 }
 
+//******************************************************************************
+// 背景画像ファイルパス ブラウズボタン押下
+//******************************************************************************
+int MTGraphicCfgDlg::_OnBtnBrowse()
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
+	bool isSelected = false;
+
+	//ファイル選択ダイアログ表示
+	result = _SelectImageFile(filePath, _MAX_PATH, &isSelected);
+	if (result != 0) goto EXIT;
+
+	//ファイル未選択の場合は何もしない
+	if (!isSelected) goto EXIT;
+
+	//エディットボックスにファイルパスを設定
+	bresult = SetWindowText(m_hEditImageFilePath, filePath);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 画像ファイル選択
+//******************************************************************************
+int MTGraphicCfgDlg::_SelectImageFile(
+		TCHAR* pFilePath,
+		unsigned long bufSize,
+		bool* pIsSelected
+	)
+{
+	int result = 0;
+	BOOL apiresult = FALSE;
+	OPENFILENAME ofn;
+
+	if ((pFilePath == NULL) || (bufSize == 0) || (pIsSelected ==NULL)) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	pFilePath[0] = _T('\0');
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner   = m_hWnd;
+	ofn.lpstrFilter = _T("Image file (*.jpg *.png *.bmp)\0*.jpg;*.png;*.bmp\0");
+	ofn.lpstrFile   = pFilePath;
+	ofn.nMaxFile    = bufSize;
+	ofn.lpstrTitle  = _T("Select image file.");
+	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
+
+	//ファイル選択ダイアログ表示
+	apiresult = GetOpenFileName(&ofn);
+	if (!apiresult) {
+		//キャンセルまたはエラー発生：エラーはチェックしない
+		*pIsSelected = false;
+		goto EXIT;
+	}
+
+	*pIsSelected = true;
+
+EXIT:;
+	return result;
+}
 

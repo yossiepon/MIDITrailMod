@@ -4,7 +4,7 @@
 //
 // ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -25,6 +25,7 @@
 #include "MTStars.h"
 #include "MTTimeIndicator.h"
 #include "MTMeshCtrl.h"
+#include "MTBackgroundImage.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -108,13 +109,20 @@ public:
 	//演奏速度設定
 	void SetPlaySpeedRatio(unsigned long ratio);
 
-// >>> modify 20120728 yossiepon begin
 protected:
 
 	//ライト有無
 	BOOL m_IsEnableLight;
 
-	////一人称カメラ
+private:
+
+	//ライト
+	DXDirLight m_DirLight;
+
+// >>> modify access level to protected 20161223 yossiepon begin
+protected:
+
+	//一人称カメラ
 	MTFirstPersonCam m_FirstPersonCam;
 
 	//描画オブジェクト
@@ -127,25 +135,13 @@ protected:
 	MTStars m_Stars;
 	MTTimeIndicator m_TimeIndicator;
 	MTMeshCtrl m_MeshCtrl;
+	MTBackgroundImage m_BackgroundImage;
 
-	//スキップ状態
-	bool m_IsSkipping;
+// <<< modify 20161223 yossiepon end
 
-	virtual void _Reset();
-
-// >>> modify access level to protected 20121229 yossiepon begin
-	void _SetLightColor(DXDirLight* pLight);
-// <<< modify 20121229 yossiepon end
-
-// <<< modify 20120728 yossiepon end
-
+// >>> add 20161223 yossiepon begin
 private:
-
-// >>> modify 20120728 yossiepon begin
-	//ライト
-	DXDirLight m_DirLight;
-
-// <<< modify 20120728 yossiepon end
+// <<< add 20161223 yossiepon end
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
@@ -159,8 +155,23 @@ private:
 	//ノートデザインオブジェクト
 	MTNoteDesign m_NoteDesign;
 
+// >>> modify access level to protected 20161223 yossiepon begin
+protected:
+
+	//スキップ状態
+	bool m_IsSkipping;
+
 // >>> modify 20120728 yossiepon begin
+	virtual void _Reset();
 // <<< modify 20120728 yossiepon end
+	void _SetLightColor(DXDirLight* pLight);
+
+// <<< modify 20161223 yossiepon end
+
+// >>> add 20161223 yossiepon begin
+private:
+// <<< add 20161223 yossiepon end
+
 	int _LoadConf();
 
 };
