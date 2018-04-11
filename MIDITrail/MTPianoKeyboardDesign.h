@@ -173,6 +173,11 @@ public:
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
 
+protected:
+
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
+
+
 private:
 
 	//キー情報
@@ -221,15 +226,13 @@ private:
 	D3DXCOLOR m_BlackKeyColor;
 
 	//発音中キー色情報
-	D3DXCOLOR m_NoteColor[16];
-	D3DXCOLOR m_ActiveKeyColor;
+	D3DXCOLOR m_ActiveKeyColor[16];
 	int m_ActiveKeyColorDuration;
 	float m_ActiveKeyColorTailRate;
 
 	void _Initialize();
 	void _InitKeyType();
 	void _InitKeyPos();
-	int _LoadConfFile(const TCHAR* pSceneName);
 
 };
 

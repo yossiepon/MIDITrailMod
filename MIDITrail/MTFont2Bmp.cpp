@@ -49,13 +49,19 @@ void MTFont2Bmp::Clear()
 		m_hFont = NULL;
 	}
 
-	for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
-		delete [] (itr->pBmp);
+	if(!m_GlyphBmpList.empty()) {
+		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
+			if(itr->pBmp != NULL) {
+				delete [] (itr->pBmp);
+			}
+		}
+		m_GlyphBmpList.clear();
 	}
-	m_GlyphBmpList.clear();
 
-	delete [] m_pBmpBuf;
-	m_pBmpBuf = NULL;
+	if(m_pBmpBuf != NULL) {
+		delete [] m_pBmpBuf;
+		m_pBmpBuf = NULL;
+	}
 }
 
 //******************************************************************************
@@ -381,8 +387,10 @@ int MTFont2Bmp::_CreateBmpBuf()
 
 	//幅
 	m_BmpWidth = 0;
-	for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
-		m_BmpWidth += (itr->glyphMetric.gmCellIncX);
+	if(!m_GlyphBmpList.empty()) {
+		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
+			m_BmpWidth += (itr->glyphMetric.gmCellIncX);
+		}
 	}
 	//幅を4の倍数にする
 	m_BmpWidth = m_BmpWidth + ((4 - (m_BmpWidth % 4)) % 4);
@@ -420,42 +428,44 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 	BYTE* pSrc = NULL;
 	BYTE* pDest = NULL;
 
-	for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
+	if(!m_GlyphBmpList.empty()) {
+		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 
-		//空文字はスキップ
-		if (itr->pBmp == NULL) {
-			offsetX += (itr->glyphMetric.gmCellIncX);
-			continue;
-		}
-
-		//コピー元グリフBMPの座標は4の倍数制限があるBMPサイズを意識せず
-		//実データの範囲でスキャンする
-		for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
-			for (x = 0; x < (itr->glyphMetric.gmBlackBoxX); x++) {
-
-				//コピー先の領域外になる場合はスキップする
-				destX = offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x;
-				if (destX >= (m_BmpWidth-1)) continue;
-
-				//コピー元ピクセルポインタ：BMPサイズの4の倍数制限を意識して算出する
-				pSrc = itr->pBmp + (itr->bmpWidth * y) + x;
-
-				//コピー先ピクセルポインタ
-				pDest = m_pBmpBuf
-							+ (m_TextMetric.tmAscent - (itr->glyphMetric.gmptGlyphOrigin.y) + y) * m_BmpWidth
-							+ (offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x);
-
-				//確保したバッファを越えて書き込もうとしていないかチェックする
-				if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
-					result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
-					goto EXIT;
-				}
-
-				//ピクセルコピー
-				*pDest = *pSrc;
+			//空文字はスキップ
+			if (itr->pBmp == NULL) {
+				offsetX += (itr->glyphMetric.gmCellIncX);
+				continue;
 			}
+
+			//コピー元グリフBMPの座標は4の倍数制限があるBMPサイズを意識せず
+			//実データの範囲でスキャンする
+			for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
+				for (x = 0; x < (itr->glyphMetric.gmBlackBoxX); x++) {
+
+					//コピー先の領域外になる場合はスキップする
+					destX = offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x;
+					if (destX >= (m_BmpWidth-1)) continue;
+
+					//コピー元ピクセルポインタ：BMPサイズの4の倍数制限を意識して算出する
+					pSrc = itr->pBmp + (itr->bmpWidth * y) + x;
+
+					//コピー先ピクセルポインタ
+					pDest = m_pBmpBuf
+								+ (m_TextMetric.tmAscent - (itr->glyphMetric.gmptGlyphOrigin.y) + y) * m_BmpWidth
+								+ (offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x);
+
+					//確保したバッファを越えて書き込もうとしていないかチェックする
+					if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
+						result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
+						goto EXIT;
+					}
+
+					//ピクセルコピー
+					*pDest = *pSrc;
+				}
+			}
+			offsetX += (itr->glyphMetric.gmCellIncX);
 		}
-		offsetX += (itr->glyphMetric.gmCellIncX);
 	}
 
 EXIT:;

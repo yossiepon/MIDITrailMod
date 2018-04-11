@@ -203,6 +203,12 @@ int MTTimeIndicator::Draw(
 {
 	int result = 0;
 
+	//テクスチャステージ設定
+	//  カラー演算：無効
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_DISABLE);
+	// アルファ演算：無効
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
+
 	if (m_isEnableLine) {
 		result = m_PrimitiveLine.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;

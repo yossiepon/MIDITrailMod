@@ -128,10 +128,11 @@ void MTPianoKeyboardDesign::_Initialize()
 	m_KeyboardMaxDispNum = 16;        //設定ファイル
 	m_WhiteKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //設定ファイル
 	m_BlackKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //設定ファイル
-	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //設定ファイル
 	m_ActiveKeyColorDuration = 400;   //設定ファイル
 	m_ActiveKeyColorTailRate = 0.5f;  //設定ファイル
-
+	for (i = 0; i < 16; i++) {
+		m_ActiveKeyColor[i] = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //設定ファイル
+	}
 	return;
 }
 
@@ -609,7 +610,7 @@ D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 	//      |   on :   off
 	//          <-->duration
 
-	color    = m_NoteColor[chNo];
+	color    = m_ActiveKeyColor[chNo];
 	duration = (unsigned long)m_ActiveKeyColorDuration;
 	rate     = m_ActiveKeyColorTailRate;
 
@@ -869,7 +870,7 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	)
 {
 	int result = 0;
-	TCHAR key[16] = {_T('\0')};
+	TCHAR key[21] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
 	unsigned long i = 0;
 	MTConfFile confFile;
@@ -901,10 +902,6 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	if (result != 0) goto EXIT;
 	m_BlackKeyColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 
-	result = confFile.GetStr(_T("ActiveKeyColor"), hexColor, 16, _T("FF0000FF"));
-	if (result != 0) goto EXIT;
-	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
-
 	result = confFile.GetInt(_T("ActiveKeyColorDuration"), &m_ActiveKeyColorDuration, 400);
 	if (result != 0) goto EXIT;
 	result = confFile.GetFloat(_T("ActiveKeyColorTailRate"), &m_ActiveKeyColorTailRate, 0.5f);
@@ -921,13 +918,13 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	//----------------------------------
 	//色情報
 	//----------------------------------
-	//ノート色情報を取得
+	//発音中のキー色情報を取得
 	for (i = 0; i < 16; i++) {
-		_stprintf_s(key, 16, _T("Ch-%02d-NoteRGBA"), i+1);
+		_stprintf_s(key, 21, _T("Ch-%02d-ActiveKeyColor"), i+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
 		if (result != 0) goto EXIT;
 
-		m_NoteColor[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+		m_ActiveKeyColor[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 	}
 
 EXIT:;

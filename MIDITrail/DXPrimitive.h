@@ -64,6 +64,12 @@ public:
 			int drawPrimitiveNum = -1
 		);
 
+	int DrawLyrics(
+			LPDIRECT3DDEVICE9 pD3DDevice,
+			LPDIRECT3DTEXTURE9 *pTextures = NULL,
+			int drawPrimitiveNum = -1
+		);
+
 	//頂点バッファ／インデックスバッファのロック制御
 	//  バッファの内容を書き換えるにはロックしてバッファのポインタを取得する
 	//  バッファの内容を書き終えたらアンロックする

@@ -23,6 +23,9 @@ using namespace SMIDILib;
 //******************************************************************************
 // パラメータ定義
 //******************************************************************************
+//最大ポート数
+#define MTNOTERIPPLE_MAX_PORT_NUM  (8)
+
 //最大波紋描画数
 #define MTNOTERIPPLE_MAX_RIPPLE_NUM  (100)
 
@@ -60,23 +63,26 @@ public:
 	//解放
 	void Release();
 
-	//ノートOFF登録
-	void SetNoteOff(
-			unsigned char portNo,
-			unsigned char chNo,
-			unsigned char noteNo
-		);
+	////ノートOFF登録
+	//void SetNoteOff(
+	//		unsigned char portNo,
+	//		unsigned char chNo,
+	//		unsigned char noteNo
+	//	);
 
-	//ノートON登録
-	void SetNoteOn(
-			unsigned char portNo,
-			unsigned char chNo,
-			unsigned char noteNo,
-			unsigned char velocity
-		);
+	////ノートON登録
+	//void SetNoteOn(
+	//		unsigned char portNo,
+	//		unsigned char chNo,
+	//		unsigned char noteNo,
+	//		unsigned char velocity
+	//	);
 
 	//演奏チックタイム登録
 	void SetCurTickTime(unsigned long curTickTime);
+
+	//演奏時間設定
+	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
 	//リセット
 	void Reset();
@@ -89,14 +95,29 @@ public:
 
 private:
 
-	//ノート発音状態構造体
+	////ノート発音状態構造体
+	//struct NoteStatus {
+	//	bool isActive;
+	//	unsigned char portNo;
+	//	unsigned char chNo;
+	//	unsigned char noteNo;
+	//	unsigned char velocity;
+	//	unsigned long regTime;
+	//};
+
+	//キー状態
+	enum KeyStatus {
+		BeforeNoteON,
+		NoteON,
+		AfterNoteOFF
+	};
+
+	//発音ノート情報構造体
 	struct NoteStatus {
 		bool isActive;
-		unsigned char portNo;
-		unsigned char chNo;
-		unsigned char noteNo;
-		unsigned char velocity;
-		unsigned long regTime;
+		KeyStatus keyStatus;
+		unsigned long index;
+		float keyDownRate;
 	};
 
 	//頂点バッファ構造体
@@ -117,9 +138,6 @@ private:
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DMATERIAL9 m_Material;
 
-	//再生時刻
-	unsigned long m_CurTickTime;
-
 	//カメラ
 	D3DXVECTOR3 m_CamVector;
 
@@ -128,6 +146,15 @@ private:
 
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
+
+	//ノートリスト
+	SMNoteList m_NoteListRT;
+
+	//発音中ノート管理
+	unsigned long m_PlayTimeMSec;
+	unsigned long m_CurTickTime;
+	unsigned long m_CurNoteIndex;
+	float m_KeyDownRate[MTNOTERIPPLE_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
 	//ノート発音状態情報
 	NoteStatus* m_pNoteStatus;
@@ -144,13 +171,20 @@ private:
 	int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,
+				SMNote note,
 				NoteStatus* pNoteStatus,
-				unsigned long rippleNo,
-				unsigned long curTime,
-				bool* pIsTimeout
+				unsigned long rippleNo
 			);
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _UpdateStatusOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _UpdateNoteStatus(
+				unsigned long playTimeMSec,
+				unsigned long decayDuration,
+				unsigned long releaseDuration,
+				SMNote note,
+				NoteStatus* pNoteStatus
+			);
 	int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 
 };

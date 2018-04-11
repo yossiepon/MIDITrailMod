@@ -17,6 +17,7 @@
 #include "MTFirstPersonCam.h"
 #include "MTNoteBox.h"
 #include "MTNoteRipple.h"
+#include "MTNoteLyrics.h"
 #include "MTNoteDesign.h"
 #include "MTNotePitchBend.h"
 #include "MTGridBox.h"
@@ -112,6 +113,7 @@ private:
 	//描画オブジェクト
 	MTNoteBox m_NoteBox;
 	MTNoteRipple m_NoteRipple;
+	MTNoteLyrics m_NoteLyrics;
 	MTNotePitchBend m_NotePitchBend;
 	MTGridBox m_GridBox;
 	MTPictBoard m_PictBoard;
