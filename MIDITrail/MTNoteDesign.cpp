@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -206,6 +206,42 @@ void MTNoteDesign::GetNoteBoxVirtexPos(
 	bh = GetNoteBoxHeight();
 	bw = GetNoteBoxWidht();
 
+	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
+	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
+	*pVector2 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z+(bw/2.0f));
+	*pVector3 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z-(bw/2.0f));
+}
+
+//******************************************************************************
+// 発音中ノートボックス頂点座標取得
+//******************************************************************************
+void MTNoteDesign::GetActiveNoteBoxVirtexPos(
+		unsigned long curTickTime,
+		unsigned char portNo,
+		unsigned char chNo,
+		unsigned char noteNo,
+		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
+		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
+		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
+		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
+		short pitchBendValue,				//省略可：ピッチベンド
+		unsigned char pitchBendSensitivity,	//省略可：ピッチベンド感度
+		unsigned long elapsedTime			//省略可：経過時間（ミリ秒）
+	)
+{
+	D3DXVECTOR3 center;
+	float bh, bw = 0.0f;
+	float curSizeRatio = 1.0f;
+	
+	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
+	
+	if (elapsedTime < (unsigned long)m_ActiveNoteDuration) {
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
+	}
+	
+	bh = GetNoteBoxHeight() * curSizeRatio;
+	bw = GetNoteBoxWidht() * curSizeRatio;
+	
 	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
 	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
 	*pVector2 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z+(bw/2.0f));
@@ -608,6 +644,7 @@ void MTNoteDesign::_Clear(void)
 
 	m_ActiveNoteDuration = 400;
 	m_ActiveNoteWhiteRate = 1.0f;
+	m_ActiveNoteBoxSizeRatio = 1.0f;
 	m_RippleDuration = 1600;
 }
 
@@ -716,6 +753,10 @@ int MTNoteDesign::_LoadConfFile(
 	result = confFile.GetStr(_T("EmissiveRGBA"), hexColor, 16, _T("1A1A1A1A"));
 	if (result != 0) goto EXIT;
 	m_ActiveNoteEmissive = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+
+	//発音中ノート情報：ボックスサイズ比率
+	result = confFile.GetFloat(_T("SizeRatio"), &m_ActiveNoteBoxSizeRatio, 1.4f);
+	if (result != 0) goto EXIT;
 
 	//----------------------------------
 	//波紋情報

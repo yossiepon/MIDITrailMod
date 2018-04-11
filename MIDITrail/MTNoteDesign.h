@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -89,6 +89,21 @@ public:
 				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
 				short pitchBendValue = 0,				//省略可：ピッチベンド
 				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+			);
+
+	//発音中ノートボックス頂点座標取得
+	void GetActiveNoteBoxVirtexPos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
+				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
+				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
+				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
+				short pitchBendValue = 0,				//省略可：ピッチベンド
+				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
+				unsigned long elapsedTime = 0            //省略可：経過時間（ミリ秒）
 			);
 
 	//ライブモニタ用ノートボックス頂点座標取得
@@ -201,6 +216,7 @@ private:
 
 	int m_ActiveNoteDuration;
 	float m_ActiveNoteWhiteRate;
+	float m_ActiveNoteBoxSizeRatio;
 
 	int m_RippleDuration;
 
