@@ -110,8 +110,13 @@ int MTDashboard::Create(
 	if (result != 0) goto EXIT;
 	m_Counter.SetColor(m_CaptionColor);
 
+// >>> modify 20120728 yossiepon begin
+
 	//‘S‘Ì‰‰‘tŽžŠÔ
+	//GetTotalPlayTime‚Ì–ß‚è’l‚ª[sec.]‚©‚ç[msec.]‚É‚È‚Á‚Ä‚¢‚é‚½‚ßA/1000‚ðíœ
 	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
+
+// <<< modify 20120728 yossiepon end
 
 	//ƒeƒ“ƒ|(BPM)
 	SetTempoBPM(pSeqData->GetTempoBPM());
@@ -267,6 +272,16 @@ void MTDashboard::SetPlayTimeSec(
 		unsigned long playTimeSec
 	)
 {
+	m_PlayTimeSec = playTimeSec * 1000;
+}
+
+//******************************************************************************
+// ‰‰‘tŽžŠÔ“o˜^iƒ~ƒŠ•bj
+//******************************************************************************
+void MTDashboard::SetPlayTimeMSec(
+		unsigned long playTimeSec
+	)
+{
 	m_PlayTimeSec = playTimeSec;
 }
 
@@ -365,6 +380,7 @@ int MTDashboard::_GetCounterStr(
 	eresult = _stprintf_s(
 				pStr,
 				bufSize,
+// >>> modify 20120728 yossiepon begin
 				_T("TIME:%02d:%02d.%03d/%02d:%02d.%03d BPM:%03d BEAT:%d/%d BAR:%03d/%03d NOTES:%05d/%05d"),
 				m_PlayTimeSec / 60000,
 				(m_PlayTimeSec % 60000) / 1000,
@@ -372,6 +388,7 @@ int MTDashboard::_GetCounterStr(
 				m_TotalPlayTimeSec / 60000,
 				(m_TotalPlayTimeSec % 60000) / 1000,
 				m_TotalPlayTimeSec % 1000,
+// <<< modify 20120728 yossiepon end
 				m_TempoBPM,
 				m_BeatNumerator,
 				m_BeatDenominator,

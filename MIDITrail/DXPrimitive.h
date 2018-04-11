@@ -64,11 +64,15 @@ public:
 			int drawPrimitiveNum = -1
 		);
 
+// >>> add 20120728 yossiepon begin
+
 	int DrawLyrics(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			LPDIRECT3DTEXTURE9 *pTextures = NULL,
 			int drawPrimitiveNum = -1
 		);
+
+// <<< add 20120728 yossiepon end
 
 	//頂点バッファ／インデックスバッファのロック制御
 	//  バッファの内容を書き換えるにはロックしてバッファのポインタを取得する

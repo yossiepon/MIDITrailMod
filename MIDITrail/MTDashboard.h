@@ -29,14 +29,18 @@ using namespace SMIDILib;
 #define MTDASHBOARD_FONTNAME  _T("MS Gothic")
 #define MTDASHBOARD_FONTSIZE  (40)
 
+// >>> modify 20120728 yossiepon begin
+
 //カウンタキャプション文字列
 #define MTDASHBOARD_COUNTER_CHARS  _T("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:./% ")
 
 //カウンタキャプションサイズ
-//   12345678901234567890123456789012345678901234567890123456789012345678901234  (74)
-//  "TIME:00:00/00:00 BPM:000 BEAT:4/4 BAR:000/000 NOTES:00000/00000 SPEED:000%"
-//  余裕をみて80にしておく
-#define MTDASHBOARD_COUNTER_SIZE  (92)
+//   1234567890123456789012345678901234567890123456789012345678901234567890123456789012  (82)
+//  "TIME:00:00.000/00:00.000 BPM:000 BEAT:4/4 BAR:000/000 NOTES:00000/00000 SPEED:000%"
+//  余裕をみて90にしておく
+#define MTDASHBOARD_COUNTER_SIZE  (90)
+
+// <<< modify 20120728 yossiepon end
 
 //枠サイズ（ピクセル）
 #define MTDASHBOARD_FRAMESIZE  (5.0f)
@@ -70,6 +74,7 @@ public:
 
 	//演奏経過時間と総演奏時間の登録
 	void SetPlayTimeSec(unsigned long playTimeSec);
+	void SetPlayTimeMSec(unsigned long playTimeSec);
 	void SetTotalPlayTimeSec(unsigned long totalPlayTimeSec);
 
 	//テンポ登録

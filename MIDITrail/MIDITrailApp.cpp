@@ -16,8 +16,8 @@
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
 #include "MTSceneTitle.h"
-#include "MTScenePianoRoll3D.h"
-#include "MTScenePianoRoll2D.h"
+#include "MTScenePianoRoll3DMod.h"
+#include "MTScenePianoRoll2DMod.h"
 #include "MTScenePianoRollRain.h"
 #include "MTScenePianoRoll3DLive.h"
 #include "MTScenePianoRoll2DLive.h"
@@ -284,7 +284,10 @@ int MIDITrailApp::_RegisterClass(
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MIDITRAIL));
 															//アイコンリソースハンドル
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//カーソルリソースハンドル
+// >>> modify 20120728 yossiepon begin
+	// COLOR+WINDOW+1だとちらつき時に白一色になって目立つので、背景色を黒にしてちらつきを抑える
 	wcex.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH); //(COLOR_WINDOW+1);			//背景用ブラシハンドル
+// <<< modify 20120728 yossiepon end
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MIDITRAIL);	//メニューリソース名称
 	wcex.lpszClassName	= m_WndClassName;					//ウィンドウクラス名称
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -493,11 +496,13 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuFileOpen();
 					if (result != 0) goto EXIT;
 					break;
+// >>> add 20120728 yossiepon begin
 				case IDM_ADD_FILE:
 					//ファイル追加
 					result = _OnMenuFileAdd();
 					if (result != 0) goto EXIT;
 					break;
+// <<< add 20120728 yossiepon end
 				case IDM_EXIT:
 					//終了
 					DestroyWindow(hWnd);
@@ -721,6 +726,8 @@ EXIT:;
 	return result;
 }
 
+// >>> add 20120728 yossiepon begin
+
 //******************************************************************************
 // ファイル追加
 //******************************************************************************
@@ -753,6 +760,8 @@ int MIDITrailApp::_OnMenuFileAdd()
 EXIT:;
 	return result;
 }
+
+// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // メニュー選択：再生／一時停止／再開
@@ -1654,8 +1663,12 @@ EXIT:;
 	return result;
 }
 
+// >>> add 20120728 yossiepon begin
+
 //******************************************************************************
 // MIDIファイル追加読み込み
+// ファイル名に「portX」が含まれる場合、Xをポート番号とみなす（a-Z:大小同一視）
+// ファイル名に「chXX」が含まれる場合、XXをチャンネル番号と見なす（00-99)
 //******************************************************************************
 int MIDITrailApp::_AddMIDIFile(
 		const TCHAR* pFilePath
@@ -1733,6 +1746,8 @@ EXIT:;
 	}
 	return result;
 }
+
+// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // FPS更新
@@ -1939,7 +1954,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 	//メニューID一覧
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
+// >>> add 20120728 yossiepon begin
 		IDM_ADD_FILE,
+// <<< add 20120728 yossiepon end
 		IDM_EXIT,
 		IDM_PLAY,
 		IDM_STOP,
@@ -1973,7 +1990,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
 		//データ無, 停止, 再生中, 一時停止, メニューID, モニタ停止, モニタ中
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPEN_FILE
+// >>> add 20120728 yossiepon begin
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
+// <<< add 20120728 yossiepon end
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_EXIT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_STOP
@@ -1986,7 +2005,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED	},	//IDM_STOP_MONITORING
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_3DPIAMF_GRAYEDROLL
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_2DPIAMF_GRAYEDROLL
-		{	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED	},	//IDM_VIEW_PIAMF_GRAYEDROLLRAIN
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIAMF_GRAYEDROLLRAIN
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_VIEWPOINT
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIAMF_GRAYEDKEYBOAR
@@ -2047,10 +2066,10 @@ int MIDITrailApp::_CreateScene(
 			//プレイヤ用シーン生成
 			if (pSeqData != NULL) {
 				if (type == PianoRoll3D) {
-					m_pScene = new MTScenePianoRoll3D();
+					m_pScene = new MTScenePianoRoll3DMod();
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll2D();
+					m_pScene = new MTScenePianoRoll2DMod();
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain();

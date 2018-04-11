@@ -378,13 +378,13 @@ int MTScenePianoRoll3DLive::OnRecvSequencerMsg(
 	//ノートOFF通知
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOff) {
 		m_NoteBoxLive.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
-		//m_NoteRipple.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+		m_NoteRipple.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
 	}
 	//ノートON通知
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
 		m_DashboardLive.SetNoteOn();
 		m_NoteBoxLive.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
-		//m_NoteRipple.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
+		m_NoteRipple.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
 	}
 	//ピッチベンド通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {

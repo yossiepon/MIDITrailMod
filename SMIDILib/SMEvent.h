@@ -65,8 +65,12 @@ public:
 	//ステータス取得
 	unsigned char GetStatus();
 
+// >>> add 20120728 yossiepon begin
+
 	//ステータス設定
 	void SetStatus(unsigned char status);
+
+// <<< add 20120728 yossiepon end
 
 	//メタ種別取得
 	unsigned char GetMetaType();

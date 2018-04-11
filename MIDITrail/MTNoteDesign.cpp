@@ -357,69 +357,51 @@ void MTNoteDesign::GetPlaybackSectionVirtexPos(
 }
 
 //******************************************************************************
-// 波紋ディケイ時間取得(msec)
-//******************************************************************************
-unsigned long MTNoteDesign::GetRippleDecayDuration()
-{
-	return (unsigned long)m_RippleDecayDuration;
-}
-
-//******************************************************************************
-// 波紋リリース時間取得(msec)
-//******************************************************************************
-unsigned long MTNoteDesign::GetRippleReleaseDuration()
-{
-	return (unsigned long)m_RippleReleaseDuration;
-}
-
-//******************************************************************************
 // 波紋縦サイズ取得
 //******************************************************************************
 float MTNoteDesign::GetRippleHeight(
-		float rate	//サイズ比率
+		unsigned long elapsedTime	//省略可：経過時間（ミリ秒）
 	)
 {
-	return m_RippleHeight * GetDecayCoefficient(rate);
+	float height = 0.0f;
+
+	if ((int)elapsedTime <= m_RippleDuration) {
+		height = m_RippleHeight * (1.0f - ((float)elapsedTime / m_RippleDuration));
+	}
+
+	return height;
 }
 
 //******************************************************************************
 // 波紋横サイズ取得
 //******************************************************************************
 float MTNoteDesign::GetRippleWidth(
-		float rate	//サイズ比率
+		unsigned long elapsedTime	//省略可：経過時間（ミリ秒）
 	)
 {
-	return m_RippleWidth * GetDecayCoefficient(rate);
+	float width = 0.0f;
+
+	if ((int)elapsedTime <= m_RippleDuration) {
+		width = m_RippleWidth * (1.0f - ((float)elapsedTime / m_RippleDuration));
+	}
+
+	return width;
 }
 
 //******************************************************************************
 // 波紋透明度取得
 //******************************************************************************
 float MTNoteDesign::GetRippleAlpha(
-		float rate	//サイズ比率
+		unsigned long elapsedTime	//経過時間（ミリ秒）
 	)
 {
-	return GetDecayCoefficient(rate);
-}
+	float alpha = 1.0f;
 
-//******************************************************************************
-// 減衰係数取得
-//******************************************************************************
-float MTNoteDesign::GetDecayCoefficient(
-		float rate	//サイズ比率
-	)
-{
-	float coeff = 1.0f;
-
-	if(rate < 0.5f) {
-		coeff = (pow(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / 20.0f;
-	} else {
-		coeff = (16.0f - pow(2.0f, (rate - 0.5f) * 8.0f)) / 20.0f;
+	if ((int)elapsedTime <= m_RippleDuration) {
+		alpha = 1.0f - ((float)elapsedTime / m_RippleDuration);
 	}
 
-	coeff = coeff > 1.0f ? 1.0f : coeff;
-
-	return coeff;
+	return alpha;
 }
 
 //******************************************************************************
@@ -481,7 +463,7 @@ float MTNoteDesign::GetPortOriginZ(
 	//                  -y
 
 	portIndex = (float)(m_PortIndex[portNo]);
-	portWidth = GetChStep() * 15.0f;
+	portWidth = GetChStep() * 16.0f;
 
 	return ((portWidth * portIndex) - (portWidth * m_PortList.GetSize() / 2.0f));
 }
@@ -532,21 +514,12 @@ D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		float rate
+		unsigned long elapsedTime
 	)
 {
-	float alpha = 1.0f;
-
-	if(rate < 0.5f) {
-		alpha = (pow(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / 20.0f;
-	} else {
-		alpha = (16.0f - pow(2.0f, (rate - 0.5f) * 8.0f)) / 20.0f;
-	}
-
-	alpha = alpha > 1.0f ? 1.0f : alpha;
-
 	D3DXCOLOR color;
 	float r,g,b,a = 0.0f;
+	float rate = 0.0f;
 
 	color = GetNoteBoxColor(portNo, chNo, noteNo);
 
@@ -559,9 +532,13 @@ D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
 	//  0.5 → ノート色と白の中間色
 	//  1.0 → 白
 
-	r = color.r + ((1.0f - color.r) * alpha * m_ActiveNoteWhiteRate);
-	g = color.g + ((1.0f - color.g) * alpha * m_ActiveNoteWhiteRate);
-	b = color.b + ((1.0f - color.b) * alpha * m_ActiveNoteWhiteRate);
+	rate = 0.0f;
+	if ((int)elapsedTime < m_ActiveNoteDuration) {
+		rate = 1.0f - ((float)elapsedTime / (float)m_ActiveNoteDuration);
+	}
+	r = color.r + ((1.0f - color.r) * rate * m_ActiveNoteWhiteRate);
+	g = color.g + ((1.0f - color.g) * rate * m_ActiveNoteWhiteRate);
+	b = color.b + ((1.0f - color.b) * rate * m_ActiveNoteWhiteRate);
 	a = color.a;
 	color = D3DXCOLOR(r, g, b, a);
 
@@ -624,8 +601,6 @@ void MTNoteDesign::_Clear(void)
 	m_ActiveNoteDuration = 400;
 	m_ActiveNoteWhiteRate = 1.0f;
 	m_RippleDuration = 1600;
-	m_RippleDecayDuration = 200;
-	m_RippleReleaseDuration = 200;
 }
 
 //******************************************************************************
@@ -722,14 +697,6 @@ int MTNoteDesign::_LoadConfFile(
 
 	//波紋継続時間(msec)
 	result = confFile.GetInt(_T("Duration"), &m_RippleDuration, 1600);
-	if (result != 0) goto EXIT;
-
-	//波紋ディケイ時間(msec)
-	result = confFile.GetInt(_T("DecayDuration"), &m_RippleDecayDuration, 200);
-	if (result != 0) goto EXIT;
-
-	//波紋リリース時間(msec)
-	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 200);
 	if (result != 0) goto EXIT;
 
 EXIT:;
