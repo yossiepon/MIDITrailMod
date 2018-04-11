@@ -164,7 +164,7 @@ int MTPianoKeyboardMod::PushKey(
 		goto EXIT;
 	}
 
-	angle = m_KeyboardDesign.GetKeyRotateAngle() * keyDownRate;
+	angle = m_KeyboardDesignMod.GetKeyRotateAngle() * keyDownRate;
 
 	if (keyDownRate < 1.0f) {
 		//ƒL[‚ª‰º~’†^ã¸’†‚Ìê‡‚ÍF‚ð•ÏX‚¹‚¸‰ñ“]‚³‚¹‚é

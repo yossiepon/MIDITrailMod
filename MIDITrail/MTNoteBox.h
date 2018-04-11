@@ -80,8 +80,19 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-// >>> modify 20120728 yossiepon begin
+private:
+
+	//発音ノート情報構造体
+	struct NoteStatus {
+		bool isActive;
+		bool isHide;
+		unsigned long index;
+		unsigned long startTime;
+	};
+
+// >>> modify access level to protected 20161224 yossiepon begin
 protected:
+// <<< modify 20161224 yossiepon end
 
 	//頂点バッファ構造体
 	struct MTNOTEBOX_VERTEX {
@@ -90,7 +101,8 @@ protected:
 		DWORD		c;	//ディフューズ色
 	};
 
-protected:
+// >>> modify access level to protected 20161224 yossiepon begin
+// <<< modify 20161224 yossiepon end
 
 	//ノートデザイン
 	MTNoteDesign m_NoteDesign;
@@ -107,10 +119,39 @@ protected:
 	unsigned long m_CurNoteIndex;
 	unsigned long m_ActiveNoteNum;
 
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
+	NoteStatus* m_pNoteStatus;
+
+	//スキップ状態
+	bool m_isSkipping;
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
+	//頂点バッファFVFフォーマット
+	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
+
+	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+// >>> modify 20120728 yossiepon begin
 	virtual int _CreateNoteStatus();
+// <<< modify 20120728 yossiepon end
 
 	int _CreateVertexOfNote(
 			SMNote note,
@@ -121,46 +162,27 @@ protected:
 			bool isEnablePitchBend = false
 		);
 
-	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-
-	int _HideNoteBox(unsigned long index);
-	int _ShowNoteBox(unsigned long index);
-
-// <<< modify 20120728 yossiepon end
-
+// >>> modify access level 20161224 yossiepon begin
 private:
-
-	//発音ノート情報構造体
-	struct NoteStatus {
-		bool isActive;
-		bool isHide;
-		unsigned long index;
-		unsigned long startTime;
-	};
-
-// >>> modify 20120728 yossiepon begin
-private:
-
-	//発音中ノートボックス
-	NoteStatus* m_pNoteStatus;
-
-	//スキップ状態
-	bool m_isSkipping;
-
-	//頂点バッファFVFフォーマット
-	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
-
-	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20161224 yossiepon end
 
 	unsigned long _GetVertexIndexOfNote(unsigned long index);
 
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	void _MakeMaterialForActiveNote(D3DMATERIAL9* pMaterial);
 
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+// >>> modify 20120728 yossiepon begin
+	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify 20120728 yossiepon end
+
+	int _HideNoteBox(unsigned long index);
+	int _ShowNoteBox(unsigned long index);
 
 };
 

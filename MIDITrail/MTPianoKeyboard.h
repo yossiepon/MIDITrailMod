@@ -80,19 +80,6 @@ public:
 	//共有用テクスチャ取得
 	LPDIRECT3DTEXTURE9 GetTexture();
 
-// >>> modify 20120728 yossiepon begin
-protected:
-
-	//キーボードプリミティブ
-	DXPrimitive m_PrimitiveKeyboard;
-
-	//キーボードデザイン
-	MTPianoKeyboardDesign m_KeyboardDesign;
-
-	int _RotateKey(unsigned char noteNo, float angle, D3DXCOLOR* pColor = NULL);
-
-// <<< modify 20120728 yossiepon end
-
 private:
 
 	//頂点バッファ構造体
@@ -111,14 +98,31 @@ private:
 		unsigned long indexNum;
 	} MTBufInfo;
 
-private:
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
 
-// >>> modify 20120728 yossiepon begin
+	//キーボードプリミティブ
+	DXPrimitive m_PrimitiveKeyboard;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	//テクスチャ
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DXIMAGE_INFO m_ImgInfo;
 
-// <<< modify 20120728 yossiepon end
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	//キーボードデザイン
+	MTPianoKeyboardDesign m_KeyboardDesign;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
 
 	//バッファ情報
 	MTBufInfo m_BufInfo[SM_MAX_NOTE_NUM];
@@ -157,9 +161,17 @@ private:
 	int _LoadTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 
-// >>> modify 20120728 yossiepon begin
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	int _RotateKey(unsigned char noteNo, float angle, D3DXCOLOR* pColor = NULL);
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	D3DXVECTOR3 _RotateYZ(float centerY, float centerZ, D3DXVECTOR3 p1, float angle);
-// <<< modify 20120728 yossiepon end
 
 	int _HideKey(unsigned char noteNo);
 

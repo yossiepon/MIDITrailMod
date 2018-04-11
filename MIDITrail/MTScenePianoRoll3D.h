@@ -121,6 +121,7 @@ private:
 
 // >>> modify access level to protected 20161223 yossiepon begin
 protected:
+// <<< modify 20161223 yossiepon end
 
 	//一人称カメラ
 	MTFirstPersonCam m_FirstPersonCam;
@@ -137,11 +138,9 @@ protected:
 	MTMeshCtrl m_MeshCtrl;
 	MTBackgroundImage m_BackgroundImage;
 
-// <<< modify 20161223 yossiepon end
-
-// >>> add 20161223 yossiepon begin
+// >>> modify access level 20161223 yossiepon begin
 private:
-// <<< add 20161223 yossiepon end
+// <<< modify access level 20161223 yossiepon end
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
@@ -157,6 +156,7 @@ private:
 
 // >>> modify access level to protected 20161223 yossiepon begin
 protected:
+// <<< modify 20161223 yossiepon end
 
 	//スキップ状態
 	bool m_IsSkipping;
@@ -166,11 +166,9 @@ protected:
 // <<< modify 20120728 yossiepon end
 	void _SetLightColor(DXDirLight* pLight);
 
-// <<< modify 20161223 yossiepon end
-
-// >>> add 20161223 yossiepon begin
+// >>> modify access level 20161223 yossiepon begin
 private:
-// <<< add 20161223 yossiepon end
+// <<< modify access level 20161223 yossiepon end
 
 	int _LoadConf();
 

@@ -22,9 +22,16 @@ public:
 	MTNoteDesignMod(void);
 	virtual ~MTNoteDesignMod(void);
 
+	//初期化
+	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
+
 	//波紋表示時間取得
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();
+
+	//波紋描画情報取得
+	unsigned long GetRippleOverwriteTimes();
+	float GetRippleSpacing();
 
 	//波紋サイズ取得
 	float GetRippleHeight(float rate);
@@ -50,9 +57,15 @@ protected:
 
 private:
 
+	//ディケイ時間
 	int m_RippleDecayDuration;
+	//リリース時間
 	int m_RippleReleaseDuration;
 
+	//上書き回数
+	int m_RippleOverwriteTimes;
+	//描画間隔
+	float m_RippleSpacing;
 };
 
 

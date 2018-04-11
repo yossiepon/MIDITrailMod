@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -493,15 +493,19 @@ D3DXCOLOR MTNoteDesign::GetNoteBoxColor(
 {
 	D3DXCOLOR color;
 
-	//チャンネル番号によって色を変える
-	//ポート番号とノート番号による色の変化は未サポート
-
-	if (chNo >= 16) {
-		//データ異常だが無視する
-		color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	if (m_NoteColorType == Channel) {
+		//チャンネル番号によって色を変える
+		if (chNo >= 16) {
+			//データ異常だが無視する
+			color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+		}
+		else {
+			color = m_NoteColor[chNo];
+		}
 	}
-	else {
-		color = m_NoteColor[chNo];
+	else if (m_NoteColorType == Scale) {
+		//音階によって色を変える
+		color = m_NoteColorOfScale[(noteNo % 12)];
 	}
 
 	return color;
@@ -591,8 +595,12 @@ void MTNoteDesign::_Clear(void)
 		m_PortIndex[i] = 0;
 	}
 
+	m_NoteColorType = Channel;
 	for (i = 0; i < 16; i++) {
 		m_NoteColor[i] = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	}
+	for (i = 0; i < 12; i++) {
+		m_NoteColorOfScale[i] = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
 	}
 	m_ActiveNoteEmissive   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
 	m_GridLineColor        = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
@@ -611,8 +619,9 @@ int MTNoteDesign::_LoadConfFile(
 	)
 {
 	int result = 0;
-	TCHAR key[16] = {_T('\0')};
+	TCHAR key[32] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
+	TCHAR noteColorType[16] = {_T('\0')};
 	unsigned long i = 0;
 	MTConfFile confFile;
 
@@ -651,13 +660,32 @@ int MTNoteDesign::_LoadConfFile(
 	result = confFile.SetCurSection(_T("Color"));
 	if (result != 0) goto EXIT;
 
+	//ノートカラー種別を取得
+	result = confFile.GetStr(_T("NoteColorType"), noteColorType, 16, _T("CHANNEL"));
+	if (result != 0) goto EXIT;
+
+	//ノートカラー種別を決定
+	m_NoteColorType = Channel;
+	if (_tcscmp(noteColorType, _T("SCALE")) == 0) {
+		m_NoteColorType = Scale;
+	}
+
 	//ノート色情報を取得
 	for (i = 0; i < 16; i++) {
-		_stprintf_s(key, 16, _T("Ch-%02d-NoteRGBA"), i+1);
+		_stprintf_s(key, 32, _T("Ch-%02d-NoteRGBA"), i+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
 		if (result != 0) goto EXIT;
 
 		m_NoteColor[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+	}
+
+	//音階用ノート色情報を取得
+	for (i = 0; i < 12; i++) {
+		_stprintf_s(key, 32, _T("Scale-%02d-NoteRGBA"), i+1);
+		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
+		if (result != 0) goto EXIT;
+
+		m_NoteColorOfScale[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 	}
 
 	//グリッドライン色情報を取得

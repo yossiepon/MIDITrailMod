@@ -30,6 +30,27 @@ MTNoteDesignMod::~MTNoteDesignMod(void)
 }
 
 //******************************************************************************
+// 初期化
+//******************************************************************************
+int MTNoteDesignMod::Initialize(
+		const TCHAR* pSceneName,
+		SMSeqData* pSeqData
+	)
+{
+	int result = 0;
+
+	//基底クラスの初期化処理を呼び出す
+	MTNoteDesign::Initialize(pSceneName, pSeqData);
+
+	//パラメータ設定ファイル読み込み
+	result = _LoadConfFile(pSceneName);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // 波紋ディケイ時間取得(msec)
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleDecayDuration()
@@ -43,6 +64,22 @@ unsigned long MTNoteDesignMod::GetRippleDecayDuration()
 unsigned long MTNoteDesignMod::GetRippleReleaseDuration()
 {
 	return (unsigned long)m_RippleReleaseDuration;
+}
+
+//******************************************************************************
+// 波紋上書き回数
+//******************************************************************************
+unsigned long MTNoteDesignMod::GetRippleOverwriteTimes()
+{
+	return (unsigned long)m_RippleOverwriteTimes;
+}
+
+//******************************************************************************
+// 波紋描画間隔
+//******************************************************************************
+float MTNoteDesignMod::GetRippleSpacing()
+{
+	return m_RippleSpacing;
 }
 
 //******************************************************************************
@@ -211,6 +248,14 @@ int MTNoteDesignMod::_LoadConfFile(
 
 	//波紋リリース時間(msec)
 	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
+	if (result != 0) goto EXIT;
+
+	//波紋上書き回数
+	result = confFile.GetInt(_T("OverwriteTimes"), &m_RippleOverwriteTimes, 3);
+	if (result != 0) goto EXIT;
+
+	//波紋描画間隔
+	result = confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
 	if (result != 0) goto EXIT;
 
 EXIT:;

@@ -12,6 +12,7 @@
 
 #include "MTPianoKeyboardCtrl.h"
 #include "MTPianoKeyboardDesignMod.h"
+#include "MTNoteDesignMod.h"
 
 
 //******************************************************************************
@@ -48,6 +49,9 @@ protected:
 	virtual int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 private:
+
+	//ノートデザイン
+	MTNoteDesignMod m_NoteDesignMod;
 
 	//キーボードデザイン
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;

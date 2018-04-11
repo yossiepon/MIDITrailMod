@@ -199,6 +199,11 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	unsigned long i = 0;
 	MTConfFile confFile;
 
+	//基底クラスの読み込み処理を呼び出す
+	result = MTPianoKeyboardDesign::_LoadConfFile(pSceneName);
+	if (result != 0) goto EXIT;
+
+	//設定ファイルを開く
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 

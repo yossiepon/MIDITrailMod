@@ -194,29 +194,6 @@ public:
 	unsigned char GetKeyDispRangeEnd();
 	bool IsKeyDisp(unsigned char noteNo);
 
-// >>> modify 20120728 yossiepon begin
-protected:
-
-	//ポート情報
-	SMPortList m_PortList;
-	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
-
-	//キーボード配置情報
-	float m_KeyboardStepY;
-
-	//発音中キー色情報
-	int m_ActiveKeyColorDuration;
-	float m_ActiveKeyColorTailRate;
-
-	virtual void _Initialize();
-	virtual int _LoadConfFile(const TCHAR* pSceneName);
-
-// <<< modify 20120728 yossiepon end
-
-// >>> modify 20140920 yossiepon begin
-	ActiveKeyColorType m_ActiveKeyColorType;
-// <<< modify 20120920 yossiepon end
-
 private:
 
 	//キー情報
@@ -227,11 +204,20 @@ private:
 
 private:
 
-// >>> modify 20120728 yossiepon begin
 	//キー情報配列
 	MTKeyInfo m_KeyInfo[SM_MAX_NOTE_NUM];
 
-// <<< modify 20120728 yossiepon end
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	//ポート情報
+	SMPortList m_PortList;
+	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
 
 	//スケール情報
 	float m_WhiteKeyStep;
@@ -255,27 +241,64 @@ private:
 	int m_KeyUpDuration;
 
 	//キーボード配置情報
-// >>> modify 20120728 yossiepon begin
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	float m_KeyboardStepY;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	float m_KeyboardStepZ;
 	int m_KeyboardMaxDispNum;
-// <<< modify 20120728 yossiepon end
 
 	//キー色情報
 	D3DXCOLOR m_WhiteKeyColor;
 	D3DXCOLOR m_BlackKeyColor;
 
 	//発音中キー色情報
-// >>> modify 20120728 yossiepon begin
 	D3DXCOLOR m_ActiveKeyColor;
-// <<< modify 20120728 yossiepon end
 
-// >>> modify 20120728 yossiepon begin
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	int m_ActiveKeyColorDuration;
+	float m_ActiveKeyColorTailRate;
+	ActiveKeyColorType m_ActiveKeyColorType;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	//キー表示範囲
 	int m_KeyDispRangeStart;
 	int m_KeyDispRangeEnd;
 
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+// >>> modify 20120728 yossiepon begin
+	virtual void _Initialize();
+// <<< modify 20120728 yossiepon end
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	void _InitKeyType();
 	void _InitKeyPos();
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+// >>> modify 20120728 yossiepon begin
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
 // <<< modify 20120728 yossiepon end
 
 };
