@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -140,7 +140,11 @@ int MTScenePianoRoll3DLive::Create(
 	//メッシュ制御生成
 	result = m_MeshCtrl.Create(pD3DDevice, GetName());
 	if (result != 0) goto EXIT;
-
+	
+	//背景画像生成
+	result = m_BackgroundImage.Create(pD3DDevice, hWnd);
+	if (result != 0) goto EXIT;
+	
 	//----------------------------------
 	// レンダリングステート
 	//----------------------------------
@@ -245,6 +249,10 @@ int MTScenePianoRoll3DLive::Draw(
 	result = Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
+	//背景画像描画
+	result = m_BackgroundImage.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+	
 	//グリッドボックス描画
 	result = m_GridBoxLive.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -294,6 +302,7 @@ void MTScenePianoRoll3DLive::Release()
 	m_TimeIndicator.Release();
 	m_NoteRipple.Release();
 	m_MeshCtrl.Release();
+	m_BackgroundImage.Release();
 }
 
 //******************************************************************************
@@ -639,6 +648,9 @@ void MTScenePianoRoll3DLive::SetEffect(
 			break;
 		case EffectCounter:
 			m_DashboardLive.SetEnable(isEnable);
+			break;
+		case EffectBackgroundImage:
+			m_BackgroundImage.SetEnable(isEnable);
 			break;
 		default:
 			break;

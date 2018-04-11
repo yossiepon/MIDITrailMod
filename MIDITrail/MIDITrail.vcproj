@@ -435,6 +435,14 @@
 				Name="SceneObject"
 				>
 				<File
+					RelativePath=".\MTBackgroundImage.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTBackgroundImage.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTDashboard.cpp"
 					>
 				</File>

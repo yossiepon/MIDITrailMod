@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -43,9 +43,9 @@ using namespace SMIDILib;
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-// >>> modify 20140920 yossiepon begin
-#define MT_MENU_NUM        (31)
-// <<< modify 20140920 yossiepon end
+// >>> modify 20161223 yossiepon begin
+#define MT_MENU_NUM        (32)
+// <<< modify 20161223 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -180,6 +180,7 @@ private:
 	bool m_isEnableStars;
 	bool m_isEnableCounter;
 	bool m_isEnableFileName;
+	bool m_isEnableBackgroundImage;
 
 	//シーン種別
 	SceneType m_SceneType;

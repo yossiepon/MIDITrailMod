@@ -33,6 +33,11 @@
 #define IDC_CHECK_MIDITHRU              1016
 #define IDC_TEXT_VERSION                1017
 #define IDC_TEXT_COPYRIGHT              1018
+#define IDC_CHECK_APPLY_TO_VIEW         1019
+#define IDC_EDIT_WIDTH                  1020
+#define IDC_EDIT_HEIGHT                 1021
+#define IDC_EDIT_IMAGE_FILE_PATH        1022
+#define IDC_BTN_BROWSE                  1023
 #define IDM_OPEN_FILE                   32771
 #define IDM_PLAY                        32772
 #define IDM_STOP                        32773
@@ -64,6 +69,7 @@
 // <<< add 20120728 yossiepon end
 #define IDM_AUTO_SAVE_VIEWPOINT         32838
 #define IDM_VIEW_PIANOROLLRAIN2D        32840
+#define IDM_ENABLE_BACKGROUNDIMAGE      32842
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -72,10 +78,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
-// >>> modify 20140920 yossiepon begin
-#define _APS_NEXT_COMMAND_VALUE         32841
-// <<< modify 20140920 yossiepon end
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_COMMAND_VALUE         32843
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

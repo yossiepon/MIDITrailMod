@@ -177,8 +177,8 @@ void MTNoteDesignMod::_Clear(void)
 {
 	MTNoteDesign::_Clear();
 
-	m_RippleDecayDuration = 200;
-	m_RippleReleaseDuration = 200;
+	m_RippleDecayDuration = 100;
+	m_RippleReleaseDuration = 250;
 }
 
 //******************************************************************************
@@ -206,11 +206,11 @@ int MTNoteDesignMod::_LoadConfFile(
 	if (result != 0) goto EXIT;
 
 	//波紋ディケイ時間(msec)
-	result = confFile.GetInt(_T("DecayDuration"), &m_RippleDecayDuration, 200);
+	result = confFile.GetInt(_T("DecayDuration"), &m_RippleDecayDuration, 100);
 	if (result != 0) goto EXIT;
 
 	//波紋リリース時間(msec)
-	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 200);
+	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
 	if (result != 0) goto EXIT;
 
 EXIT:;

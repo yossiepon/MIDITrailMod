@@ -163,6 +163,10 @@ int MTScenePianoRoll3DMod::Draw(
 	//ƒJƒƒ‰À•Wæ“¾
 	m_FirstPersonCam.GetPosition(&camVector);
 
+	//”wŒi‰æ‘œ•`‰æ
+	result = m_BackgroundImage.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//¯•`‰æ
 	result = m_Stars.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -380,6 +384,9 @@ void MTScenePianoRoll3DMod::SetEffect(
 			break;
 		case EffectFileName:
 			m_Dashboard.SetEnableFileName(isEnable);
+			break;
+		case EffectBackgroundImage:
+			m_BackgroundImage.SetEnable(isEnable);
 			break;
 		default:
 			break;

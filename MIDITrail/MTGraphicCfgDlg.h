@@ -4,7 +4,7 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -41,7 +41,7 @@ public:
 	int Show(HWND hParentWnd);
 
 	//パラメータ変更確認
-	bool IsCahnged();
+	bool IsChanged();
 
 private:
 
@@ -51,6 +51,9 @@ private:
 	//アプリケーションインスタンス
 	HINSTANCE m_hInstance;
 
+	//ウィンドウハンドル
+	HWND m_hWnd;
+
 	//設定ファイル
 	YNConfFile m_ConfFile;
 
@@ -58,11 +61,17 @@ private:
 	HWND m_hComboMultiSampleType;
 	bool m_MultSampleTypeSupport[DX_MULTI_SAMPLE_TYPE_MAX+1];
 
+	//背景画像ファイルパスエディットボックスのウィンドウハンドル
+	HWND m_hEditImageFilePath;
+
 	//アンチエイリアシング設定
 	unsigned long m_MultiSampleType;
 
+	//背景画像ファイルパス
+	TCHAR m_ImageFilePath[_MAX_PATH];
+
 	//更新フラグ
-	bool m_isCahnged;
+	bool m_isChanged;
 
 	//ウィンドウプロシージャ
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -80,8 +89,17 @@ private:
 	//デバイス選択コンボボックス初期化
 	int _InitComboMultiSampleType(HWND hCombo, unsigned long selMultiSampleType);
 
+	//背景画像ファイルパス初期化
+	int _InitBackgroundImageFilePath();
+
 	//保存処理
 	int _Save();
+
+	//背景画像ファイルパスブラウズボタン押下
+	int _OnBtnBrowse();
+
+	//画像ファイル選択
+	int _SelectImageFile(TCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
 
 };
 
