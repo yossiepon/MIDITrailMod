@@ -45,20 +45,29 @@ public:
 	//解放
 	void Release();
 
-// >>> modify 20120728 yossiepon begin
+// >>> modify access level to protected 20161224 yossiepon begin
 protected:
+// <<< modify 20161224 yossiepon end
 
 	DXPrimitive m_Primitive;
-	MTNoteDesign m_NoteDesign;
 
-// <<< modify 20120728 yossiepon end
-
+// >>> modify access level 20161224 yossiepon begin
 private:
+// <<< modify 20161224 yossiepon end
 
-// >>> modify 20120728 yossiepon begin
 	unsigned long m_BarNum;
 	SMPortList m_PortList;
-// <<< modify 20120728 yossiepon end
+
+// >>> modify access level to protected 20161224 yossiepon begin
+protected:
+// <<< modify 20161224 yossiepon end
+
+	MTNoteDesign m_NoteDesign;
+
+// >>> modify access level 20161224 yossiepon begin
+private:
+// <<< modify 20161224 yossiepon end
+
 	bool m_isVisible;
 
 	//頂点バッファ構造体

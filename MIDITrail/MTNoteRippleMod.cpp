@@ -17,12 +17,6 @@
 using namespace YNBaseLib;
 
 //******************************************************************************
-// パラメータ定義
-//******************************************************************************
-//波紋の上書き回数 
-#define MTNOTERIPPLE_MAX_OVERWRITE_NUM 3
-
-//******************************************************************************
 // コンストラクタ
 //******************************************************************************
 MTNoteRippleMod::MTNoteRippleMod(void) : MTNoteRipple()
@@ -56,9 +50,9 @@ int MTNoteRippleMod::Create(
 
 	Release();
 
-	// 基底クラスの生成処理を呼び出す
-	result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
-	if (result != 0) goto EXIT;
+	//// 基底クラスの生成処理を呼び出す
+	//result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
+	//if (result != 0) goto EXIT;
 
 	//ノートデザインModオブジェクト初期化
 	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
@@ -72,50 +66,9 @@ int MTNoteRippleMod::Create(
 	result = track.GetNoteListWithRealTime(&m_NoteListRT, pSeqData->GetTimeDivision());
 	if (result != 0) goto EXIT;
 
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// 移動
-//******************************************************************************
-int MTNoteRippleMod::Transform(
-		LPDIRECT3DDEVICE9 pD3DDevice,
-		D3DXVECTOR3 camVector,
-		float rollAngle
-	)
-{
-	int result = 0;
-	D3DXVECTOR3 moveVector;
-	D3DXMATRIX rotateMatrix;
-	D3DXMATRIX moveMatrix;
-	D3DXMATRIX worldMatrix;
-
-	m_CamVector = camVector;
-
-	//波紋の頂点更新
-	result = _TransformRipple(pD3DDevice);
+	// 基底クラスの生成処理を呼び出す
+	result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
 	if (result != 0) goto EXIT;
-
-	//行列初期化
-	D3DXMatrixIdentity(&rotateMatrix);
-	D3DXMatrixIdentity(&moveMatrix);
-	D3DXMatrixIdentity(&worldMatrix);
-
-	//回転行列
-	//TODO: ini で切り替えられるようにする
-	//D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle + 180.0f));
-	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
-
-	//移動行列
-	moveVector = m_NoteDesign.GetWorldMoveVector();
-	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
-
-	//行列の合成
-	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
-
-	//変換行列設定
-	m_Primitive.Transform(worldMatrix);
 
 EXIT:;
 	return result;
@@ -366,6 +319,9 @@ int MTNoteRippleMod::_UpdateVertexOfRipple(
 
 	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTERIPPLE_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
+	// 波紋上書き回数
+	unsigned long overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
+
 	//発音中ノートの波紋について頂点を更新
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 		if (m_pNoteStatusMod[i].isActive) {
@@ -380,7 +336,7 @@ int MTNoteRippleMod::_UpdateVertexOfRipple(
 			if ((note.portNo < MTNOTERIPPLE_MAX_PORT_NUM)
 			 && (m_KeyDownRate[note.portNo][note.chNo][note.noteNo] < m_pNoteStatusMod[i].keyDownRate)) {
 				//頂点更新：波紋の描画位置とサイズを変える
-				for(j = 0; j < MTNOTERIPPLE_MAX_OVERWRITE_NUM; j++) {
+				for(j = 0; j < overwriteTimes; j++) {
 					_SetVertexPosition(
 							&(pVertex[activeNoteNum*6]),	//頂点バッファ書き込み位置
 							note,							//ノート情報
@@ -436,8 +392,8 @@ int MTNoteRippleMod::Draw(
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
 	//レンダリングステート設定：加算合成
-	//pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 
 	//プリミティブ描画
 	if (m_ActiveNoteNum > 0) {
@@ -447,8 +403,8 @@ int MTNoteRippleMod::Draw(
 	}
 
 	//レンダリングステート設定：通常のアルファ合成
-	//pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 
 EXIT:;
 	return result;
@@ -506,6 +462,9 @@ int MTNoteRippleMod::_CreateVertex(
 	unsigned long vertexNum = 0;
 	MTNOTERIPPLE_VERTEX* pVertex = NULL;
 
+	// 波紋上書き回数
+	unsigned long overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
+
 	//プリミティブ初期化
 	result = m_Primitive.Initialize(
 					sizeof(MTNOTERIPPLE_VERTEX),//頂点サイズ
@@ -515,7 +474,7 @@ int MTNoteRippleMod::_CreateVertex(
 	if (result != 0) goto EXIT;
 
 	//頂点バッファ生成
-	vertexNum = 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * MTNOTERIPPLE_MAX_OVERWRITE_NUM;
+	vertexNum = 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * overwriteTimes;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
@@ -523,7 +482,7 @@ int MTNoteRippleMod::_CreateVertex(
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
-	ZeroMemory(pVertex, sizeof(MTNOTERIPPLE_VERTEX) * 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * MTNOTERIPPLE_MAX_OVERWRITE_NUM);
+	ZeroMemory(pVertex, sizeof(MTNOTERIPPLE_VERTEX) * 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * overwriteTimes);
 
 	//バッファのロック解除
 	result = m_Primitive.UnlockVertex();
@@ -546,6 +505,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 	int result = 0;
 	unsigned long i = 0;
 	float rh, rw = 0.0f;
+	float spacing = 0.0f;
 	float alpha = 0.0f;
 	D3DXVECTOR3 center;
 	D3DXCOLOR color;
@@ -569,6 +529,9 @@ int MTNoteRippleMod::_SetVertexPosition(
 	rh = m_NoteDesignMod.GetRippleHeight(pNoteStatus->keyDownRate);
 	rw = m_NoteDesignMod.GetRippleWidth(pNoteStatus->keyDownRate);
 
+	//波紋描画間隔
+	spacing = m_NoteDesignMod.GetRippleSpacing();
+
 	//描画終了確認
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
 		goto EXIT;
@@ -579,10 +542,10 @@ int MTNoteRippleMod::_SetVertexPosition(
 	//  Zファイティングによって発生するちらつきやかすれを回避する
 	//  グラフィックカードによって現象が異なる
 	if (center.x < m_CamVector.x) {
-		center.x -= 0.002f * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM) - (rippleNo + 1) * 0.002f;
+		center.x -= spacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM - (rippleNo + 1));
 	}
 	else {
-		center.x -= 0.002f * MTNOTELYRICS_MAX_LYRICS_NUM + (rippleNo + 1) * 0.002f;
+		center.x -= spacing * (MTNOTELYRICS_MAX_LYRICS_NUM + rippleNo + 1);
 	}
 
 	//頂点座標

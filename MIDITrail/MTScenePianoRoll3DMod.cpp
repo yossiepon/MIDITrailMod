@@ -89,7 +89,7 @@ int MTScenePianoRoll3DMod::Create(
 	m_PictBoard.SetEnable(false);
 
 	//ピアノキーボード制御
-	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend, m_IsSingleKeyboard);
+	result = m_PianoKeyboardCtrlMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend, m_IsSingleKeyboard);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -134,7 +134,7 @@ int MTScenePianoRoll3DMod::Transform(
 	if (result != 0) goto EXIT;
 
 	//ピアノキーボード更新
-	result = m_PianoKeyboardCtrl.Transform(pD3DDevice, rollAngle);
+	result = m_PianoKeyboardCtrlMod.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -201,7 +201,7 @@ int MTScenePianoRoll3DMod::Draw(
 		if (result != 0) goto EXIT;
 
 		//ピアノキーボード描画
-		result = m_PianoKeyboardCtrl.Draw(pD3DDevice);
+		result = m_PianoKeyboardCtrlMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 	} else {
@@ -209,7 +209,7 @@ int MTScenePianoRoll3DMod::Draw(
 		//キーボード＞波紋＞歌詞＞タイムインジケータ＞メッシュの順で奥から描画
 
 		//ピアノキーボード描画
-		result = m_PianoKeyboardCtrl.Draw(pD3DDevice);
+		result = m_PianoKeyboardCtrlMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 		//ノート波紋描画
@@ -246,7 +246,7 @@ void MTScenePianoRoll3DMod::Release()
 	m_NoteBoxMod.Release();
 	m_NoteRippleMod.Release();
 	m_NoteLyrics.Release();
-	m_PianoKeyboardCtrl.Release();
+	m_PianoKeyboardCtrlMod.Release();
 
 	MTScenePianoRoll3D::Release();
 }
@@ -288,8 +288,8 @@ int MTScenePianoRoll3DMod::OnRecvSequencerMsg(
 		m_NoteBoxMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteLyrics.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteLyrics.SetCurTickTime(parser.GetPlayTickTime());
-		m_PianoKeyboardCtrl.SetPlayTimeMSec(parser.GetPlayTimeMSec());
-		m_PianoKeyboardCtrl.SetCurTickTime(parser.GetPlayTickTime());
+		m_PianoKeyboardCtrlMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
+		m_PianoKeyboardCtrlMod.SetCurTickTime(parser.GetPlayTickTime());
 	}
 	//テンポ変更通知
 	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
@@ -326,8 +326,8 @@ int MTScenePianoRoll3DMod::OnRecvSequencerMsg(
 		m_NoteRippleMod.SetSkipStatus(true);
 		m_NoteLyrics.Reset();
 		m_NoteLyrics.SetSkipStatus(true);
-		m_PianoKeyboardCtrl.Reset();
-		m_PianoKeyboardCtrl.SetSkipStatus(true);
+		m_PianoKeyboardCtrlMod.Reset();
+		m_PianoKeyboardCtrlMod.SetSkipStatus(true);
 		m_IsSkipping = true;
 	}
 	//スキップ終了通知
@@ -336,7 +336,7 @@ int MTScenePianoRoll3DMod::OnRecvSequencerMsg(
 		m_NoteBoxMod.SetSkipStatus(false);
 		m_NoteRippleMod.SetSkipStatus(false);
 		m_NoteLyrics.SetSkipStatus(false);
-		m_PianoKeyboardCtrl.SetSkipStatus(false);
+		m_PianoKeyboardCtrlMod.SetSkipStatus(false);
 		m_IsSkipping = false;
 	}
 
@@ -354,7 +354,7 @@ void MTScenePianoRoll3DMod::_Reset()
 	m_NoteBoxMod.Reset();
 	m_NoteRippleMod.Reset();
 	m_NoteLyrics.Reset();
-	m_PianoKeyboardCtrl.Reset();
+	m_PianoKeyboardCtrlMod.Reset();
 }
 
 //******************************************************************************
@@ -367,7 +367,7 @@ void MTScenePianoRoll3DMod::SetEffect(
 {
 	switch (type) {
 		case EffectPianoKeyboard:
-			m_PianoKeyboardCtrl.SetEnable(isEnable);
+			m_PianoKeyboardCtrlMod.SetEnable(isEnable);
 			break;
 		case EffectRipple:
 			m_NoteRippleMod.SetEnable(isEnable);
