@@ -59,6 +59,9 @@ protected:
 
 private:
 
+	// ライト2
+	DXDirLight m_DirLightBack;
+
 	//描画オブジェクト
 	MTGridBoxMod m_GridBoxMod;
 	MTNoteBoxMod m_NoteBoxMod;
