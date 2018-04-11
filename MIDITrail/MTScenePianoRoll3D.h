@@ -23,6 +23,7 @@
 #include "MTPictBoard.h"
 #include "MTDashboard.h"
 #include "MTStars.h"
+#include "MTPianoKeyboardCtrl.h"
 #include "MTTimeIndicator.h"
 #include "SMIDILib.h"
 
@@ -117,6 +118,8 @@ private:
 	MTDashboard m_Dashboard;
 	MTStars m_Stars;
 	MTTimeIndicator m_TimeIndicator;
+
+	MTPianoKeyboardCtrl m_PianoKeyboardCtrl;
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;

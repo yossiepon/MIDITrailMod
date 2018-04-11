@@ -578,7 +578,7 @@ int SMSequencer::_UpdatePlayPosition()
 		m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), m_TotalTickTimeTemp);
 		//通知間隔は60FPS表示を考慮して0.01秒(10msec = 10000000nanosec)とする
 		//TODO: 外部から間隔を指定できるようにする
-		ntcSpan = 10 * 1000000;;
+		ntcSpan = (unsigned long long)((double)10 * 1000000 * m_PlaySpeedRatio);
 		m_NextNtcTime = m_CurPlayTime - (m_CurPlayTime % ntcSpan) + ntcSpan;
 	}
 
