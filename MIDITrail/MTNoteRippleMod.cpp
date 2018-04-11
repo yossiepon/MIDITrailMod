@@ -558,7 +558,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 
 	//–@ü
 	for (i = 0; i < 6; i++) {
-		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
 
 	//“§–¾“x‚ğ™X‚É—‚Æ‚·

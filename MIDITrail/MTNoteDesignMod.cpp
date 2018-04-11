@@ -116,15 +116,16 @@ float MTNoteDesignMod::GetRippleAlpha(
 // 減衰係数取得
 //******************************************************************************
 float MTNoteDesignMod::GetDecayCoefficient(
-		float rate	//サイズ比率
+		float rate,			//サイズ比率
+		float saturation	//飽和レベル
 	)
 {
 	float coeff = 1.0f;
 
 	if(rate < 0.5f) {
-		coeff = (pow(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / 20.0f;
+		coeff = (pow(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / saturation;
 	} else {
-		coeff = (16.0f - pow(2.0f, (rate - 0.5f) * 8.0f)) / 20.0f;
+		coeff = (16.0f - pow(2.0f, (rate - 0.5f) * 8.0f)) / saturation;
 	}
 
 	coeff = coeff > 1.0f ? 1.0f : coeff;
@@ -133,35 +134,39 @@ float MTNoteDesignMod::GetDecayCoefficient(
 }
 
 //******************************************************************************
-// ポート原点Z座標取得
+// 発音中ノートボックス頂点座標取得
 //******************************************************************************
-float MTNoteDesignMod::GetPortOriginZ(
-		unsigned char portNo
+void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
+		unsigned long curTickTime,
+		unsigned char portNo,
+		unsigned char chNo,
+		unsigned char noteNo,
+		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
+		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
+		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
+		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
+		short pitchBendValue,				//省略可：ピッチベンド
+		unsigned char pitchBendSensitivity,	//省略可：ピッチベンド感度
+		float rate							//省略可：サイズ比率
 	)
 {
-	float portIndex = 0.0f;
-	float portWidth = 0.0f;
-
-	//                  +y
-	//                   |
-	//         portC   portB   portA
-	//       +-------+-------+-------+Note#127
-	//       |       |   |   |       |
-	//       |       |   |   |       |
-	//       |       |   |   |       |
-	// +z<---|-------@---0---@-------@--------->-z
-	//       |       |   |   |       |
-	//       |       |   |   |       |  @:OriginZ(for portA,B,C)
-	//       |       |   |   |       |
-	//       +-------+-------+-------+Note#0
-	//    Ch. 16    0 16 |  0 16    0
-	//                   |
-	//                  -y
-
-	portIndex = (float)(m_PortIndex[portNo]);
-	portWidth = GetChStep() * 15.0f;
-
-	return ((portWidth * portIndex) - (portWidth * m_PortList.GetSize() / 2.0f));
+	D3DXVECTOR3 center;
+	float bh, bw = 0.0f;
+	float curSizeRatio = 1.0f;
+	
+	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
+	
+	if (rate > 0.0f) {
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
+	}
+	
+	bh = GetNoteBoxHeight() * curSizeRatio;
+	bw = GetNoteBoxWidht() * curSizeRatio;
+	
+	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
+	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
+	*pVector2 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z+(bw/2.0f));
+	*pVector3 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z-(bw/2.0f));
 }
 
 //******************************************************************************
@@ -174,15 +179,7 @@ D3DXCOLOR MTNoteDesignMod::GetActiveNoteBoxColor(
 		float rate
 	)
 {
-	float alpha = 1.0f;
-
-	if(rate < 0.5f) {
-		alpha = (pow(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / 20.0f;
-	} else {
-		alpha = (16.0f - pow(2.0f, (rate - 0.5f) * 8.0f)) / 20.0f;
-	}
-
-	alpha = alpha > 1.0f ? 1.0f : alpha;
+	float alpha = GetDecayCoefficient(rate, 30.0f);
 
 	D3DXCOLOR color;
 	float r,g,b,a = 0.0f;
