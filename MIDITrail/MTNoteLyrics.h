@@ -15,7 +15,7 @@
 #include <d3dx9.h>
 #include "SMIDILib.h"
 #include "DXPrimitive.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesignMod.h"
 #include "MTNotePitchBend.h"
 #include "MTFontTexture.h"
 
@@ -120,7 +120,7 @@ private:
 	D3DXVECTOR3 m_CamVector;
 
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesignMod m_NoteDesign;
 
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;

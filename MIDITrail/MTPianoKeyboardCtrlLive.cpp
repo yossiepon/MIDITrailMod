@@ -141,44 +141,26 @@ int MTPianoKeyboardCtrlLive::Transform(
 	int result = 0;
 	unsigned char portNo = 0;
 	unsigned char chNo = 0;
-	D3DXVECTOR3 vectorLU;
-	D3DXVECTOR3 vectorRU;
-	D3DXVECTOR3 vectorLD;
-	D3DXVECTOR3 vectorRD;
-	D3DXVECTOR3 moveVector1;
-	D3DXVECTOR3 moveVector2;
+	D3DXVECTOR3 moveVector;
 	
 	//現在発音中ノートの頂点更新
 	result = _TransformActiveNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
-	//再生面頂点座標取得
-	m_NoteDesign.GetPlaybackSectionVirtexPos(
-			0,
-			&vectorLU,
-			&vectorRU,
-			&vectorLD,
-			&vectorRD
-		);
-
-	float boardHeight = vectorLU.y - vectorLD.y;
-	float keyboardWidth = m_KeyboardDesign.GetPortOriginX(0) * -2.0f;
-
 	//各キーボードの移動
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		
 		//移動ベクトル：キーボード基準座標
-		moveVector1 = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
+		moveVector = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
 		
 		//移動ベクトル：ピッチベンドシフトを反映
-		moveVector1.x += _GetPichBendShiftPosX(portNo, chNo);
+		moveVector.x += _GetPichBendShiftPosX(portNo, chNo);
 		
 		//移動ベクトル：再生面に追従する
-		moveVector2 = m_NoteDesign.GetWorldMoveVector();
-		//moveVector2.x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+		//moveVector.y += m_NoteDesign.GetPlayPosX(m_CurTickTime);
 		
 		//キーボード移動
-		result = m_pPianoKeyboard[chNo]->Transform(pD3DDevice, moveVector1, moveVector2, boardHeight / keyboardWidth, vectorLU.z, rollAngle);
+		result = m_pPianoKeyboard[chNo]->Transform(pD3DDevice, moveVector, rollAngle);
 		if (result != 0) goto EXIT;
 	}
 	
@@ -236,12 +218,12 @@ int MTPianoKeyboardCtrlLive::_UpdateStatusOfActiveNotes(
 					m_NoteStatus[chNo][noteNo].startTime = 0;
 					m_NoteStatus[chNo][noteNo].endTime = 0;
 					m_NoteStatus[chNo][noteNo].keyDownRate = 0.0f;
-					result = m_pPianoKeyboard[0]->ResetKey((unsigned char)noteNo);
+					result = m_pPianoKeyboard[chNo]->ResetKey((unsigned char)noteNo);
 					if (result != 0) goto EXIT;
 				}
 				//キー押下率を更新
 				else {
-					m_NoteStatus[0][noteNo].keyDownRate
+					m_NoteStatus[chNo][noteNo].keyDownRate
 						= 1.0f - ((float)(curTime - m_NoteStatus[chNo][noteNo].endTime) / (float)keyUpDuration);
 				}
 			}
@@ -275,8 +257,7 @@ int MTPianoKeyboardCtrlLive::_UpdateVertexOfActiveNotes(
 				elapsedTime = curTime - m_NoteStatus[chNo][noteNo].startTime;
 			
 				//発音対象キーを回転
-				result = m_pPianoKeyboard[0]->PushKey(
-									(unsigned char)chNo,
+				result = m_pPianoKeyboard[chNo]->PushKey(
 									(unsigned char)noteNo,
 									m_NoteStatus[chNo][noteNo].keyDownRate,
 									elapsedTime
@@ -305,7 +286,7 @@ int MTPianoKeyboardCtrlLive::Draw(
 	if (!m_isEnable) goto EXIT;
 	
 	//キーボード最大表示数
-	dispNum = 1; //SM_MAX_CH_NUM;
+	dispNum = SM_MAX_CH_NUM;
 	if (m_KeyboardDesign.GetKeyboardMaxDispNum() < dispNum) {
 		dispNum = m_KeyboardDesign.GetKeyboardMaxDispNum();
 	}

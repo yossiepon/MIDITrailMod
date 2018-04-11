@@ -32,7 +32,9 @@ typedef struct {
 	unsigned char velocity;
 	unsigned long startTime;
 	unsigned long endTime;
-	char lyric[9];
+// >>> add 20120728 yossiepon begin
+	char lyric[17];
+// <<< add 20120728 yossiepon end
 } SMNote;
 
 //******************************************************************************

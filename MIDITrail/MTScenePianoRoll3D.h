@@ -17,14 +17,12 @@
 #include "MTFirstPersonCam.h"
 #include "MTNoteBox.h"
 #include "MTNoteRipple.h"
-#include "MTNoteLyrics.h"
 #include "MTNoteDesign.h"
 #include "MTNotePitchBend.h"
 #include "MTGridBox.h"
 #include "MTPictBoard.h"
 #include "MTDashboard.h"
 #include "MTStars.h"
-#include "MTPianoKeyboardCtrl.h"
 #include "MTTimeIndicator.h"
 #include "SMIDILib.h"
 
@@ -40,7 +38,7 @@ public:
 
 	//コンストラクタ／デストラクタl
 	MTScenePianoRoll3D();
-	~MTScenePianoRoll3D();
+	virtual ~MTScenePianoRoll3D();
 
 	//名称取得
 	const TCHAR* GetName();
@@ -53,13 +51,13 @@ public:
 		);
 
 	//変換
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//破棄
-	void Release();
+	virtual void Release();
 
 	//ウィンドウクリックイベント受信
 	int OnWindowClicked(
@@ -75,7 +73,7 @@ public:
 	int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//シーケンサメッセージ受信
-	int OnRecvSequencerMsg(
+	virtual int OnRecvSequencerMsg(
 			unsigned long wParam,
 			unsigned long lParam
 		);
@@ -92,36 +90,55 @@ public:
 	void ResetViewpoint();
 
 	//エフェクト設定
-	void SetEffect(MTScene::EffectType type, bool isEnable);
+	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
 
 	//演奏速度設定
 	void SetPlaySpeedRatio(unsigned long ratio);
 
 protected:
 
-	//ライト有無
-	BOOL m_IsEnableLight;
+	////ライト
+	//DXDirLight m_DirLight;
 
-private:
-
-	//ライト
-	DXDirLight m_DirLight;
-
-	//一人称カメラ
+	////一人称カメラ
 	MTFirstPersonCam m_FirstPersonCam;
 
 	//描画オブジェクト
 	MTNoteBox m_NoteBox;
 	MTNoteRipple m_NoteRipple;
-	MTNoteLyrics m_NoteLyrics;
-	MTNotePitchBend m_NotePitchBend;
 	MTGridBox m_GridBox;
 	MTPictBoard m_PictBoard;
 	MTDashboard m_Dashboard;
 	MTStars m_Stars;
 	MTTimeIndicator m_TimeIndicator;
 
-	MTPianoKeyboardCtrl m_PianoKeyboardCtrl;
+	//ピッチベンド情報
+	MTNotePitchBend m_NotePitchBend;
+
+	////マウス視線移動モード
+	//bool m_IsMouseCamMode;
+
+	////自動回転モード
+	//bool m_IsAutoRollMode;
+
+	////視点情報
+	//MTViewParamMap m_ViewParamMap;
+
+	////ノートデザインオブジェクト
+	//MTNoteDesign m_NoteDesign;
+
+	//スキップ状態
+	bool m_IsSkipping;
+
+	//ライト有無
+	BOOL m_IsEnableLight;
+
+	virtual void _Reset();
+
+private:
+
+	//ライト
+	DXDirLight m_DirLight;
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
@@ -135,10 +152,6 @@ private:
 	//ノートデザインオブジェクト
 	MTNoteDesign m_NoteDesign;
 
-	//スキップ状態
-	bool m_IsSkipping;
-
-	void _Reset();
 	void _SetLightColor(DXDirLight* pLight);
 
 };

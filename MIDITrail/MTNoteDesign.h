@@ -134,22 +134,17 @@ public:
 				D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
 			);
 
-	//波紋表示時間取得
-	unsigned long GetRippleDecayDuration();
-	unsigned long GetRippleReleaseDuration();
-
-	//波紋サイズ取得
-	float GetRippleHeight(float rate);
-	float GetRippleWidth(float rate);
-	float GetRippleAlpha(float rate);
-	float GetDecayCoefficient(float rate);
+	//波紋サイズ取得：経過時間（ミリ秒）は省略可
+	float GetRippleHeight(unsigned long elapsedTime = 0);
+	float GetRippleWidth(unsigned long elapsedTime = 0);
+	float GetRippleAlpha(unsigned long elapsedTime = 0);
 
 	//ピクチャボード相対位置取得
 	float GetPictBoardRelativePos();
 
 	//ポート原点座標取得
 	float GetPortOriginY(unsigned char portNo);
-	float GetPortOriginZ(unsigned char portNo);
+	virtual float GetPortOriginZ(unsigned char portNo);
 
 	//世界座標配置移動ベクトル取得
 	D3DXVECTOR3 GetWorldMoveVector();
@@ -166,7 +161,7 @@ public:
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				float rate
+				unsigned long elapsedTime
 			);
 
 	//発音中ノートボックスエミッシブ取得（マテリアル用）
@@ -178,6 +173,19 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
+protected:
+
+	float m_RippleHeight;
+	float m_RippleWidth;
+
+	SMPortList m_PortList;
+	unsigned char m_PortIndex[256];
+
+	float m_ActiveNoteWhiteRate;
+
+	virtual void _Clear();
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
+
 private:
 
 	unsigned long m_TimeDivision;
@@ -186,11 +194,7 @@ private:
 	float m_NoteBoxWidth;
 	float m_NoteStep;
 	float m_ChStep;
-	float m_RippleHeight;
-	float m_RippleWidth;
 	float m_PictBoardRelativePos;
-	SMPortList m_PortList;
-	unsigned char m_PortIndex[256];
 
 	D3DXCOLOR m_NoteColor[16];
 	D3DXCOLOR m_ActiveNoteEmissive;
@@ -198,17 +202,10 @@ private:
 	D3DXCOLOR m_PlaybackSectionColor;
 
 	int m_ActiveNoteDuration;
-	float m_ActiveNoteWhiteRate;
-
 	int m_RippleDuration;
-	int m_RippleDecayDuration;
-	int m_RippleReleaseDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
-
-	void _Clear();
-	int _LoadConfFile(const TCHAR* pSceneName);
 
 };
 

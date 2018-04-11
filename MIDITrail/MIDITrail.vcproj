@@ -286,6 +286,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MTGridBoxMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTGridBoxMod.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTLogo.cpp"
 					>
 				</File>
@@ -310,11 +318,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MTNoteBoxMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTNoteBoxMod.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTNoteDesign.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\MTNoteDesign.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MTNoteDesignMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTNoteDesignMod.h"
 					>
 				</File>
 				<File
@@ -350,6 +374,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MTNoteRippleMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTNoteRippleMod.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTPianoKeyboard.cpp"
 					>
 				</File>
@@ -374,11 +406,35 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MTPianoKeyboardCtrlMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTPianoKeyboardCtrlMod.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTPianoKeyboardDesign.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\MTPianoKeyboardDesign.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MTPianoKeyboardDesignMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTPianoKeyboardDesignMod.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MTPianoKeyboardMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTPianoKeyboardMod.h"
 					>
 				</File>
 				<File
@@ -434,6 +490,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MTScenePianoRoll2DMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTScenePianoRoll2DMod.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTScenePianoRoll3D.cpp"
 					>
 				</File>
@@ -447,6 +511,14 @@
 				</File>
 				<File
 					RelativePath=".\MTScenePianoRoll3DLive.h"
+					>
+				</File>
+				<File
+					RelativePath=".\MTScenePianoRoll3DMod.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTScenePianoRoll3DMod.h"
 					>
 				</File>
 				<File

@@ -57,7 +57,9 @@
 #define IDM_OPTION_MIDIIN               32832
 #define IDM_START_MONITORING            32835
 #define IDM_STOP_MONITORING             32836
+// >>> add 20120728 yossiepon begin
 #define IDM_ADD_FILE                    32837
+// <<< add 20120728 yossiepon end
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -66,7 +68,9 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
+// >>> modify 20120728 yossiepon begin
 #define _APS_NEXT_COMMAND_VALUE         32838
+// <<< modify 20120728 yossiepon end
 #define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

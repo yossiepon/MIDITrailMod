@@ -104,42 +104,32 @@ int MTScenePianoRoll3D::Create(
 	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
-	//星生成
-	result = m_Stars.Create(pD3DDevice, GetName(), &m_DirLight);
+	//ノートボックス生成
+	result = m_NoteBox.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+
+	//ノート波紋生成
+	result = m_NoteRipple.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
 	//グリッドボックス生成
 	result = m_GridBox.Create(pD3DDevice, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
 	
-	//ノートボックス生成
-	result = m_NoteBox.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-
-	//タイムインジケータ生成
-	result = m_TimeIndicator.Create(pD3DDevice, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-
-	//ノート波紋生成
-	result = m_NoteRipple.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-	m_NoteRipple.SetEnable(false);
-
-	//ノート歌詞生成
-	result = m_NoteLyrics.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-
 	//ピクチャボード生成
 	result = m_PictBoard.Create(pD3DDevice, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-	m_PictBoard.SetEnable(false);
-
-	//ピアノキーボード制御
-	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
 	//ダッシュボード生成
 	result = m_Dashboard.Create(pD3DDevice, GetName(), pSeqData, hWnd);
+	if (result != 0) goto EXIT;
+
+	//星生成
+	result = m_Stars.Create(pD3DDevice, GetName(), &m_DirLight);
+	if (result != 0) goto EXIT;
+
+	//タイムインジケータ生成
+	result = m_TimeIndicator.Create(pD3DDevice, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
@@ -192,16 +182,24 @@ int MTScenePianoRoll3D::Transform(
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
 
-	//星更新
-	result = m_Stars.Transform(pD3DDevice, camVector);
+	//ノートボックス更新
+	result = m_NoteBox.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
 
 	//グリッドボックス更新
 	result = m_GridBox.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
 
-	//ノートボックス更新
-	result = m_NoteBox.Transform(pD3DDevice, rollAngle);
+	//ピクチャボード更新
+	result = m_PictBoard.Transform(pD3DDevice, camVector, rollAngle);
+	if (result != 0) goto EXIT;
+
+	//ダッシュボード更新
+	result = m_Dashboard.Transform(pD3DDevice, camVector);
+	if (result != 0) goto EXIT;
+	
+	//星更新
+	result = m_Stars.Transform(pD3DDevice, camVector);
 	if (result != 0) goto EXIT;
 
 	//タイムインジケータ更新
@@ -209,25 +207,9 @@ int MTScenePianoRoll3D::Transform(
 	if (result != 0) goto EXIT;
 
 	//ノート波紋更新
-	//result = m_NoteRipple.Transform(pD3DDevice, camVector, rollAngle);
-	//if (result != 0) goto EXIT;
-
-	//ノート歌詞更新
-	result = m_NoteLyrics.Transform(pD3DDevice, camVector, rollAngle);
+	result = m_NoteRipple.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
-	//ピクチャボード更新
-	//result = m_PictBoard.Transform(pD3DDevice, camVector, rollAngle);
-	//if (result != 0) goto EXIT;
-
-	//ピアノキーボード更新
-	result = m_PianoKeyboardCtrl.Transform(pD3DDevice, rollAngle);
-	if (result != 0) goto EXIT;
-
-	//ダッシュボード更新
-	result = m_Dashboard.Transform(pD3DDevice, camVector);
-	if (result != 0) goto EXIT;
-	
 EXIT:;
 	return result;
 }
@@ -250,10 +232,6 @@ int MTScenePianoRoll3D::Draw(
 	result = Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//星描画
-	result = m_Stars.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
-
 	//グリッドボックス描画
 	result = m_GridBox.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -262,24 +240,20 @@ int MTScenePianoRoll3D::Draw(
 	result = m_NoteBox.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//ピクチャボード描画
+	result = m_PictBoard.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+	//星描画
+	result = m_Stars.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//タイムインジケータ描画
 	result = m_TimeIndicator.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//ノート波紋描画
-	//result = m_NoteRipple.Draw(pD3DDevice);
-	//if (result != 0) goto EXIT;
-
-	//ノート歌詞描画
-	result = m_NoteLyrics.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
-
-	//ピクチャボード描画
-	//result = m_PictBoard.Draw(pD3DDevice);
-	//if (result != 0) goto EXIT;
-
-	//ピアノキーボード描画
-	result = m_PianoKeyboardCtrl.Draw(pD3DDevice);
+	result = m_NoteRipple.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//ダッシュボード描画：座標変換済み頂点を用いるため一番最後に描画する
@@ -295,7 +269,6 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRoll3D::Release()
 {
-	m_PianoKeyboardCtrl.Release();
 	m_NoteBox.Release();
 	m_GridBox.Release();
 	m_PictBoard.Release();
@@ -303,7 +276,6 @@ void MTScenePianoRoll3D::Release()
 	m_Stars.Release();
 	m_TimeIndicator.Release();
 	m_NoteRipple.Release();
-	m_NoteLyrics.Release();
 }
 
 //******************************************************************************
@@ -397,17 +369,11 @@ int MTScenePianoRoll3D::OnRecvSequencerMsg(
 	}
 	//演奏チックタイム通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeMSec());
-		m_PianoKeyboardCtrl.SetPlayTimeMSec(parser.GetPlayTimeMSec());
-		m_PianoKeyboardCtrl.SetCurTickTime(parser.GetPlayTickTime());
+		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
 		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
-		m_NoteRipple.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRipple.SetCurTickTime(parser.GetPlayTickTime());
-		m_NoteLyrics.SetPlayTimeMSec(parser.GetPlayTimeMSec());
-		m_NoteLyrics.SetCurTickTime(parser.GetPlayTickTime());
 		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
-		m_NoteBox.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
 	}
 	//テンポ変更通知
@@ -424,12 +390,12 @@ int MTScenePianoRoll3D::OnRecvSequencerMsg(
 	}
 	//ノートOFF通知
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOff) {
-		//m_NoteRipple.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+		m_NoteRipple.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
 	}
 	//ノートON通知
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
 		m_Dashboard.SetNoteOn();
-		//m_NoteRipple.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
+		m_NoteRipple.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
 	}
 	//ピッチベンド通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
@@ -440,23 +406,17 @@ int MTScenePianoRoll3D::OnRecvSequencerMsg(
 		if (parser.GetSkipStartDirection() == SMMsgParser::SkipBack) {
 			m_NotePitchBend.Reset();
 		}
-		m_PianoKeyboardCtrl.Reset();
-		m_PianoKeyboardCtrl.SetSkipStatus(true);
 		m_NoteBox.Reset();
 		m_NoteBox.SetSkipStatus(true);
 		m_NoteRipple.Reset();
 		m_NoteRipple.SetSkipStatus(true);
-		m_NoteLyrics.Reset();
-		m_NoteLyrics.SetSkipStatus(true);
 		m_IsSkipping = true;
 	}
 	//スキップ終了通知
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
 		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
-		m_PianoKeyboardCtrl.SetSkipStatus(false);
 		m_NoteBox.SetSkipStatus(false);
 		m_NoteRipple.SetSkipStatus(false);
-		m_NoteLyrics.SetSkipStatus(false);
 		m_IsSkipping = false;
 	}
 
@@ -486,12 +446,10 @@ void MTScenePianoRoll3D::_Reset()
 {
 	m_Dashboard.Reset();
 	m_FirstPersonCam.Reset();
-	m_PianoKeyboardCtrl.Reset();
 	m_TimeIndicator.Reset();
 	m_PictBoard.Reset();
 	m_NoteBox.Reset();
 	m_NoteRipple.Reset();
-	m_NoteLyrics.Reset();
 	m_NotePitchBend.Reset();
 }
 
@@ -669,12 +627,10 @@ void MTScenePianoRoll3D::SetEffect(
 {
 	switch (type) {
 		case EffectPianoKeyboard:
-			m_PianoKeyboardCtrl.SetEnable(isEnable);
-			//m_PictBoard.SetEnable(isEnable);
+			m_PictBoard.SetEnable(isEnable);
 			break;
 		case EffectRipple:
-			//m_NoteRipple.SetEnable(isEnable);
-			m_NoteLyrics.SetEnable(isEnable);
+			m_NoteRipple.SetEnable(isEnable);
 			break;
 		case EffectPitchBend:
 			m_NotePitchBend.SetEnable(isEnable);

@@ -35,7 +35,7 @@ public:
 	virtual ~MTPianoKeyboard(void);
 
 	//生成
-	int Create(
+	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -43,7 +43,9 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector1, D3DXVECTOR3 moveVector2, float scale, float z, float rollAngle);
+	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector, float rollAngle);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector1, D3DXVECTOR3 moveVector2, float scale, float z, float rollAngle);
+
 
 	//描画
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
@@ -53,10 +55,21 @@ public:
 
 	//キー状態変更
 	int ResetKey(unsigned char noteNo);
-	int PushKey(unsigned char chNo, unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
+	int PushKey(unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
+	virtual int PushKey(unsigned char chNo, unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
 
 	//共有用テクスチャ取得
 	LPDIRECT3DTEXTURE9 GetTexture();
+
+protected:
+
+	//キーボードプリミティブ
+	DXPrimitive m_PrimitiveKeyboard;
+
+	//キーボードデザイン
+	MTPianoKeyboardDesign m_KeyboardDesign;
+
+	int _RotateKey(unsigned char noteNo, float angle, D3DXCOLOR* pColor = NULL);
 
 private:
 
@@ -78,15 +91,9 @@ private:
 
 private:
 
-	//キーボードプリミティブ
-	DXPrimitive m_PrimitiveKeyboard;
-
 	//テクスチャ
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DXIMAGE_INFO m_ImgInfo;
-
-	//キーボードデザイン
-	MTPianoKeyboardDesign m_KeyboardDesign;
 
 	//バッファ情報
 	MTBufInfo m_BufInfo[SM_MAX_NOTE_NUM];
@@ -125,7 +132,6 @@ private:
 	int _LoadTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 
-	int _RotateKey(unsigned char noteNo, float angle, D3DXCOLOR* pColor = NULL);
 	D3DXVECTOR3 _RotateYZ(float centerY, float centerZ, D3DXVECTOR3 p1, float angle);
 
 };

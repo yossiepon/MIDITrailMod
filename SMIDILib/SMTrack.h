@@ -70,11 +70,15 @@ public:
 	//コピー
 	int CopyFrom(SMTrack* pSrcTrack);
 
+// >>> add 20120728 yossiepon begin
+
 	//ポート番号上書き
 	int OverwritePortNo(short portNo);
 
 	//チャンネル番号上書き
 	int OverwriteChNo(short chNo);
+
+// <<< add 20120728 yossiepon end
 
 private:
 
@@ -106,7 +110,12 @@ private:
 
 	SMSimpleList m_List;
 	SMExDataMap m_ExDataMap;
+
+// >>> add 20120728 yossiepon begin
+
 	short overwritePortNo;
+
+// <<< add 20120728 yossiepon end
 
 	unsigned long _GetNoteKey(unsigned char portNo, unsigned char chNo, unsigned char noteNo);
 	int _GetNoteList(SMNoteList* pNoteList, unsigned long timeDivision);

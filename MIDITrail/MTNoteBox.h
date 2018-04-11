@@ -26,9 +26,6 @@ using namespace SMIDILib;
 //******************************************************************************
 // パラメータ定義
 //******************************************************************************
-//最大ポート数
-#define MT_NOTEBOX_MAX_PORT_NUM  (8)
-
 //最大発音ノート描画数
 #define MTNOTEBOX_MAX_ACTIVENOTE_NUM  (100)
 
@@ -50,7 +47,7 @@ public:
 	virtual ~MTNoteBox(void);
 
 	//生成
-	int Create(
+	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -58,44 +55,24 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
 	//描画
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
-	void Release();
+	virtual void Release();
 
 	//演奏チックタイム登録
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//演奏時間設定
-	void SetPlayTimeMSec(unsigned long playTimeMsec);
-
 	//リセット
-	void Reset();
+	virtual void Reset();
 
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-private:
-
-	//キー状態
-	enum KeyStatus {
-		BeforeNoteON,
-		NoteON,
-		AfterNoteOFF
-	};
-
-	//発音ノート情報構造体
-	struct NoteStatus {
-		bool isActive;
-		bool isHide;
-		KeyStatus keyStatus;
-		unsigned long index;
-		float keyDownRate;
-		//unsigned long startTime;
-	};
+protected:
 
 	//頂点バッファ構造体
 	struct MTNOTEBOX_VERTEX {
@@ -104,70 +81,72 @@ private:
 		DWORD		c;	//ディフューズ色
 	};
 
-private:
+protected:
 
 	//ノートデザイン
 	MTNoteDesign m_NoteDesign;
 
 	//ノートリスト
 	SMNoteList m_NoteList;
-	SMNoteList m_NoteListRT;
 
 	//全ノートボックス
 	DXPrimitive m_PrimitiveAllNotes;
 
 	//発音中ノートボックス
 	DXPrimitive m_PrimitiveActiveNotes;
-
-	//発音中ノート管理
-	unsigned long m_PlayTimeMSec;
 	unsigned long m_CurTickTime;
 	unsigned long m_CurNoteIndex;
-	float m_KeyDownRate[MT_NOTEBOX_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
-
-	//ノート発音状態情報
-	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
-	//スキップ状態
-	bool m_isSkipping;
-
-		//ピッチベンド情報
+	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//頂点バッファFVFフォーマット
-	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
-
-	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _CreateNoteStatus();
+	virtual int _CreateNoteStatus();
 
 	int _CreateVertexOfNote(
 			SMNote note,
 			MTNOTEBOX_VERTEX* pVertex,
 			unsigned long vertexOffset,
 			unsigned long* pIbIndex,
-			float keyDownRate = 0.0f,
+			unsigned long elapsedTime = 0xFFFFFFFF,
 			bool isEnablePitchBend = false
 		);
+	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	int _HideNoteBox(unsigned long index);
+	int _ShowNoteBox(unsigned long index);
+
+private:
+
+	//発音ノート情報構造体
+	struct NoteStatus {
+		bool isActive;
+		bool isHide;
+		unsigned long index;
+		unsigned long startTime;
+	};
+
+private:
+
+	//発音中ノートボックス
+	NoteStatus* m_pNoteStatus;
+
+	//スキップ状態
+	bool m_isSkipping;
+
+	//頂点バッファFVFフォーマット
+	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
+
+	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
+
 	unsigned long _GetVertexIndexOfNote(unsigned long index);
 
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	void _MakeMaterialForActiveNote(D3DMATERIAL9* pMaterial);
-
-	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateNoteStatus(
-				unsigned long playTimeMSec,
-				unsigned long decayDuration,
-				unsigned long releaseDuration,
-				SMNote note,
-				NoteStatus* pNoteStatus
-			);
-	int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-
-	int _HideNoteBox(unsigned long index);
-	int _ShowNoteBox(unsigned long index);
 
 };
 

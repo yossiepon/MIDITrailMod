@@ -37,7 +37,7 @@ public:
 	virtual ~MTPianoKeyboardCtrl(void);
 
 	//生成
-	int Create(
+	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -45,10 +45,10 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
 	void Release();
@@ -60,7 +60,7 @@ public:
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
 	//リセット
-	void Reset();
+	virtual void Reset();
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -68,7 +68,7 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-private:
+protected:
 
 	//キー状態
 	enum KeyStatus {
@@ -84,8 +84,6 @@ private:
 		unsigned long index;
 		float keyDownRate;
 	};
-
-private:
 
 	//ノートデザイン
 	MTNoteDesign m_NoteDesign;
@@ -106,9 +104,6 @@ private:
 	NoteStatus* m_pNoteStatus;
 	float m_KeyDownRate[SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
-	//スキップ状態
-	bool m_isSkipping;
-
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
@@ -116,19 +111,25 @@ private:
 	bool m_isEnable;
 
 	int _CreateNoteStatus();
-	int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
+	virtual int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateNoteStatus(
+	virtual int _UpdateNoteStatus(
 				unsigned long playTimeMSec,
 				unsigned long keyDownDuration,
 				unsigned long keyUpDuration,
 				SMNote note,
 				NoteStatus* pNoteStatus
 			);
-	int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 	float _GetPichBendShiftPosX(unsigned char portNo, unsigned char chNo);
+
+private:
+
+	//スキップ状態
+	bool m_isSkipping;
+
+	int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 
 };
 

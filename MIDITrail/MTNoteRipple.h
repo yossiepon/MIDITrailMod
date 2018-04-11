@@ -23,9 +23,6 @@ using namespace SMIDILib;
 //******************************************************************************
 // パラメータ定義
 //******************************************************************************
-//最大ポート数
-#define MTNOTERIPPLE_MAX_PORT_NUM  (8)
-
 //最大波紋描画数
 #define MTNOTERIPPLE_MAX_RIPPLE_NUM  (100)
 
@@ -47,7 +44,7 @@ public:
 	virtual ~MTNoteRipple(void);
 
 	//生成
-	int Create(
+	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -55,37 +52,34 @@ public:
 		);
 
 	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
-	void Release();
+	virtual void Release();
 
-	////ノートOFF登録
-	//void SetNoteOff(
-	//		unsigned char portNo,
-	//		unsigned char chNo,
-	//		unsigned char noteNo
-	//	);
+	//ノートOFF登録
+	void SetNoteOff(
+			unsigned char portNo,
+			unsigned char chNo,
+			unsigned char noteNo
+		);
 
-	////ノートON登録
-	//void SetNoteOn(
-	//		unsigned char portNo,
-	//		unsigned char chNo,
-	//		unsigned char noteNo,
-	//		unsigned char velocity
-	//	);
+	//ノートON登録
+	void SetNoteOn(
+			unsigned char portNo,
+			unsigned char chNo,
+			unsigned char noteNo,
+			unsigned char velocity
+		);
 
 	//演奏チックタイム登録
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//演奏時間設定
-	void SetPlayTimeMSec(unsigned long playTimeMsec);
-
 	//リセット
-	void Reset();
+	virtual void Reset();
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -93,31 +87,16 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
-private:
+protected:
 
-	////ノート発音状態構造体
-	//struct NoteStatus {
-	//	bool isActive;
-	//	unsigned char portNo;
-	//	unsigned char chNo;
-	//	unsigned char noteNo;
-	//	unsigned char velocity;
-	//	unsigned long regTime;
-	//};
-
-	//キー状態
-	enum KeyStatus {
-		BeforeNoteON,
-		NoteON,
-		AfterNoteOFF
-	};
-
-	//発音ノート情報構造体
+	//ノート発音状態構造体
 	struct NoteStatus {
 		bool isActive;
-		KeyStatus keyStatus;
-		unsigned long index;
-		float keyDownRate;
+		unsigned char portNo;
+		unsigned char chNo;
+		unsigned char noteNo;
+		unsigned char velocity;
+		unsigned long regTime;
 	};
 
 	//頂点バッファ構造体
@@ -131,12 +110,14 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-private:
+protected:
 
 	//描画系
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
-	D3DMATERIAL9 m_Material;
+
+	//再生時刻
+	unsigned long m_CurTickTime;
 
 	//カメラ
 	D3DXVECTOR3 m_CamVector;
@@ -147,17 +128,7 @@ private:
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//ノートリスト
-	SMNoteList m_NoteListRT;
-
-	//発音中ノート管理
-	unsigned long m_PlayTimeMSec;
-	unsigned long m_CurTickTime;
-	unsigned long m_CurNoteIndex;
-	float m_KeyDownRate[MTNOTERIPPLE_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
-
 	//ノート発音状態情報
-	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
 	//表示可否
@@ -166,27 +137,28 @@ private:
 	//スキップ状態
 	bool m_isSkipping;
 
+	virtual int _CreateNoteStatus();
+	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
+	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+
+private:
+
+	//描画系
+	D3DMATERIAL9 m_Material;
+
+	//ノート発音状態情報
+	NoteStatus* m_pNoteStatus;
+
 	int _CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
-	int _CreateNoteStatus();
-	int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,
-				SMNote note,
 				NoteStatus* pNoteStatus,
-				unsigned long rippleNo
+				unsigned long rippleNo,
+				unsigned long curTime,
+				bool* pIsTimeout
 			);
-	void _MakeMaterial(D3DMATERIAL9* pMaterial);
-	int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateStatusOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-	int _UpdateNoteStatus(
-				unsigned long playTimeMSec,
-				unsigned long decayDuration,
-				unsigned long releaseDuration,
-				SMNote note,
-				NoteStatus* pNoteStatus
-			);
-	int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-
 };
 
 

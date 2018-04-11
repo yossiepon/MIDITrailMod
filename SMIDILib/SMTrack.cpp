@@ -25,7 +25,9 @@ namespace SMIDILib {
 // コンストラクタ
 //******************************************************************************
 SMTrack::SMTrack(void)
+// >>> modify 20120728 yossiepon begin
  : m_List(sizeof(SMDataSet), 1000), overwritePortNo(-1)
+// <<< modify 20120728 yossiepon end
 {
 }
 
@@ -51,7 +53,9 @@ void SMTrack::Clear()
 	}
 	m_ExDataMap.clear();
 
+// >>> add 20120728 yossiepon begin
 	overwritePortNo = -1;
+// <<< add 20120728 yossiepon end
 
 	return;
 }
@@ -157,11 +161,13 @@ int SMTrack::GetDataSet(
 
 	//ポート番号
 	if (pProtNo != NULL) {
+// >>> modify 20120728 yossiepon begin
 		if(overwritePortNo == -1) {
 			*pProtNo = dataSet.portNo;
 		} else {
 			*pProtNo = (unsigned char)overwritePortNo;
 		}
+// <<< modify 20120728 yossiepon end	
 	}
 
 EXIT:;
@@ -169,7 +175,9 @@ EXIT:;
 }
 
 //******************************************************************************
+// >>> modify 20120728 yossiepon begin
 // サイズ取得
+// <<< modify 20120728 yossiepon end
 //******************************************************************************
 unsigned long SMTrack::GetSize()
 {
@@ -214,6 +222,8 @@ int SMTrack::CopyFrom(
 EXIT:;
 	return result;
 }
+
+// >>> add 20120728 yossiepon begin
 
 //******************************************************************************
 // ポート番号上書き
@@ -261,6 +271,8 @@ int SMTrack::OverwriteChNo(short chNo)
 EXIT:;
 	return result;
 }
+
+// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // ノートリスト取得
@@ -348,6 +360,8 @@ int SMTrack::_GetNoteList(
 		totalTime += deltaTime;
 		totalRealtime += _ConvTick2TimeMsec(deltaTime, tempo, timeDivision);
 
+// >>> modify 20120728 yossiepon begin
+
 		//METAイベント
 		if (event.GetType() == SMEvent::EventMeta) {
 
@@ -357,20 +371,24 @@ int SMTrack::_GetNoteList(
 				//テンポの設定
 				tempo = metaEvent.GetTempo();
 			} else if (metaEvent.GetType() == 0x05) {
-				OutputDebugString("lyrics");
 
 				//最後のノートを取得
 				result = pNoteList->GetNote(pNoteList->GetSize() - 1, &note);
 				if (result != 0) goto EXIT;
 
-				//歌詞を取得してリストに書き戻す
+				//歌詞を取得
 				std::string lyric;
 				metaEvent.GetText(&lyric);
-				strcpy_s(note.lyric, 8, lyric.c_str());
-				result = pNoteList->SetNote(pNoteList->GetSize() - 1, &note);
-				if (result != 0) goto EXIT;
+				//歌詞の先頭がSPC(0x20)以降であれば、歌詞を格納する
+				if(((unsigned char)lyric.c_str()[0]) > 0x20) {
+					::strncpy_s(note.lyric, sizeof(note.lyric), lyric.c_str(), _TRUNCATE);
+					result = pNoteList->SetNote(pNoteList->GetSize() - 1, &note);
+					if (result != 0) goto EXIT;
+				}
 			}
 		}
+
+// <<< modify 20120728 yossiepon end
 
 		//MIDIイベント以外はスキップ
 		if (event.GetType() != SMEvent::EventMIDI) continue;
@@ -391,7 +409,9 @@ int SMTrack::_GetNoteList(
 				note.velocity = midiEvent.GetVelocity();
 				note.startTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
 				note.endTime = 0;
+// >>> add 20120728 yossiepon begin
 				note.lyric[0] = '\0';
+// <<< add 20120728 yossiepon end
 			}
 			//登録済みの場合
 			else {
@@ -492,9 +512,11 @@ unsigned long SMTrack::_GetNoteKey(
 		unsigned char noteNo
 	)
 {
+// >>> add 20120728 yossiepon begin
 	if(overwritePortNo != -1) {
 		portNo = (unsigned char)overwritePortNo;
 	}
+// <<< add 20120728 yossiepon end
 
 	return ((portNo << 16) | (chNo << 8) | noteNo);
 }

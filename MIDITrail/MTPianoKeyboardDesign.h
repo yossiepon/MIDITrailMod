@@ -55,12 +55,12 @@ public:
 	virtual ~MTPianoKeyboardDesign(void);
 
 	//初期化
-	int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
+	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 	//ポート原点座標取得
 	float GetPortOriginX(unsigned char portNo);
-	float GetPortOriginY(unsigned char portNo);
-	float GetPortOriginZ(unsigned char portNo);
+	virtual float GetPortOriginY(unsigned char portNo);
+	virtual float GetPortOriginZ(unsigned char portNo);
 
 	//キー種別取得
 	KeyType GetKeyType(unsigned char noteNo);
@@ -120,7 +120,7 @@ public:
 	D3DXCOLOR GetBlackKeyColor();
 
 	//発音中キーカラー取得
-	D3DXCOLOR GetActiveKeyColor(unsigned char chNo, unsigned char noteNo, unsigned long elapsedTime);
+	D3DXCOLOR GetActiveKeyColor(unsigned char noteNo, unsigned long elapsedTime);
 
 	//白鍵テクスチャ座標取得
 	void GetWhiteKeyTexturePosTop(
@@ -168,15 +168,26 @@ public:
 		);
 
 	//キーボード基準座標取得
-	D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
+	virtual D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
 
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
 
 protected:
 
-	virtual int _LoadConfFile(const TCHAR* pSceneName);
+	//ポート情報
+	SMPortList m_PortList;
+	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
 
+	//キーボード配置情報
+	float m_KeyboardStepY;
+
+	//発音中キー色情報
+	int m_ActiveKeyColorDuration;
+	float m_ActiveKeyColorTailRate;
+
+	virtual void _Initialize();
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
 
 private:
 
@@ -186,14 +197,8 @@ private:
 		float keyCenterPosX;
 	} MTKeyInfo;
 
-private:
-
 	//キー情報配列
 	MTKeyInfo m_KeyInfo[SM_MAX_NOTE_NUM];
-
-	//ポート情報
-	SMPortList m_PortList;
-	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
 
 	//スケール情報
 	float m_WhiteKeyStep;
@@ -217,7 +222,6 @@ private:
 	int m_KeyUpDuration;
 
 	//キーボード配置情報
-	float m_KeyboardStepY;
 	float m_KeyboardStepZ;
 	int m_KeyboardMaxDispNum;
 
@@ -226,11 +230,8 @@ private:
 	D3DXCOLOR m_BlackKeyColor;
 
 	//発音中キー色情報
-	D3DXCOLOR m_ActiveKeyColor[16];
-	int m_ActiveKeyColorDuration;
-	float m_ActiveKeyColorTailRate;
+	D3DXCOLOR m_ActiveKeyColor;
 
-	void _Initialize();
 	void _InitKeyType();
 	void _InitKeyPos();
 
