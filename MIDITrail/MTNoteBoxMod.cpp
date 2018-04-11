@@ -360,7 +360,7 @@ int MTNoteBoxMod::_UpdateVertexOfActiveNotes(
 							&(pVertex[NOTE_VERTEX_NUM * activeNoteNum]),//頂点バッファ書き込み位置
 							NOTE_VERTEX_NUM * activeNoteNum,			//頂点バッファインデックスオフセット
 							&(pIndex[NOTE_INDEX_NUM * activeNoteNum]),	//インデックスバッファ書き込み位置
-							m_pNoteStatusMod[i].keyDownRate,				//ノート状態
+							m_pNoteStatusMod[i].keyDownRate,			//キー押し下げ率
 							true										//ピッチベンド適用
 						);
 			if (result != 0) goto EXIT;
@@ -415,20 +415,161 @@ int MTNoteBoxMod::_CreateVertexOfNote(
 		bool isEnablePitchBend
 	)
 {
+	int result = 0;
 	unsigned long i;
+	D3DXVECTOR3 vectorStartLU;
+	D3DXVECTOR3 vectorStartRU;
+	D3DXVECTOR3 vectorStartLD;
+	D3DXVECTOR3 vectorStartRD;
+	D3DXVECTOR3 vectorEndLU;
+	D3DXVECTOR3 vectorEndRU;
+	D3DXVECTOR3 vectorEndLD;
+	D3DXVECTOR3 vectorEndRD;
 	D3DXCOLOR color;
+	short pitchBendValue = 0;
+	unsigned char pitchBendSensitivity = SM_DEFAULT_PITCHBEND_SENSITIVITY;
 
-	// 基底クラスの頂点生成処理の呼び出し
-	MTNoteBox::_CreateVertexOfNote(note, pVertex, vertexOffset, pIndex, -1, isEnablePitchBend);
+	if (isEnablePitchBend) {
+		pitchBendValue =       m_pNotePitchBend->GetValue(note.portNo, note.chNo);
+		pitchBendSensitivity = m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo);
+	}
 
-	//基底クラスの設定色を上書きする
+	//     +   1+----+3   +
+	//    /|   / 上 /    /|         y x
+	//   + | 0+----+2   + |右       |/
+	// 左| +   7+----+5 | +      z--+0
+	//   |/    / 下 /   |/
+	//   +   6+----+4   + ← 4 が原点(0,0,0)
+	//
+
+	//ノートボックス頂点座標取得
+	if (keyDownRate == 0.0f) {
+		//通常ノートの場合
+		m_NoteDesignMod.GetNoteBoxVirtexPos(
+				note.startTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorStartLU,
+				&vectorStartRU,
+				&vectorStartLD,
+				&vectorStartRD,
+				pitchBendValue,
+				pitchBendSensitivity
+			);
+		m_NoteDesignMod.GetNoteBoxVirtexPos(
+				note.endTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorEndLU,
+				&vectorEndRU,
+				&vectorEndLD,
+				&vectorEndRD,
+				pitchBendValue,
+				pitchBendSensitivity
+			);
+	}
+	else {
+		//発音中ノートの場合：キー押し下げ率でサイズが変化する
+		m_NoteDesignMod.GetActiveNoteBoxVirtexPos(
+				note.startTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorStartLU,
+				&vectorStartRU,
+				&vectorStartLD,
+				&vectorStartRD,
+				pitchBendValue,
+				pitchBendSensitivity,
+				keyDownRate
+			);
+		m_NoteDesignMod.GetActiveNoteBoxVirtexPos(
+				note.endTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorEndLU,
+				&vectorEndRU,
+				&vectorEndLD,
+				&vectorEndRD,
+				pitchBendValue,
+				pitchBendSensitivity,
+				keyDownRate
+			);
+	}
+
+	//頂点座標・・・法線が異なるので頂点を8個に集約できない
+	//上の面
+	pVertex[0].p = vectorStartLU;
+	pVertex[1].p = vectorEndLU;
+	pVertex[2].p = vectorStartRU;
+	pVertex[3].p = vectorEndRU;
+	//下の面
+	pVertex[4].p = vectorStartRD;
+	pVertex[5].p = vectorEndRD;
+	pVertex[6].p = vectorStartLD;
+	pVertex[7].p = vectorEndLD;
+	//右の面
+	pVertex[8].p  = pVertex[2].p;
+	pVertex[9].p  = pVertex[3].p;
+	pVertex[10].p = pVertex[4].p;
+	pVertex[11].p = pVertex[5].p;
+	//左の面
+	pVertex[12].p = pVertex[6].p;
+	pVertex[13].p = pVertex[7].p;
+	pVertex[14].p = pVertex[0].p;
+	pVertex[15].p = pVertex[1].p;
+	//前の面
+	pVertex[16].p = pVertex[0].p;
+	pVertex[17].p = pVertex[2].p;
+	pVertex[18].p = pVertex[6].p;
+	pVertex[19].p = pVertex[4].p;
+	//後の面
+	pVertex[20].p = pVertex[3].p;
+	pVertex[21].p = pVertex[1].p;
+	pVertex[22].p = pVertex[5].p;
+	pVertex[23].p = pVertex[7].p;
+
+	//法線
+	//上の面
+	pVertex[0].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
+	pVertex[1].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
+	pVertex[2].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
+	pVertex[3].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
+	//下の面
+	pVertex[4].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
+	pVertex[5].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
+	pVertex[6].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
+	pVertex[7].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
+	//右の面
+	pVertex[8].n  = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
+	pVertex[9].n  = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
+	pVertex[10].n = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
+	pVertex[11].n = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
+	//左の面
+	pVertex[12].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
+	pVertex[13].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
+	pVertex[14].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
+	pVertex[15].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
+	//前の面
+	pVertex[16].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+	pVertex[17].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+	pVertex[18].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+	pVertex[19].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+	//後の面
+	pVertex[20].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
+	pVertex[21].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
+	pVertex[22].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
+	pVertex[23].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
 
 	//各頂点のディフューズ色
 	if (keyDownRate == 0.0f) {
-		color = m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+		color = m_NoteDesignMod.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 	}
 	else {
-		//発音中は発音開始からの経過時間によって色が変化する
+		//発音中はキー押し下げ率によって色が変化する
 		color = m_NoteDesignMod.GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, keyDownRate);
 	}
 

@@ -37,10 +37,25 @@ public:
 	float GetRippleHeight(float rate);
 	float GetRippleWidth(float rate);
 	float GetRippleAlpha(float rate);
-	float GetDecayCoefficient(float rate);
+	float GetDecayCoefficient(
+				float rate,					//サイズ比率
+				float saturation = 20.0f	//飽和レベル
+			);
 
-	//ポート原点座標取得
-	virtual float GetPortOriginZ(unsigned char portNo);
+	//発音中ノートボックス頂点座標取得
+	void GetActiveNoteBoxVirtexPos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
+				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
+				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
+				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
+				short pitchBendValue = 0,				//省略可：ピッチベンド
+				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
+				float rate = 0.0f						//省略可：サイズ比率
+			);
 
 	//発音中ノートボックスカラー取得
 	D3DXCOLOR GetActiveNoteBoxColor(

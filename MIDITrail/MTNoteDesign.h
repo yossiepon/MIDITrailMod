@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -93,6 +93,21 @@ public:
 				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
 			);
 
+	//発音中ノートボックス頂点座標取得
+	void GetActiveNoteBoxVirtexPos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
+				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
+				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
+				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
+				short pitchBendValue = 0,				//省略可：ピッチベンド
+				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
+				unsigned long elapsedTime = 0			//省略可：経過時間（ミリ秒）
+			);
+
 	//ライブモニタ用ノートボックス頂点座標取得
 	void GetNoteBoxVirtexPosLive(
 				unsigned long elapsedTime,	//経過時間（ミリ秒）
@@ -146,9 +161,7 @@ public:
 
 	//ポート原点座標取得
 	float GetPortOriginY(unsigned char portNo);
-// >>> modify 20120728 yossiepon begin
-	virtual float GetPortOriginZ(unsigned char portNo);
-// <<< modify 20120728 yossiepon end
+	float GetPortOriginZ(unsigned char portNo);
 
 	//世界座標配置移動ベクトル取得
 	D3DXVECTOR3 GetWorldMoveVector();
@@ -229,6 +242,7 @@ protected:
 // <<< modify 20161224 yossiepon end
 
 	float m_ActiveNoteWhiteRate;
+	float m_ActiveNoteBoxSizeRatio;
 
 // >>> modify access level 20161224 yossiepon begin
 private:

@@ -4,7 +4,7 @@
 //
 // ノートボックス描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -447,15 +447,11 @@ int MTNoteBox::_UpdateVertexOfActiveNotes(
 						);
 			if (result != 0) goto EXIT;
 
-			//発音中ノートがピッチベンドで移動する場合
 			//発音終了までオリジナルのノートを非表示にする
 			if (!(m_pNoteStatus[i].isHide)) {
-				if ((m_pNotePitchBend->GetValue(note.portNo, note.chNo) != 0)
-				 && (m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo) != 0)) {
-					result = _HideNoteBox(m_pNoteStatus[i].index);
-					if (result != 0) goto EXIT;
-					m_pNoteStatus[i].isHide = true;
-				}
+				result = _HideNoteBox(m_pNoteStatus[i].index);
+				if (result != 0) goto EXIT;
+				m_pNoteStatus[i].isHide = true;
 			}
 
 			activeNoteNum++;
@@ -557,30 +553,62 @@ int MTNoteBox::_CreateVertexOfNote(
 	//
 
 	//ノートボックス頂点座標取得
-	m_NoteDesign.GetNoteBoxVirtexPos(
-			note.startTime,
-			note.portNo,
-			note.chNo,
-			note.noteNo,
-			&vectorStartLU,
-			&vectorStartRU,
-			&vectorStartLD,
-			&vectorStartRD,
-			pitchBendValue,
-			pitchBendSensitivity
-		);
-	m_NoteDesign.GetNoteBoxVirtexPos(
-			note.endTime,
-			note.portNo,
-			note.chNo,
-			note.noteNo,
-			&vectorEndLU,
-			&vectorEndRU,
-			&vectorEndLD,
-			&vectorEndRD,
-			pitchBendValue,
-			pitchBendSensitivity
-		);
+	if (elapsedTime == 0xFFFFFFFF) {
+		//通常ノートの場合
+		m_NoteDesign.GetNoteBoxVirtexPos(
+				note.startTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorStartLU,
+				&vectorStartRU,
+				&vectorStartLD,
+				&vectorStartRD,
+				pitchBendValue,
+				pitchBendSensitivity
+			);
+		m_NoteDesign.GetNoteBoxVirtexPos(
+				note.endTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorEndLU,
+				&vectorEndRU,
+				&vectorEndLD,
+				&vectorEndRD,
+				pitchBendValue,
+				pitchBendSensitivity
+			);
+	}
+	else {
+		//発音中ノートの場合：経過時間でサイズが変化する
+		m_NoteDesign.GetActiveNoteBoxVirtexPos(
+				note.startTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorStartLU,
+				&vectorStartRU,
+				&vectorStartLD,
+				&vectorStartRD,
+				pitchBendValue,
+				pitchBendSensitivity,
+				elapsedTime
+			);
+		m_NoteDesign.GetActiveNoteBoxVirtexPos(
+				note.endTime,
+				note.portNo,
+				note.chNo,
+				note.noteNo,
+				&vectorEndLU,
+				&vectorEndRU,
+				&vectorEndLD,
+				&vectorEndRD,
+				pitchBendValue,
+				pitchBendSensitivity,
+				elapsedTime
+			);
+	}
 
 	//頂点座標・・・法線が異なるので頂点を8個に集約できない
 	//上の面

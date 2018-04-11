@@ -309,9 +309,9 @@ END
 
 STRINGTABLE 
 BEGIN
-// >>> modify 20161223 yossiepon begin
-    IDS_APP_TITLE           "MIDITrail 1.2.2 mod. yossiepon_20161223"
-// <<< modify 20161223 yossiepon end
+// >>> modify 20180404 yossiepon begin
+    IDS_APP_TITLE           "MIDITrail 1.2.3 mod. yossiepon_20180404"
+// <<< modify 20180404 yossiepon end
     IDC_MIDITRAIL           "MIDITRAIL"
 END
 
