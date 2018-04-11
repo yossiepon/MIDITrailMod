@@ -77,10 +77,8 @@ EXIT:;
 //******************************************************************************
 int MTPianoKeyboardMod::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		D3DXVECTOR3 moveVector1,
-		D3DXVECTOR3 moveVector2,
-		float scale,
-		float z,
+		D3DXVECTOR3 basePosVector,
+		D3DXVECTOR3 playbackPosVector,
 		float rollAngle
 	)
 {
@@ -89,18 +87,16 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMATRIX rotateMatrix1;
 	D3DXMATRIX rotateMatrix2;
 	D3DXMATRIX rotateMatrix3;
-	D3DXMATRIX moveMatrix1;
-	D3DXMATRIX moveMatrix2;
-	D3DXMATRIX moveMatrix3;
+	D3DXMATRIX basePosMatrix;
+	D3DXMATRIX playbackPosMatrix;
 	D3DXMATRIX worldMatrix;
 
 	//行列初期化
 	D3DXMatrixIdentity(&scaleMatrix);
 	D3DXMatrixIdentity(&rotateMatrix1);
 	D3DXMatrixIdentity(&rotateMatrix2);
-	D3DXMatrixIdentity(&rotateMatrix3);
-	D3DXMatrixIdentity(&moveMatrix1);
-	D3DXMatrixIdentity(&moveMatrix2);
+	D3DXMatrixIdentity(&basePosMatrix);
+	D3DXMatrixIdentity(&playbackPosMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
 	//回転行列
@@ -120,21 +116,20 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMatrixRotationX(&rotateMatrix3, D3DXToRadian(rollAngle));
 
 	//移動行列
-	D3DXMatrixTranslation(&moveMatrix1, moveVector1.x, moveVector1.y, moveVector1.z);
-	D3DXMatrixTranslation(&moveMatrix2, moveVector2.x, moveVector2.y, moveVector2.z);
-	D3DXMatrixTranslation(&moveMatrix3, 0.0f, 0.0f, z / scale);
+	D3DXMatrixTranslation(&basePosMatrix, basePosVector.x, basePosVector.y, basePosVector.z);
+	D3DXMatrixTranslation(&playbackPosMatrix, playbackPosVector.x, playbackPosVector.y, playbackPosVector.z);
 
 	//スケール行列
+	float scale = m_KeyboardDesignMod.GetKeyboardResizeRatio();
 	D3DXMatrixScaling(&scaleMatrix, scale, scale, scale);
 
-	//行列の合成：ピッチベンド移動１→鍵盤向き補正回転１・２→グリッド面まで移動３→ホイール回転３→スケール→再生面追従移動２
-	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &moveMatrix1);
+	//行列の合成：スケール→原点移動→回転１・２（鍵盤向き補正）→回転３（ホイール角度）→再生位置追従移動
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &basePosMatrix);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix1);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix2);
-	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &moveMatrix3);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix3);
-	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
-	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &moveMatrix2);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &playbackPosMatrix);
 
 	//変換行列設定
 	m_PrimitiveKeyboard.Transform(worldMatrix);

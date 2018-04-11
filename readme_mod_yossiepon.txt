@@ -1,13 +1,14 @@
 ピカピカMIDITrail 鍵盤方向自動切替・多ポート・歌詞対応等
 
-MIDITrail 1.2.3 mod. yossiepon_20180404
+MIDITrail 1.2.3 mod. yossiepon_20180412
 mail: yoshy@users.sourceforge.jp
 
-改造点 20180404：
+改造点 20180412：
 ・[UPDATE] 1.2.3をマージ
 ・[ADD] リップルと背景画像のブレンド方法を指定できる設定を追加
 　→INIファイル中のRippleセクション SrcBlendおよびDestBlend
 ・[FIX] 多ポートのシーケンスでPianoRoll2Dのキーボードが1つに集約されない不具合を修正
+・[FIX] PianoRoll3Dで多ポート時のキーボード基準位置がずれている不具合を修正
 
 改造点 20170528：
 ・[FIX] タイトル（シーケンス名）が空の場合、ファイル名を代替表示するよう修正

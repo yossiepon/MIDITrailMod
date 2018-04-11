@@ -90,19 +90,10 @@ D3DXVECTOR3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
 	angle += angle < 0.0f ? 360.0f : 0.0f;
 	bool flip = !((angle > 120.0f) && (angle < 300.0f));
 
-	float boardHeight = GetPlaybackSectionHeight();
-	float keyboardWidth = GetKeyboardWidth();
-
-	float rippleMargin = GetRippleMargin(); // * antiResizeScale;
-
-	//キーボード描画時にリサイズがかかってはならない相対座標用の逆リサイズ比
-	//対象：ポート間隔、リップルマージン
-	float antiResizeScale = keyboardWidth / boardHeight;
-
 	//ポート単位の原点座標
 	ox = GetPortOriginX();
-	oy = GetPortOriginY(keyboardIndex, antiResizeScale, flip);
-	oz = GetPortOriginZ(keyboardIndex, antiResizeScale, flip);
+	oy = GetPortOriginY(keyboardIndex, flip);
+	oz = GetPortOriginZ(keyboardIndex, flip);
 
 	return D3DXVECTOR3(ox, oy, oz);
 }
@@ -141,10 +132,12 @@ float MTPianoKeyboardDesignMod::GetPortOriginX()
 	//              |
 	//             -z
 
-	float originX = -GetKeyboardWidth() / 2.0f;
+	float originX = -GetPlaybackSectionHeight() / 2.0f;
 
 	//鍵盤の1/2の幅だけ高音側に移動
-	return originX + GetWhiteKeyStep() / 2.0f;
+	originX += GetWhiteKeyStep() * GetKeyboardResizeRatio() / 2.0f;
+
+	return originX;
 }
 
 //******************************************************************************
@@ -152,19 +145,19 @@ float MTPianoKeyboardDesignMod::GetPortOriginX()
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginY(
 		int keyboardIndex,
-		float antiResizeScale,
 		bool flip
 	)
 {
 	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
 	//      +y                                    
 	//       |                                    
-	// +z<---0-----------------------------Ch.15------------>-z
+	//       |                             Ch.15  
 	//       |                                    
 	//       |            +--------------+        
 	//       |      portC +--------------@ Ch.0   
 	//       |                             Ch.15  
 	//       |                                    
+	// +z<---0---------------------------------------------->-z
 	//       |            +--------------+        
 	//       |      portB +--------------@ Ch.0   
 	//       |                             Ch.15  
@@ -182,32 +175,36 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 	//              portA +--------------@ Ch.0   |
 	//                                     Ch.15  |
 	//                                            |
+	// +z<----------------------------------------0-------------->-z
 	//                    +--------------+        |
 	//              portB +--------------@ Ch.0   |
 	//                                     Ch.15  |
 	//                                            |
 	//                    +--------------+        |
-	// +z<----------portC +--------------@ Ch.0---0-------------->-z
+	//              portC +--------------@ Ch.0   |
 	//                                            |
 	//                                            | @:OriginY(for portA,B,C)
 	//                                           -y
 
-	float portWidth = GetChStep() * 16.0f;
+	float portWidth = GetPortWidth();
 
 	// TODO シングルキーボードの判定方法を再検討
 	int keyboardDispNum = GetKeyboardMaxDispNum() > 1 ? m_PortList.GetSize() : 1;
 
-	float originY = portWidth * (keyboardDispNum - keyboardIndex - 1);
+	float originY;
 
 	if (!flip) {
-		originY = 0; //-(originY + GetChStep() * 15.0f);
+		originY = -portWidth * (float)(keyboardDispNum - keyboardIndex * 2) / 2.0f;
+
+		//チャネル間隔の62.5%の高さだけ下に
+		originY -= GetChStep() * 0.625f;
 	}
+	else {
+		originY = portWidth * (float)(keyboardDispNum - (keyboardIndex + 1) * 2) / 2.0f;
 
-	//キーボードリサイズ後に正しいポート間隔となるよう逆比をかける
-	originY *= antiResizeScale;
-
-	//鍵盤の1/4の高さだけ下に
-	originY -= GetWhiteKeyHeight() / 4.0f;
+		//チャネル間隔の37.5%の高さだけ上に
+		originY += GetChStep() * 0.375f;
+	}
 
 	return originY;
 }
@@ -217,7 +214,6 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginZ(
 		int keyboardIndex,
-		float antiResizeScale,
 		bool flip
 	)
 {
@@ -252,14 +248,11 @@ float MTPianoKeyboardDesignMod::GetPortOriginZ(
 
 	float originZ;
 
-	//キーボードリサイズ後に正しいリップルマージンとなるよう逆比をかける
-	float rippleMargin = GetRippleSpacing() * antiResizeScale;
-
 	if (!flip) {
-		originZ = -(GetWhiteKeyLen() + rippleMargin);
+		originZ = -(GetWhiteKeyLen() * GetKeyboardResizeRatio() + GetRippleMargin());
 	}
 	else {
-		originZ = rippleMargin;
+		originZ = GetRippleMargin();
 	}
 
 	return originZ;
@@ -318,7 +311,7 @@ float MTPianoKeyboardDesignMod::GetKeyboardWidth()
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetGridHeight()
 {
-	return GetNoteStep() * 127;
+	return GetNoteStep() * 127.0f;
 }
 
 //******************************************************************************
@@ -326,7 +319,23 @@ float MTPianoKeyboardDesignMod::GetGridHeight()
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetGridWidth()
 {
-	return GetChStep() * 15;
+	return GetChStep() * 15.0f;
+}
+
+//******************************************************************************
+// ポート高さ取得
+//******************************************************************************
+float MTPianoKeyboardDesignMod::GetPortHeight()
+{
+	return GetGridHeight();
+}
+
+//******************************************************************************
+// ポート幅取得
+//******************************************************************************
+float MTPianoKeyboardDesignMod::GetPortWidth()
+{
+	return GetChStep() * 16.0f;
 }
 
 //******************************************************************************
@@ -359,6 +368,15 @@ float MTPianoKeyboardDesignMod::GetRippleSpacing()
 float MTPianoKeyboardDesignMod::GetRippleMargin()
 {
 	return GetRippleSpacing() * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM);
+}
+
+//******************************************************************************
+// キーボードリサイズ比取得
+//******************************************************************************
+float MTPianoKeyboardDesignMod::GetKeyboardResizeRatio()
+{
+	//キーボード基準の相対座標に適用するリサイズ比
+	return GetPlaybackSectionHeight() / GetKeyboardWidth();
 }
 
 //******************************************************************************

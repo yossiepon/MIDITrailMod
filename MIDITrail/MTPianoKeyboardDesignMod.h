@@ -28,12 +28,15 @@ public:
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 	//キーボード基準座標取得
-	D3DXVECTOR3 GetKeyboardBasePos(int keyboardIndex, float angle);
+	D3DXVECTOR3 GetKeyboardBasePos(
+			int keyboardIndex,
+			float angle
+		);
 
 	//ポート原点座標取得
 	float GetPortOriginX();
-	float GetPortOriginY(int keyboardIndex, float antiResizeScale, bool flip);
-	float GetPortOriginZ(int keyboardIndex, float antiResizeScale, bool flip);
+	float GetPortOriginY(int keyboardIndex, bool flip);
+	float GetPortOriginZ(int keyboardIndex, bool flip);
 
 	//ノートボックス高さ・幅取得
 	float GetNoteBoxHeight();
@@ -53,6 +56,10 @@ public:
 	float GetGridHeight();
 	float GetGridWidth();
 
+	//ポート高さ・幅取得
+	float GetPortHeight();
+	float GetPortWidth();
+
 	//再生面高さ・幅取得
 	float GetPlaybackSectionHeight();
 	float GetPlaybackSectionWidth();
@@ -62,6 +69,9 @@ public:
 
 	//波紋描画マージン取得
 	float GetRippleMargin();
+
+	//キーボードリサイズ比取得
+	float GetKeyboardResizeRatio();
 
 	//発音中キーカラー取得
 	D3DXCOLOR GetActiveKeyColor(

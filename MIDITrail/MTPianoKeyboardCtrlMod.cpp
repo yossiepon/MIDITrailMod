@@ -173,11 +173,7 @@ int MTPianoKeyboardCtrlMod::Transform(
 	unsigned char portNo = 0;
 	unsigned char chNo = 0;
 	int index;
-	D3DXVECTOR3 portWindowLU;
-	D3DXVECTOR3 portWindowRU;
-	D3DXVECTOR3 portWindowLD;
-	D3DXVECTOR3 portWindowRD;
-	D3DXVECTOR3 transformVector;
+	D3DXVECTOR3 basePosVector;
 	D3DXVECTOR3 playbackPosVector;
 
 	//アクティブポートフラグクリア
@@ -188,20 +184,6 @@ int MTPianoKeyboardCtrlMod::Transform(
 	//現在発音中ノートの頂点更新
 	result = _TransformActiveNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
-
-	//再生面頂点座標取得
-	m_NoteDesignMod.GetPlaybackSectionVirtexPos(
-			0,
-			&portWindowLU,
-			&portWindowRU,
-			&portWindowLD,
-			&portWindowRD
-		);
-
-	float boardHeight = m_KeyboardDesignMod.GetPlaybackSectionHeight();
-	float keyboardWidth = m_KeyboardDesignMod.GetKeyboardWidth();
-
-	float resizeSacle = boardHeight / keyboardWidth;
 
 	//移動ベクトル：再生面に追従する
 	playbackPosVector = m_NoteDesignMod.GetWorldMoveVector();
@@ -229,13 +211,13 @@ int MTPianoKeyboardCtrlMod::Transform(
 		}
 
 		//移動ベクトル：キーボード基準座標
-		transformVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rollAngle);
+		basePosVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rollAngle);
 
 		//移動ベクトル：ピッチベンドシフトを反映
-		transformVector.x += GetMaxPitchBendShift(portNo);
+		basePosVector.x += GetMaxPitchBendShift(portNo);
 
 		//キーボード移動
-		result = m_pPianoKeyboard[keyboardIndex]->Transform(pD3DDevice, transformVector, playbackPosVector, resizeSacle, portWindowLU.z, rollAngle);
+		result = m_pPianoKeyboard[keyboardIndex]->Transform(pD3DDevice, basePosVector, playbackPosVector, rollAngle);
 		if (result != 0) goto EXIT;
 	}
 
