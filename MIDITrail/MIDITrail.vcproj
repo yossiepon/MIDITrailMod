@@ -318,6 +318,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\MTNoteLyrics.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MTNoteLyrics.h"
+					>
+				</File>
+				<File
 					RelativePath=".\MTNoteRain.cpp"
 					>
 				</File>

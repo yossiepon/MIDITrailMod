@@ -493,6 +493,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuFileOpen();
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_ADD_FILE:
+					//ファイル追加
+					result = _OnMenuFileAdd();
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_EXIT:
 					//終了
 					DestroyWindow(hWnd);
@@ -709,6 +714,39 @@ int MIDITrailApp::_OnMenuFileOpen()
 
 		//HowToView表示
 		result = _DispHowToView();
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ファイル追加
+//******************************************************************************
+int MIDITrailApp::_OnMenuFileAdd()
+{
+	int result = 0;
+	TCHAR filePath[MAX_PATH] = {_T('\0')};
+	bool isSelected = false;
+
+	//演奏中はファイルオープンさせない
+	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//ファイルオープンOK
+	}
+	else {
+		//ファイルオープンNG
+		goto EXIT;
+	}
+
+	//ファイル選択ダイアログ表示
+	result = _SelectMIDIFile(filePath, MAX_PATH, &isSelected);
+	if (result != 0) goto EXIT;
+
+	//ファイル選択時の処理
+	if (isSelected) {
+		//MIDIファイル読み込み処理
+		result = _AddMIDIFile(filePath);
 		if (result != 0) goto EXIT;
 	}
 
@@ -1617,6 +1655,86 @@ EXIT:;
 }
 
 //******************************************************************************
+// MIDIファイル追加読み込み
+//******************************************************************************
+int MIDITrailApp::_AddMIDIFile(
+		const TCHAR* pFilePath
+	)
+{
+	int result = 0;
+	TCHAR* pPath = NULL;
+	TCHAR smfTempPath[_MAX_PATH] = {_T('\0')};
+	TCHAR smfDumpPath[_MAX_PATH] = {_T('\0')};
+	SMSeqData tmpSeqData;
+	SMFileReader smfReader;
+	short portNo = -1;
+	short chNo = -1;
+
+	//拡張子が*.midの場合
+	if (YNPathUtil::IsFileExtMatch(pFilePath, _T(".mid"))) {
+		pPath = (TCHAR*)pFilePath;
+	}
+	//拡張子が*.mid以外の場合
+	else {
+		//レコンポーザのデータファイルとみなしてSMFに変換する
+		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, _T("RCP"));
+		if (result != 0) goto EXIT;
+		result = m_RcpConv.Convert(pFilePath, smfTempPath);
+		if (result != 0) goto EXIT;
+		pPath = smfTempPath;
+	}
+
+	//デバッグモードであればMIDIファイル解析結果をダンプする
+	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
+		_tcscat_s(smfDumpPath, _MAX_PATH, pPath);
+		_tcscat_s(smfDumpPath, _MAX_PATH, _T(".dump.txt"));
+		smfReader.SetLogPath(smfDumpPath);
+	}
+
+	//ファイルを一時シーケンスに読み込み
+	result = smfReader.Load(pPath, &tmpSeqData);
+	if (result != 0) goto EXIT;
+
+	//ファイル名にポート番号が含まれていれば抽出
+	char *pPortNo = strstr(pPath, "port");
+	if(pPortNo != NULL) {
+		portNo = tolower(*(pPortNo + 4)) - 'a';
+	}
+
+	//ファイル名にチャンネル番号が含まれていれば抽出
+	char *pChNo = strstr(pPath, "ch");
+	if(pChNo != NULL) {
+		char bufChNo[3];
+		strncpy_s(bufChNo, 3, pChNo + 2, 2);
+		bufChNo[2] = '\0';
+		chNo = atoi(bufChNo) - 1;
+	}
+
+	//一時シーケンスをマージ
+	m_SeqData.AddSequence(tmpSeqData, portNo, chNo);
+
+	//ファイル読み込み時に再生スピードを100%に戻す：_CreateSceneでカウンタに反映
+	m_PlaySpeedRatio = 100;
+
+	//シーンオブジェクト生成
+	m_SceneType = m_SelectedSceneType;
+	result = _CreateScene(m_SceneType, &m_SeqData);
+	if (result != 0) goto EXIT;
+
+	//演奏状態変更
+	result = _ChangePlayStatus(Stop);
+	if (result != 0) goto EXIT;
+
+	m_isRewind = false;
+
+EXIT:;
+	if (_tcslen(smfTempPath) != 0) {
+		DeleteFile(smfTempPath);
+	}
+	return result;
+}
+
+//******************************************************************************
 // FPS更新
 //******************************************************************************
 void MIDITrailApp::_UpdateFPS()
@@ -1821,6 +1939,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 	//メニューID一覧
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
+		IDM_ADD_FILE,
 		IDM_EXIT,
 		IDM_PLAY,
 		IDM_STOP,
@@ -1854,6 +1973,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
 		//データ無, 停止, 再生中, 一時停止, メニューID, モニタ停止, モニタ中
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPEN_FILE
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_EXIT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_STOP

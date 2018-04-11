@@ -196,23 +196,42 @@ int MTPianoKeyboardCtrl::Transform(
 	float boardHeight = vectorLU.y - vectorLD.y;
 	float keyboardWidth = m_KeyboardDesign.GetPortOriginX(0) * -2.0f;
 
-	//各キーボードの移動
+	//移動ベクトル：再生面に追従する
+	moveVector2 = m_NoteDesign.GetWorldMoveVector();
+	moveVector2.x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+
+	//ピッチベンドシフトの最大量を求める
+	float maxAbsPitchBendShift = 0.0f;
+	float curMaxPitchBendShift = 0.0f;
+
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 
-		//移動ベクトル：キーボード基準座標
-		moveVector1 = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
+		float pitchBendShift = _GetPichBendShiftPosX(portNo, chNo);
+		if(maxAbsPitchBendShift < fabs(pitchBendShift)) {
 
-		//移動ベクトル：ピッチベンドシフトを反映
-		moveVector1.x += _GetPichBendShiftPosX(portNo, chNo);
-
-		//移動ベクトル：再生面に追従する
-		moveVector2 = m_NoteDesign.GetWorldMoveVector();
-		moveVector2.x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
-
-		//キーボード移動
-		result = m_pPianoKeyboard[chNo]->Transform(pD3DDevice, moveVector1, moveVector2, boardHeight / keyboardWidth, vectorLU.z, rollAngle);
-		if (result != 0) goto EXIT;
+			curMaxPitchBendShift = pitchBendShift;
+			maxAbsPitchBendShift = fabs(pitchBendShift);
+		}
 	}
+
+	//キーボードの移動
+	chNo = 0;
+
+	//移動ベクトル：キーボード基準座標
+	moveVector1 = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
+
+	//移動ベクトル：ピッチベンドシフトを反映
+	moveVector1.x += curMaxPitchBendShift;
+
+	//移動ベクトル：鍵盤の1/4の高さだけ下に
+	moveVector1.y -= m_KeyboardDesign.GetWhiteKeyHeight() / 4;
+
+	//移動ベクトル：鍵盤の長さ＋リップルマージンだけ手前に
+	moveVector1.z -= m_KeyboardDesign.GetWhiteKeyLen() + 0.002f * 100; //MTNOTERIPPLE_MAX_RIPPLE_NUM
+
+	//キーボード移動
+	result = m_pPianoKeyboard[chNo]->Transform(pD3DDevice, moveVector1, moveVector2, boardHeight / keyboardWidth, vectorLU.z, rollAngle);
+	if (result != 0) goto EXIT;
 
 EXIT:;
 	return result;
@@ -519,7 +538,7 @@ void MTPianoKeyboardCtrl::Release()
 			m_pPianoKeyboard[chNo] = NULL;
 		}
 	}
-	delete m_pNoteStatus;
+	delete [] m_pNoteStatus;
 	m_pNoteStatus = NULL;
 }
 

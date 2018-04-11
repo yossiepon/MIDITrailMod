@@ -1570,7 +1570,7 @@ int MTPianoKeyboard::Transform(
 
 	//回転行列
 	D3DXMatrixRotationX(&rotateMatrix1, D3DXToRadian(-90.0f));
-	D3DXMatrixRotationZ(&rotateMatrix2, D3DXToRadian(90.0f));
+	D3DXMatrixRotationZ(&rotateMatrix2, D3DXToRadian(-90.0f));
 	D3DXMatrixRotationX(&rotateMatrix3, D3DXToRadian(rollAngle));
 
 	//移動行列
@@ -1581,8 +1581,7 @@ int MTPianoKeyboard::Transform(
 	//スケール行列
 	D3DXMatrixScaling(&scaleMatrix, scale, scale, scale);
 
-	//行列の合成：ピッチベンド移動１→鍵盤向き補正回転１・２→ホイール回転３→スケール→再生面追従移動２
-	//ピッチベンドによるシフトを先に適用してから回転する
+	//行列の合成：ピッチベンド移動１→鍵盤向き補正回転１・２→グリッド面まで移動３→ホイール回転３→スケール→再生面追従移動２
 	D3DXMatrixMultiply(&worldMatrix1, &moveMatrix1, &rotateMatrix1);
 	D3DXMatrixMultiply(&worldMatrix2, &worldMatrix1, &rotateMatrix2);
 	D3DXMatrixMultiply(&worldMatrix1, &worldMatrix2, &moveMatrix3);
@@ -1667,7 +1666,7 @@ int MTPianoKeyboard::Draw(
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	// アルファ演算：引数1を使用  引数1：ポリゴン
+	// アルファ演算：乗算  引数1：テクスチャ  引数2：ポリゴン
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
@@ -1676,9 +1675,17 @@ int MTPianoKeyboard::Draw(
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
+	//レンダリングステート設定：加算合成
+	//pD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_ONE );
+	//pD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_ONE );
+
 	//キーボードの描画
 	result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture);
 	if (result != 0) goto EXIT;
+
+	//レンダリングステート設定：通常のアルファ合成
+	//pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	//pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 EXIT:;
 	return result;

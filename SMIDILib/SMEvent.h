@@ -65,6 +65,9 @@ public:
 	//ステータス取得
 	unsigned char GetStatus();
 
+	//ステータス設定
+	void SetStatus(unsigned char status);
+
 	//メタ種別取得
 	unsigned char GetMetaType();
 

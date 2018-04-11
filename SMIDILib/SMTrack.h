@@ -70,6 +70,12 @@ public:
 	//コピー
 	int CopyFrom(SMTrack* pSrcTrack);
 
+	//ポート番号上書き
+	int OverwritePortNo(short portNo);
+
+	//チャンネル番号上書き
+	int OverwriteChNo(short chNo);
+
 private:
 
 	//イベントデータ
@@ -100,6 +106,7 @@ private:
 
 	SMSimpleList m_List;
 	SMExDataMap m_ExDataMap;
+	short overwritePortNo;
 
 	unsigned long _GetNoteKey(unsigned char portNo, unsigned char chNo, unsigned char noteNo);
 	int _GetNoteList(SMNoteList* pNoteList, unsigned long timeDivision);

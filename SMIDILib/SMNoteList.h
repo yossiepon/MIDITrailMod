@@ -32,6 +32,7 @@ typedef struct {
 	unsigned char velocity;
 	unsigned long startTime;
 	unsigned long endTime;
+	char lyric[9];
 } SMNote;
 
 //******************************************************************************

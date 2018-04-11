@@ -361,6 +361,88 @@ EXIT:;
 }
 
 //******************************************************************************
+// 歌詞描画
+//******************************************************************************
+int DXPrimitive::DrawLyrics(
+		LPDIRECT3DDEVICE9 pD3DDevice,
+		LPDIRECT3DTEXTURE9 *pTextures,
+		int drawPrimitiveNum
+	)
+{
+	int result = 0;
+	HRESULT hresult = D3D_OK;
+	unsigned long primitiveNum = 0;
+
+	if (m_IsVertexLocked || m_IsIndexLocked) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	//頂点が存在しなければ何もしない
+	if (m_pVertexBuffer == NULL) goto EXIT;
+
+	//プリミティブ数取得
+	primitiveNum = drawPrimitiveNum;
+
+	for(unsigned long i = 0; i < primitiveNum / 2; i++) {
+
+		//レンダリングパイプラインに頂点バッファを設定
+		hresult = pD3DDevice->SetStreamSource(
+						0,					//ストリーム番号
+						m_pVertexBuffer,	//ストリームデータ
+						m_VertexSize * 6 * i,	//頂点データ開始オフセット位置(bytes)
+						m_VertexSize		//頂点データ構造体サイズ
+					);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, m_VertexSize);
+			goto EXIT;
+		}
+
+		//レンダリングパイプラインに頂点バッファFVFフォーマットを設定
+		hresult = pD3DDevice->SetFVF(m_FVFFormat);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, m_FVFFormat);
+			goto EXIT;
+		}
+
+		//レンダリングパイプラインにマテリアルを設定
+		hresult = pD3DDevice->SetMaterial(&m_Material);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, 0);
+			goto EXIT;
+		}
+
+		//レンダリングパイプラインにテクスチャを設定：ステージ0
+		hresult = pD3DDevice->SetTexture(0, pTextures[i]);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD)pTextures[i]);
+			goto EXIT;
+		}
+
+		//レンダリングパイプラインに移動マトリックスをセット
+		hresult = pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldMatrix);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, 0);
+			goto EXIT;
+		}
+
+		//インデックスなしプリミティブの描画
+		hresult = pD3DDevice->DrawPrimitive(
+						m_PrimitiveType,	//プリミティブ種別
+						0, //i * 2,				//頂点バッファ開始インデックス
+						2					//プリミティブ数
+					);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, primitiveNum);
+			goto EXIT;
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // 頂点バッファロック
 //******************************************************************************
 int DXPrimitive::LockVertex(

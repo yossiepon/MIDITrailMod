@@ -25,7 +25,7 @@ namespace SMIDILib {
 // コンストラクタ
 //******************************************************************************
 SMTrack::SMTrack(void)
- : m_List(sizeof(SMDataSet), 1000)
+ : m_List(sizeof(SMDataSet), 1000), overwritePortNo(-1)
 {
 }
 
@@ -50,6 +50,8 @@ void SMTrack::Clear()
 		delete [] (exdataitr->second);
 	}
 	m_ExDataMap.clear();
+
+	overwritePortNo = -1;
 
 	return;
 }
@@ -155,7 +157,11 @@ int SMTrack::GetDataSet(
 
 	//ポート番号
 	if (pProtNo != NULL) {
-		*pProtNo = dataSet.portNo;
+		if(overwritePortNo == -1) {
+			*pProtNo = dataSet.portNo;
+		} else {
+			*pProtNo = (unsigned char)overwritePortNo;
+		}
 	}
 
 EXIT:;
@@ -163,7 +169,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// コピー
+// サイズ取得
 //******************************************************************************
 unsigned long SMTrack::GetSize()
 {
@@ -202,6 +208,53 @@ int SMTrack::CopyFrom(
 		if (result != 0) goto EXIT;
 
 		result = AddDataSet(deltaTime, &event, portNo);
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ポート番号上書き
+//******************************************************************************
+int SMTrack::OverwritePortNo(short portNo)
+{
+	int result = 0;
+
+	overwritePortNo = portNo;
+
+	return result;
+}
+
+//******************************************************************************
+// チャンネル番号上書き
+//******************************************************************************
+int SMTrack::OverwriteChNo(short chNo)
+{
+	int result = 0;
+	unsigned long index = 0;
+	SMEvent event;
+
+	if(chNo == -1) {
+		goto EXIT;
+	}
+
+	for (index = 0; index < GetSize(); index++) {
+
+		//リストからノートを取得する
+		result = m_List.GetItem(index, &event);
+		if (result != 0) goto EXIT;
+
+		if(event.GetType() != SMEvent::EventMIDI) {
+			continue;
+		}
+
+		//チャンネル番号を上書きしてリストに書き戻す
+		unsigned char status = event.GetStatus();
+		event.SetStatus((status & 0xf0) | (chNo & 0x0f));
+
+		result = m_List.SetItem(index, &event);
 		if (result != 0) goto EXIT;
 	}
 
@@ -295,11 +348,27 @@ int SMTrack::_GetNoteList(
 		totalTime += deltaTime;
 		totalRealtime += _ConvTick2TimeMsec(deltaTime, tempo, timeDivision);
 
-		//テンポの変化を確認
+		//METAイベント
 		if (event.GetType() == SMEvent::EventMeta) {
+
 			metaEvent.Attach(&event);
+
 			if (metaEvent.GetType() == 0x51) {
+				//テンポの設定
 				tempo = metaEvent.GetTempo();
+			} else if (metaEvent.GetType() == 0x05) {
+				OutputDebugString("lyrics");
+
+				//最後のノートを取得
+				result = pNoteList->GetNote(pNoteList->GetSize() - 1, &note);
+				if (result != 0) goto EXIT;
+
+				//歌詞を取得してリストに書き戻す
+				std::string lyric;
+				metaEvent.GetText(&lyric);
+				strcpy_s(note.lyric, 8, lyric.c_str());
+				result = pNoteList->SetNote(pNoteList->GetSize() - 1, &note);
+				if (result != 0) goto EXIT;
 			}
 		}
 
@@ -322,6 +391,7 @@ int SMTrack::_GetNoteList(
 				note.velocity = midiEvent.GetVelocity();
 				note.startTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
 				note.endTime = 0;
+				note.lyric[0] = '\0';
 			}
 			//登録済みの場合
 			else {
@@ -422,6 +492,10 @@ unsigned long SMTrack::_GetNoteKey(
 		unsigned char noteNo
 	)
 {
+	if(overwritePortNo != -1) {
+		portNo = (unsigned char)overwritePortNo;
+	}
+
 	return ((portNo << 16) | (chNo << 8) | noteNo);
 }
 
