@@ -13,6 +13,12 @@
 #include "SMEventMeta.h"
 #include <new>
 
+// >>> add 20170528 yossiepon begin
+#include <algorithm>
+#include <functional>
+#include <cctype>
+// <<< add 20170528 yossiepon end
+
 using namespace YNBaseLib;
 
 namespace SMIDILib {
@@ -126,6 +132,12 @@ int SMEventMeta::GetText(
 	pBuf[size] = '\0';
 
 	*pText = pBuf;
+
+// >>> add 20170528 yossiepon begin
+	// rtrim
+	pText->erase(std::find_if(pText->rbegin(), pText->rend(),
+		std::not1(std::ptr_fun<int, int>(std::isspace))).base(), pText->end());
+// <<< add 20170528 yossiepon end
 
 EXIT:;
 	delete [] pBuf;
