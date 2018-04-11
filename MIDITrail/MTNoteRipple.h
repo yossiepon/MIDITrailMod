@@ -44,7 +44,9 @@ public:
 	virtual ~MTNoteRipple(void);
 
 	//生成
+// >>> modify 20120728 yossiepon begin
 	virtual int Create(
+// <<< modify 20120728 yossiepon end
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -52,13 +54,19 @@ public:
 		);
 
 	//更新
+// >>> modify 20120728 yossiepon begin
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
+// <<< modify 20120728 yossiepon end
 
 	//描画
+// >>> modify 20120728 yossiepon begin
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify 20120728 yossiepon end
 
 	//解放
+// >>> modify 20120728 yossiepon begin
 	virtual void Release();
+// <<< modify 20120728 yossiepon end
 
 	//ノートOFF登録
 	void SetNoteOff(
@@ -79,7 +87,9 @@ public:
 	void SetCurTickTime(unsigned long curTickTime);
 
 	//リセット
+// >>> modify 20120728 yossiepon begin
 	virtual void Reset();
+// <<< modify 20120728 yossiepon end
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -87,6 +97,7 @@ public:
 	//スキップ状態
 	void SetSkipStatus(bool isSkipping);
 
+// >>> modify 20120728 yossiepon begin
 protected:
 
 	//ノート発音状態構造体
@@ -143,8 +154,11 @@ protected:
 	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 
+// <<< modify 20120728 yossiepon end
+
 private:
 
+// >>> modify 20120728 yossiepon begin
 	//描画系
 	D3DMATERIAL9 m_Material;
 
@@ -159,6 +173,9 @@ private:
 				unsigned long curTime,
 				bool* pIsTimeout
 			);
+
+// <<< modify 20120728 yossiepon end
+
 };
 
 

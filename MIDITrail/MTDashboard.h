@@ -74,7 +74,9 @@ public:
 
 	//‰‰‘tŒo‰ßŽžŠÔ‚Æ‘‰‰‘tŽžŠÔ‚Ì“o˜^
 	void SetPlayTimeSec(unsigned long playTimeSec);
+// >>> add 20120729 yossiepon begin
 	void SetPlayTimeMSec(unsigned long playTimeSec);
+// <<< add 20120729 yossiepon end
 	void SetTotalPlayTimeSec(unsigned long totalPlayTimeSec);
 
 	//ƒeƒ“ƒ|“o˜^

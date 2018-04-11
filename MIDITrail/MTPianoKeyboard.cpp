@@ -1571,6 +1571,7 @@ int MTPianoKeyboard::Transform(
 	return result;
 }
 
+// >>> add 20120729 yossiepon begin
 //******************************************************************************
 // 移動
 //******************************************************************************
@@ -1585,6 +1586,7 @@ int MTPianoKeyboard::Transform(
 {
 	return YN_SET_ERR("Program error.", 0, 0);
 }
+// <<< add 20120729 yossiepon end
 
 //******************************************************************************
 // キーのリセット
@@ -1641,6 +1643,7 @@ EXIT:;
 	return result;
 }
 
+// >>> add 20120728 yossiepon begin
 //******************************************************************************
 // キーの押し込み
 //******************************************************************************
@@ -1653,6 +1656,7 @@ int MTPianoKeyboard::PushKey(
 {
 	return YN_SET_ERR("Program error.", 0, 0);
 }
+// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // 描画
@@ -1668,7 +1672,9 @@ int MTPianoKeyboard::Draw(
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+// >>> modify 20120728 yossiepon begin
 	// アルファ演算：乗算  引数1：テクスチャ  引数2：ポリゴン
+// <<< modify 20120728 yossiepon end
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);

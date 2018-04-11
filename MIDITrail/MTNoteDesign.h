@@ -144,7 +144,9 @@ public:
 
 	//ポート原点座標取得
 	float GetPortOriginY(unsigned char portNo);
+// >>> modify 20120728 yossiepon begin
 	virtual float GetPortOriginZ(unsigned char portNo);
+// <<< modify 20120728 yossiepon end
 
 	//世界座標配置移動ベクトル取得
 	D3DXVECTOR3 GetWorldMoveVector();
@@ -173,6 +175,7 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
+// >>> modify 20120728 yossiepon begin
 protected:
 
 	float m_RippleHeight;
@@ -186,8 +189,11 @@ protected:
 	virtual void _Clear();
 	virtual int _LoadConfFile(const TCHAR* pSceneName);
 
+// <<< modify 20120728 yossiepon end
+
 private:
 
+// >>> modify 20120728 yossiepon begin
 	unsigned long m_TimeDivision;
 	float m_QuarterNoteLength;
 	float m_NoteBoxHeight;
@@ -196,16 +202,21 @@ private:
 	float m_ChStep;
 	float m_PictBoardRelativePos;
 
+// <<< modify 20120728 yossiepon end
+
 	D3DXCOLOR m_NoteColor[16];
 	D3DXCOLOR m_ActiveNoteEmissive;
 	D3DXCOLOR m_GridLineColor;
 	D3DXCOLOR m_PlaybackSectionColor;
 
+// >>> modify 20120728 yossiepon begin
 	int m_ActiveNoteDuration;
 	int m_RippleDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
+
+// <<< modify 20120728 yossiepon end
 
 };
 
