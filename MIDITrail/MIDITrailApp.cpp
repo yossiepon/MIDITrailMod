@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,9 +21,11 @@
 #include "MTScenePianoRoll2DMod.h"
 // <<< modify 20120729 yossiepon end
 #include "MTScenePianoRollRain.h"
+#include "MTScenePianoRollRain2D.h"
 #include "MTScenePianoRoll3DLive.h"
 #include "MTScenePianoRoll2DLive.h"
 #include "MTScenePianoRollRainLive.h"
+#include "MTScenePianoRollRain2DLive.h"
 
 using namespace YNBaseLib;
 
@@ -40,6 +42,9 @@ MIDITrailApp::MIDITrailApp(void)
 {
 	m_pThis = this;
 	m_hInstance = NULL;
+	m_hAppMutex = NULL;
+	m_hMailSlot = NULL;
+	m_isExitApp = false;
 
 	//ウィンドウ系
 	m_hWnd = NULL;
@@ -59,6 +64,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_PlayStatus = NoData;
 	m_isRepeat = false;
 	m_isRewind = false;
+	m_isOpenFileAfterStop = false;
 	ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
 	m_PlaySpeedRatio = 100;
 
@@ -68,10 +74,18 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnablePitchBend = true;
 	m_isEnableStars = true;
 	m_isEnableCounter = true;
+	m_isEnableFileName = false;
 
 	//シーン種別
 	m_SceneType = Title;
 	m_SelectedSceneType = PianoRoll3D;
+
+	//自動視点保存
+	m_isAutoSaveViewpoint = false;
+
+	//プレーヤー制御
+	m_AllowMultipleInstances = 0;
+	m_AutoPlaybackAfterOpenFile = 0;
 
 	//リワインド／スキップ制御
 	m_SkipBackTimeSpanInMsec = 10000;
@@ -80,6 +94,9 @@ MIDITrailApp::MIDITrailApp(void)
 	//演奏スピード制御
 	m_SpeedStepInPercent = 1;
 	m_MaxSpeedInPercent = 400;
+
+	//次回オープン対象ファイルパス
+	m_NextFilePath[0] = _T('\0');
 }
 
 //******************************************************************************
@@ -100,6 +117,7 @@ int MIDITrailApp::Initialize(
 	)
 {
 	int result = 0;
+	bool isExitApp = false;
 
 	m_hInstance = hInstance;
 
@@ -119,6 +137,24 @@ int MIDITrailApp::Initialize(
 	result = _LoadPlayerConf();
 	if (result != 0) goto EXIT;
 
+	//二重起動チェック
+	result = _CheckMultipleInstances(&m_isExitApp);
+	if (result != 0) goto EXIT;
+
+	//二重起動抑止の場合
+	if (m_isExitApp) {
+		_PostFilePathToFirstMIDITrail(pCmdLine);
+		goto EXIT;
+	}
+
+	//メールスロット作成
+	result = _CreateMailSlot();
+	if (result != 0) goto EXIT;
+
+	//メッセージキュー初期化
+	result = m_MsgQueue.Initialize(10000);
+	if (result != 0) goto EXIT;
+
 	//ウィンドウクラス登録
 	result = _RegisterClass(hInstance);
 	if (result != 0) goto EXIT;
@@ -130,7 +166,7 @@ int MIDITrailApp::Initialize(
 	//アクセラレータテーブル読み込み
 	m_Accel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MIDITRAIL));
 	if (m_Accel == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hInstance);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 
@@ -149,6 +185,10 @@ int MIDITrailApp::Initialize(
 
 	//シーン種別読み込み
 	result = _LoadSceneType();
+	if (result != 0) goto EXIT;
+
+	//シーン設定読み込み
+	result = _LoadSceneConf();
 	if (result != 0) goto EXIT;
 
 	//メニュー選択マーク更新
@@ -196,6 +236,16 @@ int MIDITrailApp::Terminate()
 		m_pScene = NULL;
 	}
 
+	if (m_hAppMutex != NULL) {
+		CloseHandle(m_hAppMutex);
+		m_hAppMutex = NULL;
+	}
+
+	if (m_hMailSlot != NULL) {
+		CloseHandle(m_hMailSlot);
+		m_hMailSlot = NULL;
+	}
+
 	return result;
 }
 
@@ -210,6 +260,8 @@ int MIDITrailApp::Run()
 	MSG msg;
 	WINDOWPLACEMENT wndpl;
 
+	if (m_isExitApp) goto EXIT;
+
 	m_PrevTime = timeGetTime();
 
 	//メッセージループ
@@ -223,7 +275,7 @@ int MIDITrailApp::Run()
 					);
 		if (isExist) {
 			if (msg.message == WM_QUIT) {
-				quitCode = msg.wParam;
+				quitCode = (int)msg.wParam;
 				break;
 			}
 			else {
@@ -232,6 +284,11 @@ int MIDITrailApp::Run()
 			}
 		}
 		else if (m_pScene != NULL) {
+			//シーケンサーメッセージ処理
+			result = _SequencerMsgProc();
+			if (result != 0) {
+				YN_SHOW_ERR(m_hWnd);
+			}
 			//ウィンドウ表示状態でのみ描画を行う
 			GetWindowPlacement(m_hWnd, &wndpl);
 			if ((wndpl.showCmd != SW_HIDE) &&
@@ -260,6 +317,7 @@ int MIDITrailApp::Run()
 		}
     }
 
+EXIT:;
 	//関数がWM_QUITメッセージを受け取って正常に終了する場合は
 	//wParamに格納されている終了コードを返す
 	//メッセージループに入る前に終了する場合は0を返す
@@ -409,7 +467,7 @@ int MIDITrailApp::_SetWindowSize()
 					SWP_NOMOVE		//ウィンドウ位置指定
 				);
 	if (!bresult) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)m_hWnd);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
 		goto EXIT;
 	}
 
@@ -569,6 +627,17 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuSelectSceneType(PianoRollRain);
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_VIEW_PIANOROLLRAIN2D:
+					//ビュー変更：ピアノロールレイン2D
+					result = _OnMenuSelectSceneType(PianoRollRain2D);
+					if (result != 0) goto EXIT;
+					break;
+				//TAG: シーン追加
+				case IDM_AUTO_SAVE_VIEWPOINT:
+					//自動視点保存
+					result = _OnMenuAutoSaveViewpoint();
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_RESET_VIEWPOINT:
 					//視点リセット
 					result = _OnMenuResetViewpoint();
@@ -646,11 +715,6 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			hdc = BeginPaint(hWnd, &ps);
 			EndPaint(hWnd, &ps);
 			break;
-		case WM_SEQUENCER_MESSAGE:
-			//シーケンサメッセージ
-			result = _OnRecvSequencerMsg(wParam, lParam);
-			if (result != 0) goto EXIT;
-			break;
 		case WM_KEYDOWN:
 			//キー押下メッセージ
 			result = _OnKeyDown(wParam, lParam);
@@ -679,6 +743,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			//戻り値は無視する
 			PostQuitMessage(0);
 			break;
+		case WM_FILEPATH_POSTED:
+			//ファイルパスポスト通知
+			result = _OnFilePathPosted();
+			if (result != 0) goto EXIT;
+			break;
 		default:
 			lresult = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
@@ -700,14 +769,16 @@ int MIDITrailApp::_OnMenuFileOpen()
 	TCHAR filePath[MAX_PATH] = {_T('\0')};
 	bool isSelected = false;
 
-	//演奏中はファイルオープンさせない
-	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ファイルオープンOK
-	}
-	else {
-		//ファイルオープンNG
-		goto EXIT;
-	}
+	////演奏中はファイルオープンさせない
+	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+	//	//ファイルオープンOK
+	//}
+	//else {
+	//	//ファイルオープンNG
+	//	goto EXIT;
+	//}
+
+	//演奏中でもファイルオープン可とする
 
 	//ファイル選択ダイアログ表示
 	result = _SelectMIDIFile(filePath, MAX_PATH, &isSelected);
@@ -715,12 +786,8 @@ int MIDITrailApp::_OnMenuFileOpen()
 
 	//ファイル選択時の処理
 	if (isSelected) {
-		//MIDIファイル読み込み処理
-		result = _LoadMIDIFile(filePath);
-		if (result != 0) goto EXIT;
-
-		//HowToView表示
-		result = _DispHowToView();
+		//演奏/モニタ停止とファイルオープン処理
+		result = _StopPlaybackAndOpenFile(filePath);
 		if (result != 0) goto EXIT;
 	}
 
@@ -774,7 +841,7 @@ int MIDITrailApp::_OnMenuPlay()
 
 	if (m_PlayStatus == Stop) {
 		//シーケンサ初期化
-		result = m_Sequencer.Initialize(m_hWnd, WM_SEQUENCER_MESSAGE);
+		result = m_Sequencer.Initialize(&m_MsgQueue);
 		if (result != 0) goto EXIT;
 
 		//シーケンサにポート情報を登録
@@ -985,11 +1052,17 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 	//シーケンサ初期化
 	//  シーケンサは再生終了時にデバイスをクローズしないため
 	//  初期化することによってクローズさせる
-	result = m_Sequencer.Initialize(m_hWnd, WM_SEQUENCER_MESSAGE);
+	result = m_Sequencer.Initialize(&m_MsgQueue);
 	if (result != 0) goto EXIT;
 	
 	//ライブモニタ用シーン生成
 	if (m_PlayStatus != MonitorOFF) {
+		//視点保存
+		if (m_isAutoSaveViewpoint) {
+			result = _OnMenuSaveViewpoint();
+			if (result != 0) goto EXIT;
+		}
+		
 		//シーン種別
 		m_SceneType = m_SelectedSceneType;
 		
@@ -999,7 +1072,7 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 	}
 	
 	//ライブモニタ初期化
-	result = m_LiveMonitor.Initialize(m_hWnd, WM_SEQUENCER_MESSAGE);
+	result = m_LiveMonitor.Initialize(&m_MsgQueue);
 	if (result != 0) goto EXIT;
 	result = _SetMonitorPortDev(&m_LiveMonitor, m_pScene);
 	if (result != 0) goto EXIT;
@@ -1055,7 +1128,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// メニュー選択：
+// メニュー選択：シーン種別
 //******************************************************************************
 int MIDITrailApp::_OnMenuSelectSceneType(
 		MIDITrailApp::SceneType type
@@ -1083,6 +1156,12 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 
 	//停止中の場合はシーンを再構築
 	if ((m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//視点保存
+		if (m_isAutoSaveViewpoint) {
+			result = _OnMenuSaveViewpoint();
+			if (result != 0) goto EXIT;
+		}
+
 		m_SceneType = m_SelectedSceneType;
 		if (m_PlayStatus == Stop) {
 			//プレイヤのシーン種別切り替え
@@ -1095,6 +1174,27 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 			if (result != 0) goto EXIT;
 		}
 	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：自動視点保存
+//******************************************************************************
+int MIDITrailApp::_OnMenuAutoSaveViewpoint()
+{
+	int result = 0;
+
+	m_isAutoSaveViewpoint = m_isAutoSaveViewpoint ? false : true;
+
+	//メニュー選択マーク更新
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//シーン設定保存
+	result = _SaveSceneConf();
+	if (result != 0) goto EXIT;
 
 EXIT:;
 	return result;
@@ -1283,7 +1383,7 @@ int MIDITrailApp::_OnMenuManual()
 					SW_SHOWNORMAL	//表示状態
 				);
 	if (hresult <= (HINSTANCE)32) {
-		result = YN_SET_ERR("File open error.", (unsigned long)hresult, 0);
+		result = YN_SET_ERR("File open error.", (DWORD64)hresult, 0);
 		goto EXIT;
 	}
 
@@ -1292,11 +1392,39 @@ EXIT:;
 }
 
 //******************************************************************************
+// シーケンサメッセージ処理
+//******************************************************************************
+int MIDITrailApp::_SequencerMsgProc()
+{
+	int result = 0;
+	bool isExist = false;
+	unsigned long param1 = 0;
+	unsigned long param2 = 0;
+	SMMsgParser parser;
+	
+	while (true) {
+		//メッセージ取り出し
+		result = m_MsgQueue.GetMessage(&isExist, &param1, &param2);
+		if (result != 0) goto EXIT;
+		
+		//メッセージがなければ終了
+		if (!isExist) break;
+		
+		//シーケンサメッセージ受信処理
+		result = _OnRecvSequencerMsg(param1, param2);
+		if (result != 0) goto EXIT;	
+	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // シーケンサメッセージ受信
 //******************************************************************************
 int MIDITrailApp::_OnRecvSequencerMsg(
-		unsigned long wParam,
-		unsigned long lParam
+		unsigned long param1,
+		unsigned long param2
 	)
 {
 	int result = 0;
@@ -1304,12 +1432,12 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 
 	//シーンにシーケンサメッセージを渡す
 	if (m_pScene != NULL) {
-		result = m_pScene->OnRecvSequencerMsg(wParam, lParam);
+		result = m_pScene->OnRecvSequencerMsg(param1, param2);
 		if (result != 0) goto EXIT;
 	}
 
 	//演奏状態変更通知への対応
-	parser.Parse(wParam, lParam);
+	parser.Parse(param1, param2);
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
 		//一時停止
 		if (parser.GetPlayStatus() == SMMsgParser::StatusPause) {
@@ -1327,10 +1455,23 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 				if (result != 0) goto EXIT;
 			}
 
+			//視点保存
+			if (m_isAutoSaveViewpoint) {
+				result = _OnMenuSaveViewpoint();
+				if (result != 0) goto EXIT;
+			}
+
 			//ユーザーの要求によって停止した場合は巻き戻す
 			if ((m_isRewind) && (m_pScene != NULL)) {
 				m_isRewind = false;
 				result = m_pScene->Rewind();
+				if (result != 0) goto EXIT;
+			}
+			//停止後のファイルオープンが指定されている場合
+			else if ((m_isOpenFileAfterStop) && (m_pScene != NULL)) {
+				m_isOpenFileAfterStop = false;
+				//ファイル読み込み処理
+				result = _FileOpenProc(m_NextFilePath);
 				if (result != 0) goto EXIT;
 			}
 			//通常の演奏終了の場合は次回の演奏時に巻き戻す
@@ -1355,26 +1496,26 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 	if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		//演奏チックタイム通知
 		m_SequencerLastMsg.isRecvPlayTime = true;
-		m_SequencerLastMsg.playTime.wParam = wParam;
-		m_SequencerLastMsg.playTime.lParam = lParam;
+		m_SequencerLastMsg.playTime.param1 = param1;
+		m_SequencerLastMsg.playTime.param2 = param2;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
 		//テンポ変更通知
 		m_SequencerLastMsg.isRecvTempo = true;
-		m_SequencerLastMsg.tempo.wParam = wParam;
-		m_SequencerLastMsg.tempo.lParam = lParam;
+		m_SequencerLastMsg.tempo.param1 = param1;
+		m_SequencerLastMsg.tempo.param2 = param2;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
 		//小節番号通知
 		m_SequencerLastMsg.isRecvBar = true;
-		m_SequencerLastMsg.bar.wParam = wParam;
-		m_SequencerLastMsg.bar.lParam = lParam;
+		m_SequencerLastMsg.bar.param1 = param1;
+		m_SequencerLastMsg.bar.param2 = param2;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
 		//拍子記号変更通知
 		m_SequencerLastMsg.isRecvBeat = true;
-		m_SequencerLastMsg.beat.wParam = wParam;
-		m_SequencerLastMsg.beat.lParam = lParam;
+		m_SequencerLastMsg.beat.param1 = param1;
+		m_SequencerLastMsg.beat.param2 = param2;
 	}
 
 EXIT:;
@@ -1385,9 +1526,9 @@ EXIT:;
 // ウィンドウクリックイベント
 //******************************************************************************
 int MIDITrailApp::_OnMouseButtonDown(
-		unsigned long button,
-		unsigned long wParam,
-		unsigned long lParam
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
 	)
 {
 	int result = 0;
@@ -1405,14 +1546,14 @@ EXIT:;
 // キー入力イベント
 //******************************************************************************
 int MIDITrailApp::_OnKeyDown(
-		unsigned long wParam,
-		unsigned long lParam
+		WPARAM wParam,
+		LPARAM lParam
 	)
 {
 	int result = 0;
 	unsigned short keycode = 0;
 
-	keycode = LOWORD(wParam);
+	keycode = LOWORD((DWORD)wParam);
 
 	switch (keycode) {
 		case VK_SPACE:
@@ -1442,7 +1583,7 @@ int MIDITrailApp::_OnKeyDown(
 			break;
 		case VK_RETURN:
 			//演奏停止：テンキーのENTERでかつNUMLOCKオンの場合
-			if ((HIWORD(lParam) & KF_EXTENDED) && (GetKeyState(VK_NUMLOCK) & 0x01)) {
+			if ((HIWORD((DWORD)lParam) & KF_EXTENDED) && (GetKeyState(VK_NUMLOCK) & 0x01)) {
 				result = _OnMenuStop();
 				if (result != 0) goto EXIT;
 			}
@@ -1488,8 +1629,8 @@ EXIT:;
 // ファイルドロップイベント
 //******************************************************************************
 int MIDITrailApp::_OnDropFiles(
-		unsigned long wParam,
-		unsigned long lParam
+		WPARAM wParam,
+		LPARAM lParam
 	)
 {
 	int result = 0;
@@ -1499,14 +1640,16 @@ int MIDITrailApp::_OnDropFiles(
 	TCHAR path[_MAX_PATH] = {_T('\0')};
 	bool isMIDIDataFile = false;
 
-	//停止中でなければファイルドロップは無視する
-	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ファイルドロップOK
-	}
-	else {
-		//ファイルドロップNG
-		goto EXIT;
-	}
+	////停止中でなければファイルドロップは無視する
+	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+	//	//ファイルドロップOK
+	//}
+	//else {
+	//	//ファイルドロップNG
+	//	goto EXIT;
+	//}
+
+	//常にファイルドロップを許可する
 
 	hDrop = (HDROP)wParam;
 
@@ -1542,15 +1685,12 @@ int MIDITrailApp::_OnDropFiles(
 		isMIDIDataFile = true;
 	}
 
-	if (isMIDIDataFile) {
-		//MIDIファイル読み込み
-		result = _LoadMIDIFile(path);
-		if (result != 0) goto EXIT;
+	//サポート対象ファイルでなければ何もしない
+	if (!isMIDIDataFile) goto EXIT;
 
-		//HowToView表示
-		result = _DispHowToView();
+	//演奏/モニタ停止とファイルオープン処理
+	result = _StopPlaybackAndOpenFile(path);
 		if (result != 0) goto EXIT;
-	}
 
 EXIT:;
 	if (hDrop != NULL) {
@@ -1927,13 +2067,16 @@ int MIDITrailApp::_ChangePlayStatus(
 	//演奏状態変更
 	m_PlayStatus = status;
 
-	//ファイルドラック許可
-	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+	////ファイルドラック許可
+	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+	//	DragAcceptFiles(m_hWnd, TRUE);
+	//}
+	//else {
+	//	DragAcceptFiles(m_hWnd, FALSE);
+	//}
+
+	//常にファイルドラッグ許可
 		DragAcceptFiles(m_hWnd, TRUE);
-	}
-	else {
-		DragAcceptFiles(m_hWnd, FALSE);
-	}
 
 	//メニュースタイル更新
 	result = _ChangeMenuStyle();
@@ -1954,6 +2097,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long style = 0;
 
 	//メニューID一覧
+	//TAG:シーン追加
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
 // >>> add 20120728 yossiepon begin
@@ -1972,6 +2116,8 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_VIEW_3DPIANOROLL,
 		IDM_VIEW_2DPIANOROLL,
 		IDM_VIEW_PIANOROLLRAIN,
+		IDM_VIEW_PIANOROLLRAIN2D,
+		IDM_AUTO_SAVE_VIEWPOINT,
 		IDM_RESET_VIEWPOINT,
 		IDM_SAVE_VIEWPOINT,
 		IDM_ENABLE_PIANOKEYBOARD,
@@ -1990,8 +2136,8 @@ int MIDITrailApp::_ChangeMenuStyle()
 
 	//メニュースタイル一覧
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
-		//データ無, 停止, 再生中, 一時停止, メニューID, モニタ停止, モニタ中
-		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPEN_FILE
+		//データ無, 停止, 再生中, 一時停止, モニタ停止, モニタ中
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FILE
 // >>> add 20120728 yossiepon begin
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
 // <<< add 20120728 yossiepon end
@@ -2005,12 +2151,14 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY_SPEED_UP
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_START_MONITORING
 		{	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED	},	//IDM_STOP_MONITORING
-		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_3DPIAMF_GRAYEDROLL
-		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_2DPIAMF_GRAYEDROLL
-		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIAMF_GRAYEDROLLRAIN
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_3DPIANOROLL
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_2DPIANOROLL
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN2D
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_AUTO_SAVE_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_VIEWPOINT
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIAMF_GRAYEDKEYBOAR
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIANOKEYBOARD
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_RIPPLE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_STARS
@@ -2060,6 +2208,7 @@ int MIDITrailApp::_CreateScene(
 	}
 
 	//シーンオブジェクト生成
+	//TAG:シーン追加
 	try {
 		if (type == Title) {
 			m_pScene = new MTSceneTitle();
@@ -2080,6 +2229,9 @@ int MIDITrailApp::_CreateScene(
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain();
 				}
+				else if (type == PianoRollRain2D) {
+					m_pScene = new MTScenePianoRollRain2D();
+				}
 			}
 			//ライブモニタ用シーン生成
 			else {
@@ -2091,6 +2243,9 @@ int MIDITrailApp::_CreateScene(
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRainLive();
+				}
+				else if (type == PianoRollRain2D) {
+					m_pScene = new MTScenePianoRollRain2DLive();
 				}
 			}
 		}
@@ -2139,6 +2294,7 @@ int MIDITrailApp::_LoadSceneType()
 	result = m_ViewConf.GetStr(_T("Type"), type, 256, _T(""));
 	if (result != 0) goto EXIT;
 
+	//TAG:シーン追加
 	if (_tcscmp(type, _T("PianoRoll3D")) == 0) {
 		m_SelectedSceneType = PianoRoll3D;
 	}
@@ -2147,6 +2303,9 @@ int MIDITrailApp::_LoadSceneType()
 	}
 	else if (_tcscmp(type, _T("PianoRollRain")) == 0) {
 		m_SelectedSceneType = PianoRollRain;
+	}
+	else if (_tcscmp(type, _T("PianoRollRain2D")) == 0) {
+		m_SelectedSceneType = PianoRollRain2D;
 	}
 	else {
 		m_SelectedSceneType = PianoRoll3D;
@@ -2164,6 +2323,7 @@ int MIDITrailApp::_SaveSceneType()
 	int result = 0;
 	TCHAR* pType = _T("");
 
+	//TAG:シーン追加
 	switch (m_SelectedSceneType) {
 		case PianoRoll3D:
 			pType = _T("PianoRoll3D");
@@ -2173,6 +2333,9 @@ int MIDITrailApp::_SaveSceneType()
 			break;
 		case PianoRollRain:
 			pType = _T("PianoRollRain");
+			break;
+		case PianoRollRain2D:
+			pType = _T("PianoRollRain2D");
 			break;
 		default:
 			result = YN_SET_ERR("Program error.", m_SelectedSceneType, 0);
@@ -2184,6 +2347,50 @@ int MIDITrailApp::_SaveSceneType()
 	if (result != 0) goto EXIT;
 
 	result = m_ViewConf.SetStr(_T("Type"), pType);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// シーン設定読み込み
+//******************************************************************************
+int MIDITrailApp::_LoadSceneConf()
+{
+	int result = 0;
+	int autoSaveViewpoint = 0;
+
+	result = m_ViewConf.SetCurSection(_T("Scene"));
+	if (result != 0) goto EXIT;
+
+	//自動視点保存
+	result = m_ViewConf.GetInt(_T("AutoSaveViewpoint"), &autoSaveViewpoint, 0);
+	if (result != 0) goto EXIT;
+	
+	m_isAutoSaveViewpoint = false;
+	if (autoSaveViewpoint == 1) {
+		m_isAutoSaveViewpoint = true;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// シーン設定保存
+//******************************************************************************
+int MIDITrailApp::_SaveSceneConf()
+{
+	int result = 0;
+	int autoSaveViewpoint = 0;
+
+	result = m_ViewConf.SetCurSection(_T("Scene"));
+	if (result != 0) goto EXIT;
+
+	//自動視点保存
+	autoSaveViewpoint = m_isAutoSaveViewpoint ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("AutoSaveViewpoint"), autoSaveViewpoint);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -2298,9 +2505,29 @@ int MIDITrailApp::_LoadPlayerConf()
 	int timeSpan = 400;
 	int speedStepInPercent = 1;
 	int maxSpeedInPercent = 400;
+	int showFileName = 0;
 
 	result = confFile.Initialize("Player");
 	if (result != 0) goto EXIT;
+
+	//----------------------------------
+	//プレーヤー制御
+	//----------------------------------
+	result = confFile.SetCurSection("PlayerControl");
+	if (result != 0) goto EXIT;
+	result = confFile.GetInt("AllowMultipleInstances", &m_AllowMultipleInstances, 0);
+	if (result != 0) goto EXIT;
+	result = confFile.GetInt("AutoPlaybackAfterOpenFile", &m_AutoPlaybackAfterOpenFile, 0);
+	if (result != 0) goto EXIT;
+
+	//----------------------------------
+	//表示制御
+	//----------------------------------
+	result = confFile.SetCurSection("ViewControl");
+	if (result != 0) goto EXIT;
+	result = confFile.GetInt("ShowFileName", &showFileName, 0);
+	if (result != 0) goto EXIT;
+	m_isEnableFileName = (showFileName > 0) ? true : false;
 
 	//----------------------------------
 	//リワインド／スキップ制御
@@ -2341,6 +2568,13 @@ int MIDITrailApp::_OnDestroy()
 {
 	int result = 0;
 
+	//視点保存
+	if (m_isAutoSaveViewpoint) {
+		result = _OnMenuSaveViewpoint();
+		//if (result != 0) goto EXIT;
+		//エラーが発生しても処理を続行する
+	}
+
 	//演奏を止める
 	if (m_PlayStatus == Play) {
 		m_Sequencer.Stop();
@@ -2353,6 +2587,7 @@ int MIDITrailApp::_OnDestroy()
 		Sleep(100);
 	}
 
+//EXIT:;
 	return result;
 }
 
@@ -2420,32 +2655,32 @@ int MIDITrailApp::_RebuildScene()
 		//演奏チックタイム通知
 		if (m_SequencerLastMsg.isRecvPlayTime) {
 			result = m_pScene->OnRecvSequencerMsg(
-							m_SequencerLastMsg.playTime.wParam,
-							m_SequencerLastMsg.playTime.lParam
+							m_SequencerLastMsg.playTime.param1,
+							m_SequencerLastMsg.playTime.param2
 						);
 			if (result != 0) goto EXIT;
 		}
 		//テンポ変更通知
 		if (m_SequencerLastMsg.isRecvTempo) {
 			result = m_pScene->OnRecvSequencerMsg(
-							m_SequencerLastMsg.tempo.wParam,
-							m_SequencerLastMsg.tempo.lParam
+							m_SequencerLastMsg.tempo.param1,
+							m_SequencerLastMsg.tempo.param2
 						);
 			if (result != 0) goto EXIT;
 		}
 		//小節番号通知
 		if (m_SequencerLastMsg.isRecvBar) {
 			result = m_pScene->OnRecvSequencerMsg(
-							m_SequencerLastMsg.bar.wParam,
-							m_SequencerLastMsg.bar.lParam
+							m_SequencerLastMsg.bar.param1,
+							m_SequencerLastMsg.bar.param2
 						);
 			if (result != 0) goto EXIT;
 		}
 		//拍子記号変更通知
 		if (m_SequencerLastMsg.isRecvBeat) {
 			result = m_pScene->OnRecvSequencerMsg(
-							m_SequencerLastMsg.beat.wParam,
-							m_SequencerLastMsg.beat.lParam
+							m_SequencerLastMsg.beat.param1,
+							m_SequencerLastMsg.beat.param2
 						);
 			if (result != 0) goto EXIT;
 		}
@@ -2506,9 +2741,11 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	_CheckMenuItem(IDM_REPEAT, m_isRepeat);
 
 	//シーン種別選択
+	//TAG:シーン追加
 	_CheckMenuItem(IDM_VIEW_3DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_2DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN, false);
+	_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN2D, false);
 	switch (m_SelectedSceneType) {
 		case PianoRoll3D:
 			_CheckMenuItem(IDM_VIEW_3DPIANOROLL, true);
@@ -2518,6 +2755,9 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 			break;
 		case PianoRollRain:
 			_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN, true);
+			break;
+		case PianoRollRain2D:
+			_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN2D, true);
 			break;
 		default:
 			result = YN_SET_ERR("Program error.", m_SelectedSceneType, 0);
@@ -2539,6 +2779,9 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 
 	//カウンタ表示
 	_CheckMenuItem(IDM_ENABLE_COUNTER, m_isEnableCounter);
+
+	//自動視点保存
+	_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
 
 EXIT:;
 	return result;
@@ -2577,6 +2820,7 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTScene::EffectPitchBend, m_isEnablePitchBend);
 		m_pScene->SetEffect(MTScene::EffectStars, m_isEnableStars);
 		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
+		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
 	}
 	return;
 }
@@ -2602,7 +2846,8 @@ int MIDITrailApp::_ParseCmdLine(
 		if (result != 0) goto EXIT;
 
 		//再生指定されている場合は再生開始
-		if (m_CmdLineParser.GetSwitch(CMDSW_PLAY) == CMDSW_ON) {
+		if ((m_CmdLineParser.GetSwitch(CMDSW_PLAY) == CMDSW_ON) ||
+		    (m_AutoPlaybackAfterOpenFile > 0)) {
 			result = _OnMenuPlay();
 			if (result != 0) goto EXIT;
 		}
@@ -2618,7 +2863,7 @@ EXIT:;
 int MIDITrailApp::_StartTimer()
 {
 	int result = 0;
-	UINT apiresult = 0;
+	UINT_PTR apiresult = 0;
 
 	//キー状態確認タイマー
 	apiresult = SetTimer(
@@ -2810,4 +3055,325 @@ EXIT:;
 	return result;
 }
 
+//******************************************************************************
+// 二重起動チェック
+//******************************************************************************
+int MIDITrailApp::_CheckMultipleInstances(
+		 bool* pIsExitApp
+	)
+{
+	int result = 0;
+	SECURITY_DESCRIPTOR sd;
+	SECURITY_ATTRIBUTES secAttribute;
+
+	*pIsExitApp = false;
+
+	//二重起動を許可する場合は何もしない
+	if (m_AllowMultipleInstances > 0) {
+		goto EXIT;
+	}
+
+	//セキュリティ記述子初期化
+	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+
+	//セキュリティ記述子に随意アクセス制御リスト(DACL)を設定
+	SetSecurityDescriptorDacl(
+			&sd,	//セキュリティ記述子のアドレス
+			TRUE,	//DACLの存在フラグ
+			NULL,	//DACLのアドレス：オブジェクトへのすべてのアクセスを許可
+			FALSE	//DACLの既定フラグ
+		);
+
+	//セキュリティ属性
+	secAttribute.nLength = sizeof(SECURITY_ATTRIBUTES);	//構造体サイズ
+	secAttribute.lpSecurityDescriptor = &sd;			//セキュリティ記述子
+	secAttribute.bInheritHandle = TRUE; 				//継承フラグ
+
+	//ミューテクス作成
+	//  「別のユーザーとして実行」を選択したときミューテクス作成が失敗するため
+	//  セキュリティ属性を指定する
+	m_hAppMutex = CreateMutex(
+						&secAttribute,	//セキュリティ属性
+						FALSE,			//オブジェクトの所有権を取得しない
+						MIDITRAIL_MUTEX	//オブジェクト名称
+					);
+	if (m_hAppMutex == NULL) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+	else if (GetLastError() ==  ERROR_ALREADY_EXISTS) {
+		//すでに存在する場合
+		CloseHandle(m_hAppMutex);
+		m_hAppMutex = NULL;
+		*pIsExitApp = true;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メールスロット作成
+//******************************************************************************
+int MIDITrailApp::_CreateMailSlot()
+{
+	int result = 0;
+
+	//二重起動を許可する場合は何もしない
+	if (m_AllowMultipleInstances > 0) {
+		goto EXIT;
+	}
+
+	//メールスロット作成
+	m_hMailSlot = CreateMailslot(
+						MIDITRAIL_MAILSLOT,	//メールスロット名称
+						1024,				//最大メッセージサイズ(byte)：制限なし
+						0,					//読み取りタイムアウト値(ms)：メッセージがなければ即座に制御を返す
+						NULL				//継承オプション
+					);
+	if (m_hMailSlot == INVALID_HANDLE_VALUE) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 先行プロセスのMIDITrailへファイルパスをポスト
+//******************************************************************************
+int MIDITrailApp::_PostFilePathToFirstMIDITrail(
+		LPTSTR pCmdLine
+	)
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+	HWND hWnd = NULL;
+	HANDLE hFile = NULL;
+	size_t size = 0;
+	DWORD written = 0;
+	TCHAR* pFilePart = NULL;
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
+
+	//先行のMIDITrailのウィンドウを検索する
+	hWnd = FindWindow(
+				m_WndClassName,	//クラス名
+				NULL			//ウィンドウ名
+			);
+	if (hWnd == NULL) {
+		//ウィンドウが見つからない場合は何もしない
+		goto EXIT;
+	}
+
+	//先行のMIDITrailのウィンドウを前面に移動
+	SetForegroundWindow(hWnd);
+
+	//コマンドライン解析
+	result = m_CmdLineParser.Initialize(pCmdLine);
+	if (result != 0) goto EXIT;
+
+	//コマンドラインでファイルを指定されていなければ何もしない
+	if (m_CmdLineParser.GetSwitch(CMDSW_FILE_PATH) != CMDSW_ON) {
+		goto EXIT;
+	}
+
+	//ファイルパスをフルパスに変換
+	written = GetFullPathName(
+					m_CmdLineParser.GetFilePath(),	//ファイルパス
+					_MAX_PATH,		//バッファサイズ：TCHAR単位
+					filePath,		//バッファ位置
+					&pFilePart		//ファイル名の位置
+				);
+	if (written == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+	else if (written > _MAX_PATH) {
+		result = YN_SET_ERR("File path is too long.", written, 0);
+		goto EXIT;
+	}
+
+	//先行起動プロセスのメールスロットを開く
+	hFile = CreateFile(
+				MIDITRAIL_MAILSLOT,		//メールスロット名称
+				GENERIC_WRITE,			//アクセスタイプ
+				FILE_SHARE_READ,		//共有方法
+				NULL,					//セキュリティ属性
+				OPEN_EXISTING,			//生成指定
+				FILE_ATTRIBUTE_NORMAL,	//ファイル属性とフラグ
+				NULL					//テンプレートファイルハンドル
+			);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		//メールスロットが開けない場合は何もしない
+		//先行プロセスの状態に依存するため失敗する可能性はある
+		goto EXIT;
+	}
+
+	//メールスロットにファイルパスを書き込む
+	//_tcscat_s(filePath, _MAX_PATH, m_CmdLineParser.GetFilePath());
+	size = (_tcslen(filePath) + 1) * sizeof(TCHAR);
+	bresult = WriteFile(
+				hFile,		//ファイルハンドル
+				filePath,	//データバッファ
+				(DWORD)size,	//書き込みサイズ(byte)
+				&written,	//書き込んだサイズ(byte)
+				NULL		//オーバーラップ構造体
+			);
+	if (!bresult) {
+		//書き込めなかった場合は何もしない
+		//先行プロセスの状態に依存するため失敗する可能性はある
+		goto EXIT;
+	}
+
+	//先行のMIDITrailのウィンドウにファイルパスポスト通知
+	PostMessage(hWnd, WM_FILEPATH_POSTED, 0, 0);
+
+EXIT:;
+	if (hWnd != NULL) {
+		CloseHandle(hWnd);
+	}
+	if (hFile != NULL) {
+		CloseHandle(hFile);
+	}
+	return result;
+}
+
+//******************************************************************************
+// 後続プロセスからのファイルパスポスト通知
+//******************************************************************************
+int MIDITrailApp::_OnFilePathPosted()
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+	DWORD nextSize = 0;
+	DWORD readSize = 0;
+	DWORD count = 0;
+	TCHAR filePath[_MAX_PATH + 4];
+
+	ZeroMemory(filePath, sizeof(TCHAR)*(_MAX_PATH + 4));
+
+	//メールスロットが存在しなければ何もしない
+	if (m_hMailSlot == NULL) goto EXIT;
+
+	//メールスロットからファイルパスを取得
+	bresult = GetMailslotInfo(
+					m_hMailSlot,	//メールスロット
+					NULL,			//最大メッセージサイズ
+					&nextSize,		//次メッセージサイズ
+					&count,			//メッセージ数
+					NULL			//読み取りタイムアウト時間
+				);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	//メッセージがなければ何もしない
+	if (nextSize == MAILSLOT_NO_MESSAGE) goto EXIT;
+
+	//メッセージサイズの整合性チェック
+	if (nextSize > (sizeof(TCHAR)*1024)) {
+		result = YN_SET_ERR("Program error.", nextSize, 0);
+		goto EXIT;
+	}
+
+	//メッセージ読み込み
+	bresult = ReadFile(
+					m_hMailSlot,	//メールスロット
+					filePath,		//バッファ
+					nextSize,		//読み取りサイズ(byte)
+					&readSize,		//読み取ったサイズ(byte)
+					NULL			//オーバーラップ構造体
+				);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	//演奏/モニタ停止とファイルオープン処理
+	result = _StopPlaybackAndOpenFile(filePath);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 演奏/モニタ停止とMIDIファイルオープン処理
+//******************************************************************************
+int MIDITrailApp::_StopPlaybackAndOpenFile(
+		TCHAR* pFilePath
+	)
+{
+	int result = 0;
+
+	//演奏ステータスごとの対応方式
+	//  データ無   → すぐにファイルを開く
+	//  停止       → すぐにファイルを開く
+	//  再生中     → シーケンサに停止要求を出す → 停止通知を受けた後にファイルを開く
+	//  一時停止   → シーケンサに停止要求を出す → 停止通知を受けた後にファイルを開く
+	//  モニタ停止 → すぐにファイルを開く
+	//  モニタ中   → モニタを停止してモニタ停止状態へ遷移 → すぐにファイルを開く
+
+	//視点保存
+	if (m_isAutoSaveViewpoint) {
+		result = _OnMenuSaveViewpoint();
+		if (result != 0) goto EXIT;
+	}
+
+	//モニタ中であれば停止する
+	if (m_PlayStatus == MonitorON) {
+		result = _OnMenuStopMonitoring();
+		if (result != 0) goto EXIT;
+		//この時点でモニタ停止に遷移済み
+	}
+
+	//停止中であればすぐにファイルを開く
+	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//ファイル読み込み処理
+		result = _FileOpenProc(pFilePath);
+		if (result != 0) goto EXIT;
+	}
+	//演奏中の場合は演奏停止後にファイルを開く
+	else if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
+		//演奏状態通知が届くまで再生中とみなす
+		//ここでは演奏状態を変更しない
+		m_Sequencer.Stop();
+		
+		//停止完了後にファイルを開く
+		_tcscpy_s(m_NextFilePath, _MAX_PATH, pFilePath);
+		m_isOpenFileAfterStop = true;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// MIDIファイルオープン処理
+//******************************************************************************
+int MIDITrailApp::_FileOpenProc(
+		TCHAR* pFilePath
+	)
+{
+	int result = 0;
+
+	//MIDIファイル読み込み
+	result = _LoadMIDIFile(pFilePath);
+	if (result != 0) goto EXIT;
+
+	//HowToView表示
+	result = _DispHowToView();
+	if (result != 0) goto EXIT;
+
+	//再生指定されている場合は再生開始
+	if (m_AutoPlaybackAfterOpenFile > 0) {
+		result = _OnMenuPlay();
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
 

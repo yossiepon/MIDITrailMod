@@ -193,6 +193,11 @@ protected:
 
 private:
 
+	enum NoteColorType {
+		Channel,
+		Scale
+	};
+
 // >>> modify 20120728 yossiepon begin
 	unsigned long m_TimeDivision;
 	float m_QuarterNoteLength;
@@ -204,7 +209,9 @@ private:
 
 // <<< modify 20120728 yossiepon end
 
+	NoteColorType m_NoteColorType;
 	D3DXCOLOR m_NoteColor[16];
+	D3DXCOLOR m_NoteColorOfScale[12];
 	D3DXCOLOR m_ActiveNoteEmissive;
 	D3DXCOLOR m_GridLineColor;
 	D3DXCOLOR m_PlaybackSectionColor;

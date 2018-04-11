@@ -109,7 +109,8 @@ float MTPianoKeyboardDesignMod::GetChStep()
 D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 		unsigned char chNo,
 		unsigned char noteNo,
-		unsigned long elapsedTime
+		unsigned long elapsedTime,
+		D3DXCOLOR* pNoteColor
 	)
 {
 	D3DXCOLOR color;
@@ -133,7 +134,15 @@ D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 	//      |   on :   off
 	//          <-->duration
 
-	color    = m_ActiveKeyColorList[chNo];
+	if ((pNoteColor != NULL) && (m_ActiveKeyColorType == NoteColor)) {
+		//ノート色が指定されている場合
+		color = *pNoteColor;
+	}
+	else {
+		//それ以外はデフォルト色とする
+		color = m_ActiveKeyColorList[chNo];
+	}
+
 	duration = (unsigned long)m_ActiveKeyColorDuration;
 	rate     = m_ActiveKeyColorTailRate;
 

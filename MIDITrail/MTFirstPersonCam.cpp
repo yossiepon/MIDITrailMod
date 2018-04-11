@@ -4,7 +4,7 @@
 //
 // 一人称カメラクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -573,12 +573,12 @@ int MTFirstPersonCam::_ClipCursor(
 	if (isClip) {
 		bresult = GetWindowRect(m_hWnd, &wrect);
 		if (!bresult) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)m_hWnd);
+			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
 			goto EXIT;
 		}
 		bresult = GetClientRect(m_hWnd, &crect);
 		if (!bresult) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)m_hWnd);
+			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
 			goto EXIT;
 		}
 		wh = wrect.bottom - wrect.top;

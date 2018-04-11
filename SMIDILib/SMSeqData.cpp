@@ -4,7 +4,7 @@
 //
 // シーケンスデータクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -236,6 +236,7 @@ void SMSeqData::Clear()
 	m_BarNum = 0;
 	m_CopyRight = "";
 	m_Title = "";
+	m_FileName = "";
 
 	delete m_pMergedTrack;
 	m_pMergedTrack = NULL;
@@ -297,7 +298,7 @@ unsigned long SMSeqData::GetTimeDivision()
 //******************************************************************************
 unsigned long SMSeqData::GetTrackNum()
 {
-	return m_TrackList.size();
+	return (unsigned long)m_TrackList.size();
 }
 
 //******************************************************************************
@@ -826,6 +827,26 @@ int SMSeqData::GetPortList(
 EXIT:;
 	return result;
 }
+
+//******************************************************************************
+// ファイル名登録
+//******************************************************************************
+void SMSeqData::SetFileName(
+		const char* pFileName
+	)
+{
+	m_FileName = pFileName;
+	return;
+}
+
+//******************************************************************************
+// ファイル名取得
+//******************************************************************************
+const char* SMSeqData::GetFileName()
+{
+	return m_FileName.c_str();
+}
+
 
 } // end of namespace
 

@@ -48,7 +48,8 @@ int MTPianoKeyboardCtrlMod::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
-		MTNotePitchBend* pNotePitchBend
+		MTNotePitchBend* pNotePitchBend,
+		bool isSingleKeyboard
 	)
 {
 	int result = 0;
@@ -109,6 +110,10 @@ int MTPianoKeyboardCtrlMod::Create(
 
 	//ピッチベンド情報
 	m_pNotePitchBend = pNotePitchBend;
+
+	//シングルキーボードフラグ
+	//※フラグを受け取っても使用しない。ポート別シングルキーボードで常に動作する
+	m_isSingleKeyboard = isSingleKeyboard;
 
 EXIT:;
 	return result;
@@ -305,6 +310,7 @@ int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 	//ノートOFF後（キー復帰済み）
 	else {
 		//ノート情報を破棄
+		//複数チャンネルのキー状態をポート別に集約する
 		result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->ResetKey(note.noteNo);
 		if (result != 0) goto EXIT;
 
@@ -329,35 +335,42 @@ int MTPianoKeyboardCtrlMod::_UpdateVertexOfActiveNotes(
 	unsigned long i = 0;
 	unsigned long elapsedTime = 0;
 	SMNote note;
+	D3DXCOLOR noteColor;
 
 	ZeroMemory(m_KeyDownRateMod, sizeof(float) * SM_MAX_CH_NUM* SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
 	//発音中ノートについて頂点を更新
 	for (i = 0; i < MTPIANOKEYBOARD_MAX_ACTIVENOTE_NUM; i++) {
-		if (m_pNoteStatus[i].isActive) {
-			//ノート情報取得
-			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
+		//発音中でなければスキップ
+		if (!(m_pNoteStatus[i].isActive)) continue;
+
+		//ノート情報取得
+		result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
+		if (result != 0) goto EXIT;
+
+		//発音開始からの経過時間
+		elapsedTime = 0;
+		if (m_pNoteStatus[i].keyStatus == NoteON) {
+			elapsedTime = m_PlayTimeMSec - note.startTime;
+		}
+
+		//ノートの色
+		noteColor = m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+		
+		//発音対象キーを回転
+		//  すでに同一ノートに対して頂点を更新している場合
+		//  押下率が前回よりも上回る場合に限り頂点を更新する
+		if (m_KeyDownRateMod[note.portNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate) {
+			//複数チャンネルのキー状態をポート別に集約する
+			result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->PushKey(
+																	note.chNo,
+																	note.noteNo,
+																	m_pNoteStatus[i].keyDownRate,
+																	elapsedTime,
+																	&noteColor
+																);
 			if (result != 0) goto EXIT;
-
-			//発音開始からの経過時間
-			elapsedTime = 0;
-			if (m_pNoteStatus[i].keyStatus == NoteON) {
-				elapsedTime = m_PlayTimeMSec - note.startTime;
-			}
-
-			//発音対象キーを回転
-			//  すでに同一ノートに対して頂点を更新している場合
-			//  押下率が前回よりも上回る場合に限り頂点を更新する
-			if (m_KeyDownRateMod[note.portNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate) {
-				result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->PushKey(
-														note.chNo,
-														note.noteNo,
-														m_pNoteStatus[i].keyDownRate,
-														elapsedTime
-													);
-				if (result != 0) goto EXIT;
-				m_KeyDownRateMod[note.portNo][note.chNo][note.noteNo] = m_pNoteStatus[i].keyDownRate;
-			}
+			m_KeyDownRateMod[note.portNo][note.chNo][note.noteNo] = m_pNoteStatus[i].keyDownRate;
 		}
 	}
 
@@ -408,6 +421,7 @@ void MTPianoKeyboardCtrlMod::Reset()
 			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
 			//if (result != 0) goto EXIT;
 
+			//複数チャンネルのキー状態をポート別に集約する
 			result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->ResetKey(note.noteNo);
 			//if (result != 0) goto EXIT;
 		}

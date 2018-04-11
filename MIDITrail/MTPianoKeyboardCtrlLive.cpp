@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノキーボード制御クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -32,6 +32,7 @@ MTPianoKeyboardCtrlLive::MTPianoKeyboardCtrlLive(void)
 	_ClearNoteStatus();
 	
 	m_isEnable = true;
+	m_isSingleKeyboard = false;
 }
 
 //******************************************************************************
@@ -48,7 +49,8 @@ MTPianoKeyboardCtrlLive::~MTPianoKeyboardCtrlLive(void)
 int MTPianoKeyboardCtrlLive::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		const TCHAR* pSceneName,
-		MTNotePitchBend* pNotePitchBend
+		MTNotePitchBend* pNotePitchBend,
+		bool isSingleKeyboard
 	)
 {
 	int result = 0;
@@ -72,6 +74,9 @@ int MTPianoKeyboardCtrlLive::Create(
 	
 	//ピッチベンド情報
 	m_pNotePitchBend = pNotePitchBend;
+	
+	//シングルキーボードフラグ
+	m_isSingleKeyboard = isSingleKeyboard;
 	
 EXIT:;
 	return result;
@@ -201,6 +206,7 @@ int MTPianoKeyboardCtrlLive::_UpdateStatusOfActiveNotes(
 	unsigned long noteNo = 0;
 	unsigned long keyUpDuration = 0;
 	unsigned long curTime = 0;
+	unsigned long targetChNo = 0;
 	
 	curTime = timeGetTime();
 	
@@ -218,7 +224,12 @@ int MTPianoKeyboardCtrlLive::_UpdateStatusOfActiveNotes(
 					m_NoteStatus[chNo][noteNo].startTime = 0;
 					m_NoteStatus[chNo][noteNo].endTime = 0;
 					m_NoteStatus[chNo][noteNo].keyDownRate = 0.0f;
-					result = m_pPianoKeyboard[chNo]->ResetKey((unsigned char)noteNo);
+					//シングルキーボードでは複数チャンネルのキー状態を先頭チャンネルに集約する
+					targetChNo = chNo;
+					if (m_isSingleKeyboard) {
+						targetChNo = 0;
+					}
+					result = m_pPianoKeyboard[targetChNo]->ResetKey((unsigned char)noteNo);
 					if (result != 0) goto EXIT;
 				}
 				//キー押下率を更新
@@ -242,28 +253,44 @@ int MTPianoKeyboardCtrlLive::_UpdateVertexOfActiveNotes(
 	)
 {
 	int result = 0;
+	unsigned long portNo = 0;
 	unsigned long chNo = 0;
 	unsigned long noteNo = 0;
 	unsigned long elapsedTime = 0;
 	unsigned long curTime = 0;
+	unsigned long targetChNo = 0;
+	D3DXCOLOR noteColor;
+	D3DXCOLOR* pActiveKeyColor = NULL;
 	
 	curTime = timeGetTime();
-		
-	//ノートの頂点を更新
+	
+	//キーの状態更新
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-			if (m_NoteStatus[chNo][noteNo].isActive) {
-				//発音開始からの経過時間
-				elapsedTime = curTime - m_NoteStatus[chNo][noteNo].startTime;
+			//発音中でなければスキップ
+			if (!(m_NoteStatus[chNo][noteNo].isActive)) continue;
 			
-				//発音対象キーを回転
-				result = m_pPianoKeyboard[chNo]->PushKey(
-									(unsigned char)noteNo,
-									m_NoteStatus[chNo][noteNo].keyDownRate,
-									elapsedTime
-								);
-				if (result != 0) goto EXIT;
+			//発音開始からの経過時間
+			elapsedTime = curTime - m_NoteStatus[chNo][noteNo].startTime;
+			
+			//シングルキーボードでは複数チャンネルのキー状態を先頭チャンネルに集約する
+			targetChNo = chNo;
+			if (m_isSingleKeyboard) {
+				targetChNo = 0;
 			}
+			
+			//ノートの色
+			noteColor = m_NoteDesign.GetNoteBoxColor((unsigned char)portNo, (unsigned char)chNo, (unsigned char)noteNo);
+			pActiveKeyColor = &noteColor;
+			
+			//発音対象キーを回転
+			result = m_pPianoKeyboard[targetChNo]->PushKey(
+								(unsigned char)noteNo,
+								m_NoteStatus[chNo][noteNo].keyDownRate,
+								elapsedTime,
+								pActiveKeyColor
+							);
+			if (result != 0) goto EXIT;
 		}
 	}
 	

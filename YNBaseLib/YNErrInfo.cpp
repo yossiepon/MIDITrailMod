@@ -4,7 +4,7 @@
 //
 // エラー情報クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,8 +21,8 @@ YNErrInfo::YNErrInfo(
 		unsigned long lineNo,
 		const TCHAR* pFuncName,
 		const TCHAR* pMessage,
-		unsigned long errInfo1,
-		unsigned long errInfo2
+		unsigned long long errInfo1,
+		unsigned long long errInfo2
 	)
 {	
 	m_ErrLevel = errLevel;
@@ -76,7 +76,7 @@ const TCHAR* YNErrInfo::GetMessage()
 //******************************************************************************
 // エラー情報1取得
 //******************************************************************************
-unsigned long YNErrInfo::GetErrInfo1()
+unsigned long long YNErrInfo::GetErrInfo1()
 {
 	return m_ErrInfo1;
 }
@@ -84,7 +84,7 @@ unsigned long YNErrInfo::GetErrInfo1()
 //******************************************************************************
 // エラー情報2取得
 //******************************************************************************
-unsigned long YNErrInfo::GetErrInfo2()
+unsigned long long YNErrInfo::GetErrInfo2()
 {
 	return m_ErrInfo2;
 }

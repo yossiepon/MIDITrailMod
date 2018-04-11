@@ -4,7 +4,7 @@
 //
 // レンダラクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -179,11 +179,15 @@ int DXRenderer::RenderScene(
 {
 	int result = 0;
 	HRESULT hresult = 0;
+	D3DCOLOR bgColor;
 
 	if (pScene == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
+
+	//バッファ初期化色の指定：ARGB
+	bgColor = pScene->GetBGColor();
 
 	//ビューポートクリア＋深度バッファクリア＋ステンシルバッファ削除
 	hresult = m_pD3DDevice->Clear(
@@ -191,7 +195,8 @@ int DXRenderer::RenderScene(
 					NULL, 					//クリア対象矩形：全面
 					D3DCLEAR_TARGET			//レンダリングターゲットクリア
 					| D3DCLEAR_ZBUFFER, 	//深度バッファクリア
-					D3DCOLOR_XRGB(0,0,0), 	//設定色(ARGB)：黒
+					bgColor,				//設定色(ARGB)
+					//D3DCOLOR_XRGB(0,0,0), 			//設定色(ARGB)：黒
 					//D3DCOLOR_XRGB(255,255,255), 		//設定色(ARGB)：白
 					1.0f, 					//深度バッファ設定値
 					0						//ステンシルバッファ設定値

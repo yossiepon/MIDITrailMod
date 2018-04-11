@@ -4,7 +4,7 @@
 //
 // ピアノキーボードデザインクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -128,9 +128,12 @@ void MTPianoKeyboardDesign::_Initialize()
 	m_KeyboardMaxDispNum = 16;        //設定ファイル
 	m_WhiteKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //設定ファイル
 	m_BlackKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //設定ファイル
+	m_ActiveKeyColorType = DefaultColor;  //設定ファイル
 	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //設定ファイル
 	m_ActiveKeyColorDuration = 400;   //設定ファイル
 	m_ActiveKeyColorTailRate = 0.5f;  //設定ファイル
+	m_KeyDispRangeStart = 0;
+	m_KeyDispRangeEnd   = 127;
 
 	return;
 }
@@ -142,6 +145,7 @@ void MTPianoKeyboardDesign::_InitKeyType()
 {
 	unsigned long i = 0;
 	unsigned char noteNo = 0;
+	KeyType type = KeyWhiteC;
 
 	//実際の鍵盤では黒鍵が微妙にずれて配置されているため
 	//厳密には(C,F)(D,G,A)(E,B)の形はすべて異なる
@@ -170,6 +174,34 @@ void MTPianoKeyboardDesign::_InitKeyType()
 	m_KeyInfo[noteNo + 5].keyType = KeyWhiteF;		// |        |F
 	m_KeyInfo[noteNo + 6].keyType = KeyBlack;		// |----####|
 	m_KeyInfo[noteNo + 7].keyType = KeyWhiteB;		// |________|G <= 形状はB
+
+	//キー表示範囲：開始キーの調整
+	type = m_KeyInfo[m_KeyDispRangeStart].keyType;
+	switch (type) {
+		case KeyWhiteC: type = KeyWhiteC; break;
+		case KeyWhiteD: type = KeyWhiteC; break;
+		case KeyWhiteE: type = KeyWhiteE; break; //変更対象なし
+		case KeyWhiteF: type = KeyWhiteF; break;
+		case KeyWhiteG: type = KeyWhiteF; break;
+		case KeyWhiteA: type = KeyWhiteF; break;
+		case KeyWhiteB: type = KeyWhiteB; break; //変更対象なし
+		default: break;
+	}
+	m_KeyInfo[m_KeyDispRangeStart].keyType = type;
+
+	//キー表示範囲：終了キーの調整
+	type = m_KeyInfo[m_KeyDispRangeEnd].keyType;
+	switch (type) {
+		case KeyWhiteC: type = KeyWhiteC; break; //変更対象なし
+		case KeyWhiteD: type = KeyWhiteE; break;
+		case KeyWhiteE: type = KeyWhiteE; break;
+		case KeyWhiteF: type = KeyWhiteF; break; //変更対象なし
+		case KeyWhiteG: type = KeyWhiteB; break;
+		case KeyWhiteA: type = KeyWhiteB; break;
+		case KeyWhiteB: type = KeyWhiteB; break;
+		default: break;
+	}
+	m_KeyInfo[m_KeyDispRangeEnd].keyType = type;
 
 	return;
 }
@@ -235,6 +267,21 @@ void MTPianoKeyboardDesign::_InitKeyPos()
 			if (noteNo == 126) {
 				shift = 0.00f;
 			}
+			
+			//表示範囲の先頭末尾でひとつだけ取り残される黒鍵は中央に配置する
+			if ((noteNo - 1) == m_KeyDispRangeStart) {
+				if ((m_KeyInfo[noteNo + 1].keyType == KeyWhiteE) 
+				 || (m_KeyInfo[noteNo + 1].keyType == KeyWhiteB)) {
+					shift =  0.00f;
+				}
+			}
+			if ((noteNo + 1) == m_KeyDispRangeEnd) {
+				if ((m_KeyInfo[noteNo - 1].keyType == KeyWhiteD) 
+				 || (m_KeyInfo[noteNo - 1].keyType == KeyWhiteF)) {
+					shift =  0.00f;
+				}
+			}
+			
 			//位置補正
 			m_KeyInfo[noteNo].keyCenterPosX += shift;
 		}
@@ -584,7 +631,8 @@ D3DXCOLOR MTPianoKeyboardDesign::GetBlackKeyColor()
 //******************************************************************************
 D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 		unsigned char noteNo,
-		unsigned long elapsedTime
+		unsigned long elapsedTime,
+		D3DXCOLOR* pNoteColor
 	)
 {
 	D3DXCOLOR color;
@@ -608,7 +656,15 @@ D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 	//      |   on :   off
 	//          <-->duration
 
-	color    = m_ActiveKeyColor;
+	if ((pNoteColor != NULL) && (m_ActiveKeyColorType == NoteColor)) {
+		//ノート色が指定されている場合
+		color = *pNoteColor;
+	}
+	else {
+		//それ以外はデフォルト色とする
+		color = m_ActiveKeyColor;
+	}
+
 	duration = (unsigned long)m_ActiveKeyColorDuration;
 	rate     = m_ActiveKeyColorTailRate;
 
@@ -861,6 +917,38 @@ unsigned long MTPianoKeyboardDesign::GetKeyboardMaxDispNum()
 }
 
 //******************************************************************************
+// キー表示範囲：開始
+//******************************************************************************
+unsigned char MTPianoKeyboardDesign::GetKeyDispRangeStart()
+{
+	return (unsigned char)m_KeyDispRangeStart;
+}
+
+//******************************************************************************
+// キー表示範囲：終了
+//******************************************************************************
+unsigned char MTPianoKeyboardDesign::GetKeyDispRangeEnd()
+{
+	return (unsigned char)m_KeyDispRangeEnd;
+}
+
+//******************************************************************************
+// キー表示判定
+//******************************************************************************
+bool MTPianoKeyboardDesign::IsKeyDisp(
+		unsigned char noteNo
+	)
+{
+	bool isDisp = false;
+
+	if ((m_KeyDispRangeStart <= noteNo) && (noteNo <= m_KeyDispRangeEnd)) {
+		isDisp = true;
+	}
+
+	return isDisp;
+}
+
+//******************************************************************************
 // 設定ファイル読み込み
 //******************************************************************************
 int MTPianoKeyboardDesign::_LoadConfFile(
@@ -869,6 +957,7 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 {
 	int result = 0;
 	TCHAR hexColor[16] = {_T('\0')};
+	TCHAR activeKeyColorType[32] = {_T('\0')};
 	MTConfFile confFile;
 
 	result = confFile.Initialize(pSceneName);
@@ -898,13 +987,25 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	if (result != 0) goto EXIT;
 	m_BlackKeyColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 
+	result = confFile.GetStr(_T("ActiveKeyColorType"), activeKeyColorType, 32, _T("STANDARD"));
+	if (result != 0) goto EXIT;
+	if (_tcscmp(activeKeyColorType, _T("NOTE")) == 0) {
+		m_ActiveKeyColorType = NoteColor;
+	}
+	else {
+		m_ActiveKeyColorType = DefaultColor;
+	}
 	result = confFile.GetStr(_T("ActiveKeyColor"), hexColor, 16, _T("FF0000FF"));
 	if (result != 0) goto EXIT;
 	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
-
 	result = confFile.GetInt(_T("ActiveKeyColorDuration"), &m_ActiveKeyColorDuration, 400);
 	if (result != 0) goto EXIT;
 	result = confFile.GetFloat(_T("ActiveKeyColorTailRate"), &m_ActiveKeyColorTailRate, 0.5f);
+	if (result != 0) goto EXIT;
+
+	result = confFile.GetInt(_T("KeyDispRangeStart"), &m_KeyDispRangeStart, 0);
+	if (result != 0) goto EXIT;
+	result = confFile.GetInt(_T("KeyDispRangeEnd"), &m_KeyDispRangeEnd, 127);
 	if (result != 0) goto EXIT;
 
 	//キーボード最大表示数は1ポート分（16ch）に制限する
@@ -913,6 +1014,23 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	}
 	if (m_KeyboardMaxDispNum < 0) {
 		m_KeyboardMaxDispNum = 0;
+	}
+
+	//キー表示範囲のクリッピング
+	if (m_KeyDispRangeStart < 0) {
+		m_KeyDispRangeStart = 0;
+	}
+	if (m_KeyDispRangeStart > 127) {
+		m_KeyDispRangeStart = 127;
+	}
+	if (m_KeyDispRangeEnd < 0) {
+		m_KeyDispRangeEnd = 0;
+	}
+	if (m_KeyDispRangeEnd > 127) {
+		m_KeyDispRangeEnd = 127;
+	}
+	if (m_KeyDispRangeStart > m_KeyDispRangeEnd) {
+		m_KeyDispRangeEnd = m_KeyDispRangeStart;
 	}
 
 EXIT:;

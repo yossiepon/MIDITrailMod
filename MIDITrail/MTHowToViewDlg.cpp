@@ -4,7 +4,7 @@
 //
 // 操作方法ダイアログ
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -128,9 +128,9 @@ int MTHowToViewDlg::Show(
 	m_PageNo = 0;
 
 	//アプリケーションインスタンスハンドルを取得
-	hInstance = (HINSTANCE)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
+	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hParentWnd);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
@@ -142,7 +142,7 @@ int MTHowToViewDlg::Show(
 					_WndProc							//ダイアログボックスプロシージャ
 				);
 	if ((dresult == 0) || (dresult == -1)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hInstance);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 

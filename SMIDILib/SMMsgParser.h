@@ -4,7 +4,7 @@
 //
 // メッセージ解析クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -62,7 +62,7 @@ public:
 	virtual ~SMMsgParser(void);
 
 	//メッセージ解析
-	void Parse(unsigned long wParam, unsigned long lParam);
+	void Parse(unsigned long param1, unsigned long param2);
 
 	//メッセージ種別取得
 	Message GetMsg();
@@ -103,8 +103,8 @@ public:
 
 private:
 
-	unsigned long m_WParam;
-	unsigned long m_LParam;
+	unsigned long m_Param1;
+	unsigned long m_Param2;
 	Message m_Msg;
 
 };

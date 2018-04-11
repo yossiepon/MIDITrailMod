@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,6 +22,7 @@
 #include "SMEventMeta.h"
 #include "SMSeqData.h"
 #include "SMMsgTransmitter.h"
+#include "SMMsgQueue.h"
 #include "SMOutDevCtrl.h"
 #include "SMCommon.h"
 #include "SMFPUCtrl.h"
@@ -57,7 +58,7 @@ public:
 	virtual ~SMSequencer(void);
 
 	//初期化
-	int Initialize(HWND hTargetWnd, unsigned long msgId);
+	int Initialize(SMMsgQueue* pMsgQueue);
 
 	//ポート対応デバイス登録
 	int SetPortDev(unsigned char portNo, const char* pProductName);
@@ -94,6 +95,7 @@ private:
 	unsigned long m_PlayIndex;
 	UserRequest m_UserRequest;
 	SMMsgTransmitter m_MsgTrans;
+	SMMsgQueue* m_pMsgQue;
 	SMEventWatcher m_EventWatcher;
 
 	//MIDIデバイス系

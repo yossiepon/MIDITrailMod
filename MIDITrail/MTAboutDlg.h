@@ -4,7 +4,7 @@
 //
 // バージョン情報ダイアログクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -38,6 +38,9 @@ private:
 	//ウィンドウプロシージャ
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
+
+	//ダイアログ表示直前初期化
+	int _OnInitDlg(HWND hDlg);
 
 };
 

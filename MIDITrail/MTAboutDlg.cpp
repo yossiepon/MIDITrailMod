@@ -4,12 +4,13 @@
 //
 // バージョン情報ダイアログクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
+#include "MIDITrailVersion.h"
 #include "MTAboutDlg.h"
 
 using namespace YNBaseLib;
@@ -53,12 +54,15 @@ INT_PTR MTAboutDlg::_WndProcImpl(
 		LPARAM lParam
 	)
 {
+	int result = 0;
 	BOOL bresult = FALSE;
 
 	UNREFERENCED_PARAMETER(lParam);
 
 	switch (message) {
 		case WM_INITDIALOG:
+			result = _OnInitDlg(hDlg);
+			if (result != 0) goto EXIT;
 			bresult = TRUE;
 			break;
 		case WM_COMMAND:
@@ -69,6 +73,7 @@ INT_PTR MTAboutDlg::_WndProcImpl(
 			break;
 	}
 
+EXIT:;
 	return (INT_PTR)bresult;
 }
 
@@ -84,7 +89,7 @@ int MTAboutDlg::Show(
 	HINSTANCE hInstance = NULL;
 
 	//アプリケーションインスタンスハンドルを取得
-	hInstance = (HINSTANCE)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
+	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -105,4 +110,47 @@ int MTAboutDlg::Show(
 EXIT:;
 	return result;
 }
+
+//******************************************************************************
+// ダイアログ表示直前初期化
+//******************************************************************************
+int MTAboutDlg::_OnInitDlg(
+		HWND hDlg
+	)
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+	TCHAR* pVersion = NULL;
+	TCHAR* pCopyright = NULL;
+
+	//バージョン文字列
+#ifdef _WIN64
+	//64bit
+	pVersion = MIDITRAIL_VERSION_STRING_X64;
+#else
+	//32bit
+	pVersion = MIDITRAIL_VERSION_STRING_X86;
+#endif
+
+	//コピーライト文字列
+	pCopyright = MIDITRAIL_COPYRIGHT;
+
+	//バージョン文字列設定
+	bresult = SetWindowText(GetDlgItem(hDlg, IDC_TEXT_VERSION), pVersion);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	//コピーライト文字列設定
+	bresult = SetWindowText(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT), pCopyright);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
 

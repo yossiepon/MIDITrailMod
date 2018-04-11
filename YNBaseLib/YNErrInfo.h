@@ -4,7 +4,7 @@
 //
 // エラー情報クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -41,8 +41,8 @@ public:
 			unsigned long lineNo,
 			const TCHAR* pFileName,
 			const TCHAR* pMessage,
-			unsigned long errInfo1,
-			unsigned long errInfo2
+			unsigned long long errInfo1,
+			unsigned long long errInfo2
 		);
 	virtual ~YNErrInfo(void);
 
@@ -59,15 +59,15 @@ public:
 	const TCHAR* GetMessage();
 
 	//エラー情報取得
-	unsigned long GetErrInfo1();
-	unsigned long GetErrInfo2();
+	unsigned long long GetErrInfo1();
+	unsigned long long GetErrInfo2();
 
 private:
 
 	ErrLevel m_ErrLevel;
 	unsigned long m_LineNo;
-	unsigned long m_ErrInfo1;
-	unsigned long m_ErrInfo2;
+	unsigned long long m_ErrInfo1;
+	unsigned long long m_ErrInfo2;
 
 //CRTをスタティックリンク(/MT)すると警告が出る
 //#pragma warning(disable:4251)

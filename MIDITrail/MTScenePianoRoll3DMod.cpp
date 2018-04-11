@@ -20,6 +20,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTScenePianoRoll3DMod::MTScenePianoRoll3DMod()
 {
+	m_IsSingleKeyboard = false;
 }
 
 //******************************************************************************
@@ -88,7 +89,7 @@ int MTScenePianoRoll3DMod::Create(
 	m_PictBoard.SetEnable(false);
 
 	//ピアノキーボード制御
-	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
+	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend, m_IsSingleKeyboard);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -116,7 +117,7 @@ int MTScenePianoRoll3DMod::Transform(
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
 
-	//ノートボックス更新
+	//グリッドボックス更新
 	result = m_GridBoxMod.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
 
@@ -177,7 +178,11 @@ int MTScenePianoRoll3DMod::Draw(
 	// カメラ位置が演奏位置より手前側であれば
 	if(m_TimeIndicator.GetPos() > camVector.x) {
 
-		//タイムインジケータ＞歌詞＞波紋＞キーボードの順で奥から描画
+		//メッシュ＞タイムインジケータ＞歌詞＞波紋＞キーボードの順で奥から描画
+
+		//メッシュ描画
+		result = m_MeshCtrl.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
 
 		//タイムインジケータ描画
 		result = m_TimeIndicator.Draw(pD3DDevice);
@@ -197,7 +202,7 @@ int MTScenePianoRoll3DMod::Draw(
 
 	} else {
 
-		//キーボード＞波紋＞歌詞＞タイムインジケータの順で奥から描画
+		//キーボード＞波紋＞歌詞＞タイムインジケータ＞メッシュの順で奥から描画
 
 		//ピアノキーボード描画
 		result = m_PianoKeyboardCtrl.Draw(pD3DDevice);
@@ -213,6 +218,10 @@ int MTScenePianoRoll3DMod::Draw(
 
 		//タイムインジケータ描画
 		result = m_TimeIndicator.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//メッシュ描画
+		result = m_MeshCtrl.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 	}
@@ -242,14 +251,14 @@ void MTScenePianoRoll3DMod::Release()
 // シーケンサメッセージ受信
 //******************************************************************************
 int MTScenePianoRoll3DMod::OnRecvSequencerMsg(
-		unsigned long wParam,
-		unsigned long lParam
+		unsigned long param1,
+		unsigned long param2
 	)
 {
 	int result = 0;
 	SMMsgParser parser;
 
-	parser.Parse(wParam, lParam);
+	parser.Parse(param1, param2);
 
 	//演奏状態通知
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
@@ -368,6 +377,9 @@ void MTScenePianoRoll3DMod::SetEffect(
 			break;
 		case EffectCounter:
 			m_Dashboard.SetEnable(isEnable);
+			break;
+		case EffectFileName:
+			m_Dashboard.SetEnableFileName(isEnable);
 			break;
 		default:
 			break;

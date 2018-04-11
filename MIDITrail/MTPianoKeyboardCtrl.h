@@ -4,7 +4,7 @@
 //
 // ピアノキーボード制御クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -43,7 +43,8 @@ public:
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
-			MTNotePitchBend* pNotePitchBend
+			MTNotePitchBend* pNotePitchBend,
+			bool isSingleKeyboard
 		);
 
 	//更新
@@ -93,6 +94,12 @@ protected:
 		unsigned long index;
 		float keyDownRate;
 	};
+
+// >>> modify 20140920 yossiepon begin
+protected:
+	//シングルキーボードフラグ
+	bool m_isSingleKeyboard;
+// <<< modify 20120920 yossiepon end
 
 protected:
 

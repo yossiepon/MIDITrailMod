@@ -31,6 +31,8 @@
 #define IDC_BTN_NEXT                    1012
 #define IDC_BTN_CLOSE                   1013
 #define IDC_CHECK_MIDITHRU              1016
+#define IDC_TEXT_VERSION                1017
+#define IDC_TEXT_COPYRIGHT              1018
 #define IDM_OPEN_FILE                   32771
 #define IDM_PLAY                        32772
 #define IDM_STOP                        32773
@@ -60,6 +62,8 @@
 // >>> add 20120728 yossiepon begin
 #define IDM_ADD_FILE                    32837
 // <<< add 20120728 yossiepon end
+#define IDM_AUTO_SAVE_VIEWPOINT         32838
+#define IDM_VIEW_PIANOROLLRAIN2D        32840
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -68,10 +72,10 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
-// >>> modify 20120728 yossiepon begin
-#define _APS_NEXT_COMMAND_VALUE         32838
-// <<< modify 20120728 yossiepon end
-#define _APS_NEXT_CONTROL_VALUE         1017
+// >>> modify 20140920 yossiepon begin
+#define _APS_NEXT_COMMAND_VALUE         32841
+// <<< modify 20140920 yossiepon end
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

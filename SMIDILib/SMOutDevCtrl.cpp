@@ -4,7 +4,7 @@
 //
 // MIDI出力デバイス制御クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -101,7 +101,7 @@ EXIT:;
 //******************************************************************************
 unsigned long SMOutDevCtrl::GetDevNum()
 {
-	return m_OutDevList.size();
+	return (unsigned long)m_OutDevList.size();
 }
 
 //******************************************************************************

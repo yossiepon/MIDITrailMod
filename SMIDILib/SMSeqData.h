@@ -4,7 +4,7 @@
 //
 // シーケンスデータクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -53,6 +53,9 @@ public:
 
 	//トラック登録終了
 	int CloseTrack();
+
+	//ファイル名登録
+	void SetFileName(const char* pFileName);
 
 	//クリア
 	void Clear();
@@ -113,6 +116,9 @@ public:
 	//ポートリスト取得
 	int GetPortList(SMPortList* pPortList);
 
+	//ファイル名取得
+	const char* GetFileName();
+
 private:
 
 	typedef std::list<SMTrack*> SMTrackList;
@@ -138,6 +144,7 @@ private:
 	unsigned long m_BarNum;
 	std::string m_CopyRight;
 	std::string m_Title;
+	std::string m_FileName;
 	SMTrackList m_TrackList;
 	SMTrack* m_pMergedTrack;
 

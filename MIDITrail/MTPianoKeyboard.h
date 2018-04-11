@@ -4,7 +4,7 @@
 //
 // ピアノキーボード描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -59,10 +59,23 @@ public:
 
 	//キー状態変更
 	int ResetKey(unsigned char noteNo);
-	int PushKey(unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
-// >>> modify 20120728 yossiepon begin
-	virtual int PushKey(unsigned char chNo, unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
-// <<< modify 20120728 yossiepon end
+	int PushKey(
+			unsigned char noteNo,
+			float keyDownRate,
+			unsigned long elapsedTime,
+			D3DXCOLOR* pActiveKeyColor = NULL
+		);
+// >>> add 20120728 yossiepon begin
+// >>> modify 20140920 yossiepon begin
+	virtual int PushKey(
+			unsigned char chNo,
+			unsigned char noteNo,
+			float keyDownRate,
+			unsigned long elapsedTime,
+			D3DXCOLOR* pActiveKeyColor = NULL
+		);
+// <<< modify 20140920 yossiepon end
+// <<< add 20120728 yossiepon end
 
 	//共有用テクスチャ取得
 	LPDIRECT3DTEXTURE9 GetTexture();
@@ -147,6 +160,8 @@ private:
 // >>> modify 20120728 yossiepon begin
 	D3DXVECTOR3 _RotateYZ(float centerY, float centerZ, D3DXVECTOR3 p1, float angle);
 // <<< modify 20120728 yossiepon end
+
+	int _HideKey(unsigned char noteNo);
 
 };
 

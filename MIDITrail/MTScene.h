@@ -4,7 +4,7 @@
 //
 // MIDITrail シーン基底クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -32,7 +32,8 @@ public:
 		EffectRipple,
 		EffectPitchBend,
 		EffectStars,
-		EffectCounter
+		EffectCounter,
+		EffectFileName
 	};
 
 	typedef std::map<std::string, float>  MTViewParamMap;
@@ -65,9 +66,9 @@ public:
 
 	//ウィンドウクリックイベント受信
 	virtual int OnWindowClicked(
-					unsigned long button,
-					unsigned long wParam,
-					unsigned long lParam
+					UINT button,
+					WPARAM wParam,
+					LPARAM lParam
 				);
 
 	//演奏開始イベント受信
@@ -78,8 +79,8 @@ public:
 
 	//シーケンサメッセージ受信
 	virtual int OnRecvSequencerMsg(
-					unsigned long wParam,
-					unsigned long lParam
+					unsigned long param1,
+					unsigned long param2
 				);
 
 	//巻き戻し

@@ -1,5 +1,5 @@
 
-Copyright (c) 2010-2012, WADA Masashi <yknk@users.sourceforge.jp>
+Copyright (c) 2010-2014, WADA Masashi <yknk@users.sourceforge.jp>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
