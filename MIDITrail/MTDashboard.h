@@ -4,7 +4,7 @@
 //
 // ダッシュボード描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -107,11 +107,15 @@ public:
 	//表示設定
 	void SetEnable(bool isEnable);
 
+	//ファイル名表示設定
+	void SetEnableFileName(bool isEnable);
+
 private:
 
 	HWND m_hWnd;
 	
 	MTStaticCaption m_Title;
+	MTStaticCaption m_FileName;
 	
 	MTDynamicCaption m_Counter;
 	float m_PosCounterX;
@@ -137,6 +141,7 @@ private:
 
 	//表示可否
 	bool m_isEnable;
+	bool m_isEnableFileName;
 
 	int _GetCounterPos(float* pX, float* pY);
 	int _GetCounterStr(TCHAR* pStr, unsigned long bufSize);

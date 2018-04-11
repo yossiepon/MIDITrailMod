@@ -4,14 +4,16 @@
 //
 // 設定ファイルクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
+#include "YNErrCtrl.h"
 #include "YNConfFile.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <new>
 
 namespace YNBaseLib {
 
@@ -240,11 +242,26 @@ int YNConfFile::SetStr(
 {
 	int result = 0;
 	BOOL bresult = TRUE;
+	TCHAR* pValue = NULL;
+	size_t length = 0;
+
+	//INIファイルに末尾が空白文字の値を登録すると
+	//値を取得するときに空白文字を削除されてしまうため
+	//シングルクォートで囲んで登録する
+	length = _tcslen(pStr) + 4;
+	try {
+		pValue = new TCHAR[length];
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", length, 0);
+		goto EXIT;
+	}
+	_stprintf_s(pValue, length, _T("'%s'"), pStr);
 
 	bresult = WritePrivateProfileString(
 					m_Section,		//セクション名
 					pKey,			//キー名
-					pStr,			//登録する文字列
+					pValue,			//登録する文字列
 					m_FilePath		//ファイルパス
 				);
 	if (!bresult) {
@@ -253,6 +270,7 @@ int YNConfFile::SetStr(
 	}
 
 EXIT:;
+	delete [] pValue;
 	return result;
 }
 

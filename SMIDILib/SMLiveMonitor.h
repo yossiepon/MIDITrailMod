@@ -4,7 +4,7 @@
 //
 // ライブモニタクラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,6 +17,7 @@
 #endif
 
 #include "SMEvent.h"
+#include "SMMsgQueue.h"
 #include "SMMsgTransmitter.h"
 #include "SMInDevCtrl.h"
 #include "SMOutDevCtrl.h"
@@ -48,7 +49,7 @@ public:
 	virtual ~SMLiveMonitor(void);
 	
 	//初期化
-	int Initialize(HWND hTargetWnd, unsigned long msgId);
+	int Initialize(SMMsgQueue* pMsgQueue);
 	
 	//ポート対応デバイス登録
 	int SetInPortDev(const char* pProductName, bool isMIDITHRU);
@@ -69,6 +70,7 @@ private:
 	//演奏状態
 	Status m_Status;
 	SMMsgTransmitter m_MsgTrans;
+	SMMsgQueue* m_pMsgQue;
 	SMEventWatcher m_EventWatcher;
 	
 	//MIDIデバイス系

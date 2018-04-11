@@ -4,7 +4,7 @@
 //
 // MIDITrail シーン基底クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -82,9 +82,9 @@ void MTScene::Release()
 // ウィンドウクリックイベント受信
 //******************************************************************************
 int MTScene::OnWindowClicked(
-		unsigned long button,
-		unsigned long wParam,
-		unsigned long lParam
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
 	)
 {
 	return 0;
@@ -114,8 +114,8 @@ int MTScene::OnPlayEnd(
 // シーケンサメッセージ受信
 //******************************************************************************
 int MTScene::OnRecvSequencerMsg(
-		unsigned long wParam,
-		unsigned long lParam
+		unsigned long param1,
+		unsigned long param2
 	)
 {
 	return 0;

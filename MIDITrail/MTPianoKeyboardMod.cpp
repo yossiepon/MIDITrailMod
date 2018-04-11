@@ -151,7 +151,8 @@ int MTPianoKeyboardMod::PushKey(
 		unsigned char chNo,
 		unsigned char noteNo,
 		float keyDownRate,
-		unsigned long elapsedTime
+		unsigned long elapsedTime,
+		D3DXCOLOR* pNoteColor
 	)
 {
 	int result = 0;
@@ -171,7 +172,7 @@ int MTPianoKeyboardMod::PushKey(
 	}
 	else {
 		//キーが押下状態の場合は色を変更して回転させる
-		color = m_KeyboardDesignMod.GetActiveKeyColor(chNo, noteNo, elapsedTime);
+		color = m_KeyboardDesignMod.GetActiveKeyColor(chNo, noteNo, elapsedTime, pNoteColor);
 		_RotateKey(noteNo, angle, &color);
 	}
 

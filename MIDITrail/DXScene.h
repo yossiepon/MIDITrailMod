@@ -4,7 +4,7 @@
 //
 // ƒV[ƒ“Šî’êƒNƒ‰ƒX
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -28,8 +28,19 @@ public:
 	DXScene(void);
 	virtual ~DXScene(void);
 
+	//”wŒiFİ’è
+	virtual void SetBGColor(D3DCOLOR color);
+
+	//”wŒiFæ“¾
+	virtual D3DCOLOR GetBGColor();
+
 	//•`‰æ
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+
+private:
+
+	//”wŒiF
+	D3DCOLOR m_BGColor;
 
 };
 

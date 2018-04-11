@@ -37,7 +37,13 @@ public:
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector1, D3DXVECTOR3 moveVector2, float scale, float z, float rollAngle);
 
 	//ÉLÅ[èÛë‘ïœçX
-	virtual int PushKey(unsigned char chNo, unsigned char noteNo, float keyDownRate, unsigned long elapsedTime);
+	virtual int PushKey(
+			unsigned char chNo,
+			unsigned char noteNo,
+			float keyDownRate,
+			unsigned long elapsedTime,
+			D3DXCOLOR* pActiveKeyColor = NULL
+		);
 
 private:
 

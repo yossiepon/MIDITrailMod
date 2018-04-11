@@ -4,7 +4,7 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -122,9 +122,9 @@ int MTGraphicCfgDlg::Show(
 	HINSTANCE hInstance = NULL;
 
 	//アプリケーションインスタンスハンドルを取得
-	hInstance = (HINSTANCE)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
+	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hParentWnd);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
@@ -136,7 +136,7 @@ int MTGraphicCfgDlg::Show(
 					_WndProc							//ダイアログボックスプロシージャ
 				);
 	if ((dresult == 0) || (dresult == -1)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hInstance);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 
@@ -321,15 +321,15 @@ int MTGraphicCfgDlg::_Save()
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
-	selectedIndex = lresult;
+	selectedIndex = (unsigned long)lresult;
 
 	//選択項目のユーザデータを取得：マルチサンプル種別
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETITEMDATA, selectedIndex, 0);
 	if (lresult == CB_ERR) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)selectedIndex);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
 		goto EXIT;
 	}
-	selectedMultiSampleType = lresult;
+	selectedMultiSampleType = (unsigned long)lresult;
 
 	//設定保存
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));

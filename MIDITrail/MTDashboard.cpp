@@ -4,7 +4,7 @@
 //
 // ダッシュボード描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -47,6 +47,7 @@ MTDashboard::MTDashboard(void)
 	m_CaptionColor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 	m_isEnable = true;
+	m_isEnableFileName = false;
 }
 
 //******************************************************************************
@@ -69,6 +70,7 @@ int MTDashboard::Create(
 {
 	int result = 0;
 	std::string title;
+	std::string fileName;
 	SMTrack track;
 	SMNoteList noteList;
 	TCHAR counter[100];
@@ -88,8 +90,13 @@ int MTDashboard::Create(
 
 	//タイトルキャプション
 	//TODO: UNICODE版ビルドには対応していない
-	title = "TITLE: ";
+	//title = "TITLE: ";
+	title = "";
 	title += pSeqData->GetTitle();
+	if (title.size() == 0) {
+		//空文字ではテクスチャ生成でエラーとなるため空白文字とする
+		title += " ";
+	}
 	result = m_Title.Create(
 					pD3DDevice,
 					MTDASHBOARD_FONTNAME,	//フォント名称
@@ -98,6 +105,19 @@ int MTDashboard::Create(
 				);
 	if (result != 0) goto EXIT;
 	m_Title.SetColor(m_CaptionColor);
+
+	//ファイル名キャプション
+	//TODO: UNICODE版ビルドには対応していない
+	fileName = "";
+	fileName = pSeqData->GetFileName();
+	result = m_FileName.Create(
+					pD3DDevice,
+					MTDASHBOARD_FONTNAME,	//フォント名称
+					MTDASHBOARD_FONTSIZE,	//フォントサイズ
+					(TCHAR*)fileName.c_str()	//ファイル名
+				);
+	if (result != 0) goto EXIT;
+	m_FileName.SetColor(m_CaptionColor);
 
 	//カウンタキャプション
 	result = m_Counter.Create(
@@ -185,9 +205,16 @@ int MTDashboard::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//タイトル描画：カウンタと同じ拡大率で表示する
-	result = m_Title.Draw(pD3DDevice, MTDASHBOARD_FRAMESIZE, MTDASHBOARD_FRAMESIZE, m_CounterMag);
-	if (result != 0) goto EXIT;
+	if (m_isEnableFileName) {
+		//ファイル名描画：カウンタと同じ拡大率で表示する
+		result = m_FileName.Draw(pD3DDevice, MTDASHBOARD_FRAMESIZE, MTDASHBOARD_FRAMESIZE, m_CounterMag);
+		if (result != 0) goto EXIT;
+	}
+	else {
+		//タイトル描画：カウンタと同じ拡大率で表示する
+		result = m_Title.Draw(pD3DDevice, MTDASHBOARD_FRAMESIZE, MTDASHBOARD_FRAMESIZE, m_CounterMag);
+		if (result != 0) goto EXIT;
+	}
 	
 	//カウンタ文字列描画
 	result = _GetCounterStr(counter, 100);
@@ -209,6 +236,7 @@ EXIT:;
 void MTDashboard::Release()
 {
 	m_Title.Release();
+	m_FileName.Release();
 	m_Counter.Release();
 }
 
@@ -243,7 +271,7 @@ int MTDashboard::_GetCounterPos(
 
 	//文字サイズ
 	charHeight = th;
-	charWidth = tw / _tcslen(MTDASHBOARD_COUNTER_CHARS);
+	charWidth = tw / (unsigned long)_tcslen(MTDASHBOARD_COUNTER_CHARS);
 
 	//拡大率1.0のキャプションサイズ
 	captionWidth = (unsigned long)(charWidth * MTDASHBOARD_COUNTER_SIZE);
@@ -478,5 +506,15 @@ void MTDashboard::SetEnable(
 	)
 {
 	m_isEnable = isEnable;
+}
+
+//******************************************************************************
+// ファイル名表示設定
+//******************************************************************************
+void MTDashboard::SetEnableFileName(
+		bool isEnable
+	)
+{
+	m_isEnableFileName = isEnable;
 }
 

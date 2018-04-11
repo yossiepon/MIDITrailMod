@@ -4,12 +4,14 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
+#include "DXColorUtil.h"
+#include "MTConfFile.h"
 #include "MTScenePianoRollRain.h"
 
 using namespace YNBaseLib;
@@ -21,6 +23,7 @@ using namespace YNBaseLib;
 MTScenePianoRollRain::MTScenePianoRollRain(void)
 {
 	m_IsEnableLight = TRUE;
+	m_IsSingleKeyboard = false;
 	m_IsMouseCamMode = false;
 	m_IsAutoRollMode = false;
 	m_CurTickTime = 0;
@@ -60,6 +63,10 @@ int MTScenePianoRollRain::Create(
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
+
+	//設定ファイル読み込み
+	result = _LoadConf();
+	if (result != 0) goto EXIT;
 
 	//----------------------------------
 	// カメラ
@@ -102,8 +109,16 @@ int MTScenePianoRollRain::Create(
 	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
+	//シングルキーボードはピッチベンド無効
+	if (m_IsSingleKeyboard) {
+		m_NotePitchBend.SetEnable(false);
+	}
+	else {
+		m_NotePitchBend.SetEnable(true);
+	}
+
 	//ピアノキーボード制御
-	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
+	result = m_PianoKeyboardCtrl.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend, m_IsSingleKeyboard);
 	if (result != 0) goto EXIT;
 
 	//ノートレイン
@@ -116,6 +131,10 @@ int MTScenePianoRollRain::Create(
 
 	//星生成
 	result = m_Stars.Create(pD3DDevice, GetName(), &m_DirLight);
+	if (result != 0) goto EXIT;
+
+	//メッシュ制御生成
+	result = m_MeshCtrl.Create(pD3DDevice, GetName());
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
@@ -154,6 +173,7 @@ int MTScenePianoRollRain::Transform(
 	int result = 0;
 	float rollAngle = 0.0f;
 	D3DXVECTOR3 camVector;
+	D3DXVECTOR3 moveVector;
 
 	if (pD3DDevice == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -184,6 +204,11 @@ int MTScenePianoRollRain::Transform(
 
 	//星更新
 	result = m_Stars.Transform(pD3DDevice, camVector);
+	if (result != 0) goto EXIT;
+
+	//メッシュ更新
+	moveVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	result = m_MeshCtrl.Transform(pD3DDevice, moveVector);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -220,6 +245,10 @@ int MTScenePianoRollRain::Draw(
 	result = m_Stars.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//メッシュ描画
+	result = m_MeshCtrl.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//ダッシュボード描画：座標変換済み頂点を用いるため一番最後に描画する
 	result = m_Dashboard.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -237,15 +266,16 @@ void MTScenePianoRollRain::Release()
 	m_NoteRain.Release();
 	m_Dashboard.Release();
 	m_Stars.Release();
+	m_MeshCtrl.Release();
 }
 
 //******************************************************************************
 // ウィンドウクリックイベント受信
 //******************************************************************************
 int MTScenePianoRollRain::OnWindowClicked(
-		unsigned long button,
-		unsigned long wParam,
-		unsigned long lParam
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
 	)
 {
 	int result = 0;
@@ -303,14 +333,14 @@ int MTScenePianoRollRain::OnPlayEnd(
 // シーケンサメッセージ受信
 //******************************************************************************
 int MTScenePianoRollRain::OnRecvSequencerMsg(
-		unsigned long wParam,
-		unsigned long lParam
+		unsigned long param1,
+		unsigned long param2
 	)
 {
 	int result = 0;
 	SMMsgParser parser;
 
-	parser.Parse(wParam, lParam);
+	parser.Parse(param1, param2);
 
 	//演奏状態通知
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
@@ -577,13 +607,18 @@ void MTScenePianoRollRain::SetEffect(
 		case EffectRipple:
 			break;
 		case EffectPitchBend:
-			m_NotePitchBend.SetEnable(isEnable);
+			if (!m_IsSingleKeyboard) {
+				m_NotePitchBend.SetEnable(isEnable);
+			}
 			break;
 		case EffectStars:
 			m_Stars.SetEnable(isEnable);
 			break;
 		case EffectCounter:
 			m_Dashboard.SetEnable(isEnable);
+			break;
+		case EffectFileName:
+			m_Dashboard.SetEnableFileName(isEnable);
 			break;
 		default:
 			break;
@@ -634,4 +669,27 @@ void MTScenePianoRollRain::_SetLightColor(
 	return;
 }
 
+//******************************************************************************
+// 設定ファイル読み込み
+//******************************************************************************
+int MTScenePianoRollRain::_LoadConf()
+{
+	int result = 0;
+	TCHAR hexColor[16] = {_T('\0')};
+	MTConfFile confFile;
+
+	result = confFile.Initialize(GetName());
+	if (result != 0) goto EXIT;
+
+	result = confFile.SetCurSection(_T("Color"));
+	if (result != 0) goto EXIT;
+
+	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000"));
+	if (result != 0) goto EXIT;
+
+	SetBGColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
+
+EXIT:;
+	return result;
+}
 

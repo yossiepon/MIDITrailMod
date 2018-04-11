@@ -30,7 +30,8 @@ public:
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
-			MTNotePitchBend* pNotePitchBend
+			MTNotePitchBend* pNotePitchBend,
+			bool isSingleKeyboard
 		);
 
 	//çXêV

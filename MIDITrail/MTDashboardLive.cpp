@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ダッシュボード描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -177,7 +177,7 @@ int MTDashboardLive::_GetCounterPos(
 	
 	//文字サイズ
 	charHeight = th;
-	charWidth = tw / _tcslen(MTDASHBOARDLIVE_COUNTER_CHARS);
+	charWidth = tw / (unsigned long)_tcslen(MTDASHBOARDLIVE_COUNTER_CHARS);
 	
 	//拡大率1.0のキャプションサイズ
 	captionWidth = (unsigned long)(charWidth * MTDASHBOARDLIVE_COUNTER_SIZE);

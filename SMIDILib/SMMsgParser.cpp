@@ -4,7 +4,7 @@
 //
 // メッセージ解析クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -20,8 +20,8 @@ namespace SMIDILib {
 //******************************************************************************
 SMMsgParser::SMMsgParser(void)
 {
-	m_WParam = 0;
-	m_LParam = 0;
+	m_Param1 = 0;
+	m_Param2 = 0;
 	m_Msg = MsgUnknown;
 }
 
@@ -36,14 +36,14 @@ SMMsgParser::~SMMsgParser(void)
 // メッセージ解析
 //******************************************************************************
 void SMMsgParser::Parse(
-		unsigned long wParam,
-		unsigned long lParam
+		unsigned long param1,
+		unsigned long param2
 	)
 {
-	m_WParam = wParam;
-	m_LParam = lParam;
+	m_Param1 = param1;
+	m_Param2 = param2;
 
-	switch (m_WParam >> 24) {
+	switch (m_Param1 >> 24) {
 		case SM_MSG_PLAY_STATUS:
 			m_Msg = MsgPlayStatus;
 			break;
@@ -103,7 +103,7 @@ SMMsgParser::PlayStatus SMMsgParser::GetPlayStatus()
 		goto EXIT;
 	}
 
-	switch (m_LParam) {
+	switch (m_Param2) {
 		case SM_PLAYSTATUS_STOP:
 			status = StatusStop;
 			break;
@@ -133,7 +133,7 @@ unsigned long SMMsgParser::GetPlayTimeSec()
 		goto EXIT;
 	}
 
-	timeSec = (m_WParam & 0x00FFFFFF) / 1000;
+	timeSec = (m_Param1 & 0x00FFFFFF) / 1000;
 
 EXIT:;
 	return timeSec;
@@ -150,7 +150,7 @@ unsigned long SMMsgParser::GetPlayTimeMSec()
 		goto EXIT;
 	}
 
-	timeSec = m_WParam & 0x00FFFFFF;
+	timeSec = m_Param1 & 0x00FFFFFF;
 
 EXIT:;
 	return timeSec;
@@ -167,7 +167,7 @@ unsigned long SMMsgParser::GetPlayTickTime()
 		goto EXIT;
 	}
 
-	tickTime = m_LParam;
+	tickTime = m_Param2;
 
 EXIT:;
 	return tickTime;
@@ -185,7 +185,7 @@ unsigned long SMMsgParser::GetTempoBPM()
 		goto EXIT;
 	}
 
-	tempo = m_LParam;
+	tempo = m_Param2;
 	tempoBPM = (60 * 1000 * 1000) / tempo;
 
 EXIT:;
@@ -203,7 +203,7 @@ unsigned long SMMsgParser::GetBarNo()
 		goto EXIT;
 	}
 
-	barNo = m_LParam;
+	barNo = m_Param2;
 
 EXIT:;
 	return barNo;
@@ -220,7 +220,7 @@ unsigned long SMMsgParser::GetBeatNumerator()
 		goto EXIT;
 	}
 
-	numerator = m_LParam >> 16;
+	numerator = m_Param2 >> 16;
 
 EXIT:;
 	return numerator;
@@ -237,7 +237,7 @@ unsigned long SMMsgParser::GetBeatDenominator()
 		goto EXIT;
 	}
 
-	denominator = m_LParam & 0x0000FFFF;
+	denominator = m_Param2 & 0x0000FFFF;
 
 EXIT:;
 	return denominator;
@@ -255,7 +255,7 @@ unsigned char SMMsgParser::GetPortNo()
 		goto EXIT;
 	}
 
-	portNo = (m_LParam & 0xFF000000) >> 24;
+	portNo = (m_Param2 & 0xFF000000) >> 24;
 
 EXIT:;
 	return portNo;
@@ -273,7 +273,7 @@ unsigned char SMMsgParser::GetChNo()
 		goto EXIT;
 	}
 
-	chNo = (unsigned char)((m_LParam & 0x00FF0000) >> 16);
+	chNo = (unsigned char)((m_Param2 & 0x00FF0000) >> 16);
 
 EXIT:;
 	return chNo;
@@ -290,7 +290,7 @@ unsigned char SMMsgParser::GetNoteNo()
 		goto EXIT;
 	}
 
-	noteNo = (unsigned char)((m_LParam & 0x0000FF00) >> 8);
+	noteNo = (unsigned char)((m_Param2 & 0x0000FF00) >> 8);
 
 EXIT:;
 	return noteNo;
@@ -307,7 +307,7 @@ unsigned char SMMsgParser::GetVelocity()
 		goto EXIT;
 	}
 
-	velocity = (unsigned char)(m_LParam & 0x000000FF);
+	velocity = (unsigned char)(m_Param2 & 0x000000FF);
 
 EXIT:;
 	return velocity;
@@ -324,7 +324,7 @@ short SMMsgParser::GetPitchBendValue()
 		goto EXIT;
 	}
 
-	pitchBend = (short)(m_LParam & 0x0000FFFF);
+	pitchBend = (short)(m_Param2 & 0x0000FFFF);
 
 EXIT:;
 	return pitchBend;
@@ -341,7 +341,7 @@ unsigned char SMMsgParser::GetPitchBendSensitivity()
 		goto EXIT;
 	}
 
-	sensitivity = (unsigned char)(m_WParam & 0x000000FF);
+	sensitivity = (unsigned char)(m_Param1 & 0x000000FF);
 
 EXIT:;
 	return sensitivity;
@@ -358,10 +358,10 @@ SMMsgParser::SkipDirection SMMsgParser::GetSkipStartDirection()
 		goto EXIT;
 	}
 
-	if (m_LParam == SM_SKIP_BACK) {
+	if (m_Param2 == SM_SKIP_BACK) {
 		direction = SkipBack;
 	}
-	else if (m_LParam == SM_SKIP_FORWARD) {
+	else if (m_Param2 == SM_SKIP_FORWARD) {
 		direction = SkipForward;
 	}
 
@@ -380,7 +380,7 @@ unsigned long SMMsgParser::GetSkipEndNotesCount()
 		goto EXIT;
 	}
 
-	notesCount = m_LParam;
+	notesCount = m_Param2;
 
 EXIT:;
 	return notesCount;

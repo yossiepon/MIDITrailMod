@@ -4,7 +4,7 @@
 //
 // ライブモニタクラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -45,11 +45,12 @@ SMLiveMonitor::~SMLiveMonitor()
 // 初期化
 //******************************************************************************
 int SMLiveMonitor::Initialize(
-		HWND hTargetWnd,
-		unsigned long msgId
+		SMMsgQueue* pMsgQueue
 	)
 {
 	int result = 0;
+	
+	m_pMsgQue = pMsgQueue;	
 	
 	//MIDI出力デバイス初期化
 	result = m_OutDevCtrl.Initialize();
@@ -63,7 +64,7 @@ int SMLiveMonitor::Initialize(
 	_ClearPortInfo();
 	
 	//イベント転送オブジェクト初期化
-	result = m_MsgTrans.Initialize(hTargetWnd, msgId);
+	result = m_MsgTrans.Initialize(pMsgQueue);
 	if (result != 0) goto EXIT;
 	
 	//イベントウォッチャー初期化

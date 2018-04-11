@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロール2Dシーン描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -31,7 +31,7 @@ MTScenePianoRoll2DLive::~MTScenePianoRoll2DLive(void)
 //******************************************************************************
 const TCHAR* MTScenePianoRoll2DLive::GetName()
 {
-	return _T("PianoRoll2D");
+	return _T("PianoRoll2DLive");
 }
 
 //******************************************************************************

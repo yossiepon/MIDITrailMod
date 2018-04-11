@@ -4,7 +4,7 @@
 //
 // MIDI IN 設定ダイアログ
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -99,9 +99,9 @@ int MTMIDIINCfgDlg::Show(
 	HINSTANCE hInstance = NULL;
 
 	//アプリケーションインスタンスハンドルを取得
-	hInstance = (HINSTANCE)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
+	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hParentWnd);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
@@ -113,7 +113,7 @@ int MTMIDIINCfgDlg::Show(
 					_WndProc							//ダイアログボックスプロシージャ
 				);
 	if ((dresult == 0) || (dresult == -1)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hInstance);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 
@@ -206,7 +206,7 @@ int MTMIDIINCfgDlg::_InitComboDev(
 	//「選択なし」をコンボボックスに追加
 	lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)_T("(none)"));
 	if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hComboDev);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
 		goto EXIT;
 	}
 	comboIndex++;
@@ -222,7 +222,7 @@ int MTMIDIINCfgDlg::_InitComboDev(
 		//デバイス名をコンボボックスに追加
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)productName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hComboDev);
+			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
 			goto EXIT;
 		}
 		if (selectedProductName == productName) {
@@ -238,7 +238,7 @@ int MTMIDIINCfgDlg::_InitComboDev(
 		//デバイス名をコンボボックスに追加
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)selectedProductName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hComboDev);
+			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
 			goto EXIT;
 		}
 		selectedIndex = comboIndex;
@@ -320,10 +320,10 @@ int MTMIDIINCfgDlg::_SavePortCfg(
 	//選択項目のインデックスを取得
 	lresult = SendMessage(hComboDev, CB_GETCURSEL, 0, 0);
 	if ((lresult == CB_ERR) || (lresult < 0)) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD)hComboDev);
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
 		goto EXIT;
 	}
-	selectedIndex = lresult;
+	selectedIndex = (unsigned long)lresult;
 
 	//選択項目のデバイス名を取得
 	if (selectedIndex == 0) {

@@ -46,8 +46,8 @@ public:
 
 	//シーケンサメッセージ受信
 	virtual int OnRecvSequencerMsg(
-			unsigned long wParam,
-			unsigned long lParam
+			unsigned long param1,
+			unsigned long param2
 		);
 
 	//エフェクト設定
@@ -56,6 +56,9 @@ public:
 protected:
 
 	virtual void _Reset();
+
+	//シングルキーボードフラグ
+	bool m_IsSingleKeyboard;
 
 private:
 

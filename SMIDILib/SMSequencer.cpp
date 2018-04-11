@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -90,8 +90,7 @@ SMSequencer::~SMSequencer(void)
 // 初期化
 //******************************************************************************
 int SMSequencer::Initialize(
-		HWND hTargetWnd,
-		unsigned long msgId
+		SMMsgQueue* pMsgQueue
 	)
 {
 	int result = 0;
@@ -109,7 +108,7 @@ int SMSequencer::Initialize(
 	_ClearPortInfo();
 
 	//イベント転送オブジェクト初期化
-	result = m_MsgTrans.Initialize(hTargetWnd, msgId);
+	result = m_MsgTrans.Initialize(pMsgQueue);
 	if (result != 0) goto EXIT;
 
 	//イベントウォッチャー初期化
@@ -227,12 +226,12 @@ int SMSequencer::Play()
 
 	//先頭から演奏開始
 	if (m_Status == StatusStop) {
-		//再生開始パラメータ初期化
-		result = _InitializeParamsOnPlayStart();
-		if (result != 0) goto EXIT;
-
 		//MIDI出力デバイスを開く
 		result = _OpenMIDIOutDev();
+		if (result != 0) goto EXIT;
+
+		//再生開始パラメータ初期化
+		result = _InitializeParamsOnPlayStart();
 		if (result != 0) goto EXIT;
 	}
 	//一時停止から演奏再開
@@ -999,7 +998,7 @@ int SMSequencer::_FilterMIDIEvent(
 			m_CacheCC011_Expression[portNo][chNo] = ccValue;
 		}
 		//CC#121 リセットオールコントローラ
-		else if (ccNo = 121) {
+		else if (ccNo == 121) {
 			//クリア対象パラメータのキャッシュを破棄する
 			m_CachePitchBend[portNo][chNo][0] = 0xFF;
 			m_CachePitchBend[portNo][chNo][1] = 0xFF;

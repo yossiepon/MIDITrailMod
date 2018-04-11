@@ -4,7 +4,7 @@
 //
 // イベント転送クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,6 +22,7 @@ namespace SMIDILib {
 //******************************************************************************
 SMMsgTransmitter::SMMsgTransmitter(void)
 {
+	m_pMsgQueue = NULL;
 }
 
 //******************************************************************************
@@ -35,12 +36,10 @@ SMMsgTransmitter::~SMMsgTransmitter(void)
 // 初期化
 //******************************************************************************
 int SMMsgTransmitter::Initialize(
-		HWND hTargetWnd,
-		unsigned long msgId
+		SMMsgQueue* pMsgQueue
 	)
 {
-	m_hTargetWnd = hTargetWnd;
-	m_MsgId = msgId;
+	m_pMsgQueue = pMsgQueue;
 	return 0;
 }
 
@@ -52,8 +51,6 @@ int SMMsgTransmitter::PostPlayStatus(
 	)
 {
 	int result = 0;
-
-	if (m_hTargetWnd == NULL) goto EXIT;
 
 	result = _Post(SM_MSG_PLAY_STATUS, 0, playStatus);
 	if (result != 0) goto EXIT;
@@ -266,25 +263,15 @@ int SMMsgTransmitter::_Post(
 	)
 {
 	int result = 0;
-	unsigned long wparam = 0;
-	unsigned long lparam = 0;
+	unsigned long param1e = 0;
 	BOOL bresult = false;
 
-	wparam = ((unsigned long)event << 24) | (param1 & 0x00FFFFFF);
-	lparam = param2;
+	param1e = ((unsigned long)event << 24) | (param1 & 0x00FFFFFF);
 
-	if (m_hTargetWnd == NULL) goto EXIT;
+	if (m_pMsgQueue == NULL) goto EXIT;
 
-	bresult = PostMessage(
-					m_hTargetWnd,	//送信先ウィンドウハンドル
-					m_MsgId,		//メッセージ
-					wparam,			//WParam
-					lparam			//LParam
-				);
-	if (!bresult)	{
-		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-		goto EXIT;
-	}
+	result = m_pMsgQueue->PostMessage(param1e, param2);
+	if (result != 0) goto EXIT;
 
 EXIT:;
 	return result;

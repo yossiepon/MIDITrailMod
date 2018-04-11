@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -349,6 +349,7 @@ void MTTimeIndicator::SetCurTickTime(
 	)
 {
 	m_CurTickTime = curTickTime;
+	m_CurPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);
 }
 
 //******************************************************************************
@@ -366,5 +367,13 @@ void MTTimeIndicator::Reset()
 float MTTimeIndicator::GetPos()
 {
 	return m_CurPos;
+}
+
+//******************************************************************************
+// 移動ベクトル取得
+//******************************************************************************
+D3DXVECTOR3 MTTimeIndicator::GetMoveVector()
+{
+	return D3DXVECTOR3(m_CurPos, 0.0f, 0.0f);
 }
 

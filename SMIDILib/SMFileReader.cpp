@@ -4,7 +4,7 @@
 //
 // 標準MIDIファイル読み込みクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,6 +13,7 @@
 #include "SMFileReader.h"
 #include "SMCommon.h"
 #include "tchar.h"
+#include "shlwapi.h"
 
 using namespace YNBaseLib;
 
@@ -147,6 +148,9 @@ int SMFileReader::Load(
 	//トラックを閉じる
 	result = pSeqData->CloseTrack();
 	if (result != 0 ) goto EXIT;
+
+	//ファイル名登録
+	pSeqData->SetFileName(PathFindFileName(pSMFPath));
 
 EXIT:;
 	if (hFile != NULL) {

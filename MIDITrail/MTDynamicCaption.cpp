@@ -4,7 +4,7 @@
 //
 // 動的キャプション描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -321,8 +321,8 @@ int MTDynamicCaption::_GetTextureUV(
 {
 	int result = 0;
 	bool isFound = false;
-	unsigned long i = 0;
-	unsigned long charsNum = 0;
+	size_t i = 0;
+	size_t charsNum = 0;
 	float fontNo = 0;
 	float fontWidth = 0.0f;
 
@@ -384,7 +384,7 @@ void MTDynamicCaption::_SetVertexPosition(
 	unsigned long i = 0;
 	unsigned long texHeight = 0;
 	unsigned long texWidth = 0;
-	unsigned long charsNum = 0;
+	size_t charsNum = 0;
 	float height = 0.0f;
 	float width = 0.0f;
 

@@ -35,7 +35,12 @@ public:
 	float GetChStep();
 
 	//発音中キーカラー取得
-	D3DXCOLOR GetActiveKeyColor(unsigned char chNo, unsigned char noteNo, unsigned long elapsedTime);
+	D3DXCOLOR GetActiveKeyColor(
+			unsigned char chNo,
+			unsigned char noteNo,
+			unsigned long elapsedTime,
+			D3DXCOLOR* pNoteColor = NULL
+		);
 
 	//キーボード基準座標取得
 	virtual D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo, float scale);

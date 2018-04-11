@@ -4,7 +4,7 @@
 //
 // MIDI入力デバイス制御クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -104,24 +104,24 @@ private:
 	static void CALLBACK _InReadCallBack(
 			HMIDIIN hMidiIn,
 			UINT wMsg,
-			DWORD dwInstance,
-			DWORD dwParam1,
-			DWORD dwParam2
+			DWORD_PTR dwInstance,
+			DWORD_PTR dwParam1,
+			DWORD_PTR dwParam2
 		);
 	void _InReadProc(
 			HMIDIIN hMidiIn,
 			UINT wMsg,
-			DWORD dwParam1,
-			DWORD dwParam2
+			DWORD_PTR dwParam1,
+			DWORD_PTR dwParam2
 		);
 	int _InReadProcMIDI(
-			DWORD midiMessage,
-			DWORD timestamp,
+			DWORD_PTR midiMessage,
+			DWORD_PTR timestamp,
 			SMEvent* pEvent
 		);
 	int _InReadProcSysEx(
 			MIDIHDR* pMIDIHDR,
-			DWORD timestamp,
+			DWORD_PTR timestamp,
 			bool* pIsContinueSysEx,
 			SMEvent* pEvent
 		);

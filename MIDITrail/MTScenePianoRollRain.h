@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -20,6 +20,7 @@
 #include "MTNoteRain.h"
 #include "MTDashboard.h"
 #include "MTNotePitchBend.h"
+#include "MTMeshCtrl.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -57,9 +58,9 @@ public:
 
 	//ウィンドウクリックイベント受信
 	int OnWindowClicked(
-			unsigned long button,
-			unsigned long wParam,
-			unsigned long lParam
+			UINT button,
+			WPARAM wParam,
+			LPARAM lParam
 		);
 
 	//演奏開始イベント受信
@@ -70,15 +71,15 @@ public:
 
 	//シーケンサメッセージ受信
 	int OnRecvSequencerMsg(
-			unsigned long wParam,
-			unsigned long lParam
+			unsigned long param1,
+			unsigned long param2
 		);
 
 	//巻き戻し
 	int Rewind();
 
 	//視点取得／登録
-	void GetDefaultViewParam(MTViewParamMap* pParamMap);
+	virtual void GetDefaultViewParam(MTViewParamMap* pParamMap);
 	void GetViewParam(MTViewParamMap* pParamMap);
 	void SetViewParam(MTViewParamMap* pParamMap);
 
@@ -96,6 +97,9 @@ protected:
 	//ライト有無
 	BOOL m_IsEnableLight;
 
+	//シングルキーボードフラグ
+	bool m_IsSingleKeyboard;
+
 private:
 
 	//ライト
@@ -110,6 +114,7 @@ private:
 	MTNoteRain m_NoteRain;
 	MTNotePitchBend m_NotePitchBend;
 	MTDashboard m_Dashboard;
+	MTMeshCtrl m_MeshCtrl;
 
 	//マウス視線移動モード
 	bool m_IsMouseCamMode;
@@ -128,6 +133,7 @@ private:
 
 	void _Reset();
 	void _SetLightColor(DXDirLight* pLight);
+	int _LoadConf();
 
 };
 

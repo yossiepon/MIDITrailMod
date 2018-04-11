@@ -1,8 +1,8 @@
 ******************************************************************************
 
-  MIDITrail ソースコード Ver.1.2.0 for Windows
+  MIDITrail ソースコード Ver.1.2.1b for Windows
 
-  Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+  Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 
   Web : http://sourceforge.jp/projects/miditrail/
   Mail: yknk@users.sourceforge.jp
