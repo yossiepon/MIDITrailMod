@@ -46,11 +46,6 @@ int MTScenePianoRoll2DMod::Create(
 {
 	int result = 0;
 
-	//ピアノロール2Dはライトなし
-	//  ノートボックスの幅をゼロにするので表と裏が同一平面状で重なる
-	//  ライトを有効にすると表と裏の色が異なりZファイティングを誘発する
-	m_IsEnableLight = FALSE;
-
 	result = MTScenePianoRoll3DMod::Create(hWnd, pD3DDevice, pSeqData);
 	if (result != 0) goto EXIT;
 

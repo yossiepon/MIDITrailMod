@@ -52,6 +52,33 @@ public:
 
 private:
 
+	virtual int _CreateVertexOfKeyWhite1(
+				unsigned char noteNo,
+				MTPIANOKEYBOARD_VERTEX* pVertex,
+				unsigned long* pIndex,
+				D3DXCOLOR* pColor = NULL
+			);
+	virtual int _CreateVertexOfKeyWhite2(
+				unsigned char noteNo,
+				MTPIANOKEYBOARD_VERTEX* pVertex,
+				unsigned long* pIndex,
+				D3DXCOLOR* pColor = NULL
+			);
+	virtual int _CreateVertexOfKeyWhite3(
+				unsigned char noteNo,
+				MTPIANOKEYBOARD_VERTEX* pVertex,
+				unsigned long* pIndex,
+				D3DXCOLOR* pColor = NULL
+			);
+	virtual int _CreateVertexOfKeyBlack(
+				unsigned char noteNo,
+				MTPIANOKEYBOARD_VERTEX* pVertex,
+				unsigned long* pIndex,
+				D3DXCOLOR* pColor = NULL
+			);
+
+private:
+
 	//キーボードデザイン
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;
 
