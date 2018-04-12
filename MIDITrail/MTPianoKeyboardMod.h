@@ -34,7 +34,12 @@ public:
 		);
 
 	//更新
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector1, D3DXVECTOR3 moveVector2, float scale, float z, float rollAngle);
+	int Transform(
+			LPDIRECT3DDEVICE9 pD3DDevice,
+			D3DXVECTOR3 basePosVector,
+			D3DXVECTOR3 playbackPosVector,
+			float rollAngle
+		);
 
 	//キー状態変更
 	virtual int PushKey(

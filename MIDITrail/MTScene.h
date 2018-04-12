@@ -34,7 +34,11 @@ public:
 		EffectStars,
 		EffectCounter,
 		EffectBackgroundImage,
-		EffectFileName
+		EffectFileName,
+// >>> add 20180404 yossiepon begin
+		EffectTimeIndicator,
+		EffectGridBox,
+// <<< add 20180404 yossiepon end
 	};
 
 	typedef std::map<std::string, float>  MTViewParamMap;

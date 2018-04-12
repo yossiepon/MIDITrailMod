@@ -1599,20 +1599,20 @@ int MTPianoKeyboard::Transform(
 }
 
 // >>> add 20120729 yossiepon begin
+// >>> modify 20180411 yossiepon begin
 //******************************************************************************
 // ˆÚ“®
 //******************************************************************************
 int MTPianoKeyboard::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		D3DXVECTOR3 moveVector1,
-		D3DXVECTOR3 moveVector2,
-		float scale,
-		float z,
+		D3DXVECTOR3 basePosVector,
+		D3DXVECTOR3 playbackPosVector,
 		float rollAngle
 	)
 {
 	return YN_SET_ERR("Program error.", 0, 0);
 }
+// <<< modify 20180411 yossiepon end
 // <<< add 20120729 yossiepon end
 
 //******************************************************************************

@@ -43,9 +43,9 @@ using namespace SMIDILib;
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-// >>> modify 20161223 yossiepon begin
-#define MT_MENU_NUM        (32)
-// <<< modify 20161223 yossiepon end
+// >>> modify 20180404 yossiepon begin
+#define MT_MENU_NUM        (34)
+// <<< modify 20180404 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -181,6 +181,10 @@ private:
 	bool m_isEnableCounter;
 	bool m_isEnableFileName;
 	bool m_isEnableBackgroundImage;
+// >>> add 20180404 yossiepon begin
+	bool m_isEnableTimeIndicator;
+	bool m_isEnableGridBox;
+// <<< add 20180404 yossiepon end
 
 	//シーン種別
 	SceneType m_SceneType;

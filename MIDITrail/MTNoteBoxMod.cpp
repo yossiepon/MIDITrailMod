@@ -365,15 +365,11 @@ int MTNoteBoxMod::_UpdateVertexOfActiveNotes(
 						);
 			if (result != 0) goto EXIT;
 
-			//発音中ノートがピッチベンドで移動する場合
 			//発音終了までオリジナルのノートを非表示にする
 			if (!(m_pNoteStatusMod[i].isHide)) {
-				if ((m_pNotePitchBend->GetValue(note.portNo, note.chNo) != 0)
-				 && (m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo) != 0)) {
-					result = _HideNoteBox(m_pNoteStatusMod[i].index);
-					if (result != 0) goto EXIT;
-					m_pNoteStatusMod[i].isHide = true;
-				}
+				result = _HideNoteBox(m_pNoteStatusMod[i].index);
+				if (result != 0) goto EXIT;
+				m_pNoteStatusMod[i].isHide = true;
 			}
 
 			activeNoteNum++;

@@ -388,6 +388,14 @@ void MTScenePianoRoll3DMod::SetEffect(
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
 			break;
+// >>> add 20180404 yossiepon begin
+		case EffectTimeIndicator:
+			m_TimeIndicator.SetEnable(isEnable);
+			break;
+		case EffectGridBox:
+			m_GridBoxMod.SetEnable(isEnable);
+			break;
+// <<< add 20180404 yossiepon end
 		default:
 			break;
 	}
