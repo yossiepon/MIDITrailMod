@@ -87,7 +87,9 @@ public:
 	//共有用テクスチャ取得
 	LPDIRECT3DTEXTURE9 GetTexture();
 
-private:
+// >>> modify access level to protected 20180412 yossiepon begin
+protected:
+// <<< modify 20180412 yossiepon end
 
 	//頂点バッファ構造体
 	struct MTPIANOKEYBOARD_VERTEX {
@@ -127,10 +129,6 @@ protected:
 	//キーボードデザイン
 	MTPianoKeyboardDesign m_KeyboardDesign;
 
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
-
 	//バッファ情報
 	MTBufInfo m_BufInfo[SM_MAX_NOTE_NUM];
 
@@ -141,30 +139,37 @@ private:
 	void _CreateBufInfo();
 	int _CreateVertexOfKeyboard(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _CreateVertexOfKey(unsigned char noteNo);
-	int _CreateVertexOfKeyWhite1(
+// >>> modify function decl to virtual 20180412 yossiepon begin
+	virtual int _CreateVertexOfKeyWhite1(
 				unsigned char noteNo,
 				MTPIANOKEYBOARD_VERTEX* pVertex,
 				unsigned long* pIndex,
 				D3DXCOLOR* pColor = NULL
 			);
-	int _CreateVertexOfKeyWhite2(
+	virtual int _CreateVertexOfKeyWhite2(
 				unsigned char noteNo,
 				MTPIANOKEYBOARD_VERTEX* pVertex,
 				unsigned long* pIndex,
 				D3DXCOLOR* pColor = NULL
 			);
-	int _CreateVertexOfKeyWhite3(
+	virtual int _CreateVertexOfKeyWhite3(
 				unsigned char noteNo,
 				MTPIANOKEYBOARD_VERTEX* pVertex,
 				unsigned long* pIndex,
 				D3DXCOLOR* pColor = NULL
 			);
-	int _CreateVertexOfKeyBlack(
+	virtual int _CreateVertexOfKeyBlack(
 				unsigned char noteNo,
 				MTPIANOKEYBOARD_VERTEX* pVertex,
 				unsigned long* pIndex,
 				D3DXCOLOR* pColor = NULL
 			);
+// <<< modify function decl to virtual 20180412 yossiepon end
+
+// >>> modify access level 20180412 yossiepon begin
+private:
+// <<< modify 20180412 yossiepon end
+
 	int _LoadTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 
