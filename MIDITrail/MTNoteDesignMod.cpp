@@ -67,6 +67,22 @@ unsigned long MTNoteDesignMod::GetRippleReleaseDuration()
 }
 
 //******************************************************************************
+// 描画元（リップル画像）ブレンド指定
+//******************************************************************************
+D3DBLEND MTNoteDesignMod::GetRippleSrcBlend()
+{
+	return m_RippleSrcBlend;
+}
+
+//******************************************************************************
+// 描画元（リップル画像）ブレンド指定
+//******************************************************************************
+D3DBLEND MTNoteDesignMod::GetRippleDestBlend()
+{
+	return m_RippleDestBlend;
+}
+
+//******************************************************************************
 // 波紋上書き回数
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleOverwriteTimes()
@@ -245,6 +261,14 @@ int MTNoteDesignMod::_LoadConfFile(
 
 	//波紋リリース時間(msec)
 	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
+	if (result != 0) goto EXIT;
+
+	//描画元（リップル画像）ブレンド指定 Default: D3DBLEND_SRCALPHA(5)
+	result = confFile.GetInt(_T("SrcBlend"), (int *)&m_RippleSrcBlend, 5);
+	if (result != 0) goto EXIT;
+
+	//描画先（背景画像）ブレンド指定 Default: D3DBLEND_ONE(2)
+	result = confFile.GetInt(_T("DestBlend"), (int *)&m_RippleDestBlend, 2);
 	if (result != 0) goto EXIT;
 
 	//波紋上書き回数

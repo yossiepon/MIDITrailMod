@@ -20,6 +20,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTGridBoxMod::MTGridBoxMod(void)
 {
+	m_isEnable = true;
 }
 
 //******************************************************************************
@@ -48,14 +49,6 @@ int MTGridBoxMod::Transform(
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	if(rollAngle < 0.0f) {
-		rollAngle += 360.0f;
-	}
-
-	if((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-		rollAngle -= 180.0f;
-	}
-
 	//‰ñ“]s—ñ
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
@@ -70,4 +63,32 @@ int MTGridBoxMod::Transform(
 	m_Primitive.Transform(worldMatrix);
 
 	return result;
+}
+
+//******************************************************************************
+// •`‰æ
+//******************************************************************************
+int MTGridBoxMod::Draw(
+		LPDIRECT3DDEVICE9 pD3DDevice
+	)
+{
+	int result = 0;
+
+	if (!m_isEnable) goto EXIT;
+
+	result = MTGridBox::Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// •\Ž¦Ý’è
+//******************************************************************************
+void MTGridBoxMod::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
 }

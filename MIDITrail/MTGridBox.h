@@ -36,11 +36,13 @@ public:
 	//ê∂ê¨
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
+// >>> modify function to virtual 20180404 yossiepon begin
 	//çXêV
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
 	//ï`âÊ
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify function to virtual 20180404 yossiepon end
 
 	//âï˙
 	void Release();

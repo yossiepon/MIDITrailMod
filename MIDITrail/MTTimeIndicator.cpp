@@ -23,6 +23,9 @@ MTTimeIndicator::MTTimeIndicator(void)
 	m_CurPos = 0.0f;
 	m_CurTickTime = 0;
 	m_isEnableLine = false;
+// >>> add 20180404 yossiepon begin
+	m_isEnable = true;
+// <<< add 20180404 yossiepon end
 }
 
 //******************************************************************************
@@ -203,6 +206,12 @@ int MTTimeIndicator::Draw(
 {
 	int result = 0;
 
+// >>> add 20180404 yossiepon begin
+
+	if (!m_isEnable) goto EXIT;
+
+// <<< add 20180404 yossiepon end
+
 // >>> add 20120728 yossiepon begin
 
 	//テクスチャステージ設定
@@ -377,3 +386,12 @@ D3DXVECTOR3 MTTimeIndicator::GetMoveVector()
 	return D3DXVECTOR3(m_CurPos, 0.0f, 0.0f);
 }
 
+//******************************************************************************
+// 表示設定
+//******************************************************************************
+void MTTimeIndicator::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
+}

@@ -67,10 +67,8 @@ public:
 
 	//ポート原点座標取得
 	float GetPortOriginX(unsigned char portNo);
-// >>> modify 20120728 yossiepon begin
-	virtual float GetPortOriginY(unsigned char portNo);
-	virtual float GetPortOriginZ(unsigned char portNo);
-// <<< modify 20120728 yossiepon end
+	float GetPortOriginY(unsigned char portNo);
+	float GetPortOriginZ(unsigned char portNo);
 
 	//キー種別取得
 	KeyType GetKeyType(unsigned char noteNo);
@@ -182,12 +180,14 @@ public:
 		);
 
 	//キーボード基準座標取得
-// >>> modify 20120728 yossiepon begin
-	virtual D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
-// <<< modify 20120728 yossiepon end
+	D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
 
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
+
+// >>> add 20180404 yossiepon begin
+	void SetKeyboardSingle();
+// <<< add 20180404 yossiepon end
 
 	//キー表示範囲取得
 	unsigned char GetKeyDispRangeStart();

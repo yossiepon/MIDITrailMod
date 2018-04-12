@@ -12,8 +12,6 @@
 #include "YNBaseLib.h"
 #include "MTPianoKeyboardCtrlMod.h"
 #include "MTPianoKeyboardMod.h"
-#include "MTNoteRippleMod.h"
-#include "MTNoteLyrics.h"
 
 using namespace YNBaseLib;
 
@@ -29,7 +27,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTPianoKeyboardCtrlMod::MTPianoKeyboardCtrlMod(void)
 {
-	m_MaxPortIndex = 0;
+	m_MaxKeyboardIndex = 0;
 	ZeroMemory(m_KeyDownRateMod, sizeof(float) * SM_MAX_CH_NUM* SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 }
 
@@ -54,7 +52,7 @@ int MTPianoKeyboardCtrlMod::Create(
 {
 	int result = 0;
 	unsigned long index = 0;
-	unsigned long portIndex = 0;
+	unsigned long keyboardIndex = 0;
 	unsigned char portNo = 0;
 	SMTrack track;
 
@@ -77,20 +75,32 @@ int MTPianoKeyboardCtrlMod::Create(
 	result = pSeqData->GetPortList(&m_PortList);
 	if (result != 0) goto EXIT;
 
-	//ポート番号に昇順のインデックスを振る
-	//ポート 0番 3番 5番 に出力する場合のインデックスはそれぞれ 0, 1, 2
 	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
-		m_PortIndex[index] = -1;
+		m_KeyboardIndex[index] = -1;
 	}
-	for (index = 0; index < m_PortList.GetSize(); index++) {
-		m_PortList.GetPort(index, &portNo);
-		m_PortIndex[portNo] = portIndex;
-		portIndex++;
-		if(portIndex == m_KeyboardDesignMod.GetKeyboardMaxDispNum()){
-			break;
+
+	//シングルキーボードでない場合
+	if (!isSingleKeyboard) {
+		//ポート番号に昇順のキーボードインデックスを振る
+		//ポート 0番 3番 5番 に出力する場合のインデックスはそれぞれ 0, 1, 2
+		for (index = 0; index < m_PortList.GetSize(); index++) {
+			m_PortList.GetPort(index, &portNo);
+			m_KeyboardIndex[portNo] = keyboardIndex;
+			keyboardIndex++;
+			if(keyboardIndex == m_KeyboardDesignMod.GetKeyboardMaxDispNum()){
+				break;
+			}
 		}
+		m_MaxKeyboardIndex = (unsigned char)keyboardIndex;
 	}
-	m_MaxPortIndex = (unsigned char)portIndex;
+	//シングルキーボードの場合
+	else {
+		//キーボードデザインをシングルモードに設定
+		m_KeyboardDesignMod.SetKeyboardSingle();
+		//ポートとキーボードの対応を1:1に固定
+		m_KeyboardIndex[0] = 0;
+		m_MaxKeyboardIndex = 1;
+	}
 
 	//トラック取得
 	result = pSeqData->GetMergedTrack(&track);
@@ -112,7 +122,6 @@ int MTPianoKeyboardCtrlMod::Create(
 	m_pNotePitchBend = pNotePitchBend;
 
 	//シングルキーボードフラグ
-	//※フラグを受け取っても使用しない。ポート別シングルキーボードで常に動作する
 	m_isSingleKeyboard = isSingleKeyboard;
 
 EXIT:;
@@ -129,23 +138,23 @@ int MTPianoKeyboardCtrlMod::_CreateKeyboards(
 	)
 {
 	int result = 0;
-	unsigned char portIndex = 0;
+	unsigned char index = 0;
 	LPDIRECT3DTEXTURE9 pTexture = NULL;
 
-	for (portIndex = 0; portIndex < m_MaxPortIndex; portIndex++) {
+	for (index = 0; index < m_MaxKeyboardIndex; index++) {
 		try {
-			m_pPianoKeyboard[portIndex] = new MTPianoKeyboardMod;
+			m_pPianoKeyboard[index] = new MTPianoKeyboardMod;
 		}
 		catch (std::bad_alloc) {
 			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 			goto EXIT;
 		}
 
-		result = m_pPianoKeyboard[portIndex]->Create(pD3DDevice, pSceneName, pSeqData, pTexture);
+		result = m_pPianoKeyboard[index]->Create(pD3DDevice, pSceneName, pSeqData, pTexture);
 		if (result != 0) goto EXIT;
 
 		//先頭オブジェクトで作成したテクスチャを再利用する
-		pTexture = m_pPianoKeyboard[portIndex]->GetTexture();
+		pTexture = m_pPianoKeyboard[index]->GetTexture();
 	}
 
 EXIT:;
@@ -163,107 +172,52 @@ int MTPianoKeyboardCtrlMod::Transform(
 	int result = 0;
 	unsigned char portNo = 0;
 	unsigned char chNo = 0;
-	D3DXVECTOR3 vectorLU;
-	D3DXVECTOR3 vectorRU;
-	D3DXVECTOR3 vectorLD;
-	D3DXVECTOR3 vectorRD;
-	D3DXVECTOR3 moveVector1;
-	D3DXVECTOR3 moveVector2;
+	int index;
+	D3DXVECTOR3 basePosVector;
+	D3DXVECTOR3 playbackPosVector;
+
+	//アクティブポートフラグクリア
+	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
+		m_isActivePort[index] = false;
+	}
 
 	//現在発音中ノートの頂点更新
 	result = _TransformActiveNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//再生面頂点座標取得
-	m_NoteDesignMod.GetPlaybackSectionVirtexPos(
-			0,
-			&vectorLU,
-			&vectorRU,
-			&vectorLD,
-			&vectorRD
-		);
-
-	float boardHeight = vectorLU.y - vectorLD.y;
-	float keyboardWidth = m_KeyboardDesignMod.GetPortOriginX(0) * -2.0f;
-
-	float rippleSpacing = m_NoteDesignMod.GetRippleSpacing();
-
 	//移動ベクトル：再生面に追従する
-	moveVector2 = m_NoteDesignMod.GetWorldMoveVector();
-	moveVector2.x += m_NoteDesignMod.GetPlayPosX(m_CurTickTime);
+	playbackPosVector = m_NoteDesignMod.GetWorldMoveVector();
+	playbackPosVector.x += m_NoteDesignMod.GetPlayPosX(m_CurTickTime);
 
 	unsigned char lastPortNo = 0;
 
-	m_PortList.GetPort(m_PortList.GetSize()-1, &lastPortNo);
+	if (!m_isSingleKeyboard) {
+		//シングルキーボードでない場合、最終ポート番号を取得
+		m_PortList.GetPort(m_PortList.GetSize()-1, &lastPortNo);
+	}
+	else {
+		//シングルキーボードの場合、最終ポート番号は0固定
+		lastPortNo = 0;
+	}
 
 	for(portNo = 0; portNo <= lastPortNo; portNo ++) {
 
-		int portIndex = m_PortIndex[portNo];
+		//ポート番号からキーボードインデックスを取得
+		//シングルキーボードの場合、インデックスは0固定
+		int keyboardIndex = !m_isSingleKeyboard ? m_KeyboardIndex[portNo] : 0;
 
-		if(portIndex == -1) {
+		if(keyboardIndex == -1) {
 			continue;
 		}
 
-		//ピッチベンドシフトの最大量を求める
-		float maxAbsPitchBendShift = 0.0f;
-		float curMaxPitchBendShift = 0.0f;
-
-		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-
-			float pitchBendShift = _GetPichBendShiftPosX(portNo, chNo);
-			if(maxAbsPitchBendShift < fabs(pitchBendShift)) {
-
-				curMaxPitchBendShift = pitchBendShift;
-				maxAbsPitchBendShift = fabs(pitchBendShift);
-			}
-		}
-
 		//移動ベクトル：キーボード基準座標
-		moveVector1 = m_KeyboardDesignMod.GetKeyboardBasePos(portIndex, 0, keyboardWidth / boardHeight);
+		basePosVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rollAngle);
 
 		//移動ベクトル：ピッチベンドシフトを反映
-		moveVector1.x += curMaxPitchBendShift;
-
-		if(rollAngle < 0.0f) {
-			rollAngle += 360.0f;
-		}
-
-		float portWidth =  m_KeyboardDesignMod.GetChStep() * 16.0f;
-
-		if((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-
-			//鍵盤の1/2の幅だけ高音側に
-			moveVector1.x += m_KeyboardDesignMod.GetWhiteKeyStep() / 2.0f;
-
-			//ポート原点Y
-			moveVector1.y -= portWidth * (m_PortList.GetSize() - portIndex - 1) * (keyboardWidth / boardHeight);
-
-			//鍵盤の原点をCh15に
-			moveVector1.y -= m_KeyboardDesignMod.GetChStep()  * (keyboardWidth / boardHeight) * 15.0f;
-
-			//鍵盤の1/4の高さだけ下に
-			moveVector1.y -= m_KeyboardDesignMod.GetWhiteKeyHeight() / 4.0f;
-
-			//鍵盤の長さ＋リップルマージン＋歌詞マージンだけ手前に
-			moveVector1.z -= m_KeyboardDesignMod.GetWhiteKeyLen() + rippleSpacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM) * (keyboardWidth / boardHeight);
-
-		} else {
-
-			//鍵盤の1/2の幅だけ高音側に
-			moveVector1.x += m_KeyboardDesignMod.GetWhiteKeyStep() / 2.0f;
-
-			//ポート原点Y
-			moveVector1.y += portWidth * (m_PortList.GetSize() - portIndex - 1) * (keyboardWidth / boardHeight);
-
-			//鍵盤の1/4の高さだけ下に
-			moveVector1.y -= m_KeyboardDesignMod.GetWhiteKeyHeight() / 4.0f;
-
-			//リップルマージン＋歌詞マージンだけ奥に
-			moveVector1.z += 0.002f * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM) * (keyboardWidth / boardHeight);
-		}
+		basePosVector.x += GetMaxPitchBendShift(portNo);
 
 		//キーボード移動
-		result = m_pPianoKeyboard[portIndex]->Transform(pD3DDevice, moveVector1, moveVector2, boardHeight / keyboardWidth, vectorLU.z, rollAngle);
+		result = m_pPianoKeyboard[keyboardIndex]->Transform(pD3DDevice, basePosVector, playbackPosVector, rollAngle);
 		if (result != 0) goto EXIT;
 	}
 
@@ -312,14 +266,20 @@ int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 	//ノートOFF後（キー復帰済み）
 	else {
 		//ノート情報を破棄
-		//複数チャンネルのキー状態をポート別に集約する
-		result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->ResetKey(note.noteNo);
+		//発音中のキーをリセットする
+		result = m_pPianoKeyboard[_GetKeyboardIndexFromNote(note)]->ResetKey(note.noteNo);
 		if (result != 0) goto EXIT;
 
 		pNoteStatus->isActive = false;
 		pNoteStatus->keyStatus = BeforeNoteON;
 		pNoteStatus->index = 0;
 		pNoteStatus->keyDownRate = 0.0f;
+	}
+
+	//状態更新後、発音中であれば
+	if (pNoteStatus->isActive) {
+		//アクティブポートフラグを立てる
+		m_isActivePort[note.portNo] = true;
 	}
 
 EXIT:;
@@ -338,6 +298,7 @@ int MTPianoKeyboardCtrlMod::_UpdateVertexOfActiveNotes(
 	unsigned long elapsedTime = 0;
 	SMNote note;
 	D3DXCOLOR noteColor;
+	unsigned char notePortNo;
 
 	ZeroMemory(m_KeyDownRateMod, sizeof(float) * SM_MAX_CH_NUM* SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
@@ -358,21 +319,32 @@ int MTPianoKeyboardCtrlMod::_UpdateVertexOfActiveNotes(
 
 		//ノートの色
 		noteColor = m_NoteDesignMod.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
-		
+
+		//シングルキーボードでない場合
+		if (!m_isSingleKeyboard) {
+			//ノートのポート番号を取得
+			notePortNo = note.portNo;
+		}
+		//シングルキーボードの場合
+		else {
+			//ノートのポート番号を0固定に
+			notePortNo = 0;
+		}
+
 		//発音対象キーを回転
 		//  すでに同一ノートに対して頂点を更新している場合
 		//  押下率が前回よりも上回る場合に限り頂点を更新する
-		if (m_KeyDownRateMod[note.portNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate) {
+		if (m_KeyDownRateMod[notePortNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate) {
 			//複数チャンネルのキー状態をポート別に集約する
-			result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->PushKey(
-																	note.chNo,
-																	note.noteNo,
-																	m_pNoteStatus[i].keyDownRate,
-																	elapsedTime,
-																	&noteColor
-																);
+			result = m_pPianoKeyboard[_GetKeyboardIndexFromNote(note)]->PushKey(
+																		note.chNo,
+																		note.noteNo,
+																		m_pNoteStatus[i].keyDownRate,
+																		elapsedTime,
+																		&noteColor
+																	);
 			if (result != 0) goto EXIT;
-			m_KeyDownRateMod[note.portNo][note.chNo][note.noteNo] = m_pNoteStatus[i].keyDownRate;
+			m_KeyDownRateMod[notePortNo][note.chNo][note.noteNo] = m_pNoteStatus[i].keyDownRate;
 		}
 	}
 
@@ -388,18 +360,24 @@ int MTPianoKeyboardCtrlMod::Draw(
    )
 {
 	int result = 0;
-	unsigned char portIndex = 0;
+	unsigned char index = 0;
 	unsigned long count = 0;
 	unsigned long dispNum = 0;
 
 	if (!m_isEnable) goto EXIT;
 
-	//キーボードの描画
-	for (portIndex = 0; portIndex < m_MaxPortIndex; portIndex++) {
+	//レンダリングステート設定：Zバッファへの書き込みオフ
+//	pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-		result = m_pPianoKeyboard[portIndex]->Draw(pD3DDevice);
+	//キーボードの描画
+	for (index = 0; index < m_MaxKeyboardIndex; index++) {
+
+		result = m_pPianoKeyboard[index]->Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 	}
+
+	//レンダリングステート設定：Zバッファへの書き込みオン
+//	pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
 EXIT:;
 	return result;
@@ -423,8 +401,8 @@ void MTPianoKeyboardCtrlMod::Reset()
 			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
 			//if (result != 0) goto EXIT;
 
-			//複数チャンネルのキー状態をポート別に集約する
-			result = m_pPianoKeyboard[m_PortIndex[note.portNo]]->ResetKey(note.noteNo);
+			//発音中のキーをリセットする
+			result = m_pPianoKeyboard[_GetKeyboardIndexFromNote(note)]->ResetKey(note.noteNo);
 			//if (result != 0) goto EXIT;
 		}
 		m_pNoteStatus[i].isActive = false;
@@ -434,4 +412,54 @@ void MTPianoKeyboardCtrlMod::Reset()
 	}
 
 	return;
+}
+
+int MTPianoKeyboardCtrlMod::_GetKeyboardIndexFromNote(const SMNote &note)
+{
+	//シングルキーボードでない場合
+	if (!m_isSingleKeyboard) {
+		//ノートのピアノ番号を取得
+		return m_KeyboardIndex[note.portNo];
+	}
+	//シングルキーボードの場合
+	else {
+		//ノートのピアノ番号を0固定に
+		return 0;
+	}
+}
+
+//******************************************************************************
+// ピッチベンドシフトの最大量を求める
+//******************************************************************************
+float MTPianoKeyboardCtrlMod::GetMaxPitchBendShift(unsigned char portNo) {
+
+	float max = 0.0f;
+	float cur = 0.0f;
+
+	//シングルキーボードでない場合、指定のポート番号から求める
+	//シングルキーボードの場合、シーケンスに含まれるポート番号すべてから求める
+	int portListSize = !m_isSingleKeyboard ? 1 : m_PortList.GetSize();
+
+	for (int i = 0; i < portListSize; i++) {
+
+		if (m_isSingleKeyboard) {
+			m_PortList.GetPort(i, &portNo);
+		}
+
+		if (!m_isActivePort[portNo]) {
+			continue;
+		}
+
+		for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+
+			float pitchBendShift = _GetPichBendShiftPosX(portNo, chNo);
+			if(max < fabs(pitchBendShift)) {
+
+				cur = pitchBendShift;
+				max = fabs(pitchBendShift);
+			}
+		}
+	}
+
+	return cur;
 }
