@@ -38,6 +38,10 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTPianoKeyboardMod::MTPianoKeyboardMod(void)
 {
+	//逆順インデックス情報
+	m_pRevIndexBuffer = NULL;
+	m_RevIndexNum = 0;
+	m_IsRevIndexLocked = false;
 }
 
 //******************************************************************************
@@ -66,6 +70,44 @@ int MTPianoKeyboardMod::Create(
 	
 	//キーボードデザイン初期化
 	result = m_KeyboardDesignMod.Initialize(pSceneName, pSeqData);
+	if (result != 0) goto EXIT;
+
+	//逆順インデックス生成
+	_CreateRevIndex(pD3DDevice);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 描画
+//******************************************************************************
+int MTPianoKeyboardMod::Draw(
+		LPDIRECT3DDEVICE9 pD3DDevice
+   )
+{
+	int result = 0;
+
+	//テクスチャステージ設定
+	//  カラー演算：乗算  引数1：テクスチャ  引数2：ポリゴン
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	// アルファ演算：乗算  引数1：テクスチャ  引数2：ポリゴン
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+
+	//テクスチャフィルタ
+	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+
+	//正順側キーボードの描画
+	result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture, m_BufInfo[63].indexTotal / 3);
+	if (result != 0) goto EXIT;
+
+	//逆順側キーボードの描画
+	result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pRevIndexBuffer, m_pTexture, m_BufInfo[64].revIndexTotal / 3);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -168,6 +210,199 @@ int MTPianoKeyboardMod::PushKey(
 		//キーが押下状態の場合は色を変更して回転させる
 		color = m_KeyboardDesignMod.GetActiveKeyColor(chNo, noteNo, elapsedTime, pNoteColor);
 		_RotateKey(noteNo, angle, &color);
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 逆順インデックス生成
+//******************************************************************************
+int MTPianoKeyboardMod::_CreateRevIndex(LPDIRECT3DDEVICE9 pD3DDevice)
+{
+	int result = 0;
+
+	//インデックスの総数
+	unsigned long indexTotal = 0;
+
+	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+		indexTotal += m_BufInfo[noteNo].indexNum;
+		m_BufInfo[noteNo].indexTotal = indexTotal;
+	}
+
+	//逆順インデックスバッファ生成
+	result = _CreateRevIndexBuffer(pD3DDevice, indexTotal);
+	if (result != 0) goto EXIT;
+
+	//逆順インデックスのオフセット情報を生成
+	unsigned long revIndexNum = indexTotal;
+	unsigned long revIndexTotal = 0;
+
+	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+		unsigned long size = m_BufInfo[noteNo].indexNum;
+		revIndexNum -= size;
+
+		m_BufInfo[noteNo].revIndexPos = revIndexNum;
+		m_BufInfo[noteNo].revIndexTotal = indexTotal- revIndexTotal;
+
+		revIndexTotal += size;
+	}
+
+	unsigned long* pIndex = NULL;
+	unsigned long* pRevIndex = NULL;
+	unsigned long size = indexTotal * sizeof(unsigned long);
+
+	//インデックスバッファのロック
+	result = m_PrimitiveKeyboard.LockIndex(&pIndex, 0, size);
+	if (result != 0) goto EXIT;
+
+	//逆順インデックスバッファのロック
+	result = _LockRevIndex(&pRevIndex, 0, size);
+	if (result != 0) goto EXIT;
+
+	ZeroMemory(pRevIndex, size);
+
+	//バッファに逆順インデックスを書き込む
+	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+		result = _CreateRevIndexOfKey(noteNo, pIndex, pRevIndex);
+		if (result != 0) goto EXIT;
+	}
+
+	//逆順インデックスバッファのロック解除
+	result = _UnlockRevIndex();
+	if (result != 0) goto EXIT;
+
+	//インデックスバッファのロック解除
+	result = m_PrimitiveKeyboard.UnlockIndex();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// キー単位の逆順インデックス生成
+//******************************************************************************
+int MTPianoKeyboardMod::_CreateRevIndexOfKey(
+		unsigned char noteNo,
+		unsigned long* pIndex,
+		unsigned long* pRevIndex
+   )
+{
+	int result = 0;
+
+	unsigned long srcOffset = m_BufInfo[noteNo].indexPos;
+	unsigned long dstOffset = m_BufInfo[noteNo].revIndexPos;
+	unsigned long size = m_BufInfo[noteNo].indexNum;
+
+	::memcpy(pRevIndex + dstOffset, pIndex + srcOffset, sizeof(unsigned long) * size);
+
+	return result;
+}
+
+//******************************************************************************
+// 逆順インデックスバッファ生成
+//******************************************************************************
+int MTPianoKeyboardMod::_CreateRevIndexBuffer(
+		LPDIRECT3DDEVICE9 pD3DDevice,
+		unsigned long indexNum
+	)
+{
+	int result = 0;
+	HRESULT hresult = D3D_OK;
+	
+	if (pD3DDevice == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+	if (m_pRevIndexBuffer != NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+	
+	//インデックスバッファ生成
+	if (indexNum > 0) {
+		hresult = pD3DDevice->CreateIndexBuffer(
+						sizeof(unsigned long) * indexNum,
+												//インデックスバッファの全体サイズ(byte)
+						D3DUSAGE_WRITEONLY,		//使用方法
+						D3DFMT_INDEX32,			//インデックスバッファのフォーマット
+						D3DPOOL_MANAGED,		//リソース配置場所となるメモリクラス
+						&m_pRevIndexBuffer,		//作成されたインデックスバッファ
+						NULL					//予約パラメータ
+					);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, indexNum);
+			goto EXIT;
+		}
+	}
+
+	m_RevIndexNum = indexNum;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 逆順インデックスバッファロック
+//******************************************************************************
+int MTPianoKeyboardMod::_LockRevIndex(
+		unsigned long** pPtrIndex,
+		unsigned long offset,	//省略時はゼロ
+		unsigned long size		//省略時はゼロ
+	)
+{
+	int result = 0;
+	HRESULT hresult = D3D_OK;
+
+	if (m_IsRevIndexLocked) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	if ((sizeof(unsigned long) * m_RevIndexNum) < (offset + size)) {
+		result = YN_SET_ERR("Program error.", offset, size);
+		goto EXIT;
+	}
+
+	//インデックスバッファのロックとバッファメモリポインタ取得
+	if (m_pRevIndexBuffer != NULL) {
+		hresult = m_pRevIndexBuffer->Lock(
+						offset,		//ロックするインデックスのオフセット(byte)
+						size,		//ロックするインデックスのサイズ(byte)
+						(void**)pPtrIndex,	//バッファメモリポインタ
+						0			//ロッキングフラグ
+					);
+		if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pPtrIndex);
+			goto EXIT;
+		}
+	}
+
+	m_IsRevIndexLocked = true;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 逆順インデックスバッファロック解除
+//******************************************************************************
+int MTPianoKeyboardMod::_UnlockRevIndex()
+{
+	int result = 0;
+	HRESULT hresult = D3D_OK;
+
+	if (m_IsRevIndexLocked) {
+		if (m_pRevIndexBuffer != NULL) {
+			hresult = m_pRevIndexBuffer->Unlock();
+			if (FAILED(hresult)) {
+			result = YN_SET_ERR("DirectX API error.", hresult, 0);
+				goto EXIT;
+			}
+		}
+		m_IsRevIndexLocked = false;
 	}
 
 EXIT:;

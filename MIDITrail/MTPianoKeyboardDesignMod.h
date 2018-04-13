@@ -100,7 +100,7 @@ private:
 	//シングルキーボードフラグ
 	bool m_isKeyboardSingle;
 	//表示するキーボードの数
-	unsigned char m_KeyboardDispNum;
+	int m_KeyboardDispNum;
 
 	//ノートボックス高さ
 	float m_NoteBoxHeight;

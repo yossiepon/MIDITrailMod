@@ -57,9 +57,10 @@ public:
 // <<< modify 20180411 yossiepon end
 // <<< add 20120729 yossiepon end
 
-
+// >>> modify function decl to virtual 20180412 yossiepon begin
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+// <<< modify function decl to virtual 20180412 yossiepon end
 
 	//解放
 	void Release();
@@ -105,6 +106,11 @@ protected:
 		unsigned long vertexNum;
 		unsigned long indexPos;
 		unsigned long indexNum;
+// >>> add 20180413 yossiepon begin
+		unsigned long indexTotal;
+		unsigned long revIndexPos;
+		unsigned long revIndexTotal;
+// <<< add 20180413 yossiepon end
 	} MTBufInfo;
 
 // >>> modify access level to protected 20161224 yossiepon begin
@@ -113,10 +119,6 @@ protected:
 
 	//キーボードプリミティブ
 	DXPrimitive m_PrimitiveKeyboard;
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
 
 	//テクスチャ
 	LPDIRECT3DTEXTURE9 m_pTexture;
