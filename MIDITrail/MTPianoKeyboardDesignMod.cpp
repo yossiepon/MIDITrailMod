@@ -51,6 +51,8 @@ int MTPianoKeyboardDesignMod::Initialize(
 	//基底クラスの初期化処理を呼び出す
 	MTPianoKeyboardDesign::Initialize(pSceneName, pSeqData);
 
+	m_KeyboardDispNum = m_PortList.GetSize();
+
 	//設定ファイル読み込み
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
@@ -60,16 +62,86 @@ EXIT:;
 }
 
 //******************************************************************************
+// シングルキーボードフラグ設定
+//******************************************************************************
+void MTPianoKeyboardDesignMod::SetKeyboardSingle()
+{
+	m_isKeyboardSingle = true;
+	m_KeyboardDispNum = 1;
+
+	for (int i = 0; i < SM_MAX_PORT_NUM; i++) {
+		m_PortIndex[i] = 0;
+	}
+}
+
+//******************************************************************************
+// シングルキーボードフラグ取得
+//******************************************************************************
+bool MTPianoKeyboardDesignMod::IsKeyboardSingle()
+{
+	return m_isKeyboardSingle;
+}
+//******************************************************************************
+// キーボード表示数取得
+//******************************************************************************
+int MTPianoKeyboardDesignMod::GetKeyboardDispNum()
+{
+	return m_KeyboardDispNum;
+}
+
+//******************************************************************************
+// ノートからキーボードインデックス取得
+//******************************************************************************
+int MTPianoKeyboardDesignMod::GetKeyboardIndex(const SMNote &note)
+{
+	return m_PortIndex[note.portNo];
+}
+
+//******************************************************************************
+// ポートリストサイズ取得
+//******************************************************************************
+int MTPianoKeyboardDesignMod::GetPortListSize()
+{
+	return m_PortList.GetSize();
+}
+
+//******************************************************************************
+// ノートからポート番号取得
+//******************************************************************************
+unsigned char MTPianoKeyboardDesignMod::GetPortNo(const SMNote &note)
+{
+	if (m_isKeyboardSingle) {
+		return 0;
+	}
+	else {
+		return note.portNo;
+	}
+}
+
+//******************************************************************************
+// キーボードインデックスからポート番号取得
+//******************************************************************************
+unsigned char MTPianoKeyboardDesignMod::GetPortNoFromKeyboardIndex(int index)
+{
+	unsigned char portNo;
+
+	m_PortList.GetPort(index, &portNo);
+
+	return portNo;
+}
+
+//******************************************************************************
 // 初期化
 //******************************************************************************
 void MTPianoKeyboardDesignMod::_Initialize()
 {
-	unsigned long i = 0;
-
 	//基底クラスの初期化処理を呼び出す
 	MTPianoKeyboardDesign::_Initialize();
 
-	for (i = 0; i < 16; i++) {
+	m_isKeyboardSingle = false;
+	m_KeyboardDispNum = 0;
+
+	for (int i = 0; i < 16; i++) {
 		m_ActiveKeyColorList[i] = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //設定ファイル
 	}
 
@@ -188,8 +260,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 
 	float portWidth = GetPortWidth();
 
-	// TODO シングルキーボードの判定方法を再検討
-	int keyboardDispNum = GetKeyboardMaxDispNum() > 1 ? m_PortList.GetSize() : 1;
+	int keyboardDispNum = GetKeyboardDispNum();
 
 	float originY;
 

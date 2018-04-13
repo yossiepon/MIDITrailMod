@@ -36,17 +36,21 @@ public:
 		);
 
 	//更新
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
+	int Transform(
+			LPDIRECT3DDEVICE9 pD3DDevice,
+			D3DXVECTOR3 camVector,
+			float rollAngle
+		);
 
 	//描画
-	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//リセット
-	virtual void Reset();
+	void Reset();
 
 protected:
 
-	virtual int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
+	int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 private:
 
@@ -56,15 +60,8 @@ private:
 	//キーボードデザイン
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;
 
-	//ポートリスト
-	SMPortList m_PortList;
-
 	//アクティブポートフラグ
 	bool m_isActivePort[SM_MAX_PORT_NUM];
-
-	//キーボードインデックス
-	int m_KeyboardIndex[SM_MAX_PORT_NUM];
-	unsigned char m_MaxKeyboardIndex;
 
 	//キー押下率配列
 	float m_KeyDownRateMod[SM_MAX_CH_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
@@ -78,9 +75,8 @@ private:
 			);
 	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	int _GetKeyboardIndexFromNote(const SMNote &note);
-
-	float GetMaxPitchBendShift(unsigned char portNo);
+	float _GetMaxPitchBendShift(int keyboardIndex);
+	float _GetMaxPitchBendShift(int keyboardIndex, float max);
 };
 
 
