@@ -48,14 +48,10 @@ public:
 		);
 
 	//更新
-// >>> modify 20120728 yossiepon begin
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
-// <<< modify 20120728 yossiepon end
+	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
 	//描画
-// >>> modify 20120728 yossiepon begin
-	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
-// <<< modify 20120728 yossiepon end
+	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//解放
 	void Release();
@@ -67,9 +63,7 @@ public:
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
 	//リセット
-// >>> modify 20120728 yossiepon begin
-	virtual void Reset();
-// <<< modify 20120728 yossiepon end
+	void Reset();
 
 	//表示設定
 	void SetEnable(bool isEnable);
@@ -139,9 +133,7 @@ protected:
 	bool m_isSingleKeyboard;
 
 	int _CreateNoteStatus();
-// >>> modify 20120728 yossiepon begin
-	virtual int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
-// <<< modify 20120728 yossiepon end
+	int _CreateKeyboards(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 

@@ -27,6 +27,15 @@ public:
 	//初期化
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
+	void SetKeyboardSingle();
+	bool IsKeyboardSingle();
+	int GetKeyboardDispNum();
+	int GetKeyboardIndex(const SMNote &note);
+
+	int GetPortListSize();
+	unsigned char GetPortNo(const SMNote &note);
+	unsigned char GetPortNoFromKeyboardIndex(int index);
+
 	//キーボード基準座標取得
 	D3DXVECTOR3 GetKeyboardBasePos(
 			int keyboardIndex,
@@ -83,10 +92,15 @@ public:
 
 protected:
 
-	virtual void _Initialize();
-	virtual int _LoadConfFile(const TCHAR* pSceneName);
+	void _Initialize();
+	int _LoadConfFile(const TCHAR* pSceneName);
 
 private:
+
+	//シングルキーボードフラグ
+	bool m_isKeyboardSingle;
+	//表示するキーボードの数
+	unsigned char m_KeyboardDispNum;
 
 	//ノートボックス高さ
 	float m_NoteBoxHeight;

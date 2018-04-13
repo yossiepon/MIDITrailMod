@@ -185,10 +185,6 @@ public:
 	//キーボード最大表示数取得
 	unsigned long GetKeyboardMaxDispNum();
 
-// >>> add 20180404 yossiepon begin
-	void SetKeyboardSingle();
-// <<< add 20180404 yossiepon end
-
 	//キー表示範囲取得
 	unsigned char GetKeyDispRangeStart();
 	unsigned char GetKeyDispRangeEnd();
@@ -282,9 +278,7 @@ private:
 protected:
 // <<< modify 20161224 yossiepon end
 
-// >>> modify 20120728 yossiepon begin
-	virtual void _Initialize();
-// <<< modify 20120728 yossiepon end
+	void _Initialize();
 
 // >>> modify access level 20161224 yossiepon begin
 private:
@@ -297,10 +291,7 @@ private:
 protected:
 // <<< modify 20161224 yossiepon end
 
-// >>> modify 20120728 yossiepon begin
-	virtual int _LoadConfFile(const TCHAR* pSceneName);
-// <<< modify 20120728 yossiepon end
-
+	int _LoadConfFile(const TCHAR* pSceneName);
 };
 
 

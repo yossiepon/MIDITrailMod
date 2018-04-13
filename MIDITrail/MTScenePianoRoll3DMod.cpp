@@ -134,7 +134,7 @@ int MTScenePianoRoll3DMod::Transform(
 	if (result != 0) goto EXIT;
 
 	//ピアノキーボード更新
-	result = m_PianoKeyboardCtrlMod.Transform(pD3DDevice, rollAngle);
+	result = m_PianoKeyboardCtrlMod.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
 EXIT:;
