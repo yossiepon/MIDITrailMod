@@ -33,6 +33,9 @@ public:
 			LPDIRECT3DTEXTURE9 pTexture = NULL
 		);
 
+	//描画
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+
 	//更新
 	int Transform(
 			LPDIRECT3DDEVICE9 pD3DDevice,
@@ -51,6 +54,23 @@ public:
 		);
 
 private:
+
+	//逆順インデックスの生成
+	int _CreateRevIndex(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	//キー単位の逆順インデックスの生成
+	int _CreateRevIndexOfKey(
+			unsigned char noteNo,
+			unsigned long* pIndex,
+			unsigned long* pRevIndex
+		);
+
+	//逆順インデックスバッファの生成
+	int _CreateRevIndexBuffer(LPDIRECT3DDEVICE9 pD3DDevice, unsigned long indexNum);
+
+	//逆順インデックスバッファのロック制御
+	int _LockRevIndex(unsigned long** pPtrIndex, unsigned long offset = 0, unsigned long size = 0);
+	int _UnlockRevIndex();
 
 	virtual int _CreateVertexOfKeyWhite1(
 				unsigned char noteNo,
@@ -82,6 +102,10 @@ private:
 	//キーボードデザイン
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;
 
+	//逆順インデックス情報
+	LPDIRECT3DINDEXBUFFER9 m_pRevIndexBuffer;
+	unsigned long m_RevIndexNum;
+	bool m_IsRevIndexLocked;
 };
 
 

@@ -64,6 +64,15 @@ public:
 			int drawPrimitiveNum = -1
 		);
 
+// >>> add 20180413 yossiepon begin
+	int Draw(
+			LPDIRECT3DDEVICE9 pD3DDevice,
+			LPDIRECT3DINDEXBUFFER9 pIndexBuffer,
+			LPDIRECT3DTEXTURE9 pTexture = NULL,
+			int drawPrimitiveNum = -1
+		);
+// <<< add 20180413 yossiepon end
+
 // >>> add 20120728 yossiepon begin
 
 	int DrawLyrics(

@@ -244,11 +244,28 @@ void DXPrimitive::Transform(
 	m_WorldMatrix = worldMatrix;
 }
 
+// >>> add 20180413 yossiepon begin
 //******************************************************************************
 // 描画
 //******************************************************************************
 int DXPrimitive::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice,
+		LPDIRECT3DTEXTURE9 pTexture,
+		int drawPrimitiveNum
+	)
+{
+	return Draw(pD3DDevice, m_pIndexBuffer, pTexture, drawPrimitiveNum);
+}
+// <<< add 20180413 yossiepon end
+
+//******************************************************************************
+// 描画
+//******************************************************************************
+int DXPrimitive::Draw(
+		LPDIRECT3DDEVICE9 pD3DDevice,
+// >>> add 20180413 yossiepon begin
+		LPDIRECT3DINDEXBUFFER9 pIndexBuffer,
+// <<< add 20180413 yossiepon end
 		LPDIRECT3DTEXTURE9 pTexture,
 		int drawPrimitiveNum
 	)
@@ -278,8 +295,10 @@ int DXPrimitive::Draw(
 	}
 
 	//レンダリングパイプラインにインデックスバッファを設定
-	if (m_pIndexBuffer != NULL) {
-		hresult = pD3DDevice->SetIndices(m_pIndexBuffer);
+	if (pIndexBuffer != NULL) {
+// >>> modify 20180413 yossiepon begin
+		hresult = pD3DDevice->SetIndices(pIndexBuffer);
+// <<< modify 20180413 yossiepon end
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)m_pIndexBuffer);
 			goto EXIT;
@@ -390,10 +409,10 @@ int DXPrimitive::DrawLyrics(
 
 		//レンダリングパイプラインに頂点バッファを設定
 		hresult = pD3DDevice->SetStreamSource(
-						0,					//ストリーム番号
-						m_pVertexBuffer,	//ストリームデータ
+						0,						//ストリーム番号
+						m_pVertexBuffer,		//ストリームデータ
 						m_VertexSize * 6 * i,	//頂点データ開始オフセット位置(bytes)
-						m_VertexSize		//頂点データ構造体サイズ
+						m_VertexSize			//頂点データ構造体サイズ
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, m_VertexSize);
@@ -431,7 +450,7 @@ int DXPrimitive::DrawLyrics(
 		//インデックスなしプリミティブの描画
 		hresult = pD3DDevice->DrawPrimitive(
 						m_PrimitiveType,	//プリミティブ種別
-						0, //i * 2,				//頂点バッファ開始インデックス
+						0,					//頂点バッファ開始インデックス
 						2					//プリミティブ数
 					);
 		if (FAILED(hresult)) {
