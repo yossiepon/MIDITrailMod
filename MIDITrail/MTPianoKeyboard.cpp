@@ -1611,6 +1611,8 @@ int MTPianoKeyboard::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		D3DXVECTOR3 basePosVector,
 		D3DXVECTOR3 playbackPosVector,
+		D3DXVECTOR3 camVector,
+		D3DXVECTOR3 lookVector,
 		float rollAngle
 	)
 {

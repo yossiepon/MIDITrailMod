@@ -106,6 +106,11 @@ int MTScenePianoRoll3DMod::Transform(
 	int result = 0;
 	float rollAngle = 0.0f;
 	D3DXVECTOR3 camVector;
+	D3DXVECTOR3 lookVector;
+	float phi;
+	float phiRad;
+	float theta;
+	float thetaRad;
 
 	//基底クラスの変換処理を呼び出す
 	result = MTScenePianoRoll3D::Transform(pD3DDevice);
@@ -113,6 +118,16 @@ int MTScenePianoRoll3DMod::Transform(
 
 	//カメラ座標取得
 	m_FirstPersonCam.GetPosition(&camVector);
+
+	//カメラ視線方向取得
+	m_FirstPersonCam.GetDirection(&phi, &theta);
+
+	//視線ベクトル（極座標から直交座標へ変換）
+	phiRad    = D3DXToRadian(phi);
+	thetaRad  = D3DXToRadian(theta);
+	lookVector.x = 10.0f * sin(thetaRad) * cos(phiRad);
+	lookVector.y = 10.0f * cos(thetaRad);
+	lookVector.z = 10.0f * sin(thetaRad) * sin(phiRad);
 
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
@@ -134,7 +149,7 @@ int MTScenePianoRoll3DMod::Transform(
 	if (result != 0) goto EXIT;
 
 	//ピアノキーボード更新
-	result = m_PianoKeyboardCtrlMod.Transform(pD3DDevice, camVector, rollAngle);
+	result = m_PianoKeyboardCtrlMod.Transform(pD3DDevice, camVector, lookVector, rollAngle);
 	if (result != 0) goto EXIT;
 
 EXIT:;

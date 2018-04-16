@@ -41,6 +41,8 @@ public:
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			D3DXVECTOR3 basePosVector,
 			D3DXVECTOR3 playbackPosVector,
+			D3DXVECTOR3 camVector,
+			D3DXVECTOR3 lookVector,
 			float rollAngle
 		);
 
@@ -54,6 +56,13 @@ public:
 		);
 
 private:
+
+	//描画順の作成
+	int _MakeRenderingOrder(
+			D3DXVECTOR3 basePosVector,
+			D3DXVECTOR3 camVector,
+			D3DXVECTOR3 lookVector
+		);
 
 	//逆順インデックスの生成
 	int _CreateRevIndex(LPDIRECT3DDEVICE9 pD3DDevice);
@@ -106,6 +115,10 @@ private:
 	LPDIRECT3DINDEXBUFFER9 m_pRevIndexBuffer;
 	unsigned long m_RevIndexNum;
 	bool m_IsRevIndexLocked;
+
+	//キーボード描画範囲
+	int m_noteNoLow;
+	int m_noteNoHigh;
 };
 
 

@@ -139,6 +139,7 @@ EXIT:;
 int MTPianoKeyboardCtrlMod::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		D3DXVECTOR3 camVector,
+		D3DXVECTOR3 lookVector,
 		float rollAngle
 	)
 {
@@ -171,7 +172,7 @@ int MTPianoKeyboardCtrlMod::Transform(
 		basePosVector.x += _GetMaxPitchBendShift(index);
 
 		//キーボード移動
-		result = m_pPianoKeyboard[index]->Transform(pD3DDevice, basePosVector, playbackPosVector, rollAngle);
+		result = m_pPianoKeyboard[index]->Transform(pD3DDevice, basePosVector, playbackPosVector, camVector, lookVector, rollAngle);
 		if (result != 0) goto EXIT;
 	}
 
