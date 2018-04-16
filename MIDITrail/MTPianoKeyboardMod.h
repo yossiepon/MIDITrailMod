@@ -119,6 +119,7 @@ private:
 	//キーボード描画範囲
 	int m_noteNoLow;
 	int m_noteNoHigh;
+	int m_camDir;
 };
 
 

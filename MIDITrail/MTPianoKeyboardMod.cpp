@@ -106,16 +106,32 @@ int MTPianoKeyboardMod::Draw(
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//正順側キーボードの描画
-	if (m_noteNoLow != -1) {
-		result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture, m_BufInfo[m_noteNoLow].indexTotal / 3);
-		if (result != 0) goto EXIT;
-	}
+	//視線方向による描画順の変更
+	if (m_camDir == -1) {
+		//正順側キーボードの描画
+		if (m_noteNoLow != -1) {
+			result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture, m_BufInfo[m_noteNoLow].indexTotal / 3);
+			if (result != 0) goto EXIT;
+		}
 
-	//逆順側キーボードの描画
-	if (m_noteNoHigh != -1) {
-		result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pRevIndexBuffer, m_pTexture, m_BufInfo[m_noteNoHigh].revIndexTotal / 3);
-		if (result != 0) goto EXIT;
+		//逆順側キーボードの描画
+		if (m_noteNoHigh != -1) {
+			result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pRevIndexBuffer, m_pTexture, m_BufInfo[m_noteNoHigh].revIndexTotal / 3);
+			if (result != 0) goto EXIT;
+		}
+	}
+	else {
+		//逆順側キーボードの描画
+		if (m_noteNoHigh != -1) {
+			result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pRevIndexBuffer, m_pTexture, m_BufInfo[m_noteNoHigh].revIndexTotal / 3);
+			if (result != 0) goto EXIT;
+		}
+
+		//正順側キーボードの描画
+		if (m_noteNoLow != -1) {
+			result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture, m_BufInfo[m_noteNoLow].indexTotal / 3);
+			if (result != 0) goto EXIT;
+		}
 	}
 
 EXIT:;
@@ -238,15 +254,21 @@ int MTPianoKeyboardMod::_MakeRenderingOrder(
 		D3DXVECTOR3 lookVector
 	)
 {
+	//ピッチベンド幅を含んだキーボード原点
 	float origin = basePosVector.x;
 
+	//カメラ位置
 	float camPos = -camVector.z;
+
+	//カメラ視線方向
+	float camDir = -lookVector.z;
 
 	m_noteNoLow = (int)::floor((camPos - origin) / m_KeyboardDesignMod.GetNoteStep());
 	m_noteNoHigh = m_noteNoLow + 1;
 
 	//char buf[256];
-	//::sprintf(buf, "O:%f, P:%f, L:%d, H:%d\n", origin, camPos, m_noteNoLow, m_noteNoHigh);
+	////::sprintf(buf, "O:%f, P:%f, L:%d, H:%d\n", origin, camPos, m_noteNoLow, m_noteNoHigh);
+	//::sprintf(buf, "D:%f\n", camDir);
 	//::OutputDebugStringA(buf);
 
 	if (m_noteNoLow < 0) {
@@ -265,6 +287,8 @@ int MTPianoKeyboardMod::_MakeRenderingOrder(
 	if (m_noteNoHigh >= SM_MAX_NOTE_NUM) {
 		m_noteNoHigh = -1;
 	}
+
+	m_camDir = camDir < 0 ? -1 : 1;
 
 	return 0;
 }
