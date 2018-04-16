@@ -42,6 +42,10 @@ MTPianoKeyboardMod::MTPianoKeyboardMod(void)
 	m_pRevIndexBuffer = NULL;
 	m_RevIndexNum = 0;
 	m_IsRevIndexLocked = false;
+
+	//キーボード描画範囲
+	m_noteNoLow = -1;
+	m_noteNoHigh = -1;
 }
 
 //******************************************************************************
@@ -103,12 +107,16 @@ int MTPianoKeyboardMod::Draw(
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
 	//正順側キーボードの描画
-	result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture, m_BufInfo[63].indexTotal / 3);
-	if (result != 0) goto EXIT;
+	if (m_noteNoLow != -1) {
+		result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture, m_BufInfo[m_noteNoLow].indexTotal / 3);
+		if (result != 0) goto EXIT;
+	}
 
 	//逆順側キーボードの描画
-	result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pRevIndexBuffer, m_pTexture, m_BufInfo[64].revIndexTotal / 3);
-	if (result != 0) goto EXIT;
+	if (m_noteNoHigh != -1) {
+		result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pRevIndexBuffer, m_pTexture, m_BufInfo[m_noteNoHigh].revIndexTotal / 3);
+		if (result != 0) goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -121,6 +129,8 @@ int MTPianoKeyboardMod::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		D3DXVECTOR3 basePosVector,
 		D3DXVECTOR3 playbackPosVector,
+		D3DXVECTOR3 camVector,
+		D3DXVECTOR3 lookVector,
 		float rollAngle
 	)
 {
@@ -176,6 +186,9 @@ int MTPianoKeyboardMod::Transform(
 	//変換行列設定
 	m_PrimitiveKeyboard.Transform(worldMatrix);
 
+	//キーボード描画順の生成
+	_MakeRenderingOrder(basePosVector, camVector, lookVector);
+
 //EXIT:;
 	return result;
 }
@@ -214,6 +227,46 @@ int MTPianoKeyboardMod::PushKey(
 
 EXIT:;
 	return result;
+}
+
+//******************************************************************************
+// 描画順の作成
+//******************************************************************************
+int MTPianoKeyboardMod::_MakeRenderingOrder(
+		D3DXVECTOR3 basePosVector,
+		D3DXVECTOR3 camVector,
+		D3DXVECTOR3 lookVector
+	)
+{
+	float origin = basePosVector.x;
+
+	float camPos = -camVector.z;
+
+	m_noteNoLow = (int)::floor((camPos - origin) / m_KeyboardDesignMod.GetNoteStep());
+	m_noteNoHigh = m_noteNoLow + 1;
+
+	//char buf[256];
+	//::sprintf(buf, "O:%f, P:%f, L:%d, H:%d\n", origin, camPos, m_noteNoLow, m_noteNoHigh);
+	//::OutputDebugStringA(buf);
+
+	if (m_noteNoLow < 0) {
+		m_noteNoLow = -1;
+	}
+
+	if (m_noteNoLow >= SM_MAX_NOTE_NUM) {
+		m_noteNoLow = SM_MAX_NOTE_NUM - 1;
+	}
+
+
+	if (m_noteNoHigh < 0) {
+		m_noteNoHigh = 0;
+	}
+
+	if (m_noteNoHigh >= SM_MAX_NOTE_NUM) {
+		m_noteNoHigh = -1;
+	}
+
+	return 0;
 }
 
 //******************************************************************************

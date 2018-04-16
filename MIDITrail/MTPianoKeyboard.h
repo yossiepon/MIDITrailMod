@@ -47,14 +47,16 @@ public:
 	//XV
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector, float rollAngle);
 // >>> add 20120729 yossiepon begin
-// >>> modify 20180411 yossiepon begin
+// >>> modify 20180414 yossiepon begin
 	virtual int Transform(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			D3DXVECTOR3 basePosVector,
 			D3DXVECTOR3 playbackPosVector,
+			D3DXVECTOR3 camVector,
+			D3DXVECTOR3 lookVector,
 			float rollAngle
 		);
-// <<< modify 20180411 yossiepon end
+// <<< modify 20180414 yossiepon end
 // <<< add 20120729 yossiepon end
 
 // >>> modify function decl to virtual 20180412 yossiepon begin
