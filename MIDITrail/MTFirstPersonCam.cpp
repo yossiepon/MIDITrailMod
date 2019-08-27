@@ -90,6 +90,10 @@ int MTFirstPersonCam::Initialize(
 	m_DIKeyCtrl.Acquire();
 	m_DIMouseCtrl.Acquire();
 
+	//ゲームパッド初期化：ユーザインデックス0固定
+	result = m_GamePadCtrl.Initialize(0);
+	if (result != 0) goto EXIT;
+	
 	//カメラ初期化
 	result = m_Camera.Initialize();
 	if (result != 0) goto EXIT;
@@ -201,10 +205,14 @@ int MTFirstPersonCam::Transform(
 	)
 {
 	int result = 0;
+	float dt = 0.0f;
 	int dX = 0;
 	int dY = 0;
 	int dW = 0;
-
+	
+	//デルタタイム
+	dt = (float)m_DeltaTime / 1000.0f;
+	
 	//TODO: ここじゃないどこかへ移す
 	m_DIKeyCtrl.Acquire();
 	m_DIMouseCtrl.Acquire();
@@ -222,6 +230,12 @@ int MTFirstPersonCam::Transform(
 	//if (result != 0) goto EXIT;
 	result = 0;
 
+	//ゲームパッド状態更新
+	result = m_GamePadCtrl.UpdateState();
+	if (result != 0) goto EXIT;
+
+	//_RPTN(_CRT_WARN, "GamePad: %f %f\n", m_GamePadCtrl.GetState_ThumbRX(), m_GamePadCtrl.GetState_ThumbRY());
+	
 	//マウス／ホイール移動量
 	dX = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisX);
 	dY = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisY);
@@ -232,6 +246,11 @@ int MTFirstPersonCam::Transform(
 		dX = 0;
 		dY = 0;
 	}
+
+	//ゲームパッド操作：右スティック
+	//スティック値は-1.0から1.0の範囲
+	dX += m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRX() * (100.0f);
+	dY += m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRY() * (-100.0f);
 	
 	//CTRL+移動キーで視線方向を変化させる
 	if (m_DIKeyCtrl.IsKeyDown(DIK_LCONTROL) || m_DIKeyCtrl.IsKeyDown(DIK_RCONTROL)) {
@@ -335,6 +354,8 @@ int MTFirstPersonCam::_TransformEyeDirection(
 int MTFirstPersonCam::_TransformCamPosition()
 {
 	int result = 0;
+	float dFB = 0.0f;
+	float dLR = 0.0f;
 	float phi = 0.0f;
 	float phiRad = 0.0f;
 	float distance = 0.0f;
@@ -396,7 +417,40 @@ int MTFirstPersonCam::_TransformCamPosition()
 			m_CamVector.x +=  +(m_VelocityFB * dt * rate);
 		}
 	}
-
+	
+	//ゲームパッド操作：十字キー＞前後左右移動
+	if (distance == 0.0f) {
+		if (m_GamePadCtrl.GetState_DPadUp()) {
+			dFB = m_VelocityFB * dt * (1.0f);
+		}
+		if (m_GamePadCtrl.GetState_DPadDown()) {
+			dFB = m_VelocityFB * dt * (-1.0f);
+		}
+		if (m_GamePadCtrl.GetState_DPadRight()) {
+			dLR = m_VelocityLR * dt * (-1.0f);
+		}
+		if (m_GamePadCtrl.GetState_DPadLeft()) {
+			dLR = m_VelocityLR * dt * (1.0f);
+		}
+		distance = sqrt((dFB * dFB) + (dLR * dLR));
+		phi += D3DXToDegree(atan2(dLR, dFB));
+	}
+	//ゲームパッド操作：左スティック＞前後左右移動
+	if (distance == 0.0f) {
+		//スティック値は-1.0から1.0の範囲
+		dFB += m_VelocityFB * dt * m_GamePadCtrl.GetState_ThumbLX() * -1.0f;
+		dLR += m_VelocityLR * dt * m_GamePadCtrl.GetState_ThumbLY();
+		distance = sqrt((dFB * dFB) + (dLR * dLR));
+		phi += D3DXToDegree(atan2(dFB, dLR));
+	}
+	//ゲームパッド操作：X,Yボタン＞下降,上昇移動
+	if (m_GamePadCtrl.GetState_X()) {
+		m_CamVector.y += -(m_VelocityUD * dt);
+	}
+	if (m_GamePadCtrl.GetState_Y()) {
+		m_CamVector.y += +(m_VelocityUD * dt);
+	}
+	
 	//クリッピング
 	if (phi >= 360.0f) {
 		phi -= 360.0f;

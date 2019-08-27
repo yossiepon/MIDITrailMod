@@ -4,7 +4,7 @@
 //
 // 一人称カメラクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,6 +21,7 @@
 #include "DXCamera.h"
 #include "SMIDILib.h"
 #include "MTNoteDesign.h"
+#include "MTGamePadCtrl.h"
 
 using namespace SMIDILib;
 
@@ -116,6 +117,7 @@ private:
 
 	DIKeyCtrl m_DIKeyCtrl;
 	DIMouseCtrl m_DIMouseCtrl;
+	MTGamePadCtrl m_GamePadCtrl;
 	bool m_IsMouseCamMode;
 	bool m_IsAutoRollMode;
 	HWND m_hWnd;

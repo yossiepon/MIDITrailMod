@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="en">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.2.5 for Windows User Manual</title>
+<title>MIDITrail Ver.1.2.6 for Windows User Manual</title>
 </head>
 <body>
 
@@ -15,7 +15,7 @@
 English / <a href="MANUAL.ja.html">Japanese</a>
 </div>
 
-<h1>MIDITrail Ver.1.2.5 for Windows User Manual</h1>
+<h1>MIDITrail Ver.1.2.6 for Windows User Manual</h1>
 
 <p>
 Copyright (c) 2010-2019, WADA Masashi All rights reserved.<br>
@@ -262,7 +262,7 @@ or when you push following key, you can move to a fixed viewpoint.
 
 <h3>(5) Change of window size</h3>
 <p>
-Select "Window size..." from "View" menu, the Window size configuration dialog will appear.<br>
+When you select "Window size..." from "View" menu, the Window size configuration dialog will appear.<br>
 Select your favorite window size, and push the OK button.<br>
 You can not change window size while playing or pausing.
 </p>
@@ -275,7 +275,13 @@ If you want to specify any window size, fill in "Width" "Height".<br>
 If you want to apply that size to  the view area, check "Apply to the view area".
 </p>
 
-<h3>(6) Display counters</h3>
+<h3>(6) Full Screen</h3>
+<p>
+When you select "Full Screen" from "View" menu, you can switch between window mode and full screen mode.<br>
+By F11 key, you can switch the mode too.
+</p>
+
+<h3>(7) Display counters</h3>
 
 <p>
 <img src="Files/Counter.png"><br>
@@ -294,7 +300,7 @@ If you want to apply that size to  the view area, check "Apply to the view area"
 </table>
 </p>
 
-<h3>(7) View mode select</h3>
+<h3>(8) View mode select</h3>
 <p>
 You can select the view mode from "View" menu.
 You can not change the view mode while playing or pausing.
@@ -303,7 +309,7 @@ You can not change the view mode while playing or pausing.
 <img src="Files/ViewMenu-Mode.png"><br>
 </p>
 
-<h3>(8) Display/Effect switch</h3>
+<h3>(9) Display/Effect switch</h3>
 <p>
 You can switch the display/effect at "View" menu.
 </p>
@@ -316,7 +322,7 @@ Some MIDI animation works are using pitch bend to shift the piano roll bars with
 If the MIDI animation is not displayed correctly, please disable the pitch bend effect to fix the piano roll bars.
 </p>
 
-<h3>(9) MIDITrail command line interface</h3>
+<h3>(10) MIDITrail command line interface</h3>
 <p>
 If you want to start MIDITrail by command line, you can use following arguments.
 </p>
@@ -335,7 +341,7 @@ MIDITrail.exe [-p] [-q] ["path\to\file"]
 If you drop a MIDI file to the shortcut of MIDITrail, MIDITrail open the file on startup.
 </p>
 
-<h3>(10) Graphic configuration</h3>
+<h3>(11) Graphic configuration</h3>
 <p>
 Select "Graphic..." from "Option" menu, the graphic configuration dialog will appear.<br>
 You can not change graphic configuration while playing or pausing.
@@ -360,7 +366,7 @@ You can change a quarter note length of piano roll.<br>
 You can specify a value from 0% to 1000%. The default value is 100%.<br>
 </p>
 
-<h3>(11) MIDI IN Monitor</h3>
+<h3>(12) MIDI IN Monitor</h3>
 <p>
 You can view data sets received from MIDI IN device in realtime.<br>
 Select "MIDI IN..." from "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
@@ -373,6 +379,29 @@ Select the MIDI IN device for monitoring.<br>
 If you check the MIDITHRU, MIDITrail will send data sets received from MIDI IN to MIDI OUT.<br>
 When you select "Start Monitoring" from "Playback" menu, MIDI IN monitoring will start.<br>
 NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
+</p>
+
+<h3>(13) Game Controller</h3>
+<p>
+You can operate by XInput game controller.<br>
+</p>
+<p>
+<table>
+  <tr><th>Button / Stick</th><th>Action</th></tr>
+  <tr><td>START button</td><td>Play / Pause / Resume</td></tr>
+  <tr><td>A button</td><td>Play / Pause / Resume</td></tr>
+  <tr><td>B button</td><td>Stop</td></tr>
+  <tr><td>X button</td><td>Viewpoint: down</td></tr>
+  <tr><td>Y button</td><td>Viewpoint: up</td></tr>
+  <tr><td>LB/RB shoulder button</td><td>Change viewpoint</td></tr>
+  <tr><td>LT/RT trigger button</td><td>Skip back/forward</td></tr>
+  <tr><td>Directional pad</td><td>Viewpoint movement: front and back, right and left</td></tr>
+  <tr><td>Left stick</td><td>Viewpoint movement: front and back, right and left</td></tr>
+  <tr><td>Right stick</td><td>Eye direction</td></tr>
+</table>
+</p>
+<p>
+NOTE: MIDITrail does not support DirectInput game controller.
 </p>
 
 <!-- ************************************************************* -->
@@ -445,18 +474,12 @@ Width=800
 Height=600
 </pre>
 
-<h3>(4) Q. I want to display in full screen.</h3>
-<p>
-In present version, MIDITrail can not display in full screen.
-It may support in the future.
-</p>
-
-<h3>(5) Q. When I display the menu, the animation stops.</h3>
+<h3>(4) Q. When I display the menu, the animation stops.</h3>
 <p>
 Sorry, it is a specification.
 </p>
 
-<h3>(6) Q. I got "DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A" error.</h3>
+<h3>(5) Q. I got "DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A" error.</h3>
 <p>
 If your PC does not support Direct3D, this error occurs.<br>
 Please execute "DirectX Diagnostic Tool"(dxdiag.exe), and select "Display" tab.
@@ -465,7 +488,7 @@ If you can't change "Direct3D Acceleration" to "Enabled", your PC does not suppo
 Please use the PC which supports DirectX 9.0c graphics.
 </p>
 
-<h3>(7) Q. I want to change the ripple more showily.</h3>
+<h3>(6) Q. I want to change the ripple more showily.</h3>
 <p>
 You can change size of the ripple by editing configuration file.<br>
 Please Check "7. Customize - (2) Piano roll".<br>
@@ -912,6 +935,10 @@ This version was released with MIDITrail for Mac OS X.<br>
 #39226 Changed development environment to Visual Studio 2017<br>
 #39228 Changed appendix of user's manual<br>
 #39229 fixed bug (Code analysis found some mistakes)<br>
+  </td></tr>
+  <tr><td>2019/06/02</td><td>Ver.1.2.6</td><td>
+#39274 Added full screen mode<br>
+#39275 Added support for game controller<br>
   </td></tr>
 </table>
 </p>

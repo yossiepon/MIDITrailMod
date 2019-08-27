@@ -32,6 +32,9 @@
     <Filter Include="Sources\Dialog">
       <UniqueIdentifier>{0346b7cc-b30c-4603-870f-2f75d5d335ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\XInputUtility">
+      <UniqueIdentifier>{d054de01-6c08-4761-ae2f-dacf689ea8ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="MIDITrail.ico">
@@ -214,6 +217,9 @@
     </ClCompile>
     <ClCompile Include="MTWindowSizeCfgDlg.cpp">
       <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTGamePadCtrl.cpp">
+      <Filter>Sources\XInputUtility</Filter>
     </ClCompile>
     <ClCompile Include="MTGridBoxMod.cpp">
       <Filter>Sources\SceneObject</Filter>
@@ -426,6 +432,9 @@
     </ClInclude>
     <ClInclude Include="MTWindowSizeCfgDlg.h">
       <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTGamePadCtrl.h">
+      <Filter>Sources\XInputUtility</Filter>
     </ClInclude>
     <ClInclude Include="MTGridBoxMod.h">
       <Filter>Sources\SceneObject</Filter>
