@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -212,15 +212,17 @@ int MTTimeIndicator::Draw(
 
 // <<< add 20180404 yossiepon end
 
-// >>> add 20120728 yossiepon begin
-
 	//テクスチャステージ設定
-	//  カラー演算：無効
-	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_DISABLE);
-	// アルファ演算：無効
-	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
+	//  カラー演算：引数1を使用  引数1：テクスチャ
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	// アルファ演算：引数1を使用  引数1：テクスチャ
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 
-// <<< add 20120728 yossiepon end
+	//テクスチャフィルタ
+	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
 	if (m_isEnableLine) {
 		result = m_PrimitiveLine.Draw(pD3DDevice);
@@ -258,6 +260,7 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 	D3DXVECTOR3 vectorRU;
 	D3DXVECTOR3 vectorLD;
 	D3DXVECTOR3 vectorRD;
+	float delta = 0.0f;
 
 	//              y x
 	//  0+----+1    |/
@@ -280,8 +283,12 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 	pVertex[2].p = vectorLD;
 	pVertex[3].p = vectorRD;
 
-	//再生面の幅がゼロの場合はラインを描画する
-	if (vectorLU.z == vectorRU.z) {
+	//再生面の幅がゼロに近い場合はラインを描画する
+	delta = vectorLU.z - vectorRU.z;
+	if (delta < 0) {
+		delta = -1.0f * delta;
+	}
+	if (delta < 0.1) {
 		m_isEnableLine = true;
 	}
 

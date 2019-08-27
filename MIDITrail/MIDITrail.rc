@@ -84,10 +84,9 @@ BEGIN
         MENUITEM "Grid Box",                    IDM_ENABLE_GRIDBOX
 // <<< add 20180404 yossiepon end
         MENUITEM SEPARATOR
-        MENUITEM "Auto save viewpoint",         32838
-        MENUITEM SEPARATOR
-        MENUITEM "Reset viewpoint",             IDM_RESET_VIEWPOINT
-        MENUITEM "Save viewpoint",              IDM_SAVE_VIEWPOINT
+        MENUITEM "Viewpoint 1\t7",              IDM_RESET_VIEWPOINT
+        MENUITEM "Viewpoint 2\t8",              IDM_VIEWPOINT2
+        MENUITEM "Viewpoint 3\t9",              IDM_VIEWPOINT3
         MENUITEM SEPARATOR
         MENUITEM "Window size...",              IDM_WINDOWSIZE
     END
