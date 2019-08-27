@@ -4,7 +4,7 @@
 //
 // エラー制御クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -189,7 +189,7 @@ int YNErrCtrl::ShowErr(
 	_stprintf_s(
 		msgex,
 		512,
-		_T("\n\nFUNC: %s\nLINE: %d\nINFO: %08X %08X"),
+		_T("\n\nFUNC: %s\nLINE: %d\nINFO: %08llX %08llX"),
 		pErrInfo->GetFuncName(),
 		pErrInfo->GetLineNo(),
 		pErrInfo->GetErrInfo1(),

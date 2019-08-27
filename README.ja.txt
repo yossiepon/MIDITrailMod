@@ -1,6 +1,6 @@
 ******************************************************************************
 
-  MIDITrail ソースコード Ver.1.2.4 for Windows
+  MIDITrail ソースコード Ver.1.2.5 for Windows
 
   Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 
@@ -15,14 +15,18 @@
 
 (2) ビルド環境
 
-  Microsoft DirectX SDK
-  Microsoft Visual Studio 2008 sp1
+  Microsoft DirectX SDK (June 2010)
+  Microsoft Visual Studio Community 2017
 
 (3) フォルダ構成
 
   /bin
-    ビルドモジュールの出力先です。
+    x86用ビルドモジュールの出力先です。
     binの下に Debug / Release フォルダが作成されます。
+
+  /x64
+    x64用ビルドモジュールの出力先です。
+    x64の下に Debug / Release フォルダが作成されます。
 
   /MIDITrail
     アプリケーション本体(MIDITrail.exe)のプロジェクトです。
@@ -37,6 +41,9 @@
   /YNBaseLib
     基本ライブラリ(YNBaseLib.dll)のプロジェクトです。
     エラー制御やユーティリティ関数を含んでいます。
+
+  /Resources
+    アプリケーションが参照するリソースファイルです。
 
 (4) ライセンス
 

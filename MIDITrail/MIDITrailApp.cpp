@@ -26,6 +26,9 @@
 #include "MTScenePianoRoll2DLive.h"
 #include "MTScenePianoRollRainLive.h"
 #include "MTScenePianoRollRain2DLive.h"
+// >>> add 20190828 yossiepon begin
+#include "MIDITrailVersion.h"
+// <<< add 20190828 yossiepon end
 
 using namespace YNBaseLib;
 
@@ -129,6 +132,21 @@ int MIDITrailApp::Initialize(
 	//文字列初期化
 	LoadString(hInstance, IDS_APP_TITLE, m_Title, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
+
+//>>> add yossiepon 20190828
+	TCHAR* pVersion = NULL;
+
+	//バージョン文字列
+#ifdef _WIN64
+	//64bit
+	pVersion = MIDITRAIL_VERSION_STRING_X64;
+#else
+	//32bit
+	pVersion = MIDITRAIL_VERSION_STRING_X86;
+#endif
+	_tcscat_s(m_Title, MAX_LOADSTRING, _T(" "));
+	_tcscat_s(m_Title, MAX_LOADSTRING, pVersion);
+//<<< add yossiepon 20190828
 
 	//設定ファイル初期化
 	result = _InitConfFile();

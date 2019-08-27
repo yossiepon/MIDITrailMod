@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{75ac27cd-dff6-4f72-ab91-8acac430871f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Common">
+      <UniqueIdentifier>{7e7268b3-025b-480b-8c11-709a940691f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DeviceIO">
+      <UniqueIdentifier>{3bb1e9f4-0312-40af-99f1-f0edc4b53832}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\EventData">
+      <UniqueIdentifier>{9ee0f7f9-bf2d-4e43-ac50-8661e2048f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\SequenceData">
+      <UniqueIdentifier>{c44067d0-1809-49cd-aeb4-5528eb7a1432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Processor">
+      <UniqueIdentifier>{e6ee9e49-d1c8-45cf-a5b3-3ca09d0945f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Utility">
+      <UniqueIdentifier>{44ae91ee-cdce-4931-a706-c7f4890033a1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SMIDILib.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SMInDevCtrl.cpp">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClCompile>
+    <ClCompile Include="SMOutDevCtrl.cpp">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClCompile>
+    <ClCompile Include="SMEvent.cpp">
+      <Filter>Sources\EventData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMEventMeta.cpp">
+      <Filter>Sources\EventData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMEventMIDI.cpp">
+      <Filter>Sources\EventData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMEventSysEx.cpp">
+      <Filter>Sources\EventData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMEventSysMsg.cpp">
+      <Filter>Sources\EventData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMBarList.cpp">
+      <Filter>Sources\SequenceData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMNoteList.cpp">
+      <Filter>Sources\SequenceData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMPortList.cpp">
+      <Filter>Sources\SequenceData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMSeqData.cpp">
+      <Filter>Sources\SequenceData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMSimpleList.cpp">
+      <Filter>Sources\SequenceData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTrack.cpp">
+      <Filter>Sources\SequenceData</Filter>
+    </ClCompile>
+    <ClCompile Include="SMEventWatcher.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMFileReader.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMLiveMonitor.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMMsgParser.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMMsgQueue.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMMsgTransmitter.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMSequencer.cpp">
+      <Filter>Sources\Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="SMFPUCtrl.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SMRcpConv.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="SMCommon.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SMIDILib.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SMInDevCtrl.h">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClInclude>
+    <ClInclude Include="SMOutDevCtrl.h">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClInclude>
+    <ClInclude Include="SMEvent.h">
+      <Filter>Sources\EventData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMEventMeta.h">
+      <Filter>Sources\EventData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMEventMIDI.h">
+      <Filter>Sources\EventData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMEventSysEx.h">
+      <Filter>Sources\EventData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMEventSysMsg.h">
+      <Filter>Sources\EventData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMBarList.h">
+      <Filter>Sources\SequenceData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMNoteList.h">
+      <Filter>Sources\SequenceData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMPortList.h">
+      <Filter>Sources\SequenceData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMSeqData.h">
+      <Filter>Sources\SequenceData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMSimpleList.h">
+      <Filter>Sources\SequenceData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMTrack.h">
+      <Filter>Sources\SequenceData</Filter>
+    </ClInclude>
+    <ClInclude Include="SMEventWatcher.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMFileReader.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMLiveMonitor.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMMsgParser.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMMsgQueue.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMMsgTransmitter.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMSequencer.h">
+      <Filter>Sources\Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="SMFPUCtrl.h">
+      <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="SMRcpConv.h">
+      <Filter>Sources\Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
