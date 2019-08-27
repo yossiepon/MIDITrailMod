@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -459,6 +459,7 @@ void MTScenePianoRollRain::GetDefaultViewParam(
 	D3DXVECTOR3 viewPointVector;
 	float phi, theta = 0.0f;
 
+	//視点情報作成
 	viewPointVector.x = 0.0f;
 	viewPointVector.y = 0.0f;
 	viewPointVector.z = - (1.5f * 16.0f / 2.0f) - 10.0f;
@@ -588,6 +589,34 @@ void MTScenePianoRollRain::SetViewParam(
 }
 
 //******************************************************************************
+// 静的視点移動
+//******************************************************************************
+void MTScenePianoRollRain::MoveToStaticViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap paramMap;
+
+	if (viewpointNo == 1) {
+		GetDefaultViewParam(&paramMap);
+		SetViewParam(&paramMap);
+	}
+	else if (viewpointNo == 2) {
+		SetViewParam(&m_Viewpoint2);
+	}
+	else if (viewpointNo == 3) {
+		SetViewParam(&m_Viewpoint3);
+	}
+	else {
+		GetDefaultViewParam(&paramMap);
+		SetViewParam(&paramMap);
+	}
+
+	return;
+}
+
+//******************************************************************************
 // 視点リセット
 //******************************************************************************
 void MTScenePianoRollRain::ResetViewpoint()
@@ -700,6 +729,70 @@ int MTScenePianoRollRain::_LoadConf()
 	if (result != 0) goto EXIT;
 
 	SetBGColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
+
+	result = _LoadConfViewpoint(&confFile, 2, &m_Viewpoint2);
+	if (result != 0) goto EXIT;
+
+	result = _LoadConfViewpoint(&confFile, 3, &m_Viewpoint3);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 設定ファイル読み込み：視点
+//******************************************************************************
+int MTScenePianoRollRain::_LoadConfViewpoint(
+		MTConfFile* pConfFile,
+		unsigned long viewpointNo,
+		MTViewParamMap* pParamMap
+	)
+{
+	int result = 0;
+	int eresult = 0;
+	TCHAR sectionStr[32] = {0};
+	float x, y, z = 0.0f;
+	float phi, theta = 0.0f;
+	float manualRollAngle = 0.0f;
+	float autoRollVelocity = 0.0f;
+
+	//セクション名作成
+	eresult = _stprintf_s(sectionStr, 32, _T("Viewpoint-%d"), viewpointNo);
+	if (eresult < 0) {
+		result = YN_SET_ERR("Program error.", viewpointNo, 0);
+		goto EXIT;
+	}
+
+	//セクション設定
+	result = pConfFile->SetCurSection(sectionStr);
+	if (result != 0) goto EXIT;
+
+	//パラメータ取得
+	result = pConfFile->GetFloat(_T("X"), &x, 0.0f);
+	if (result != 0) goto EXIT;
+	result = pConfFile->GetFloat(_T("Y"), &y, 0.0f);
+	if (result != 0) goto EXIT;
+	result = pConfFile->GetFloat(_T("Z"), &z, 0.0f);
+	if (result != 0) goto EXIT;
+	result = pConfFile->GetFloat(_T("Phi"), &phi, 0.0f);
+	if (result != 0) goto EXIT;
+	result = pConfFile->GetFloat(_T("Theta"), &theta, 0.0f);
+	if (result != 0) goto EXIT;
+	result = pConfFile->GetFloat(_T("ManualRollAngle"), &manualRollAngle, 0.0f);
+	if (result != 0) goto EXIT;
+	result = pConfFile->GetFloat(_T("AutoRollVelocity"), &autoRollVelocity, 0.0f);
+	if (result != 0) goto EXIT;
+
+	//マップ登録
+	pParamMap->clear();
+	pParamMap->insert(MTViewParamMapPair("X", x));
+	pParamMap->insert(MTViewParamMapPair("Y", y));
+	pParamMap->insert(MTViewParamMapPair("Z", z));
+	pParamMap->insert(MTViewParamMapPair("Phi", phi));
+	pParamMap->insert(MTViewParamMapPair("Theta", theta));
+	pParamMap->insert(MTViewParamMapPair("ManualRollAngle", manualRollAngle));
+	pParamMap->insert(MTViewParamMapPair("AutoRollVelocity", autoRollVelocity));
 
 EXIT:;
 	return result;

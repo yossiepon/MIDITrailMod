@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2012-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,6 +22,7 @@
 #include "MTNotePitchBend.h"
 #include "MTMeshCtrl.h"
 #include "MTBackgroundImage.h"
+#include "MTConfFile.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -86,6 +87,7 @@ public:
 	
 	//視点リセット
 	void ResetViewpoint();
+	void MoveToStaticViewpoint(unsigned long viewpointNo);
 	
 	//エフェクト設定
 	void SetEffect(MTScene::EffectType type, bool isEnable);
@@ -123,9 +125,12 @@ private:
 	
 	//視点情報
 	MTViewParamMap m_ViewParamMap;
+	MTViewParamMap m_Viewpoint2;
+	MTViewParamMap m_Viewpoint3;
 	
 	void _Reset();
 	int _LoadConf();
+	int _LoadConfViewpoint(MTConfFile* pConfFile, unsigned long viewpointNo, MTScene::MTViewParamMap* pParamMap);
 	
 };
 

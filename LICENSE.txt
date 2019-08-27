@@ -1,5 +1,5 @@
 
-Copyright (c) 2010-2017, WADA Masashi <yknk@users.osdn.me>
+Copyright (c) 2010-2019, WADA Masashi <yknk@users.osdn.me>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
