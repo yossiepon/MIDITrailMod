@@ -4,7 +4,7 @@
 //
 // レンダラクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -312,7 +312,7 @@ int DXRenderer::_RecoverDevice()
 			// TODO: 未実装・・・どうしましょ
 		}
 		//内部エラー
-		else if (D3DERR_DRIVERINTERNALERROR) {
+		else if (hresult == D3DERR_DRIVERINTERNALERROR) {
 			result = YN_SET_ERR("DirectX API error.", hresult, 0);
 			goto EXIT;
 		}

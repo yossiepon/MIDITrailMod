@@ -4,7 +4,7 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -14,6 +14,13 @@
 #include "MTParam.h"
 #include "MTGraphicCfgDlg.h"
 
+
+//******************************************************************************
+// グラフィック設定ダイアログクラス パラメタ定義
+//******************************************************************************
+//ノート長拡大率 最小値/最大値
+#define MT_QNOTE_LENGTH_MAG_MIN		(0)
+#define MT_QNOTE_LENGTH_MAG_MAX		(1000)
 
 //******************************************************************************
 // ウィンドウプロシージャ制御用パラメータ設定
@@ -32,7 +39,9 @@ MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 	m_MultiSampleType = 0;
 	m_hComboMultiSampleType = NULL;
 	m_hEditImageFilePath = NULL;
+	m_hEditQuarterNoteLengthMag = NULL;
 	m_ImageFilePath[0] = _T('\0');
+	m_QuarterNoteLengthMag = 100;
 	m_isChanged = false;
 
 	for (type = 0; type < DX_MULTI_SAMPLE_TYPE_MAX; type++) {
@@ -182,6 +191,11 @@ int MTGraphicCfgDlg::_OnInitDlg(
 	result = _InitBackgroundImageFilePath();
 	if (result != 0) goto EXIT;
 
+	//四分音符長拡大率初期化
+	m_hEditQuarterNoteLengthMag = GetDlgItem(hDlg, IDC_EDIT_QUARTER_NOTE_LENGTH_MAG);
+	result = _InitQuarterNote();
+	if (result != 0) goto EXIT;
+
 EXIT:;
 	return result;
 }
@@ -242,6 +256,13 @@ int MTGraphicCfgDlg::_LoadConf()
 	result = m_ConfFile.GetStr(_T("ImageFilePath"), m_ImageFilePath, _MAX_PATH, _T(""));
 	if (result != 0) goto EXIT;
 
+	//四分音符長拡大率設定値取得
+	result = m_ConfFile.SetCurSection(_T("QuarterNote"));
+	if (result != 0) goto EXIT;
+	
+	result = m_ConfFile.GetInt(_T("LengthMagnification"), &m_QuarterNoteLengthMag, 100);
+	if (result != 0) goto EXIT;
+	
 EXIT:;
 	return result;
 }
@@ -350,6 +371,30 @@ EXIT:;
 }
 
 //******************************************************************************
+// 四分音符設定初期化
+//******************************************************************************
+int MTGraphicCfgDlg::_InitQuarterNote()
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+	TCHAR str[32] = { _T('\0') };
+
+	//エディットボックスに入力可能最大文字数を設定：最大4文字("1000")
+	SendMessage(m_hEditQuarterNoteLengthMag, EM_SETLIMITTEXT, (WPARAM)4, 0);
+	
+	//エディットボックスに四分音符長拡大率の数値文字列を設定
+	_stprintf_s(str, 32, _T("%d"), m_QuarterNoteLengthMag);
+	bresult = SetWindowText(m_hEditQuarterNoteLengthMag, str);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), m_QuarterNoteLengthMag);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // 設定情報保存
 //******************************************************************************
 int MTGraphicCfgDlg::_Save()
@@ -360,7 +405,12 @@ int MTGraphicCfgDlg::_Save()
 	unsigned long selectedIndex = 0;
 	unsigned long selectedMultiSampleType = 0;
 	TCHAR filePath[_MAX_PATH] = {_T('\0')};
+	TCHAR strMag[32] = { _T('\0') };
+	int mag = 0;
 
+	//------------------------------
+	//アンチエイリアシング
+	//------------------------------
 	//選択項目のインデックスを取得
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETCURSEL, 0, 0);
 	if ((lresult == CB_ERR) || (lresult < 0)) {
@@ -389,6 +439,9 @@ int MTGraphicCfgDlg::_Save()
 	}
 	m_MultiSampleType = selectedMultiSampleType;
 
+	//------------------------------
+	//背景画像ファイルパス
+	//------------------------------
 	//背景画像ファイルパスをエディットボックスから取得
 	apiresult = GetWindowText(m_hEditImageFilePath, filePath, _MAX_PATH);
 	if (apiresult == 0) {
@@ -407,6 +460,39 @@ int MTGraphicCfgDlg::_Save()
 		m_isChanged = true;
 	}
 	_tcscpy_s(m_ImageFilePath, _MAX_PATH, filePath);
+	
+	//------------------------------
+	//四分音符長拡大率
+	//------------------------------
+	//四分音符長拡大率を取得
+	apiresult = GetWindowText(m_hEditQuarterNoteLengthMag, strMag, 32);
+	if (apiresult == 0) {
+		//テキスト無しまたはウィンドウハンドル無効の場合
+		mag = 100;
+	}
+	else {
+		mag = _tstoi(strMag);
+	}
+
+	//クリッピング
+	if (mag < MT_QNOTE_LENGTH_MAG_MIN) {
+		mag = MT_QNOTE_LENGTH_MAG_MIN;
+	}
+	if (mag > MT_QNOTE_LENGTH_MAG_MAX) {
+		mag = MT_QNOTE_LENGTH_MAG_MAX;
+	}
+	
+	//四分音符長拡大率保存
+	result = m_ConfFile.SetCurSection(_T("QuarterNote"));
+	if (result != 0) goto EXIT;
+	result = m_ConfFile.SetInt(_T("LengthMagnification"), mag);
+	if (result != 0) goto EXIT;
+
+	//変更確認
+	if (m_QuarterNoteLengthMag != mag) {
+		m_isChanged = true;
+	}
+	m_QuarterNoteLengthMag = mag;
 
 EXIT:;
 	return result;

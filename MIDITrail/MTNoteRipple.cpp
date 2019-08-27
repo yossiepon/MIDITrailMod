@@ -4,7 +4,7 @@
 //
 // ÉmÅ[Égîgñ‰ï`âÊÉNÉâÉX
 //
-// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -400,7 +400,8 @@ int MTNoteRipple::_SetVertexPosition(
 {
 	int result = 0;
 	unsigned long i = 0;
-	float rh, rw = 0.0f;
+	float rh = 0.0f;
+	float rw = 0.0f;
 	float alpha = 0.0f;
 	D3DXVECTOR3 center;
 	D3DXCOLOR color;

@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -80,6 +80,10 @@ int MTNoteDesign::Initialize(
 
 	//パラメータ設定ファイル読み込み
 	result = _LoadConfFile(pSceneName);
+	if (result != 0) goto EXIT;
+	
+	//ユーザ設定読み込み
+	result = _LoadUserConf();
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -199,7 +203,8 @@ void MTNoteDesign::GetNoteBoxVirtexPos(
 	)
 {
 	D3DXVECTOR3 center;
-	float bh, bw = 0.0f;
+	float bh = 0.0f;
+	float bw = 0.0f;
 
 	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
 
@@ -230,7 +235,8 @@ void MTNoteDesign::GetActiveNoteBoxVirtexPos(
 	)
 {
 	D3DXVECTOR3 center;
-	float bh, bw = 0.0f;
+	float bh = 0.0f;
+	float bw = 0.0f;
 	float curSizeRatio = 1.0f;
 	
 	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
@@ -265,7 +271,8 @@ void MTNoteDesign::GetNoteBoxVirtexPosLive(
 	)
 {
 	D3DXVECTOR3 center;
-	float bh, bw = 0.0f;
+	float bh = 0.0f;
+	float bw = 0.0f;
 	float x = 0.0f;
 	unsigned long tickTimeDummy = 0;
 	
@@ -294,7 +301,9 @@ void MTNoteDesign::GetGridBoxVirtexPos(
 		D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
 	)
 {
-	float x, bh, bw = 0.0f;
+	float x = 0.0f;
+	float bh = 0.0f;
+	float bw = 0.0f;
 	float gridHeight = 0.0f;
 	float gridWidth = 0.0f;
 	float oy = 0.0f;
@@ -329,7 +338,9 @@ void MTNoteDesign::GetGridBoxVirtexPosLive(
 		D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
 	)
 {
-	float x, bh, bw = 0.0f;
+	float x = 0.0f;
+	float bh = 0.0f;
+	float bw = 0.0f;
 	float gridHeight = 0.0f;
 	float gridWidth = 0.0f;
 	float oy = 0.0f;
@@ -558,7 +569,10 @@ D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
 	)
 {
 	D3DXCOLOR color;
-	float r,g,b,a = 0.0f;
+	float r = 0.0f;
+	float g = 0.0f;
+	float b = 0.0f;
+	float a = 0.0f;
 	float rate = 0.0f;
 
 	color = GetNoteBoxColor(portNo, chNo, noteNo);
@@ -767,6 +781,44 @@ int MTNoteDesign::_LoadConfFile(
 	//波紋継続時間(msec)
 	result = confFile.GetInt(_T("Duration"), &m_RippleDuration, 1600);
 	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ユーザ設定読み込み
+//******************************************************************************
+int MTNoteDesign::_LoadUserConf()
+{
+	int result = 0;
+	YNConfFile confFile;
+	TCHAR userConfFilePath[_MAX_PATH] = { _T('\0') };
+	int lengthMagnification = 0;
+	
+	result = YNPathUtil::GetAppDataDirPath(userConfFilePath, _MAX_PATH);
+	if (result != 0) goto EXIT;
+	
+	_tcscat_s(userConfFilePath, _MAX_PATH, MT_USER_CONFFILE_DIR);
+	_tcscat_s(userConfFilePath, _MAX_PATH, MT_USER_CONFFILE_GRAPHIC);
+	
+	result = confFile.Initialize(userConfFilePath);
+	if (result != 0) goto EXIT;
+	
+	//四分音符長拡大率(0-1000)
+	result = confFile.SetCurSection(_T("QuarterNote"));
+	result = confFile.GetInt(_T("LengthMagnification"), &lengthMagnification, 100);
+	
+	//クリッピング
+	if (lengthMagnification < 0) {
+		lengthMagnification = 0;
+	}
+	if (lengthMagnification > 1000) {
+		lengthMagnification = 1000;
+	}
+
+	//四分音符の長さを更新
+	m_QuarterNoteLength = m_QuarterNoteLength * ((float)lengthMagnification / 100.0f);
 
 EXIT:;
 	return result;

@@ -4,7 +4,7 @@
 //
 // エラー情報クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -70,7 +70,7 @@ private:
 	unsigned long long m_ErrInfo2;
 
 //CRTをスタティックリンク(/MT)すると警告が出る
-//#pragma warning(disable:4251)
+#pragma warning(disable:4251)
 #ifdef _UNICODE
 	wstring m_FuncName;
 	wstring m_Message;
@@ -78,7 +78,7 @@ private:
 	string m_FuncName;
 	string m_Message;
 #endif
-//#pragma warning(default:4251)
+#pragma warning(default:4251)
 
 	//代入とコピーコンストラクタの禁止
 	void operator=(const YNErrInfo&);

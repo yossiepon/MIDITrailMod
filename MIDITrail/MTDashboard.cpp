@@ -4,7 +4,7 @@
 //
 // ダッシュボード描画クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -246,9 +246,12 @@ int MTDashboard::_GetCounterPos(
 	int result = 0;
 	BOOL bresult = 0;
 	RECT rect;
-	unsigned long cw, ch = 0;
-	unsigned long tw, th = 0;
-	unsigned long charHeight, charWidth = 0;
+	unsigned long cw = 0;
+	unsigned long ch = 0;
+	unsigned long tw = 0;
+	unsigned long th = 0;
+	unsigned long charHeight = 0;
+	unsigned long charWidth = 0;
 	unsigned long captionWidth = 0;
 	float newMag = 0.0f;
 

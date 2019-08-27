@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by MIDITrail.rc
+// Microsoft Visual C++ で生成されたインクルード ファイル。
+// MIDITrail.rc で使用
 //
 #define IDC_MYICON                      2
 #define IDD_MENUWINDOW_DIALOG           102
@@ -38,6 +38,7 @@
 #define IDC_EDIT_HEIGHT                 1021
 #define IDC_EDIT_IMAGE_FILE_PATH        1022
 #define IDC_BTN_BROWSE                  1023
+#define IDC_EDIT_QUARTER_NOTE_LENGTH_MAG 1024
 #define IDM_OPEN_FILE                   32771
 #define IDM_PLAY                        32772
 #define IDM_STOP                        32773
@@ -78,7 +79,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32848
-#define _APS_NEXT_CONTROL_VALUE         1024
+#define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

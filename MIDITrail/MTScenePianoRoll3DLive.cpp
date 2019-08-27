@@ -471,7 +471,8 @@ void MTScenePianoRoll3DLive::GetDefaultViewParam(
 	D3DXVECTOR3 viewPointVector;
 	D3DXVECTOR3 e4Vector;
 	D3DXVECTOR3 moveVctor;
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta= 0.0f;
 	
 	//デフォルトのカメラY座標（高さ）をE4の位置とする
 	e4Vector = m_NoteDesign.GetNoteBoxCenterPosX(
@@ -511,7 +512,8 @@ void MTScenePianoRoll3DLive::GetViewParam(
 	)
 {
 	D3DXVECTOR3 viewPointVector;
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 	float manualRollAngle = 0.0f;
 	float autoRollVelocity = 0.0f;
 	
@@ -548,7 +550,8 @@ void MTScenePianoRoll3DLive::SetViewParam(
 	)
 {
 	D3DXVECTOR3 viewPointVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 	float manualRollAngle = 0.0f;
 	float autoRollVelocity = 0.0f;
 	MTViewParamMap::iterator itr;
@@ -729,8 +732,11 @@ int MTScenePianoRoll3DLive::_LoadConfViewpoint(
 	int result = 0;
 	int eresult = 0;
 	TCHAR sectionStr[32] = {0};
-	float x, y, z = 0.0f;
-	float phi, theta = 0.0f;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 	float manualRollAngle = 0.0f;
 	float autoRollVelocity = 0.0f;
 

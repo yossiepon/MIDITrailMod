@@ -1,18 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MIDITrail", "MIDITrail\MIDITrail.vcproj", "{106FBE78-9698-49DF-B557-B8E591D189F9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BFBD3FB7-F98D-4FE4-95A8-08E225FDE000} = {BFBD3FB7-F98D-4FE4-95A8-08E225FDE000}
-		{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82} = {AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MIDITrail", "MIDITrail\MIDITrail.vcxproj", "{106FBE78-9698-49DF-B557-B8E591D189F9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YNBaseLib", "YNBaseLib\YNBaseLib.vcproj", "{BFBD3FB7-F98D-4FE4-95A8-08E225FDE000}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YNBaseLib", "YNBaseLib\YNBaseLib.vcxproj", "{BFBD3FB7-F98D-4FE4-95A8-08E225FDE000}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SMIDILib", "SMIDILib\SMIDILib.vcproj", "{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BFBD3FB7-F98D-4FE4-95A8-08E225FDE000} = {BFBD3FB7-F98D-4FE4-95A8-08E225FDE000}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SMIDILib", "SMIDILib\SMIDILib.vcxproj", "{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,5 +44,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1CBFFF51-07B6-437D-9461-DB15E6596587}
 	EndGlobalSection
 EndGlobal

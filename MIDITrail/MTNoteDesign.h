@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -225,6 +225,7 @@ private:
 
 	void _Clear();
 	int _LoadConfFile(const TCHAR* pSceneName);
+	int _LoadUserConf();
 
 };
 

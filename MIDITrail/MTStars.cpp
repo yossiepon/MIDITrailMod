@@ -4,7 +4,7 @@
 //
 // êØï`âÊÉNÉâÉX
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -155,8 +155,12 @@ int MTStars::_CreateVertexOfStars(
 	float r = 0.0f;
 	float phi = 0.0f;
 	//float theta = 0.0f;
-	float x, y, z = 0.0f;
-	float cr, cg, cb = 0.0f;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	float cr = 0.0f;
+	float cg = 0.0f;
+	float cb = 0.0f;
 	int i = 0;
 	D3DXVECTOR3 normal;
 
