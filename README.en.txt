@@ -1,6 +1,6 @@
 ******************************************************************************
 
-  MIDITrail source code Ver.1.2.4 for Windows
+  MIDITrail source code Ver.1.2.5 for Windows
 
   Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 
@@ -15,14 +15,18 @@
 
 (2) Development environment
 
-  Microsoft DirectX SDK
-  Microsoft Visual Studio 2008 sp1
+  Microsoft DirectX SDK (June 2010)
+  Microsoft Visual Studio Community 2017
 
 (3) Folders
 
   /bin
-    The output folder of the builded modules.
+    The output folder of the builded modules for x86.
     The "Debug" and "Release" folder are created under the "bin" folder.
+
+  /x64
+    The output folder of the builded modules for x64.
+    The "Debug" and "Release" folder are created under the "x64" folder.
 
   /MIDITrail
     The application project. (MIDITrail.exe)
@@ -37,6 +41,9 @@
   /YNBaseLib
     The Basic Library Project. (YNBaseLib.dll)
     It implements the error control and utility functions.
+
+  /Resources
+    The resource files referenced by application.
 
 (4) License
 

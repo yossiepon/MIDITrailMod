@@ -457,7 +457,8 @@ void MTScenePianoRollRain::GetDefaultViewParam(
 	)
 {
 	D3DXVECTOR3 viewPointVector;
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 
 	//éãì_èÓïÒçÏê¨
 	viewPointVector.x = 0.0f;
@@ -486,7 +487,8 @@ void MTScenePianoRollRain::GetViewParam(
 	)
 {
 	D3DXVECTOR3 viewPointVector;
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 	float manualRollAngle = 0.0f;
 	float autoRollVelocity = 0.0f;
 
@@ -524,7 +526,8 @@ void MTScenePianoRollRain::SetViewParam(
 	)
 {
 	D3DXVECTOR3 viewPointVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 	float manualRollAngle = 0.0f;
 	float autoRollVelocity = 0.0f;
 	MTViewParamMap::iterator itr;
@@ -752,8 +755,11 @@ int MTScenePianoRollRain::_LoadConfViewpoint(
 	int result = 0;
 	int eresult = 0;
 	TCHAR sectionStr[32] = {0};
-	float x, y, z = 0.0f;
-	float phi, theta = 0.0f;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 	float manualRollAngle = 0.0f;
 	float autoRollVelocity = 0.0f;
 

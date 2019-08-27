@@ -4,7 +4,7 @@
 //
 // ピアノキーボード描画クラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -1752,7 +1752,8 @@ int MTPianoKeyboard::_RotateKey(
 	unsigned long size = 0;
 	MTPIANOKEYBOARD_VERTEX tempVertex[MTPIANOKEYBOARD_KEY_VERTEX_NUM_MAX];
 	unsigned long tempIndex[MTPIANOKEYBOARD_KEY_INDEX_NUM_MAX];
-	float centerY, centerZ = 0.0f;
+	float centerY = 0.0f;
+	float centerZ = 0.0f;
 	D3DXVECTOR2 ts;
 
 	if (noteNo >= SM_MAX_NOTE_NUM) {

@@ -4,7 +4,7 @@
 //
 // グリッドボックス描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -394,7 +394,8 @@ int MTGridBox::_CreateVertexOfPortSplitLine(
 	)
 {
 	int result = 0;
-	unsigned long i, j = 0;
+	unsigned long i = 0;
+	unsigned long j = 0;
 	unsigned long count = 0;
 	unsigned char portNo = 0;
 	unsigned char lastPortNo = 0;

@@ -4,7 +4,7 @@
 //
 // ウィンドウサイズ設定ダイアログクラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -337,7 +337,7 @@ int MTWindowSizeCfgDlg::_GetConfWindowSize(
 	int width = 0;
 	int height = 0;
 
-	if ((pHeight == NULL) || (pHeight == NULL)) {
+	if ((pWidth == NULL) || (pHeight == NULL)) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}

@@ -1,0 +1,401 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{ca703810-6f1f-41d6-8c56-e37b7148c626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\AppMain">
+      <UniqueIdentifier>{c0c4bf60-2f57-4344-a038-2fb8f5dd9cb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\SceneObject">
+      <UniqueIdentifier>{090351cc-79a7-4592-b4db-ec88e56b37dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Scene">
+      <UniqueIdentifier>{77e44a35-376f-40f2-8525-d59729756c76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\SceneLibrary">
+      <UniqueIdentifier>{081b27ef-83c3-4cad-a26a-d872fcad5bed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DirectInputUtility">
+      <UniqueIdentifier>{bd33e431-ad2e-427c-bebe-19da3a94f34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DirectXUtility">
+      <UniqueIdentifier>{6d9f4694-f3e0-4b4c-8a87-3eedf424df80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Utility">
+      <UniqueIdentifier>{2cb4fdc8-009e-4db6-90f2-f2b7640fd8e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Dialog">
+      <UniqueIdentifier>{0346b7cc-b30c-4603-870f-2f75d5d335ed}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="MIDITrail.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="small.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MIDITrail.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MIDITrailApp.cpp">
+      <Filter>Sources\AppMain</Filter>
+    </ClCompile>
+    <ClCompile Include="MIDITrailMain.cpp">
+      <Filter>Sources\AppMain</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Sources\AppMain</Filter>
+    </ClCompile>
+    <ClCompile Include="MTBackgroundImage.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTDashboard.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTDashboardLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTGridBox.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTGridBoxLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTLogo.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTMeshCtrl.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteBox.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteBoxLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteDesign.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteRain.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteRainLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteRipple.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboard.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboardCtrl.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboardCtrlLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboardDesign.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPictBoard.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTStars.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTTimeIndicator.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScene.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll2D.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll2DLive.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll3D.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll3DLive.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRollRain.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRollRain2D.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRollRain2DLive.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRollRainLive.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTSceneTitle.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTDynamicCaption.cpp">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="MTFirstPersonCam.cpp">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="MTFont2Bmp.cpp">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="MTFontTexture.cpp">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNotePitchBend.cpp">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="MTStaticCaption.cpp">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="DIKeyCtrl.cpp">
+      <Filter>Sources\DirectInputUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DIMouseCtrl.cpp">
+      <Filter>Sources\DirectInputUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXCamera.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXColorUtil.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDirLight.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXMesh.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXPrimitive.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRenderer.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="DXScene.cpp">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="MTCmdLineParser.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MTConfFile.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MTAboutDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTGraphicCfgDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTHowToViewDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTMIDIINCfgDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTMIDIOUTCfgDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTWindowSizeCfgDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MIDITrailApp.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="MIDITrailMain.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="MIDITrailVersion.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="MTParam.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Sources\AppMain</Filter>
+    </ClInclude>
+    <ClInclude Include="MTBackgroundImage.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTDashboard.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTDashboardLive.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTGridBox.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTGridBoxLive.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTLogo.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTMeshCtrl.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteBox.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteBoxLive.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteDesign.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteRain.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteRainLive.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteRipple.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboard.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboardCtrl.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboardCtrlLive.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboardDesign.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPictBoard.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTStars.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTTimeIndicator.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScene.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll2D.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll2DLive.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll3D.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll3DLive.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRain.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRain2D.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRain2DLive.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRainLive.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTSceneTitle.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTDynamicCaption.h">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="MTFirstPersonCam.h">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="MTFont2Bmp.h">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="MTFontTexture.h">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNotePitchBend.h">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="MTStaticCaption.h">
+      <Filter>Sources\SceneLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="DIKeyCtrl.h">
+      <Filter>Sources\DirectInputUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DIMouseCtrl.h">
+      <Filter>Sources\DirectInputUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXCamera.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXColorUtil.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXDirLight.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXMesh.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXPrimitive.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXRenderer.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="DXScene.h">
+      <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTCmdLineParser.h">
+      <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTConfFile.h">
+      <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTAboutDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTGraphicCfgDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTHowToViewDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTMIDIINCfgDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTMIDIOUTCfgDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTWindowSizeCfgDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
