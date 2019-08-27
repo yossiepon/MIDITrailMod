@@ -1,7 +1,15 @@
 ピカピカMIDITrail 鍵盤方向自動切替・多ポート・歌詞対応等
 
-MIDITrail 1.2.3 mod. yossiepon_20180412
+MIDITrail 1.2.6 mod. yossiepon_20190828
 mail: yoshy@users.sourceforge.jp
+
+改造点 20190828：
+・[UPDATE] 1.2.4～1.2.6をマージ
+・[FIX] x64実行時にFPUの精度変更がサポートされていないため無効化
+
+Mod 20190828:
+*[UPDATE] merge v1.2.4 - v1.2.6
+*[FIX] Disable to change FPU precision on x64 binary.
 
 改造点 20180412：
 ・[UPDATE] 1.2.3をマージ
