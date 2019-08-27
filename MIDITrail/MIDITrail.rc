@@ -89,6 +89,7 @@ BEGIN
         MENUITEM "Viewpoint 3\t9",              IDM_VIEWPOINT3
         MENUITEM SEPARATOR
         MENUITEM "Window size...",              IDM_WINDOWSIZE
+        MENUITEM "Full Screen\tF11",            IDM_FULLSCREEN
     END
     POPUP "Option"
     BEGIN
