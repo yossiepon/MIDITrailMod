@@ -22,6 +22,10 @@
 
 using namespace SMIDILib;
 
+//******************************************************************************
+// パラメータ定義
+//******************************************************************************
+#define MTPIANOKEYBOARD_KEY_PLANE_MAX (10)
 
 //******************************************************************************
 // ピアノキーボード描画クラス
@@ -102,6 +106,16 @@ protected:
 		D3DXVECTOR2 t;	//テクスチャ画像位置
 	};
 
+// >>> add 20180416 yossiepon begin
+	//キー種別
+	enum KeyType {
+		KeyWhite1,	//白鍵1
+		KeyWhite2,	//白鍵2
+		KeyWhite3,	//白鍵3
+		KeyBlack	//黒鍵
+	};
+// <<< add 20180416 yossiepon end
+
 	//バッファ情報
 	typedef struct {
 		unsigned long vertexPos;
@@ -113,6 +127,11 @@ protected:
 		unsigned long revIndexPos;
 		unsigned long revIndexTotal;
 // <<< add 20180413 yossiepon end
+// >>> add 20180416 yossiepon begin
+		KeyType keyType;
+		unsigned long planeIndexPos[MTPIANOKEYBOARD_KEY_PLANE_MAX];
+		unsigned long planeIndexNum[MTPIANOKEYBOARD_KEY_PLANE_MAX];
+// <<< add 20180416 yossiepon end
 	} MTBufInfo;
 
 // >>> modify access level to protected 20161224 yossiepon begin

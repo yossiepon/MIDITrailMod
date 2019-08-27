@@ -15,6 +15,11 @@
 
 
 //******************************************************************************
+// パラメータ定義
+//******************************************************************************
+#define MTPIANOKEYBOARDMOD_INDEX_BUFFER_MAX (12)
+
+//******************************************************************************
 // ピアノキーボード描画Modクラス
 //******************************************************************************
 class MTPianoKeyboardMod : public MTPianoKeyboard
@@ -57,29 +62,43 @@ public:
 
 private:
 
-	//描画順の作成
-	int _MakeRenderingOrder(
+	//描画情報の作成
+	int _MakeRenderingInfo(
 			D3DXVECTOR3 basePosVector,
+			D3DXVECTOR3 playbackPosVector,
 			D3DXVECTOR3 camVector,
-			D3DXVECTOR3 lookVector
+			D3DXVECTOR3 lookVector,
+			float rollAngle
 		);
 
-	//逆順インデックスの生成
-	int _CreateRevIndex(LPDIRECT3DDEVICE9 pD3DDevice);
+	//描画インデックスの生成
+	int _CreateRenderingIndex(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//キー単位の逆順インデックスの生成
-	int _CreateRevIndexOfKey(
+	//キー単位の描画インデックスの生成
+	int _CreateRenderingIndexOfKey(
 			unsigned char noteNo,
+			int bufferIdx,
 			unsigned long* pIndex,
-			unsigned long* pRevIndex
+			unsigned long* pRenderingIndex
 		);
 
-	//逆順インデックスバッファの生成
-	int _CreateRevIndexBuffer(LPDIRECT3DDEVICE9 pD3DDevice, unsigned long indexNum);
+	//描画インデックスバッファの生成
+	int _CreateRenderingIndexBuffer(
+				LPDIRECT3DDEVICE9 pD3DDevice,
+				int bufferIdx,
+				unsigned long indexNum
+			);
 
-	//逆順インデックスバッファのロック制御
-	int _LockRevIndex(unsigned long** pPtrIndex, unsigned long offset = 0, unsigned long size = 0);
-	int _UnlockRevIndex();
+	//描画インデックスバッファのロック制御
+	int _LockRenderingIndex(
+				unsigned long** pPtrIndex,
+				int bufferIdx,
+				unsigned long offset = 0,
+				unsigned long size = 0
+			);
+	int _UnlockRenderingIndex(
+				int bufferIdx
+			);
 
 	virtual int _CreateVertexOfKeyWhite1(
 				unsigned char noteNo,
@@ -111,15 +130,16 @@ private:
 	//キーボードデザイン
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;
 
-	//逆順インデックス情報
-	LPDIRECT3DINDEXBUFFER9 m_pRevIndexBuffer;
-	unsigned long m_RevIndexNum;
-	bool m_IsRevIndexLocked;
+	//描画インデックス情報
+	LPDIRECT3DINDEXBUFFER9 m_pRenderingIndexBuffer[ MTPIANOKEYBOARDMOD_INDEX_BUFFER_MAX ];
+	unsigned long m_RenderingIndexNum[ MTPIANOKEYBOARDMOD_INDEX_BUFFER_MAX ];
+	bool m_IsRenderingIndexLocked[ MTPIANOKEYBOARDMOD_INDEX_BUFFER_MAX ];
 
-	//キーボード描画範囲
+	//キーボード描画情報
 	int m_noteNoLow;
 	int m_noteNoHigh;
-	int m_camDir;
+	int m_camDirLR;
+	int m_camPosIdx;
 };
 
 
