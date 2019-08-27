@@ -215,6 +215,36 @@
     <ClCompile Include="MTWindowSizeCfgDlg.cpp">
       <Filter>Sources\Dialog</Filter>
     </ClCompile>
+    <ClCompile Include="MTGridBoxMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteBoxMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteDesignMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteRippleMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboardCtrlMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboardDesignMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTPianoKeyboardMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteLyrics.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MIDITrailApp.h">
@@ -396,6 +426,36 @@
     </ClInclude>
     <ClInclude Include="MTWindowSizeCfgDlg.h">
       <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTGridBoxMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteBoxMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteDesignMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteRippleMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboardCtrlMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboardDesignMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPianoKeyboardMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll2DMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll3DMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteLyrics.h">
+      <Filter>Sources\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

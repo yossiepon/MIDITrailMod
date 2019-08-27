@@ -38,7 +38,9 @@ SMFPUCtrl::~SMFPUCtrl(void)
 	//設定開始したままであれば解除する
 	if ((m_isLock) && (m_ThreadID == GetCurrentThreadId())) {
 		unsigned int curCtrl = 0;
+#ifndef _WIN64
 		_controlfp_s(&curCtrl, m_FPUCtrl, _MCW_PC);
+#endif
 		m_isLock = false;
 	}
 }
@@ -87,11 +89,13 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 			result = YN_SET_ERR("Program error.", 0, 0);
 			goto EXIT;
 	}
+#ifndef _WIN64
 	eresult = _controlfp_s(
 					&curCtrl,	//現在の制御ワード
 					flag,		//制御ワード：制御種別
 					_MCW_PC		//マスク：制度制御
 				);
+#endif
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
 		goto EXIT;
@@ -127,12 +131,14 @@ int SMFPUCtrl::End()
 		goto EXIT;
 	}
 
+#ifndef _WIN64
 	//浮動小数点精度を復元する
 	eresult = _controlfp_s(
 					&curCtrl,	//現在の制御ワード
 					m_FPUCtrl,	//制御ワード：設定開始時点
 					_MCW_PC		//マスク：制度制御
 				);
+#endif
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
 		goto EXIT;
