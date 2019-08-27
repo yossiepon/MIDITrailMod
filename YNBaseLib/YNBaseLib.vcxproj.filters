@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{be3c75be-6344-42a3-a7ee-c619efa8e69c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="YNBaseLib.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="YNConfFile.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="YNErrCtrl.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="YNErrInfo.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="YNPathUtil.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="YNBaseLib.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="YNConfFile.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="YNErrCtrl.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="YNErrInfo.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="YNPathUtil.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

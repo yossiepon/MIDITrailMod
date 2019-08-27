@@ -4,7 +4,7 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -63,12 +63,18 @@ private:
 
 	//背景画像ファイルパスエディットボックスのウィンドウハンドル
 	HWND m_hEditImageFilePath;
+	
+	//四分音符長拡大率エディットボックスのウィンドウハンドル
+	HWND m_hEditQuarterNoteLengthMag;
 
 	//アンチエイリアシング設定
 	unsigned long m_MultiSampleType;
 
 	//背景画像ファイルパス
 	TCHAR m_ImageFilePath[_MAX_PATH];
+	
+	//四分音符長拡大率
+	int m_QuarterNoteLengthMag;
 
 	//更新フラグ
 	bool m_isChanged;
@@ -91,6 +97,9 @@ private:
 
 	//背景画像ファイルパス初期化
 	int _InitBackgroundImageFilePath();
+	
+	//四分音符設定初期化
+	int _InitQuarterNote();
 
 	//保存処理
 	int _Save();

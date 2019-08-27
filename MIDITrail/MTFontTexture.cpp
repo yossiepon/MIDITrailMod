@@ -4,7 +4,7 @@
 //
 // フォントテクスチャクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -80,7 +80,8 @@ int MTFontTexture::CreateTexture(
 	D3DLOCKED_RECT lockedRect;
 	DWORD bmpHeight = 0;
 	DWORD bmpWidth = 0;
-	DWORD x, y = 0;
+	DWORD x = 0;
+	DWORD y = 0;
 	DWORD alpha = 0;
 	DWORD argb = 0;
 	BYTE bmpPixcel = 0;

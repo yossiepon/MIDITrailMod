@@ -4,7 +4,7 @@
 //
 // 一人称カメラクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -201,7 +201,9 @@ int MTFirstPersonCam::Transform(
 	)
 {
 	int result = 0;
-	int dX, dY, dW = 0;
+	int dX = 0;
+	int dY = 0;
+	int dW = 0;
 
 	//TODO: ここじゃないどこかへ移す
 	m_DIKeyCtrl.Acquire();
@@ -567,8 +569,10 @@ int MTFirstPersonCam::_ClipCursor(
 	RECT wrect;
 	RECT crect;
 	RECT clip;
-	int wh, ww = 0;
-	int ch, cw = 0;
+	int wh = 0;
+	int ww = 0;
+	int ch = 0;
+	int cw = 0;
 
 	if (isClip) {
 		bresult = GetWindowRect(m_hWnd, &wrect);

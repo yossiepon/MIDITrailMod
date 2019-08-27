@@ -1,0 +1,912 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Language" content="ja">
+<link rel="stylesheet" href="Files/doc.css" type="text/css">
+<title>MIDITrail Ver.1.2.5 for Windows ユーザーマニュアル</title>
+</head>
+<body>
+
+<div class="contents">
+
+<div class="selectlangs">
+<a href="MANUAL.en.html">English</a> / Japanese
+</div>
+
+<h1>MIDITrail Ver.1.2.5 for Windows ユーザーマニュアル</h1>
+
+<p>
+Copyright (c) 2010-2019, WADA Masashi All rights reserved.<br>
+Web: <a href="https://osdn.jp/projects/miditrail/">https://osdn.jp/projects/miditrail/</a><br>
+Mail: <img src="Files/mail.png" align="top"><br>
+</p>
+
+<!-- ************************************************************* -->
+
+<h2>目次</h2>
+
+<p>
+<a href="#introduction">1. はじめに</a><br>
+<a href="#system">2. 動作環境</a><br>
+<a href="#install">3. 導入方法</a><br>
+<a href="#usage">4. 使用方法</a><br>
+<a href="#restriction">5. 制限事項</a><br>
+<a href="#faq">6. FAQ</a><br>
+<a href="#customize">7. カスタマイズ</a><br>
+<a href="#appendix">8. 補遺</a><br>
+<a href="#license">9. 著作権とライセンス</a><br>
+<a href="#history">10. 履歴</a><br>
+</p>
+
+<!-- ************************************************************* -->
+
+<h2><a name="introduction"></a>1. はじめに</h2>
+
+<p>
+MIDITrailは、MIDIデータを三次元可視化するMIDIプレーヤーです。<br>
+FPSライクな操作で空間を移動することにより、演奏を聴くだけでなく、見て楽しむことができます。<br>
+標準MIDIファイルFormat0/1、および複数ポート出力に対応しています。<br>
+MIDITrailはWindows, macOS, iOSに対応しています。
+</p>
+<p>
+スクリーンショット：ピアノロール3D<br>
+<img src="Files/ScreenShot1.png"><br>
+<br>
+スクリーンショット：ピアノロールレイン<br>
+<img src="Files/ScreenShot2.png"><br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="system"></a>2. 動作環境</h2>
+
+<p>
+対応OS： Windows 7 / 8 / 10<br>
+DirectX 9.0c に対応したグラフィックチップが必要です。<br>
+</p>
+<p>
+スムーズな画面表示を実現するため、高性能グラフィックチップが搭載されたPCの使用を推奨します。<br>
+MIDIデータに含まれるノート（音符）の数が多くなるほど、より性能の高いグラフィックチップが必要になります。<br>
+PCの性能が許す限り、大画面でお楽しみください。
+</p>
+<p>
+MIDITrail Ver.1.2.5から Windows 2000 / XP / Vista はサポート対象外となりました。<br>
+Windows 2000 / XP / Vistaでは、MIDITrail Ver.1.2.4を利用してください。
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="install"></a>3. 導入方法</h2>
+
+<h3>(1) インストール</h3>
+<p>
+配布されている圧縮ファイルを任意のフォルダに展開して、MIDITrail.exeを実行してください。<br>
+<br>
+圧縮ファイル名<br>
+MIDITrail-Ver.X.X.X-Windows.zip   -- MIDITrail 32bit版<br>
+MIDITrail-Ver.X.X.X-Windows64.zip -- MIDITrail 64bit版<br>
+</p>
+
+<h3>(2) 初回起動時の設定</h3>
+<p>
+MIDITrailを起動したら、最初にMIDI出力ポートの設定を行ってください。<br>
+「Option」メニューから「MIDI OUT...」を選択すると、MIDI OUT設定ダイアログが表示されます。<br>
+</p>
+<p>
+<img src="Files/MIDIOUT.png"><br>
+</p>
+<p>
+<b>[Port A] ポートA</b><br>
+ポートAの出力先は必ず設定してください。通常のMIDIデータはポートAを使って演奏されます。
+</p>
+<p>
+<b>[Port B,C,D,E,F] ポートB,C,D,E,F</b><br>
+複数ポートを利用するMIDIデータを再生する場合は、ポートB以降の出力先を設定してください。<br>
+複数ポートを利用するMIDIデータを再生しない場合は、ポートB以降の出力先を設定する必要はありません。<br>
+なお、複数ポートを利用するMIDIデータを再生するには、
+複数ポート対応のMIDIインターフェースと音源を用意する必要があります。
+</p>
+
+<h3>(3) アンインストール</h3>
+<p>
+MIDITrail.exeを展開したフォルダを削除してください。
+レジストリは使用していません。
+</p>
+
+<h3>(4) レコンポーザのファイル読み込み対応</h3>
+<p>
+ふみぃ氏が公開しているレコンポーザ変換DLL(RCPCV.DLL)を別途用意することにより、
+レコンポーザのデータファイル(*.rcp *.r36 *.g36)を読み込めるようになります。<br>
+RCPCV.DLLを公開サイト(Vector)からダウンロードして、MIDITrail.exeと同じフォルダに配置してください。<br>
+なおMIDITrail(32bit版)はRCPCV.DLLを利用できますが、MIDITrail(64bit版)はRCPCV.DLLを利用できません。<br>
+RCPCV.DLL <a href="http://www.vector.co.jp/soft/win95/art/se114143.html">http://www.vector.co.jp/soft/win95/art/se114143.html</a>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="usage"></a>4. 使用方法</h2>
+
+<h3>(1) 標準MIDIファイルの読み込み</h3>
+<p>
+「File」メニューから「Open...」を選択すると、ファイル選択ダイアログが表示されます。
+ここで標準MIDIファイル(*.mid)を選択してください。<br>
+また、標準MIDIファイル(*.mid)をMIDITrailのウィンドウにドラッグ＆ドロップすることにより、
+ファイルを読み込むことができます。
+</p>
+<p>
+RCPCV.DLLを導入している場合は、レコンポーザのデータファイル(*.rcp *.r36 *.g36)を読み込むことができます。<br>
+詳しくは「3.(4) レコンポーザのファイル読み込み対応」を参照してください。
+</p>
+
+<h3>(2) 演奏の開始／一時停止／再開／停止</h3>
+<p>
+次のキーを押下するか、「Playback」メニューを利用してください。
+</p>
+
+<p>
+<img src="Files/HowToView1.png"><br>
+</p>
+
+<p>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><kbd>SPACE</kbd></td><td>演奏の開始／一時停止／再開</td></tr>
+  <tr><td><kbd>ESC</kbd></td><td>演奏の停止</td></tr>
+  <tr><td><kbd>1</kbd><kbd>2</kbd></td><td>スキップ：後方／前方</td></tr>
+  <tr><td><kbd>4</kbd><kbd>5</kbd></td><td>再生スピード：ダウン／アップ</td></tr>
+  <tr><td><kbd>F2</kbd></td><td>2倍速再生</td></tr>
+</table>
+</p>
+
+
+<h3>(3) 三次元空間内の視点移動</h3>
+<p>
+MIDIファイルを読み込んだ直後、および演奏中に、三次元空間内を移動して、
+あらゆる方向からMIDIデータを眺めることができます。<br>
+FPS（一人称シューティング）ゲームでおなじみの操作で、三次元空間内を移動します。<br>
+初めてこの操作を体験する方は違和感を持つかもしれませんが、
+一度慣れてしまうと非常に快適です。
+</p>
+
+<p>
+<img src="Files/HowToView2.png"><br>
+<img src="Files/HowToView3.png"><br>
+</p>
+
+<h4>マウス操作</h4>
+<p>
+画面をクリックすると、マウスによる視線移動モードになり、マウスカーソルが消えます。<br>
+マウスの移動によって、視線方向を制御できます。
+もう一度クリックすると、視線移動モードが解除されます。<br>
+またマウスホイールを操作することにより、ピアノロールを回転させることができます。
+</p>
+
+<h4>キーボード操作</h4>
+<p>
+左手の人差し指を<kbd>D</kbd>、中指を<kbd>W</kbd>、薬指を<kbd>A</kbd>、に載せて操作します。
+</p>
+<p>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><kbd>W</kbd><kbd>S</kbd></td><td>前後に移動します。</td></tr>
+  <tr><td><kbd>A</kbd><kbd>D</kbd></td><td>左右に移動します。</td></tr>
+  <tr><td><kbd>Q</kbd><kbd>E</kbd></td><td>上昇下降します。</td></tr>
+  <tr><td><kbd>Z</kbd><kbd>C</kbd></td><td>MIDIデータ進行方向に沿って移動します。<br>
+（ピアノロールレインの場合はキーボードに沿って移動します）</td></tr>
+  <tr>
+    <td>
+      <kbd>SHIFT</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
+      <kbd>SHIFT</kbd> + [<kbd>A</kbd><kbd>D</kbd>]<br>
+      <kbd>SHIFT</kbd> + [<kbd>Q</kbd><kbd>E</kbd>]<br>
+      <kbd>SHIFT</kbd> + [<kbd>Z</kbd><kbd>C</kbd>]
+    </td>
+    <td><kbd>SHIFT</kbd>キーを押しながら移動キーを押すと、より高速に移動することができます。</td>
+  </tr>
+  <tr>
+    <td>
+      <kbd>CTRL</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
+      <kbd>CTRL</kbd> + [<kbd>A</kbd><kbd>D</kbd>]
+    </td>
+  <td>視線方向を制御します。</td>
+  </tr>
+</table>
+</p>
+
+<h4>左利きの方へ</h4>
+
+<p>
+カーソルキーでも移動可能です。
+マウスを左手で操作する方は、こちらの方が便利かもしれません。
+</p>
+<p>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><kbd>↑</kbd><kbd>↓</kbd></td><td>前後に移動します。</td></tr>
+  <tr><td><kbd>←</kbd><kbd>→</kbd></td><td>左右に移動します。</td></tr>
+  <tr><td><kbd>PgUp</kbd><kbd>PgDn</kbd></td><td>上昇下降します。</td></tr>
+  <tr><td><kbd>,</kbd><kbd>.</kbd></td><td>MIDIデータ進行方向に沿って移動します。<br>
+（ピアノロールレインの場合はキーボードに沿って移動します）</td></tr>
+  <tr>
+    <td>
+      <kbd>SHIFT</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
+      <kbd>SHIFT</kbd> + [<kbd>←</kbd><kbd>→</kbd>]<br>
+      <kbd>SHIFT</kbd> + [<kbd>PgUp</kbd><kbd>PgDn</kbd>]<br>
+      <kbd>SHIFT</kbd> + [<kbd>,</kbd><kbd>.</kbd>]
+    </td>
+    <td><kbd>SHIFT</kbd>キーを押しながら移動キーを押すと、より高速に移動することができます。</td>
+  </tr>
+  <tr>
+    <td>
+      <kbd>CTRL</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
+      <kbd>CTRL</kbd> + [<kbd>←</kbd><kbd>→</kbd>]
+    </td>
+    <td>視線方向を制御します。</td>
+  </tr>
+</table>
+</p>
+
+<h3>(4) 視点の選択</h3>
+<p>
+Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択するか、次のキーを押すと、
+あらかじめ固定された視点に移動することができます。
+</p>
+<p>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><kbd>7</kbd></td><td>視点1に移動する</td></tr>
+  <tr><td><kbd>8</kbd></td><td>視点2に移動する</td></tr>
+  <tr><td><kbd>9</kbd></td><td>視点3に移動する</td></tr>
+</table>
+</p>
+
+<h3>(5) ウィンドウサイズの変更</h3>
+<p>
+「View」メニューから「Window size...」を選択すると、ウィンドウサイズ設定ダイアログが表示されます。<br>
+お好みのウィンドウサイズを選択してOKボタンを押してください。<br>
+なお、演奏中／一時停止中にウィンドウサイズの変更はできません。
+</p>
+<p>
+<img src="Files/WindowSize.png"><br>
+</p>
+<p>
+お使いのPCによって、選択できるウィンドウサイズが変わります。<br>
+任意のウィンドウサイズを指定したい場合は、「Width」「Height」にサイズを記入してください。<br>
+「Aplly to the view area」を選択すると、設定値が画像領域のサイズに反映されます。<br>
+</p>
+
+<h3>(6) 表示カウンタの種類</h3>
+
+<p>
+<img src="Files/Counter.png"><br>
+</p>
+<p>
+<table>
+  <tr><th>項目</th><th>内容</th></tr>
+  <tr><td>FPS</td><td>1秒間あたりの画面描画回数(Frame Per Second)</td></tr>
+  <tr><td>TITLE</td><td>曲名</td></tr>
+  <tr><td>TIME</td><td>演奏時間</td></tr>
+  <tr><td>BPM</td><td>テンポ (Beats Per Minute)</td></tr>
+  <tr><td>BEAT</td><td>拍子記号</td></tr>
+  <tr><td>BAR</td><td>小節番号</td></tr>
+  <tr><td>NOTES</td><td>ノート数（音符の数）</td></tr>
+  <tr><td>SPEED</td><td>再生スピード</td></tr>
+</table>
+</p>
+
+<h3>(7) ビューモード選択</h3>
+<p>
+「View」メニューでビューモードを選択することができます。
+演奏中／一時停止中にビューモードの変更はできません。
+</p>
+<p>
+<img src="Files/ViewMenu-Mode.png"><br>
+</p>
+
+<h3>(8) 表示／エフェクト選択</h3>
+<p>
+「View」メニューで表示／エフェクトの有無を切り替えることができます。
+</p>
+<p>
+<img src="Files/ViewMenu-Effect.png"><br>
+</p>
+<p>
+発音中のピアノロールバーは、ピッチベンドの変化に合わせて上下または左右に移動します。<br>
+MIDIアニメ作品の中には、ピッチベンドを用いて、
+音の高さを変えずにバーの表示位置を意図的にずらしているものがあります。
+MIDIアニメ作品が正常に表示されない場合は、バーの表示位置を固定するために、
+ピッチベンドのエフェクトをOFFにしてください。
+</p>
+
+<h3>(9) MIDITrailコマンドラインインターフェース</h3>
+<p>
+コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
+</p>
+<pre>
+MIDITrail.exe [-p] [-q] ["path\to\file"]
+</pre>
+<p>
+<table>
+  <tr><th>引数</th><th>詳細</th></tr>
+  <tr><td>-p</td><td>MIDITrail起動直後に指定されたMIDIファイルの再生を開始します。<br>"path\to\file"が指定されていない場合は無視されます。</td></tr>
+  <tr><td>-q</td><td>MIDIファイルの再生終了後にMIDITrailを終了します。-pオプションが有効でない場合は無視されます。</td></tr>
+  <tr><td>path\to\file</td><td>MIDIファイルパスを指定します。<br>空白を含むパスを指定する場合はダブルクォーテーションで囲んでください。</td></tr>
+</table>
+</p>
+<p>
+MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
+</p>
+
+<h3>(10) グラフィック設定</h3>
+<p>
+「Option」メニューから「Graphic...」を選択すると、グラフィック設定ダイアログが表示されます。<br>
+演奏中／一時停止中にグラフィック設定の変更はできません。
+</p>
+<p>
+<img src="Files/Graphic.png"><br>
+</p>
+<p>
+<b>[Anti-aliasing] アンチエイリアシング</b><br>
+アンチエイリアシングを有効にすると、ギザギザ（ジャギー）が低減し、より綺麗な画像が表示されます。<br>
+しかしアンチエイリアシングの処理は重いため、高いレベルを選択するとパフォーマンスが落ちる可能性があります。<br>
+PCがアンチエイリアシングに対応していない場合は「Not supported」と表示されます。
+</p>
+<p>
+<b>[Background image file path] 背景画像ファイルパス</b><br>
+背景画像を表示したい場合は、画像のファイルパスを指定してください。<br>
+画像ファイルの拡張子は、".jpg"または".png"としてください。
+</p>
+<p>
+<b>[Quarter note length] 四分音符の長さ</b><br>
+ピアノロールの四分音符の長さを指定します。<br>
+0%から1000%を指定できます。デフォルトは100%です。 
+</p>
+
+<h3>(11) MIDI IN モニタ</h3>
+<p>
+MIDI INデバイスで受信したデータをリアルタイム表示することができます。<br>
+「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
+</p>
+<p>
+<img src="Files/MIDIIN.png"><br>
+</p>
+<p>
+モニタリングするMIDI INデバイスを選択してください。<br>
+MIDI INで受信したデータをそのままMIDI OUTに出力する場合は、MIDITHRUを選択してください。<br>
+モニタリングを開始するには、「Playback」メニューから「Start Monitoring」を選択してください。<br>
+なお、MIDITrailはMIDI INで受信したデータを保存することはできません。<br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="restriction"></a>5. 制限事項</h2>
+
+<h3>(1) 演奏と画面表示の同期について</h3>
+<p>
+アプリケーションが発音を指示してから実際に音が鳴るまでに遅延が生じる音源
+（ソフトウェア音源など）を利用する場合、演奏と画面表示がずれる可能性があります。
+</p>
+
+<h3>(2) グラフィックチップの性能について</h3>
+<p>
+MIDITrailは、MIDIデータに含まれる全ノートをリアルタイムレンダリングします。
+このため、全ノート数が多いMIDIデータほど画面描画処理の負荷が高くなります。
+<br>
+クラシック音楽のように、演奏時間が長く、全ノート数が数万個に達するMIDIデータを
+快適に鑑賞するには、高性能なグラフィックチップを搭載したPCを使用してください。
+</p>
+
+<h3>(3) 複数ポート出力について</h3>
+<p>
+標準MIDIファイルの仕様には、複数ポート出力への対応方法は定義されていません。
+しかし特定のパラメータを用いて複数ポート出力に対応する方式(*1)が存在します。
+MIDITrailは、この方式に沿って複数ポート出力対応を行っていますが、
+MIDIデータによってはうまく再生できない可能性があります。
+<br>
+(*1) メタイベント(FF 21 01 pp)を出力先ポート番号の切替とみなします。
+</p>
+
+<h3>(4) 標準MIDIファイル対応について</h3>
+<p>
+デルタタイムが実時間タイムコードで表現されているMIDIデータには対応していません。
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="faq"></a>6. FAQ</h2>
+
+<h3>(1)「d3dx9_**.dllが見つからない」というエラーが出て起動できません</h3>
+<p>
+お使いのPCにインストールされているDirectXのバージョンが古いと、このエラーが発生します。<br>
+マイクロソフト社のWebページにアクセスして、
+最新の「DirectX エンドユーザーランタイム(DirectX End-User Runtime)」をインストールしてください。
+</p>
+<p>
+Microsoft: DirectX End-User Runtimes (June 2010)<br>
+<a href="https://www.microsoft.com/en-us/download/details.aspx?id=8109">https://www.microsoft.com/en-us/download/details.aspx?id=8109</a>
+</p>
+
+<h3>(2) 画面がスムーズに描画されません</h3>
+<p>
+ウィンドウサイズを小さくして、アンチエイリアシングをOFFにしてください。レンダリングの負荷が減少します。<br>
+ウィンドウタイトルに表示されているFPS（1秒間あたりの画面描画回数）の値が60付近を維持できていない場合、
+グラフィックチップの性能が不足しています。<br>
+なお、MIDIデータに含まれる音符の数が多いほど、描画処理が重くなります。<br>
+PCの処理能力を確認するために、音符の数が少ないMIDIデータを再生してみてください。<br>
+それでも改善されない場合は、高速なグラフィックチップが搭載されたPCを使用してください。<br>
+</p>
+
+<h3>(3) ウィンドウサイズをカスタマイズしたいのですが</h3>
+<p>
+次のファイルをテキストエディタで編集することにより、ウィンドウサイズをカスタマイズできます。
+</p>
+<pre>
+Windows 7 / 8 / 10 の場合
+C:\Users\（ユーザー名）\AppData\Roaming\yknk\MIDITrail\View.ini
+</pre>
+<p>
+テキストエディタでView.iniを開き、WidthとHeightの値を書き換えてください。
+</p>
+<pre>
+[WindowSize]
+Width=800
+Height=600
+</pre>
+
+<h3>(4) フルスクリーン表示にしたい</h3>
+<p>
+現時点では、フルスクリーン表示には対応していません。<br>
+そのうち対応するかもしれません。
+</p>
+
+<h3>(5) メニューを表示すると画面の描画が止まります</h3>
+<p>
+すいません。仕様です。<br>
+</p>
+
+<h3>(6) 「DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A」というエラーが出ます</h3>
+<p>
+お使いのPCがDirect3Dをサポートしていない場合にこのエラーが発生します。<br>
+DirectX診断ツール(dxdiag.exe)を起動して「ディスプレイ」タブを選択し、
+「Direct3Dアクセラレータ」が「使用可能」になっているか確認してください。<br>
+「使用可能」に変更できない場合は、そのPCがDirect3Dをサポートしていないため、MIDITrailは実行できません。<br>
+DirectX 9.0cをサポートしているPCを使用してください。
+</p>
+
+<h3>(7) 波紋を派手にしたい</h3>
+<p>
+設定ファイルを編集することにより、波紋の大きさを変更することができます。<br>
+詳しくは「7. カスタマイズ - (2) ピアノロール表示のカスタマイズ」を参照してください。<br>
+RippleHeight, RippleWidth の値を大きくします。
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="customize"></a>7. カスタマイズ</h2>
+
+<p>
+MIDITrailインストール先のconfフォルダにある設定ファイルをテキストエディタで編集することにより、
+自分の好みに合わせてカスタマイズすることができます。
+</p>
+<table>
+  <tr><th>ファイル</th><th>内容</th></tr>
+  <tr><td>conf/Player.ini</td><td>プレイヤー設定</td></tr>
+  <tr><td>conf/PianoRoll3D.ini</td><td>ビューモード設定：Piano Roll 3D</td></tr>
+  <tr><td>conf/PianoRoll2D.ini</td><td>ビューモード設定：Piano Roll 2D</td></tr>
+  <tr><td>conf/PianoRollRain.ini</td><td>ビューモード設定：Piano Roll Rain</td></tr>
+  <tr><td>conf/PianoRollRain2D.ini</td><td>ビューモード設定：Piano Roll Rain 2D</td></tr>
+  <tr><td>conf/PianoRoll3DLive.ini</td><td>ビューモード設定：Piano Roll 3D（MIDI IN モニタ）</td></tr>
+  <tr><td>conf/PianoRoll2DLive.ini</td><td>ビューモード設定：Piano Roll 2D（MIDI IN モニタ）</td></tr>
+  <tr><td>conf/PianoRollRainLive.ini</td><td>ビューモード設定：Piano Roll Rain（MIDI IN モニタ）</td></tr>
+  <tr><td>conf/PianoRollRain2DLive.ini</td><td>ビューモード設定：Piano Roll Rain 2D（MIDI IN モニタ）</td></tr>
+</table>
+
+<h3>(1) プレイヤーの設定 </h3>
+
+<h4>(a) プレーヤー制御</h4>
+<p>
+[PlayerControl]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>内容</th></tr>
+  <tr><td>AllowMultipleInstance</td><td>二重起動許可（0:許可しない / 1:許可する）</td></tr>
+  <tr><td>AutoPlaybackAfterOpenFile</td><td>ファイルオープン後の自動演奏開始（0:無効 / 1:有効）</td></tr>
+</table>
+</p>
+
+<h4>(b) ビュー制御</h4>
+<p>
+[ViewControl]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>内容</th></tr>
+  <tr><td>ShowFileName</td><td>タイトルの代わりにファイル名を表示する（0:無効 / 1:有効）</td></tr>
+</table>
+</p>
+
+<h4>(c) スキップ制御</h4>
+<p>
+[SkipControl]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>内容</th></tr>
+  <tr><td>SkipBackTimeSpanInMsec</td><td>後方スキップ時間間隔 (msec)</td></tr>
+  <tr><td>SkipForwardTimeSpanInMsec</td><td>前方スキップ時間間隔 (msec)</td></tr>
+  <tr><td>MovingTimeSpanInMsec</td><td>スキップアニメーション時間間隔 (msec)</td></tr>
+</table>
+</p>
+
+<h4>(d) 再生スピード制御</h4>
+<p>
+[PlaybackSpeedControl]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>内容</th></tr>
+  <tr><td>SpeedStepInPercent</td><td>再生スピード変化間隔 (%)</td></tr>
+  <tr><td>MaxSpeedInPercent</td><td>再生スピード最大値 (%)</td></tr>
+</table>
+</p>
+
+<h3>(2) ビューモードの設定</h3>
+
+<h4>(a) 視点移動速度のカスタマイズ</h4>
+<p>
+[FirstPersonCam]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>VelocityFB</td><td>o</td><td>o</td><td>前後方向の移動速度 (m/s)</td></tr>
+  <tr><td>VelocityLR</td><td>o</td><td>o</td><td>左右方向の移動速度 (m/s)</td></tr>
+  <tr><td>VelocityUD</td><td>o</td><td>o</td><td>上下方向の移動速度 (m/s)</td></tr>
+  <tr><td>VelocityPT</td><td>o</td><td>o</td><td>視線の角速度 (degree/s)</td></tr>
+  <tr><td>AcceleRate</td><td>o</td><td>o</td><td>SHIFTキー押下時の加速倍率（通常速度のn倍）</td></tr>
+  <tr><td>VelocityAutoRoll</td><td>o</td><td>o</td><td>ピアノロール自動回転角速度 (degree/s)</td></tr>
+  <tr><td>VelocityManualRoll</td><td>o</td><td>o</td><td>ピアノロール手動回転角速度 (degree/s)</td></tr>
+</table>
+</p>
+
+<h4>(b) ピアノロール表示のカスタマイズ</h4>
+<p>
+[Scale]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>QuarterNoteLength</td><td>o</td><td>o</td><td>四分音符の長さ(m)</td></tr>
+  <tr><td>NoteBoxHeight</td><td>o</td><td>x</td><td>ノートボックスの高さ(m)</td></tr>
+  <tr><td>NoteBoxWidth</td><td>o</td><td>x</td><td>ノートボックスの幅(m)</td></tr>
+  <tr><td>NoteStep</td><td>o</td><td>x</td><td>ノート間隔(m)</td></tr>
+  <tr><td>ChStep</td><td>o</td><td>x</td><td>チャンネル間隔(m)</td></tr>
+  <tr><td>RippleHeight</td><td>o</td><td>x</td><td>波紋の高さ(m)</td></tr>
+  <tr><td>RippleWidth</td><td>o</td><td>x</td><td>波紋の幅(m)</td></tr>
+  <tr><td>PictBoardRelativePos</td><td>o</td><td>x</td><td>ピクチャボードと再生面の直交位置<br>
+　0.0 画像の左端が再生面と直交する<br>　0.5 画像の中央が再生面と直交する<br>　1.0 画像の右端が再生面と直交する</td></tr>
+  <tr><td>LiveNoteLengthPerSecond</td><td>o</td><td>o</td><td>モニタ表示の1秒あたりのノートの長さ(m)</td></tr>
+  <tr><td>LiveMonitorDisplayDuration</td><td>o</td><td>o</td><td>モニタ表示の時間間隔(msec)</td></tr>
+</table>
+</p>
+<p>
+QuarterNoteLengthの値を小さくすると、箱庭的なMIDIデータ鑑賞ができます。
+</p>
+
+<h4>(c) 色のカスタマイズ</h4>
+<p>
+[Color]セクションを編集します。<br>
+RGBAのAは透明度です。
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>NoteColorType</td><td>o</td><td>o</td><td>ノートの色種別<br>
+  CHANNEL: チャンネル単位で色を割り当てる (Ch-XX-NoteRGBA)<br>
+  SCALE: 音階単位で色を割り当てる (Scale-XX-NoteRGBA)</td></tr>
+  <tr><td>Ch-01-NoteRGBA<br>Ch-02-NoteRGBA<br>・・・<br>Ch-16-NoteRGBA</td><td>o</td><td>o</td><td>ピアノロールバーのチャンネル別の色(RGBA)</td></tr>
+  <tr><td>Scale-01-NoteRGBA<br>Scale-02-NoteRGBA<br>・・・<br>Scale-12-NoteRGBA</td><td>o</td><td>o</td><td>ピアノロールバーの音階別の色(RGBA)<br>
+  01=C,02=C#,03=D,04=D#,05=E,06=F,07=F#,08=G,F09=G#,10=A,11=A#,12=B</td></tr>
+  <tr><td>GridLineRGBA</td><td>o</td><td>x</td><td>グリッド線と小節線の色(RGBA)<br>RGBAのAが00の場合、線は消えます。</td></tr>
+  <tr><td>PlaybackSectionRGBA</td><td>o</td><td>x</td><td>再生面の色(RGBA)</td></tr>
+  <tr><td>CaptionRGBA</td><td>o</td><td>o</td><td>キャプション／カウンタの文字色(RGBA)</td></tr>
+  <tr><td>BackGroundRGB</td><td>o</td><td>o</td><td>背景色(RGB)</td></tr>
+</table>
+</p>
+
+<h4>(d) 発音中ノートのカスタマイズ</h4>
+<p>
+[ActiveNote]セクションを編集します。
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>Duration</td><td>o</td><td>x</td><td>発音によって光らせる時間間隔（ミリ秒）を指定します。</td></tr>
+  <tr><td>WhiteRate</td><td>o</td><td>x</td><td>発音開始時点の最大白色率を指定します。<br>
+　0.0 ピアノロールバーの色と同じ（光らない）<br>　0.5 ピアノロールバーの色と白の中間色<br>　1.0 白</td></tr>
+  <tr><td>EmissiveRGBA</td><td>o</td><td>x</td><td>発音中ピアノロールバーのエミッシブ色(RGBA)<br>この値はPianoRoll2Dでは無視されます。</td></tr>
+  <tr><td>SizeRatio</td><td>o</td><td>x</td><td>発音中ピアノロールバーのサイズ拡大率を指定します。<br>この値はMIDI INモニタでは無視されます。</td></tr>
+</table>
+</p>
+
+<h4>(e) 波紋のカスタマイズ</h4>
+<p>
+[Ripple]セクションを編集します。
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>Duration</td><td>o</td><td>x</td><td>波紋を表示する時間間隔（ミリ秒）を指定します。</td></tr>
+</table>
+</p>
+
+<h4>(f) 星のカスタマイズ</h4>
+<p>
+[Stars]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>NumberOfStars</td><td>o</td><td>o</td><td>描画する星の数</td></tr>
+</table>
+</p>
+
+<h4>(g) ビットマップのカスタマイズ</h4>
+<p>
+[Bitmap]セクションを編集します。<br>
+MIDITrailインストール先のdataフォルダに表示したいビットマップファイルを格納し、
+そのファイル名を設定ファイルに記述してください。<br>
+縦横サイズが大きすぎると、グラフィックチップによっては描画できない場合があります。
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>Board</td><td>o</td><td>x</td><td>ピクチャボードのビットマップファイル名（例："data\Board.bmp"）<br>
+ピアノ鍵盤の代わりにお好みの壁紙を表示することができます。縦横サイズは任意です。<br>
+設定ファイル [Scale] / PictBoardRelativePos を編集して、再生面との直交位置を調整してください。</td></tr>
+  <tr><td>Ripple</td><td>o</td><td>x</td><td>波紋のビットマップファイル名（例："data\Ripple.bmp"）<br>
+ノートONになったときに表示される波紋を変更することができます。縦横サイズは任意です。<br>
+設定ファイル [Scale] / RippleHeight, RippleWidth を編集して、波紋の縦横サイズを調整してください。</td></tr>
+  <tr><td>Keyboard</td><td>x</td><td>o</td><td>キーボードのビットマップファイル名（例："data\Keyboard.bmp"）<br>
+ピアノキーボードのテクスチャ画像です。縦横サイズは変更できません。</td></tr>
+</table>
+</p>
+
+<h4>(h) ピアノキーボードのカスタマイズ</h4>
+<p>
+[PianoKeyboard]セクションを編集します。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>KeyDownDuration</td><td>x</td><td>o</td><td>キー下降時間（ミリ秒）</td></tr>
+  <tr><td>KeyUpDuration</td><td>x</td><td>o</td><td>キー上昇時間（ミリ秒）</td></tr>
+  <tr><td>KeyboardStepY</td><td>x</td><td>o</td><td>キーボード配置間隔：水平方向(m)</td></tr>
+  <tr><td>KeyboardStepZ</td><td>x</td><td>o</td><td>キーボード配置間隔：垂直方向(m)</td></tr>
+  <tr><td>KeyboardMaxDispNum</td><td>x</td><td>o</td><td>最大キーボード表示数（0-16）</td></tr>
+  <tr><td>WhiteKeyColor</td><td>x</td><td>o</td><td>白鍵の色(RGBA)</td></tr>
+  <tr><td>BlackKeyColor</td><td>x</td><td>o</td><td>黒鍵の色(RGBA)</td></tr>
+  <tr><td>ActiveKeyColorType</td><td>x</td><td>o</td><td>発音中キーの色種別<br>
+  STANDARD: 標準 (ActiveKeyColor)<br>NOTE: ノート色 (Ch-XX-NoteRGBA or Scale-XX-NoteRGBA)</td></tr>
+  <tr><td>ActiveKeyColor</td><td>x</td><td>o</td><td>発音中キーの色(RGBA)</td></tr>
+  <tr><td>ActiveKeyColorDuration</td><td>x</td><td>o</td><td>発音開始から最終中間色に変化させるまでの時間間隔（ミリ秒）</td></tr>
+  <tr><td>ActiveKeyColorTailRate</td><td>x</td><td>o</td><td>最終中間色の定義：発音開始時の色（赤）とキー色（白／黒）の色比率（0.0-1.0）</td></tr>
+  <tr><td>KeyDispRangeStart</td><td>x</td><td>o</td><td>キー表示範囲：開始位置 (0-127)<br>
+  一般的な88鍵ピアノのキー開始位置は21(A0)です。</td></tr>
+  <tr><td>KeyDispRangeEnd</td><td>x</td><td>o</td><td>キー表示範囲：終了位置 (0-127)<br>
+  一般的な88鍵ピアノのキー終了位置は108(C8)です。</td></tr>
+</table>
+</p>
+
+<h4>(i) 固定視点のカスタマイズ</h4>
+<p>
+[Viewpoint-2],[Viewpoint-3]セクションを編集します。視点1はカスタマイズできません。<br>
+</p>
+<p>
+<table>
+  <tr><th>値名</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>内容</th></tr>
+  <tr><td>X</td><td>o</td><td>o</td><td>X座標</td></tr>
+  <tr><td>Y</td><td>o</td><td>o</td><td>Y座標</td></tr>
+  <tr><td>Z</td><td>o</td><td>o</td><td>Z座標</td></tr>
+  <tr><td>Phi</td><td>o</td><td>o</td><td>方位角(度)</td></tr>
+  <tr><td>Theta</td><td>o</td><td>o</td><td>天頂角(度)</td></tr>
+  <tr><td>ManualRollAngle</td><td>o</td><td>o</td><td>手動回転角度(度)</td></tr>
+  <tr><td>AutoRollVelocity</td><td>o</td><td>o</td><td>自動回転速度(度/秒)</td></tr>
+</table>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="appendix"></a>8. 補遺</h2>
+
+<h3>(1) ピアノロール表示の構造</h3>
+<p>
+(a) ピアノロール3Dの三次元可視化方式<br>
+</p>
+<p>
+<img src="Files/PianoRoll3D.png"><br>
+</p>
+<p>
+複数ポートを使用するMIDIデータを読み込んだ場合、未出力ポートを省略して表示します。<br>
+例えばポートA,C,Eに出力するMIDIデータの場合、ポートA,C,Eを隣接させて表示し、
+ポートB,Dは省略します。
+</p>
+
+<p>
+(b) ピアノロールレインの三次元可視化方式<br>
+</p>
+<p>
+<img src="Files/PianoRollRain.png"><br>
+</p>
+<p>
+複数ポートを使用するMIDIデータを読み込んだ場合、現状はポートAのキーボードのみが表示されます。<br>
+ピアノロールバーは全ポート分が表示されます。
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="license"></a>9. 著作権とライセンス</h2>
+
+<p>
+MIDITrailの著作権は和田雅志が保有しています。
+MIDITrailは修正BSDライセンスを適用して公開しています。
+</p>
+
+<pre>
+Copyright (c) 2010-2019, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions 
+are met:
+
+* Redistributions of source code must retain the above copyright 
+  notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright 
+  notice, this list of conditions and the following disclaimer in the 
+  documentation and/or other materials provided with the distribution.
+* Neither the name of the author nor the names of its contributors 
+  may be used to endorse or promote products derived from this 
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE.
+</pre>
+
+<!-- ************************************************************* -->
+<h2><a name="history"></a>10. 履歴</h2>
+
+<p>
+<table>
+  <tr><th>日時</th><th>バージョン</th><th>変更内容</th></tr>
+  <tr><td>2010/03/08</td><td>Ver.0.0.0</td><td>開発開始</td></tr>
+  <tr><td>2010/05/18</td><td>Ver.1.0.0 beta</td><td>ベータ版公開</td></tr>
+  <tr><td>2010/06/02</td><td>Ver.1.0.0</td><td>正式版公開</td></tr>
+  <tr><td>2010/06/05</td><td>Ver.1.0.1</td><td>
+#22102 バグ修正：Visual C++ランタイムライブラリが見つからず起動が失敗する<br>
+#22106 バグ修正：英語版WindowsでAboutダイアログのサイズが大きい
+  </td></tr>
+  <tr><td>2010/06/20</td><td>Ver.1.0.2</td><td>
+#22218 機能追加：英語版マニュアル追加<br>
+#22108 バグ修正：VOCALOIDで書き出したMIDIファイルを開くと落ちる<br>
+#22217 バグ修正：波紋が重なるとちらつく<br>
+  </td></tr>
+  <tr><td>2010/07/11</td><td>Ver.1.0.3</td><td>
+#22319 機能追加：発音中のピアノロールバーの色を変える<br>
+#22412 機能追加：ピッチベンドの変化をピアノロールに反映する<br>
+#22425 機能追加：ピアノロールの2D表示に対応する<br>
+#22442 機能追加：表示／エフェクトの有無を選択可能にする<br>
+#22413 バグ修正：スペキュラを無効にして描画速度を向上する<br>
+#22414 バグ修正：ノート総数の値が正しくない<br>
+#22424 バグ修正：波紋消去までの時間を一定にする<br>
+  </td></tr>
+  <tr><td>2010/07/24</td><td>Ver.1.0.4</td><td>
+#22320 機能追加：アプリケーションアイコン作成<br>
+#22522 機能追加：レコンポーザのデータファイル読み込みに対応する<br>
+#22523 機能追加：コマンドライン対応<br>
+#22582 機能追加：2倍速再生機能を追加<br>
+#22585 機能追加：マウスホイールによるピアノロール回転に対応する<br>
+#22566 バグ修正：演奏時間が数％短い<br>
+#22506 バグ修正：再生終了後に音が鳴り続ける場合がある<br>
+  </td></tr>
+  <tr><td>2010/08/06</td><td>Ver.1.0.5</td><td>
+#22633 バグ修正：ピアノロール回転状態が「Save viewpoint」で保存されない<br>
+#22652 バグ修正：55MCMDL1.MID（渡辺宙明メドレー）を開くとエラー発生<br>
+#22709 バグ修正：マルチパケットシステムエクスクルーシブでF7を送信してしまう<br>
+#22710 バグ修正：ピアノロール自動回転の速度が一定でない<br>
+  </td></tr>
+  <tr><td>2010/08/29</td><td>Ver.1.1.0 beta</td><td>ベータ版公開（ピアノロールレイン追加）</td></tr>
+  <tr><td>2010/09/19</td><td>Ver.1.1.0</td><td>
+#23174 機能追加：ビューモード「ピアノロールレイン」追加<br>
+#23175 バグ修正：ファイル選択ダイアログがモーダル表示されていない<br>
+  </td></tr>
+  <tr><td>2010/10/17</td><td>Ver.1.1.1</td><td>
+#23439 機能追加：アンチエイリアシング対応<br>
+#23347 バグ修正：ピアノロールレインでキー押下タイミングとピアノロールがずれる<br>
+#23348 バグ修正：ファイル選択ダイアログでスペルミスあり<br>
+#23422 バグ修正：ピアノロールレインで黒鍵の位置が正しくない<br>
+  </td></tr>
+  <tr><td>2010/12/26</td><td>Ver.1.1.2</td><td>
+MIDITrail for Mac OS Xと同時にリリース<br>
+#23970 機能追加：キー操作で視線方向の制御を可能にする<br>
+#23971 機能追加：テクスチャ画像の変更<br>
+#23972 機能追加：アプリケーションアイコンを更新<br>
+#23497 バグ修正：ViewメニューのPianoRollRainが常に活性状態<br>
+#23968 バグ修正：ファイル読み込み直後に拍子記号が常に4/4と表示される<br>
+#23969 バグ修正：曲名に含まれる空白文字がタイトル表示に反映されない<br>
+  </td></tr>
+  <tr><td>2012/01/15</td><td>Ver.1.1.3</td><td>
+#27006 マージ：MIDITrail Ver.1.1.3 for Mac OS X 追加機能<br>
+#25454 機能追加：グリッドラインの表示制御<br>
+#26987 機能追加：再生スピード制御<br>
+#26988 機能追加：スキップ制御<br>
+#26989 機能追加：星とカウンタの表示制御<br>
+#27005 機能追加：How to viewダイアログにプレイヤー操作説明図を追加<br>
+#27091 機能追加：DirectX機能サポート確認（インデックスバッファ）<br>
+#26990 バグ修正：ライセンスの記述ミス修正<br>
+#27139 バグ修正：Piano Roll 3D のノートボックスの色が白っぽい<br>
+#27140 バグ修正：Piano Roll Rain の星が暗い<br>
+  </td></tr>
+  <tr><td>2012/03/04</td><td>Ver.1.2.0</td><td>
+#27711 マージ：MIDITrail Ver.1.2.0 for Mac OS X 追加機能<br>
+#27458 機能追加：MIDI IN モニタ機能追加<br>
+#27459 機能追加：MIDI OUT 自動設定機能追加<br>
+#27712 機能追加：ファイルオープンのショートカットキー登録<br>
+#27725 バグ修正：ポート番号が6以上のトラックを含むMIDIデータの再生でエラー発生<br>
+  </td></tr>
+  <tr><td>2013/12/04</td><td>Ver.1.2.1</td><td>
+#30545 機能追加：キー表示範囲指定<br>
+#30546 機能追加：背景色指定<br>
+#30547 機能追加：音階色指定<br>
+#30553 機能追加：任意3Dモデル描画対応<br>
+#32360 機能追加：自動視点保存機能の追加<br>
+#32361 機能追加：モニタリング用視点情報の保存<br>
+#32362 機能追加：ファイルオープン直後の自動再生機能の追加<br>
+#32363 機能追加：再生中のMIDIファイルオープン対応<br>
+#32364 機能追加：二重起動抑止モードの追加<br>
+#32366 機能追加：ファイル名表示機能の追加<br>
+#32367 機能追加：ビューモード「ピアノロールレイン2D」追加<br>
+#32427 機能追加：押下状態のキーにノートの色を反映する<br>
+#32365 仕様変更：TITLE:を削除してタイトルのみを表示する<br>
+#30552 内部改善：演奏イベントをウィンドウメッセージからキューに変更<br>
+#30548 バグ修正：再生開始直後の演奏が引っかかる<br>
+#32359 バグ修正：スキップ実行時にコントロールチェンジが送信されない<br>
+  </td></tr>
+  <tr><td>2014/02/23</td><td>Ver.1.2.1a</td><td>
+#33252 機能追加：Windows版 64bit対応<br>
+  </td></tr>
+  <tr><td>2014/04/20</td><td>Ver.1.2.1b</td><td>
+#33674 バグ修正：MIDI OUTにNSX-39を選択すると再生開始直後にエラー発生<br>
+#33695 バグ修正：MTFont2Bmp::_writeGlyphToBmpBufでエラー発生<br>
+  </td></tr>
+  <tr><td>2016/12/05</td><td>Ver.1.2.2</td><td>
+#35775 仕様変更：SourceForge.JPサイト名称変更に伴うユーザマニュアル修正<br>
+#36844 機能追加：ウィンドウサイズ任意設定対応<br>
+#36845 機能追加：背景画像表示機能追加<br>
+#36846 仕様変更：バージョン情報表示変更<br>
+  </td></tr>
+  <tr><td>2017/10/09</td><td>Ver.1.2.3</td><td>
+#37561 機能追加：発音中ノートボックスを大きく描画する<br>
+#37562 仕様変更：波紋の色を明るくする<br>
+  </td></tr>
+  <tr><td>2019/02/10</td><td>Ver.1.2.4</td><td>
+#38953 機能追加：視点選択対応<br>
+#38954 バグ修正：Piano Roll 2Dでピアノロールバーがちらつく<br>
+#38955 バグ修正：Piano Roll 3Dでタイムインジケータが不透明になる<br>
+  </td></tr>
+  <tr><td>2019/05/12</td><td>Ver.1.2.5</td><td>
+#39227 機能追加：四分音符長設定機能追加<br>
+#39226 仕様変更：開発環境をVisual Studio 2017に移行<br>
+#39228 仕様変更：ユーザマニュアル補遺修正<br>
+#39229 バグ修正：コード分析対応<br>
+  </td></tr>
+</table>
+</p>
+
+</div>
+
+</body>
+</html>

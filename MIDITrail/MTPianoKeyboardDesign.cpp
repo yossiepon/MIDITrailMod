@@ -4,7 +4,7 @@
 //
 // ピアノキーボードデザインクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -636,7 +636,10 @@ D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 	)
 {
 	D3DXCOLOR color;
-	float r,g,b,a = 0.0f;
+	float r = 0.0f;
+	float g = 0.0f;
+	float b = 0.0f;
+	float a = 0.0f;
 	float rate = 0.0f;
 	unsigned long duration = 0;
 
@@ -892,7 +895,9 @@ D3DXVECTOR3 MTPianoKeyboardDesign::GetKeyboardBasePos(
 		unsigned char chNo
 	)
 {
-	float ox, oy, oz = 0.0f;
+	float ox = 0.0f;
+	float oy = 0.0f;
+	float oz = 0.0f;
 	D3DXVECTOR3 moveVector;
 
 	//ポート単位の原点座標

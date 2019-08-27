@@ -4,7 +4,7 @@
 //
 // ピアノロールレイン2Dシーン描画クラス
 //
-// Copyright (C) 2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2013-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -63,7 +63,8 @@ void MTScenePianoRollRain2D::GetDefaultViewParam(
 	)
 {
 	D3DXVECTOR3 viewPointVector;
-	float phi, theta = 0.0f;
+	float phi = 0.0f;
+	float theta = 0.0f;
 
 	viewPointVector.x = 0.0f;
 	viewPointVector.y = 0.34f * 16.0f / 2.0f;

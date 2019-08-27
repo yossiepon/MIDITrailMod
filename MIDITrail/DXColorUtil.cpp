@@ -4,7 +4,7 @@
 //
 // カラーユーティリティクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -33,7 +33,10 @@ D3DXCOLOR DXColorUtil::MakeColorFromHexRGBA(
 		const TCHAR* pHexRGBA
 	)
 {
-	float cr, cg, cb, alpha = 0.0f;
+	float cr = 0.0f;
+	float cg = 0.0f;
+	float cb = 0.0f;
+	float alpha = 0.0f;
 	TCHAR* stopped = NULL;
 	TCHAR buf[3];
 
@@ -69,7 +72,9 @@ D3DCOLOR DXColorUtil::MakeColorFromHexRGB(
 		const TCHAR* pHexRGB
 	)
 {
-	long cr, cg, cb = 0;
+	long cr = 0;
+	long cg = 0;
+	long cb = 0;
 	TCHAR* stopped = NULL;
 	TCHAR buf[3];
 
