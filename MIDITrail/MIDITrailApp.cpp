@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -631,14 +631,24 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuAutoSaveViewpoint();
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_SAVE_VIEWPOINT:
+					//視点保存
+					result = _OnMenuSaveViewpoint();
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_RESET_VIEWPOINT:
 					//視点リセット
 					result = _OnMenuResetViewpoint();
 					if (result != 0) goto EXIT;
 					break;
-				case IDM_SAVE_VIEWPOINT:
-					//視点保存
-					result = _OnMenuSaveViewpoint();
+				case IDM_VIEWPOINT2:
+					//静的視点2に移動
+					result = _OnMenuViewpoint(2);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEWPOINT3:
+					//静的視点3に移動
+					result = _OnMenuViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_PIANOKEYBOARD:
@@ -1162,6 +1172,24 @@ EXIT:;
 }
 
 //******************************************************************************
+// メニュー選択：静的視点移動
+//******************************************************************************
+int MIDITrailApp::_OnMenuViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	int result = 0;
+
+	if (m_PlayStatus == NoData) goto EXIT;
+
+	//静的視点に移動
+	m_pScene->MoveToStaticViewpoint(viewpointNo);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // メニュー選択：視点リセット
 //******************************************************************************
 int MIDITrailApp::_OnMenuResetViewpoint()
@@ -1574,6 +1602,24 @@ int MIDITrailApp::_OnKeyDown(
 		case VK_NUMPAD5:
 			//再生スピードアップ
 			result = _OnMenuPlaySpeedUp();
+			if (result != 0) goto EXIT;
+			break;
+		case '7':
+		case VK_NUMPAD7:
+			//視点リセット
+			result = _OnMenuResetViewpoint();
+			if (result != 0) goto EXIT;
+			break;
+		case '8':
+		case VK_NUMPAD8:
+			//静的視点2移動
+			result = _OnMenuViewpoint(2);
+			if (result != 0) goto EXIT;
+			break;
+		case '9':
+		case VK_NUMPAD9:
+			//静的視点3移動
+			result = _OnMenuViewpoint(3);
 			if (result != 0) goto EXIT;
 			break;
 		case 'O':
@@ -1992,9 +2038,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_VIEW_2DPIANOROLL,
 		IDM_VIEW_PIANOROLLRAIN,
 		IDM_VIEW_PIANOROLLRAIN2D,
-		IDM_AUTO_SAVE_VIEWPOINT,
 		IDM_RESET_VIEWPOINT,
-		IDM_SAVE_VIEWPOINT,
+		IDM_VIEWPOINT2,
+		IDM_VIEWPOINT3,
 		IDM_ENABLE_PIANOKEYBOARD,
 		IDM_ENABLE_RIPPLE,
 		IDM_ENABLE_PITCHBEND,
@@ -2028,9 +2074,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_2DPIANOROLL
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN2D
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_AUTO_SAVE_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_VIEWPOINT
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT2
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT3
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIANOKEYBOARD
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_RIPPLE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND
@@ -2235,13 +2281,16 @@ int MIDITrailApp::_LoadSceneConf()
 	if (result != 0) goto EXIT;
 
 	//自動視点保存
-	result = m_ViewConf.GetInt(_T("AutoSaveViewpoint"), &autoSaveViewpoint, 0);
-	if (result != 0) goto EXIT;
-	
-	m_isAutoSaveViewpoint = false;
-	if (autoSaveViewpoint == 1) {
-		m_isAutoSaveViewpoint = true;
-	}
+	//result = m_ViewConf.GetInt(_T("AutoSaveViewpoint"), &autoSaveViewpoint, 0);
+	//if (result != 0) goto EXIT;
+	//
+	//m_isAutoSaveViewpoint = false;
+	//if (autoSaveViewpoint == 1) {
+	//	m_isAutoSaveViewpoint = true;
+	//}
+
+	//自動視点保存：常に有効とする
+	m_isAutoSaveViewpoint = true;
 
 EXIT:;
 	return result;

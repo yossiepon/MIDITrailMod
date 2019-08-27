@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -203,6 +203,18 @@ int MTTimeIndicator::Draw(
 {
 	int result = 0;
 
+	//テクスチャステージ設定
+	//  カラー演算：引数1を使用  引数1：テクスチャ
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	// アルファ演算：引数1を使用  引数1：テクスチャ
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+
+	//テクスチャフィルタ
+	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+
 	if (m_isEnableLine) {
 		result = m_PrimitiveLine.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
@@ -239,6 +251,7 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 	D3DXVECTOR3 vectorRU;
 	D3DXVECTOR3 vectorLD;
 	D3DXVECTOR3 vectorRD;
+	float delta = 0.0f;
 
 	//              y x
 	//  0+----+1    |/
@@ -261,8 +274,12 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 	pVertex[2].p = vectorLD;
 	pVertex[3].p = vectorRD;
 
-	//再生面の幅がゼロの場合はラインを描画する
-	if (vectorLU.z == vectorRU.z) {
+	//再生面の幅がゼロに近い場合はラインを描画する
+	delta = vectorLU.z - vectorRU.z;
+	if (delta < 0) {
+		delta = -1.0f * delta;
+	}
+	if (delta < 0.1) {
 		m_isEnableLine = true;
 	}
 

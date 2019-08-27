@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2018 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -253,6 +253,7 @@ private:
 	int _OnMenuStopMonitoring();
 	int _OnMenuAutoSaveViewpoint();
 	int _OnMenuResetViewpoint();
+	int _OnMenuViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
 	int _OnMenuWindowSize();

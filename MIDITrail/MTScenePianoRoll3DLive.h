@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2012-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -26,6 +26,7 @@
 #include "MTTimeIndicator.h"
 #include "MTMeshCtrl.h"
 #include "MTBackgroundImage.h"
+#include "MTConfFile.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -87,6 +88,7 @@ public:
 	void GetDefaultViewParam(MTViewParamMap* pParamMap);
 	void GetViewParam(MTViewParamMap* pParamMap);
 	void SetViewParam(MTViewParamMap* pParamMap);
+	void MoveToStaticViewpoint(unsigned long viewpointNo);
 	
 	//視点リセット
 	void ResetViewpoint();
@@ -127,6 +129,8 @@ private:
 	
 	//視点情報
 	MTViewParamMap m_ViewParamMap;
+	MTViewParamMap m_Viewpoint2;
+	MTViewParamMap m_Viewpoint3;
 	
 	//ノートデザインオブジェクト
 	MTNoteDesign m_NoteDesign;
@@ -136,6 +140,7 @@ private:
 	
 	void _Reset();
 	int _LoadConf();
+	int _LoadConfViewpoint(MTConfFile* pConfFile, unsigned long viewpointNo, MTScene::MTViewParamMap* pParamMap);
 
 };
 

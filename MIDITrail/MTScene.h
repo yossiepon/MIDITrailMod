@@ -4,7 +4,7 @@
 //
 // MIDITrail シーン基底クラス
 //
-// Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2018 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -91,6 +91,7 @@ public:
 	virtual void GetDefaultViewParam(MTViewParamMap* pParamMap);
 	virtual void GetViewParam(MTViewParamMap* pParamMap);
 	virtual void SetViewParam(MTViewParamMap* pParamMap);
+	virtual void MoveToStaticViewpoint(unsigned long viewpointNo);
 
 	//視点リセット
 	virtual void ResetViewpoint();
