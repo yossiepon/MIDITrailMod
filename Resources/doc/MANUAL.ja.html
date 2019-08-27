@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="ja">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.2.5 for Windows ユーザーマニュアル</title>
+<title>MIDITrail Ver.1.2.6 for Windows ユーザーマニュアル</title>
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 <a href="MANUAL.en.html">English</a> / Japanese
 </div>
 
-<h1>MIDITrail Ver.1.2.5 for Windows ユーザーマニュアル</h1>
+<h1>MIDITrail Ver.1.2.6 for Windows ユーザーマニュアル</h1>
 
 <p>
 Copyright (c) 2010-2019, WADA Masashi All rights reserved.<br>
@@ -272,8 +272,14 @@ Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択す�
 「Aplly to the view area」を選択すると、設定値が画像領域のサイズに反映されます。<br>
 </p>
 
-<h3>(6) 表示カウンタの種類</h3>
+<h3>(6) フルスクリーン表示</h3>
+<p>
+「View」メニューから「Full Screen」を選択すると、ウィンドウ表示とフルスクリーン表示を
+切り替えることができます。<br>
+F11キーを押すことで、表示を切り替えることも可能です。
+</p>
 
+<h3>(7) 表示カウンタの種類</h3>
 <p>
 <img src="Files/Counter.png"><br>
 </p>
@@ -291,7 +297,7 @@ Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択す�
 </table>
 </p>
 
-<h3>(7) ビューモード選択</h3>
+<h3>(8) ビューモード選択</h3>
 <p>
 「View」メニューでビューモードを選択することができます。
 演奏中／一時停止中にビューモードの変更はできません。
@@ -300,7 +306,7 @@ Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択す�
 <img src="Files/ViewMenu-Mode.png"><br>
 </p>
 
-<h3>(8) 表示／エフェクト選択</h3>
+<h3>(9) 表示／エフェクト選択</h3>
 <p>
 「View」メニューで表示／エフェクトの有無を切り替えることができます。
 </p>
@@ -315,7 +321,7 @@ MIDIアニメ作品が正常に表示されない場合は、バーの表示位�
 ピッチベンドのエフェクトをOFFにしてください。
 </p>
 
-<h3>(9) MIDITrailコマンドラインインターフェース</h3>
+<h3>(10) MIDITrailコマンドラインインターフェース</h3>
 <p>
 コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
 </p>
@@ -334,7 +340,7 @@ MIDITrail.exe [-p] [-q] ["path\to\file"]
 MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
 </p>
 
-<h3>(10) グラフィック設定</h3>
+<h3>(11) グラフィック設定</h3>
 <p>
 「Option」メニューから「Graphic...」を選択すると、グラフィック設定ダイアログが表示されます。<br>
 演奏中／一時停止中にグラフィック設定の変更はできません。
@@ -359,7 +365,7 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 0%から1000%を指定できます。デフォルトは100%です。 
 </p>
 
-<h3>(11) MIDI IN モニタ</h3>
+<h3>(12) MIDI IN モニタ</h3>
 <p>
 MIDI INデバイスで受信したデータをリアルタイム表示することができます。<br>
 「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
@@ -372,6 +378,29 @@ MIDI INデバイスで受信したデータをリアルタイム表示するこ�
 MIDI INで受信したデータをそのままMIDI OUTに出力する場合は、MIDITHRUを選択してください。<br>
 モニタリングを開始するには、「Playback」メニューから「Start Monitoring」を選択してください。<br>
 なお、MIDITrailはMIDI INで受信したデータを保存することはできません。<br>
+</p>
+
+<h3>(13) ゲームコントローラー</h3>
+<p>
+XInput対応のゲームコントローラーを用いて操作することができます。<br>
+</p>
+<p>
+<table>
+  <tr><th>ボタン / スティック</th><th>操作</th></tr>
+  <tr><td>START ボタン</td><td>再生/一時停止</td></tr>
+  <tr><td>A ボタン</td><td>再生/一時停止</td></tr>
+  <tr><td>B ボタン</td><td>停止</td></tr>
+  <tr><td>X ボタン</td><td>視点移動：下降</td></tr>
+  <tr><td>Y ボタン</td><td>視点移動：上昇</td></tr>
+  <tr><td>LB/RB ショルダーボタン</td><td>視点切り替え</td></tr>
+  <tr><td>LT/RT トリガーボタン</td><td>再生スキップ</td></tr>
+  <tr><td>十字キー</td><td>視点移動：前後左右</td></tr>
+  <tr><td>左スティック</td><td>視点移動：前後左右</td></tr>
+  <tr><td>右スティック</td><td>視線方向</td></tr>
+</table>
+</p>
+<p>
+注意：MIDITrailはDirectInputのゲームコントローラーをサポートしていません。
 </p>
 
 <!-- ************************************************************* -->
@@ -448,18 +477,12 @@ Width=800
 Height=600
 </pre>
 
-<h3>(4) フルスクリーン表示にしたい</h3>
-<p>
-現時点では、フルスクリーン表示には対応していません。<br>
-そのうち対応するかもしれません。
-</p>
-
-<h3>(5) メニューを表示すると画面の描画が止まります</h3>
+<h3>(4) メニューを表示すると画面の描画が止まります</h3>
 <p>
 すいません。仕様です。<br>
 </p>
 
-<h3>(6) 「DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A」というエラーが出ます</h3>
+<h3>(5) 「DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A」というエラーが出ます</h3>
 <p>
 お使いのPCがDirect3Dをサポートしていない場合にこのエラーが発生します。<br>
 DirectX診断ツール(dxdiag.exe)を起動して「ディスプレイ」タブを選択し、
@@ -468,7 +491,7 @@ DirectX診断ツール(dxdiag.exe)を起動して「ディスプレイ」タブ�
 DirectX 9.0cをサポートしているPCを使用してください。
 </p>
 
-<h3>(7) 波紋を派手にしたい</h3>
+<h3>(6) 波紋を派手にしたい</h3>
 <p>
 設定ファイルを編集することにより、波紋の大きさを変更することができます。<br>
 詳しくは「7. カスタマイズ - (2) ピアノロール表示のカスタマイズ」を参照してください。<br>
@@ -902,6 +925,10 @@ MIDITrail for Mac OS Xと同時にリリース<br>
 #39226 仕様変更：開発環境をVisual Studio 2017に移行<br>
 #39228 仕様変更：ユーザマニュアル補遺修正<br>
 #39229 バグ修正：コード分析対応<br>
+  </td></tr>
+  <tr><td>2019/06/02</td><td>Ver.1.2.6</td><td>
+#39274 機能追加：フルスクリーン表示対応<br>
+#39275 機能追加：ゲームコントローラー対応<br>
   </td></tr>
 </table>
 </p>

@@ -39,7 +39,8 @@ DXRenderer::~DXRenderer()
 //******************************************************************************
 int DXRenderer::Initialize(
 		HWND hWnd,
-		unsigned long multiSampleType	//省略時はゼロ：アンチエイリアシング無効
+		unsigned long multiSampleType,	//省略時はゼロ：アンチエイリアシング無効
+		bool isFullScreen  //省略時はfalse：フルスクリーン無効
 	)
 {
 	int result = 0;
@@ -48,8 +49,16 @@ int DXRenderer::Initialize(
 	bool isSupport = false;
 	D3DMULTISAMPLE_TYPE type = D3DMULTISAMPLE_NONE;
 	unsigned long qualityLevels = 0;
+	BOOL apiresult = FALSE;
+	RECT windowRect;
 
 	m_hWnd = hWnd;
+
+	apiresult = GetWindowRect(m_hWnd, &windowRect);
+	if (!apiresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
 
 	if (DX_MULTI_SAMPLE_TYPE_MAX < multiSampleType) {
 		result = YN_SET_ERR("Program error.", multiSampleType, 0);
@@ -81,6 +90,11 @@ int DXRenderer::Initialize(
 	m_D3DPP.SwapEffect = D3DSWAPEFFECT_DISCARD;		//ダブルバッファリングスワップ指定
 	m_D3DPP.EnableAutoDepthStencil = TRUE;			//深度ステンシルバッファ作成
 	m_D3DPP.AutoDepthStencilFormat = D3DFMT_D16;	//自動深度ステンシルサーフェスフォーマット
+	if (isFullScreen) {
+		m_D3DPP.Windowed = FALSE;						//ウインドウ内表示の指定
+		m_D3DPP.BackBufferWidth = windowRect.right - windowRect.left;	//バッファサイズ
+		m_D3DPP.BackBufferHeight = windowRect.bottom - windowRect.top;	//バッファサイズ
+	}
 
 	//アンチエイリアシング有効化
 	if (multiSampleType >= DX_MULTI_SAMPLE_TYPE_MIN) {

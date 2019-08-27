@@ -49,6 +49,8 @@ MIDITrailApp::MIDITrailApp(void)
 	m_Accel = NULL;
 	m_Title[0] = _T('\0');
 	m_WndClassName[0] = _T('\0');
+	m_isFullScreen = false;
+	m_hMenu = NULL;
 
 	//レンダリング系
 	m_pScene = NULL;
@@ -96,6 +98,9 @@ MIDITrailApp::MIDITrailApp(void)
 
 	//次回オープン対象ファイルパス
 	m_NextFilePath[0] = _T('\0');
+
+	//ゲームパッド用視点番号
+	m_GamePadViewPointNo = 0;
 }
 
 //******************************************************************************
@@ -214,6 +219,10 @@ int MIDITrailApp::Initialize(
 	result = _StartTimer();
 	if (result != 0) goto EXIT;
 
+	//ゲームパッド制御：ユーザインデックス0固定
+	result = m_GamePadCtrl.Initialize(0);
+	if (result != 0) goto EXIT;
+
 EXIT:;
 	return result;
 }
@@ -288,6 +297,13 @@ int MIDITrailApp::Run()
 			if (result != 0) {
 				YN_SHOW_ERR(m_hWnd);
 			}
+
+			//ゲームパッド操作処理
+			result = _GamePadProc();
+			if (result != 0) {
+				YN_SHOW_ERR(m_hWnd);
+			}
+
 			//ウィンドウ表示状態でのみ描画を行う
 			GetWindowPlacement(m_hWnd, &wndpl);
 			if ((wndpl.showCmd != SW_HIDE) &&
@@ -343,7 +359,7 @@ int MIDITrailApp::_RegisterClass(
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MIDITRAIL));
 															//アイコンリソースハンドル
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//カーソルリソースハンドル
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);			//背景用ブラシハンドル
+	wcex.hbrBackground  = CreateSolidBrush(RGB(0, 0, 0));	//背景用ブラシハンドル：黒
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MIDITRAIL);	//メニューリソース名称
 	wcex.lpszClassName	= m_WndClassName;					//ウィンドウクラス名称
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -390,6 +406,9 @@ int MIDITrailApp::_CreateWindow(
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
+	
+	//メニューバー表示切替のためウィンドウ生成直後にハンドルを取得しておく
+	m_hMenu = GetMenu(m_hWnd);
 
 	//ユーザー設定ウィンドウサイズ変更
 	result = _SetWindowSize();
@@ -419,6 +438,12 @@ int MIDITrailApp::_SetWindowSize()
 	RECT wrect, crect;
 	int ww, wh, cw, ch, framew, frameh;
 	int applyToViewArea = 0;
+	LONG apiresult = 0;
+
+	if (m_isFullScreen) {
+		result = _SetWindowSizeFullScreen();
+		goto EXIT;
+	}
 
 	//ユーザ選択ウィンドウサイズ取得
 	result = m_ViewConf.SetCurSection(_T("WindowSize"));
@@ -455,7 +480,18 @@ int MIDITrailApp::_SetWindowSize()
 		width = width + framew;
 		height = height + frameh;
 	}
-
+	
+	//ウィンドウスタイル設定
+	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+		goto EXIT;
+	}
+	
+	//メニューバー表示
+	result = _ShowMenu();
+	if (result != 0) goto EXIT;
+	
 	//ウィンドウサイズ変更
 	bresult = SetWindowPos(
 					m_hWnd,			//ウィンドウハンドル
@@ -464,7 +500,73 @@ int MIDITrailApp::_SetWindowSize()
 					0,				//縦方向の位置
 					width,			//幅
 					height,			//高さ
-					SWP_NOMOVE		//ウィンドウ位置指定
+					SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ウィンドウ位置指定
+				);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ウィンドウサイズ変更：フルスクリーン
+//******************************************************************************
+int MIDITrailApp::_SetWindowSizeFullScreen()
+{
+	int result = 0;
+	BOOL bresult = FALSE;
+	LONG apiresult = 0;
+	POINT mouseCursorPoint;
+	HMONITOR hMonitor = NULL;
+	MONITORINFOEX monitorInfo;
+	int width = 0;
+	int height = 0;
+
+	//マウスカーソル位置を取得
+	bresult = GetCursorPos(&mouseCursorPoint);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	//マウスカーソルの位置に該当するモニタを選択
+	hMonitor = MonitorFromPoint(mouseCursorPoint, MONITOR_DEFAULTTONEAREST);
+
+	//モニタ情報取得
+	monitorInfo.cbSize = sizeof(MONITORINFOEX);
+	bresult = GetMonitorInfo(hMonitor, &monitorInfo);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hMonitor);
+		goto EXIT;
+	}
+
+	//ウィンドウ縦横サイズ
+	width  = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
+	height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+
+	//ウィンドウスタイル設定
+	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, WS_POPUP);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+		goto EXIT;
+	}
+
+	//メニューバー非表示
+	result = _HideMenu();
+	if (result != 0) goto EXIT;
+
+	//ウィンドウサイズ変更
+	bresult = SetWindowPos(
+					m_hWnd,						//ウィンドウハンドル
+					HWND_TOP,					//配置順序：Zオーダー先頭
+					monitorInfo.rcMonitor.left,	//横方向の位置
+					monitorInfo.rcMonitor.top,	//縦方向の位置
+					width,						//幅
+					height,						//高さ
+					SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ウィンドウ位置指定
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -626,31 +728,6 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					if (result != 0) goto EXIT;
 					break;
 				//TAG: シーン追加
-				case IDM_AUTO_SAVE_VIEWPOINT:
-					//自動視点保存
-					result = _OnMenuAutoSaveViewpoint();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_SAVE_VIEWPOINT:
-					//視点保存
-					result = _OnMenuSaveViewpoint();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_RESET_VIEWPOINT:
-					//視点リセット
-					result = _OnMenuResetViewpoint();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEWPOINT2:
-					//静的視点2に移動
-					result = _OnMenuViewpoint(2);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEWPOINT3:
-					//静的視点3に移動
-					result = _OnMenuViewpoint(3);
-					if (result != 0) goto EXIT;
-					break;
 				case IDM_ENABLE_PIANOKEYBOARD:
 					//表示効果：ピアノキーボード
 					result = _OnMenuEnableEffect(MTScene::EffectPianoKeyboard);
@@ -681,9 +758,40 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
 					if (result != 0) goto EXIT;
 					break;
+				//自動視点保存と視点保存は廃止
+				//case IDM_AUTO_SAVE_VIEWPOINT:
+				//	//自動視点保存
+				//	result = _OnMenuAutoSaveViewpoint();
+				//	if (result != 0) goto EXIT;
+				//	break;
+				//case IDM_SAVE_VIEWPOINT:
+				//	//視点保存
+				//	result = _OnMenuSaveViewpoint();
+				//	if (result != 0) goto EXIT;
+				//	break;
+				case IDM_RESET_VIEWPOINT:
+					//静的視点1に移動（視点リセット）
+					result = _OnMenuResetViewpoint();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEWPOINT2:
+					//静的視点2に移動
+					result = _OnMenuViewpoint(2);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEWPOINT3:
+					//静的視点3に移動
+					result = _OnMenuViewpoint(3);
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_WINDOWSIZE:
 					//ウィンドウサイズ設定
 					result = _OnMenuWindowSize();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_FULLSCREEN:
+					//フルスクリーン
+					result = _OnMenuFullScreen();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_MIDIOUT:
@@ -735,6 +843,10 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			result = _OnMouseButtonDown(message, wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
+		case WM_MOUSEMOVE:
+			result = _OnMouseMove(message, wParam, lParam);
+			if (result != 0) goto EXIT;
+			break;
 		case WM_DROPFILES:
 			//ファイルドロップ
 			result = _OnDropFiles(wParam, lParam);
@@ -755,6 +867,14 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			//ファイルパスポスト通知
 			result = _OnFilePathPosted();
 			if (result != 0) goto EXIT;
+			break;
+		case WM_SIZE:
+			//ウィンドウサイズ変更
+			if (wParam == SIZE_MAXIMIZED) {
+				//最大化：フルスクリーン
+				result = _OnMenuFullScreen();
+				if (result != 0) goto EXIT;
+			}
 			break;
 		default:
 			lresult = DefWindowProc(hWnd, message, wParam, lParam);
@@ -794,6 +914,13 @@ int MIDITrailApp::_OnMenuFileOpen()
 
 	//ファイル選択時の処理
 	if (isSelected) {
+		//フルスクリーンでメニューからファイル選択した場合
+		//  シーン生成処理でクライアントウィンドウのサイズを参照しているため
+		//  一時的に表示したメニューを非表示に戻しておく
+		if (m_isFullScreen) {
+			_HideMenu();
+		}
+
 		//演奏/モニタ停止とファイルオープン処理
 		result = _StopPlaybackAndOpenFile(filePath);
 		if (result != 0) goto EXIT;
@@ -1287,6 +1414,21 @@ EXIT:;
 }
 
 //******************************************************************************
+// メニュー選択：フルスクリーン
+//******************************************************************************
+int MIDITrailApp::_OnMenuFullScreen()
+{
+	int result = 0;
+
+	//フルスクリーン切替
+	result = _ToggleFullScreen();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // メニュー選択：MIDI出力デバイス設定
 //******************************************************************************
 int MIDITrailApp::_OnMenuOptionMIDIOUT()
@@ -1524,10 +1666,45 @@ int MIDITrailApp::_OnMouseButtonDown(
 	)
 {
 	int result = 0;
-
+	
 	if ((m_pScene != NULL) && (m_PlayStatus != NoData)) {
 		result = m_pScene->OnWindowClicked(button, wParam, lParam);
 		if (result != 0) goto EXIT;
+	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// マウス移動イベント
+//******************************************************************************
+int MIDITrailApp::_OnMouseMove(
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
+	)
+{
+	int result = 0;
+	LONG apiresult = 0;
+	POINT point;
+
+	point.x = LOWORD(lParam);
+	point.y = HIWORD(lParam);
+	
+	//フルスクリーンの場合
+	if (m_isFullScreen) {
+		//マウスカーソルがスクリーン上端に移動した場合
+		if (point.y == 0) {
+			//メニューバー表示
+			result = _ShowMenu();
+			if (result != 0) goto EXIT;
+		}
+		else {
+			//メニューバー非表示
+			result = _HideMenu();
+			if (result != 0) goto EXIT;
+		}
 	}
 
 EXIT:;
@@ -1628,6 +1805,13 @@ int MIDITrailApp::_OnKeyDown(
 				result = _OnMenuFileOpen();
 				if (result != 0) goto EXIT;
 			}
+			break;
+		case VK_F11:
+			//フルスクリーン
+			result = _OnMenuFullScreen();
+			if (result != 0) goto EXIT;
+			break;
+		default:
 			break;
 	}
 
@@ -2038,16 +2222,17 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_VIEW_2DPIANOROLL,
 		IDM_VIEW_PIANOROLLRAIN,
 		IDM_VIEW_PIANOROLLRAIN2D,
-		IDM_RESET_VIEWPOINT,
-		IDM_VIEWPOINT2,
-		IDM_VIEWPOINT3,
 		IDM_ENABLE_PIANOKEYBOARD,
 		IDM_ENABLE_RIPPLE,
 		IDM_ENABLE_PITCHBEND,
 		IDM_ENABLE_STARS,
 		IDM_ENABLE_COUNTER,
 		IDM_ENABLE_BACKGROUNDIMAGE,
+		IDM_RESET_VIEWPOINT,
+		IDM_VIEWPOINT2,
+		IDM_VIEWPOINT3,
 		IDM_WINDOWSIZE,
+		IDM_FULLSCREEN,
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
 		IDM_OPTION_GRAPHIC,
@@ -2074,16 +2259,17 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_2DPIANOROLL
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN2D
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT2
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT3
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIANOKEYBOARD
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_RIPPLE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_STARS
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_COUNTER
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_BACKGROUNDIMAGE
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT2
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT3
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_WINDOWSIZE
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_FULLSCREEN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_GRAPHIC
@@ -2705,6 +2891,9 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	//自動視点保存
 	_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
 
+	//フルスクリーン
+	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
+	
 EXIT:;
 	return result;
 }
@@ -3300,3 +3489,174 @@ EXIT:;
 	return result;
 }
 
+//******************************************************************************
+// フルスクリーン切替
+//******************************************************************************
+int MIDITrailApp::_ToggleFullScreen()
+{
+	int result = 0;
+	
+	m_isFullScreen = m_isFullScreen ? false : true;
+	
+	result = _ChangeWindowSize();
+	if (result != 0) goto EXIT;
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー表示
+//******************************************************************************
+int MIDITrailApp::_ShowMenu()
+{
+	int result = 0;
+	LONG apiresult = 0;
+	
+	//メニューバー表示処理
+	if (GetMenu(m_hWnd) == NULL) {
+		apiresult = SetMenu(m_hWnd, m_hMenu);
+		if (apiresult == 0) {
+			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+			goto EXIT;
+		}
+	}
+
+	//メニュー選択マーク更新
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//メニュースタイル更新
+	result = _ChangeMenuStyle();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー非表示
+//******************************************************************************
+int MIDITrailApp::_HideMenu()
+{
+	int result = 0;
+	LONG apiresult = 0;
+
+	//メニューバー非表示処理
+	//すでにメニューバー非表示なら何もしない
+	if (GetMenu(m_hWnd) != NULL) {
+		//GetMenuで取得したハンドルは破棄されない
+		apiresult = SetMenu(m_hWnd, NULL);
+		if (apiresult == 0) {
+			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+			goto EXIT;
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ゲームパッド操作処理
+//******************************************************************************
+int MIDITrailApp::_GamePadProc()
+{
+	int result = 0;
+
+	result = m_GamePadCtrl.UpdateState();
+	if (result != 0) goto EXIT;
+	
+	//_RPTN(_CRT_WARN, "GamePad: %d %d\n", m_GamePadCtrl.DidPressNow_A(), m_GamePadCtrl.DidPressNow_B());
+
+	//スタート 押下
+	if (m_GamePadCtrl.DidPressNow_Start()) {
+		//演奏開始／一時停止
+		result = _OnMenuPlay();
+		if (result != 0) goto EXIT;
+	}
+
+	//ボタンA 押下
+	if (m_GamePadCtrl.DidPressNow_A()) {
+		//演奏開始／一時停止
+		result = _OnMenuPlay();
+		if (result != 0) goto EXIT;
+	}
+	
+	//ボタンB 押下
+	if (m_GamePadCtrl.DidPressNow_B()) {
+		//演奏停止
+		result = _OnMenuStop();
+		if (result != 0) goto EXIT;
+	}
+	
+	//左ショルダー 押下
+	if (m_GamePadCtrl.DidPressNow_LShoulder()) {
+		//視点切り替え
+		result = _ChangeViewPoint(-1);
+		if (result != 0) goto EXIT;
+	}
+	
+	//右ショルダー 押下
+	if (m_GamePadCtrl.DidPressNow_RShoulder()) {
+		//視点切り替え
+		result = _ChangeViewPoint(+1);
+		if (result != 0) goto EXIT;
+	}
+	
+	//左トリガー 押下
+	if (m_GamePadCtrl.DidPressNow_LTrigger()) {
+		//再生リワインド
+		result = _OnMenuSkipBack();
+		if (result != 0) goto EXIT;
+	}
+	
+	//右トリガー 押下
+	if (m_GamePadCtrl.DidPressNow_RTrigger()) {
+		//再生スキップ
+		result = _OnMenuSkipForward();
+		if (result != 0) goto EXIT;
+	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 視点切り替え
+//******************************************************************************
+int MIDITrailApp::_ChangeViewPoint(int step)
+{
+	int result = 0;
+
+	//ゲームパッド用視点番号更新
+	m_GamePadViewPointNo += step;
+
+	if (m_GamePadViewPointNo < 0) {
+		m_GamePadViewPointNo = 2;
+	}
+	else if (m_GamePadViewPointNo > 2) {
+		m_GamePadViewPointNo = 0;
+	}
+
+	//視点切り替え
+	switch (m_GamePadViewPointNo) {
+	case 0:
+		result = _OnMenuResetViewpoint();
+		if (result != 0) goto EXIT;
+		break;
+	case 1:
+		result = _OnMenuViewpoint(2);
+		if (result != 0) goto EXIT;
+		break;
+	case 2:
+		result = _OnMenuViewpoint(3);
+		if (result != 0) goto EXIT;
+		break;
+	default:
+		break;
+	}
+
+EXIT:;
+	return result;
+}

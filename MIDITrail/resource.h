@@ -70,6 +70,7 @@
 #define IDM_ENABLE_BACKGROUNDIMAGE      32842
 #define IDM_VIEWPOINT2                  32843
 #define IDM_VIEWPOINT3                  32844
+#define IDM_FULLSCREEN                  32849
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -78,7 +79,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
-#define _APS_NEXT_COMMAND_VALUE         32848
+#define _APS_NEXT_COMMAND_VALUE         32850
 #define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

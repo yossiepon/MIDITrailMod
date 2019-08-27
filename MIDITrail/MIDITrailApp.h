@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2018 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,6 +23,7 @@
 #include "MTHowToViewDlg.h"
 #include "MTAboutDlg.h"
 #include "MTCmdLineParser.h"
+#include "MTGamePadCtrl.h"
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
@@ -36,14 +37,13 @@ using namespace SMIDILib;
 //ウィンドウスタイル
 //  WS_OVERLAPPEDWINDOW から次のスタイルを削ったもの
 //    WS_THICKFRAME   サイズ変更可
-//    WS_MAXIMIZEBOX  最大化ボタン
-#define MIDITRAIL_WINDOW_STYLE  (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
+#define MIDITRAIL_WINDOW_STYLE  (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
 
 //後続起動プロセスのファイルパスポスト通知
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-#define MT_MENU_NUM        (31)
+#define MT_MENU_NUM        (32)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -146,6 +146,8 @@ private:
 	HACCEL m_Accel;
 	TCHAR m_Title[MAX_LOADSTRING];
 	TCHAR m_WndClassName[MAX_LOADSTRING];
+	bool m_isFullScreen;
+	HMENU m_hMenu;
 
 	//レンダリング系
 	DXRenderer m_Renderer;
@@ -225,6 +227,12 @@ private:
 	//次回オープン対象ファイルパス
 	TCHAR m_NextFilePath[_MAX_PATH];
 
+	//ゲームパッド制御
+	MTGamePadCtrl m_GamePadCtrl;
+
+	//ゲームパッド用視点番号
+	int m_GamePadViewPointNo;
+
 	//----------------------------------------------------------------
 	//メソッド定義
 	//----------------------------------------------------------------
@@ -232,6 +240,7 @@ private:
 	int _RegisterClass(HINSTANCE hInstance);
 	int _CreateWindow(HINSTANCE hInstance, int nCmdShow);
 	int _SetWindowSize();
+	int _SetWindowSizeFullScreen();
 
 	//設定ファイル初期化
 	int _InitConfFile();
@@ -257,6 +266,7 @@ private:
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
 	int _OnMenuWindowSize();
+	int _OnMenuFullScreen();
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
 	int _OnMenuOptionGraphic();
@@ -268,6 +278,7 @@ private:
 	int _SequencerMsgProc();
 	int _OnRecvSequencerMsg(unsigned long wParam, unsigned long lParam);
 	int _OnMouseButtonDown(UINT button, WPARAM wParam, LPARAM lParam);
+	int _OnMouseMove(UINT button, WPARAM wParam, LPARAM lParam);
 	int _OnKeyDown(WPARAM wParam, LPARAM lParam);
 	int _OnDropFiles(WPARAM wParam, LPARAM lParam);
 
@@ -306,6 +317,11 @@ private:
 	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
 	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
 	int _FileOpenProc(TCHAR* pFilePath);
+	int _ToggleFullScreen();
+	int _ShowMenu();
+	int _HideMenu();
+	int _GamePadProc();
+	int _ChangeViewPoint(int step);
 
 };
 

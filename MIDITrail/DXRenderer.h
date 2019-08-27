@@ -4,7 +4,7 @@
 //
 // レンダラクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -39,7 +39,7 @@ public:
 public:
 
 	//初期化
-	int Initialize(HWND hWnd, unsigned long multiSampleType = 0);
+	int Initialize(HWND hWnd, unsigned long multiSampleType = 0, bool isFullScreen = false);
 
 	//デバイス取得
 	LPDIRECT3DDEVICE9 GetDevice();
