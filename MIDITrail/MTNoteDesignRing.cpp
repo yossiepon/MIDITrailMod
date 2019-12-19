@@ -24,6 +24,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteDesignRing::MTNoteDesignRing(void)
 {
+	m_isLiveMode = false;
 	m_NoteAngleStep = 360.0f / (float)SM_MAX_NOTE_NUM;
 	m_RingRadius = 0.0f;
 }
@@ -33,6 +34,14 @@ MTNoteDesignRing::MTNoteDesignRing(void)
 //******************************************************************************
 MTNoteDesignRing::~MTNoteDesignRing(void)
 {
+}
+
+//******************************************************************************
+// ライブモニタモード設定
+//******************************************************************************
+void MTNoteDesignRing::SetLiveMode(void)
+{
+	m_isLiveMode = true;
 }
 
 //******************************************************************************
@@ -356,7 +365,12 @@ float MTNoteDesignRing::_GetNoteAngle(
 	}
 
 	//ノート番号で角度を決定
-	angle = (m_NoteAngleStep * noteNo) + (m_NoteAngleStep / 2.0f) + pb;
+	angle = ((m_NoteAngleStep * noteNo) + (m_NoteAngleStep / 2.0f) + pb) * (-1.0f);
+
+	//ライブモニタの場合は反転する
+	if (m_isLiveMode) {
+		angle = angle * (-1.0f);
+	}
 
 	return angle;
 }

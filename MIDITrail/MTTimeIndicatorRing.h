@@ -78,13 +78,6 @@ private:
 	int _CreatePrimitiveLine(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _CreateVertexOfIndicatorLine(MTTIMEINDICATOR_VERTEX* pVertex, unsigned long* pIndex);
 
-	D3DXVECTOR3 _RotateYZ(
-			float centerY,
-			float centerZ,
-			D3DXVECTOR3 p1,
-			float angle
-		);
-
 };
 
 

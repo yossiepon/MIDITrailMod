@@ -2130,10 +2130,16 @@ int MIDITrailApp::_ChangeWindowSize()
 {
 	int result = 0;
 	bool isMonitor = false;
+	MTScene::MTViewParamMap viewParamMap;
 
 	//モニタ状態の確認
 	if ((m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON)) {
 		isMonitor = true;
+	}
+
+	//現在の視点を退避
+	if (m_pScene != NULL) {
+		m_pScene->GetViewParam(&viewParamMap);
 	}
 
 	//シーン破棄
@@ -2164,6 +2170,11 @@ int MIDITrailApp::_ChangeWindowSize()
 		//ライブモニタのシーン生成
 		result = _CreateScene(m_SceneType, NULL);
 		if (result != 0) goto EXIT;
+	}
+
+	//視点を復帰
+	if (m_pScene != NULL) {
+		m_pScene->SetViewParam(&viewParamMap);
 	}
 
 EXIT:;

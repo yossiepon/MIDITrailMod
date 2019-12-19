@@ -16,7 +16,7 @@
 #include "MTScene.h"
 #include "MTFirstPersonCam.h"
 #include "MTNoteBoxRingLive.h"
-#include "MTNoteRippleRing.h"
+#include "MTNoteRippleRingLive.h"
 #include "MTNoteDesignRing.h"
 #include "MTNotePitchBend.h"
 #include "MTGridRingLive.h"
@@ -111,7 +111,7 @@ private:
 	
 	//描画オブジェクト
 	MTNoteBoxRingLive m_NoteBoxLive;
-	MTNoteRippleRing m_NoteRipple;
+	MTNoteRippleRingLive m_NoteRipple;
 	MTNotePitchBend m_NotePitchBend;
 	MTGridRingLive m_GridBoxLive;
 	MTPictBoardRing m_PictBoard;

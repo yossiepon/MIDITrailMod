@@ -4,7 +4,7 @@
 //
 // ピクチャボード描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -202,7 +202,7 @@ int MTPictBoard::_CreateVertexOfBoard(
 	D3DXVECTOR3 vectorRU;
 	D3DXVECTOR3 vectorLD;
 	D3DXVECTOR3 vectorRD;
-	float boardHight = 0.0f;
+	float boardHeight = 0.0f;
 	float boardWidth = 0.0f;
 	float chStep = 0.0f;
 
@@ -223,8 +223,8 @@ int MTPictBoard::_CreateVertexOfBoard(
 			&vectorRD
 		);
 
-	boardHight = vectorLU.y - vectorLD.y;
-	boardWidth = boardHight * ((float)m_ImgInfo.Width / (float)m_ImgInfo.Height);
+	boardHeight = vectorLU.y - vectorLD.y;
+	boardWidth = boardHeight * ((float)m_ImgInfo.Width / (float)m_ImgInfo.Height);
 	chStep = m_NoteDesign.GetChStep();
 
 	//頂点座標：左の面

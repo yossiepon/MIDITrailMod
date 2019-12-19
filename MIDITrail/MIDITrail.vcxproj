@@ -241,6 +241,7 @@
     <ClCompile Include="MTNoteRainLive.cpp" />
     <ClCompile Include="MTNoteRipple.cpp" />
     <ClCompile Include="MTNoteRippleRing.cpp" />
+    <ClCompile Include="MTNoteRippleRingLive.cpp" />
     <ClCompile Include="MTPianoKeyboard.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrl.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrlLive.cpp" />
@@ -317,6 +318,7 @@
     <ClInclude Include="MTNoteRainLive.h" />
     <ClInclude Include="MTNoteRipple.h" />
     <ClInclude Include="MTNoteRippleRing.h" />
+    <ClInclude Include="MTNoteRippleRingLive.h" />
     <ClInclude Include="MTParam.h" />
     <ClInclude Include="MTPianoKeyboard.h" />
     <ClInclude Include="MTPianoKeyboardCtrl.h" />

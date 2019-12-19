@@ -254,6 +254,9 @@
     <ClCompile Include="DXH.cpp">
       <Filter>Sources\DirectXUtility</Filter>
     </ClCompile>
+    <ClCompile Include="MTNoteRippleRingLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MIDITrailApp.h">
@@ -471,6 +474,9 @@
     </ClInclude>
     <ClInclude Include="DXH.h">
       <Filter>Sources\DirectXUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteRippleRingLive.h">
+      <Filter>Sources\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
