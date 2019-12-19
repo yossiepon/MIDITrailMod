@@ -4,7 +4,7 @@
 //
 // ノートボックス描画クラス
 //
-// Copyright (C) 2010-2017 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -29,6 +29,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteBox::MTNoteBox(void)
 {
+	m_pNoteDesign = NULL;
 	m_CurTickTime = 0;
 	m_CurNoteIndex = 0;
 	m_ActiveNoteNum = 0;
@@ -64,8 +65,12 @@ int MTNoteBox::Create(
 		goto EXIT;
 	}
 
+	//ノートデザインオブジェクト生成
+	result = _CreateNoteDesign();
+	if (result != 0) goto EXIT;
+
 	//ノートデザインオブジェクト初期化
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
+	result = m_pNoteDesign->Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 	//トラック取得
@@ -90,6 +95,25 @@ int MTNoteBox::Create(
 
 	//ピッチベンド情報
 	m_pNotePitchBend = pNotePitchBend;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ノートデザイン生成
+//******************************************************************************
+int MTNoteBox::_CreateNoteDesign()
+{
+	int result = 0;
+
+	try {
+		m_pNoteDesign = new MTNoteDesign();
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -290,7 +314,7 @@ int MTNoteBox::Transform(
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
 	//移動行列
-	moveVector = m_NoteDesign.GetWorldMoveVector();
+	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
 	//行列の合成
@@ -501,6 +525,9 @@ EXIT:;
 //******************************************************************************
 void MTNoteBox::Release()
 {
+	delete m_pNoteDesign;
+	m_pNoteDesign = NULL;
+
 	m_PrimitiveAllNotes.Release();
 	m_PrimitiveActiveNotes.Release();
 	m_NoteList.Clear();
@@ -551,7 +578,7 @@ int MTNoteBox::_CreateVertexOfNote(
 	//ノートボックス頂点座標取得
 	if (elapsedTime == 0xFFFFFFFF) {
 		//通常ノートの場合
-		m_NoteDesign.GetNoteBoxVirtexPos(
+			m_pNoteDesign->GetNoteBoxVirtexPos(
 				note.startTime,
 				note.portNo,
 				note.chNo,
@@ -563,7 +590,7 @@ int MTNoteBox::_CreateVertexOfNote(
 				pitchBendValue,
 				pitchBendSensitivity
 			);
-		m_NoteDesign.GetNoteBoxVirtexPos(
+		m_pNoteDesign->GetNoteBoxVirtexPos(
 				note.endTime,
 				note.portNo,
 				note.chNo,
@@ -578,7 +605,7 @@ int MTNoteBox::_CreateVertexOfNote(
 	}
 	else {
 		//発音中ノートの場合：経過時間でサイズが変化する
-		m_NoteDesign.GetActiveNoteBoxVirtexPos(
+		m_pNoteDesign->GetActiveNoteBoxVirtexPos(
 				note.startTime,
 				note.portNo,
 				note.chNo,
@@ -591,7 +618,7 @@ int MTNoteBox::_CreateVertexOfNote(
 				pitchBendSensitivity,
 				elapsedTime
 			);
-		m_NoteDesign.GetActiveNoteBoxVirtexPos(
+		m_pNoteDesign->GetActiveNoteBoxVirtexPos(
 				note.endTime,
 				note.portNo,
 				note.chNo,
@@ -672,11 +699,11 @@ int MTNoteBox::_CreateVertexOfNote(
 
 	//各頂点のディフューズ色
 	if (elapsedTime == 0xFFFFFFFF) {
-		color = m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+		color = m_pNoteDesign->GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 	}
 	else {
 		//発音中は発音開始からの経過時間によって色が変化する
-		color = m_NoteDesign.GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, elapsedTime);
+		color = m_pNoteDesign->GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, elapsedTime);
 	}
 
 	//頂点の色設定完了
@@ -778,7 +805,7 @@ void MTNoteBox::_MakeMaterialForActiveNote(
 	//鏡面反射光の鮮明度
 	pMaterial->Power = 40.0f;
 	//発光色
-	pMaterial->Emissive = m_NoteDesign.GetActiveNoteEmissive();
+	pMaterial->Emissive = m_pNoteDesign->GetActiveNoteEmissive();
 }
 
 //******************************************************************************

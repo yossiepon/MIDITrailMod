@@ -4,7 +4,7 @@
 //
 // ノートボックス描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -89,10 +89,10 @@ private:
 		DWORD		c;	//ディフューズ色
 	};
 
-private:
+protected:
 
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign* m_pNoteDesign;
 
 	//ノートリスト
 	SMNoteList m_NoteList;
@@ -116,6 +116,7 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
+	virtual int _CreateNoteDesign();
 	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _CreateNoteStatus();

@@ -20,10 +20,12 @@
 #include "MTScenePianoRoll2D.h"
 #include "MTScenePianoRollRain.h"
 #include "MTScenePianoRollRain2D.h"
+#include "MTScenePianoRollRing.h"
 #include "MTScenePianoRoll3DLive.h"
 #include "MTScenePianoRoll2DLive.h"
 #include "MTScenePianoRollRainLive.h"
 #include "MTScenePianoRollRain2DLive.h"
+#include "MTScenePianoRollRingLive.h"
 
 using namespace YNBaseLib;
 
@@ -725,6 +727,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				case IDM_VIEW_PIANOROLLRAIN2D:
 					//ビュー変更：ピアノロールレイン2D
 					result = _OnMenuSelectSceneType(PianoRollRain2D);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_PIANOROLLRING:
+					//ビュー変更：ピアノロールリング
+					result = _OnMenuSelectSceneType(PianoRollRing);
 					if (result != 0) goto EXIT;
 					break;
 				//TAG: シーン追加
@@ -2222,6 +2229,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_VIEW_2DPIANOROLL,
 		IDM_VIEW_PIANOROLLRAIN,
 		IDM_VIEW_PIANOROLLRAIN2D,
+		IDM_VIEW_PIANOROLLRING,
 		IDM_ENABLE_PIANOKEYBOARD,
 		IDM_ENABLE_RIPPLE,
 		IDM_ENABLE_PITCHBEND,
@@ -2259,6 +2267,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_2DPIANOROLL
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN2D
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRING
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIANOKEYBOARD
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_RIPPLE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND
@@ -2334,6 +2343,9 @@ int MIDITrailApp::_CreateScene(
 				else if (type == PianoRollRain2D) {
 					m_pScene = new MTScenePianoRollRain2D();
 				}
+				else if (type == PianoRollRing) {
+					m_pScene = new MTScenePianoRollRing();
+				}
 			}
 			//ライブモニタ用シーン生成
 			else {
@@ -2348,6 +2360,9 @@ int MIDITrailApp::_CreateScene(
 				}
 				else if (type == PianoRollRain2D) {
 					m_pScene = new MTScenePianoRollRain2DLive();
+				}
+				else if (type == PianoRollRing) {
+					m_pScene = new MTScenePianoRollRingLive();
 				}
 			}
 		}
@@ -2409,6 +2424,9 @@ int MIDITrailApp::_LoadSceneType()
 	else if (_tcscmp(type, _T("PianoRollRain2D")) == 0) {
 		m_SelectedSceneType = PianoRollRain2D;
 	}
+	else if (_tcscmp(type, _T("PianoRollRing")) == 0) {
+		m_SelectedSceneType = PianoRollRing;
+	}
 	else {
 		m_SelectedSceneType = PianoRoll3D;
 	}
@@ -2438,6 +2456,9 @@ int MIDITrailApp::_SaveSceneType()
 			break;
 		case PianoRollRain2D:
 			pType = _T("PianoRollRain2D");
+			break;
+		case PianoRollRing:
+			pType = _T("PianoRollRing");
 			break;
 		default:
 			result = YN_SET_ERR("Program error.", m_SelectedSceneType, 0);
@@ -2851,6 +2872,7 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	_CheckMenuItem(IDM_VIEW_2DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN, false);
 	_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN2D, false);
+	_CheckMenuItem(IDM_VIEW_PIANOROLLRING, false);
 	switch (m_SelectedSceneType) {
 		case PianoRoll3D:
 			_CheckMenuItem(IDM_VIEW_3DPIANOROLL, true);
@@ -2863,6 +2885,9 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 			break;
 		case PianoRollRain2D:
 			_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN2D, true);
+			break;
+		case PianoRollRing:
+			_CheckMenuItem(IDM_VIEW_PIANOROLLRING, true);
 			break;
 		default:
 			result = YN_SET_ERR("Program error.", m_SelectedSceneType, 0);

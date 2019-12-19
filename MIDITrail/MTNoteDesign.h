@@ -55,7 +55,7 @@ public:
 	float GetLivePosX(unsigned long elapsedTime);
 
 	//ノートボックス中心座標取得
-	D3DXVECTOR3 GetNoteBoxCenterPosX(
+	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
@@ -66,7 +66,7 @@ public:
 
 	//ノートボックス縦横サイズ取得
 	float GetNoteBoxHeight();
-	float GetNoteBoxWidht();
+	float GetNoteBoxWidth();
 
 	//ノート間隔取得
 	float GetNoteStep();
@@ -78,7 +78,7 @@ public:
 	unsigned long GetLiveMonitorDisplayDuration();
 
 	//ノートボックス頂点座標取得
-	void GetNoteBoxVirtexPos(
+	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
@@ -92,7 +92,7 @@ public:
 			);
 
 	//発音中ノートボックス頂点座標取得
-	void GetActiveNoteBoxVirtexPos(
+	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
@@ -107,7 +107,7 @@ public:
 			);
 
 	//ライブモニタ用ノートボックス頂点座標取得
-	void GetNoteBoxVirtexPosLive(
+	virtual void GetNoteBoxVirtexPosLive(
 				unsigned long elapsedTime,	//経過時間（ミリ秒）
 				unsigned char portNo,
 				unsigned char chNo,
@@ -158,11 +158,11 @@ public:
 	float GetPictBoardRelativePos();
 
 	//ポート原点座標取得
-	float GetPortOriginY(unsigned char portNo);
-	float GetPortOriginZ(unsigned char portNo);
+	virtual float GetPortOriginY(unsigned char portNo);
+	virtual float GetPortOriginZ(unsigned char portNo);
 
 	//世界座標配置移動ベクトル取得
-	D3DXVECTOR3 GetWorldMoveVector();
+	virtual D3DXVECTOR3 GetWorldMoveVector();
 
 	//ノートボックスカラー取得
 	D3DXCOLOR GetNoteBoxColor(
@@ -188,7 +188,7 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
-private:
+protected:
 
 	enum NoteColorType {
 		Channel,
@@ -224,7 +224,7 @@ private:
 	float m_LiveNoteLengthPerSecond;
 
 	void _Clear();
-	int _LoadConfFile(const TCHAR* pSceneName);
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
 	int _LoadUserConf();
 
 };

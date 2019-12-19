@@ -4,7 +4,7 @@
 //
 // ノート波紋描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -110,7 +110,7 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-private:
+protected:
 
 	//描画系
 	DXPrimitive m_Primitive;
@@ -124,7 +124,7 @@ private:
 	D3DXVECTOR3 m_CamVector;
 
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign* m_pNoteDesign;
 
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
@@ -139,6 +139,7 @@ private:
 	//スキップ状態
 	bool m_isSkipping;
 
+	virtual int _CreateNoteDesign();
 	int _CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 	int _CreateNoteStatus();
 	int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);

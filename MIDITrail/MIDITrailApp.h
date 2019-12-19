@@ -43,7 +43,8 @@ using namespace SMIDILib;
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-#define MT_MENU_NUM        (32)
+//TAG:シーン追加
+#define MT_MENU_NUM        (33)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -97,11 +98,12 @@ private:
 	//シーン種別
 	//TAG:シーン追加
 	enum SceneType {
-		Title,			//タイトル
-		PianoRoll3D,	//ピアノロール3D
-		PianoRoll2D,	//ピアノロール2D
-		PianoRollRain,	//ピアノロールレイン
-		PianoRollRain2D	//ピアノロールレイン2D
+		Title,				//タイトル
+		PianoRoll3D,		//ピアノロール3D
+		PianoRoll2D,		//ピアノロール2D
+		PianoRollRain,		//ピアノロールレイン
+		PianoRollRain2D,	//ピアノロールレイン2D
+		PianoRollRing		//ピアノロールリング
 	};
 
 	//シーケンサメッセージ
