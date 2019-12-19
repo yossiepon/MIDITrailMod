@@ -202,6 +202,7 @@
     <ClCompile Include="DXCamera.cpp" />
     <ClCompile Include="DXColorUtil.cpp" />
     <ClCompile Include="DXDirLight.cpp" />
+    <ClCompile Include="DXH.cpp" />
     <ClCompile Include="DXMesh.cpp" />
     <ClCompile Include="DXPrimitive.cpp" />
     <ClCompile Include="DXRenderer.cpp" />
@@ -223,6 +224,8 @@
     <ClCompile Include="MTGridBox.cpp" />
     <ClCompile Include="MTGridBoxLive.cpp" />
     <ClCompile Include="MTGridBoxMod.cpp" />
+    <ClCompile Include="MTGridRing.cpp" />
+    <ClCompile Include="MTGridRingLive.cpp" />
     <ClCompile Include="MTHowToViewDlg.cpp" />
     <ClCompile Include="MTLogo.cpp" />
     <ClCompile Include="MTMeshCtrl.cpp" />
@@ -231,14 +234,18 @@
     <ClCompile Include="MTNoteBox.cpp" />
     <ClCompile Include="MTNoteBoxLive.cpp" />
     <ClCompile Include="MTNoteBoxMod.cpp" />
+    <ClCompile Include="MTNoteBoxRing.cpp" />
+    <ClCompile Include="MTNoteBoxRingLive.cpp" />
     <ClCompile Include="MTNoteDesign.cpp" />
     <ClCompile Include="MTNoteDesignMod.cpp" />
+    <ClCompile Include="MTNoteDesignRing.cpp" />
     <ClCompile Include="MTNoteLyrics.cpp" />
     <ClCompile Include="MTNotePitchBend.cpp" />
     <ClCompile Include="MTNoteRain.cpp" />
     <ClCompile Include="MTNoteRainLive.cpp" />
     <ClCompile Include="MTNoteRipple.cpp" />
     <ClCompile Include="MTNoteRippleMod.cpp" />
+    <ClCompile Include="MTNoteRippleRing.cpp" />
     <ClCompile Include="MTPianoKeyboard.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrl.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrlLive.cpp" />
@@ -247,6 +254,7 @@
     <ClCompile Include="MTPianoKeyboardDesignMod.cpp" />
     <ClCompile Include="MTPianoKeyboardMod.cpp" />
     <ClCompile Include="MTPictBoard.cpp" />
+    <ClCompile Include="MTPictBoardRing.cpp" />
     <ClCompile Include="MTScene.cpp" />
     <ClCompile Include="MTScenePianoRoll2D.cpp" />
     <ClCompile Include="MTScenePianoRoll2DLive.cpp" />
@@ -258,10 +266,13 @@
     <ClCompile Include="MTScenePianoRollRain2D.cpp" />
     <ClCompile Include="MTScenePianoRollRain2DLive.cpp" />
     <ClCompile Include="MTScenePianoRollRainLive.cpp" />
+    <ClCompile Include="MTScenePianoRollRing.cpp" />
+    <ClCompile Include="MTScenePianoRollRingLive.cpp" />
     <ClCompile Include="MTSceneTitle.cpp" />
     <ClCompile Include="MTStars.cpp" />
     <ClCompile Include="MTStaticCaption.cpp" />
     <ClCompile Include="MTTimeIndicator.cpp" />
+    <ClCompile Include="MTTimeIndicatorRing.cpp" />
     <ClCompile Include="MTWindowSizeCfgDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -276,6 +287,7 @@
     <ClInclude Include="DXCamera.h" />
     <ClInclude Include="DXColorUtil.h" />
     <ClInclude Include="DXDirLight.h" />
+    <ClInclude Include="DXH.h" />
     <ClInclude Include="DXMesh.h" />
     <ClInclude Include="DXPrimitive.h" />
     <ClInclude Include="DXRenderer.h" />
@@ -298,6 +310,8 @@
     <ClInclude Include="MTGridBox.h" />
     <ClInclude Include="MTGridBoxLive.h" />
     <ClInclude Include="MTGridBoxMod.h" />
+    <ClInclude Include="MTGridRing.h" />
+    <ClInclude Include="MTGridRingLive.h" />
     <ClInclude Include="MTHowToViewDlg.h" />
     <ClInclude Include="MTLogo.h" />
     <ClInclude Include="MTMeshCtrl.h" />
@@ -306,14 +320,18 @@
     <ClInclude Include="MTNoteBox.h" />
     <ClInclude Include="MTNoteBoxLive.h" />
     <ClInclude Include="MTNoteBoxMod.h" />
+    <ClInclude Include="MTNoteBoxRing.h" />
+    <ClInclude Include="MTNoteBoxRingLive.h" />
     <ClInclude Include="MTNoteDesign.h" />
     <ClInclude Include="MTNoteDesignMod.h" />
+    <ClInclude Include="MTNoteDesignRing.h" />
     <ClInclude Include="MTNoteLyrics.h" />
     <ClInclude Include="MTNotePitchBend.h" />
     <ClInclude Include="MTNoteRain.h" />
     <ClInclude Include="MTNoteRainLive.h" />
     <ClInclude Include="MTNoteRipple.h" />
     <ClInclude Include="MTNoteRippleMod.h" />
+    <ClInclude Include="MTNoteRippleRing.h" />
     <ClInclude Include="MTParam.h" />
     <ClInclude Include="MTPianoKeyboard.h" />
     <ClInclude Include="MTPianoKeyboardCtrl.h" />
@@ -323,6 +341,7 @@
     <ClInclude Include="MTPianoKeyboardDesignMod.h" />
     <ClInclude Include="MTPianoKeyboardMod.h" />
     <ClInclude Include="MTPictBoard.h" />
+    <ClInclude Include="MTPictBoardRing.h" />
     <ClInclude Include="MTScene.h" />
     <ClInclude Include="MTScenePianoRoll2D.h" />
     <ClInclude Include="MTScenePianoRoll2DLive.h" />
@@ -334,10 +353,13 @@
     <ClInclude Include="MTScenePianoRollRain2D.h" />
     <ClInclude Include="MTScenePianoRollRain2DLive.h" />
     <ClInclude Include="MTScenePianoRollRainLive.h" />
+    <ClInclude Include="MTScenePianoRollRing.h" />
+    <ClInclude Include="MTScenePianoRollRingLive.h" />
     <ClInclude Include="MTSceneTitle.h" />
     <ClInclude Include="MTStars.h" />
     <ClInclude Include="MTStaticCaption.h" />
     <ClInclude Include="MTTimeIndicator.h" />
+    <ClInclude Include="MTTimeIndicatorRing.h" />
     <ClInclude Include="MTWindowSizeCfgDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

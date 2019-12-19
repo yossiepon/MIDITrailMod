@@ -4,7 +4,7 @@
 //
 // ノート波紋描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -120,21 +120,12 @@ protected:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-// >>> modify access level to protected 20161224 yossiepon begin
-// >>> modify 20161224 yossiepon end
+protected:
 
 	//描画系
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
-// >>> modify access level 20161224 yossiepon begin
-private:
-// >>> modify 20161224 yossiepon end
-
 	D3DMATERIAL9 m_Material;
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// >>> modify 20161224 yossiepon end
 
 	//再生時刻
 	unsigned long m_CurTickTime;
@@ -143,23 +134,13 @@ protected:
 	D3DXVECTOR3 m_CamVector;
 
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign* m_pNoteDesign;
 
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
 
 	//ノート発音状態情報
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// >>> modify 20161224 yossiepon end
-
 	NoteStatus* m_pNoteStatus;
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// >>> modify 20161224 yossiepon end
-
 	unsigned long m_ActiveNoteNum;
 
 	//表示可否
@@ -168,21 +149,12 @@ protected:
 	//スキップ状態
 	bool m_isSkipping;
 
-// >>> modify access level 20161224 yossiepon begin
-private:
-// >>> modify 20161224 yossiepon end
-
+	virtual int _CreateNoteDesign();
 	int _CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// >>> modify 20161224 yossiepon end
-
+// >>> modify 20161224 yossiepon begin
 	virtual int _CreateNoteStatus();
 	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
-
-// >>> modify access level 20161224 yossiepon begin
-private:
 // >>> modify 20161224 yossiepon end
 
 	int _SetVertexPosition(
@@ -193,13 +165,11 @@ private:
 				bool* pIsTimeout
 			);
 
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// >>> modify 20161224 yossiepon end
-
+// >>> modify 20161224 yossiepon begin
 	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+// >>> modify 20161224 yossiepon end
 
 };
 

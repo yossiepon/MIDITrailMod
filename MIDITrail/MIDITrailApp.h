@@ -43,9 +43,11 @@ using namespace SMIDILib;
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-// >>> modify 20190828 yossiepon begin
-#define MT_MENU_NUM        (35)
-// <<< modify 20190828 yossiepon end
+//TAG:シーン追加
+// >>> modify 20191219 yossiepon begin
+#define MT_MENU_NUM        (36)
+// <<< modify 20191219 yossiepon end
+
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -103,7 +105,8 @@ private:
 		PianoRoll3D,	//ピアノロール3D
 		PianoRoll2D,	//ピアノロール2D
 		PianoRollRain,	//ピアノロールレイン
-		PianoRollRain2D	//ピアノロールレイン2D
+		PianoRollRain2D,	//ピアノロールレイン2D
+		PianoRollRing		//ピアノロールリング
 	};
 
 	//シーケンサメッセージ
@@ -329,7 +332,6 @@ private:
 	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
 	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
 	int _FileOpenProc(TCHAR* pFilePath);
-
 	int _ToggleFullScreen();
 	int _ShowMenu();
 	int _HideMenu();
