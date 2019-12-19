@@ -85,8 +85,8 @@ int MTTimeIndicatorRing::_CreatePrimitiveLine(
 	result = m_PrimitiveLine.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//インデックスバッファ生成：1サークル128辺 * 2(始点/終点) * 2(先端/終端)
-	indexNum = 128 * 2 * 2;
+	//インデックスバッファ生成：1サークル128辺 * 2(始点/終点)
+	indexNum = 128 * 2;
 	result = m_PrimitiveLine.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 

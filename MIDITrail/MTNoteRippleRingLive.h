@@ -1,8 +1,8 @@
 //******************************************************************************
 //
-// MIDITrail / MTNoteRippleRing
+// MIDITrail / MTNoteRippleRingLive
 //
-// ノート波紋リング描画クラス
+// ライブモニタ用ノート波紋リング描画クラス
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //
@@ -14,15 +14,15 @@
 
 
 //******************************************************************************
-// リング用ノート波紋描画クラス
+// ライブモニタ用ノート波紋リング描画クラス
 //******************************************************************************
-class MTNoteRippleRing : public MTNoteRipple
+class MTNoteRippleRingLive : public MTNoteRipple
 {
 public:
 
 	//コンストラクタ／デストラクタ
-	MTNoteRippleRing(void);
-	virtual ~MTNoteRippleRing(void);
+	MTNoteRippleRingLive(void);
+	virtual ~MTNoteRippleRingLive(void);
 
 private:
 

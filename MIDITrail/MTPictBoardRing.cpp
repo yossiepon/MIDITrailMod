@@ -74,7 +74,7 @@ int MTPictBoardRing::Create(
 	if (result != 0) goto EXIT;
 
 	//頂点バッファ生成
-	vertexNum = (SM_MAX_NOTE_NUM + 1)* 2;
+	vertexNum = (SM_MAX_NOTE_NUM + 1) * 2;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
@@ -206,19 +206,34 @@ int MTPictBoardRing::_CreateVertexOfBoard(
 	unsigned long virtexIndexStart = 0;
 	D3DXVECTOR3 basePos;
 	D3DXVECTOR3 rotatedPos;
-	float boardHight = 0.0f;
+	float boardHeight = 0.0f;
 	float boardWidth = 0.0f;
 	float chStep = 0.0f;
 	float angle = 0.0f;
-	float tx1 = 0.0f;
-	float tx2 = 0.0f;
+	float direction = 0.0f;
+	D3DXVECTOR2 clipAreaP1;
+	D3DXVECTOR2 clipAreaP2;
+	D3DXVECTOR2 textureP1;
+	D3DXVECTOR2 textureP2;
 
-	//テクスチャX座標
-	tx1 = 1.0f;
-	tx2 = 0.0f;
+	//テクスチャクリップ領域の座標
+	clipAreaP1 = D3DXVECTOR2(0.0f, 0.0f);  //左上
+	clipAreaP2 = D3DXVECTOR2(1.0f, 1.0f);  //右下
+
+	//テスクチャX座標
 	if (isReverseMode) {
-		tx1 = 0.0f;
-		tx2 = 1.0f;
+		textureP1.x = clipAreaP1.x;
+		textureP1.y = clipAreaP2.y;
+		textureP2.x = clipAreaP2.x;
+		textureP2.y = clipAreaP1.y;
+		direction = -1.0f;
+	}
+	else {
+		textureP1.x = clipAreaP2.x;
+		textureP1.y = clipAreaP1.y;
+		textureP2.x = clipAreaP1.x;
+		textureP2.y = clipAreaP2.y;
+		direction = 1.0f;
 	}
 
 	//基準座標
@@ -227,8 +242,8 @@ int MTPictBoardRing::_CreateVertexOfBoard(
 				m_NoteDesign.GetPlayPosX(0),
 				m_NoteDesign.GetPortOriginY(0) + (chStep * (float)SM_MAX_CH_NUM) + chStep + 0.01f,
 				m_NoteDesign.GetPortOriginZ(0));
-	boardHight = 2.0f * 3.1415926f * basePos.y;
-	boardWidth = boardHight * ((float)m_ImgInfo.Width / (float)m_ImgInfo.Height);
+	boardHeight = 2.0f * 3.1415926f * basePos.y;
+	boardWidth = boardHeight * ((float)m_ImgInfo.Width / (float)m_ImgInfo.Height);
 	basePos.x -= (boardWidth * m_NoteDesign.GetPictBoardRelativePos());
 
 	//頂点作成：X軸回りの円筒
@@ -236,13 +251,13 @@ int MTPictBoardRing::_CreateVertexOfBoard(
 	pVertex[virtexIndex].p = basePos;
 	pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[virtexIndex].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVertex[virtexIndex].t = D3DXVECTOR2(tx1, 1.0f);
+	pVertex[virtexIndex].t = D3DXVECTOR2(textureP1.x, textureP1.y);
 	virtexIndex++;
 	pVertex[virtexIndex].p = basePos;
 	pVertex[virtexIndex].p.x += boardWidth;
 	pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[virtexIndex].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVertex[virtexIndex].t = D3DXVECTOR2(tx2, 1.0f);
+	pVertex[virtexIndex].t = D3DXVECTOR2(textureP2.x, textureP1.y);
 	for (i = 1; i < SM_MAX_NOTE_NUM; i++) {
 		virtexIndex++;
 		
@@ -252,13 +267,13 @@ int MTPictBoardRing::_CreateVertexOfBoard(
 		pVertex[virtexIndex].p = rotatedPos;
 		pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[virtexIndex].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVertex[virtexIndex].t = D3DXVECTOR2(tx1, (float)(SM_MAX_NOTE_NUM - i) / (float)SM_MAX_NOTE_NUM);
+		pVertex[virtexIndex].t = D3DXVECTOR2(textureP1.x, textureP1.y + (direction * (float)i / (float)SM_MAX_NOTE_NUM));
 		virtexIndex++;
 		pVertex[virtexIndex].p = rotatedPos;
 		pVertex[virtexIndex].p.x += boardWidth;
 		pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[virtexIndex].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVertex[virtexIndex].t = D3DXVECTOR2(tx2, (float)(SM_MAX_NOTE_NUM - i) / (float)SM_MAX_NOTE_NUM);
+		pVertex[virtexIndex].t = D3DXVECTOR2(textureP2.x, textureP1.y + (direction * (float)i / (float)SM_MAX_NOTE_NUM));
 		
 		//インデックスバッファ
 		//  直前の頂点0,1と追加した頂点2,3で三角形0-1-3と0-3-2を追加
@@ -276,10 +291,10 @@ int MTPictBoardRing::_CreateVertexOfBoard(
 	//最後の頂点2,3は最初0,1の頂点と同じ（リングを閉じる）
 	virtexIndex++;
 	pVertex[virtexIndex] =pVertex[0];
-	pVertex[virtexIndex].t = D3DXVECTOR2(tx1, 0.0f);
+	pVertex[virtexIndex].t = D3DXVECTOR2(textureP1.x, textureP2.y);
 	virtexIndex++;
 	pVertex[virtexIndex] =pVertex[1];
-	pVertex[virtexIndex].t = D3DXVECTOR2(tx2, 0.0f);
+	pVertex[virtexIndex].t = D3DXVECTOR2(textureP2.x, textureP2.y);
 
 	//インデックスバッファ（リングを閉じる）
 	pIndex[(i-1)*6 + 0] = (i-1)*2 + 0;  //0 1つ目の三角形

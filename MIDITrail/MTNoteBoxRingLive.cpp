@@ -44,7 +44,10 @@ int MTNoteBoxRingLive::_CreateNoteDesign()
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 		goto EXIT;
 	}
-
+	
+	//ライブモニタモード設定
+	((MTNoteDesignRing*)m_pNoteDesign)->SetLiveMode();
+	
 EXIT:;
 	return result;
 }
