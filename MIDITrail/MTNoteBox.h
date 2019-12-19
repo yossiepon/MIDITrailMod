@@ -4,7 +4,7 @@
 //
 // ノートボックス描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -101,11 +101,10 @@ protected:
 		DWORD		c;	//ディフューズ色
 	};
 
-// >>> modify access level to protected 20161224 yossiepon begin
-// <<< modify 20161224 yossiepon end
+protected:
 
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign* m_pNoteDesign;
 
 	//ノートリスト
 	SMNoteList m_NoteList;
@@ -118,36 +117,20 @@ protected:
 	unsigned long m_CurTickTime;
 	unsigned long m_CurNoteIndex;
 	unsigned long m_ActiveNoteNum;
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
-
 	NoteStatus* m_pNoteStatus;
 
 	//スキップ状態
 	bool m_isSkipping;
 
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
-
-	//ピッチベンド情報
+		//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
 
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
+	virtual int _CreateNoteDesign();
 	int _CreateAllNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _CreateActiveNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
 
 // >>> modify 20120728 yossiepon begin
 	virtual int _CreateNoteStatus();
@@ -161,19 +144,10 @@ protected:
 			unsigned long elapsedTime = 0xFFFFFFFF,
 			bool isEnablePitchBend = false
 		);
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
-
 	unsigned long _GetVertexIndexOfNote(unsigned long index);
 
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	void _MakeMaterialForActiveNote(D3DMATERIAL9* pMaterial);
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
 
 	int _TransformActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
 // >>> modify 20120728 yossiepon begin

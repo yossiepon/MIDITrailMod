@@ -57,7 +57,7 @@ public:
 	float GetLivePosX(unsigned long elapsedTime);
 
 	//ノートボックス中心座標取得
-	D3DXVECTOR3 GetNoteBoxCenterPosX(
+	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
@@ -68,7 +68,7 @@ public:
 
 	//ノートボックス縦横サイズ取得
 	float GetNoteBoxHeight();
-	float GetNoteBoxWidht();
+	float GetNoteBoxWidth();
 
 	//ノート間隔取得
 	float GetNoteStep();
@@ -80,7 +80,7 @@ public:
 	unsigned long GetLiveMonitorDisplayDuration();
 
 	//ノートボックス頂点座標取得
-	void GetNoteBoxVirtexPos(
+	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
@@ -94,7 +94,7 @@ public:
 			);
 
 	//発音中ノートボックス頂点座標取得
-	void GetActiveNoteBoxVirtexPos(
+	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
@@ -105,11 +105,11 @@ public:
 				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
 				short pitchBendValue = 0,				//省略可：ピッチベンド
 				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
-				unsigned long elapsedTime = 0			//省略可：経過時間（ミリ秒）
+				unsigned long elapsedTime = 0            //省略可：経過時間（ミリ秒）
 			);
 
 	//ライブモニタ用ノートボックス頂点座標取得
-	void GetNoteBoxVirtexPosLive(
+	virtual void GetNoteBoxVirtexPosLive(
 				unsigned long elapsedTime,	//経過時間（ミリ秒）
 				unsigned char portNo,
 				unsigned char chNo,
@@ -160,11 +160,11 @@ public:
 	float GetPictBoardRelativePos();
 
 	//ポート原点座標取得
-	float GetPortOriginY(unsigned char portNo);
-	float GetPortOriginZ(unsigned char portNo);
+	virtual float GetPortOriginY(unsigned char portNo);
+	virtual float GetPortOriginZ(unsigned char portNo);
 
 	//世界座標配置移動ベクトル取得
-	D3DXVECTOR3 GetWorldMoveVector();
+	virtual D3DXVECTOR3 GetWorldMoveVector();
 
 	//ノートボックスカラー取得
 	D3DXCOLOR GetNoteBoxColor(
@@ -190,7 +190,7 @@ public:
 	//再生面カラー取得
 	D3DXCOLOR GetPlaybackSectionColor();
 
-private:
+protected:
 
 	enum NoteColorType {
 		Channel,
@@ -203,30 +203,11 @@ private:
 	float m_NoteBoxWidth;
 	float m_NoteStep;
 	float m_ChStep;
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
-
 	float m_RippleHeight;
 	float m_RippleWidth;
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
-
 	float m_PictBoardRelativePos;
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
-
 	SMPortList m_PortList;
 	unsigned char m_PortIndex[256];
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
 
 	NoteColorType m_NoteColorType;
 	D3DXCOLOR m_NoteColor[16];
@@ -236,32 +217,19 @@ private:
 	D3DXCOLOR m_PlaybackSectionColor;
 
 	int m_ActiveNoteDuration;
-
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
-
 	float m_ActiveNoteWhiteRate;
 	float m_ActiveNoteBoxSizeRatio;
-
-// >>> modify access level 20161224 yossiepon begin
-private:
-// <<< modify 20161224 yossiepon end
 
 	int m_RippleDuration;
 
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
 
-// >>> modify access level to protected 20161224 yossiepon begin
-protected:
-// <<< modify 20161224 yossiepon end
-
 // >>> modify 20120728 yossiepon begin
 	virtual void _Clear();
-	virtual int _LoadConfFile(const TCHAR* pSceneName);
 // <<< modify 20120728 yossiepon end
 
+	virtual int _LoadConfFile(const TCHAR* pSceneName);
 	int _LoadUserConf();
 
 };

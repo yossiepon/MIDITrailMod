@@ -72,6 +72,7 @@ BEGIN
         MENUITEM "Piano Roll 2D",               IDM_VIEW_2DPIANOROLL
         MENUITEM "Piano Roll Rain",             IDM_VIEW_PIANOROLLRAIN
         MENUITEM "Piano Roll Rain 2D",          IDM_VIEW_PIANOROLLRAIN2D
+        MENUITEM "Piano Roll Ring",             IDM_VIEW_PIANOROLLRING
         MENUITEM SEPARATOR
         MENUITEM "Piano Keyboard",              IDM_ENABLE_PIANOKEYBOARD
         MENUITEM "Ripple",                      IDM_ENABLE_RIPPLE

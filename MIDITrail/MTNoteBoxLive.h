@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ノートボックス描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -77,7 +77,7 @@ public:
 	void AllNoteOff();
 	void AllNoteOffOnCh(unsigned char portNo, unsigned char chNo);
 	
-private:
+protected:
 	
 	//発音ノート情報構造体
 	struct NoteStatus {
@@ -96,10 +96,10 @@ private:
 		DWORD		c;	//ディフューズ色
 	};
 	
-private:
+protected:
 	
 	//ノートデザイン
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign* m_pNoteDesign;
 	
 	//ノートボックス
 	DXPrimitive m_PrimitiveNotes;
@@ -115,6 +115,7 @@ private:
 	//頂点バッファFVFフォーマット
 	unsigned long _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 	
+	virtual int _CreateNoteDesign();
 	int _CreateNoteBox(LPDIRECT3DDEVICE9 pD3DDevice);
 	int _CreateNoteStatus();
 	

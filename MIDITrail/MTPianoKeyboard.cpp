@@ -14,6 +14,7 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MTPianoKeyboard.h"
+#include "DXH.h"
 
 using namespace YNBaseLib;
 
@@ -1804,8 +1805,8 @@ int MTPianoKeyboard::_RotateKey(
 	centerY = 0.00f;
 	centerZ = m_KeyboardDesign.GetKeyRotateAxisXPos();
 	for (i = 0; i < m_BufInfo[noteNo].vertexNum; i++) {
-		tempVertex[i].p = _RotateYZ(centerY, centerZ, tempVertex[i].p, angle);
-		tempVertex[i].n = _RotateYZ(   0.0f,   0.00f, tempVertex[i].n, angle);
+		tempVertex[i].p = DXH::RotateYZ(centerY, centerZ, tempVertex[i].p, angle);
+		tempVertex[i].n = DXH::RotateYZ(   0.0f,   0.00f, tempVertex[i].n, angle);
 	}
 
 	//頂点バッファのロック
@@ -1823,27 +1824,6 @@ int MTPianoKeyboard::_RotateKey(
 
 EXIT:;
 	return result;
-}
-
-//******************************************************************************
-// 座標回転：YZ平面
-//******************************************************************************
-D3DXVECTOR3 MTPianoKeyboard::_RotateYZ(
-		float centerY,
-		float centerZ,
-		D3DXVECTOR3 p1,
-		float angle
-	)
-{
-	D3DXVECTOR3 p2;
-	float rad = 0.0f;
-
-	rad = D3DXToRadian(angle);
-	p2.x = p1.x;
-	p2.y = centerY + (sin(rad) * (p1.z - centerZ)) + (cos(rad) * (p1.y - centerY));
-	p2.z = centerZ + (cos(rad) * (p1.z - centerZ)) - (sin(rad) * (p1.y - centerY));
-
-	return p2;
 }
 
 //******************************************************************************
