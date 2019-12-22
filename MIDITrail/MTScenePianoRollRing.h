@@ -41,7 +41,9 @@ public:
 
 	//コンストラクタ／デストラクタl
 	MTScenePianoRollRing();
-	~MTScenePianoRollRing();
+	// >>> modify 20191222 yossiepon begin
+	virtual ~MTScenePianoRollRing();
+	// <<< modify 20191222 yossiepon end
 
 	//名称取得
 	const TCHAR* GetName();
@@ -54,13 +56,19 @@ public:
 		);
 
 	//変換
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+	// >>> modify 20191222 yossiepon begin
+	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+	// <<< modify 20191222 yossiepon end
 
 	//描画
-	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	// >>> modify 20191222 yossiepon begin
+	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
+	// <<< modify 20191222 yossiepon end
 
 	//破棄
-	void Release();
+	// >>> modify 20191222 yossiepon begin
+	virtual void Release();
+	// <<< modify 20191222 yossiepon end
 
 	//ウィンドウクリックイベント受信
 	int OnWindowClicked(
@@ -76,7 +84,9 @@ public:
 	int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	//シーケンサメッセージ受信
-	int OnRecvSequencerMsg(
+	// >>> modify 20191222 yossiepon begin
+	virtual int OnRecvSequencerMsg(
+	// <<< modify 20191222 yossiepon end
 			unsigned long param1,
 			unsigned long param2
 		);
@@ -91,10 +101,14 @@ public:
 	void MoveToStaticViewpoint(unsigned long viewpointNo);
 
 	//視点リセット
+	// >>> modify 20191222 yossiepon begin
 	void ResetViewpoint();
+	// <<< modify 20191222 yossiepon end
 
 	//エフェクト設定
-	void SetEffect(MTScene::EffectType type, bool isEnable);
+	// >>> modify 20191222 yossiepon begin
+	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
+	// <<< modify 20191222 yossiepon end
 
 	//演奏速度設定
 	void SetPlaySpeedRatio(unsigned long ratio);
@@ -104,7 +118,9 @@ protected:
 	//ライト有無
 	BOOL m_IsEnableLight;
 
-private:
+// >>> modify access level to protected 20191222 yossiepon begin
+//private:
+// <<< modify 20191222 yossiepon end
 
 	//ライト
 	DXDirLight m_DirLight;
@@ -141,7 +157,11 @@ private:
 	//スキップ状態
 	bool m_IsSkipping;
 
-	void _Reset();
+	//シーンリセット
+	// >>> modify 20191222 yossiepon begin
+	virtual void _Reset();
+	// <<< modify 20191222 yossiepon end
+
 	void _SetLightColor(DXDirLight* pLight);
 	int _LoadConf();
 	int _LoadConfViewpoint(MTConfFile* pConfFile, unsigned long viewpointNo, MTScene::MTViewParamMap* pParamMap);

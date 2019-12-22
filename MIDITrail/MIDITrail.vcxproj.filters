@@ -305,6 +305,9 @@
     <ClCompile Include="MTScenePianoRoll3DMod.cpp">
       <Filter>Sources\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="MTScenePianoRollRingMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MIDITrailApp.h">
@@ -572,6 +575,9 @@
       <Filter>Sources\Scene</Filter>
     </ClInclude>
     <ClInclude Include="MTScenePianoRoll3DMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRingMod.h">
       <Filter>Sources\Scene</Filter>
     </ClInclude>
   </ItemGroup>
