@@ -516,7 +516,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo);
 
 	//ノートボックス中心座標取得
-	center = m_NoteDesign.GetNoteBoxCenterPosX(
+	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					note.portNo,
 					note.chNo,
@@ -566,7 +566,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 
 	//各頂点のディフューズ色
 	for (i = 0; i < 6; i++) {
-		color = m_NoteDesign.GetNoteBoxColor(
+		color = m_pNoteDesign->GetNoteBoxColor(
 			note.portNo,
 			note.chNo,
 			note.noteNo

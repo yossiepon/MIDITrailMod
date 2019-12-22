@@ -4,7 +4,7 @@
 //
 // 浮動点小数プロセッサ制御クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -89,17 +89,22 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 			result = YN_SET_ERR("Program error.", 0, 0);
 			goto EXIT;
 	}
-#ifndef _WIN64
+
+#ifdef _WIN64
+	//x64(64bit)
+	//精度制御の必要なし
+#else
+	//x86(32bit)
 	eresult = _controlfp_s(
 					&curCtrl,	//現在の制御ワード
 					flag,		//制御ワード：制御種別
-					_MCW_PC		//マスク：制度制御
+					_MCW_PC		//マスク：精度制御
 				);
-#endif
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
 		goto EXIT;
 	}
+#endif
 
 	_DisplayCurCtrl(_T("Start after"));
 
@@ -131,18 +136,22 @@ int SMFPUCtrl::End()
 		goto EXIT;
 	}
 
-#ifndef _WIN64
 	//浮動小数点精度を復元する
+#ifdef _WIN64
+	//x64(64bit)
+	//精度制御の必要なし
+#else
+	//x86(32bit)
 	eresult = _controlfp_s(
 					&curCtrl,	//現在の制御ワード
 					m_FPUCtrl,	//制御ワード：設定開始時点
-					_MCW_PC		//マスク：制度制御
+					_MCW_PC		//マスク：精度制御
 				);
-#endif
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
 		goto EXIT;
 	}
+#endif
 
 	_DisplayCurCtrl(_T("End after"));
 

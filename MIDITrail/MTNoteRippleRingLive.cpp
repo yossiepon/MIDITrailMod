@@ -1,8 +1,8 @@
 //******************************************************************************
 //
-// MIDITrail / MTNoteRippleRing
+// MIDITrail / MTNoteRippleRingLive
 //
-// ノート波紋リング描画クラス
+// ライブモニタ用ノート波紋リング描画クラス
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //
@@ -11,7 +11,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTNoteDesignRing.h"
-#include "MTNoteRippleRing.h"
+#include "MTNoteRippleRingLive.h"
 
 using namespace YNBaseLib;
 
@@ -19,21 +19,21 @@ using namespace YNBaseLib;
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-MTNoteRippleRing::MTNoteRippleRing(void)
+MTNoteRippleRingLive::MTNoteRippleRingLive(void)
 {
 }
 
 //******************************************************************************
 // デストラクタ
 //******************************************************************************
-MTNoteRippleRing::~MTNoteRippleRing(void)
+MTNoteRippleRingLive::~MTNoteRippleRingLive(void)
 {
 }
 
 //******************************************************************************
 // ノートデザイン生成
 //******************************************************************************
-int MTNoteRippleRing::_CreateNoteDesign()
+int MTNoteRippleRingLive::_CreateNoteDesign()
 {
 	int result = 0;
 
@@ -44,7 +44,10 @@ int MTNoteRippleRing::_CreateNoteDesign()
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 		goto EXIT;
 	}
-
+	
+	//ライブモニタモード設定
+	((MTNoteDesignRing*)m_pNoteDesign)->SetLiveMode();
+	
 EXIT:;
 	return result;
 }

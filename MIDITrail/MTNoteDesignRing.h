@@ -26,6 +26,9 @@ public:
 	MTNoteDesignRing(void);
 	virtual ~MTNoteDesignRing(void);
 
+	//ライブモニタモード設定
+	void SetLiveMode(void);
+
 	//ノートボックス中心座標取得
 	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
@@ -101,6 +104,7 @@ public:
 
 private:
 
+	bool m_isLiveMode;
 	float m_NoteAngleStep;
 	float m_RingRadius;
 
