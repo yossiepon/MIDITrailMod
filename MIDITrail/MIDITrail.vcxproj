@@ -197,6 +197,10 @@
     <ResourceCompile Include="MIDITrail.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MTGridRingMod.cpp" />
+    <ClCompile Include="MTScenePianoRollRingMod.cpp" />
+    <ClCompile Include="MTTimeIndicatorMod.cpp" />
+    <ClCompile Include="MTTimeIndicatorRingMod.cpp" />
     <ClCompile Include="DIKeyCtrl.cpp" />
     <ClCompile Include="DIMouseCtrl.cpp" />
     <ClCompile Include="DXCamera.cpp" />
@@ -283,6 +287,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MTGridRingMod.h" />
+    <ClInclude Include="MTScenePianoRollRingMod.h" />
+    <ClInclude Include="MTTimeIndicatorMod.h" />
+    <ClInclude Include="MTTimeIndicatorRingMod.h" />
     <ClInclude Include="DIKeyCtrl.h" />
     <ClInclude Include="DIMouseCtrl.h" />
     <ClInclude Include="DXCamera.h" />

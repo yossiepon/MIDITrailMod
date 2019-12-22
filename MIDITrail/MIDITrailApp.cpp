@@ -22,7 +22,9 @@
 // <<< modify 20120729 yossiepon end
 #include "MTScenePianoRollRain.h"
 #include "MTScenePianoRollRain2D.h"
-#include "MTScenePianoRollRing.h"
+// >>> modify 20191222 yossiepon begin
+#include "MTScenePianoRollRingMod.h"
+// <<< modify 20191222 yossiepon end
 #include "MTScenePianoRoll3DLive.h"
 #include "MTScenePianoRoll2DLive.h"
 #include "MTScenePianoRollRainLive.h"
@@ -2550,7 +2552,9 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRollRain2D();
 				}
 				else if (type == PianoRollRing) {
-					m_pScene = new MTScenePianoRollRing();
+					// >>> modify 20191222 yossiepon begin
+					m_pScene = new MTScenePianoRollRingMod();
+					// <<< modify 20191222 yossiepon end
 				}
 			}
 			//ライブモニタ用シーン生成

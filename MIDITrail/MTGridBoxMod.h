@@ -24,9 +24,6 @@ public:
 	MTGridBoxMod(void);
 	virtual ~MTGridBoxMod(void);
 
-	//çXêV
-	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
-
 	//ï`âÊ
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 

@@ -85,6 +85,10 @@ int MTScenePianoRoll3DMod::Create(
 	result = m_NoteLyrics.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
+	//タイムインジケータ生成
+	result = m_TimeIndicatorMod.Create(pD3DDevice, GetName(), pSeqData);
+	if (result != 0) goto EXIT;
+
 	//ピクチャボード無効
 	m_PictBoard.SetEnable(false);
 
@@ -123,6 +127,10 @@ int MTScenePianoRoll3DMod::Transform(
 
 	//ノートボックス更新
 	result = m_NoteBoxMod.Transform(pD3DDevice, rollAngle);
+	if (result != 0) goto EXIT;
+
+	//タイムインジケータ更新
+	result = m_TimeIndicatorMod.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
 	//ノート波紋更新
@@ -189,7 +197,7 @@ int MTScenePianoRoll3DMod::Draw(
 		if (result != 0) goto EXIT;
 
 		//タイムインジケータ描画
-		result = m_TimeIndicator.Draw(pD3DDevice);
+		result = m_TimeIndicatorMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 		//ノート歌詞描画
@@ -221,7 +229,7 @@ int MTScenePianoRoll3DMod::Draw(
 		if (result != 0) goto EXIT;
 
 		//タイムインジケータ描画
-		result = m_TimeIndicator.Draw(pD3DDevice);
+		result = m_TimeIndicatorMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 		//メッシュ描画
@@ -280,7 +288,7 @@ int MTScenePianoRoll3DMod::OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		m_Dashboard.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
-		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
+		m_TimeIndicatorMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
@@ -373,30 +381,14 @@ void MTScenePianoRoll3DMod::SetEffect(
 			m_NoteRippleMod.SetEnable(isEnable);
 			m_NoteLyrics.SetEnable(isEnable);
 			break;
-		case EffectPitchBend:
-			m_NotePitchBend.SetEnable(isEnable);
-			break;
-		case EffectStars:
-			m_Stars.SetEnable(isEnable);
-			break;
-		case EffectCounter:
-			m_Dashboard.SetEnable(isEnable);
-			break;
-		case EffectFileName:
-			m_Dashboard.SetEnableFileName(isEnable);
-			break;
-		case EffectBackgroundImage:
-			m_BackgroundImage.SetEnable(isEnable);
-			break;
-// >>> add 20180404 yossiepon begin
 		case EffectTimeIndicator:
-			m_TimeIndicator.SetEnable(isEnable);
+			m_TimeIndicatorMod.SetEnable(isEnable);
 			break;
 		case EffectGridBox:
 			m_GridBoxMod.SetEnable(isEnable);
 			break;
-// <<< add 20180404 yossiepon end
 		default:
+			MTScenePianoRoll3D::SetEffect(type, isEnable);
 			break;
 	}
 

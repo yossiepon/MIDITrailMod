@@ -242,12 +242,6 @@
     <ClCompile Include="MTPianoKeyboardMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
     <ClCompile Include="MTNoteLyrics.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
@@ -285,6 +279,24 @@
       <Filter>Sources\DirectXUtility</Filter>
     </ClCompile>
     <ClCompile Include="MTNoteRippleRingLive.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRollRingMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTGridRingMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTTimeIndicatorMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTTimeIndicatorRingMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
   </ItemGroup>
@@ -493,12 +505,6 @@
     <ClInclude Include="MTPianoKeyboardMod.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
-    <ClInclude Include="MTScenePianoRoll2DMod.h">
-      <Filter>Sources\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="MTScenePianoRoll3DMod.h">
-      <Filter>Sources\SceneObject</Filter>
-    </ClInclude>
     <ClInclude Include="MTNoteLyrics.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
@@ -536,6 +542,24 @@
       <Filter>Sources\DirectXUtility</Filter>
     </ClInclude>
     <ClInclude Include="MTNoteRippleRingLive.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll2DMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll3DMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRingMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTGridRingMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTTimeIndicatorMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTTimeIndicatorRingMod.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>

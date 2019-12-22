@@ -57,11 +57,6 @@ public:
 	//移動ベクトル取得
 	D3DXVECTOR3 GetMoveVector();
 
-// >>> add 20180404 yossiepon begin
-	//表示設定
-	void SetEnable(bool isEnable);
-// <<< add 20180404 yossiepon end
-
 private:
 
 	DXPrimitive m_Primitive;
@@ -69,11 +64,6 @@ private:
 	float m_CurPos;
 	MTNoteDesign m_NoteDesign;
 	bool m_isEnableLine;
-
-// >>> add 20180404 yossiepon begin
-	//表示可否
-	bool m_isEnable;
-// <<< add 20180404 yossiepon end
 
 	unsigned long m_CurTickTime;
 

@@ -15,6 +15,7 @@
 #include "MTNoteBoxMod.h"
 #include "MTNoteRippleMod.h"
 #include "MTNoteLyrics.h"
+#include "MTTimeIndicatorMod.h"
 #include "MTPianoKeyboardCtrlMod.h"
 
 //******************************************************************************
@@ -70,6 +71,7 @@ private:
 	MTNoteBoxMod m_NoteBoxMod;
 	MTNoteRippleMod m_NoteRippleMod;
 	MTNoteLyrics m_NoteLyrics;
+	MTTimeIndicatorMod m_TimeIndicatorMod;
 	MTPianoKeyboardCtrlMod m_PianoKeyboardCtrlMod;
 
 };
