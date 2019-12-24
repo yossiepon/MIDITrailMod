@@ -232,6 +232,8 @@ xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
     <ResourceCompile Include="MIDITrail.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MTNoteDesignRingMod.cpp" />
+    <ClCompile Include="MTNoteRippleRingMod.cpp" />
     <ClCompile Include="MTScenePianoRollRingMod.cpp" />
     <ClCompile Include="DIKeyCtrl.cpp" />
     <ClCompile Include="DIMouseCtrl.cpp" />
@@ -325,6 +327,8 @@ xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MTNoteDesignRingMod.h" />
+    <ClInclude Include="MTNoteRippleRingMod.h" />
     <ClInclude Include="MTScenePianoRollRingMod.h" />
     <ClInclude Include="DIKeyCtrl.h" />
     <ClInclude Include="DIMouseCtrl.h" />

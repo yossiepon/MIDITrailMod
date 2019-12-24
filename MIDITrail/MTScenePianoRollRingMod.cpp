@@ -187,8 +187,9 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 	}
 	//演奏チックタイム通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		m_Dashboard.SetPlayTimeSec(parser.GetPlayTimeSec());
+		m_Dashboard.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
+		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
@@ -207,12 +208,12 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 	}
 	//ノートOFF通知
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOff) {
-		m_NoteRippleMod.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+		// NOP
 	}
 	//ノートON通知
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
 		m_Dashboard.SetNoteOn();
-		m_NoteRippleMod.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
+		// NOP
 	}
 	//ピッチベンド通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
