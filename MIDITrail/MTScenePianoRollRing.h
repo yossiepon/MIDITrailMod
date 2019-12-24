@@ -101,9 +101,7 @@ public:
 	void MoveToStaticViewpoint(unsigned long viewpointNo);
 
 	//視点リセット
-	// >>> modify 20191222 yossiepon begin
 	void ResetViewpoint();
-	// <<< modify 20191222 yossiepon end
 
 	//エフェクト設定
 	// >>> modify 20191222 yossiepon begin

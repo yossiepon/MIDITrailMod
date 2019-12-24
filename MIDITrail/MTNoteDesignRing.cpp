@@ -385,6 +385,12 @@ int MTNoteDesignRing::_LoadConfFile(
 	int result = 0;
 	MTConfFile confFile;
 
+// >>> modify 20191224 yossiepon begin
+	//基底クラスの読み込み処理を呼び出す
+	result = MTNoteDesign::_LoadConfFile(pSceneName);
+	if (result != 0) goto EXIT;
+// <<< modify 20191224 yossiepon end
+
 	//設定ファイル読み込み
 	result = MTNoteDesign::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;

@@ -45,7 +45,7 @@ public:
 			);
 
 	//発音中ノートボックス頂点座標取得
-	void GetActiveNoteBoxVirtexPos(
+	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,

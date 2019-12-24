@@ -197,6 +197,8 @@
     <ResourceCompile Include="MIDITrail.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MTNoteDesignRingMod.cpp" />
+    <ClCompile Include="MTNoteRippleRingMod.cpp" />
     <ClCompile Include="MTGridRingMod.cpp" />
     <ClCompile Include="MTScenePianoRollRingMod.cpp" />
     <ClCompile Include="MTTimeIndicatorMod.cpp" />
@@ -287,6 +289,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MTNoteDesignRingMod.h" />
+    <ClInclude Include="MTNoteRippleRingMod.h" />
     <ClInclude Include="MTGridRingMod.h" />
     <ClInclude Include="MTScenePianoRollRingMod.h" />
     <ClInclude Include="MTTimeIndicatorMod.h" />

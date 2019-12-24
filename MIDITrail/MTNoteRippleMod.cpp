@@ -21,6 +21,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteRippleMod::MTNoteRippleMod(void) : MTNoteRipple()
 {
+	m_pNoteDesignMod = NULL;
 	m_PlayTimeMSec = 0;
 	m_CurNoteIndex = 0;
 	m_pNoteStatusMod = NULL;
@@ -48,14 +49,10 @@ int MTNoteRippleMod::Create(
 	int result = 0;
 	SMTrack track;
 
-	Release();
+	//解放およびノートデザインModオブジェクト生成は基底クラスからオーバライド経由で行う
 
-	//// 基底クラスの生成処理を呼び出す
-	//result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
-	//if (result != 0) goto EXIT;
-
-	//ノートデザインModオブジェクト初期化
-	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
+	// 基底クラスの生成処理を呼び出す
+	result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
 	if (result != 0) goto EXIT;
 
 	//トラック取得
@@ -66,9 +63,26 @@ int MTNoteRippleMod::Create(
 	result = track.GetNoteListWithRealTime(&m_NoteListRT, pSeqData->GetTimeDivision());
 	if (result != 0) goto EXIT;
 
-	// 基底クラスの生成処理を呼び出す
-	result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
-	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ノートデザイン生成
+//******************************************************************************
+int MTNoteRippleMod::_CreateNoteDesign()
+{
+	int result = 0;
+
+	try {
+		//ノートデザインModオブジェクト生成
+		m_pNoteDesignMod = new MTNoteDesignMod();
+		m_pNoteDesign = m_pNoteDesignMod;
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -112,8 +126,8 @@ int MTNoteRippleMod::_UpdateStatusOfRipple(
 	SMNote note;
 
 	//波紋ディケイ・リリース時間(msec)
-	unsigned long decayDuration = m_NoteDesignMod.GetRippleDecayDuration();
-	unsigned long releaseDuration   = m_NoteDesignMod.GetRippleReleaseDuration();
+	unsigned long decayDuration = m_pNoteDesignMod->GetRippleDecayDuration();
+	unsigned long releaseDuration   = m_pNoteDesignMod->GetRippleReleaseDuration();
 
 	//ノート情報を更新する
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
@@ -320,7 +334,7 @@ int MTNoteRippleMod::_UpdateVertexOfRipple(
 	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTERIPPLE_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
 	// 波紋上書き回数
-	unsigned long overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
+	unsigned long overwriteTimes = m_pNoteDesignMod->GetRippleOverwriteTimes();
 
 	//発音中ノートの波紋について頂点を更新
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
@@ -392,8 +406,8 @@ int MTNoteRippleMod::Draw(
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
 	//レンダリングステート設定：ブレンド指定値
-	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, m_NoteDesignMod.GetRippleSrcBlend());
-	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, m_NoteDesignMod.GetRippleDestBlend());
+	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, m_pNoteDesignMod->GetRippleSrcBlend());
+	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, m_pNoteDesignMod->GetRippleDestBlend());
 
 	//プリミティブ描画
 	if (m_ActiveNoteNum > 0) {
@@ -415,10 +429,12 @@ EXIT:;
 //******************************************************************************
 void MTNoteRippleMod::Release()
 {
-	if(m_pNoteStatusMod != NULL) {
-		delete [] m_pNoteStatusMod;
-		m_pNoteStatusMod = NULL;
-	}
+	delete m_pNoteDesignMod;
+	m_pNoteDesignMod = NULL;
+	m_pNoteDesign = NULL;
+
+	delete [] m_pNoteStatusMod;
+	m_pNoteStatusMod = NULL;
 
 	MTNoteRipple::Release();
 }
@@ -463,7 +479,7 @@ int MTNoteRippleMod::_CreateVertex(
 	MTNOTERIPPLE_VERTEX* pVertex = NULL;
 
 	// 波紋上書き回数
-	unsigned long overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
+	unsigned long overwriteTimes = m_pNoteDesignMod->GetRippleOverwriteTimes();
 
 	//プリミティブ初期化
 	result = m_Primitive.Initialize(
@@ -526,11 +542,11 @@ int MTNoteRippleMod::_SetVertexPosition(
 				);
 
 	//波紋サイズ
-	rh = m_NoteDesignMod.GetRippleHeight(pNoteStatus->keyDownRate);
-	rw = m_NoteDesignMod.GetRippleWidth(pNoteStatus->keyDownRate);
+	rh = m_pNoteDesignMod->GetRippleHeight(pNoteStatus->keyDownRate);
+	rw = m_pNoteDesignMod->GetRippleWidth(pNoteStatus->keyDownRate);
 
 	//波紋描画間隔
-	spacing = m_NoteDesignMod.GetRippleSpacing();
+	spacing = m_pNoteDesignMod->GetRippleSpacing();
 
 	//描画終了確認
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
@@ -562,7 +578,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 	}
 
 	//透明度を徐々に落とす
-	alpha = m_NoteDesignMod.GetRippleAlpha(pNoteStatus->keyDownRate);
+	alpha = m_pNoteDesignMod->GetRippleAlpha(pNoteStatus->keyDownRate);
 
 	//各頂点のディフューズ色
 	for (i = 0; i < 6; i++) {
