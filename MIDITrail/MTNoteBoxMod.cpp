@@ -393,10 +393,8 @@ EXIT:;
 //******************************************************************************
 void MTNoteBoxMod::Release()
 {
-	if(m_pNoteStatusMod != NULL) {
-		delete [] m_pNoteStatusMod;
-		m_pNoteStatusMod = NULL;
-	}
+	delete [] m_pNoteStatusMod;
+	m_pNoteStatusMod = NULL;
 }
 
 //******************************************************************************

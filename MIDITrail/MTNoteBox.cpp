@@ -532,12 +532,8 @@ void MTNoteBox::Release()
 	m_PrimitiveActiveNotes.Release();
 	m_NoteList.Clear();
 
-// >>> modify 20120728 yossiepon begin
-	if(m_pNoteStatus != NULL) {
-		delete [] m_pNoteStatus;
-		m_pNoteStatus = NULL;
-	}
-// <<< modify 20120728 yossiepon end
+	delete [] m_pNoteStatus;
+	m_pNoteStatus = NULL;
 }
 
 //******************************************************************************

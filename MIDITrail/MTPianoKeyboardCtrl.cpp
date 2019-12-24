@@ -528,11 +528,9 @@ void MTPianoKeyboardCtrl::Release()
 	}
 
 // >>> modify 20120728 yossiepon begin
-	if(m_pNoteStatus != NULL) {
-		//20120728 yossiepon: delete ‚ğ delete[] ‚ÉC³
-		delete[] m_pNoteStatus;
-		m_pNoteStatus = NULL;
-	}
+	//20120728 yossiepon: delete ‚ğ delete[] ‚ÉC³
+	delete[] m_pNoteStatus;
+	m_pNoteStatus = NULL;
 // <<< modify 20120728 yossiepon end
 }
 
