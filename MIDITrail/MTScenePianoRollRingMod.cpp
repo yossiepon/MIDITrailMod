@@ -224,6 +224,8 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		m_Dashboard.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
+		// Viewpoint‚Ì“Ç‚İ‘‚«‚Éxá‚ªo‚é‚Ì‚ÅAm_TimeIndicator ‚É‚à’Ê’m‚·‚é
+		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_TimeIndicatorMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());

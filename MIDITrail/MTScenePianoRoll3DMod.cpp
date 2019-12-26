@@ -188,7 +188,7 @@ int MTScenePianoRoll3DMod::Draw(
 	if (result != 0) goto EXIT;
 
 	// カメラ位置が演奏位置より手前側であれば
-	if(m_TimeIndicator.GetPos() > camVector.x) {
+	if(m_TimeIndicatorMod.GetPos() > camVector.x) {
 
 		//メッシュ＞タイムインジケータ＞歌詞＞波紋＞キーボードの順で奥から描画
 
@@ -288,6 +288,8 @@ int MTScenePianoRoll3DMod::OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		m_Dashboard.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
+		// Viewpointの読み書きに支障が出るので、m_TimeIndicator にも通知する
+		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_TimeIndicatorMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
@@ -359,6 +361,7 @@ void MTScenePianoRoll3DMod::_Reset()
 {
 	MTScenePianoRoll3D::_Reset();
 
+	m_TimeIndicatorMod.Reset();
 	m_NoteBoxMod.Reset();
 	m_NoteRippleMod.Reset();
 	m_NoteLyrics.Reset();
