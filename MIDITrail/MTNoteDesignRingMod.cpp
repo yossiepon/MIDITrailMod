@@ -4,7 +4,7 @@
 //
 // ノートデザインリングModクラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
