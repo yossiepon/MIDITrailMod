@@ -54,14 +54,6 @@ public:
 
 protected:
 
-	virtual int _CreateNoteStatus();
-	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
-	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-
-private:
-
 	//ノート発音状態構造体
 	//キー状態
 	enum KeyStatus {
@@ -78,13 +70,6 @@ private:
 		float keyDownRate;
 	};
 
-protected:
-
-	//ノートデザイン
-	MTNoteDesignMod *m_pNoteDesignMod;
-
-private:
-
 	//ノートリスト
 	SMNoteList m_NoteListRT;
 
@@ -93,8 +78,17 @@ private:
 	unsigned long m_CurNoteIndex;
 	float m_KeyDownRate[MTNOTERIPPLE_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
+	//ノートデザイン
+	MTNoteDesignMod *m_pNoteDesignMod;
+
 	//ノート発音状態情報
 	NoteStatusMod* m_pNoteStatusMod;
+
+	virtual int _CreateNoteStatus();
+	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
+	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 
 	virtual int _CreateNoteDesign();
 

@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "MTNoteBoxRingMod.h"
 #include "MTNoteRippleRingMod.h"
 #include "MTGridRingMod.h"
 #include "MTTimeIndicatorRingMod.h"
@@ -60,6 +61,7 @@ public:
 protected:
 
 	//描画オブジェクト
+	MTNoteBoxRingMod m_NoteBoxMod;
 	MTNoteRippleRingMod m_NoteRippleMod;
 	MTGridRingMod m_GridRingMod;
 	MTTimeIndicatorRingMod m_TimeIndicatorMod;

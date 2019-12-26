@@ -63,6 +63,10 @@ int MTScenePianoRollRingMod::Create(
 	//----------------------------------
 	// 描画オブジェクト
 	//----------------------------------
+	//ノートボックス生成
+	result = m_NoteBoxMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+
 	//ノート波紋生成
 	result = m_NoteRippleMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
@@ -99,6 +103,10 @@ int MTScenePianoRollRingMod::Transform(
 
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
+
+	//ノートボックス更新
+	result = m_NoteBoxMod.Transform(pD3DDevice, rollAngle);
+	if (result != 0) goto EXIT;
 
 	//グリッドリング更新
 	result = m_GridRingMod.Transform(pD3DDevice, rollAngle);
@@ -143,7 +151,7 @@ int MTScenePianoRollRingMod::Draw(
 	if (result != 0) goto EXIT;
 
 	//ノートボックス描画
-	result = m_NoteBox.Draw(pD3DDevice);
+	result = m_NoteBoxMod.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//ピクチャボード描画
@@ -179,6 +187,7 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRollRingMod::Release()
 {
+	m_NoteBoxMod.Release();
 	m_GridRingMod.Release();
 	m_TimeIndicatorMod.Release();
 	m_NoteRippleMod.Release();
@@ -219,7 +228,8 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
-		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
+		m_NoteBoxMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
+		m_NoteBoxMod.SetCurTickTime(parser.GetPlayTickTime());
 	}
 	//テンポ変更通知
 	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
@@ -251,8 +261,8 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		if (parser.GetSkipStartDirection() == SMMsgParser::SkipBack) {
 			m_NotePitchBend.Reset();
 		}
-		m_NoteBox.Reset();
-		m_NoteBox.SetSkipStatus(true);
+		m_NoteBoxMod.Reset();
+		m_NoteBoxMod.SetSkipStatus(true);
 		m_NoteRippleMod.Reset();
 		m_NoteRippleMod.SetSkipStatus(true);
 		m_IsSkipping = true;
@@ -260,7 +270,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 	//スキップ終了通知
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
 		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
-		m_NoteBox.SetSkipStatus(false);
+		m_NoteBoxMod.SetSkipStatus(false);
 		m_NoteRippleMod.SetSkipStatus(false);
 		m_IsSkipping = false;
 	}
@@ -277,6 +287,7 @@ void MTScenePianoRollRingMod::_Reset()
 	MTScenePianoRollRing::_Reset();
 
 	m_TimeIndicatorMod.Reset();
+	m_NoteBoxMod.Reset();
 	m_NoteRippleMod.Reset();
 }
 

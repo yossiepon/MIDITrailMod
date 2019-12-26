@@ -52,7 +52,7 @@ public:
 	//リセット
 	virtual void Reset();
 
-private:
+protected:
 
 	//キー状態
 	enum KeyStatus {
@@ -70,16 +70,6 @@ private:
 		float keyDownRate;
 	};
 
-protected:
-
-	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
-
-private:
-
-	//ノートデザイン
-	MTNoteDesignMod m_NoteDesignMod;
-
 	//ノートリスト
 	SMNoteList m_NoteListRT;
 
@@ -87,9 +77,16 @@ private:
 	unsigned long m_PlayTimeMSec;
 	float m_KeyDownRate[MT_NOTEBOX_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
+	//ノートデザイン
+	MTNoteDesignMod *m_pNoteDesignMod;
+
 	//ノート発音状態情報
 	NoteStatusMod* m_pNoteStatusMod;
 
+	virtual int _UpdateStatusOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+	virtual int _UpdateVertexOfActiveNotes(LPDIRECT3DDEVICE9 pD3DDevice);
+
+	virtual int _CreateNoteDesign();
 	virtual int _CreateNoteStatus();
 
 	int _CreateVertexOfNote(

@@ -29,6 +29,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteBoxMod::MTNoteBoxMod(void) : MTNoteBox()
 {
+	m_pNoteDesignMod = NULL;
 	m_pNoteStatusMod = NULL;
 	ZeroMemory(m_KeyDownRate, sizeof(float) * MT_NOTEBOX_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 }
@@ -60,10 +61,6 @@ int MTNoteBoxMod::Create(
 	result = MTNoteBox::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
 	if (result != 0) goto EXIT;
 
-	//ノートデザインModオブジェクト初期化
-	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
-
 	//トラック取得
 	result = pSeqData->GetMergedTrack(&track);
 	if (result != 0) goto EXIT;
@@ -71,6 +68,26 @@ int MTNoteBoxMod::Create(
 	//ノートリスト取得：startTime, endTime はリアルタイム(msec)
 	result = track.GetNoteListWithRealTime(&m_NoteListRT, pSeqData->GetTimeDivision());
 	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ノートデザイン生成
+//******************************************************************************
+int MTNoteBoxMod::_CreateNoteDesign()
+{
+	int result = 0;
+
+	try {
+		m_pNoteDesignMod = new MTNoteDesignMod();
+		m_pNoteDesign = m_pNoteDesignMod;
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -162,8 +179,8 @@ int MTNoteBoxMod::_UpdateStatusOfActiveNotes(
 	SMNote note;
 
 	//波紋ディケイ・リリース時間(msec)
-	unsigned long decayDuration = m_NoteDesignMod.GetRippleDecayDuration();
-	unsigned long releaseDuration   = m_NoteDesignMod.GetRippleReleaseDuration();
+	unsigned long decayDuration = m_pNoteDesignMod->GetRippleDecayDuration();
+	unsigned long releaseDuration   = m_pNoteDesignMod->GetRippleReleaseDuration();
 
 	//ノート情報を更新する
 	for (i = 0; i < MTNOTEBOX_MAX_ACTIVENOTE_NUM; i++) {
@@ -393,8 +410,14 @@ EXIT:;
 //******************************************************************************
 void MTNoteBoxMod::Release()
 {
+	delete m_pNoteDesignMod;
+	m_pNoteDesignMod = NULL;
+	m_pNoteDesign = NULL;
+
 	delete [] m_pNoteStatusMod;
 	m_pNoteStatusMod = NULL;
+
+	MTNoteBox::Release();
 }
 
 //******************************************************************************
@@ -439,7 +462,7 @@ int MTNoteBoxMod::_CreateVertexOfNote(
 	//ノートボックス頂点座標取得
 	if (keyDownRate == 0.0f) {
 		//通常ノートの場合
-		m_NoteDesignMod.GetNoteBoxVirtexPos(
+		m_pNoteDesignMod->GetNoteBoxVirtexPos(
 				note.startTime,
 				note.portNo,
 				note.chNo,
@@ -451,7 +474,7 @@ int MTNoteBoxMod::_CreateVertexOfNote(
 				pitchBendValue,
 				pitchBendSensitivity
 			);
-		m_NoteDesignMod.GetNoteBoxVirtexPos(
+		m_pNoteDesignMod->GetNoteBoxVirtexPos(
 				note.endTime,
 				note.portNo,
 				note.chNo,
@@ -466,7 +489,7 @@ int MTNoteBoxMod::_CreateVertexOfNote(
 	}
 	else {
 		//発音中ノートの場合：キー押し下げ率でサイズが変化する
-		m_NoteDesignMod.GetActiveNoteBoxVirtexPos(
+		m_pNoteDesignMod->GetActiveNoteBoxVirtexPos(
 				note.startTime,
 				note.portNo,
 				note.chNo,
@@ -479,7 +502,7 @@ int MTNoteBoxMod::_CreateVertexOfNote(
 				pitchBendSensitivity,
 				keyDownRate
 			);
-		m_NoteDesignMod.GetActiveNoteBoxVirtexPos(
+		m_pNoteDesignMod->GetActiveNoteBoxVirtexPos(
 				note.endTime,
 				note.portNo,
 				note.chNo,
@@ -560,11 +583,11 @@ int MTNoteBoxMod::_CreateVertexOfNote(
 
 	//各頂点のディフューズ色
 	if (keyDownRate == 0.0f) {
-		color = m_NoteDesignMod.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+		color = m_pNoteDesignMod->GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 	}
 	else {
 		//発音中はキー押し下げ率によって色が変化する
-		color = m_NoteDesignMod.GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, keyDownRate);
+		color = m_pNoteDesignMod->GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, keyDownRate);
 	}
 
 	//頂点の色設定完了
