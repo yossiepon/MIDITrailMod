@@ -4,7 +4,7 @@
 //
 // MIDITrail バージョン定義
 //
-// Copyright (C) 2014-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2014-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -16,10 +16,10 @@
 //******************************************************************************
 
 //バージョン文字列
-#define MIDITRAIL_VERSION_STRING_X86  _T("Version 1.3.4 (32bit)")
-#define MIDITRAIL_VERSION_STRING_X64  _T("Version 1.3.4 (64bit)")
+#define MIDITRAIL_VERSION_STRING_X86  _T("Version 1.3.6 (32bit)")
+#define MIDITRAIL_VERSION_STRING_X64  _T("Version 1.3.6 (64bit)")
 
 //コピーライト
-#define MIDITRAIL_COPYRIGHT          _T("Copyright (C) 2010-2021 WADA Masashi");
+#define MIDITRAIL_COPYRIGHT          _T("Copyright (C) 2010-2022 WADA Masashi");
 
 

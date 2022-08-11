@@ -2,7 +2,7 @@
 
   MIDITrail for Windows
 
-  Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+  Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 
   Web : https://osdn.jp/projects/miditrail/
   Mail: yknk@users.osdn.me
@@ -16,7 +16,7 @@
 
 (2) 動作環境
 
-  OS： Windows 7 / 8 / 10
+  OS： Windows 7 / 8 / 10 / 11
   VIDEO: DirectX 9.0c に対応したグラフィックチップが必要です。
 
 (3) クイックスタート

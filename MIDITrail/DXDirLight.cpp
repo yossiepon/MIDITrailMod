@@ -4,7 +4,7 @@
 //
 // ディレクショナルライトクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -105,10 +105,22 @@ D3DXVECTOR3 DXDirLight::GetDirection()
 }
 
 //******************************************************************************
-// デバイス登録
+// デバイス登録：インデックス0
 //******************************************************************************
 int DXDirLight::SetDevice(
 		LPDIRECT3DDEVICE9 pD3DDevice,
+		BOOL isLightON
+	)
+{
+	return SetDevice(pD3DDevice, 0, isLightON);
+}
+
+//******************************************************************************
+// デバイス登録：インデックス指定
+//******************************************************************************
+int DXDirLight::SetDevice(
+		LPDIRECT3DDEVICE9 pD3DDevice,
+		DWORD index,
 		BOOL isLightON
 	)
 {
@@ -132,14 +144,14 @@ int DXDirLight::SetDevice(
 	}
 
 	// ライトをレンダリングパイプラインに設定
-	hresult = pD3DDevice->SetLight(0, &m_Light);
+	hresult = pD3DDevice->SetLight(index, &m_Light);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
 	//ライト有効化
-	hresult = pD3DDevice->LightEnable(0, isLightON);
+	hresult = pD3DDevice->LightEnable(index, isLightON);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, isLightON);
 		goto EXIT;

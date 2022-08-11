@@ -4,7 +4,7 @@
 //
 // グリッドボックス描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -45,6 +45,9 @@ public:
 	//解放
 	void Release();
 
+	//表示設定
+	void SetEnable(bool isEnable);
+
 private:
 
 	DXPrimitive m_Primitive;
@@ -52,6 +55,7 @@ private:
 	SMPortList m_PortList;
 	MTNoteDesign m_NoteDesign;
 	bool m_isVisible;
+	bool m_isEnable;
 
 	//頂点バッファ構造体
 	struct MTGRIDBOX_VERTEX {

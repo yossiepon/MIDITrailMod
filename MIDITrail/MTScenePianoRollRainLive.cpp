@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -642,6 +642,12 @@ void MTScenePianoRollRainLive::SetEffect(
 			break;
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
+			break;
+		case EffectGridLine:
+			//表示対象無し
+			break;
+		case EffectTimeIndicator:
+			//表示対象無し
 			break;
 		default:
 			break;

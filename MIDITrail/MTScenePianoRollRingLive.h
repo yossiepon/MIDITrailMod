@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロールリングシーン描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -113,7 +113,7 @@ private:
 	MTNoteBoxRingLive m_NoteBoxLive;
 	MTNoteRippleRingLive m_NoteRipple;
 	MTNotePitchBend m_NotePitchBend;
-	MTGridRingLive m_GridBoxLive;
+	MTGridRingLive m_GridRingLive;
 	MTPictBoardRing m_PictBoard;
 	MTDashboardLive m_DashboardLive;
 	MTStars m_Stars;

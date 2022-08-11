@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -45,7 +45,7 @@ using namespace SMIDILib;
 
 //メニュースタイル制御
 //TAG:シーン追加
-#define MT_MENU_NUM        (37)
+#define MT_MENU_NUM        (46)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
@@ -161,6 +161,7 @@ private:
 	TCHAR m_Title[MAX_LOADSTRING];
 	TCHAR m_WndClassName[MAX_LOADSTRING];
 	bool m_isFullScreen;
+	bool m_isEnableMenuBar;
 	HMENU m_hMenu;
 
 	//レンダリング系
@@ -196,6 +197,8 @@ private:
 	bool m_isEnableCounter;
 	bool m_isEnableFileName;
 	bool m_isEnableBackgroundImage;
+	bool m_isEnableGridLine;
+	bool m_isEnableTimeIndicator;
 
 	//シーン種別
 	SceneType m_SceneType;
@@ -288,10 +291,13 @@ private:
 	int _OnMenuAutoSaveViewpoint();
 	int _OnMenuResetViewpoint();
 	int _OnMenuViewpoint(unsigned long viewpointNo);
+	int _OnMenuMyViewpoint(unsigned long viewpointNo);
+	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
 	int _OnMenuWindowSize();
 	int _OnMenuFullScreen();
+	int _OnMenuMenuBar();
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
 	int _OnMenuOptionGraphic();
@@ -322,8 +328,12 @@ private:
 	int _SaveSceneType();
 	int _LoadSceneConf();
 	int _SaveSceneConf();
+	int _LoadEffectStatus();
+	int _SaveEffectStatus();
 	int _LoadViewpoint();
 	int _SaveViewpoint();
+	int _MoveToMyViewpoint(unsigned long viewpointNo);
+	int _SaveMyViewpoint(unsigned long viewpointNo);
 	int _LoadGraphicConf();
 	int _LoadPlayerConf();
 	int _OnDestroy();
@@ -348,6 +358,7 @@ private:
 	int _StopPlaybackAndOpenFolder(const TCHAR* pFolderPath);
 	int _FileOpenProc(const TCHAR* pFilePath);
 	int _ToggleFullScreen();
+	int _ToggleMenuBar();
 	int _ShowMenu();
 	int _HideMenu();
 	int _GamePadProc();

@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -658,11 +658,17 @@ void MTScenePianoRollRain::SetEffect(
 		case EffectCounter:
 			m_Dashboard.SetEnable(isEnable);
 			break;
-		case EffectFileName:
-			m_Dashboard.SetEnableFileName(isEnable);
-			break;
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
+			break;
+		case EffectGridLine:
+			//表示対象無し
+			break;
+		case EffectTimeIndicator:
+			//表示対象無し
+			break;
+		case EffectFileName:
+			m_Dashboard.SetEnableFileName(isEnable);
 			break;
 		default:
 			break;

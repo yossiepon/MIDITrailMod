@@ -4,7 +4,7 @@
 //
 // ライブモニタ用グリッドボックス描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,6 +21,7 @@ using namespace YNBaseLib;
 MTGridBoxLive::MTGridBoxLive(void)
 {
 	m_isVisible = true;
+	m_isEnable = true;
 }
 
 //******************************************************************************
@@ -155,7 +156,7 @@ int MTGridBoxLive::Draw(
 {
 	int result = 0;
 	
-	if (m_isVisible) {
+	if (m_isEnable && m_isVisible) {
 		result = m_Primitive.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 	}
@@ -290,6 +291,16 @@ void MTGridBoxLive::_MakeMaterial(
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
 	pMaterial->Emissive.a = 0.0f;
+}
+
+//******************************************************************************
+// 表示設定
+//******************************************************************************
+void MTGridBoxLive::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
 }
 
 

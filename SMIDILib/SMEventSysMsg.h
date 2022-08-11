@@ -4,7 +4,7 @@
 //
 // システムメッセージイベントクラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -50,7 +50,26 @@ namespace SMIDILib {
 class SMIDILIB_API SMEventSysMsg
 {
 public:
-	
+
+	//システムメッセージ種別
+	enum SysMsg {
+		None						= 0x00, // none
+		//システムコモンメッセージ
+		Common_QuarterFrame			= 0xF1, // F1 dd
+		Common_SongPositionPointer	= 0xF2, // F2 dl dm
+		Common_SongSelect			= 0xF3, // F3 dd
+		Common_TuneRequest			= 0xF6, // F6
+		//システムリアルタイムメッセージ
+		RealTime_TimingClock		= 0xF8, // F8
+		RealTime_Start				= 0xFA, // FA
+		RealTime_Continue			= 0xFB, // FB
+		RealTime_Stop				= 0xFC, // FC
+		RealTime_ActiveSensing		= 0xFE, // FE
+		RealTime_SystemReset		= 0xFF  // FF
+	};
+
+public:
+
 	//コンストラクタ／デストラクタ
 	SMEventSysMsg();
 	virtual ~SMEventSysMsg(void);
@@ -60,6 +79,9 @@ public:
 	
 	//MIDI出力メッセージ取得
 	int GetMIDIOutShortMsg(unsigned long* pMsg, unsigned long* pSize);
+	
+	//システムメッセージ取得
+	SysMsg GetSysMsg();
 	
 private:
 	

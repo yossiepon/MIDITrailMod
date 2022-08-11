@@ -4,7 +4,7 @@
 //
 // グリッドボックス描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,6 +22,7 @@ MTGridBox::MTGridBox(void)
 {
 	m_BarNum = 0;
 	m_isVisible = true;
+	m_isEnable = true;
 }
 
 //******************************************************************************
@@ -192,7 +193,7 @@ int MTGridBox::Draw(
 {
 	int result = 0;
 
-	if (m_isVisible) {
+	if (m_isEnable && m_isVisible) {
 		result = m_Primitive.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 	}
@@ -495,5 +496,15 @@ void MTGridBox::_MakeMaterial(
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
 	pMaterial->Emissive.a = 0.0f;
+}
+
+//******************************************************************************
+// 表示設定
+//******************************************************************************
+void MTGridBox::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
 }
 

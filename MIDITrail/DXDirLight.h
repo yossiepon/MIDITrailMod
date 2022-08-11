@@ -4,7 +4,7 @@
 //
 // ディレクショナルライトクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -40,6 +40,11 @@ public:
 	//デバイスへのライト登録
 	int SetDevice(
 			LPDIRECT3DDEVICE9 pD3DDevice,
+			BOOL isLightON
+		);
+	int SetDevice(
+			LPDIRECT3DDEVICE9 pD3DDevice,
+			DWORD index,
 			BOOL isLightON
 		);
 

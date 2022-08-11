@@ -83,13 +83,26 @@ BEGIN
         MENUITEM "Stars",                       IDM_ENABLE_STARS
         MENUITEM "Counter",                     IDM_ENABLE_COUNTER
         MENUITEM "Background Image",            IDM_ENABLE_BACKGROUNDIMAGE
+        MENUITEM "Grid Line",                   IDM_ENABLE_GRIDLINE
+        MENUITEM "Time Indicator",              IDM_ENABLE_TIMEINDICATOR
         MENUITEM SEPARATOR
         MENUITEM "Viewpoint 1\t7",              IDM_RESET_VIEWPOINT
         MENUITEM "Viewpoint 2\t8",              IDM_VIEWPOINT2
         MENUITEM "Viewpoint 3\t9",              IDM_VIEWPOINT3
+        POPUP "My Viewpoint"
+        BEGIN
+            MENUITEM "My Viewpoint 1\tCtrl + 7",    IDM_MYVIEWPOINT1
+            MENUITEM "My Viewpoint 2\tCtrl + 8",    IDM_MYVIEWPOINT2
+            MENUITEM "My Viewpoint 3\tCtrl + 9",    IDM_MYVIEWPOINT3
+            MENUITEM SEPARATOR
+            MENUITEM "Save My Viewpoint 1\tShift + Ctrl + 7", IDM_SAVE_MYVIEWPOINT1
+            MENUITEM "Save My Viewpoint 2\tShift + Ctrl + 8", IDM_SAVE_MYVIEWPOINT2
+            MENUITEM "Save My Viewpoint 3\tShift + Ctrl + 9", IDM_SAVE_MYVIEWPOINT3
+        END
         MENUITEM SEPARATOR
-        MENUITEM "Window size...",              IDM_WINDOWSIZE
+        MENUITEM "Window Size...",              IDM_WINDOWSIZE
         MENUITEM "Full Screen\tF11",            IDM_FULLSCREEN
+        MENUITEM "Menu Bar\tF12",               IDM_MENUBAR
     END
     POPUP "Option"
     BEGIN

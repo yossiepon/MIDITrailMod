@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -55,6 +55,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_Title[0] = _T('\0');
 	m_WndClassName[0] = _T('\0');
 	m_isFullScreen = false;
+	m_isEnableMenuBar = true;
 	m_hMenu = NULL;
 
 	//レンダリング系
@@ -82,6 +83,8 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnableCounter = true;
 	m_isEnableFileName = false;
 	m_isEnableBackgroundImage = true;
+	m_isEnableGridLine = true;
+	m_isEnableTimeIndicator = true;
 
 	//シーン種別
 	m_SceneType = Title;
@@ -202,6 +205,10 @@ int MIDITrailApp::Initialize(
 
 	//シーン設定読み込み
 	result = _LoadSceneConf();
+	if (result != 0) goto EXIT;
+
+	//表示効果選択状態読み込み
+	result = _LoadEffectStatus();
 	if (result != 0) goto EXIT;
 
 	//メニュー選択マーク更新
@@ -463,6 +470,23 @@ int MIDITrailApp::_SetWindowSize()
 	if (result != 0) goto EXIT;
 	result = m_ViewConf.GetInt(_T("ApplyToViewArea"), &applyToViewArea, 0);
 	if (result != 0) goto EXIT;
+	
+	//ウィンドウスタイル設定
+	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+		goto EXIT;
+	}
+
+	//メニューバー表示
+	if (m_isEnableMenuBar) {
+		result = _ShowMenu();
+		if (result != 0) goto EXIT;
+	}
+	else {
+		result = _HideMenu();
+		if (result != 0) goto EXIT;
+	}
 
 	//初回起動時のウィンドウサイズ
 	if ((width <= 0) || (height <= 0)) {
@@ -489,18 +513,7 @@ int MIDITrailApp::_SetWindowSize()
 		width = width + framew;
 		height = height + frameh;
 	}
-	
-	//ウィンドウスタイル設定
-	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
-	if (apiresult == 0) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
-		goto EXIT;
-	}
-	
-	//メニューバー表示
-	result = _ShowMenu();
-	if (result != 0) goto EXIT;
-	
+
 	//ウィンドウサイズ変更
 	bresult = SetWindowPos(
 					m_hWnd,			//ウィンドウハンドル
@@ -792,6 +805,16 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_ENABLE_GRIDLINE:
+					//表示効果：グリッドライン
+					result = _OnMenuEnableEffect(MTScene::EffectGridLine);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_TIMEINDICATOR:
+					//表示効果：タイムインジケータ
+					result = _OnMenuEnableEffect(MTScene::EffectTimeIndicator);
+					if (result != 0) goto EXIT;
+					break;
 				//自動視点保存と視点保存は廃止
 				//case IDM_AUTO_SAVE_VIEWPOINT:
 				//	//自動視点保存
@@ -818,6 +841,36 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_MYVIEWPOINT1:
+					//私の視点1に移動
+					result = _OnMenuMyViewpoint(1);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_MYVIEWPOINT2:
+					//私の視点2に移動
+					result = _OnMenuMyViewpoint(2);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_MYVIEWPOINT3:
+					//私の視点3に移動
+					result = _OnMenuMyViewpoint(3);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_SAVE_MYVIEWPOINT1:
+					//私の視点1を保存
+					result = _OnMenuSaveMyViewpoint(1);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_SAVE_MYVIEWPOINT2:
+					//私の視点2を保存
+					result = _OnMenuSaveMyViewpoint(2);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_SAVE_MYVIEWPOINT3:
+					//私の視点3を保存
+					result = _OnMenuSaveMyViewpoint(3);
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_WINDOWSIZE:
 					//ウィンドウサイズ設定
 					result = _OnMenuWindowSize();
@@ -826,6 +879,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				case IDM_FULLSCREEN:
 					//フルスクリーン
 					result = _OnMenuFullScreen();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_MENUBAR:
+					//メニューバー
+					result = _OnMenuMenuBar();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_MIDIOUT:
@@ -1475,6 +1533,44 @@ EXIT:;
 }
 
 //******************************************************************************
+// メニュー選択：私の視点移動
+//******************************************************************************
+int MIDITrailApp::_OnMenuMyViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	int result = 0;
+
+	if (m_PlayStatus == NoData) goto EXIT;
+
+	//私の視点に移動
+	result = _MoveToMyViewpoint(viewpointNo);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：私の視点保存
+//******************************************************************************
+int MIDITrailApp::_OnMenuSaveMyViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	int result = 0;
+
+	if (m_PlayStatus == NoData) goto EXIT;
+
+	//私の視点を保存
+	result = _SaveMyViewpoint(viewpointNo);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // メニュー選択：視点リセット
 //******************************************************************************
 int MIDITrailApp::_OnMenuResetViewpoint()
@@ -1539,14 +1635,27 @@ int MIDITrailApp::_OnMenuEnableEffect(
 		case MTScene::EffectBackgroundImage:
 			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
 			break;
+		case MTScene::EffectGridLine:
+			m_isEnableGridLine = m_isEnableGridLine ? false : true;
+			break;
+		case MTScene::EffectTimeIndicator:
+			m_isEnableTimeIndicator = m_isEnableTimeIndicator ? false : true;
+			break;
 		default:
 			break;
 	}
 
+	//表示効果反映
 	_UpdateEffect();
+
+	//メニュー選択マーク更新
 	_UpdateMenuCheckmark();
 
-//EXIT:;
+	//表示効果選択状態保存
+	result = _SaveEffectStatus();
+	if (result != 0) goto EXIT;
+
+EXIT:;
 	return result;
 }
 
@@ -1580,6 +1689,21 @@ int MIDITrailApp::_OnMenuFullScreen()
 
 	//フルスクリーン切替
 	result = _ToggleFullScreen();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：メニューバー
+//******************************************************************************
+int MIDITrailApp::_OnMenuMenuBar()
+{
+	int result = 0;
+
+	//メニューバー表示切替
+	result = _ToggleMenuBar();
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -1897,6 +2021,23 @@ int MIDITrailApp::_OnMouseMove(
 			if (result != 0) goto EXIT;
 		}
 	}
+	//ウィンドウ表示の場合
+	else {
+		//メニュー非表示の場合
+		//マウスカーソルがウィンドウ上端近くに移動したときだけメニューを表示する
+		if (!m_isEnableMenuBar) {
+			if (point.y <= 5) {
+				//メニューバー表示
+				result = _ShowMenu();
+				if (result != 0) goto EXIT;
+			}
+			else {
+				//メニューバー非表示
+				result = _HideMenu();
+				if (result != 0) goto EXIT;
+			}
+		}
+	}
 
 EXIT:;
 	return result;
@@ -1974,21 +2115,57 @@ int MIDITrailApp::_OnKeyDown(
 			break;
 		case '7':
 		case VK_NUMPAD7:
-			//視点リセット
-			result = _OnMenuResetViewpoint();
-			if (result != 0) goto EXIT;
+			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
+				//私の視点1保存
+				result = _OnMenuSaveMyViewpoint(1);
+				if (result != 0) goto EXIT;
+			}
+			else if (GetKeyState(VK_CONTROL) & 0x8000) {
+				//私の視点1移動
+				result = _OnMenuMyViewpoint(1);
+				if (result != 0) goto EXIT;
+			}
+			else {
+				//視点リセット
+				result = _OnMenuResetViewpoint();
+				if (result != 0) goto EXIT;
+			}
 			break;
 		case '8':
 		case VK_NUMPAD8:
-			//静的視点2移動
-			result = _OnMenuViewpoint(2);
-			if (result != 0) goto EXIT;
+			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
+				//私の視点2保存
+				result = _OnMenuSaveMyViewpoint(2);
+				if (result != 0) goto EXIT;
+			}
+			else if (GetKeyState(VK_CONTROL) & 0x8000) {
+				//私の視点2移動
+				result = _OnMenuMyViewpoint(2);
+				if (result != 0) goto EXIT;
+			}
+			else {
+				//静的視点2移動
+				result = _OnMenuViewpoint(2);
+				if (result != 0) goto EXIT;
+			}
 			break;
 		case '9':
 		case VK_NUMPAD9:
-			//静的視点3移動
-			result = _OnMenuViewpoint(3);
-			if (result != 0) goto EXIT;
+			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
+				//私の視点3保存
+				result = _OnMenuSaveMyViewpoint(3);
+				if (result != 0) goto EXIT;
+			}
+			else if (GetKeyState(VK_CONTROL) & 0x8000) {
+				//私の視点3移動
+				result = _OnMenuMyViewpoint(3);
+				if (result != 0) goto EXIT;
+			}
+			else {
+				//静的視点3移動
+				result = _OnMenuViewpoint(3);
+				if (result != 0) goto EXIT;
+			}
 			break;
 		case 'O':
 			if (GetKeyState(VK_CONTROL) & 0x8000) {
@@ -2015,6 +2192,11 @@ int MIDITrailApp::_OnKeyDown(
 		case VK_F11:
 			//フルスクリーン
 			result = _OnMenuFullScreen();
+			if (result != 0) goto EXIT;
+			break;
+		case VK_F12:
+			//メニューバー
+			result = _OnMenuMenuBar();
 			if (result != 0) goto EXIT;
 			break;
 		default:
@@ -2630,11 +2812,20 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_ENABLE_STARS,
 		IDM_ENABLE_COUNTER,
 		IDM_ENABLE_BACKGROUNDIMAGE,
+		IDM_ENABLE_GRIDLINE,
+		IDM_ENABLE_TIMEINDICATOR,
 		IDM_RESET_VIEWPOINT,
 		IDM_VIEWPOINT2,
 		IDM_VIEWPOINT3,
+		IDM_MYVIEWPOINT1,
+		IDM_MYVIEWPOINT2,
+		IDM_MYVIEWPOINT3,
+		IDM_SAVE_MYVIEWPOINT1,
+		IDM_SAVE_MYVIEWPOINT2,
+		IDM_SAVE_MYVIEWPOINT3,
 		IDM_WINDOWSIZE,
 		IDM_FULLSCREEN,
+		IDM_MENUBAR,
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
 		IDM_OPTION_GRAPHIC,
@@ -2672,11 +2863,20 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_STARS
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_COUNTER
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_BACKGROUNDIMAGE
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_GRIDLINE
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_TIMEINDICATOR
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT2
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT3
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MYVIEWPOINT1
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MYVIEWPOINT2
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MYVIEWPOINT3
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT1
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT2
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT3
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_WINDOWSIZE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_FULLSCREEN
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MENUBAR
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_GRAPHIC
@@ -2929,6 +3129,100 @@ EXIT:;
 }
 
 //******************************************************************************
+// 表示効果選択状態読み込み
+//******************************************************************************
+int MIDITrailApp::_LoadEffectStatus()
+{
+	int result = 0;
+	int value = 0;
+
+	result = m_ViewConf.SetCurSection(_T("Effect"));
+	if (result != 0) goto EXIT;
+
+	result = m_ViewConf.GetInt(_T("PianoKeyboard"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnablePianoKeyboard = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("Ripple"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnableRipple = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("PitchBend"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnablePitchBend = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("Stars"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnableStars = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("Counter"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnableCounter = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("BackgroundImage"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnableBackgroundImage = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("GridLine"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnableGridLine = (value > 0)? true : false;
+
+	result = m_ViewConf.GetInt(_T("TimeIndicator"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isEnableTimeIndicator = (value > 0)? true : false;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 表示効果選択状態保存
+//******************************************************************************
+int MIDITrailApp::_SaveEffectStatus()
+{
+	int result = 0;
+	int value = 0;
+
+	result = m_ViewConf.SetCurSection(_T("Effect"));
+	if (result != 0) goto EXIT;
+
+	value = m_isEnablePianoKeyboard ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("PianoKeyboard"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableRipple ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("Ripple"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnablePitchBend ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("PitchBend"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableStars ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("Stars"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableCounter ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("Counter"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableBackgroundImage ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("BackgroundImage"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableGridLine ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("GridLine"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableTimeIndicator ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("TimeIndicator"), value);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // 視点読み込み
 //******************************************************************************
 int MIDITrailApp::_LoadViewpoint()
@@ -2990,6 +3284,74 @@ int MIDITrailApp::_SaveViewpoint()
 
 	//視点が切り替えられたことをシーンに伝達
 	m_pScene->SetViewParam(&viewParamMap);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 私の視点に移動
+//******************************************************************************
+int MIDITrailApp::_MoveToMyViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	int result = 0;
+	MTScene::MTViewParamMap defParamMap;
+	MTScene::MTViewParamMap viewParamMap;
+	MTScene::MTViewParamMap::iterator itr;
+	TCHAR section[256] = {_T('\0')};
+	float param = 0.0f;
+
+	//シーンからデフォルト視点を取得
+	m_pScene->GetDefaultViewParam(&defParamMap);
+
+	//セクション名
+	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
+	_tcscat_s(section, 256, m_pScene->GetName());
+	result = m_ViewConf.SetCurSection(section);
+	if (result != 0) goto EXIT;
+
+	//パラメータを設定ファイルから取得（未設定の場合はデフォルト視点を適用）
+	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
+		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
+		if (result != 0) goto EXIT;
+		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
+	}
+
+	//視点が切り替えられたことをシーンに伝達
+	m_pScene->SetViewParam(&viewParamMap);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 私の視点保存
+//******************************************************************************
+int MIDITrailApp::_SaveMyViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	int result = 0;
+	MTScene::MTViewParamMap viewParamMap;
+	MTScene::MTViewParamMap::iterator itr;
+	TCHAR section[256] = {_T('\0')};
+
+	//シーンから現在の視点を取得
+	m_pScene->GetViewParam(&viewParamMap);
+
+	//セクション名
+	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
+	_tcscat_s(section, 256, m_pScene->GetName());
+	result = m_ViewConf.SetCurSection(section);
+	if (result != 0) goto EXIT;
+
+	//パラメータを設定ファイルに登録
+	for (itr = viewParamMap.begin(); itr != viewParamMap.end(); itr++) {
+		result = m_ViewConf.SetFloat((itr->first).c_str(), itr->second);
+		if (result != 0) goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -3335,12 +3697,21 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	//背景画像表示
 	_CheckMenuItem(IDM_ENABLE_BACKGROUNDIMAGE, m_isEnableBackgroundImage);
 
-	//自動視点保存
-	_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
+	//自動視点保存は廃止
+	//_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
+
+	//グリッドライン
+	_CheckMenuItem(IDM_ENABLE_GRIDLINE, m_isEnableGridLine);
+
+	//タイムインジケータ
+	_CheckMenuItem(IDM_ENABLE_TIMEINDICATOR, m_isEnableTimeIndicator);
 
 	//フルスクリーン
 	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
-	
+
+	//メニューバー
+	_CheckMenuItem(IDM_MENUBAR, m_isEnableMenuBar);
+
 EXIT:;
 	return result;
 }
@@ -3378,8 +3749,10 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTScene::EffectPitchBend, m_isEnablePitchBend);
 		m_pScene->SetEffect(MTScene::EffectStars, m_isEnableStars);
 		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
-		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
 		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
+		m_pScene->SetEffect(MTScene::EffectGridLine, m_isEnableGridLine);
+		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
+		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
 	}
 	return;
 }
@@ -4085,6 +4458,22 @@ EXIT:;
 }
 
 //******************************************************************************
+// メニューバー表示切替
+//******************************************************************************
+int MIDITrailApp::_ToggleMenuBar()
+{
+	int result = 0;
+	
+	m_isEnableMenuBar = m_isEnableMenuBar ? false : true;
+	
+	result = _ChangeWindowSize();
+	if (result != 0) goto EXIT;
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // メニュー表示
 //******************************************************************************
 int MIDITrailApp::_ShowMenu()
@@ -4262,4 +4651,5 @@ int MIDITrailApp::_MakeFileListWithFolder(
 EXIT:;
 	return result;
 }
+
 

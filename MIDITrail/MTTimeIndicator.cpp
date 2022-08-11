@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,6 +23,7 @@ MTTimeIndicator::MTTimeIndicator(void)
 	m_CurPos = 0.0f;
 	m_CurTickTime = 0;
 	m_isEnableLine = false;
+	m_isEnable = true;
 }
 
 //******************************************************************************
@@ -202,6 +203,8 @@ int MTTimeIndicator::Draw(
 	)
 {
 	int result = 0;
+
+	if (!m_isEnable) goto EXIT;
 
 	//テクスチャステージ設定
 	//  カラー演算：引数1を使用  引数1：テクスチャ
@@ -383,4 +386,15 @@ D3DXVECTOR3 MTTimeIndicator::GetMoveVector()
 {
 	return D3DXVECTOR3(m_CurPos, 0.0f, 0.0f);
 }
+
+//******************************************************************************
+// 表示設定
+//******************************************************************************
+void MTTimeIndicator::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
+}
+
 
