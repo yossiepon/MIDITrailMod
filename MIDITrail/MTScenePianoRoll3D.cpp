@@ -4,7 +4,7 @@
 //
 // ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -278,12 +278,21 @@ int MTScenePianoRoll3D::Draw(
 	result = m_TimeIndicator.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//ライトを一時的に無効にする
+	//  ノート波紋とダッシュボードの描画色はライトの方向に依存させないため
+	result = m_DirLight.SetDevice(pD3DDevice, FALSE);
+	if (result != 0) goto EXIT;
+
 	//ノート波紋描画
 	result = m_NoteRipple.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//ダッシュボード描画：座標変換済み頂点を用いるため一番最後に描画する
 	result = m_Dashboard.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+	//ライトを戻す
+	result = m_DirLight.SetDevice(pD3DDevice, m_IsEnableLight);
 	if (result != 0) goto EXIT;
 
 EXIT:;

@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -276,6 +276,11 @@ int MTScenePianoRoll3DLive::Draw(
 	//タイムインジケータ描画
 	result = m_TimeIndicator.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
+
+	//ライトを一時的に無効にする
+	//  ノート波紋とダッシュボードの描画色はライトの方向に依存させないため
+	result = m_DirLight.SetDevice(pD3DDevice, FALSE);
+	if (result != 0) goto EXIT;
 	
 	//ノート波紋描画
 	result = m_NoteRipple.Draw(pD3DDevice);
@@ -285,6 +290,10 @@ int MTScenePianoRoll3DLive::Draw(
 	result = m_DashboardLive.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
+	//ライトを戻す
+	result = m_DirLight.SetDevice(pD3DDevice, m_IsEnableLight);
+	if (result != 0) goto EXIT;
+
 EXIT:;
 	return result;
 }

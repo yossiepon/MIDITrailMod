@@ -4,7 +4,7 @@
 //
 // ノート波紋描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -102,13 +102,12 @@ private:
 	//頂点バッファ構造体
 	struct MTNOTERIPPLE_VERTEX {
 		D3DXVECTOR3 p;	//頂点座標
-		D3DXVECTOR3 n;	//法線
 		DWORD		c;	//ディフューズ色
 		D3DXVECTOR2 t;	//テクスチャ画像位置
 	};
 
 	//頂点バッファFVFフォーマット
-	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
+	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
 protected:
 

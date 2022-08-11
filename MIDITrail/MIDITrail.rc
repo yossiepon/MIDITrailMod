@@ -45,7 +45,12 @@ IDC_MIDITRAIL MENU
 BEGIN
     POPUP "File"
     BEGIN
-        MENUITEM "Open...\tCtrl + O",           IDM_OPEN_FILE
+        MENUITEM "Open File...\tCtrl + O",      IDM_OPEN_FILE
+        MENUITEM "Open Folder...",              IDM_OPEN_FOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "Previous File\tCtrl + P",     IDM_PREVIOUS_FILE
+        MENUITEM "Next File\tCtrl + N",         IDM_NEXT_FILE
+        MENUITEM SEPARATOR
         MENUITEM "Exit",                        IDM_EXIT
     END
     POPUP "Playback"
@@ -53,6 +58,7 @@ BEGIN
         MENUITEM "Play / Pause\tSpace",         IDM_PLAY
         MENUITEM "Stop\tEsc",                   IDM_STOP
         MENUITEM "Repeat",                      IDM_REPEAT
+        MENUITEM "Folder Playback",             IDM_FOLDER_PLAYBACK
         MENUITEM SEPARATOR
         MENUITEM "Skip Back\t1",                IDM_SKIP_BACK
         MENUITEM "Skip Forward\t2",             IDM_SKIP_FORWARD

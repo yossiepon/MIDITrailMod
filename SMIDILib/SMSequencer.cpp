@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -824,6 +824,10 @@ int SMSequencer::_ProcUserRequest(
 	result = _AllTrackNoteOff();
 	if (result != 0) goto EXIT;
 
+	//全トラックサウンドオフ
+	result = _AllTrackSoundOff();
+	if (result != 0) goto EXIT;
+
 	*pIsContinue = false;
 
 	//一時停止を要求された場合
@@ -859,6 +863,20 @@ int SMSequencer::_AllTrackNoteOff()
 	int result = 0;
 
 	result = m_OutDevCtrl.NoteOffAll();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 全トラックサウンドオフ
+//******************************************************************************
+int SMSequencer::_AllTrackSoundOff()
+{
+	int result = 0;
+
+	result = m_OutDevCtrl.SoundOffAll();
 	if (result != 0) goto EXIT;
 
 EXIT:;

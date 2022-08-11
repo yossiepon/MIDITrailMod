@@ -216,6 +216,7 @@
     <ClCompile Include="MTDashboard.cpp" />
     <ClCompile Include="MTDashboardLive.cpp" />
     <ClCompile Include="MTDynamicCaption.cpp" />
+    <ClCompile Include="MTFileList.cpp" />
     <ClCompile Include="MTFirstPersonCam.cpp" />
     <ClCompile Include="MTFont2Bmp.cpp" />
     <ClCompile Include="MTFontTexture.cpp" />
@@ -293,6 +294,7 @@
     <ClInclude Include="MTDashboard.h" />
     <ClInclude Include="MTDashboardLive.h" />
     <ClInclude Include="MTDynamicCaption.h" />
+    <ClInclude Include="MTFileList.h" />
     <ClInclude Include="MTFirstPersonCam.h" />
     <ClInclude Include="MTFont2Bmp.h" />
     <ClInclude Include="MTFontTexture.h" />

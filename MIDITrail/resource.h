@@ -71,7 +71,11 @@
 #define IDM_VIEWPOINT2                  32843
 #define IDM_VIEWPOINT3                  32844
 #define IDM_FULLSCREEN                  32849
-#define IDM_VIEW_PIANOROLLRING           32850
+#define IDM_VIEW_PIANOROLLRING          32850
+#define IDM_FOLDER_PLAYBACK             32852
+#define IDM_OPEN_FOLDER                 32855
+#define IDM_PREVIOUS_FILE               32858
+#define IDM_NEXT_FILE                   32860
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -80,7 +84,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        134
-#define _APS_NEXT_COMMAND_VALUE         32851
+#define _APS_NEXT_COMMAND_VALUE         32861
 #define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

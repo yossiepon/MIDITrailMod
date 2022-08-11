@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="en">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.3.1 for Windows User Manual</title>
+<title>MIDITrail Ver.1.3.3 for Windows User Manual</title>
 </head>
 <body>
 
@@ -15,10 +15,10 @@
 English / <a href="MANUAL.ja.html">Japanese</a>
 </div>
 
-<h1>MIDITrail Ver.1.3.1 for Windows User Manual</h1>
+<h1>MIDITrail Ver.1.3.3 for Windows User Manual</h1>
 
 <p>
-Copyright (c) 2010-2019, WADA Masashi All rights reserved.<br>
+Copyright (c) 2010-2021, WADA Masashi All rights reserved.<br>
 Web: <a href="https://osdn.jp/projects/miditrail/">https://osdn.jp/projects/miditrail/</a><br>
 Mail: <img src="Files/mail.png" align="top"><br>
 </p>
@@ -130,7 +130,7 @@ RCPCV.DLL <a href="http://www.vector.co.jp/soft/win95/art/se114143.html">http://
 
 <h3>(1) How to open a MIDI file</h3>
 <p>
-Select "Open..." from "File" menu, the Open File dialog will appear. And choose a Standard MIDI File (*.mid).<br>
+Select "Open File..." from "File" menu, the Open File dialog will appear. And choose a Standard MIDI File (*.mid).<br>
 Or you can drag and drop a MIDI file into the window of MIDITrail.
 </p>
 <p>
@@ -158,7 +158,45 @@ Push the following keys, or use "Playback" menu.
 </table>
 </p>
 
-<h3>(3) How to move viewpoint in 3D space</h3>
+<h3>(3) Folder Playback</h3>
+
+<p>
+MIDITrail can open MIDI data files stored in folder in sequence.
+MIDITrail opens the files in ascending order by filename.
+</p>
+
+<h4>1. Folder selection</h4>
+<p>
+When you select "Open Folder..." from "File" menu, the folder selection dialog will appear.<br>
+Here you have to select the folder that contains the Standard MIDI File (*.mid).<br>
+You can also drag and drop the forlder into the window of MIDITrail.
+</p>
+
+<h4>2. File switching</h4>
+<p>
+You can switch the MIDI data file by selecting "Previous File" and "Next File" from "File" menu.<br>
+You can also use the following keyboard shortcut.<br>
+</p>
+<p>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
+          <kbd>CTRL</kbd> + <kbd>P</kbd></td>
+      <td>Open previous file.</td>
+  </tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td>
+      <td>Open next file.</td>
+  </tr>
+</table>
+</p>
+
+<h4>3. Folder Playback</h4>
+<p>
+When you select "Folder Playback" from "Playback" menu, 
+MIDITrail playback the next file after end of playback automatically.
+</p>
+
+<h3>(4) How to move viewpoint in 3D space</h3>
 <p>
 You can move freely in 3D space, and look at MIDI datasets from all directions 
 by operation of keyboard and mouse, like FPS (First Person Shooter) game.<br>
@@ -245,7 +283,7 @@ If you use a mouse with your left hand, this one may be convenience.
 </table>
 </p>
 
-<h3>(4) Selection of the viewpoint</h3>
+<h3>(5) Selection of the viewpoint</h3>
 
 <p>
 When you select "Viewpoint 1 / Viewpoint 2 / Viewpoint 3" from "View" menu,
@@ -260,7 +298,7 @@ or when you push following key, you can move to a fixed viewpoint.
 </table>
 </p>
 
-<h3>(5) Change of window size</h3>
+<h3>(6) Change of window size</h3>
 <p>
 When you select "Window size..." from "View" menu, the Window size configuration dialog will appear.<br>
 Select your favorite window size, and push the OK button.<br>
@@ -275,13 +313,13 @@ If you want to specify any window size, fill in "Width" "Height".<br>
 If you want to apply that size to  the view area, check "Apply to the view area".
 </p>
 
-<h3>(6) Full Screen</h3>
+<h3>(7) Full Screen</h3>
 <p>
 When you select "Full Screen" from "View" menu, you can switch between window mode and full screen mode.<br>
 By F11 key, you can switch the mode too.
 </p>
 
-<h3>(7) Display counters</h3>
+<h3>(8) Display counters</h3>
 
 <p>
 <img src="Files/Counter.png"><br>
@@ -300,7 +338,7 @@ By F11 key, you can switch the mode too.
 </table>
 </p>
 
-<h3>(8) View mode select</h3>
+<h3>(9) View mode select</h3>
 <p>
 You can select the view mode from "View" menu.
 You can not change the view mode while playing or pausing.
@@ -309,7 +347,7 @@ You can not change the view mode while playing or pausing.
 <img src="Files/ViewMenu-Mode.png"><br>
 </p>
 
-<h3>(9) Display/Effect switch</h3>
+<h3>(10) Display/Effect switch</h3>
 <p>
 You can switch the display/effect at "View" menu.
 </p>
@@ -322,7 +360,7 @@ Some MIDI animation works are using pitch bend to shift the piano roll bars with
 If the MIDI animation is not displayed correctly, please disable the pitch bend effect to fix the piano roll bars.
 </p>
 
-<h3>(10) MIDITrail command line interface</h3>
+<h3>(11) MIDITrail command line interface</h3>
 <p>
 If you want to start MIDITrail by command line, you can use following arguments.
 </p>
@@ -341,7 +379,7 @@ MIDITrail.exe [-p] [-q] ["path\to\file"]
 If you drop a MIDI file to the shortcut of MIDITrail, MIDITrail open the file on startup.
 </p>
 
-<h3>(11) Graphic configuration</h3>
+<h3>(12) Graphic configuration</h3>
 <p>
 Select "Graphic..." from "Option" menu, the graphic configuration dialog will appear.<br>
 You can not change graphic configuration while playing or pausing.
@@ -366,7 +404,7 @@ You can change a quarter note length of piano roll.<br>
 You can specify a value from 0% to 1000%. The default value is 100%.<br>
 </p>
 
-<h3>(12) MIDI IN Monitor</h3>
+<h3>(13) MIDI IN Monitor</h3>
 <p>
 You can view data sets received from MIDI IN device in realtime.<br>
 Select "MIDI IN..." from "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
@@ -381,7 +419,7 @@ When you select "Start Monitoring" from "Playback" menu, MIDI IN monitoring will
 NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
 </p>
 
-<h3>(13) Game Controller</h3>
+<h3>(14) Game Controller</h3>
 <p>
 You can operate by XInput game controller.<br>
 </p>
@@ -782,7 +820,7 @@ MIDITrail is released under the BSD license.
 </p>
 
 <pre>
-Copyright (c) 2010-2019, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+Copyright (c) 2010-2021, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -951,6 +989,13 @@ This version was released with MIDITrail for Mac OS X.<br>
 #39734 Changed processing to keep viewpoint when window size changed.<br>
 #39735 Fixed bug (Assertion occurs in _controlfp_s when x64 debug configuration)<br>
 #39736 Fixed bug (Exception occurs in "How to view" dialog when x64 debug configuration)<br>
+  </td></tr>
+  <tr><td>2021/05/16</td><td>Ver.1.3.3</td><td>
+#42233 Added Folder Playback feature<br>
+#42234 Added support for Standard MIDI File with illegal chunk size<br>
+#42235 Added support for RIFF-based MIDI File<br>
+#42236 Added sending "All Sound Off" messeage when pause/stop/skip<br>
+#42237 Fixed bug (The color of the ripples becomes dark in Piano Roll 3D)<br>
   </td></tr>
 </table>
 </p>

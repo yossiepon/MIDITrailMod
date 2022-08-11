@@ -4,7 +4,7 @@
 //
 // ノート波紋描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -486,9 +486,9 @@ int MTNoteRipple::_SetVertexPosition(
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
 
 	//法線
-	for (i = 0; i < 6; i++) {
-		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	}
+	//for (i = 0; i < 6; i++) {
+	//	pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	//}
 
 	//透明度を徐々に落とす
 	alpha = m_pNoteDesign->GetRippleAlpha(elapsedTime);

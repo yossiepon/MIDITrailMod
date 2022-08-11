@@ -257,6 +257,9 @@
     <ClCompile Include="MTNoteRippleRingLive.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
+    <ClCompile Include="MTFileList.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MIDITrailApp.h">
@@ -477,6 +480,9 @@
     </ClInclude>
     <ClInclude Include="MTNoteRippleRingLive.h">
       <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTFileList.h">
+      <Filter>Sources\Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

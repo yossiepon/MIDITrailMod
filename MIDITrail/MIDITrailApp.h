@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -24,6 +24,7 @@
 #include "MTAboutDlg.h"
 #include "MTCmdLineParser.h"
 #include "MTGamePadCtrl.h"
+#include "MTFileList.h"
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
@@ -32,7 +33,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // パラメータ定義
 //******************************************************************************
-#define MAX_LOADSTRING  (100)
+#define MAX_LOADSTRING  (256)
 
 //ウィンドウスタイル
 //  WS_OVERLAPPEDWINDOW から次のスタイルを削ったもの
@@ -44,11 +45,14 @@ using namespace SMIDILib;
 
 //メニュースタイル制御
 //TAG:シーン追加
-#define MT_MENU_NUM        (33)
+#define MT_MENU_NUM        (37)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
 #define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device is lost.")
+
+//ファイルなし警告メッセージ
+#define MIDITRAIL_MSG_FILE_NOT_FOUND  _T("MIDI file (*.mid) not found.")
 
 //タイマーID
 #define MIDITRAIL_TIMER_CHECK_KEY  (1)
@@ -58,6 +62,12 @@ using namespace SMIDILib;
 
 //メールスロット名称
 #define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
+
+//ウィンドウタイトル  ex.: "MIDITrail - file_name.mid - FPS:60.0"
+#define MIDITRAIL_WINDOW_TITLE			_T("MIDITrail")
+#define MIDITRAIL_WINDOW_TITLE_FILE		_T("MIDITrail - %s")
+#define MIDITRAIL_WINDOW_TITLE_FILES	_T("MIDITrail - [%d/%d] %s")
+#define MIDITRAIL_WINDOW_TITLE_FPS		_T("%s - FPS:%.1f")
 
 
 //******************************************************************************
@@ -170,6 +180,7 @@ private:
 	//演奏状態
 	PlayStatus m_PlayStatus;
 	bool m_isRepeat;
+	bool m_isFolderPlayback;
 	bool m_isRewind;
 	bool m_isOpenFileAfterStop;
 	MTSequencerLastMsg m_SequencerLastMsg;
@@ -235,6 +246,9 @@ private:
 	//ゲームパッド用視点番号
 	int m_GamePadViewPointNo;
 
+	//MIDIデータファイルリスト
+	MTFileList m_MIDIFileList;
+
 	//----------------------------------------------------------------
 	//メソッド定義
 	//----------------------------------------------------------------
@@ -252,10 +266,14 @@ private:
 	LRESULT _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
 	//メニューイベント処理
-	int _OnMenuFileOpen();
+	int _OnMenuOpenFile();
+	int _OnMenuOpenFolder();
+	int _OnMenuPreviousFile();
+	int _OnMenuNextFile();
 	int _OnMenuPlay();
 	int _OnMenuStop();
 	int _OnMenuRepeat();
+	int _OnMenuFolderPlayback();
 	int _OnMenuSkipBack();
 	int _OnMenuSkipForward();
 	int _OnMenuPlaySpeedDown();
@@ -285,7 +303,9 @@ private:
 	int _OnDropFiles(WPARAM wParam, LPARAM lParam);
 
 	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
+	int _SelectFolder(TCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const TCHAR* pFilePath);
+	void _UpdateWindowTitle(const TCHAR* pFileName);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
 	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);
@@ -317,13 +337,15 @@ private:
 	int _CheckMultipleInstances(bool* pIsExitApp);
 	int _CreateMailSlot();
 	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
-	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
-	int _FileOpenProc(TCHAR* pFilePath);
+	int _StopPlaybackAndOpenFile(const TCHAR* pFilePath);
+	int _StopPlaybackAndOpenFolder(const TCHAR* pFolderPath);
+	int _FileOpenProc(const TCHAR* pFilePath);
 	int _ToggleFullScreen();
 	int _ShowMenu();
 	int _HideMenu();
 	int _GamePadProc();
 	int _ChangeViewPoint(int step);
+	int _MakeFileListWithFolder(const TCHAR* pFolderPath, MTFileList* pFileList);
 
 };
 
