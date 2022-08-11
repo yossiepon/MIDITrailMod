@@ -102,6 +102,9 @@ MIDITrailApp::MIDITrailApp(void)
 	m_SpeedStepInPercent = 1;
 	m_MaxSpeedInPercent = 400;
 
+	//演奏制御
+	m_DelayBetweenSongsInMsec = 0;
+
 	//次回オープン対象ファイルパス
 	m_NextFilePath[0] = _T('\0');
 
@@ -1772,7 +1775,8 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 				if (m_MIDIFileList.GetFileCount() == 0) {
 					//リピート有効なら再生開始
 					if (m_isRepeat) {
-						result = _OnMenuPlay();
+						//リピートによるMIDIファイル演奏開始
+						result = _StartTimer_Play(m_DelayBetweenSongsInMsec);
 						if (result != 0) goto EXIT;
 					}
 				}
@@ -1780,26 +1784,26 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 				else {
 					//フォルダ演奏無効かつリピート有効なら再生開始
 					if (!m_isFolderPlayback && m_isRepeat) {
-						result = _OnMenuPlay();
+						//リピートによるMIDIファイル演奏開始
+						result = _StartTimer_Play(m_DelayBetweenSongsInMsec);
 						if (result != 0) goto EXIT;
 					}
 					//フォルダ演奏有効なら次ファイルを自動選択
 					else if (m_isFolderPlayback) {
 						m_MIDIFileList.SelectNextFile(&isExist);
 						if (isExist) {
-							//次ファイルが存在する場合は開いて演奏開始
-							result = _LoadMIDIFile(m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex()));
-							if (result != 0) goto EXIT;
-							result = _OnMenuPlay();
+							//次ファイルが存在する場合
+							//フォルダ演奏による次MIDIファイル演奏開始
+							result = _StartTimer_OpenFileAndPlay(m_DelayBetweenSongsInMsec);
 							if (result != 0) goto EXIT;
 						}
 						else if (m_isRepeat) {
-							//次ファイルが存在しないがリピート有効の場合は先頭ファイルを開いて演奏開始
+							//次ファイルが存在しないがリピート有効の場合
+							//フォルダ演奏による次MIDIファイル演奏開始
+							result = _StartTimer_OpenFileAndPlay(m_DelayBetweenSongsInMsec);
+							if (result != 0) goto EXIT;
+							//先頭ファイルを選択
 							m_MIDIFileList.SelectFirstFile();
-							result = _LoadMIDIFile(m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex()));
-							if (result != 0) goto EXIT;
-							result = _OnMenuPlay();
-							if (result != 0) goto EXIT;
 						}
 					}
 				}
@@ -3084,6 +3088,20 @@ int MIDITrailApp::_LoadPlayerConf()
 	m_SpeedStepInPercent = (unsigned long)speedStepInPercent;
 	m_MaxSpeedInPercent = (unsigned long)maxSpeedInPercent;
 
+	//----------------------------------
+	//演奏制御
+	//----------------------------------
+	result = confFile.SetCurSection("Playback");
+	if (result != 0) goto EXIT;
+	result = confFile.GetInt("DelayBetweenSongsInMsec", &m_DelayBetweenSongsInMsec, 0);
+	if (result != 0) goto EXIT;
+	if (m_DelayBetweenSongsInMsec < 0) {
+		m_DelayBetweenSongsInMsec = 0;
+	}
+	else if (m_DelayBetweenSongsInMsec > 10000) {
+		m_DelayBetweenSongsInMsec = 10000;
+	}
+
 EXIT:;
 	return result;
 }
@@ -3443,7 +3461,57 @@ int MIDITrailApp::_StopTimer()
 	int result = 0;
 
 	KillTimer(m_hWnd, MIDITRAIL_TIMER_CHECK_KEY);
+	KillTimer(m_hWnd, MIDITRAIL_TIMER_PLAY);
+	KillTimer(m_hWnd, MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY);
 
+	return result;
+}
+
+//******************************************************************************
+// タイマー開始：演奏開始
+//******************************************************************************
+int MIDITrailApp::_StartTimer_Play(int delayBetweenSongsInMsec)
+{
+	int result = 0;
+	UINT_PTR apiresult = 0;
+
+	//タイマー登録
+	apiresult = SetTimer(
+						m_hWnd,						//通知先ウィンドウ
+						MIDITRAIL_TIMER_PLAY,		//タイマーID
+						delayBetweenSongsInMsec,	//タイムアウト値（ミリ秒）
+						NULL						//タイマー関数
+					);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// タイマー開始：ファイルオープン＆演奏開始
+//******************************************************************************
+int MIDITrailApp::_StartTimer_OpenFileAndPlay(int delayBetweenSongsInMsec)
+{
+	int result = 0;
+	UINT_PTR apiresult = 0;
+
+	//タイマー登録
+	apiresult = SetTimer(
+						m_hWnd,						//通知先ウィンドウ
+						MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY,	//タイマーID
+						delayBetweenSongsInMsec,	//タイムアウト値（ミリ秒）
+						NULL						//タイマー関数
+					);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+EXIT:;
 	return result;
 }
 
@@ -3466,7 +3534,27 @@ int MIDITrailApp::_OnTimer(
 			m_Sequencer.SetPlaybackSpeed(1);
 		}
 	}
+	//演奏開始タイマー
+	else if (timerId == MIDITRAIL_TIMER_PLAY) {
+		//タイマー停止
+		KillTimer(m_hWnd, MIDITRAIL_TIMER_PLAY);
+		//演奏開始
+		result = _OnMenuPlay();
+		if (result != 0) goto EXIT;
+	}
+	//ファイルオープン＆演奏開始タイマー
+	else if (timerId == MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY) {
+		//タイマー停止
+		KillTimer(m_hWnd, MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY);
+		//ファイルを開く
+		result = _LoadMIDIFile(m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex()));
+		if (result != 0) goto EXIT;
+		//演奏開始
+		result = _OnMenuPlay();
+		if (result != 0) goto EXIT;
+	}
 
+EXIT:;
 	return result;
 }
 

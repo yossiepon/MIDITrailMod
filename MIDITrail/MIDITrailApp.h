@@ -55,7 +55,9 @@ using namespace SMIDILib;
 #define MIDITRAIL_MSG_FILE_NOT_FOUND  _T("MIDI file (*.mid) not found.")
 
 //タイマーID
-#define MIDITRAIL_TIMER_CHECK_KEY  (1)
+#define MIDITRAIL_TIMER_CHECK_KEY           (1)
+#define MIDITRAIL_TIMER_PLAY                (2)
+#define MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY  (3)
 
 //二重起動抑止用ミューテクス名称
 #define MIDITRAIL_MUTEX     _T("yknk.MIDITrail")
@@ -234,6 +236,9 @@ private:
 	unsigned long m_SpeedStepInPercent;
 	unsigned long m_MaxSpeedInPercent;
 
+	//演奏制御
+	int m_DelayBetweenSongsInMsec;
+
 	//自動視点保存
 	bool m_isAutoSaveViewpoint;
 
@@ -330,6 +335,8 @@ private:
 	int _ParseCmdLine(LPTSTR pCmdLine);
 	int _StartTimer();
 	int _StopTimer();
+	int _StartTimer_Play(int delayBetweenSongsInMsec);
+	int _StartTimer_OpenFileAndPlay(int delayBetweenSongsInMsec);
 	int _OnTimer(WPARAM timerId);
 	int _CheckRenderer();
 	int _AutoConfigMIDIOUT();
