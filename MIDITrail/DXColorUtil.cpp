@@ -4,12 +4,13 @@
 //
 // カラーユーティリティクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "DXColorUtil.h"
+#include <stdio.h>  //for _stprintf_s
 
 
 //******************************************************************************
@@ -41,7 +42,7 @@ D3DXCOLOR DXColorUtil::MakeColorFromHexRGBA(
 	TCHAR buf[3];
 
 	if (pHexRGBA == NULL) goto EXIT;
-	if (_tcslen(pHexRGBA) < 4) goto EXIT;
+	if (_tcslen(pHexRGBA) < 8) goto EXIT;
 
 	buf[2] = _T('\0');
 
@@ -97,5 +98,23 @@ D3DCOLOR DXColorUtil::MakeColorFromHexRGB(
 
 EXIT:;
 	return D3DCOLOR_XRGB(cr, cg, cb);
+}
+
+//******************************************************************************
+// 数値からRGBA（16進数文字列）への変換
+//******************************************************************************
+void DXColorUtil::MakeHexRGBAFromColor(
+		D3DXCOLOR color,
+		TCHAR* pHexRGBA,
+		unsigned long bufSize
+	)
+{
+	_stprintf_s(pHexRGBA, bufSize, _T("%02X%02X%02X%02X"),
+					(unsigned long)(color.r * 255.0f),
+					(unsigned long)(color.g * 255.0f),
+					(unsigned long)(color.b * 255.0f),
+					(unsigned long)(color.a * 255.0f));
+	
+	return;
 }
 

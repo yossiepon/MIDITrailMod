@@ -345,7 +345,7 @@ int MTTimeIndicator::_CreateVertexOfIndicatorLine(
 
 	//各頂点のディフューズ色
 	for (i = 0; i < 2; i++) {
-		pVertex[i].c = m_NoteDesign.GetPlaybackSectionColor();
+		pVertex[i].c = m_NoteDesign.GetGridLineColor();
 	}
 
 	return result;

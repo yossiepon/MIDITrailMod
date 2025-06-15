@@ -4,7 +4,7 @@
 //
 // パスユーティリティクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -39,14 +39,14 @@ public:
 	//拡張子判定
 	//  ファイルの拡張子が指定されたものであるか判定する
 	//  指定する拡張子の例：".txt"
-	static bool IsFileExtMatch(const TCHAR* pPath, const TCHAR* pExt);
+	static bool IsFileExtMatch(const WCHAR* pPath, const WCHAR* pExt);
 
 	//テンポラリファイルパス取得
 	//  環境変数(TMP or TEMP)で定義されたテンポラリディレクトリに
 	//  一意のテンポラリファイルを作成してパスを返却する
 	//  指定できるプレフィックスは3文字
 	//  作成されるファイルの名称は PREuuuu.TMP
-	static int GetTempFilePath(TCHAR* pPathBuf, unsigned long bufSize, const TCHAR* pPrefix);
+	static int GetTempFilePath(WCHAR* pPathBuf, unsigned long bufSize, const WCHAR* pPrefix);
 
 private:
 

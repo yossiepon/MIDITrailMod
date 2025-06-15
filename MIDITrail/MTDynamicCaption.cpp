@@ -4,7 +4,7 @@
 //
 // 動的キャプション描画クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,7 +21,7 @@ using namespace YNBaseLib;
 MTDynamicCaption::MTDynamicCaption(void)
 {
 	m_pVertex = NULL;
-	m_Chars[0] = _T('\0');
+	m_Chars[0] = L'\0';
 	m_CaptionSize = 0;
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -39,9 +39,9 @@ MTDynamicCaption::~MTDynamicCaption(void)
 //******************************************************************************
 int MTDynamicCaption::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		const TCHAR* pFontName,
+		const WCHAR* pFontName,
 		unsigned long fontSize,
-		const TCHAR* pCharacters,
+		const WCHAR* pCharacters,
 		unsigned long captionSize
    )
 {
@@ -91,7 +91,7 @@ void MTDynamicCaption::GetTextureSize(
 // 文字列設定
 //******************************************************************************
 int MTDynamicCaption::SetString(
-		TCHAR* pStr
+		WCHAR* pStr
 	)
 {
 	int result = 0;
@@ -107,7 +107,7 @@ int MTDynamicCaption::SetString(
 		m_pVertex[i].t = D3DXVECTOR2(0.0f, 0.0f);
 	}
 	for (i= 0; i < m_CaptionSize; i++) {
-		if (pStr[i] == _T('\0')) break;
+		if (pStr[i] == L'\0') break;
 
 		result = _GetTextureUV(pStr[i], &v0, &v1, &v2, &v3);
 		if (result != 0) goto EXIT;
@@ -236,9 +236,9 @@ void MTDynamicCaption::Release()
 //******************************************************************************
 int MTDynamicCaption::_CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		const TCHAR* pFontName,
+		const WCHAR* pFontName,
 		unsigned long fontSize,
-		const TCHAR* pCharacters
+		const WCHAR* pCharacters
 	)
 {
 	int result = 0;
@@ -247,7 +247,7 @@ int MTDynamicCaption::_CreateTexture(
 	bool isForceFixedPitch = true;
 
 	//タイル文字一覧を格納
-	eresult = _tcscpy_s(m_Chars, MTDYNAMICCAPTION_MAX_CHARS, pCharacters);
+	eresult = wcscpy_s(m_Chars, MTDYNAMICCAPTION_MAX_CHARS, pCharacters);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
@@ -312,7 +312,7 @@ EXIT:;
 // テクスチャUV座標取得
 //******************************************************************************
 int MTDynamicCaption::_GetTextureUV(
-		TCHAR target,
+		WCHAR target,
 		D3DXVECTOR2* pV0,
 		D3DXVECTOR2* pV1,
 		D3DXVECTOR2* pV2,
@@ -326,7 +326,7 @@ int MTDynamicCaption::_GetTextureUV(
 	float fontNo = 0;
 	float fontWidth = 0.0f;
 
-	charsNum = _tcslen(m_Chars);
+	charsNum = wcslen(m_Chars);
 	for (i = 0; i < charsNum; i++) {
 		if (m_Chars[i] == target) {
 			isFound = true;
@@ -388,7 +388,7 @@ void MTDynamicCaption::_SetVertexPosition(
 	float height = 0.0f;
 	float width = 0.0f;
 
-	charsNum = _tcslen(m_Chars);
+	charsNum = wcslen(m_Chars);
 
 	//描画サイズ
 	m_FontTexture.GetTextureSize(&texHeight, &texWidth);

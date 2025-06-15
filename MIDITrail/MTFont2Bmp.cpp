@@ -4,7 +4,7 @@
 //
 // フォント＞ビットマップ変換クラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,7 +21,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTFont2Bmp::MTFont2Bmp(void)
 {
-	m_FontName[0] = _T('\0');
+	m_FontName[0] = L'\0';
 	m_FontSize = 0;
 	m_isForceFixedPitch = false;
 	m_hFont = NULL;
@@ -62,7 +62,7 @@ void MTFont2Bmp::Clear()
 // フォント設定
 //******************************************************************************
 int MTFont2Bmp::SetFont(
-		const TCHAR* pFontName,
+		const WCHAR* pFontName,
 		unsigned long fontSize,
 		bool isForceFixedPitch
 	)
@@ -70,7 +70,7 @@ int MTFont2Bmp::SetFont(
 	int result = 0;
 	errno_t eresult = 0;
 
-	eresult = _tcscpy_s(m_FontName, LF_FACESIZE, pFontName);
+	eresult = wcscpy_s(m_FontName, LF_FACESIZE, pFontName);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
@@ -87,7 +87,7 @@ EXIT:;
 // BMP作成
 //******************************************************************************
 int MTFont2Bmp::CreateBmp(
-		const TCHAR* pStr
+		const WCHAR* pStr
 	)
 {
 	int result = 0;
@@ -152,10 +152,10 @@ EXIT:;
 int MTFont2Bmp::_CreateLogFont()
 {
 	int result = 0;
-	LOGFONT logfont;
+	LOGFONTW logfont;
 
 	//論理フォント情報を生成
-	ZeroMemory(&logfont, sizeof(LOGFONT));
+	ZeroMemory(&logfont, sizeof(LOGFONTW));
 	logfont.lfHeight         = m_FontSize;			//高さ
 	logfont.lfWidth          = 0;					//幅
 	logfont.lfEscapement     = 0;					//角度
@@ -170,14 +170,14 @@ int MTFont2Bmp::_CreateLogFont()
 	logfont.lfQuality        = PROOF_QUALITY;		//品質：フォント属性より描画品質を優先
 	logfont.lfPitchAndFamily = DEFAULT_PITCH		//ピッチ：デフォルト
 								| FF_DONTCARE;		//ファミリ：一般的なファミリ
-	_tcscpy_s(logfont.lfFaceName, LF_FACESIZE, m_FontName);
+	wcscpy_s(logfont.lfFaceName, LF_FACESIZE, m_FontName);
 
 	if (m_isForceFixedPitch) {
 		logfont.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
 	}
 
 	//論理フォント生成
-	m_hFont = CreateFontIndirect(&logfont);
+	m_hFont = CreateFontIndirectW(&logfont);
 	if (m_hFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -191,7 +191,9 @@ EXIT:;
 // グリフBMP作成
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmp(
-		unsigned long code,
+		WCHAR char1,
+		WCHAR char2,
+		bool isSurrogatePair,
 		MTGlyphBmp* pGlyphBmp
 	)
 {
@@ -203,6 +205,12 @@ int MTFont2Bmp::_CreateGlyphBmp(
 	unsigned char* pBuf = NULL;
 	GLYPHMETRICS glyphMetric;
 	CONST MAT2 mat = {{0,1},{0,0},{0,0},{0,1}};
+	GCP_RESULTSW gcp;
+	WCHAR str[2];
+	WCHAR buff[2];
+	DWORD dwresult = 0;
+	DWORD flag = 0;
+	char32_t code = 0;
 
 	//デバイスコンテキスト取得
 	hDC = GetDC(NULL);
@@ -225,17 +233,46 @@ int MTFont2Bmp::_CreateGlyphBmp(
 		goto EXIT;
 	}
 
+	//サロゲートペアの場合はグリフインデックスを取得
+	if (isSurrogatePair) {
+		str[0] = char1;
+		str[1] = char2;
+		memset(&gcp, 0, sizeof(GCP_RESULTSW));
+		gcp.lStructSize = sizeof(GCP_RESULTSW);
+		gcp.lpGlyphs = buff;
+		gcp.nGlyphs = 2;
+		dwresult = GetCharacterPlacementW(
+							hDC,			//デバイスコンテキスト
+							str,			//処理対象文字列（0終端である必要はない）
+							gcp.nGlyphs,	//文字列の長さ
+							0,				//文字列が処理される最大範囲（論理単位）
+							&gcp,			//処理結果格納先
+							GCP_GLYPHSHAPE	//フラグ
+						);
+		if (dwresult == 0) {
+			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+			goto EXIT;
+		}
+		code = gcp.lpGlyphs[0];
+		flag = GGO_GLYPH_INDEX;
+
+	}
+	else {
+		code = char1;
+		flag = 0;
+	}
+
 	//ビットマップ作成に必要なバッファサイズを取得
-	size = GetGlyphOutline(
+	size = GetGlyphOutlineW(
 					hDC,				//デバイスコンテキスト
-					code,				//文字：TODO:サロゲートは扱えない？？
-					GGO_GRAY4_BITMAP,	//フォーマット：ビットマップ（グレイレベル17段）
+					code,				//文字
+					GGO_GRAY4_BITMAP | flag,	//フォーマット：ビットマップ（グレイレベル17段）
 					&glyphMetric,		//グラフメトリクス：作成された文字セルの情報が入る
 					0,					//バッファサイズ：ゼロを指定して必要なサイズを得る
 					NULL,				//バッファ位置
 					&mat				//変換行列
 				);
-	if (size < 0) {
+	if (size == GDI_ERROR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
@@ -261,16 +298,16 @@ int MTFont2Bmp::_CreateGlyphBmp(
 		}
 
 		//TrueTypeフォントビットマップ作成
-		size = GetGlyphOutline(
+		size = GetGlyphOutlineW(
 						hDC,				//デバイスコンテキスト
-						code,				//文字：TODO:サロゲートは扱えない？？
-						GGO_GRAY4_BITMAP,	//フォーマット：ビットマップ（グレイレベル17段）
+						code,				//文字
+						GGO_GRAY4_BITMAP | flag,	//フォーマット：ビットマップ（グレイレベル17段）
 						&glyphMetric,		//グラフメトリクス：作成された文字セルの情報が入る
 						size,				//バッファサイズ
 						pBuf,				//バッファ位置
 						&mat				//変換行列
 					);
-		if (size <= 0) {
+		if (size == GDI_ERROR) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 			goto EXIT;
 		}
@@ -297,54 +334,38 @@ EXIT:;
 // グリフBMPリスト作成
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmpList(
-		const TCHAR* pStr
+		const WCHAR* pStr
 	)
 {
 	int result = 0;
-	unsigned long code = 0;
+	WCHAR char1 = 0;
+	WCHAR char2 = 0;
+	bool isSurrogatePair = false;
 	MTGlyphBmp glyphBmp;
 
-#ifdef _UNICODE
-
-	TCHAR* ptr = pStr;
+	WCHAR* ptr = (WCHAR*)pStr;
 	
 	//1文字ごとにグリフBMPを作成
-	while (ptr[0] != _T('\0')) {
-		code = ptr[0];
-		ptr += 1;
-
-		//グリフBMP作成
-		result = _CreateGlyphBmp(code, &glyphBmp);
-		if (result != 0) goto EXIT;
-
-		//文字列リストに登録
-		m_GlyphBmpList.push_back(glyphBmp);
-	}
-
-#else
-
-	unsigned char* ptr = (unsigned char*)pStr;
-	
-	//1文字ごとにグリフBMPを作成
-	while (ptr[0] != '\0') {
-		if (IsDBCSLeadByte(ptr[0]) && (ptr[1] != '\0')) {
-			code = (ptr[0] << 8) | ptr[1];
+	while (ptr[0] != L'\0') {
+		char1 = ptr[0];
+		char2 = ptr[1];
+		if (IS_HIGH_SURROGATE(char1) && IS_LOW_SURROGATE(char2)) {
+			//サロゲートペアの場合
+			isSurrogatePair = true;
 			ptr += 2;
 		}
 		else {
-			code = ptr[0];
+			isSurrogatePair = false;
 			ptr += 1;
 		}
 
 		//グリフBMP作成
-		result = _CreateGlyphBmp(code, &glyphBmp);
+		result = _CreateGlyphBmp(char1, char2, isSurrogatePair, &glyphBmp);
 		if (result != 0) goto EXIT;
 
 		//文字列リストに登録
 		m_GlyphBmpList.push_back(glyphBmp);
 	}
-
-#endif
 
 EXIT:;
 	return result;

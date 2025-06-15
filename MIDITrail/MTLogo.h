@@ -4,7 +4,7 @@
 //
 // MIDITrail ロゴ描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -19,7 +19,7 @@
 // パラメータ定義
 //******************************************************************************
 //タイトル文字列
-#define MTLOGO_TITLE  _T("MIDITrail")
+#define MTLOGO_TITLE  L"MIDITrail"
 
 //ロゴ描画位置情報
 #define MTLOGO_POS_X  (20.0f)   //描画位置x

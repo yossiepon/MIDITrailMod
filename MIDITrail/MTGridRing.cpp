@@ -21,7 +21,6 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTGridRing::MTGridRing(void)
 {
-	m_BarNum = 0;
 	m_isVisible = true;
 	m_isEnable = true;
 }
@@ -45,6 +44,7 @@ int MTGridRing::Create(
 {
 	int result = 0;
 	SMBarList barList;
+	unsigned long barNum = 0;
 	unsigned long vertexNum = 0;
 	unsigned long indexNum = 0;
 	MTGRIDBOX_VERTEX* pVertex = NULL;
@@ -76,7 +76,7 @@ int MTGridRing::Create(
 	if (result != 0) goto EXIT;
 
 	//小節数
-	m_BarNum = barList.GetSize();
+	barNum = barList.GetSize();
 
 	//プリミティブ初期化
 	result = m_Primitive.Initialize(
@@ -86,13 +86,13 @@ int MTGridRing::Create(
 				);
 	if (result != 0) goto EXIT;
 
-	//頂点バッファ生成：1リング128頂点 * 2(先端/終端)
-	vertexNum = 128 * 2;
+	//頂点バッファ生成：1リング128頂点 * (小節数 + 終端)
+	vertexNum = 128 * (barNum + 1);
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//インデックスバッファ生成：1リング128辺 * 2(始点/終点) * 2(先端/終端)
-	indexNum = 128 * 2 * 2;
+	//インデックスバッファ生成：1リング128辺 * 2(始点/終点) * (小節数 + 終端)
+	indexNum = 128 * 2 * (barNum + 1);
 	result = m_Primitive.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 
@@ -106,7 +106,8 @@ int MTGridRing::Create(
 	result = _CreateVertexOfGrid(
 					pVertex,		//頂点バッファ書き込み位置
 					pIndex,			//インデックスバッファ書き込み位置
-					totalTickTime	//トータルチックタイム
+					totalTickTime,	//トータルチックタイム
+					&barList
 				);
 	if (result != 0) goto EXIT;
 
@@ -198,55 +199,59 @@ void MTGridRing::Release()
 int MTGridRing::_CreateVertexOfGrid(
 		MTGRIDBOX_VERTEX* pVertex,
 		unsigned long* pIndex,
-		unsigned long totalTickTime
+		unsigned long totalTickTime,
+		SMBarList* pBarList
 	)
 {
 	int result = 0;
 	unsigned long i = 0;
-	unsigned long virtexIndex = 0;
+	unsigned long vertexIndex = 0;
+	unsigned long tickTime = 0;
+	D3DXVECTOR3 basePos;
+	
+	//小節単位のリング
+	for (i = 0; i < pBarList->GetSize(); i++) {
+		result = pBarList->GetBar(i, &tickTime);
+		if (result != 0) goto EXIT;
+		
+		m_NoteDesign.GetGridRingBasePos(tickTime, &basePos);
+		result = _CreateVertexOfRing(pVertex, &vertexIndex, pIndex, basePos);
+		if (result != 0) goto EXIT;
+	}
+	
+	//終端リング
+	m_NoteDesign.GetGridRingBasePos(totalTickTime, &basePos);
+	result = _CreateVertexOfRing(pVertex, &vertexIndex, pIndex, basePos);
+	if (result != 0) goto EXIT;
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// リング頂点生成
+//******************************************************************************
+int MTGridRing::_CreateVertexOfRing(
+		MTGRIDBOX_VERTEX* pVertex,
+		unsigned long* pVirtexIndex,
+		unsigned long* pIndex,
+		D3DXVECTOR3 basePos
+	)
+{
+	int result = 0;
 	unsigned long virtexIndexStart = 0;
-	D3DXVECTOR3 basePosStart;
-	D3DXVECTOR3 basePosEnd;
+	unsigned long virtexIndex = 0;
+	unsigned long i = 0;
 	D3DXVECTOR3 rotatedPos;
 	float angle = 0.0f;
-
-	//基準座標取得
-	m_NoteDesign.GetGridRingBasePos(totalTickTime, &basePosStart, &basePosEnd);
-
-	//----------------------------------
-	//先端リング
-	//----------------------------------
-	//頂点作成
-	virtexIndexStart = virtexIndex;
-	pVertex[virtexIndex].p = basePosStart;
-	pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
-	pVertex[virtexIndex].c = m_NoteDesign.GetGridLineColor();
-	for (i = 1; i < 128; i++) {
-		virtexIndex++;
-		
-		//回転後の頂点
-		angle = (360.0f / 128.0f) * (float)i;
-		rotatedPos = DXH::RotateYZ(0.0f, 0.0f, basePosStart, angle);
-		pVertex[virtexIndex].p = rotatedPos;
-		pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
-		pVertex[virtexIndex].c = m_NoteDesign.GetGridLineColor();
-		
-		//インデックスバッファ（前回の頂点から今回の頂点）
-		pIndex[(virtexIndex - 1) * 2]     = virtexIndex - 1;
-		pIndex[(virtexIndex - 1) * 2 + 1] = virtexIndex;
-	}
-	//終点と始点をつなぐ線
-	pIndex[virtexIndex * 2]     = virtexIndex;
-	pIndex[virtexIndex * 2 + 1] = virtexIndexStart;
-
-	virtexIndex++;
-
+	
 	//----------------------------------
 	//終端リング
 	//----------------------------------
 	//頂点作成
-	virtexIndexStart = virtexIndex;
-	pVertex[virtexIndex].p = basePosEnd;
+	virtexIndexStart = *pVirtexIndex;
+	virtexIndex = *pVirtexIndex;
+	pVertex[virtexIndex].p = basePos;
 	pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[virtexIndex].c = m_NoteDesign.GetGridLineColor();
 	for (i = 1; i < 128; i++) {
@@ -254,7 +259,7 @@ int MTGridRing::_CreateVertexOfGrid(
 		
 		//回転後の頂点
 		angle = (360.0f / 128.0f) * (float)i;
-		rotatedPos = DXH::RotateYZ(0.0f, 0.0f, basePosEnd, angle);
+		rotatedPos = DXH::RotateYZ(0.0f, 0.0f, basePos, angle);
 		pVertex[virtexIndex].p = rotatedPos;
 		pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[virtexIndex].c = m_NoteDesign.GetGridLineColor();
@@ -266,7 +271,10 @@ int MTGridRing::_CreateVertexOfGrid(
 	//終点と始点をつなぐ線
 	pIndex[virtexIndex * 2]     = virtexIndex;
 	pIndex[virtexIndex * 2 + 1] = virtexIndexStart;
-
+	
+	virtexIndex++;
+	*pVirtexIndex = virtexIndex;
+	
 	return result;
 }
 

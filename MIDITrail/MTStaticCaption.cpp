@@ -4,7 +4,7 @@
 //
 // 静的キャプション描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -37,9 +37,9 @@ MTStaticCaption::~MTStaticCaption(void)
 //******************************************************************************
 int MTStaticCaption::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		TCHAR* pFontName,
+		WCHAR* pFontName,
 		unsigned long fontSize,
-		TCHAR* pCaption
+		WCHAR* pCaption
    )
 {
 	int result = 0;
@@ -182,9 +182,9 @@ void MTStaticCaption::Release()
 //******************************************************************************
 int MTStaticCaption::_CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		const TCHAR* pFontName,
+		const WCHAR* pFontName,
 		unsigned long fontSize,
-		const TCHAR* pCaption
+		const WCHAR* pCaption
 	)
 {
 	int result = 0;

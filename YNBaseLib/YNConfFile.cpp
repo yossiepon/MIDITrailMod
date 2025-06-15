@@ -4,7 +4,7 @@
 //
 // 設定ファイルクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -274,5 +274,127 @@ EXIT:;
 	return result;
 }
 
+//******************************************************************************
+// 文字列取得（値のみワイド文字列）
+//******************************************************************************
+int YNConfFile::GetWStr(
+		const TCHAR* pKey,
+		WCHAR* pBuf,
+		unsigned long bufSize,
+		const WCHAR* pDefaultVal
+	)
+{
+	int result = 0;
+	unsigned long hexBufSize = 0;
+	unsigned long hexLength = 0;
+	unsigned long index = 0;
+	unsigned long indexw = 0;
+	TCHAR* pHexString = NULL;
+	TCHAR hexChar[5];
+	TCHAR* stopped = NULL;
+	WCHAR wchar = 0;
+
+	//バッファサイズがデフォルト値を格納できなければエラー
+	if (bufSize < (wcslen(pDefaultVal) + 1)) {
+		result = YN_SET_ERR("Program Error.", bufSize, 0);
+		goto EXIT;
+	}
+
+	hexBufSize = (bufSize * 4) + (unsigned long)_tcslen(YNCONFFILE_NO_DATA) + 1;
+
+	//16進数文字列を格納するメモリを確保
+	try {
+		pHexString = new TCHAR[hexBufSize];
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", hexBufSize, 0);
+		goto EXIT;
+	}
+	memset(pHexString, 0, hexBufSize);
+
+	//16進数文字列を取得
+	result = GetStr(pKey, pHexString, hexBufSize, YNCONFFILE_NO_DATA);
+	if (result != 0) goto EXIT;
+	
+	//未登録の場合はデフォルト文字列を返す
+	if (_tcscmp(pHexString, YNCONFFILE_NO_DATA) == 0) {
+		wcscpy_s(pBuf, bufSize, pDefaultVal);
+		goto EXIT;
+	}
+
+	hexLength = (unsigned long)_tcslen(pHexString);
+
+	//空文字列の場合
+	if (hexLength == 0) {
+		pBuf[0] = L'\0';
+		goto EXIT;
+	}
+
+	//16進数文字列を4文字ずつワイド文字に変換
+	//末尾が4文字単位でなければ切り捨てる
+	while ((index + 4) <= hexLength) {
+		hexChar[0] = pHexString[index + 0];
+		hexChar[1] = pHexString[index + 1];
+		hexChar[2] = pHexString[index + 2];
+		hexChar[3] = pHexString[index + 3];
+		hexChar[4] = '\0';
+		pBuf[indexw] = (WCHAR)_tcstol(hexChar, &stopped, 16);
+
+		//バッファ終端であれば変換を終了
+		if ((indexw + 1) == bufSize) {
+			break;
+		}
+
+		index += 4;
+		indexw += 1;
+	}
+	pBuf[indexw] = L'\0';
+
+EXIT:;
+	delete [] pHexString;
+	return result;
+}
+
+//******************************************************************************
+// 文字列登録（値のみワイド文字列）
+//******************************************************************************
+int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
+{
+	int result = 0;
+	unsigned long length = 0;
+	unsigned long bufSize = 0;
+	unsigned long index = 0;
+	TCHAR* pHexString = NULL;
+	TCHAR hexChar[5];
+
+	length = (unsigned long)wcslen(pStr);
+	bufSize = (length + 1) * 4;
+
+	//16進数文字列を格納するメモリを確保
+	try {
+		pHexString = new TCHAR[bufSize];
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", bufSize, 0);
+		goto EXIT;
+	}
+	memset(pHexString, 0, bufSize);
+
+	//ワイド文字文字列を1文字ずつ16進数4文字に変換（終端文字は変換しない）
+	for (index = 0; index < length; index ++) {
+		_stprintf_s(hexChar, 5, _T("%04X"), pStr[index]);
+		_tcscat_s(pHexString, bufSize, hexChar);
+	}
+
+	//文字列登録
+	result = SetStr(pKey, pHexString);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	delete [] pHexString;
+	return result;
+}
+
 } // end of namespace
+
 

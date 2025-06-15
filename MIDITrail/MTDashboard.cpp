@@ -4,7 +4,7 @@
 //
 // ダッシュボード描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,6 +13,7 @@
 #include "DXColorUtil.h"
 #include "MTParam.h"
 #include "MTConfFile.h"
+#include "MTColorConf.h"
 #include "MTDashboard.h"
 #include <string>
 
@@ -69,11 +70,11 @@ int MTDashboard::Create(
    )
 {
 	int result = 0;
-	std::string title;
-	std::string fileName;
+	std::wstring title;
+	std::wstring fileName;
 	SMTrack track;
 	SMNoteList noteList;
-	TCHAR counter[100];
+	WCHAR counter[100];
 
 	Release();
 
@@ -89,32 +90,27 @@ int MTDashboard::Create(
 	if (result != 0) goto EXIT;
 
 	//タイトルキャプション
-	//TODO: UNICODE版ビルドには対応していない
-	//title = "TITLE: ";
-	title = "";
-	title += pSeqData->GetTitle();
+	title = pSeqData->GetTitle();
 	if (title.size() == 0) {
 		//空文字ではテクスチャ生成でエラーとなるため空白文字とする
-		title += " ";
+		title += L" ";
 	}
 	result = m_Title.Create(
 					pD3DDevice,
 					MTDASHBOARD_FONTNAME,	//フォント名称
 					MTDASHBOARD_FONTSIZE,	//フォントサイズ
-					(TCHAR*)title.c_str()	//キャプション
+					(WCHAR*)title.c_str()	//キャプション
 				);
 	if (result != 0) goto EXIT;
 	m_Title.SetColor(m_CaptionColor);
 
 	//ファイル名キャプション
-	//TODO: UNICODE版ビルドには対応していない
-	fileName = "";
 	fileName = pSeqData->GetFileName();
 	result = m_FileName.Create(
 					pD3DDevice,
 					MTDASHBOARD_FONTNAME,	//フォント名称
 					MTDASHBOARD_FONTSIZE,	//フォントサイズ
-					(TCHAR*)fileName.c_str()	//ファイル名
+					(WCHAR*)fileName.c_str()	//ファイル名
 				);
 	if (result != 0) goto EXIT;
 	m_FileName.SetColor(m_CaptionColor);
@@ -191,7 +187,7 @@ int MTDashboard::Draw(
 {
 	int result = 0;
 	D3DXMATRIX mtxWorld;
-	TCHAR counter[100];
+	WCHAR counter[100];
 
 	if (pD3DDevice == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -269,7 +265,7 @@ int MTDashboard::_GetCounterPos(
 
 	//文字サイズ
 	charHeight = th;
-	charWidth = tw / (unsigned long)_tcslen(MTDASHBOARD_COUNTER_CHARS);
+	charWidth = tw / (unsigned long)wcslen(MTDASHBOARD_COUNTER_CHARS);
 
 	//拡大率1.0のキャプションサイズ
 	captionWidth = (unsigned long)(charWidth * MTDASHBOARD_COUNTER_SIZE);
@@ -385,18 +381,18 @@ void MTDashboard::SetNotesCount(
 // カウンタ文字列取得
 //******************************************************************************
 int MTDashboard::_GetCounterStr(
-		TCHAR* pStr,
+		WCHAR* pStr,
 		unsigned long bufSize
 	)
 {
 	int result = 0;
 	int eresult = 0;
-	TCHAR spdstr[16] = {0};
+	WCHAR spdstr[16] = {0};
 
-	eresult = _stprintf_s(
+	eresult = swprintf_s(
 				pStr,
 				bufSize,
-				_T("TIME:%02d:%02d/%02d:%02d BPM:%03d BEAT:%d/%d BAR:%03d/%03d NOTES:%05d/%05d"),
+				L"TIME:%02d:%02d/%02d:%02d BPM:%03d BEAT:%d/%d BAR:%03d/%03d NOTES:%05d/%05d",
 				m_PlayTimeSec / 60,
 				m_PlayTimeSec % 60,
 				m_TotalPlayTimeSec / 60,
@@ -416,12 +412,12 @@ int MTDashboard::_GetCounterStr(
 
 	//演奏速度が100%以外の場合に限りカウンタに表示する
 	if (m_PlaySpeedRatio != 100) {
-		eresult = _stprintf_s(spdstr, 16, _T(" SPEED:%03lu%%"), m_PlaySpeedRatio);
+		eresult = swprintf_s(spdstr, 16, L" SPEED:%03lu%%", m_PlaySpeedRatio);
 		if (eresult < 0) {
 			result = YN_SET_ERR("Program error.", 0, 0);
 			goto EXIT;
 		}
-		_tcscat_s(pStr, bufSize, spdstr);
+		wcscat_s(pStr, bufSize, spdstr);
 	}
 
 EXIT:;
@@ -449,22 +445,18 @@ int MTDashboard::_LoadConfFile(
 	)
 {
 	int result = 0;
-	TCHAR hexColor[16] = {_T('\0')};
-	MTConfFile confFile;
-
-	result = confFile.Initialize(pSceneName);
+	MTColorConf colorConf;
+	MTColorPalette colorPalette;
+	D3DXCOLOR color;
+	
+	//カラー設定初期化
+	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
-
-	//----------------------------------
-	//色情報
-	//----------------------------------
-	result = confFile.SetCurSection(_T("Color"));
-	if (result != 0) goto EXIT;
-
-	//キャプションカラー
-	result = confFile.GetStr(_T("CaptionRGBA"), hexColor, 16, _T("FFFFFFFF"));
-	if (result != 0) goto EXIT;
-	m_CaptionColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+	
+	//選択カラーパレットからカウンター色取得
+	colorConf.GetSelectedColorPalette(&colorPalette);
+	colorPalette.GetCounterColor(&color);
+	m_CaptionColor = color;
 
 EXIT:;
 	return result;

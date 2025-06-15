@@ -4,7 +4,7 @@
 //
 // フォントテクスチャクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -50,7 +50,7 @@ void MTFontTexture::Clear()
 // フォント設定
 //******************************************************************************
 int MTFontTexture::SetFont(
-		const TCHAR* pFontName,
+		const WCHAR* pFontName,
 		unsigned long fontSize,
 		unsigned long rgb,
 		bool isForceFixedPitch
@@ -72,7 +72,7 @@ EXIT:;
 //******************************************************************************
 int MTFontTexture::CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-		const TCHAR* pStr
+		const WCHAR* pStr
 	)
 {
 	int result = 0;

@@ -4,7 +4,7 @@
 //
 // MIDITrail ロゴ描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -162,7 +162,7 @@ int MTLogo::_CreateTexture(
 
 	//フォント設定
 	result = m_FontTexture.SetFont(
-					_T("Arial"),		//フォント名称
+					L"Arial",			//フォント名称
 					40,					//フォントサイズ
 					color,				//色
 					isForceFixedPitch	//固定ピッチ強制

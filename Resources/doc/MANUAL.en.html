@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="en">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.3.6 for Windows User Manual</title>
+<title>MIDITrail Ver.1.4.0 for Windows User Manual</title>
 </head>
 <body>
 
@@ -15,7 +15,7 @@
 English / <a href="MANUAL.ja.html">Japanese</a>
 </div>
 
-<h1>MIDITrail Ver.1.3.6 for Windows User Manual</h1>
+<h1>MIDITrail Ver.1.4.0 for Windows User Manual</h1>
 
 <p>
 Copyright (c) 2010-2022, WADA Masashi All rights reserved.<br>
@@ -78,9 +78,9 @@ Please use MIDITrail Ver.1.2.4 on Windows 2000 / XP / Vista.
 <!-- ************************************************************* -->
 <h2><a name="install"></a>3. How to install and execute</h2>
 
-<h3>(1) How to install</h3>
+<h3>(1) How to setup</h3>
 <p>
-Extract ZIP file, and execute "MIDITrail.exe".<br>
+Extract ZIP file, and open "MIDITrail.exe".<br>
 <br>
 ZIP file name<br>
 MIDITrail-Ver.X.X.X-Windows.zip   -- MIDITrail 32bit version<br>
@@ -287,14 +287,14 @@ If you use a mouse with your left hand, this one may be convenience.
 
 <p>
 When you select "Viewpoint 1 / 2 / 3" from "View" menu,
-or when you push following key, you can move to a fixed viewpoint.
+or when you push following key, you can move to a standard viewpoint.
 </p>
 <p>
 <table>
   <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>7</kbd></td><td>Move to fixed viewpoint 1</td></tr>
-  <tr><td><kbd>8</kbd></td><td>Move to fixed viewpoint 2</td></tr>
-  <tr><td><kbd>9</kbd></td><td>Move to fixed viewpoint 3</td></tr>
+  <tr><td><kbd>7</kbd></td><td>Move to standard viewpoint 1</td></tr>
+  <tr><td><kbd>8</kbd></td><td>Move to standard viewpoint 2</td></tr>
+  <tr><td><kbd>9</kbd></td><td>Move to standard viewpoint 3</td></tr>
 </table>
 </p>
 
@@ -378,23 +378,19 @@ Some MIDI animation works are using pitch bend to shift the piano roll bars with
 If the MIDI animation is not displayed correctly, please disable the pitch bend effect to fix the piano roll bars.
 </p>
 
-<h3>(11) MIDITrail command line interface</h3>
+<h3>(11) MIDI IN Monitor</h3>
 <p>
-If you want to start MIDITrail by command line, you can use following arguments.
-</p>
-<pre>
-MIDITrail.exe [-p] [-q] ["path\to\file"]
-</pre>
-<p>
-<table>
-  <tr><th>argument</th><th>detail</th></tr>
-  <tr><td>-p</td><td>Play MIDI file after startup of MIDITrail.<br>If you did not specify "path\to\file", this option will be ignored.</td></tr>
-  <tr><td>-q</td><td>End MIDITrail after end of playback.<br>If option "-p" was not specified, this option will be ignored.</td></tr>
-  <tr><td>path\to\file</td><td>MIDI file path.<br>When you specify a path including a space character, please surround with a double quotation mark.</td></tr>
-</table>
+You can view data sets received from MIDI IN device in realtime.<br>
+Select "MIDI IN..." from "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
 </p>
 <p>
-If you drop a MIDI file to the shortcut of MIDITrail, MIDITrail open the file on startup.
+<img src="Files/MIDIIN.png"><br>
+</p>
+<p>
+Select the MIDI IN device for monitoring.<br>
+If you check the MIDITHRU, MIDITrail will send data sets received from MIDI IN to MIDI OUT.<br>
+When you select "Start Monitoring" from "Playback" menu, MIDI IN monitoring will start.<br>
+NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
 </p>
 
 <h3>(12) Graphic configuration</h3>
@@ -422,22 +418,55 @@ You can change a quarter note length of piano roll.<br>
 You can specify a value from 0% to 1000%. The default value is 100%.<br>
 </p>
 
-<h3>(13) MIDI IN Monitor</h3>
+<h3>(13) Color Configuration</h3>
 <p>
-You can view data sets received from MIDI IN device in realtime.<br>
-Select "MIDI IN..." from "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
+You can customize the colors displayed on the screen.<br>
+When you select "Color..." from "Option" menu, the color configuration dialog will appear.<br>
+You can select the color palette and change it to your favorite color scheme.<br>
+You can not change the color while playing or pausing.<br>
 </p>
 <p>
-<img src="Files/MIDIIN.png"><br>
+<img src="Files/ColorCfgDlg.png"><br>
 </p>
 <p>
-Select the MIDI IN device for monitoring.<br>
-If you check the MIDITHRU, MIDITrail will send data sets received from MIDI IN to MIDI OUT.<br>
-When you select "Start Monitoring" from "Playback" menu, MIDI IN monitoring will start.<br>
-NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
+When you click "Edit..." button, the color palette configuration dialog will appear.<br>
+You can cutomaize the color palette.<br>
+You can not edit the default color palette.<br>
+</p>
+<p>
+<img src="Files/ColorPaletteCfgDlg.png"><br>
+</p>
+<p>
+<b>Gradation Tool</b><br>
+[Set Gradation Colors] You can assign gradation colors for channels that you selected.<br>
+</p>
+<p>
+<b>Parameter Setup Tool</b><br>
+[Set Default Colors] Sets the default color for all items.<br>
+[Export Color Parameters...] You can edit the exported parameters with a text editor.<br>
+[Import Color Parameters...] You can import the parameters that you edited with a text editor. It is possible to enter part of the parameters.<br>
 </p>
 
-<h3>(14) Game Controller</h3>
+<h3>(14) MIDITrail command line interface</h3>
+<p>
+If you want to start MIDITrail by command line, you can use following arguments.
+</p>
+<pre>
+MIDITrail.exe [-p] [-q] ["path\to\file"]
+</pre>
+<p>
+<table>
+  <tr><th>argument</th><th>detail</th></tr>
+  <tr><td>-p</td><td>Play MIDI file after startup of MIDITrail.<br>If you did not specify "path\to\file", this option will be ignored.</td></tr>
+  <tr><td>-q</td><td>End MIDITrail after end of playback.<br>If option "-p" was not specified, this option will be ignored.</td></tr>
+  <tr><td>path\to\file</td><td>MIDI file path.<br>When you specify a path including a space character, please surround with a double quotation mark.</td></tr>
+</table>
+</p>
+<p>
+If you drop a MIDI file to the shortcut of MIDITrail, MIDITrail open the file on startup.
+</p>
+
+<h3>(15) Game Controller</h3>
 <p>
 You can operate by XInput game controller.<br>
 </p>
@@ -795,7 +824,7 @@ Edit [PianoKeyboard] section.<br>
 </table>
 </p>
 
-<h4>(i) Fixed viewpoint</h4>
+<h4>(i) Standard viewpoint</h4>
 <p>
 Edit [Viewpoint-2],[Viewpoint-3] section. You can not edit viewpoint 1.<br>
 </p>
@@ -884,7 +913,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 <p>
 <table>
-  <tr><th>Date</th><th>Version</th><th>Changelog</th></tr>
+  <tr><th>yyyy/mm/dd</th><th>Version</th><th>Changelog</th></tr>
   <tr><td>2010/03/08</td><td>Ver.0.0.0</td><td>Development start</td></tr>
   <tr><td>2010/05/18</td><td>Ver.1.0.0 beta</td><td>Beta release</td></tr>
   <tr><td>2010/06/02</td><td>Ver.1.0.0</td><td>First formal release</td></tr>
@@ -1036,6 +1065,15 @@ This version was released with MIDITrail for Mac OS X<br>
 #45091 Added feature of saving display switch status<br>
 #45092 Added 2nd light for Piano Roll 3D<br>
 #45093 Added MIDI system message parsing<br>
+  </td></tr>
+  <tr><td>2022/10/20</td><td>Ver.1.4.0</td><td>
+#45896 Added feature of color configuration<br>
+#45897 Added bar ring for Piano Roll Ring<br>
+#45898 Added Unicode support for reading MIDI files<br>
+#45899 Changed key color of Piano Roll Rain<br>
+#45900 fixed bug. (Counter displays monitering stop when toggle full screen)<br>
+#45901 fixed bug. (Window size is smaller than user setting)<br>
+#45931 fixed bug. (MIDITrail is not reading tempo data correctly)<br>
   </td></tr>
 </table>
 </p>

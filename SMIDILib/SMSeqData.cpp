@@ -4,7 +4,7 @@
 //
 // シーケンスデータクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,6 +13,7 @@
 #include "SMEventMeta.h"
 #include "SMSeqData.h"
 #include "SMFPUCtrl.h"
+#include <mbctype.h>
 
 using namespace YNBaseLib;
 
@@ -234,9 +235,9 @@ void SMSeqData::Clear()
 	m_BeatNumerator = SM_DEFAULT_TIME_SIGNATURE_NUMERATOR;
 	m_BeatDenominator = SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR;
 	m_BarNum = 0;
-	m_CopyRight = "";
-	m_Title = "";
-	m_FileName = "";
+	m_CopyRight = L"";
+	m_Title = L"";
+	m_FileName = L"";
 
 	delete m_pMergedTrack;
 	m_pMergedTrack = NULL;
@@ -390,7 +391,7 @@ unsigned long SMSeqData::GetBarNum()
 //******************************************************************************
 // 著作権テキスト取得
 //******************************************************************************
-const char* SMSeqData::GetCopyRight()
+const WCHAR* SMSeqData::GetCopyRight()
 {
 	return m_CopyRight.c_str();
 }
@@ -398,7 +399,7 @@ const char* SMSeqData::GetCopyRight()
 //******************************************************************************
 // タイトルテキスト取得
 //******************************************************************************
-const char* SMSeqData::GetTitle()
+const WCHAR* SMSeqData::GetTitle()
 {
 	return m_Title.c_str();
 }
@@ -519,7 +520,7 @@ int SMSeqData::_GetTempo(
 		//メタイベント以外は無視
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//拍子記号を取得
+		//テンポを取得
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() == 0x51) {
 			*pTempo = metaEvent.GetTempo();
@@ -610,6 +611,8 @@ int SMSeqData::_SearchText()
 	SMTrack* pTrack = NULL;
 	SMEvent event;
 	SMEventMeta metaEvent;
+	std::string copyRight;
+	std::string title;
 
 	//トラックが存在しなければ何もしない
 	if (m_TrackList.size() == 0) goto EXIT;
@@ -630,11 +633,16 @@ int SMSeqData::_SearchText()
 		if (event.GetType() == SMEvent::EventMeta) {
 			metaEvent.Attach(&event);
 			if (metaEvent.GetType() == 0x02) {
-				result = metaEvent.GetText(&m_CopyRight);
+				result = metaEvent.GetText(&copyRight);
 				if (result != 0) goto EXIT;
 				break;
 			}
 		}
+	}
+	//ワイド文字列変換
+	if (copyRight.length() > 0) {
+		result = _StringToWstring(&copyRight, &m_CopyRight);
+		if (result != 0) goto EXIT;
 	}
 
 	//シーケンス名を検索
@@ -647,7 +655,7 @@ int SMSeqData::_SearchText()
 			metaEvent.Attach(&event);
 			//任意テキスト
 			if ((metaEvent.GetType() == 0x01) && (!isFoundText)) {
-				result = metaEvent.GetText(&m_Title);
+				result = metaEvent.GetText(&title);
 				if (result != 0) goto EXIT;
 
 				//シーケンス名を優先するので検索は継続する
@@ -655,11 +663,16 @@ int SMSeqData::_SearchText()
 			}
 			//シーケンス名
 			if (metaEvent.GetType() == 0x03) {
-				result = metaEvent.GetText(&m_Title);
+				result = metaEvent.GetText(&title);
 				if (result != 0) goto EXIT;
 				break;
 			}
 		}
+	}
+	//ワイド文字列変換
+	if (title.length() > 0) {
+		result = _StringToWstring(&title, &m_Title);
+		if (result != 0) goto EXIT;
 	}
 
 EXIT:;
@@ -805,7 +818,7 @@ EXIT:;
 // ファイル名登録
 //******************************************************************************
 void SMSeqData::SetFileName(
-		const char* pFileName
+		const WCHAR* pFileName
 	)
 {
 	m_FileName = pFileName;
@@ -815,9 +828,58 @@ void SMSeqData::SetFileName(
 //******************************************************************************
 // ファイル名取得
 //******************************************************************************
-const char* SMSeqData::GetFileName()
+const WCHAR* SMSeqData::GetFileName()
 {
 	return m_FileName.c_str();
+}
+
+//******************************************************************************
+// ワイド文字列変換
+//******************************************************************************
+int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
+{
+	int result = 0;
+	int apiresult = 0;
+	int buffSize = 0;
+	WCHAR* wstrBuff = NULL;
+
+	//空文字の場合は変換なし
+	if (pStr->length() == 0) {
+		*pWstr = L"";
+		goto EXIT;
+	}
+
+	//サロゲートペアと0終端を考慮したバッファサイズ
+	buffSize = (int)(pStr->length()) * 2 + 1;
+
+	try {
+		wstrBuff = new WCHAR[buffSize];
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", buffSize, 0);
+		goto EXIT;
+	}
+
+	memset(wstrBuff, 0, sizeof(WCHAR) * buffSize);
+
+	apiresult = MultiByteToWideChar(
+						_getmbcp(),			//コードページ
+						MB_PRECOMPOSED,		//フラグ：
+						pStr->c_str(),		//変換元マルチバイト文字列
+						(int)(pStr->length()),	//変換元マルチバイト文字列バイト数
+						wstrBuff,			//変換先ワイド文字列バッファ
+						buffSize - 1		//バッファサイズ（ワイド文字数単位）
+					);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	*pWstr = wstrBuff;
+
+EXIT:;
+	delete [] wstrBuff;
+	return result;
 }
 
 

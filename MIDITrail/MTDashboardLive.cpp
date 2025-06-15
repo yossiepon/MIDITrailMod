@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ダッシュボード描画クラス
 //
-// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,7 +12,9 @@
 #include "YNBaseLib.h"
 #include "MTParam.h"
 #include "MTConfFile.h"
+#include "MTColorConf.h"
 #include "MTDashboardLive.h"
+#include <mbctype.h>
 
 using namespace YNBaseLib;
 
@@ -50,7 +52,7 @@ int MTDashboardLive::Create(
    )
 {
 	int result = 0;
-	TCHAR counter[100];
+	WCHAR counter[100];
 	
 	Release();
 	
@@ -110,7 +112,7 @@ int MTDashboardLive::Draw(
 	)
 {
 	int result = 0;
-	TCHAR counter[100];
+	WCHAR counter[100];
 	
 	if (pD3DDevice == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -180,7 +182,7 @@ int MTDashboardLive::_GetCounterPos(
 	
 	//文字サイズ
 	charHeight = th;
-	charWidth = tw / (unsigned long)_tcslen(MTDASHBOARDLIVE_COUNTER_CHARS);
+	charWidth = tw / (unsigned long)wcslen(MTDASHBOARDLIVE_COUNTER_CHARS);
 	
 	//拡大率1.0のキャプションサイズ
 	captionWidth = (unsigned long)(charWidth * MTDASHBOARDLIVE_COUNTER_SIZE);
@@ -224,25 +226,25 @@ void MTDashboardLive::SetNoteOn()
 // カウンタ文字列取得
 //******************************************************************************
 int MTDashboardLive::_GetCounterStr(
-		TCHAR* pStr,
+		WCHAR* pStr,
 		unsigned long bufSize
 	)
 {
 	int result = 0;
 	int eresult = 0;
-	const TCHAR* pMonitorStatus = _T("");
+	const WCHAR* pMonitorStatus = L"";
 	
 	if (m_isMonitoring) {
-		pMonitorStatus = _T("");
+		pMonitorStatus = L"";
 	}
 	else {
-		pMonitorStatus = _T("[MONITERING OFF]");
+		pMonitorStatus = L"[MONITERING OFF]";
 	}
 	
-	eresult = _stprintf_s(
+	eresult = swprintf_s(
 				pStr,
 				bufSize,
-				_T("NOTES:%08lu %s"),
+				L"NOTES:%08lu %s",
 				m_NoteCount,
 				pMonitorStatus
 			);
@@ -272,22 +274,18 @@ int MTDashboardLive::_LoadConfFile(
 	)
 {
 	int result = 0;
-	TCHAR hexColor[16] = {_T('\0')};
-	MTConfFile confFile;
+	MTColorConf colorConf;
+	MTColorPalette colorPalette;
+	D3DXCOLOR color;
 	
-	result = confFile.Initialize(pSceneName);
+	//カラー設定初期化
+	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 	
-	//----------------------------------
-	//色情報
-	//----------------------------------
-	result = confFile.SetCurSection(_T("Color"));
-	if (result != 0) goto EXIT;
-	
-	//キャプションカラー
-	result = confFile.GetStr(_T("CaptionRGBA"), hexColor, 16, _T("FFFFFFFF"));
-	if (result != 0) goto EXIT;
-	m_CaptionColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+	//選択カラーパレットからカウンター色取得
+	colorConf.GetSelectedColorPalette(&colorPalette);
+	colorPalette.GetCounterColor(&color);
+	m_CaptionColor = color;
 	
 EXIT:;
 	return result;
@@ -303,6 +301,10 @@ void MTDashboardLive::SetEnable(
 	m_isEnable = isEnable;
 }
 
+// メモ
+// SMLib側でデバイス名をワイド文字列で返却すべきであるが、
+// INIファイルへのパラメータ保存など広範囲に影響が及ぶため、
+// 本クラスでワイド文字列変換をして吸収する。
 //******************************************************************************
 //MIDI IN デバイス名登録
 //******************************************************************************
@@ -313,26 +315,36 @@ int MTDashboardLive::SetMIDIINDeviceName(
 {
 	int result = 0;
 	int eresult = 0;
-	TCHAR title[256] = {0}; //MAXPNAMELEN 32 より大きいサイズにする
-	const TCHAR* pDisplayName = NULL;
+	WCHAR title[256] = {0}; //MAXPNAMELEN 32 より大きいサイズにする
+	const WCHAR* pDisplayName = NULL;
+	std::string deviceName;
+	std::wstring deviceNameW;
 	
 	m_Title.Release();
 	
+	//ワイド文字列変換
+	if (pName != NULL) {
+		deviceName = pName;
+		result = _StringToWstring(&deviceName, &deviceNameW);
+		if (result != 0) goto EXIT;
+	}
+
+	//表示名設定
 	if (pName == NULL) {
-		pDisplayName = _T("(none)");
+		pDisplayName = L"(none)";
 	}
 	else if (_tcslen(pName) == 0) {
-		pDisplayName = _T("(none)");
+		pDisplayName = L"(none)";
 	}
 	else {
-		pDisplayName = pName;
+		pDisplayName = deviceNameW.c_str();
 	}
 	
 	//タイトルキャプション
-	eresult = _stprintf_s(
+	eresult = swprintf_s(
 				title,
 				256,
-				_T("MIDI IN: %s"),
+				L"MIDI IN: %s",
 				pDisplayName
 			);
 
@@ -346,6 +358,55 @@ int MTDashboardLive::SetMIDIINDeviceName(
 	m_Title.SetColor(m_CaptionColor);
 
 EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ワイド文字列変換
+//******************************************************************************
+int MTDashboardLive::_StringToWstring(std::string* pStr, std::wstring* pWstr)
+{
+	int result = 0;
+	int apiresult = 0;
+	int buffSize = 0;
+	WCHAR* wstrBuff = NULL;
+
+	//空文字の場合は変換なし
+	if (pStr->length() == 0) {
+		*pWstr = L"";
+		goto EXIT;
+	}
+
+	//サロゲートペアと0終端を考慮したバッファサイズ
+	buffSize = (int)(pStr->length()) * 2 + 1;
+
+	try {
+		wstrBuff = new WCHAR[buffSize];
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", buffSize, 0);
+		goto EXIT;
+	}
+
+	memset(wstrBuff, 0, sizeof(WCHAR) * buffSize);
+
+	apiresult = MultiByteToWideChar(
+						_getmbcp(),			//コードページ
+						MB_PRECOMPOSED,		//フラグ：
+						pStr->c_str(),		//変換元マルチバイト文字列
+						(int)(pStr->length()),	//変換元マルチバイト文字列バイト数
+						wstrBuff,			//変換先ワイド文字列バッファ
+						buffSize - 1		//バッファサイズ（ワイド文字数単位）
+					);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	*pWstr = wstrBuff;
+
+EXIT:;
+	delete [] wstrBuff;
 	return result;
 }
 

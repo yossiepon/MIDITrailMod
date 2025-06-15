@@ -4,7 +4,7 @@
 //
 // メタイベントクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -76,7 +76,7 @@ unsigned long SMEventMeta::GetTempo()
 	}
 
 	pData = m_pEvent->GetDataPtr();
-	tempo = (pData[0] << 16) | (pData[1] << 8) | (pData[3]);
+	tempo = (pData[0] << 16) | (pData[1] << 8) | (pData[2]);
 
 EXIT:;
 	return tempo;
