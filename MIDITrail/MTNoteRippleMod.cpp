@@ -557,9 +557,11 @@ int MTNoteRippleMod::_SetVertexPosition(
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
 
 	//–@ü
+// >>> revert 20250616 yossiepon begin
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
+// <<< revert 20250616 yossiepon end
 
 	//“§–¾“x‚ð™X‚É—Ž‚Æ‚·
 	alpha = m_NoteDesignMod.GetRippleAlpha(pNoteStatus->keyDownRate);

@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="ja">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.3.1 for Windows ユーザーマニュアル</title>
+<title>MIDITrail Ver.1.3.3 for Windows ユーザーマニュアル</title>
 </head>
 <body>
 
@@ -14,10 +14,10 @@
 <a href="MANUAL.en.html">English</a> / Japanese
 </div>
 
-<h1>MIDITrail Ver.1.3.1 for Windows ユーザーマニュアル</h1>
+<h1>MIDITrail Ver.1.3.3 for Windows ユーザーマニュアル</h1>
 
 <p>
-Copyright (c) 2010-2019, WADA Masashi All rights reserved.<br>
+Copyright (c) 2010-2021, WADA Masashi All rights reserved.<br>
 Web: <a href="https://osdn.jp/projects/miditrail/">https://osdn.jp/projects/miditrail/</a><br>
 Mail: <img src="Files/mail.png" align="top"><br>
 </p>
@@ -126,7 +126,7 @@ RCPCV.DLL <a href="http://www.vector.co.jp/soft/win95/art/se114143.html">http://
 
 <h3>(1) 標準MIDIファイルの読み込み</h3>
 <p>
-「File」メニューから「Open...」を選択すると、ファイル選択ダイアログが表示されます。
+「File」メニューから「Open File...」を選択すると、ファイル選択ダイアログが表示されます。
 ここで標準MIDIファイル(*.mid)を選択してください。<br>
 また、標準MIDIファイル(*.mid)をMIDITrailのウィンドウにドラッグ＆ドロップすることにより、
 ファイルを読み込むことができます。
@@ -156,8 +156,46 @@ RCPCV.DLLを導入している場合は、レコンポーザのデータファ�
 </table>
 </p>
 
+<h3>(3) フォルダ演奏</h3>
 
-<h3>(3) 三次元空間内の視点移動</h3>
+<p>
+MIDITrailは、フォルダに格納されているMIDIデータファイルを順番に開くことができます。<br>
+ファイルを開く順番は、ファイル名の昇順です。<br>
+</p>
+
+<h4>1.フォルダの選択</h4>
+<p>
+「File」メニューの「Open Folder...」を選択すると、フォルダ選択ダイアログが表示されます。<br>
+ここで標準MIDIファイル(*.mid)が格納されているフォルダを選択してください。<br>
+フォルダをMIDITrailのウィンドウにドラッグ＆ドロップすることもできます。<br>
+</p>
+
+<h4>2. ファイルの切替</h4>
+<p>
+「File」メニューから「Previous File」「Next File」を選択すると、ファイルを切り替えることができます。<br>
+次のショートカットキーも利用できます。<br>
+</p>
+<p>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
+          <kbd>CTRL</kbd> + <kbd>P</kbd></td>
+      <td>前のファイルを開く</td>
+  </tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td>
+      <td>次のファイルを開く</td>
+  </tr>
+</table>
+</p>
+
+<h4>3.フォルダ演奏</h4>
+<p>
+「Playback」メニューの「Foler Playback」を選択すると、
+MIDITrailは演奏終了後、自動的に次のファイルを開いて演奏を開始します。
+</p>
+
+
+<h3>(4) 三次元空間内の視点移動</h3>
 <p>
 MIDIファイルを読み込んだ直後、および演奏中に、三次元空間内を移動して、
 あらゆる方向からMIDIデータを眺めることができます。<br>
@@ -243,7 +281,7 @@ FPS（一人称シューティング）ゲームでおなじみの操作で、�
 </table>
 </p>
 
-<h3>(4) 視点の選択</h3>
+<h3>(5) 視点の選択</h3>
 <p>
 Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択するか、次のキーを押すと、
 あらかじめ固定された視点に移動することができます。
@@ -257,7 +295,7 @@ Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択す�
 </table>
 </p>
 
-<h3>(5) ウィンドウサイズの変更</h3>
+<h3>(6) ウィンドウサイズの変更</h3>
 <p>
 「View」メニューから「Window size...」を選択すると、ウィンドウサイズ設定ダイアログが表示されます。<br>
 お好みのウィンドウサイズを選択してOKボタンを押してください。<br>
@@ -272,14 +310,14 @@ Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択す�
 「Aplly to the view area」を選択すると、設定値が画像領域のサイズに反映されます。<br>
 </p>
 
-<h3>(6) フルスクリーン表示</h3>
+<h3>(7) フルスクリーン表示</h3>
 <p>
 「View」メニューから「Full Screen」を選択すると、ウィンドウ表示とフルスクリーン表示を
 切り替えることができます。<br>
 F11キーを押すことで、表示を切り替えることも可能です。
 </p>
 
-<h3>(7) 表示カウンタの種類</h3>
+<h3>(8) 表示カウンタの種類</h3>
 <p>
 <img src="Files/Counter.png"><br>
 </p>
@@ -297,7 +335,7 @@ F11キーを押すことで、表示を切り替えることも可能です。
 </table>
 </p>
 
-<h3>(8) ビューモード選択</h3>
+<h3>(9) ビューモード選択</h3>
 <p>
 「View」メニューでビューモードを選択することができます。
 演奏中／一時停止中にビューモードの変更はできません。
@@ -306,7 +344,7 @@ F11キーを押すことで、表示を切り替えることも可能です。
 <img src="Files/ViewMenu-Mode.png"><br>
 </p>
 
-<h3>(9) 表示／エフェクト選択</h3>
+<h3>(10) 表示／エフェクト選択</h3>
 <p>
 「View」メニューで表示／エフェクトの有無を切り替えることができます。
 </p>
@@ -321,7 +359,7 @@ MIDIアニメ作品が正常に表示されない場合は、バーの表示位�
 ピッチベンドのエフェクトをOFFにしてください。
 </p>
 
-<h3>(10) MIDITrailコマンドラインインターフェース</h3>
+<h3>(11) MIDITrailコマンドラインインターフェース</h3>
 <p>
 コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
 </p>
@@ -340,7 +378,7 @@ MIDITrail.exe [-p] [-q] ["path\to\file"]
 MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
 </p>
 
-<h3>(11) グラフィック設定</h3>
+<h3>(12) グラフィック設定</h3>
 <p>
 「Option」メニューから「Graphic...」を選択すると、グラフィック設定ダイアログが表示されます。<br>
 演奏中／一時停止中にグラフィック設定の変更はできません。
@@ -365,7 +403,7 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 0%から1000%を指定できます。デフォルトは100%です。 
 </p>
 
-<h3>(12) MIDI IN モニタ</h3>
+<h3>(13) MIDI IN モニタ</h3>
 <p>
 MIDI INデバイスで受信したデータをリアルタイム表示することができます。<br>
 「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
@@ -380,7 +418,7 @@ MIDI INで受信したデータをそのままMIDI OUTに出力する場合は�
 なお、MIDITrailはMIDI INで受信したデータを保存することはできません。<br>
 </p>
 
-<h3>(13) ゲームコントローラー</h3>
+<h3>(14) ゲームコントローラー</h3>
 <p>
 XInput対応のゲームコントローラーを用いて操作することができます。<br>
 </p>
@@ -772,7 +810,7 @@ MIDITrailは修正BSDライセンスを適用して公開しています。
 </p>
 
 <pre>
-Copyright (c) 2010-2019, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+Copyright (c) 2010-2021, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -941,6 +979,13 @@ MIDITrail for Mac OS Xと同時にリリース<br>
 #39734 仕様変更：ウィンドウサイズ変更時に視点を維持する<br>
 #39735 バグ修正：x64デバッグ構成のとき_controlfp_sでアサーション発生<br>
 #39736 バグ修正：x64デバッグ構成のときHow to viewダイアログで例外発生<br>
+  </td></tr>
+  <tr><td>2021/05/16</td><td>Ver.1.3.3</td><td>
+#42233 機能追加：フォルダ演奏対応<br>
+#42234 機能追加：チャンクサイズ不正の標準MIDIファイル読み込み対応<br>
+#42235 機能追加：RIFF形式MIDIデータファイルの読み込み対応<br>
+#42236 機能追加：演奏一時停止時にサウンドオフメッセージを送信<br>
+#42237 バグ修正：Piano Roll 3Dで波紋の色が暗くなる<br>
   </td></tr>
 </table>
 </p>

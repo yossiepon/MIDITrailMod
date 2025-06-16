@@ -4,7 +4,7 @@
 //
 // MIDI出力デバイス制御クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -67,6 +67,7 @@ public:
 	int SendShortMsg(unsigned char portNo, unsigned long msg);
 	int SendLongMsg(unsigned char portNo, unsigned char* pMsg, unsigned long size);
 	int NoteOffAll();
+	int SoundOffAll();
 
 private:
 
