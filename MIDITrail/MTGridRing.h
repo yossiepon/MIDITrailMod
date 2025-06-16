@@ -48,7 +48,6 @@ public:
 private:
 
 	DXPrimitive m_Primitive;
-	unsigned long m_BarNum;
 	SMPortList m_PortList;
 	MTNoteDesignRing m_NoteDesign;
 	bool m_isVisible;
@@ -64,10 +63,20 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
+	//グリッド頂点生成
 	int _CreateVertexOfGrid(
 			MTGRIDBOX_VERTEX* pVertex,
 			unsigned long* pIbIndex,
-			unsigned long totalTickTime
+			unsigned long totalTickTime,
+			SMBarList* pBarList
+		);
+
+	//リング頂点生成
+	int _CreateVertexOfRing(
+			MTGRIDBOX_VERTEX* pVertex,
+			unsigned long* pVirtexIndex,
+			unsigned long* pIndex,
+			D3DXVECTOR3 basePos
 		);
 
 	void _MakeMaterial(D3DMATERIAL9* pMaterial);

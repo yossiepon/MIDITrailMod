@@ -4,7 +4,7 @@
 //
 // シーケンスデータクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -55,7 +55,7 @@ public:
 	int CloseTrack();
 
 	//ファイル名登録
-	void SetFileName(const char* pFileName);
+	void SetFileName(const WCHAR* pFileName);
 
 	//クリア
 	void Clear();
@@ -105,10 +105,10 @@ public:
 	unsigned long GetBarNum();
 
 	//コピーライト文字列取得
-	const char* GetCopyRight();
+	const WCHAR* GetCopyRight();
 
 	//タイトル文字列取得
-	const char* GetTitle();
+	const WCHAR* GetTitle();
 
 	//小節リスト取得
 	int GetBarList(SMBarList* pBarList);
@@ -117,7 +117,11 @@ public:
 	int GetPortList(SMPortList* pPortList);
 
 	//ファイル名取得
-	const char* GetFileName();
+	const WCHAR* GetFileName();
+
+// >>> add 20250616 yossiepon begin
+	static int StringToWstring(std::string* pStr, std::wstring* pWstr);
+// <<< add 20250616 yossiepon end
 
 private:
 
@@ -142,9 +146,9 @@ private:
 	unsigned long m_BeatNumerator;
 	unsigned long m_BeatDenominator;
 	unsigned long m_BarNum;
-	std::string m_CopyRight;
-	std::string m_Title;
-	std::string m_FileName;
+	std::wstring m_CopyRight;
+	std::wstring m_Title;
+	std::wstring m_FileName;
 	SMTrackList m_TrackList;
 	SMTrack* m_pMergedTrack;
 
@@ -155,11 +159,13 @@ private:
 	int _GetBarNum(unsigned long* pBarNum);
 	int _CalcTotalTime();
 	int _SearchText();
+// >>> modify 20250616 yossiepon begin
+	static int _StringToWstring(std::string* pStr, std::wstring* pWstr);
+// <<< modify 20250616 yossiepon end
 
 	//代入とコピーコンストラクタの禁止
 	void operator=(const SMSeqData&);
 	SMSeqData(const SMSeqData&);
-
 };
 
 } // end of namespace

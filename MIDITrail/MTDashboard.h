@@ -4,7 +4,7 @@
 //
 // ダッシュボード描画クラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -26,13 +26,13 @@ using namespace SMIDILib;
 // パラメータ定義
 //******************************************************************************
 //フォント設定
-#define MTDASHBOARD_FONTNAME  _T("MS Gothic")
+#define MTDASHBOARD_FONTNAME  L"MS Gothic"
 #define MTDASHBOARD_FONTSIZE  (40)
 
 // >>> modify 20120728 yossiepon begin
 
 //カウンタキャプション文字列
-#define MTDASHBOARD_COUNTER_CHARS  _T("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:./% ")
+#define MTDASHBOARD_COUNTER_CHARS  L"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:./% "
 
 //カウンタキャプションサイズ
 //   1234567890123456789012345678901234567890123456789012345678901234567890123456789012  (82)
@@ -75,7 +75,7 @@ public:
 	//演奏経過時間と総演奏時間の登録
 	void SetPlayTimeSec(unsigned long playTimeSec);
 // >>> add 20120729 yossiepon begin
-	void SetPlayTimeMSec(unsigned long playTimeSec);
+	void SetPlayTimeMSec(unsigned long playTimeMSec);
 // <<< add 20120729 yossiepon end
 	void SetTotalPlayTimeSec(unsigned long totalPlayTimeSec);
 
@@ -144,7 +144,7 @@ private:
 	bool m_isEnableFileName;
 
 	int _GetCounterPos(float* pX, float* pY);
-	int _GetCounterStr(TCHAR* pStr, unsigned long bufSize);
+	int _GetCounterStr(WCHAR* pStr, unsigned long bufSize);
 	int _LoadConfFile(const TCHAR* pSceneName);
 
 };

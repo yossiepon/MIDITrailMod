@@ -4,7 +4,7 @@
 //
 // フォント＞ビットマップ変換クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -39,10 +39,10 @@ public:
 	
 	//フォント設定
 	//  強制的に固定ピッチにする場合はisForceFixedPitchにtrueを指定する
-	int SetFont(const TCHAR* pFontName, unsigned long fontSize, bool isForceFixedPitch = false);
+	int SetFont(const WCHAR* pFontName, unsigned long fontSize, bool isForceFixedPitch = false);
 
 	//ビットマップ作成
-	int CreateBmp(const TCHAR* pStr);
+	int CreateBmp(const WCHAR* pStr);
 	
 	//ビットマップサイズ取得
 	void GetBmpSize(unsigned long* pHeight, unsigned long* pWidth);
@@ -65,7 +65,7 @@ private:
 
 private:
 
-	TCHAR m_FontName[LF_FACESIZE];
+	WCHAR m_FontName[LF_FACESIZE];
 	unsigned long m_FontSize;
 	bool m_isForceFixedPitch;
 
@@ -78,8 +78,8 @@ private:
 	unsigned long m_BmpWidth;
 	
 	int _CreateLogFont();
-	int _CreateGlyphBmp(unsigned long code, MTGlyphBmp* pGB);
-	int _CreateGlyphBmpList(const TCHAR* pStr);
+	int _CreateGlyphBmp(WCHAR char1, WCHAR char2, bool isSurrogatePair, MTGlyphBmp* pGB);
+	int _CreateGlyphBmpList(const WCHAR* pStr);
 	int _CreateBmpBuf();
 	int _WriteGlyphToBmpBuf();
 

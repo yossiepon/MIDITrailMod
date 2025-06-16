@@ -1,6 +1,6 @@
 ******************************************************************************
 
-  MIDITrail source code Ver.1.3.6 for Windows
+  MIDITrail source code Ver.1.4.0 for Windows
 
   Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 
