@@ -1,7 +1,12 @@
 ピカピカMIDITrail 鍵盤方向自動切替・多ポート・歌詞対応等
 
-MIDITrail 1.2.6 mod. yossiepon_20190828
-mail: yoshy@users.sourceforge.jp
+MIDITrail 1.3.6 mod. yossiepon_20250616
+
+改造点 20250616：
+・[UPDATE] 1.3.1～1.3.6をマージ
+
+Mod 20250616:
+*[UPDATE] merge v1.3.1 - v1.3.6
 
 改造点 20190828：
 ・[UPDATE] 1.2.4～1.2.6をマージ
