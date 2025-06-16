@@ -4,7 +4,7 @@
 //
 // ノート波紋描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -97,7 +97,7 @@ public:
 
 // >>> modify access level to protected 20120728 yossiepon begin
 protected:
-// >>> modify 20120728 yossiepon end
+// <<< modify 20120728 yossiepon end
 
 	//ノート発音状態構造体
 	struct NoteStatus {
@@ -112,13 +112,18 @@ protected:
 	//頂点バッファ構造体
 	struct MTNOTERIPPLE_VERTEX {
 		D3DXVECTOR3 p;	//頂点座標
+// >>> revert 20250616 yossiepon begin PianoRoll3Dの波紋がおかしくなるので法線パラメータありに戻す
 		D3DXVECTOR3 n;	//法線
+// <<< revert 20250616 yossiepon end
 		DWORD		c;	//ディフューズ色
 		D3DXVECTOR2 t;	//テクスチャ画像位置
 	};
 
 	//頂点バッファFVFフォーマット
+// >>> revert 20250616 yossiepon begin
+//	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
+// <<< revert 20250616 yossiepon end
 
 protected:
 
@@ -155,7 +160,7 @@ protected:
 // >>> modify 20161224 yossiepon begin
 	virtual int _CreateNoteStatus();
 	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
-// >>> modify 20161224 yossiepon end
+// <<< modify 20161224 yossiepon end
 
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,
@@ -169,7 +174,7 @@ protected:
 	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-// >>> modify 20161224 yossiepon end
+// <<< modify 20161224 yossiepon end
 
 };
 

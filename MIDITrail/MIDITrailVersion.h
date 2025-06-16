@@ -4,7 +4,7 @@
 //
 // MIDITrail バージョン定義
 //
-// Copyright (C) 2014-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2014-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -16,12 +16,12 @@
 //******************************************************************************
 
 //バージョン文字列
-// >>> modify 20191219 yossiepon begin
-#define MIDITRAIL_VERSION_STRING_X86  _T("1.3.1 (x86), mod. yossiepon_20191219")
-#define MIDITRAIL_VERSION_STRING_X64  _T("1.3.1 (x64), mod. yossiepon_20191219")
-// <<< modify 20191219 yossiepon end
+// >>> modify 20250616 yossiepon begin
+#define MIDITRAIL_VERSION_STRING_X86  _T("1.3.3 (x86), mod. yossiepon_20250616")
+#define MIDITRAIL_VERSION_STRING_X64  _T("1.3.3 (x64), mod. yossiepon_20250616")
+// <<< modify 20250616 yossiepon end
 
 //コピーライト
-#define MIDITRAIL_COPYRIGHT          _T("Copyright (C) 2010-2019 WADA Masashi");
+#define MIDITRAIL_COPYRIGHT          _T("Copyright (C) 2010-2021 WADA Masashi");
 
 
