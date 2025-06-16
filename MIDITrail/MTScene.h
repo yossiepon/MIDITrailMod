@@ -4,7 +4,7 @@
 //
 // MIDITrail シーン基底クラス
 //
-// Copyright (C) 2010-2018 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -34,11 +34,9 @@ public:
 		EffectStars,
 		EffectCounter,
 		EffectBackgroundImage,
-		EffectFileName,
-// >>> add 20180404 yossiepon begin
+		EffectGridLine,
 		EffectTimeIndicator,
-		EffectGridBox,
-// <<< add 20180404 yossiepon end
+		EffectFileName
 	};
 
 	typedef std::map<std::string, float>  MTViewParamMap;

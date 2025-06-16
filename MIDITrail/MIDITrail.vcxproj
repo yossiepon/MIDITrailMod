@@ -224,7 +224,6 @@
     <ClCompile Include="MTGraphicCfgDlg.cpp" />
     <ClCompile Include="MTGridBox.cpp" />
     <ClCompile Include="MTGridBoxLive.cpp" />
-    <ClCompile Include="MTGridBoxMod.cpp" />
     <ClCompile Include="MTGridRing.cpp" />
     <ClCompile Include="MTGridRingLive.cpp" />
     <ClCompile Include="MTHowToViewDlg.cpp" />
@@ -312,7 +311,6 @@
     <ClInclude Include="MTGraphicCfgDlg.h" />
     <ClInclude Include="MTGridBox.h" />
     <ClInclude Include="MTGridBoxLive.h" />
-    <ClInclude Include="MTGridBoxMod.h" />
     <ClInclude Include="MTGridRing.h" />
     <ClInclude Include="MTGridRingLive.h" />
     <ClInclude Include="MTHowToViewDlg.h" />

@@ -4,7 +4,7 @@
 //
 // グリッドリング描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -42,6 +42,9 @@ public:
 	//解放
 	void Release();
 
+	//表示設定
+	void SetEnable(bool isEnable);
+
 private:
 
 	DXPrimitive m_Primitive;
@@ -49,6 +52,7 @@ private:
 	SMPortList m_PortList;
 	MTNoteDesignRing m_NoteDesign;
 	bool m_isVisible;
+	bool m_isEnable;
 
 	//頂点バッファ構造体
 	struct MTGRIDBOX_VERTEX {

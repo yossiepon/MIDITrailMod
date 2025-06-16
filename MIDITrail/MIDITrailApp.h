@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -46,7 +46,7 @@ using namespace SMIDILib;
 //メニュースタイル制御
 //TAG:シーン追加
 // >>> modify 20250615 yossiepon begin
-#define MT_MENU_NUM        (37+3)
+#define MT_MENU_NUM        (46+1)
 // <<< modify 20250615 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
@@ -68,9 +68,14 @@ using namespace SMIDILib;
 #define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
 
 //ウィンドウタイトル  ex.: "MIDITrail - file_name.mid - FPS:60.0"
-#define MIDITRAIL_WINDOW_TITLE			_T("MIDITrail")
-#define MIDITRAIL_WINDOW_TITLE_FILE		_T("MIDITrail - %s")
-#define MIDITRAIL_WINDOW_TITLE_FILES	_T("MIDITrail - [%d/%d] %s")
+// >>> modify 20250615 yossiepon begin
+//#define MIDITRAIL_WINDOW_TITLE			_T("MIDITrail")
+//#define MIDITRAIL_WINDOW_TITLE_FILE		_T("MIDITrail - %s")
+//#define MIDITRAIL_WINDOW_TITLE_FILES		_T("MIDITrail - [%d/%d] %s")
+
+#define MIDITRAIL_WINDOW_TITLE_FILE		_T(" - %s")
+#define MIDITRAIL_WINDOW_TITLE_FILES		_T(" - [%d/%d] %s")
+// <<< modify 20250615 yossiepon end
 #define MIDITRAIL_WINDOW_TITLE_FPS		_T("%s - FPS:%.1f")
 
 
@@ -161,8 +166,12 @@ private:
 	HWND m_hWnd;
 	HACCEL m_Accel;
 	TCHAR m_Title[MAX_LOADSTRING];
+// >>> add 20250615 yossiepon begin
+	TCHAR m_TitleBase[MAX_LOADSTRING];
+// <<< add 20250615 yossiepon end
 	TCHAR m_WndClassName[MAX_LOADSTRING];
 	bool m_isFullScreen;
+	bool m_isEnableMenuBar;
 	HMENU m_hMenu;
 
 	//レンダリング系
@@ -198,10 +207,8 @@ private:
 	bool m_isEnableCounter;
 	bool m_isEnableFileName;
 	bool m_isEnableBackgroundImage;
-// >>> add 20180404 yossiepon begin
+	bool m_isEnableGridLine;
 	bool m_isEnableTimeIndicator;
-	bool m_isEnableGridBox;
-// <<< add 20180404 yossiepon end
 
 	//シーン種別
 	SceneType m_SceneType;
@@ -297,10 +304,13 @@ private:
 	int _OnMenuAutoSaveViewpoint();
 	int _OnMenuResetViewpoint();
 	int _OnMenuViewpoint(unsigned long viewpointNo);
+	int _OnMenuMyViewpoint(unsigned long viewpointNo);
+	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
 	int _OnMenuWindowSize();
 	int _OnMenuFullScreen();
+	int _OnMenuMenuBar();
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
 	int _OnMenuOptionGraphic();
@@ -334,8 +344,12 @@ private:
 	int _SaveSceneType();
 	int _LoadSceneConf();
 	int _SaveSceneConf();
+	int _LoadEffectStatus();
+	int _SaveEffectStatus();
 	int _LoadViewpoint();
 	int _SaveViewpoint();
+	int _MoveToMyViewpoint(unsigned long viewpointNo);
+	int _SaveMyViewpoint(unsigned long viewpointNo);
 	int _LoadGraphicConf();
 	int _LoadPlayerConf();
 	int _OnDestroy();
@@ -360,6 +374,7 @@ private:
 	int _StopPlaybackAndOpenFolder(const TCHAR* pFolderPath);
 	int _FileOpenProc(const TCHAR* pFilePath);
 	int _ToggleFullScreen();
+	int _ToggleMenuBar();
 	int _ShowMenu();
 	int _HideMenu();
 	int _GamePadProc();

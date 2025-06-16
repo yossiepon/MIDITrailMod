@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロールリングシーン描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -120,8 +120,8 @@ int MTScenePianoRollRingLive::Create(
 	result = m_NoteRipple.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 	
-	//グリッドボックス生成
-	result = m_GridBoxLive.Create(pD3DDevice, GetName());
+	//グリッドリング生成
+	result = m_GridRingLive.Create(pD3DDevice, GetName());
 	if (result != 0) goto EXIT;
 	
 	//ピクチャボード生成
@@ -202,8 +202,8 @@ int MTScenePianoRollRingLive::Transform(
 	result = m_NoteBoxLive.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
 	
-	//グリッドボックス更新
-	result = m_GridBoxLive.Transform(pD3DDevice, rollAngle);
+	//グリッドリング更新
+	result = m_GridRingLive.Transform(pD3DDevice, rollAngle);
 	if (result != 0) goto EXIT;
 	
 	//ピクチャボード更新
@@ -256,8 +256,8 @@ int MTScenePianoRollRingLive::Draw(
 	result = m_BackgroundImage.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
-	//グリッドボックス描画
-	result = m_GridBoxLive.Draw(pD3DDevice);
+	//グリッドリング描画
+	result = m_GridRingLive.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
 	//ノートボックス描画
@@ -298,7 +298,7 @@ EXIT:;
 void MTScenePianoRollRingLive::Release()
 {
 	m_NoteBoxLive.Release();
-	m_GridBoxLive.Release();
+	m_GridRingLive.Release();
 	m_PictBoard.Release();
 	m_DashboardLive.Release();
 	m_Stars.Release();
@@ -680,6 +680,12 @@ void MTScenePianoRollRingLive::SetEffect(
 			break;
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
+			break;
+		case EffectGridLine:
+			m_GridRingLive.SetEnable(isEnable);
+			break;
+		case EffectTimeIndicator:
+			m_TimeIndicator.SetEnable(isEnable);
 			break;
 		default:
 			break;

@@ -11,7 +11,6 @@
 #pragma once
 
 #include "MTScenePianoRoll3D.h"
-#include "MTGridBoxMod.h"
 #include "MTNoteBoxMod.h"
 #include "MTNoteRippleMod.h"
 #include "MTNoteLyrics.h"
@@ -62,11 +61,7 @@ protected:
 
 private:
 
-	// ライト2
-	DXDirLight m_DirLightBack;
-
 	//描画オブジェクト
-	MTGridBoxMod m_GridBoxMod;
 	MTNoteBoxMod m_NoteBoxMod;
 	MTNoteRippleMod m_NoteRippleMod;
 	MTNoteLyrics m_NoteLyrics;

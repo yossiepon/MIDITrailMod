@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -57,10 +57,8 @@ public:
 	//移動ベクトル取得
 	D3DXVECTOR3 GetMoveVector();
 
-// >>> add 20180404 yossiepon begin
 	//表示設定
 	void SetEnable(bool isEnable);
-// <<< add 20180404 yossiepon end
 
 private:
 
@@ -69,13 +67,8 @@ private:
 	float m_CurPos;
 	MTNoteDesign m_NoteDesign;
 	bool m_isEnableLine;
-
-// >>> add 20180404 yossiepon begin
-	//表示可否
-	bool m_isEnable;
-// <<< add 20180404 yossiepon end
-
 	unsigned long m_CurTickTime;
+	bool m_isEnable;
 
 	//頂点バッファ構造体
 	struct MTTIMEINDICATOR_VERTEX {

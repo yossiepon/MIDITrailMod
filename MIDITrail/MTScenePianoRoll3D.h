@@ -4,7 +4,7 @@
 //
 // ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -116,10 +116,13 @@ protected:
 	//ライト有無
 	BOOL m_IsEnableLight;
 
-private:
+// >>> modify access level to protected 20250616 yossiepon begin
+protected:
+// <<< modify 20250616 yossiepon end
 
 	//ライト
 	DXDirLight m_DirLight;
+	DXDirLight m_DirLight2;
 
 // >>> modify access level to protected 20161223 yossiepon begin
 protected:
@@ -169,6 +172,7 @@ protected:
 	virtual void _Reset();
 // <<< modify 20120728 yossiepon end
 	void _SetLightColor(DXDirLight* pLight);
+	void _SetLightColor2(DXDirLight* pLight);
 
 // >>> modify access level 20161223 yossiepon begin
 private:

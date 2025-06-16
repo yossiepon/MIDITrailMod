@@ -4,7 +4,7 @@
 //
 // タイムインジケータリング描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,6 +23,7 @@ MTTimeIndicatorRing::MTTimeIndicatorRing(void)
 {
 	m_CurPos = 0.0f;
 	m_CurTickTime = 0;
+	m_isEnable = true;
 }
 
 //******************************************************************************
@@ -158,6 +159,8 @@ int MTTimeIndicatorRing::Draw(
 {
 	int result = 0;
 
+	if (!m_isEnable) goto EXIT;
+
 	//テクスチャステージ設定
 	//  カラー演算：引数1を使用  引数1：テクスチャ
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
@@ -266,6 +269,16 @@ float MTTimeIndicatorRing::GetPos()
 D3DXVECTOR3 MTTimeIndicatorRing::GetMoveVector()
 {
 	return D3DXVECTOR3(m_CurPos, 0.0f, 0.0f);
+}
+
+//******************************************************************************
+// 表示設定
+//******************************************************************************
+void MTTimeIndicatorRing::SetEnable(
+		bool isEnable
+	)
+{
+	m_isEnable = isEnable;
 }
 
 

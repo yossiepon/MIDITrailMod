@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="ja">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.3.4 for Windows ユーザーマニュアル</title>
+<title>MIDITrail Ver.1.3.6 for Windows ユーザーマニュアル</title>
 </head>
 <body>
 
@@ -14,10 +14,10 @@
 <a href="MANUAL.en.html">English</a> / Japanese
 </div>
 
-<h1>MIDITrail Ver.1.3.4 for Windows ユーザーマニュアル</h1>
+<h1>MIDITrail Ver.1.3.6 for Windows ユーザーマニュアル</h1>
 
 <p>
-Copyright (c) 2010-2021, WADA Masashi All rights reserved.<br>
+Copyright (c) 2010-2022, WADA Masashi All rights reserved.<br>
 Web: <a href="https://osdn.jp/projects/miditrail/">https://osdn.jp/projects/miditrail/</a><br>
 Mail: <img src="Files/mail.png" align="top"><br>
 </p>
@@ -61,7 +61,7 @@ MIDITrailはWindows, macOS, iOSに対応しています。
 <h2><a name="system"></a>2. 動作環境</h2>
 
 <p>
-対応OS： Windows 7 / 8 / 10<br>
+対応OS： Windows 7 / 8 / 10 / 11<br>
 DirectX 9.0c に対応したグラフィックチップが必要です。<br>
 </p>
 <p>
@@ -283,15 +283,32 @@ FPS（一人称シューティング）ゲームでおなじみの操作で、�
 
 <h3>(5) 視点の選択</h3>
 <p>
-Viewメニューから「Viewpoint 1 / Viewpoint 2 / Viewpoint 3」を選択するか、次のキーを押すと、
+Viewメニューから「Viewpoint 1 / 2 / 3」を選択するか、次のキーを押すと、
 あらかじめ固定された視点に移動することができます。
 </p>
 <p>
 <table>
   <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>7</kbd></td><td>視点1に移動する</td></tr>
-  <tr><td><kbd>8</kbd></td><td>視点2に移動する</td></tr>
-  <tr><td><kbd>9</kbd></td><td>視点3に移動する</td></tr>
+  <tr><td><kbd>7</kbd></td><td>固定視点1に移動する</td></tr>
+  <tr><td><kbd>8</kbd></td><td>固定視点2に移動する</td></tr>
+  <tr><td><kbd>9</kbd></td><td>固定視点3に移動する</td></tr>
+</table>
+</p>
+<p>
+Viewメニューから「My Viewpoint 1 / 2 / 3」を選択するか、次のキーを押すと、
+あらかじめユーザが保存しておいた視点に移動することができます。<br>
+現在の視点を保存するには、Viewメニューから「Save My Viewpoint 1 / 2 / 3」を選択するか、
+次のキーを押します。
+</p>
+<p>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>7</kbd></td><td>私の視点1に移動する</td></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>8</kbd></td><td>私の視点2に移動する</td></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>9</kbd></td><td>私の視点3に移動する</td></tr>
+  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>7</kbd></td><td>私の視点1を保存する</td></tr>
+  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>8</kbd></td><td>私の視点2を保存する</td></tr>
+  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>9</kbd></td><td>私の視点3を保存する</td></tr>
 </table>
 </p>
 
@@ -503,7 +520,7 @@ PCの処理能力を確認するために、音符の数が少ないMIDIデー�
 次のファイルをテキストエディタで編集することにより、ウィンドウサイズをカスタマイズできます。
 </p>
 <pre>
-Windows 7 / 8 / 10 の場合
+Windows 7 / 8 / 10 / 11 の場合
 C:\Users\（ユーザー名）\AppData\Roaming\yknk\MIDITrail\View.ini
 </pre>
 <p>
@@ -821,7 +838,7 @@ MIDITrailは修正BSDライセンスを適用して公開しています。
 </p>
 
 <pre>
-Copyright (c) 2010-2021, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+Copyright (c) 2010-2022, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -856,7 +873,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 <p>
 <table>
-  <tr><th>日時</th><th>バージョン</th><th>変更内容</th></tr>
+  <tr><th>日付</th><th>バージョン</th><th>変更内容</th></tr>
   <tr><td>2010/03/08</td><td>Ver.0.0.0</td><td>開発開始</td></tr>
   <tr><td>2010/05/18</td><td>Ver.1.0.0 beta</td><td>ベータ版公開</td></tr>
   <tr><td>2010/06/02</td><td>Ver.1.0.0</td><td>正式版公開</td></tr>
@@ -1000,6 +1017,14 @@ MIDITrail for Mac OS Xと同時にリリース<br>
   </td></tr>
   <tr><td>2021/09/13</td><td>Ver.1.3.4</td><td>
 #42859 機能追加：曲間待機時間の設定を追加<br>
+  </td></tr>
+  <tr><td>2022/07/14</td><td>Ver.1.3.6</td><td>
+#45088 機能追加：メニューバー非表示対応<br>
+#45089 機能追加：視点保存機能を追加<br>
+#45090 機能追加：グリッドラインとタイムインジケータの表示切替対応<br>
+#45091 機能追加：表示/効果スイッチの選択状態を保存<br>
+#45092 機能追加：Piano Roll 3Dにライトを追加<br>
+#45093 機能追加：システムメッセージの解析処理を追加<br>
   </td></tr>
 </table>
 </p>

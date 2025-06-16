@@ -49,30 +49,9 @@ int MTScenePianoRoll3DMod::Create(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	// ライト2
-	//----------------------------------
-	//ライト2初期化
-	result = m_DirLightBack.Initialize();
-	if (result != 0) goto EXIT;
-
-	//ライト2色
-	_SetLightColor(&m_DirLightBack);
-
-	//ライト2方向
-	m_DirLightBack.SetDirection(D3DXVECTOR3(-1.0f, 1.0f, -2.0f));
-
-	//ライトのデバイス登録
-	result = m_DirLightBack.SetDevice(pD3DDevice, 1, m_IsEnableLight);
-	if (result != 0) goto EXIT;
-
-	//----------------------------------
 	// 描画オブジェクト
 	//----------------------------------
 
-	//グリッドボックス生成
-	result = m_GridBoxMod.Create(pD3DDevice, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-	
 	//ノートボックス生成
 	result = m_NoteBoxMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
@@ -116,10 +95,6 @@ int MTScenePianoRoll3DMod::Transform(
 
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
-
-	//グリッドボックス更新
-	result = m_GridBoxMod.Transform(pD3DDevice, rollAngle);
-	if (result != 0) goto EXIT;
 
 	//ノートボックス更新
 	result = m_NoteBoxMod.Transform(pD3DDevice, rollAngle);
@@ -172,7 +147,7 @@ int MTScenePianoRoll3DMod::Draw(
 	if (result != 0) goto EXIT;
 
 	//グリッドボックス描画
-	result = m_GridBoxMod.Draw(pD3DDevice);
+	result = m_GridBox.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//ノートボックス描画
@@ -192,12 +167,25 @@ int MTScenePianoRoll3DMod::Draw(
 		result = m_TimeIndicator.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
+		//ライトを一時的に無効にする
+		//  ノート波紋とダッシュボードの描画色はライトの方向に依存させないため
+		result = m_DirLight.SetDevice(pD3DDevice, 0, FALSE);
+		if (result != 0) goto EXIT;
+		result = m_DirLight2.SetDevice(pD3DDevice, 1, FALSE);
+		if (result != 0) goto EXIT;
+
 		//ノート歌詞描画
 		result = m_NoteLyrics.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 		//ノート波紋描画
 		result = m_NoteRippleMod.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//ライトを戻す
+		result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+		if (result != 0) goto EXIT;
+		result = m_DirLight2.SetDevice(pD3DDevice, 1, m_IsEnableLight);
 		if (result != 0) goto EXIT;
 
 		//ピアノキーボード描画
@@ -212,12 +200,25 @@ int MTScenePianoRoll3DMod::Draw(
 		result = m_PianoKeyboardCtrlMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
+		//ライトを一時的に無効にする
+		//  ノート波紋とダッシュボードの描画色はライトの方向に依存させないため
+		result = m_DirLight.SetDevice(pD3DDevice, 0, FALSE);
+		if (result != 0) goto EXIT;
+		result = m_DirLight2.SetDevice(pD3DDevice, 1, FALSE);
+		if (result != 0) goto EXIT;
+
 		//ノート波紋描画
 		result = m_NoteRippleMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 		//ノート歌詞描画
 		result = m_NoteLyrics.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//ライトを戻す
+		result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+		if (result != 0) goto EXIT;
+		result = m_DirLight2.SetDevice(pD3DDevice, 1, m_IsEnableLight);
 		if (result != 0) goto EXIT;
 
 		//タイムインジケータ描画
@@ -230,8 +231,21 @@ int MTScenePianoRoll3DMod::Draw(
 
 	}
 
+	//ライトを一時的に無効にする
+	//  ノート波紋とダッシュボードの描画色はライトの方向に依存させないため
+	result = m_DirLight.SetDevice(pD3DDevice, 0, FALSE);
+	if (result != 0) goto EXIT;
+	result = m_DirLight2.SetDevice(pD3DDevice, 1, FALSE);
+	if (result != 0) goto EXIT;
+
 	//ダッシュボード描画：座標変換済み頂点を用いるため一番最後に描画する
 	result = m_Dashboard.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+	//ライトを戻す
+	result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+	if (result != 0) goto EXIT;
+	result = m_DirLight2.SetDevice(pD3DDevice, 1, m_IsEnableLight);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -382,20 +396,18 @@ void MTScenePianoRoll3DMod::SetEffect(
 		case EffectCounter:
 			m_Dashboard.SetEnable(isEnable);
 			break;
-		case EffectFileName:
-			m_Dashboard.SetEnableFileName(isEnable);
-			break;
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
 			break;
-// >>> add 20180404 yossiepon begin
+		case EffectGridLine:
+			m_GridBox.SetEnable(isEnable);
+			break;
 		case EffectTimeIndicator:
 			m_TimeIndicator.SetEnable(isEnable);
 			break;
-		case EffectGridBox:
-			m_GridBoxMod.SetEnable(isEnable);
+		case EffectFileName:
+			m_Dashboard.SetEnableFileName(isEnable);
 			break;
-// <<< add 20180404 yossiepon end
 		default:
 			break;
 	}
