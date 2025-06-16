@@ -4,7 +4,7 @@
 //
 // ピアノロールリングシーン描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -698,11 +698,17 @@ void MTScenePianoRollRing::SetEffect(
 		case EffectCounter:
 			m_Dashboard.SetEnable(isEnable);
 			break;
-		case EffectFileName:
-			m_Dashboard.SetEnableFileName(isEnable);
-			break;
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
+			break;
+		case EffectGridLine:
+			m_GridRing.SetEnable(isEnable);
+			break;
+		case EffectTimeIndicator:
+			m_TimeIndicator.SetEnable(isEnable);
+			break;
+		case EffectFileName:
+			m_Dashboard.SetEnableFileName(isEnable);
 			break;
 		default:
 			break;

@@ -4,7 +4,7 @@
 //
 // ディレクショナルライトクラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -105,10 +105,8 @@ D3DXVECTOR3 DXDirLight::GetDirection()
 }
 
 //******************************************************************************
-// デバイス登録
+// デバイス登録：インデックス0
 //******************************************************************************
-// >>> add 20121229 yossiepon begin
-//デバイスへのライト登録
 int DXDirLight::SetDevice(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		BOOL isLightON
@@ -116,13 +114,13 @@ int DXDirLight::SetDevice(
 {
 	return SetDevice(pD3DDevice, 0, isLightON);
 }
-// <<< add 20121229 yossiepon end
 
+//******************************************************************************
+// デバイス登録：インデックス指定
+//******************************************************************************
 int DXDirLight::SetDevice(
 		LPDIRECT3DDEVICE9 pD3DDevice,
-// >>> add 20121229 yossiepon begin
 		DWORD index,
-// <<< add 20121229 yossiepon end
 		BOOL isLightON
 	)
 {

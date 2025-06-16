@@ -221,9 +221,6 @@
     <ClCompile Include="MTGamePadCtrl.cpp">
       <Filter>Sources\XInputUtility</Filter>
     </ClCompile>
-    <ClCompile Include="MTGridBoxMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
     <ClCompile Include="MTNoteBoxMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
@@ -474,9 +471,6 @@
     </ClInclude>
     <ClInclude Include="MTGamePadCtrl.h">
       <Filter>Sources\XInputUtility</Filter>
-    </ClInclude>
-    <ClInclude Include="MTGridBoxMod.h">
-      <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTNoteBoxMod.h">
       <Filter>Sources\SceneObject</Filter>

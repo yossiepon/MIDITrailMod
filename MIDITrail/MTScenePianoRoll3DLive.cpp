@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ピアノロール3Dシーン描画クラス
 //
-// Copyright (C) 2012-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -94,12 +94,32 @@ int MTScenePianoRoll3DLive::Create(
 	result = m_DirLight.Initialize();
 	if (result != 0) goto EXIT;
 	
+	//ライト色
+	_SetLightColor(&m_DirLight);
+	
 	//ライト方向
 	//  原点を光源としてその方向をベクトルで表現する
 	m_DirLight.SetDirection(D3DXVECTOR3(1.0f, -1.0f, 2.0f));
 	
 	//ライトのデバイス登録
-	result = m_DirLight.SetDevice(pD3DDevice, m_IsEnableLight);
+	result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+	if (result != 0) goto EXIT;
+	
+	//----------------------------------
+	// ライト2
+	//----------------------------------
+	//ライト初期化
+	result = m_DirLight2.Initialize();
+	if (result != 0) goto EXIT;
+
+	//ライト色
+	_SetLightColor2(&m_DirLight2);
+
+	//ライト方向
+	m_DirLight2.SetDirection(D3DXVECTOR3(-1.0f, 1.0f, -2.0f));
+
+	//ライトのデバイス登録
+	result = m_DirLight2.SetDevice(pD3DDevice, 1, m_IsEnableLight);
 	if (result != 0) goto EXIT;
 	
 	//----------------------------------
@@ -279,7 +299,9 @@ int MTScenePianoRoll3DLive::Draw(
 
 	//ライトを一時的に無効にする
 	//  ノート波紋とダッシュボードの描画色はライトの方向に依存させないため
-	result = m_DirLight.SetDevice(pD3DDevice, FALSE);
+	result = m_DirLight.SetDevice(pD3DDevice, 0, FALSE);
+	if (result != 0) goto EXIT;
+	result = m_DirLight2.SetDevice(pD3DDevice, 1, FALSE);
 	if (result != 0) goto EXIT;
 	
 	//ノート波紋描画
@@ -291,7 +313,9 @@ int MTScenePianoRoll3DLive::Draw(
 	if (result != 0) goto EXIT;
 	
 	//ライトを戻す
-	result = m_DirLight.SetDevice(pD3DDevice, m_IsEnableLight);
+	result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+	if (result != 0) goto EXIT;
+	result = m_DirLight2.SetDevice(pD3DDevice, 1, m_IsEnableLight);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -692,10 +716,80 @@ void MTScenePianoRoll3DLive::SetEffect(
 		case EffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
 			break;
+		case EffectGridLine:
+			m_GridBoxLive.SetEnable(isEnable);
+			break;
+		case EffectTimeIndicator:
+			m_TimeIndicator.SetEnable(isEnable);
+			break;
 		default:
 			break;
 	}
 	
+	return;
+}
+
+//******************************************************************************
+// ライト色設定
+//******************************************************************************
+void MTScenePianoRoll3DLive::_SetLightColor(
+		DXDirLight* pLight
+	)
+{
+	D3DXCOLOR diffuse;
+	D3DXCOLOR specular;
+	D3DXCOLOR ambient;
+
+	//拡散光
+	diffuse.r = 1.2f;
+	diffuse.g = 1.2f;
+	diffuse.b = 1.2f;
+	diffuse.a = 1.0f;
+	//鏡面反射光
+	specular.r = 0.0f;
+	specular.g = 0.0f;
+	specular.b = 0.0f;
+	specular.a = 0.0f;
+	//環境光
+	ambient.r = 0.2f;
+	ambient.g = 0.2f;
+	ambient.b = 0.2f;
+	ambient.a = 1.0f;
+
+	pLight->SetColor(diffuse, specular, ambient);
+
+	return;
+}
+
+//******************************************************************************
+// ライト2色設定
+//******************************************************************************
+void MTScenePianoRoll3DLive::_SetLightColor2(
+		DXDirLight* pLight
+	)
+{
+	D3DXCOLOR diffuse;
+	D3DXCOLOR specular;
+	D3DXCOLOR ambient;
+
+	//拡散光
+	diffuse.r = 1.2f;
+	diffuse.g = 1.2f;
+	diffuse.b = 1.2f;
+	diffuse.a = 1.0f;
+	//鏡面反射光
+	specular.r = 0.0f;
+	specular.g = 0.0f;
+	specular.b = 0.0f;
+	specular.a = 0.0f;
+	//環境光
+	ambient.r = 0.0f;
+	ambient.g = 0.0f;
+	ambient.b = 0.0f;
+	ambient.a = 0.0f;
+
+	pLight->SetColor(diffuse, specular, ambient);
+
 	return;
 }
 

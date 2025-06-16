@@ -4,7 +4,7 @@
 //
 // タイムインジケータリング描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -57,13 +57,16 @@ public:
 	//移動ベクトル取得
 	D3DXVECTOR3 GetMoveVector();
 
+	//表示設定
+	void SetEnable(bool isEnable);
+
 private:
 
 	DXPrimitive m_PrimitiveLine;
 	float m_CurPos;
 	MTNoteDesignRing m_NoteDesign;
-
 	unsigned long m_CurTickTime;
+	bool m_isEnable;
 
 	//頂点バッファ構造体
 	struct MTTIMEINDICATOR_VERTEX {
