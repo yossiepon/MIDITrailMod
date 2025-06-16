@@ -16,6 +16,7 @@
 #include "YNBaseLib.h"
 #include "DXColorUtil.h"
 #include "MTConfFile.h"
+#include "MTColorConf.h"
 #include "MTScenePianoRollRainLive.h"
 
 using namespace YNBaseLib;
@@ -344,8 +345,10 @@ int MTScenePianoRollRainLive::OnPlayEnd(
 	m_PianoKeyboardCtrlLive.AllNoteOff();
 	
 	m_DashboardLive.SetMonitoringStatus(false);
-	
-//EXIT:;
+	result = m_DashboardLive.SetMIDIINDeviceName(pD3DDevice, GetParam(_T("MIDI_IN_DEVICE_NAME")));
+	if (result != 0) goto EXIT;
+
+EXIT:;
 	return result;
 }
 
@@ -662,25 +665,33 @@ void MTScenePianoRollRainLive::SetEffect(
 int MTScenePianoRollRainLive::_LoadConf()
 {
 	int result = 0;
-	TCHAR hexColor[16] = {_T('\0')};
 	MTConfFile confFile;
+	MTColorConf colorConf;
+	MTColorPalette colorPalette;
+	D3DXCOLOR bgColor;
 
+	//設定ファイル初期化
 	result = confFile.Initialize(GetName());
 	if (result != 0) goto EXIT;
 
-	result = confFile.SetCurSection(_T("Color"));
-	if (result != 0) goto EXIT;
-
-	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000"));
-	if (result != 0) goto EXIT;
-
-	SetBGColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
-
+	//視点2読み込み
 	result = _LoadConfViewpoint(&confFile, 2, &m_Viewpoint2);
 	if (result != 0) goto EXIT;
 
+	//視点3読み込み
 	result = _LoadConfViewpoint(&confFile, 3, &m_Viewpoint3);
 	if (result != 0) goto EXIT;
+
+	//カラー設定初期化
+	result = colorConf.Initialize(GetName());
+	if (result != 0) goto EXIT;
+
+	//選択カラーパレットから背景色取得
+	colorConf.GetSelectedColorPalette(&colorPalette);
+	colorPalette.GetBackgroundColor(&bgColor);
+
+	//背景色設定
+	SetBGColor(bgColor);
 
 EXIT:;
 	return result;

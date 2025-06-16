@@ -4,7 +4,7 @@
 //
 // RCPファイル変換クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -48,27 +48,33 @@ public:
 	bool IsAvailable();
 
 	//標準MIDファイル変換
-	int Convert(const TCHAR* pRCPPath, const TCHAR* pSMFPath);
+	int Convert(const WCHAR* pRCPPath, const WCHAR* pSMFPath);
 
 	//拡張子によるサポート対象ファイル判定
-	bool IsSupportFileExt(const TCHAR* pFilePath);
+	bool IsSupportFileExt(const WCHAR* pFilePath);
 
 	//GetOpenFileName用ファイルフィルタ取得
-	const TCHAR* GetOpenFileNameFilter();
+	const WCHAR* GetOpenFileNameFilter();
 
 private:
 
 	HMODULE m_hModule;
 
 	//RCPCV.DLL API定義
-	typedef DWORD (WINAPI *RCPCV_ConvertFile)(LPCSTR, UINT, DWORD, UINT, DWORD);
-	typedef int   (WINAPI *RCPCV_SaveSMF)(DWORD, LPCSTR);
-	typedef void  (WINAPI *RCPCV_DeleteObject)(DWORD);
+	typedef DWORD  (WINAPI *RCPCV_ConvertFile)(LPCSTR, UINT, DWORD, UINT, DWORD);
+	typedef int    (WINAPI *RCPCV_SaveSMF)(DWORD, LPCSTR);
+	typedef void   (WINAPI *RCPCV_DeleteObject)(DWORD);
+	typedef DWORD  (WINAPI *RCPCV_ConvertFileFromBuffer)(LPCSTR, UINT, UINT, UINT, DWORD, UINT, DWORD);
+	typedef LPCSTR (WINAPI *RCPCV_GetSMF)(DWORD);
+	typedef int    (WINAPI *RCPCV_GetSMFLength)(DWORD);
 
 	//関数ポインタ
-	RCPCV_ConvertFile  m_pFuncConvertFile;
-	RCPCV_SaveSMF      m_pFuncSaveSMF;
-	RCPCV_DeleteObject m_pFuncDeleteObject;
+	RCPCV_ConvertFile           m_pFuncConvertFile;
+	RCPCV_SaveSMF               m_pFuncSaveSMF;
+	RCPCV_DeleteObject          m_pFuncDeleteObject;
+	RCPCV_ConvertFileFromBuffer m_pFuncConvertFileFromBuffer;
+	RCPCV_GetSMF                m_pFuncGetSMF;
+	RCPCV_GetSMFLength          m_pFuncGetSMFLength;
 
 	void _Release();
 

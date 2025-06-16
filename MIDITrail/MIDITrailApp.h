@@ -20,6 +20,7 @@
 #include "MTMIDIOUTCfgDlg.h"
 #include "MTMIDIINCfgDlg.h"
 #include "MTGraphicCfgDlg.h"
+#include "MTColorCfgDlg.h"
 #include "MTHowToViewDlg.h"
 #include "MTAboutDlg.h"
 #include "MTCmdLineParser.h"
@@ -46,7 +47,7 @@ using namespace SMIDILib;
 //メニュースタイル制御
 //TAG:シーン追加
 // >>> modify 20250615 yossiepon begin
-#define MT_MENU_NUM        (46+1)
+#define MT_MENU_NUM        (47+1)
 // <<< modify 20250615 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
@@ -69,14 +70,14 @@ using namespace SMIDILib;
 
 //ウィンドウタイトル  ex.: "MIDITrail - file_name.mid - FPS:60.0"
 // >>> modify 20250615 yossiepon begin
-//#define MIDITRAIL_WINDOW_TITLE			_T("MIDITrail")
-//#define MIDITRAIL_WINDOW_TITLE_FILE		_T("MIDITrail - %s")
-//#define MIDITRAIL_WINDOW_TITLE_FILES		_T("MIDITrail - [%d/%d] %s")
+//#define MIDITRAIL_WINDOW_TITLE			L"MIDITrail"
+//#define MIDITRAIL_WINDOW_TITLE_FILE		L"MIDITrail - %s"
+//#define MIDITRAIL_WINDOW_TITLE_FILES		L"MIDITrail - [%d/%d] %s"
 
-#define MIDITRAIL_WINDOW_TITLE_FILE		_T(" - %s")
-#define MIDITRAIL_WINDOW_TITLE_FILES		_T(" - [%d/%d] %s")
+#define MIDITRAIL_WINDOW_TITLE_FILE			L" - %s"
+#define MIDITRAIL_WINDOW_TITLE_FILES		L" - [%d/%d] %s"
 // <<< modify 20250615 yossiepon end
-#define MIDITRAIL_WINDOW_TITLE_FPS		_T("%s - FPS:%.1f")
+#define MIDITRAIL_WINDOW_TITLE_FPS			L"%s - FPS:%.1f"
 
 
 //******************************************************************************
@@ -165,11 +166,11 @@ private:
 	//ウィンドウ系
 	HWND m_hWnd;
 	HACCEL m_Accel;
-	TCHAR m_Title[MAX_LOADSTRING];
+	WCHAR m_Title[MAX_LOADSTRING];
 // >>> add 20250615 yossiepon begin
-	TCHAR m_TitleBase[MAX_LOADSTRING];
+	WCHAR m_TitleBase[MAX_LOADSTRING];
 // <<< add 20250615 yossiepon end
-	TCHAR m_WndClassName[MAX_LOADSTRING];
+	WCHAR m_WndClassName[MAX_LOADSTRING];
 	bool m_isFullScreen;
 	bool m_isEnableMenuBar;
 	HMENU m_hMenu;
@@ -189,6 +190,7 @@ private:
 	SMRcpConv m_RcpConv;
 	SMMsgQueue m_MsgQueue;
 	SMLiveMonitor m_LiveMonitor;
+	TCHAR m_MIDIINDevName[MAXPNAMELEN];
 
 	//演奏状態
 	PlayStatus m_PlayStatus;
@@ -226,6 +228,9 @@ private:
 	//グラフィック設定ダイアログ
 	MTGraphicCfgDlg m_GraphicCfgDlg;
 
+	//カラー設定ダイアログ
+	MTColorCfgDlg m_ColorCfgDlg;
+
 	//操作方法ダイアログ
 	MTHowToViewDlg m_HowToViewDlg;
 
@@ -256,7 +261,7 @@ private:
 	bool m_isAutoSaveViewpoint;
 
 	//次回オープン対象ファイルパス
-	TCHAR m_NextFilePath[_MAX_PATH];
+	WCHAR m_NextFilePath[_MAX_PATH];
 
 	//ゲームパッド制御
 	MTGamePadCtrl m_GamePadCtrl;
@@ -314,6 +319,7 @@ private:
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
 	int _OnMenuOptionGraphic();
+	int _OnMenuOptionColor();
 	int _OnMenuManual();
 	int _OnMenuSelectSceneType(SceneType type);
 	int _OnFilePathPosted();
@@ -326,13 +332,13 @@ private:
 	int _OnKeyDown(WPARAM wParam, LPARAM lParam);
 	int _OnDropFiles(WPARAM wParam, LPARAM lParam);
 
-	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
-	int _SelectFolder(TCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
-	int _LoadMIDIFile(const TCHAR* pFilePath);
+	int _SelectMIDIFile(WCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
+	int _SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
+	int _LoadMIDIFile(const WCHAR* pFilePath);
 // >>> add 20120728 yossiepon begin
-	int _AddMIDIFile(const TCHAR* pFilePath);
+	int _AddMIDIFile(const WCHAR* pFilePath);
 // <<< add 20120728 yossiepon end
-	void _UpdateWindowTitle(const TCHAR* pFileName);
+	void _UpdateWindowTitle(const WCHAR* pFileName);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
 	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);
@@ -358,7 +364,7 @@ private:
 	int _UpdateMenuCheckmark();
 	void _CheckMenuItem(UINT uIDCheckItem, bool isEnable);
 	void _UpdateEffect();
-	int _ParseCmdLine(LPTSTR pCmdLine);
+	int _ParseCmdLine();
 	int _StartTimer();
 	int _StopTimer();
 	int _StartTimer_Play(int delayBetweenSongsInMsec);
@@ -369,17 +375,17 @@ private:
 	int _SearchMicrosoftWavetableSynth(std::string& productName);
 	int _CheckMultipleInstances(bool* pIsExitApp);
 	int _CreateMailSlot();
-	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
-	int _StopPlaybackAndOpenFile(const TCHAR* pFilePath);
-	int _StopPlaybackAndOpenFolder(const TCHAR* pFolderPath);
-	int _FileOpenProc(const TCHAR* pFilePath);
+	int _PostFilePathToFirstMIDITrail();
+	int _StopPlaybackAndOpenFile(const WCHAR* pFilePath);
+	int _StopPlaybackAndOpenFolder(const WCHAR* pFolderPath);
+	int _FileOpenProc(const WCHAR* pFilePath);
 	int _ToggleFullScreen();
 	int _ToggleMenuBar();
 	int _ShowMenu();
 	int _HideMenu();
 	int _GamePadProc();
 	int _ChangeViewPoint(int step);
-	int _MakeFileListWithFolder(const TCHAR* pFolderPath, MTFileList* pFileList);
+	int _MakeFileListWithFolder(const WCHAR* pFolderPath, MTFileList* pFileList);
 
 };
 

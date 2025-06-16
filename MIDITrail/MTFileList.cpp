@@ -4,7 +4,7 @@
 //
 // ファイルリストクラス
 //
-// Copyright (C) 2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -21,8 +21,8 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTFileList::MTFileList(void)
 {
-	m_TargetDirPath[0] = _T('\0');
-	m_CurFilePath[0] = _T('\0');
+	m_TargetDirPath[0] = L'\0';
+	m_CurFilePath[0] = L'\0';
 	m_SelectedFileIndex = 0;
 }
 
@@ -39,8 +39,8 @@ MTFileList::~MTFileList(void)
 //******************************************************************************
 void MTFileList::Clear()
 {
-	m_TargetDirPath[0] = _T('\0');
-	m_CurFilePath[0] = _T('\0');
+	m_TargetDirPath[0] = L'\0';
+	m_CurFilePath[0] = L'\0';
 	m_FileNameList.clear();
 	m_SelectedFileIndex = 0;
 }
@@ -49,13 +49,13 @@ void MTFileList::Clear()
 // ディレクトリ配下ファイルリスト作成
 //******************************************************************************
 int MTFileList::MakeFileListWithDirectory(
-		const TCHAR* pTargetDirPath,
+		const WCHAR* pTargetDirPath,
 		SMRcpConv* pRcpConv
 	)
 {
 	int result = 0;
-	TCHAR findPath[_MAX_PATH] = {_T('\0')};;
-	WIN32_FIND_DATA findData;
+	WCHAR findPath[_MAX_PATH] = { L'\0' };
+	WIN32_FIND_DATAW findData;
 	HANDLE hFind = NULL;
 	BOOL isFind = true;
 	bool isMIDIDataFile = false;
@@ -65,26 +65,26 @@ int MTFileList::MakeFileListWithDirectory(
 		goto EXIT;
 	}
 	
-	if (_tcslen(pTargetDirPath) > (_MAX_PATH - 1)) {
-		result = YN_SET_ERR("Directory path is too long.", _tcslen(pTargetDirPath), 0);
+	if (wcslen(pTargetDirPath) > (_MAX_PATH - 1)) {
+		result = YN_SET_ERR("Directory path is too long.", wcslen(pTargetDirPath), 0);
 		goto EXIT;
 	}
 	
 	Clear();
 	
 	//ディレクトリパスを保持する
-	_tcscpy_s(m_TargetDirPath, _MAX_PATH, pTargetDirPath);
-	if (pTargetDirPath[_tcslen(pTargetDirPath) - 1] != _T('\\')) {
-		_tcscat_s(m_TargetDirPath, _MAX_PATH, _T("\\"));
+	wcscpy_s(m_TargetDirPath, _MAX_PATH, pTargetDirPath);
+	if (pTargetDirPath[wcslen(pTargetDirPath) - 1] != L'\\') {
+		wcscat_s(m_TargetDirPath, _MAX_PATH, L"\\");
 	}
 	
 	//ファイル検索用パス作成
-	findPath[0] = _T('\0');
-	_tcscat_s(findPath, _MAX_PATH, m_TargetDirPath);
-	_tcscat_s(findPath, _MAX_PATH, _T("*.*"));
+	findPath[0] = L'\0';
+	wcscat_s(findPath, _MAX_PATH, m_TargetDirPath);
+	wcscat_s(findPath, _MAX_PATH, L"*.*");
 
 	//ファイル検索
-	hFind = FindFirstFile(findPath, &findData);
+	hFind = FindFirstFileW(findPath, &findData);
 	if (hFind == INVALID_HANDLE_VALUE) {
 		//ファイルが見つからない
 		goto EXIT;
@@ -98,7 +98,7 @@ int MTFileList::MakeFileListWithDirectory(
 		else {
 			//ファイル拡張子を確認
 			isMIDIDataFile = false;
-			if (YNPathUtil::IsFileExtMatch(findData.cFileName, _T(".mid"))) {
+			if (YNPathUtil::IsFileExtMatch(findData.cFileName, L".mid")) {
 				isMIDIDataFile = true;
 			}
 			else if (pRcpConv->IsAvailable() && pRcpConv->IsSupportFileExt(findData.cFileName)) {
@@ -110,7 +110,7 @@ int MTFileList::MakeFileListWithDirectory(
 			}
 		}
 		//次のファイルを検索
-		isFind = FindNextFile(hFind, &findData);
+		isFind = FindNextFileW(hFind, &findData);
 	}
 
 	//ファイル名ソート
@@ -132,9 +132,9 @@ size_t MTFileList::GetFileCount()
 //******************************************************************************
 // ファイルパス取得
 //******************************************************************************
-const TCHAR* MTFileList::GetFilePath(unsigned long index)
+const WCHAR* MTFileList::GetFilePath(unsigned long index)
 {
-	TCHAR* pFilePath = NULL;
+	WCHAR* pFilePath = NULL;
 	MTFileNameList::iterator itr;
 
 	if (m_FileNameList.size() <= index) {
@@ -143,9 +143,9 @@ const TCHAR* MTFileList::GetFilePath(unsigned long index)
 	else {
 		itr = m_FileNameList.begin();
 		advance(itr, index);
-		m_CurFilePath[0] = _T('\0');
-		_tcscat_s(m_CurFilePath, _MAX_PATH, m_TargetDirPath);
-		_tcscat_s(m_CurFilePath, _MAX_PATH, (*itr).c_str());
+		m_CurFilePath[0] = L'\0';
+		wcscat_s(m_CurFilePath, _MAX_PATH, m_TargetDirPath);
+		wcscat_s(m_CurFilePath, _MAX_PATH, (*itr).c_str());
 		pFilePath = &(m_CurFilePath[0]);
 	}
 
@@ -155,14 +155,14 @@ const TCHAR* MTFileList::GetFilePath(unsigned long index)
 //******************************************************************************
 // ファイル名取得
 //******************************************************************************
-const TCHAR* MTFileList::GetFileName(unsigned long index)
+const WCHAR* MTFileList::GetFileName(unsigned long index)
 {
-	const TCHAR* pFilePath = NULL;
-	const TCHAR* pFileName = NULL;
+	const WCHAR* pFilePath = NULL;
+	const WCHAR* pFileName = NULL;
 
 	pFilePath = GetFilePath(index);
 	if (pFilePath != NULL) {
-		pFileName = PathFindFileName(pFilePath);
+		pFileName = PathFindFileNameW(pFilePath);
 	}
 
 	return pFileName;
@@ -171,7 +171,7 @@ const TCHAR* MTFileList::GetFileName(unsigned long index)
 //******************************************************************************
 // 選択ファイル登録
 //******************************************************************************
-int MTFileList::SetSelectedFileName(const TCHAR* pFileName)
+int MTFileList::SetSelectedFileName(const WCHAR* pFileName)
 {
 	int result = 0;
 	unsigned long index = 0;
@@ -186,7 +186,7 @@ int MTFileList::SetSelectedFileName(const TCHAR* pFileName)
 
 	//ファイル名リストから検索（大文字小文字を区別しない）
 	for (itr = m_FileNameList.begin(); itr != m_FileNameList.end(); itr++) {
-		if (_tcsicmp((*itr).c_str(), pFileName) == 0) {
+		if (_wcsicmp((*itr).c_str(), pFileName) == 0) {
 			m_SelectedFileIndex = index;
 			break;
 		}

@@ -4,7 +4,7 @@
 //
 // ファイルリストクラス
 //
-// Copyright (C) 2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -30,22 +30,22 @@ public:
 	virtual ~MTFileList(void);
 
 	//ディレクトリ配下ファイルリスト作成
-	int MakeFileListWithDirectory(const TCHAR* pTargetDirPath, SMRcpConv* pRcpConv);
+	int MakeFileListWithDirectory(const WCHAR* pTargetDirPath, SMRcpConv* pRcpConv);
 
 	//ファイル数
 	size_t GetFileCount();
 
 	//ファイルパス取得
-	const TCHAR* GetFilePath(unsigned long index);
+	const WCHAR* GetFilePath(unsigned long index);
 
 	//ファイル名取得
-	const TCHAR* GetFileName(unsigned long index);
+	const WCHAR* GetFileName(unsigned long index);
 
 	//クリア
 	void Clear();
 
 	//選択ファイル登録
-	int SetSelectedFileName(const TCHAR* pFileName);
+	int SetSelectedFileName(const WCHAR* pFileName);
 
 	//先頭ファイル選択
 	void SelectFirstFile();
@@ -65,15 +65,10 @@ private:
 	void operator=(const MTFileList&);
 	MTFileList(const MTFileList&);
 
-	TCHAR m_TargetDirPath[_MAX_PATH];
-	TCHAR m_CurFilePath[_MAX_PATH];
+	WCHAR m_TargetDirPath[_MAX_PATH];
+	WCHAR m_CurFilePath[_MAX_PATH];
 
-#ifdef _UNICODE
-	typedef std::list<wsting> MTFileNameList;
-#else
-	typedef std::list<string> MTFileNameList;
-#endif
-
+	typedef std::list<wstring> MTFileNameList;
 	MTFileNameList m_FileNameList;
 
 	unsigned long m_SelectedFileIndex;

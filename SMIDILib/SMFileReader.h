@@ -4,7 +4,7 @@
 //
 // 標準MIDIファイル読み込みクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -40,10 +40,10 @@ public:
 	~SMFileReader(void);
 
 	//ログ出力先ファイルパス登録
-	int SetLogPath(const TCHAR* pLogPath);
+	int SetLogPath(const WCHAR* pLogPath);
 
 	//標準MIDIファイル読み込み
-	int Load(const TCHAR* pSMFPath, SMSeqData* pMIDIData);
+	int Load(const WCHAR* pSMFPath, SMSeqData* pMIDIData);
 
 private:
 
@@ -83,7 +83,7 @@ private:
 
 	unsigned char m_PrevStatus;
 
-	TCHAR m_LogPath[MAX_PATH];
+	WCHAR m_LogPath[MAX_PATH];
 	FILE* m_pLogFile;
 	bool m_IsLogOut;
 

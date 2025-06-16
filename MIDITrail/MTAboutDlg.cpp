@@ -120,8 +120,8 @@ int MTAboutDlg::_OnInitDlg(
 {
 	int result = 0;
 	BOOL bresult = FALSE;
-	TCHAR* pVersion = NULL;
-	TCHAR* pCopyright = NULL;
+	WCHAR* pVersion = NULL;
+	WCHAR* pCopyright = NULL;
 
 	//バージョン文字列
 #ifdef _WIN64
@@ -136,14 +136,14 @@ int MTAboutDlg::_OnInitDlg(
 	pCopyright = MIDITRAIL_COPYRIGHT;
 
 	//バージョン文字列設定
-	bresult = SetWindowText(GetDlgItem(hDlg, IDC_TEXT_VERSION), pVersion);
+	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_VERSION), pVersion);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
 	//コピーライト文字列設定
-	bresult = SetWindowText(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT), pCopyright);
+	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT), pCopyright);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;

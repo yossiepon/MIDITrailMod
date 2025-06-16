@@ -205,9 +205,7 @@ int MTTimeIndicatorRing::_CreateVertexOfIndicatorLine(
 	float angle = 0.0f;
 
 	//äÓèÄç¿ïW
-	basePos = D3DXVECTOR3(m_NoteDesign.GetPlayPosX(0),
-							m_NoteDesign.GetPortOriginY(0),
-							m_NoteDesign.GetPortOriginZ(0));
+	m_NoteDesign.GetGridRingBasePos(0, &basePos);
 
 	//í∏ì_çÏê¨
 	virtexIndexStart = virtexIndex;

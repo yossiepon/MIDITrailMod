@@ -4,7 +4,7 @@
 //
 // パスユーティリティクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -137,16 +137,16 @@ EXIT:;
 // 拡張子判定
 //******************************************************************************
 bool YNPathUtil::IsFileExtMatch(
-		const TCHAR* pPath,
-		const TCHAR* pExt
+		const WCHAR* pPath,
+		const WCHAR* pExt
 	)
 {
 	bool isMatch = false;
 	errno_t eresult = 0;
-	TCHAR ext[_MAX_EXT] = {_T('\0')};
+	WCHAR ext[_MAX_EXT] = { L'\0' };
 
 	//パス要素を分割して拡張子を取得
-	eresult = _tsplitpath_s(
+	eresult = _wsplitpath_s(
 					pPath,			//パス
 					NULL, 0,		//ドライブ文字列バッファとサイズ
 					NULL, 0,		//ディレクトリ文字列バッファとサイズ
@@ -159,7 +159,7 @@ bool YNPathUtil::IsFileExtMatch(
 	}
 
 	//大文字と小文字を区別せずに拡張子を比較する
-	if (_tcsicmp(ext, pExt) == 0) {
+	if (_wcsicmp(ext, pExt) == 0) {
 		isMatch = true;
 	}
 
@@ -171,17 +171,17 @@ EXIT:;
 // テンポラリファイルパス取得
 //******************************************************************************
 int YNPathUtil::GetTempFilePath(
-		TCHAR* pPathBuf,
+		WCHAR* pPathBuf,
 		unsigned long bufSize,
-		const TCHAR* pPrefix
+		const WCHAR* pPrefix
 	)
 {
 	int result = 0;
 	DWORD apiresult = 0;
-	TCHAR tempDir[_MAX_PATH] = {_T('\0')};
+	WCHAR tempDir[_MAX_PATH] = { L'\0' };
 
 	//テンポラリディレクトリパスを取得
-	apiresult = GetTempPath(_MAX_PATH, tempDir);
+	apiresult = GetTempPathW(_MAX_PATH, tempDir);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -199,7 +199,7 @@ int YNPathUtil::GetTempFilePath(
 	//  ファイル名：PREuuuu.TMP
 	//    PRE ：プレフィックス
 	//    uuuu：システム時刻に基づいて生成された16進文字列
-	apiresult = GetTempFileName(
+	apiresult = GetTempFileNameW(
 						tempDir,	//ディレクトリパス
 						pPrefix,	//プレフィックス（3文字）
 						0,			//一意性：有効

@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ダッシュボード描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -27,11 +27,11 @@
 //フォント設定
 //  Windows ：フォントサイズ40 -> ビットマップサイズ縦40ピクセル (MS Gothic)
 //  Mac OS X：フォントサイズ40 -> ビットマップサイズ縦50ピクセル (Monaco)
-#define MTDASHBOARDLIVE_FONTNAME  _T("MS Gothic")
+#define MTDASHBOARDLIVE_FONTNAME  L"MS Gothic"
 #define MTDASHBOARDLIVE_FONTSIZE  (40)
 
 //カウンタキャプション文字列
-#define MTDASHBOARDLIVE_COUNTER_CHARS  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:/%[] "
+#define MTDASHBOARDLIVE_COUNTER_CHARS  L"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:/%[] "
 
 //カウンタキャプションサイズ
 //   1234567890123456789012345678901  (31)
@@ -103,8 +103,9 @@ private:
 	bool m_isEnable;
 	
 	int _GetCounterPos(float* pX, float* pY);
-	int _GetCounterStr(TCHAR* pStr, unsigned long bufSize);
+	int _GetCounterStr(WCHAR* pStr, unsigned long bufSize);
 	int _LoadConfFile(const TCHAR* pSceneName);
+	int _StringToWstring(std::string* pStr, std::wstring* pWstr);
 	
 };
 

@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="ja">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.3.6 for Windows ユーザーマニュアル</title>
+<title>MIDITrail Ver.1.4.0 for Windows ユーザーマニュアル</title>
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 <a href="MANUAL.en.html">English</a> / Japanese
 </div>
 
-<h1>MIDITrail Ver.1.3.6 for Windows ユーザーマニュアル</h1>
+<h1>MIDITrail Ver.1.4.0 for Windows ユーザーマニュアル</h1>
 
 <p>
 Copyright (c) 2010-2022, WADA Masashi All rights reserved.<br>
@@ -79,7 +79,7 @@ Windows 2000 / XP / Vistaでは、MIDITrail Ver.1.2.4を利用してください
 
 <h3>(1) インストール</h3>
 <p>
-配布されている圧縮ファイルを任意のフォルダに展開して、MIDITrail.exeを実行してください。<br>
+配布されている圧縮ファイルを任意のフォルダに展開して、MIDITrail.exeを開いてください。<br>
 <br>
 圧縮ファイル名<br>
 MIDITrail-Ver.X.X.X-Windows.zip   -- MIDITrail 32bit版<br>
@@ -283,15 +283,14 @@ FPS（一人称シューティング）ゲームでおなじみの操作で、�
 
 <h3>(5) 視点の選択</h3>
 <p>
-Viewメニューから「Viewpoint 1 / 2 / 3」を選択するか、次のキーを押すと、
-あらかじめ固定された視点に移動することができます。
+Viewメニューから「Viewpoint 1 / 2 / 3」を選択するか、次のキーを押すと、標準の視点に移動することができます。
 </p>
 <p>
 <table>
   <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>7</kbd></td><td>固定視点1に移動する</td></tr>
-  <tr><td><kbd>8</kbd></td><td>固定視点2に移動する</td></tr>
-  <tr><td><kbd>9</kbd></td><td>固定視点3に移動する</td></tr>
+  <tr><td><kbd>7</kbd></td><td>標準視点1に移動する</td></tr>
+  <tr><td><kbd>8</kbd></td><td>標準視点2に移動する</td></tr>
+  <tr><td><kbd>9</kbd></td><td>標準視点3に移動する</td></tr>
 </table>
 </p>
 <p>
@@ -376,23 +375,19 @@ MIDIアニメ作品が正常に表示されない場合は、バーの表示位�
 ピッチベンドのエフェクトをOFFにしてください。
 </p>
 
-<h3>(11) MIDITrailコマンドラインインターフェース</h3>
+<h3>(11) MIDI IN モニタ</h3>
 <p>
-コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
-</p>
-<pre>
-MIDITrail.exe [-p] [-q] ["path\to\file"]
-</pre>
-<p>
-<table>
-  <tr><th>引数</th><th>詳細</th></tr>
-  <tr><td>-p</td><td>MIDITrail起動直後に指定されたMIDIファイルの再生を開始します。<br>"path\to\file"が指定されていない場合は無視されます。</td></tr>
-  <tr><td>-q</td><td>MIDIファイルの再生終了後にMIDITrailを終了します。-pオプションが有効でない場合は無視されます。</td></tr>
-  <tr><td>path\to\file</td><td>MIDIファイルパスを指定します。<br>空白を含むパスを指定する場合はダブルクォーテーションで囲んでください。</td></tr>
-</table>
+MIDI INデバイスで受信したデータをリアルタイム表示することができます。<br>
+「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
 </p>
 <p>
-MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
+<img src="Files/MIDIIN.png"><br>
+</p>
+<p>
+モニタリングするMIDI INデバイスを選択してください。<br>
+MIDI INで受信したデータをそのままMIDI OUTに出力する場合は、MIDITHRUを選択してください。<br>
+モニタリングを開始するには、「Playback」メニューから「Start Monitoring」を選択してください。<br>
+なお、MIDITrailはMIDI INで受信したデータを保存することはできません。<br>
 </p>
 
 <h3>(12) グラフィック設定</h3>
@@ -420,22 +415,56 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 0%から1000%を指定できます。デフォルトは100%です。 
 </p>
 
-<h3>(13) MIDI IN モニタ</h3>
+<h3>(13) カラー設定</h3>
 <p>
-MIDI INデバイスで受信したデータをリアルタイム表示することができます。<br>
-「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
+画面に表示する色を設定することができます。<br>
+「Option」メニューから「Color...」を選択すると、カラー設定ダイアログが表示されます。<br>
+カラーパレットを選択して好みの配色に変更することができます。<br>
+演奏中／一時停止中にカラー設定の変更はできません。<br>
 </p>
 <p>
-<img src="Files/MIDIIN.png"><br>
+<img src="Files/ColorCfgDlg.png"><br>
 </p>
 <p>
-モニタリングするMIDI INデバイスを選択してください。<br>
-MIDI INで受信したデータをそのままMIDI OUTに出力する場合は、MIDITHRUを選択してください。<br>
-モニタリングを開始するには、「Playback」メニューから「Start Monitoring」を選択してください。<br>
-なお、MIDITrailはMIDI INで受信したデータを保存することはできません。<br>
+「Edit...」ボタンをクリックすると、カラーパレット編集ダイアログが表示されます。<br>
+カラーパレットをカスタマイズすることができます。<br>
+デフォルトのカラーパレットを編集することはできません。<br>
+</p>
+<p>
+<img src="Files/ColorPaletteCfgDlg.png"><br>
+</p>
+<p>
+<b>グラデーションツール</b><br>
+[Set Gradation Colors] ユーザが指定した開始チャンネルから終了チャンネルに対して、グラデーションカラーを設定することができます。<br>
+</p>
+<p>
+<b>パラメータセットアップツール</b><br>
+[Set Default Colors] デフォルトカラーを設定します。<br>
+[Export Color Parameters...] カラーパラメータを出力します。出力されたパラメータをテキストエディタで編集することができます。<br>
+[Import Color Parameters...] カラーパラメータを入力します。テキストエディタで編集したパラメータを入力することができます。一部のパラメータだけを入力することも可能です。<br>
 </p>
 
-<h3>(14) ゲームコントローラー</h3>
+<h3>(14) MIDITrailコマンドラインインターフェース</h3>
+<p>
+コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
+</p>
+<pre>
+MIDITrail.exe [-p] [-q] ["path\to\file"]
+</pre>
+<p>
+<table>
+  <tr><th>引数</th><th>詳細</th></tr>
+  <tr><td>-p</td><td>MIDITrail起動直後に指定されたMIDIファイルの再生を開始します。<br>"path\to\file"が指定されていない場合は無視されます。</td></tr>
+  <tr><td>-q</td><td>MIDIファイルの再生終了後にMIDITrailを終了します。-pオプションが有効でない場合は無視されます。</td></tr>
+  <tr><td>path\to\file</td><td>MIDIファイルパスを指定します。<br>空白を含むパスを指定する場合はダブルクォーテーションで囲んでください。</td></tr>
+</table>
+</p>
+<p>
+MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
+</p>
+
+
+<h3>(15) ゲームコントローラー</h3>
 <p>
 XInput対応のゲームコントローラーを用いて操作することができます。<br>
 </p>
@@ -785,7 +814,7 @@ MIDITrailインストール先のdataフォルダに表示したいビットマ�
 </table>
 </p>
 
-<h4>(i) 固定視点のカスタマイズ</h4>
+<h4>(i) 標準視点のカスタマイズ</h4>
 <p>
 [Viewpoint-2],[Viewpoint-3]セクションを編集します。視点1はカスタマイズできません。<br>
 </p>
@@ -1025,6 +1054,15 @@ MIDITrail for Mac OS Xと同時にリリース<br>
 #45091 機能追加：表示/効果スイッチの選択状態を保存<br>
 #45092 機能追加：Piano Roll 3Dにライトを追加<br>
 #45093 機能追加：システムメッセージの解析処理を追加<br>
+  </td></tr>
+  <tr><td>2022/10/20</td><td>Ver.1.4.0</td><td>
+#45896 機能追加：カラー設定機能を追加<br>
+#45897 機能追加：Piano Roll Ringで小節リングを描画<br>
+#45898 機能追加：MIDIファイル読み込み処理のUnicode対応<br>
+#45899 仕様変更：Piano Roll Rainでキー押下時の色をノート色に変更<br>
+#45900 バグ修正：MIDI INモニタ中にフルスクリーンに切り替えるとカウンタがモニタ停止状態になる<br>
+#45901 バグ修正：ウィンドウサイズがユーザ設定値より小さい<br>
+#45931 バグ修正：MIDIファイルからテンポが正しく読み取れていない<br>
   </td></tr>
 </table>
 </p>

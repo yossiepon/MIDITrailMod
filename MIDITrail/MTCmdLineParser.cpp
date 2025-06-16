@@ -4,7 +4,7 @@
 //
 // コマンドライン解析クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -14,6 +14,7 @@
 #include "MTCmdLineParser.h"
 #include <tchar.h>
 #include <stdlib.h>
+#include <shellapi.h>
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
@@ -24,7 +25,7 @@ using namespace SMIDILib;
 //******************************************************************************
 MTCmdLineParser::MTCmdLineParser(void)
 {
-	m_pFilePath = _T("");
+	m_pFilePath = L"";
 	ZeroMemory(m_CmdSwitchStatus, sizeof(unsigned char)*CMDSW_MAX);
 }
 
@@ -38,14 +39,12 @@ MTCmdLineParser::~MTCmdLineParser(void)
 //******************************************************************************
 // 初期化
 //******************************************************************************
-int MTCmdLineParser::Initialize(
-		LPTSTR pCmdLine
-	)
+int MTCmdLineParser::Initialize()
 {
 	int result = 0;
 
 	//コマンドライン解析
-	result = _AnalyzeCmdLine(pCmdLine);
+	result = _AnalyzeCmdLine();
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -55,51 +54,53 @@ EXIT:;
 //******************************************************************************
 // コマンドライン解析
 //******************************************************************************
-int MTCmdLineParser::_AnalyzeCmdLine(
-		LPTSTR pCmdLine
-	)
+int MTCmdLineParser::_AnalyzeCmdLine()
 {
 	int result = 0;
 	int i = 0;
-	TCHAR* pArg = NULL;
+	int argc = 0;
+	LPWSTR* pArgList = NULL;
+	WCHAR* pArg = NULL;
 	SMRcpConv rcpConv;
-
-	//CommandLineToArgvW は存在するが CommandLineToArgvA は存在しない
-	//このためAPIでの解析はあきらめて __argc, __targv を利用する
-	//残念ながらpCmdLineは参照しない
 
 	//RCP読み込み可否確認のためRCPファイル変換オブジェクトを用意する
 	result = rcpConv.Initialize();
 	if (result != 0) goto EXIT;
 
-	//引数の解析
-	for (i = 1; i < __argc; i++) {
-		pArg = __targv[i];
+	//引数リスト取得
+	pArgList = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (pArgList == NULL) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
 
-		//MessageBox(NULL, pArg, _T(""), MB_OK);
+	//引数の解析
+	for (i = 1; i < argc; i++) {
+		pArg = pArgList[i];
 
 		//ファイルパス
 		//  ファイルパスが複数指定された場合は先頭のみを採用する
-		if ((_tcslen(m_pFilePath) == 0) && (_tcslen(pArg) > 4)) {
-			if (YNPathUtil::IsFileExtMatch(pArg, ".mid")) {
+		if ((wcslen(m_pFilePath) == 0) && (wcslen(pArg) > 4)) {
+			if (YNPathUtil::IsFileExtMatch(pArg, L".mid")) {
 				m_pFilePath = pArg;
 				m_CmdSwitchStatus[CMDSW_FILE_PATH] = CMDSW_ON;
 			}
+			//rcpcv.dllが有効ならサポート対象ファイルであるか追加確認する
 			else if (rcpConv.IsAvailable() && rcpConv.IsSupportFileExt(pArg)) {
 				m_pFilePath = pArg;
 				m_CmdSwitchStatus[CMDSW_FILE_PATH] = CMDSW_ON;
 			}
 		}
 		//起動後に再生開始
-		if (_tcscmp(pArg, _T("-p")) == 0) {
+		if (wcscmp(pArg, L"-p") == 0) {
 			m_CmdSwitchStatus[CMDSW_PLAY] = CMDSW_ON;
 		}
 		//再生終了時にアプリ終了
-		if (_tcscmp(pArg, _T("-q")) == 0) {
+		if (wcscmp(pArg, L"-q") == 0) {
 			m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_ON;
 		}
 		//デバッグモード
-		if (_tcscmp(pArg, _T("-d")) == 0) {
+		if (wcscmp(pArg, L"-d") == 0) {
 			m_CmdSwitchStatus[CMDSW_DEBUG] = CMDSW_ON;
 		}
 	}
@@ -117,6 +118,9 @@ int MTCmdLineParser::_AnalyzeCmdLine(
 	}
 
 EXIT:;
+	if (pArgList != NULL) {
+		LocalFree(pArgList);
+	}
 	return result;
 }
 
@@ -139,7 +143,7 @@ int MTCmdLineParser::GetSwitch(
 //******************************************************************************
 // ファイルパス取得
 //******************************************************************************
-const TCHAR* MTCmdLineParser::GetFilePath()
+const WCHAR* MTCmdLineParser::GetFilePath()
 {
 	return m_pFilePath;
 }

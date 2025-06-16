@@ -16,6 +16,10 @@
 #include "SMEventMeta.h"
 #include "SMFPUCtrl.h"
 
+// >>> add 20250616 yossiepon begin
+#include "SMSeqData.h"
+// <<< add 20250616 yossiepon end
+
 using namespace YNBaseLib;
 
 namespace SMIDILib {
@@ -378,10 +382,20 @@ int SMTrack::_GetNoteList(
 
 				//‰ÌŽŒ‚ðŽæ“¾
 				std::string lyric;
-				metaEvent.GetText(&lyric);
+
+				result = metaEvent.GetText(&lyric);
+				if (result != 0) goto EXIT;
+
 				//‰ÌŽŒ‚Ìæ“ª‚ªSPC(0x20)ˆÈ~‚Å‚ ‚ê‚ÎA‰ÌŽŒ‚ðŠi”[‚·‚é
-				if(((unsigned char)lyric.c_str()[0]) > 0x20) {
-					::strncpy_s(note.lyric, sizeof(note.lyric), lyric.c_str(), _TRUNCATE);
+				if( (lyric.length() > 0) && (((unsigned char)lyric.c_str()[0]) > 0x20) ) {
+
+					std::wstring lyricW;
+
+					result = SMSeqData::StringToWstring(&lyric, &lyricW);
+					if (result != 0) goto EXIT;
+
+					::wcsncpy_s(note.lyric, sizeof(note.lyric), lyricW.c_str(), _TRUNCATE);
+
 					result = pNoteList->SetNote(pNoteList->GetSize() - 1, &note);
 					if (result != 0) goto EXIT;
 				}
@@ -410,7 +424,7 @@ int SMTrack::_GetNoteList(
 				note.startTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
 				note.endTime = 0;
 // >>> add 20120728 yossiepon begin
-				note.lyric[0] = '\0';
+				note.lyric[0] = L'\0';
 // <<< add 20120728 yossiepon end
 			}
 			//“o˜^Ï‚Ý‚Ìê‡
