@@ -135,7 +135,7 @@ int MTNoteBoxMod::Transform(
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
 	//à⁄ìÆçsóÒ
-	moveVector = m_NoteDesign.GetWorldMoveVector();
+	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
 	//çsóÒÇÃçáê¨

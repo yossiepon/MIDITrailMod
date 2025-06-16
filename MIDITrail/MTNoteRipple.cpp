@@ -4,7 +4,7 @@
 //
 // ノート波紋描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -33,6 +33,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteRipple::MTNoteRipple(void)
 {
+	m_pNoteDesign = NULL;
 	m_pTexture = NULL;
 	m_pNoteStatus = NULL;
 	m_CurTickTime = 0;
@@ -65,8 +66,14 @@ int MTNoteRipple::Create(
 
 	Release();
 
+	//ライブモニタの場合 pSeqData には NULL が指定される
+
+	//ノートデザインオブジェクト生成
+	result = _CreateNoteDesign();
+	if (result != 0) goto EXIT;
+
 	//ノートデザインオブジェクト初期化
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
+	result = m_pNoteDesign->Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 	//テクスチャ生成
@@ -86,6 +93,25 @@ int MTNoteRipple::Create(
 
 	//ピッチベンド情報
 	m_pNotePitchBend = pNotePitchBend;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ノートデザイン生成
+//******************************************************************************
+int MTNoteRipple::_CreateNoteDesign()
+{
+	int result = 0;
+
+	try {
+		m_pNoteDesign = new MTNoteDesign();
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -121,7 +147,7 @@ int MTNoteRipple::Transform(
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
 	//移動行列
-	moveVector = m_NoteDesign.GetWorldMoveVector();
+	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
 	//行列の合成
@@ -256,6 +282,10 @@ EXIT:;
 //******************************************************************************
 void MTNoteRipple::Release()
 {
+
+	delete m_pNoteDesign;
+	m_pNoteDesign = NULL;
+
 	m_Primitive.Release();
 
 	if (m_pTexture != NULL) {
@@ -419,7 +449,7 @@ int MTNoteRipple::_SetVertexPosition(
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(pNoteStatus->portNo, pNoteStatus->chNo);
 
 	//ノートボックス中心座標取得
-	center = m_NoteDesign.GetNoteBoxCenterPosX(
+	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					pNoteStatus->portNo,
 					pNoteStatus->chNo,
@@ -432,8 +462,8 @@ int MTNoteRipple::_SetVertexPosition(
 	elapsedTime = curTime - pNoteStatus->regTime;
 
 	//波紋サイズ
-	rh = m_NoteDesign.GetRippleHeight(elapsedTime);
-	rw = m_NoteDesign.GetRippleWidth(elapsedTime);
+	rh = m_pNoteDesign->GetRippleHeight(elapsedTime);
+	rw = m_pNoteDesign->GetRippleWidth(elapsedTime);
 
 	//描画終了確認
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
@@ -460,16 +490,18 @@ int MTNoteRipple::_SetVertexPosition(
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
 
 	//法線
+// >>> revert 20250616 yossiepon begin
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
+// <<< revert 20250616 yossiepon end
 
 	//透明度を徐々に落とす
-	alpha = m_NoteDesign.GetRippleAlpha(elapsedTime);
+	alpha = m_pNoteDesign->GetRippleAlpha(elapsedTime);
 
 	//各頂点のディフューズ色
 	for (i = 0; i < 6; i++) {
-		color = m_NoteDesign.GetNoteBoxColor(
+		color = m_pNoteDesign->GetNoteBoxColor(
 								pNoteStatus->portNo,
 								pNoteStatus->chNo,
 								pNoteStatus->noteNo

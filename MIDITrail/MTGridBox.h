@@ -4,7 +4,7 @@
 //
 // グリッドボックス描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -47,6 +47,9 @@ public:
 	//解放
 	void Release();
 
+	//表示設定
+	void SetEnable(bool isEnable);
+
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
 // <<< modify 20161224 yossiepon end
@@ -71,6 +74,7 @@ private:
 // <<< modify 20161224 yossiepon end
 
 	bool m_isVisible;
+	bool m_isEnable;
 
 	//頂点バッファ構造体
 	struct MTGRIDBOX_VERTEX {

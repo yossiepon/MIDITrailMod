@@ -249,8 +249,8 @@ int MTFirstPersonCam::Transform(
 
 	//ゲームパッド操作：右スティック
 	//スティック値は-1.0から1.0の範囲
-	dX += m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRX() * (100.0f);
-	dY += m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRY() * (-100.0f);
+	dX += (int)(m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRX() * (100.0f));
+	dY += (int)(m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRY() * (-100.0f));
 	
 	//CTRL+移動キーで視線方向を変化させる
 	if (m_DIKeyCtrl.IsKeyDown(DIK_LCONTROL) || m_DIKeyCtrl.IsKeyDown(DIK_RCONTROL)) {

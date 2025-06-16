@@ -4,7 +4,7 @@
 //
 // ピアノキーボード描画クラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -178,7 +178,6 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	D3DXVECTOR3 _RotateYZ(float centerY, float centerZ, D3DXVECTOR3 p1, float angle);
 
 	int _HideKey(unsigned char noteNo);
 

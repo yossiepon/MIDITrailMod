@@ -4,7 +4,7 @@
 //
 // 操作方法ダイアログ
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -186,6 +186,7 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	BYTE* pBmpPixcel = NULL;
 	TCHAR bmpFilePath[_MAX_PATH] = {_T('\0')};
 	TCHAR* pBmpFileName[3] = { MT_IMGFILE_HOWTOVIEW1, MT_IMGFILE_HOWTOVIEW2, MT_IMGFILE_HOWTOVIEW3 };
+	DWORD bmpPixelDataSize = 0;
 
 	_Clear();
 
@@ -225,9 +226,9 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	//BMPファイルヘッダ読み込み
 	bresult = ReadFile(
 					hFile,							//ファイルハンドル
-					(LPBITMAPFILEHEADER)&m_BmpHead,	//バッファ位置
-					sizeof(BITMAPFILEHEADER),		//バッファサイズ
-					&numOfBytesRead,				//読み取りサイズ
+					&m_BmpHead,						//バッファ位置
+					sizeof(BITMAPFILEHEADER),		//読み取りサイズ
+					&numOfBytesRead,				//読み取ったサイズ
 					NULL							//オーバーラップ構造体バッファ
 				);
 	if (!bresult) {
@@ -247,9 +248,9 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	//BMP情報ヘッダ読み込み
 	bresult = ReadFile(
 					hFile,							//ファイルハンドル
-					(LPBITMAPINFOHEADER)&m_BmpInfo,	//バッファ位置
-					sizeof(BITMAPINFOHEADER),		//バッファサイズ
-					&numOfBytesRead,				//読み取りサイズ
+					&m_BmpInfo,						//バッファ位置
+					sizeof(BITMAPINFOHEADER),		//読み取りサイズ
+					&numOfBytesRead,				//読み取ったサイズ
 					NULL							//オーバーラップ構造体バッファ
 				);
 	if (!bresult) {
@@ -258,6 +259,7 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	}
 
 	//24bit画像以外は読みません
+	//カラーテーブルが存在しないことを前提とする
 	if ((m_BmpInfo.biBitCount != 24) || (m_BmpInfo.biClrUsed != 0)) {
 		result = YN_SET_ERR("Invalid BMP file.", m_BmpInfo.biBitCount, m_BmpInfo.biClrUsed);
 		goto EXIT;
@@ -278,8 +280,12 @@ int MTHowToViewDlg::_LoadHowToBmp()
 		goto EXIT;
 	}
 
+	//BMPピクセルデータサイズ
+	//カラーテーブルが存在しないことを前提とする
+	bmpPixelDataSize = m_BmpHead.bfSize - sizeof(BITMAPFILEHEADER) - sizeof(BITMAPINFOHEADER);
+
 	//ピクセルデータ読み込み用メモリ確保
-	hMemBmpPixel = GlobalAlloc(GHND, m_BmpHead.bfSize);
+	hMemBmpPixel = GlobalAlloc(GHND, bmpPixelDataSize);
 	if (hMemBmpPixel == NULL) {
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 		goto EXIT;
@@ -294,8 +300,8 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	bresult = ReadFile(
 					hFile,				//ファイルハンドル
 					pBmpPixcel,			//バッファ位置
-					m_BmpHead.bfSize,	//バッファサイズ
-					&numOfBytesRead,	//読み取りサイズ
+					bmpPixelDataSize,	//読み取りサイズ
+					&numOfBytesRead,	//読み取ったサイズ
 					NULL				//オーバーラップ構造体バッファ
 				);
 	if (!bresult) {
@@ -370,7 +376,7 @@ EXIT:;
 void MTHowToViewDlg::_Clear()
 {
 	ZeroMemory(&m_BmpHead, sizeof(BITMAPFILEHEADER));
-	ZeroMemory(&m_BmpInfo, sizeof(BITMAPINFO));
+	ZeroMemory(&m_BmpInfo, sizeof(BITMAPINFOHEADER));
 
 	if (m_hMemBmpPixel != NULL) {
 		GlobalUnlock(m_hMemBmpPixel);

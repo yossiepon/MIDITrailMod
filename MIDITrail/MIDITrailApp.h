@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -24,6 +24,7 @@
 #include "MTAboutDlg.h"
 #include "MTCmdLineParser.h"
 #include "MTGamePadCtrl.h"
+#include "MTFileList.h"
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
@@ -32,7 +33,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // パラメータ定義
 //******************************************************************************
-#define MAX_LOADSTRING  (100)
+#define MAX_LOADSTRING  (256)
 
 //ウィンドウスタイル
 //  WS_OVERLAPPEDWINDOW から次のスタイルを削ったもの
@@ -43,22 +44,39 @@ using namespace SMIDILib;
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
 //メニュースタイル制御
-// >>> modify 20190828 yossiepon begin
-#define MT_MENU_NUM        (35)
-// <<< modify 20190828 yossiepon end
+//TAG:シーン追加
+// >>> modify 20250615 yossiepon begin
+#define MT_MENU_NUM        (46+1)
+// <<< modify 20250615 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
 #define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device is lost.")
 
+//ファイルなし警告メッセージ
+#define MIDITRAIL_MSG_FILE_NOT_FOUND  _T("MIDI file (*.mid) not found.")
+
 //タイマーID
-#define MIDITRAIL_TIMER_CHECK_KEY  (1)
+#define MIDITRAIL_TIMER_CHECK_KEY           (1)
+#define MIDITRAIL_TIMER_PLAY                (2)
+#define MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY  (3)
 
 //二重起動抑止用ミューテクス名称
 #define MIDITRAIL_MUTEX     _T("yknk.MIDITrail")
 
 //メールスロット名称
 #define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
+
+//ウィンドウタイトル  ex.: "MIDITrail - file_name.mid - FPS:60.0"
+// >>> modify 20250615 yossiepon begin
+//#define MIDITRAIL_WINDOW_TITLE			_T("MIDITrail")
+//#define MIDITRAIL_WINDOW_TITLE_FILE		_T("MIDITrail - %s")
+//#define MIDITRAIL_WINDOW_TITLE_FILES		_T("MIDITrail - [%d/%d] %s")
+
+#define MIDITRAIL_WINDOW_TITLE_FILE		_T(" - %s")
+#define MIDITRAIL_WINDOW_TITLE_FILES		_T(" - [%d/%d] %s")
+// <<< modify 20250615 yossiepon end
+#define MIDITRAIL_WINDOW_TITLE_FPS		_T("%s - FPS:%.1f")
 
 
 //******************************************************************************
@@ -99,11 +117,12 @@ private:
 	//シーン種別
 	//TAG:シーン追加
 	enum SceneType {
-		Title,			//タイトル
-		PianoRoll3D,	//ピアノロール3D
-		PianoRoll2D,	//ピアノロール2D
-		PianoRollRain,	//ピアノロールレイン
-		PianoRollRain2D	//ピアノロールレイン2D
+		Title,				//タイトル
+		PianoRoll3D,		//ピアノロール3D
+		PianoRoll2D,		//ピアノロール2D
+		PianoRollRain,		//ピアノロールレイン
+		PianoRollRain2D,	//ピアノロールレイン2D
+		PianoRollRing		//ピアノロールリング
 	};
 
 	//シーケンサメッセージ
@@ -147,8 +166,12 @@ private:
 	HWND m_hWnd;
 	HACCEL m_Accel;
 	TCHAR m_Title[MAX_LOADSTRING];
+// >>> add 20250615 yossiepon begin
+	TCHAR m_TitleBase[MAX_LOADSTRING];
+// <<< add 20250615 yossiepon end
 	TCHAR m_WndClassName[MAX_LOADSTRING];
 	bool m_isFullScreen;
+	bool m_isEnableMenuBar;
 	HMENU m_hMenu;
 
 	//レンダリング系
@@ -170,6 +193,7 @@ private:
 	//演奏状態
 	PlayStatus m_PlayStatus;
 	bool m_isRepeat;
+	bool m_isFolderPlayback;
 	bool m_isRewind;
 	bool m_isOpenFileAfterStop;
 	MTSequencerLastMsg m_SequencerLastMsg;
@@ -183,10 +207,8 @@ private:
 	bool m_isEnableCounter;
 	bool m_isEnableFileName;
 	bool m_isEnableBackgroundImage;
-// >>> add 20180404 yossiepon begin
+	bool m_isEnableGridLine;
 	bool m_isEnableTimeIndicator;
-	bool m_isEnableGridBox;
-// <<< add 20180404 yossiepon end
 
 	//シーン種別
 	SceneType m_SceneType;
@@ -227,6 +249,9 @@ private:
 	unsigned long m_SpeedStepInPercent;
 	unsigned long m_MaxSpeedInPercent;
 
+	//演奏制御
+	int m_DelayBetweenSongsInMsec;
+
 	//自動視点保存
 	bool m_isAutoSaveViewpoint;
 
@@ -238,6 +263,9 @@ private:
 
 	//ゲームパッド用視点番号
 	int m_GamePadViewPointNo;
+
+	//MIDIデータファイルリスト
+	MTFileList m_MIDIFileList;
 
 	//----------------------------------------------------------------
 	//メソッド定義
@@ -256,13 +284,17 @@ private:
 	LRESULT _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
 	//メニューイベント処理
-	int _OnMenuFileOpen();
+	int _OnMenuOpenFile();
 // >>> add 20120728 yossiepon begin
-	int _OnMenuFileAdd();
+	int _OnMenuAddFile();
 // <<< add 20120728 yossiepon end
+	int _OnMenuOpenFolder();
+	int _OnMenuPreviousFile();
+	int _OnMenuNextFile();
 	int _OnMenuPlay();
 	int _OnMenuStop();
 	int _OnMenuRepeat();
+	int _OnMenuFolderPlayback();
 	int _OnMenuSkipBack();
 	int _OnMenuSkipForward();
 	int _OnMenuPlaySpeedDown();
@@ -272,10 +304,13 @@ private:
 	int _OnMenuAutoSaveViewpoint();
 	int _OnMenuResetViewpoint();
 	int _OnMenuViewpoint(unsigned long viewpointNo);
+	int _OnMenuMyViewpoint(unsigned long viewpointNo);
+	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
 	int _OnMenuWindowSize();
 	int _OnMenuFullScreen();
+	int _OnMenuMenuBar();
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
 	int _OnMenuOptionGraphic();
@@ -292,10 +327,12 @@ private:
 	int _OnDropFiles(WPARAM wParam, LPARAM lParam);
 
 	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
+	int _SelectFolder(TCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const TCHAR* pFilePath);
 // >>> add 20120728 yossiepon begin
 	int _AddMIDIFile(const TCHAR* pFilePath);
 // <<< add 20120728 yossiepon end
+	void _UpdateWindowTitle(const TCHAR* pFileName);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
 	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);
@@ -307,8 +344,12 @@ private:
 	int _SaveSceneType();
 	int _LoadSceneConf();
 	int _SaveSceneConf();
+	int _LoadEffectStatus();
+	int _SaveEffectStatus();
 	int _LoadViewpoint();
 	int _SaveViewpoint();
+	int _MoveToMyViewpoint(unsigned long viewpointNo);
+	int _SaveMyViewpoint(unsigned long viewpointNo);
 	int _LoadGraphicConf();
 	int _LoadPlayerConf();
 	int _OnDestroy();
@@ -320,6 +361,8 @@ private:
 	int _ParseCmdLine(LPTSTR pCmdLine);
 	int _StartTimer();
 	int _StopTimer();
+	int _StartTimer_Play(int delayBetweenSongsInMsec);
+	int _StartTimer_OpenFileAndPlay(int delayBetweenSongsInMsec);
 	int _OnTimer(WPARAM timerId);
 	int _CheckRenderer();
 	int _AutoConfigMIDIOUT();
@@ -327,14 +370,16 @@ private:
 	int _CheckMultipleInstances(bool* pIsExitApp);
 	int _CreateMailSlot();
 	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
-	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
-	int _FileOpenProc(TCHAR* pFilePath);
-
+	int _StopPlaybackAndOpenFile(const TCHAR* pFilePath);
+	int _StopPlaybackAndOpenFolder(const TCHAR* pFolderPath);
+	int _FileOpenProc(const TCHAR* pFilePath);
 	int _ToggleFullScreen();
+	int _ToggleMenuBar();
 	int _ShowMenu();
 	int _HideMenu();
 	int _GamePadProc();
 	int _ChangeViewPoint(int step);
+	int _MakeFileListWithFolder(const TCHAR* pFolderPath, MTFileList* pFileList);
 
 };
 

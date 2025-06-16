@@ -45,10 +45,15 @@ IDC_MIDITRAIL MENU
 BEGIN
     POPUP "File"
     BEGIN
-        MENUITEM "Open...\tCtrl + O",           IDM_OPEN_FILE
+        MENUITEM "Open File...\tCtrl + O",      IDM_OPEN_FILE
 // >>> add 20120728 yossiepon begin
-        MENUITEM "Add...\tCtrl + A",            IDM_ADD_FILE
+        MENUITEM "Add File...\tCtrl + A",       IDM_ADD_FILE
 // <<< add 20120728 yossiepon end
+        MENUITEM "Open Folder...",              IDM_OPEN_FOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "Previous File\tCtrl + P",     IDM_PREVIOUS_FILE
+        MENUITEM "Next File\tCtrl + N",         IDM_NEXT_FILE
+        MENUITEM SEPARATOR
         MENUITEM "Exit",                        IDM_EXIT
     END
     POPUP "Playback"
@@ -56,6 +61,7 @@ BEGIN
         MENUITEM "Play / Pause\tSpace",         IDM_PLAY
         MENUITEM "Stop\tEsc",                   IDM_STOP
         MENUITEM "Repeat",                      IDM_REPEAT
+        MENUITEM "Folder Playback",             IDM_FOLDER_PLAYBACK
         MENUITEM SEPARATOR
         MENUITEM "Skip Back\t1",                IDM_SKIP_BACK
         MENUITEM "Skip Forward\t2",             IDM_SKIP_FORWARD
@@ -72,6 +78,7 @@ BEGIN
         MENUITEM "Piano Roll 2D",               IDM_VIEW_2DPIANOROLL
         MENUITEM "Piano Roll Rain",             IDM_VIEW_PIANOROLLRAIN
         MENUITEM "Piano Roll Rain 2D",          IDM_VIEW_PIANOROLLRAIN2D
+        MENUITEM "Piano Roll Ring",             IDM_VIEW_PIANOROLLRING
         MENUITEM SEPARATOR
         MENUITEM "Piano Keyboard",              IDM_ENABLE_PIANOKEYBOARD
         MENUITEM "Ripple",                      IDM_ENABLE_RIPPLE
@@ -79,17 +86,26 @@ BEGIN
         MENUITEM "Stars",                       IDM_ENABLE_STARS
         MENUITEM "Counter",                     IDM_ENABLE_COUNTER
         MENUITEM "Background Image",            IDM_ENABLE_BACKGROUNDIMAGE
-// >>> add 20180404 yossiepon begin
+        MENUITEM "Grid Line",                   IDM_ENABLE_GRIDLINE
         MENUITEM "Time Indicator",              IDM_ENABLE_TIMEINDICATOR
-        MENUITEM "Grid Box",                    IDM_ENABLE_GRIDBOX
-// <<< add 20180404 yossiepon end
         MENUITEM SEPARATOR
         MENUITEM "Viewpoint 1\t7",              IDM_RESET_VIEWPOINT
         MENUITEM "Viewpoint 2\t8",              IDM_VIEWPOINT2
         MENUITEM "Viewpoint 3\t9",              IDM_VIEWPOINT3
+        POPUP "My Viewpoint"
+        BEGIN
+            MENUITEM "My Viewpoint 1\tCtrl + 7",    IDM_MYVIEWPOINT1
+            MENUITEM "My Viewpoint 2\tCtrl + 8",    IDM_MYVIEWPOINT2
+            MENUITEM "My Viewpoint 3\tCtrl + 9",    IDM_MYVIEWPOINT3
+            MENUITEM SEPARATOR
+            MENUITEM "Save My Viewpoint 1\tShift + Ctrl + 7", IDM_SAVE_MYVIEWPOINT1
+            MENUITEM "Save My Viewpoint 2\tShift + Ctrl + 8", IDM_SAVE_MYVIEWPOINT2
+            MENUITEM "Save My Viewpoint 3\tShift + Ctrl + 9", IDM_SAVE_MYVIEWPOINT3
+        END
         MENUITEM SEPARATOR
-        MENUITEM "Window size...",              IDM_WINDOWSIZE
+        MENUITEM "Window Size...",              IDM_WINDOWSIZE
         MENUITEM "Full Screen\tF11",            IDM_FULLSCREEN
+        MENUITEM "Menu Bar\tF12",               IDM_MENUBAR
     END
     POPUP "Option"
     BEGIN

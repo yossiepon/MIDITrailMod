@@ -4,7 +4,7 @@
 //
 // タイムインジケータ描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,9 +23,7 @@ MTTimeIndicator::MTTimeIndicator(void)
 	m_CurPos = 0.0f;
 	m_CurTickTime = 0;
 	m_isEnableLine = false;
-// >>> add 20180404 yossiepon begin
 	m_isEnable = true;
-// <<< add 20180404 yossiepon end
 }
 
 //******************************************************************************
@@ -206,11 +204,7 @@ int MTTimeIndicator::Draw(
 {
 	int result = 0;
 
-// >>> add 20180404 yossiepon begin
-
 	if (!m_isEnable) goto EXIT;
-
-// <<< add 20180404 yossiepon end
 
 	//テクスチャステージ設定
 	//  カラー演算：引数1を使用  引数1：テクスチャ
@@ -402,3 +396,5 @@ void MTTimeIndicator::SetEnable(
 {
 	m_isEnable = isEnable;
 }
+
+

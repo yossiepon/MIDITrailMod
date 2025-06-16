@@ -4,7 +4,7 @@
 //
 // システムメッセージイベントクラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -88,6 +88,40 @@ int SMEventSysMsg::GetMIDIOutShortMsg(
 	
 EXIT:;
 	return result;
+}
+
+//******************************************************************************
+// システムメッセージ種別取得
+//******************************************************************************
+SMEventSysMsg::SysMsg SMEventSysMsg::GetSysMsg()
+{
+	SysMsg msg = None;
+	unsigned char* pData = NULL;
+	unsigned char size = 0;
+
+	if (m_pEvent == NULL) {
+		goto EXIT;
+	}
+
+	switch (m_pEvent->GetStatus()) {
+		case 0xF1: msg = Common_QuarterFrame;			size = 2; break;
+		case 0xF2: msg = Common_SongPositionPointer;	size = 3; break;
+		case 0xF3: msg = Common_SongSelect;				size = 2; break;
+		case 0xF6: msg = Common_TuneRequest;			size = 1; break;
+		case 0xF8: msg = RealTime_TimingClock;			size = 1; break;
+		case 0xFA: msg = RealTime_Start;				size = 1; break;
+		case 0xFB: msg = RealTime_Continue;				size = 1; break;
+		case 0xFC: msg = RealTime_Stop;					size = 1; break;
+		case 0xFE: msg = RealTime_ActiveSensing;		size = 1; break;
+		case 0xFF: msg = RealTime_SystemReset;			size = 1; break;
+		default: break;
+	}
+	if ((m_pEvent->GetDataSize() + 1) != size) {
+		msg = None;
+	}
+
+EXIT:;
+	return msg;
 }
 
 } // end of namespace

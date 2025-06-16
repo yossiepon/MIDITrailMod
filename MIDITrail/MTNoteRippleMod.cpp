@@ -516,7 +516,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo);
 
 	//ノートボックス中心座標取得
-	center = m_NoteDesign.GetNoteBoxCenterPosX(
+	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					note.portNo,
 					note.chNo,
@@ -557,16 +557,18 @@ int MTNoteRippleMod::_SetVertexPosition(
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
 
 	//法線
+// >>> revert 20250616 yossiepon begin
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
+// <<< revert 20250616 yossiepon end
 
 	//透明度を徐々に落とす
 	alpha = m_NoteDesignMod.GetRippleAlpha(pNoteStatus->keyDownRate);
 
 	//各頂点のディフューズ色
 	for (i = 0; i < 6; i++) {
-		color = m_NoteDesign.GetNoteBoxColor(
+		color = m_pNoteDesign->GetNoteBoxColor(
 			note.portNo,
 			note.chNo,
 			note.noteNo

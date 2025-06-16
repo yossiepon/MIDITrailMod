@@ -4,7 +4,7 @@
 //
 // 標準MIDIファイル読み込みクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -102,6 +102,10 @@ int SMFileReader::Load(
 		goto EXIT;
 	}
 
+	//RIFFヘッダ読み飛ばし
+	result = _SkipRIFFHeader(hFile);
+	if (result != 0 ) goto EXIT;
+
 	//ヘッダ読み込み
 	result = _ReadChunkHeader(hFile, &chunkTypeSection, &chunkDataSection);
 	if (result != 0 ) goto EXIT;
@@ -158,6 +162,61 @@ EXIT:;
 		hFile = NULL;
 	}
 	_CloseLogFile();
+	return result;
+}
+
+//******************************************************************************
+// RIFFヘッダ読み飛ばし
+//******************************************************************************
+int SMFileReader::_SkipRIFFHeader(
+		HMMIO hFile
+	)
+{
+	int result = 0;
+	long apiresult = 0;
+	SMFRIFFChunkHeader chunkHeader;
+	SMFRIFFSubChunkHeader subChunkHeader;
+
+	//RIFFチャンクの読み込み
+	apiresult = mmioRead(hFile, (HPSTR)&chunkHeader, sizeof(SMFRIFFChunkHeader));
+	if (apiresult != sizeof(SMFRIFFChunkHeader)) {
+		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
+		goto EXIT;
+	}
+
+	//識別子チェック
+	if (memcmp(chunkHeader.chunkID, "RIFF", 4) != 0) {
+		//RIFFではないため読み取り位置を先頭に戻して正常終了
+		apiresult = mmioSeek(hFile, 0, SEEK_SET);
+		if (apiresult == -1) {
+			result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
+			goto EXIT;
+		}
+		goto EXIT;
+	}
+
+	//フォーマットチェック
+	if (memcmp(chunkHeader.format, "RMID", 4) != 0) {
+		//RIFFであるがMIDIデータではないためファイル異常とみなす
+		result = YN_SET_ERR("Invalid data found.", 0, 0);
+		goto EXIT;
+	}
+
+	//RIFFサブチャンクの読み込み
+	apiresult = mmioRead(hFile, (HPSTR)&subChunkHeader, sizeof(SMFRIFFSubChunkHeader));
+	if (apiresult != sizeof(SMFRIFFSubChunkHeader)) {
+		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
+		goto EXIT;
+	}
+
+	//フォーマットチェック
+	//  LISTチャンクには対応しない
+	if (memcmp(subChunkHeader.chunkID, "data", 4) != 0) {
+		result = YN_SET_ERR("Invalid data found.", 0, 0);
+		goto EXIT;
+	}
+
+EXIT:;
 	return result;
 }
 
@@ -268,6 +327,7 @@ int SMFileReader::_ReadTrackEvents(
 	)
 {
 	int result = 0;
+	long apiresult = 0;
 	unsigned long readSize = 0;
 	unsigned long deltaTime = 0;
 	unsigned long offset = 0;
@@ -315,10 +375,15 @@ int SMFileReader::_ReadTrackEvents(
 
 		//トラック終端
 		if (isEndOfTrack) {
-			if (readSize != chunkSize) {
-				//データ不正
-				result = YN_SET_ERR("Invalid data found.", readSize, chunkSize);
-				goto EXIT;
+			//指定されたチャンクサイズまでスキップする（念のため）
+			if (readSize < chunkSize) {
+				offset = chunkSize - readSize;
+				apiresult = mmioSeek(hFile, offset, SEEK_CUR);
+				if (apiresult == -1) {
+					result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
+					goto EXIT;
+				}
+				readSize += offset;
 			}
 			break;
 		}
@@ -640,7 +705,7 @@ int SMFileReader::_ReadEventMeta(
 			break;
 	}
 
-	if (status == 0x2F) {
+	if (type == 0x2F) {
 		*pIsEndOfTrack = true;
 	}
 

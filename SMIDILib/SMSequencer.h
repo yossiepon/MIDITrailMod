@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -174,6 +174,7 @@ private:
 	int _SendSysExEvent(unsigned char portNo, SMEventSysEx* pSysExEvent);
 	int _SendMetaEvent(unsigned char portNo, SMEventMeta* pMetaEvent);
 	int _AllTrackNoteOff();
+	int _AllTrackSoundOff();
 
 	//その他
 	int _ProcUserRequest(BOOL* pIsContinue);

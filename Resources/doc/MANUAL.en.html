@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="en">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.2.6 for Windows User Manual</title>
+<title>MIDITrail Ver.1.3.6 for Windows User Manual</title>
 </head>
 <body>
 
@@ -15,10 +15,10 @@
 English / <a href="MANUAL.ja.html">Japanese</a>
 </div>
 
-<h1>MIDITrail Ver.1.2.6 for Windows User Manual</h1>
+<h1>MIDITrail Ver.1.3.6 for Windows User Manual</h1>
 
 <p>
-Copyright (c) 2010-2019, WADA Masashi All rights reserved.<br>
+Copyright (c) 2010-2022, WADA Masashi All rights reserved.<br>
 Web: <a href="https://osdn.jp/projects/miditrail/">https://osdn.jp/projects/miditrail/</a><br>
 Mail: <img src="Files/mail.png" align="top"><br>
 </p>
@@ -62,7 +62,7 @@ Screenshot: PianoRollRain<br>
 <h2><a name="system"></a>2. System requirement</h2>
 
 <p>
-OS: Windows 7 / 8 / 10<br>
+OS: Windows 7 / 8 / 10 / 11<br>
 VIDEO: Support for DirectX 9.0c graphics
 </p>
 <p>
@@ -130,7 +130,7 @@ RCPCV.DLL <a href="http://www.vector.co.jp/soft/win95/art/se114143.html">http://
 
 <h3>(1) How to open a MIDI file</h3>
 <p>
-Select "Open..." from "File" menu, the Open File dialog will appear. And choose a Standard MIDI File (*.mid).<br>
+Select "Open File..." from "File" menu, the Open File dialog will appear. And choose a Standard MIDI File (*.mid).<br>
 Or you can drag and drop a MIDI file into the window of MIDITrail.
 </p>
 <p>
@@ -158,7 +158,45 @@ Push the following keys, or use "Playback" menu.
 </table>
 </p>
 
-<h3>(3) How to move viewpoint in 3D space</h3>
+<h3>(3) Folder Playback</h3>
+
+<p>
+MIDITrail can open MIDI data files stored in folder in sequence.
+MIDITrail opens the files in ascending order by filename.
+</p>
+
+<h4>1. Folder selection</h4>
+<p>
+When you select "Open Folder..." from "File" menu, the folder selection dialog will appear.<br>
+Here you have to select the folder that contains the Standard MIDI File (*.mid).<br>
+You can also drag and drop the forlder into the window of MIDITrail.
+</p>
+
+<h4>2. File switching</h4>
+<p>
+You can switch the MIDI data file by selecting "Previous File" and "Next File" from "File" menu.<br>
+You can also use the following keyboard shortcut.<br>
+</p>
+<p>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
+          <kbd>CTRL</kbd> + <kbd>P</kbd></td>
+      <td>Open previous file.</td>
+  </tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td>
+      <td>Open next file.</td>
+  </tr>
+</table>
+</p>
+
+<h4>3. Folder Playback</h4>
+<p>
+When you select "Folder Playback" from "Playback" menu, 
+MIDITrail playback the next file after end of playback automatically.
+</p>
+
+<h3>(4) How to move viewpoint in 3D space</h3>
 <p>
 You can move freely in 3D space, and look at MIDI datasets from all directions 
 by operation of keyboard and mouse, like FPS (First Person Shooter) game.<br>
@@ -245,22 +283,40 @@ If you use a mouse with your left hand, this one may be convenience.
 </table>
 </p>
 
-<h3>(4) Selection of the viewpoint</h3>
+<h3>(5) Selection of the viewpoint</h3>
 
 <p>
-When you select "Viewpoint 1 / Viewpoint 2 / Viewpoint 3" from "View" menu,
+When you select "Viewpoint 1 / 2 / 3" from "View" menu,
 or when you push following key, you can move to a fixed viewpoint.
 </p>
 <p>
 <table>
   <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>7</kbd></td><td>Move to viewpoint 1</td></tr>
-  <tr><td><kbd>8</kbd></td><td>Move to viewpoint 2</td></tr>
-  <tr><td><kbd>9</kbd></td><td>Move to viewpoint 3</td></tr>
+  <tr><td><kbd>7</kbd></td><td>Move to fixed viewpoint 1</td></tr>
+  <tr><td><kbd>8</kbd></td><td>Move to fixed viewpoint 2</td></tr>
+  <tr><td><kbd>9</kbd></td><td>Move to fixed viewpoint 3</td></tr>
 </table>
 </p>
 
-<h3>(5) Change of window size</h3>
+<p>
+When you select "My Viewpoint 1 / 2 / 3" from "View" menu,
+or when you push following key, you can move to a viewpoint saved by the user in advance.<br>
+If you want to save current viewpoint, select "Save My Viewpoint 1 / 2 / 3" from "View" menu
+or push following key.
+</p>
+<p>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>7</kbd></td><td>Move to my viewpoint 1</td></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>8</kbd></td><td>Move to my viewpoint 2</td></tr>
+  <tr><td><kbd>CTRL</kbd> + <kbd>9</kbd></td><td>Move to my viewpoint 3</td></tr>
+  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>7</kbd></td><td>Save my viewpoint 1</td></tr>
+  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>8</kbd></td><td>Save my viewpoint 2</td></tr>
+  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>9</kbd></td><td>Save my viewpoint 3</td></tr>
+</table>
+</p>
+
+<h3>(6) Change of window size</h3>
 <p>
 When you select "Window size..." from "View" menu, the Window size configuration dialog will appear.<br>
 Select your favorite window size, and push the OK button.<br>
@@ -275,13 +331,13 @@ If you want to specify any window size, fill in "Width" "Height".<br>
 If you want to apply that size to  the view area, check "Apply to the view area".
 </p>
 
-<h3>(6) Full Screen</h3>
+<h3>(7) Full Screen</h3>
 <p>
 When you select "Full Screen" from "View" menu, you can switch between window mode and full screen mode.<br>
 By F11 key, you can switch the mode too.
 </p>
 
-<h3>(7) Display counters</h3>
+<h3>(8) Display counters</h3>
 
 <p>
 <img src="Files/Counter.png"><br>
@@ -300,7 +356,7 @@ By F11 key, you can switch the mode too.
 </table>
 </p>
 
-<h3>(8) View mode select</h3>
+<h3>(9) View mode select</h3>
 <p>
 You can select the view mode from "View" menu.
 You can not change the view mode while playing or pausing.
@@ -309,7 +365,7 @@ You can not change the view mode while playing or pausing.
 <img src="Files/ViewMenu-Mode.png"><br>
 </p>
 
-<h3>(9) Display/Effect switch</h3>
+<h3>(10) Display/Effect switch</h3>
 <p>
 You can switch the display/effect at "View" menu.
 </p>
@@ -322,7 +378,7 @@ Some MIDI animation works are using pitch bend to shift the piano roll bars with
 If the MIDI animation is not displayed correctly, please disable the pitch bend effect to fix the piano roll bars.
 </p>
 
-<h3>(10) MIDITrail command line interface</h3>
+<h3>(11) MIDITrail command line interface</h3>
 <p>
 If you want to start MIDITrail by command line, you can use following arguments.
 </p>
@@ -341,7 +397,7 @@ MIDITrail.exe [-p] [-q] ["path\to\file"]
 If you drop a MIDI file to the shortcut of MIDITrail, MIDITrail open the file on startup.
 </p>
 
-<h3>(11) Graphic configuration</h3>
+<h3>(12) Graphic configuration</h3>
 <p>
 Select "Graphic..." from "Option" menu, the graphic configuration dialog will appear.<br>
 You can not change graphic configuration while playing or pausing.
@@ -366,7 +422,7 @@ You can change a quarter note length of piano roll.<br>
 You can specify a value from 0% to 1000%. The default value is 100%.<br>
 </p>
 
-<h3>(12) MIDI IN Monitor</h3>
+<h3>(13) MIDI IN Monitor</h3>
 <p>
 You can view data sets received from MIDI IN device in realtime.<br>
 Select "MIDI IN..." from "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
@@ -381,7 +437,7 @@ When you select "Start Monitoring" from "Playback" menu, MIDI IN monitoring will
 NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
 </p>
 
-<h3>(13) Game Controller</h3>
+<h3>(14) Game Controller</h3>
 <p>
 You can operate by XInput game controller.<br>
 </p>
@@ -465,7 +521,7 @@ You can customize the window size.
 Please open following file by text editor, and edit "Width" and "Height".
 </p>
 <pre>
-Windows 7 / 8 / 10
+Windows 7 / 8 / 10 / 11
 C:\Users\(user name)\AppData\Roaming\yknk\MIDITrail\View.ini
 </pre>
 <pre>
@@ -508,10 +564,12 @@ You can customize MIDITrail as your like, by editing the files which is in "conf
   <tr><td>conf/PianoRoll2D.ini</td><td>View mode configuration: Piano Roll 2D</td></tr>
   <tr><td>conf/PianoRollRain.ini</td><td>View mode configuration: Piano Roll Rain</td></tr>
   <tr><td>conf/PianoRollRain2D.ini</td><td>View mode configuration: Piano Roll Rain 2D</td></tr>
+  <tr><td>conf/PianoRollRing.ini</td><td>View mode configuration: Piano Roll Ring</td></tr>
   <tr><td>conf/PianoRoll3DLive.ini</td><td>View mode configuration: Piano Roll 3D (MIDI IN Monitor)</td></tr>
   <tr><td>conf/PianoRoll2DLive.ini</td><td>View mode configuration: Piano Roll 2D (MIDI IN Monitor)</td></tr>
   <tr><td>conf/PianoRollRainLive.ini</td><td>View mode configuration: Piano Roll Rain (MIDI IN Monitor)</td></tr>
   <tr><td>conf/PianoRollRain2DLive.ini</td><td>View mode configuration: Piano Roll Rain 2D (MIDI IN Monitor)</td></tr>
+  <tr><td>conf/PianoRollRingLive.ini</td><td>View mode configuration: Piano Roll Ring (MIDI IN Monitor)</td></tr>
 </table>
 
 <h3>(1) Player Configuration</h3>
@@ -564,6 +622,17 @@ Edit [PlaybackSpeedControl] section.<br>
 </table>
 </p>
 
+<h4>(e) Playback Control</h4>
+<p>
+Edit [Playback] section.<br>
+</p>
+<p>
+<table>
+  <tr><th>Name</th><th>Details</th></tr>
+  <tr><td>DelayBetweenSongsInMsec</td><td>Delay between songs (msec)（0 - 10000）</td></tr>
+</table>
+</p>
+
 <h3>(2) View Mode Configuration</h3>
 
 <h4>(a) Moving speed of viewpoint</h4>
@@ -572,14 +641,14 @@ Edit [FirstPersonCam] section.
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>VelocityFB</td><td>yes</td><td>yes</td><td>Velocity of forward and backward. (m/s)</td></tr>
-  <tr><td>VelocityLR</td><td>yes</td><td>yes</td><td>Velocity of left and right. (m/s)</td></tr>
-  <tr><td>VelocityUD</td><td>yes</td><td>yes</td><td>Velocity of up and down. (m/s)</td></tr>
-  <tr><td>VelocityPT</td><td>yes</td><td>yes</td><td>Angular velocity of look. (degree/s)</td></tr>
-  <tr><td>AcceleRate</td><td>yes</td><td>yes</td><td>The rate of acceleration when push SHIFT key. (n times)</td></tr>
-  <tr><td>VelocityAutoRoll</td><td>yes</td><td>yes</td><td>Angular velocity of auto rotation of piano roll (degree/s)</td></tr>
-  <tr><td>VelocityManualRoll</td><td>yes</td><td>yes</td><td>Angular velocity of manual rotation of piano roll (degree/s)</td></tr>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>VelocityFB</td><td>yes</td><td>yes</td><td>yes</td><td>Velocity of forward and backward. (m/s)</td></tr>
+  <tr><td>VelocityLR</td><td>yes</td><td>yes</td><td>yes</td><td>Velocity of left and right. (m/s)</td></tr>
+  <tr><td>VelocityUD</td><td>yes</td><td>yes</td><td>yes</td><td>Velocity of up and down. (m/s)</td></tr>
+  <tr><td>VelocityPT</td><td>yes</td><td>yes</td><td>yes</td><td>Angular velocity of look. (degree/s)</td></tr>
+  <tr><td>AcceleRate</td><td>yes</td><td>yes</td><td>yes</td><td>The rate of acceleration when push SHIFT key. (n times)</td></tr>
+  <tr><td>VelocityAutoRoll</td><td>yes</td><td>yes</td><td>yes</td><td>Angular velocity of auto rotation of piano roll (degree/s)</td></tr>
+  <tr><td>VelocityManualRoll</td><td>yes</td><td>yes</td><td>yes</td><td>Angular velocity of manual rotation of piano roll (degree/s)</td></tr>
 </table>
 </p>
 
@@ -590,20 +659,21 @@ Edit [Scale] section.
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>QuarterNoteLength</td><td>yes</td><td>yes</td><td>Length of quarter note (m)</td></tr>
-  <tr><td>NoteBoxHeight</td><td>yes</td><td>no</td><td>Height of note box (m)</td></tr>
-  <tr><td>NoteBoxWidth</td><td>yes</td><td>no</td><td>Width of note box (m)</td></tr>
-  <tr><td>NoteStep</td><td>yes</td><td>no</td><td>Interval length of notes in a channel (m)</td></tr>
-  <tr><td>ChStep</td><td>yes</td><td>no</td><td>Interval length of channels (m)</td></tr>
-  <tr><td>RippleHeight</td><td>yes</td><td>no</td><td>Height of ripple (m)</td></tr>
-  <tr><td>RippleWidth</td><td>yes</td><td>no</td><td>Width of ripple (m)</td></tr>
-  <tr><td>PictBoardRelativePos</td><td>yes</td><td>no</td><td>The relative position which crosses perpendicularly the board and the playback section.<br>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>QuarterNoteLength</td><td>yes</td><td>yes</td><td>yes</td><td>Length of quarter note (m)</td></tr>
+  <tr><td>NoteBoxHeight</td><td>yes</td><td>no</td><td>yes</td><td>Height of note box (m)</td></tr>
+  <tr><td>NoteBoxWidth</td><td>yes</td><td>no</td><td>yes</td><td>Width of note box (m)</td></tr>
+  <tr><td>NoteStep</td><td>yes</td><td>no</td><td>no</td><td>Interval length of notes in a channel (m)</td></tr>
+  <tr><td>ChStep</td><td>yes</td><td>no</td><td>yes</td><td>Interval length of channels (m)</td></tr>
+  <tr><td>RippleHeight</td><td>yes</td><td>no</td><td>yes</td><td>Height of ripple (m)</td></tr>
+  <tr><td>RippleWidth</td><td>yes</td><td>no</td><td>yes</td><td>Width of ripple (m)</td></tr>
+  <tr><td>PictBoardRelativePos</td><td>yes</td><td>no</td><td>yes</td><td>The relative position which crosses perpendicularly the board and the playback section.<br>
   0.0 - The left edge of board crosses playback section<br>
   0.5 - The center of board crosses playback section<br>
   1.0 - The right edge of board crosses playback section</td></tr>
-  <tr><td>LiveNoteLengthPerSecond</td><td>yes</td><td>yes</td><td>Note length for 1 second in monitor (m)</td></tr>
-  <tr><td>LiveMonitorDisplayDuration</td><td>yes</td><td>yes</td><td>Display duration in monitor (msec)</td></tr>
+  <tr><td>LiveNoteLengthPerSecond</td><td>yes</td><td>yes</td><td>yes</td><td>Note length for 1 second in monitor (m)</td></tr>
+  <tr><td>LiveMonitorDisplayDuration</td><td>yes</td><td>yes</td><td>yes</td><td>Display duration in monitor (msec)</td></tr>
+  <tr><td>RingRadius</td><td>no</td><td>no</td><td>yes</td><td>Radius of ring (m)</td></tr>
 </table>
 </p>
 <p>
@@ -617,17 +687,17 @@ Edit [Color] section.
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>NoteColorType</td><td>yes</td><td>yes</td><td>Note color type<br>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>NoteColorType</td><td>yes</td><td>yes</td><td>yes</td><td>Note color type<br>
   CHANNEL: Assign the channel color to the piano roll bar. (Ch-XX-NoteRGBA)<br>
   SCALE: Assign the scale color to the  piano roll bar. (Scale-XX-NoteRGBA)</td></tr>
-  <tr><td>Ch-01-NoteRGBA<br>Ch-02-NoteRGBA<br>&nbsp;&nbsp;&nbsp;:<br>Ch-16-NoteRGBA</td><td>yes</td><td>yes</td><td>Color of the piano roll bar at each channel.(RGBA)</td></tr>
-  <tr><td>Scale-01-NoteRGBA<br>Scale-02-NoteRGBA<br>・・・<br>Scale-12-NoteRGBA</td><td>yes</td><td>yes</td><td>Color of the piano roll bar at each sacle.(RGBA)<br>
+  <tr><td>Ch-01-NoteRGBA<br>Ch-02-NoteRGBA<br>&nbsp;&nbsp;&nbsp;:<br>Ch-16-NoteRGBA</td><td>yes</td><td>yes</td><td>yes</td><td>Color of the piano roll bar at each channel.(RGBA)</td></tr>
+  <tr><td>Scale-01-NoteRGBA<br>Scale-02-NoteRGBA<br>&nbsp;&nbsp;&nbsp;:<br>Scale-12-NoteRGBA</td><td>yes</td><td>yes</td><td>yes</td><td>Color of the piano roll bar at each sacle.(RGBA)<br>
   01=C,02=C#,03=D,04=D#,05=E,06=F,07=F#,08=G,F09=G#,10=A,11=A#,12=B</td></tr>
-  <tr><td>GridLineRGBA</td><td>yes</td><td>no</td><td>Color of the grid line and bar line. (RGBA)<br>If A of RGBA is 00 then the grid line will disappear.</td></tr>
-  <tr><td>PlaybackSectionRGBA</td><td>yes</td><td>no</td><td>Color of the playback section. (RGBA)</td></tr>
-  <tr><td>CaptionRGBA</td><td>yes</td><td>yes</td><td>Color of the caption/counter string.(RGBA)</td></tr>
-  <tr><td>BackGroundRGB</td><td>yes</td><td>yes</td><td>Back ground color(RGB)</td></tr>
+  <tr><td>GridLineRGBA</td><td>yes</td><td>no</td><td>yes</td><td>Color of the grid line and bar line. (RGBA)<br>If A of RGBA is 00 then the grid line will disappear.</td></tr>
+  <tr><td>PlaybackSectionRGBA</td><td>yes</td><td>no</td><td>no</td><td>Color of the playback section. (RGBA)</td></tr>
+  <tr><td>CaptionRGBA</td><td>yes</td><td>yes</td><td>yes</td><td>Color of the caption/counter string.(RGBA)</td></tr>
+  <tr><td>BackGroundRGB</td><td>yes</td><td>yes</td><td>yes</td><td>Back ground color(RGB)</td></tr>
 </table>
 </p>
 
@@ -637,14 +707,14 @@ Edit [ActiveNote] section.
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>Duration</td><td>yes</td><td>no</td><td>Duration of active note flash.(msec)</td></tr>
-  <tr><td>WhiteRate</td><td>yes</td><td>no</td><td>White rate at "NOTE ON".<br>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>Duration</td><td>yes</td><td>no</td><td>yes</td><td>Duration of active note flash.(msec)</td></tr>
+  <tr><td>WhiteRate</td><td>yes</td><td>no</td><td>yes</td><td>White rate at "NOTE ON".<br>
   0.0 Same color as piano roll bar. It means no flash.<br>
   0.5 Neutral color of piano roll bar and white.<br>
   1.0 White.</td></tr>
-  <tr><td>EmissiveRGBA</td><td>yes</td><td>no</td><td>Emissive color of active note. (RGBA)<br>This value will be ignored on PianoRoll2D.</td></tr>
-  <tr><td>SizeRatio</td><td>yes</td><td>no</td><td>Size magnification ratio of active note.<br>This value will be ignored on MIDI IN Monitor.</td></tr>
+  <tr><td>EmissiveRGBA</td><td>yes</td><td>no</td><td>no</td><td>Emissive color of active note. (RGBA)<br>This value will be ignored on PianoRoll2D.</td></tr>
+  <tr><td>SizeRatio</td><td>yes</td><td>no</td><td>yes</td><td>Size magnification ratio of active note.<br>This value will be ignored on MIDI IN Monitor.</td></tr>
 </table>
 </p>
 
@@ -654,8 +724,8 @@ Edit [Ripple] section.
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>Duration</td><td>yes</td><td>no</td><td>Duration of a ripple.(msec)</td></tr>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>Duration</td><td>yes</td><td>no</td><td>yes</td><td>Duration of a ripple.(msec)</td></tr>
 </table>
 </p>
 
@@ -666,8 +736,8 @@ Edit [Stars] section.
 
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>NumberOfStars</td><td>yes</td><td>yes</td><td>The number of stars to draw.</td></tr>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>NumberOfStars</td><td>yes</td><td>yes</td><td>yes</td><td>The number of stars to draw.</td></tr>
 </table>
 </p>
 
@@ -680,20 +750,20 @@ If the height or width of bitmap is too big, your PC may be unable to draw the b
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>Board</td><td>yes</td><td>no</td><td>Bitmap file name of the picture board.(ex. "data\Board.bmp")<br>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>Board</td><td>yes</td><td>no</td><td>yes</td><td>Bitmap file name of the picture board.(ex. "data\Board.bmp")<br>
 Instead of piano keyboard, you can display your favorite wallpaper.
 The aspect ratio of bitmap is arbitrary.<br>
 To adjust the relative position which crosses perpendicularly the board and the playback section,
 please edit "[Scale] / PictBoardRelativePos".
       </td></tr>
-  <tr><td>Ripple</td><td>yes</td><td>no</td><td>Bitmap file name of the ripple.(ex. "data\Ripple.bmp")<br>
+  <tr><td>Ripple</td><td>yes</td><td>no</td><td>yes</td><td>Bitmap file name of the ripple.(ex. "data\Ripple.bmp")<br>
 You can change ripple which is displayed on "NOTE ON".
 The aspect ratio of bitmap is arbitrary.<br>
 To adjust ripple display size,
 please edit "[Scale] / RippleHeight, RippleWidth".
       </td></tr>
-  <tr><td>Keyboard</td><td>no</td><td>yes</td><td>Bitmap file name of piano keyboard.(ex. "data\Keyboard.bmp")<br>
+  <tr><td>Keyboard</td><td>no</td><td>yes</td><td>no</td><td>Bitmap file name of piano keyboard.(ex. "data\Keyboard.bmp")<br>
 Texture image of Piano keyboard. You can not change the aspect ratio of this bitmap.
       </td></tr>
 </table>
@@ -705,22 +775,22 @@ Edit [PianoKeyboard] section.<br>
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>KeyDownDuration</td><td>no</td><td>yes</td><td>Duration of key down (msec)</td></tr>
-  <tr><td>KeyUpDuration</td><td>no</td><td>yes</td><td>Duration of key up (msec)</td></tr>
-  <tr><td>KeyboardStepY</td><td>no</td><td>yes</td><td>Keyboard step interval: Horizontal direction (m)</td></tr>
-  <tr><td>KeyboardStepZ</td><td>no</td><td>yes</td><td>Keyboard step interval: Vertical direction (m)</td></tr>
-  <tr><td>KeyboardMaxDispNum</td><td>no</td><td>yes</td><td>The number of the maximum keyboards (0-16)</td></tr>
-  <tr><td>WhiteKeyColor</td><td>no</td><td>yes</td><td>Color of white key. (RGBA)</td></tr>
-  <tr><td>BlackKeyColor</td><td>no</td><td>yes</td><td>Color of black key. (RGBA)</td></tr>
-  <tr><td>ActiveKeyColorType</td><td>no</td><td>yes</td><td>Active key color type<br>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>KeyDownDuration</td><td>no</td><td>yes</td><td>no</td><td>Duration of key down (msec)</td></tr>
+  <tr><td>KeyUpDuration</td><td>no</td><td>yes</td><td>no</td><td>Duration of key up (msec)</td></tr>
+  <tr><td>KeyboardStepY</td><td>no</td><td>yes</td><td>no</td><td>Keyboard step interval: Horizontal direction (m)</td></tr>
+  <tr><td>KeyboardStepZ</td><td>no</td><td>yes</td><td>no</td><td>Keyboard step interval: Vertical direction (m)</td></tr>
+  <tr><td>KeyboardMaxDispNum</td><td>no</td><td>yes</td><td>no</td><td>The number of the maximum keyboards (0-16)</td></tr>
+  <tr><td>WhiteKeyColor</td><td>no</td><td>yes</td><td>no</td><td>Color of white key. (RGBA)</td></tr>
+  <tr><td>BlackKeyColor</td><td>no</td><td>yes</td><td>no</td><td>Color of black key. (RGBA)</td></tr>
+  <tr><td>ActiveKeyColorType</td><td>no</td><td>yes</td><td>no</td><td>Active key color type<br>
   STANDARD: Standard color (ActiveKeyColor)<br>NOTE: Note color (Ch-XX-NoteRGBA or Scale-XX-NoteRGBA)</td></tr>
-  <tr><td>ActiveKeyColor</td><td>no</td><td>yes</td><td>Color of active key. (RGBA)</td></tr>
-  <tr><td>ActiveKeyColorDuration</td><td>no</td><td>yes</td><td>Duration of change from the color of note ON to the last neutral color. (msec)</td></tr>
-  <tr><td>ActiveKeyColorTailRate</td><td>no</td><td>yes</td><td>Definition of the last neutral color. Color ratio of the color of note ON (red) and the color of key (white/black) (0.0-1.0)</td></tr>
-  <tr><td>KeyDispRangeStart</td><td>no</td><td>yes</td><td>Key display range: start position (0-127)<br>
+  <tr><td>ActiveKeyColor</td><td>no</td><td>yes</td><td>no</td><td>Color of active key. (RGBA)</td></tr>
+  <tr><td>ActiveKeyColorDuration</td><td>no</td><td>yes</td><td>no</td><td>Duration of change from the color of note ON to the last neutral color. (msec)</td></tr>
+  <tr><td>ActiveKeyColorTailRate</td><td>no</td><td>yes</td><td>no</td><td>Definition of the last neutral color. Color ratio of the color of note ON (red) and the color of key (white/black) (0.0-1.0)</td></tr>
+  <tr><td>KeyDispRangeStart</td><td>no</td><td>yes</td><td>no</td><td>Key display range: start position (0-127)<br>
   In typical 88-key piano, start position is 21(A0).</td></tr>
-  <tr><td>KeyDispRangeEnd</td><td>no</td><td>yes</td><td>Key display range: end position (0-127)<br>
+  <tr><td>KeyDispRangeEnd</td><td>no</td><td>yes</td><td>no</td><td>Key display range: end position (0-127)<br>
   In typical 88-key piano, end position is 108(C8).</td></tr>
 </table>
 </p>
@@ -731,14 +801,14 @@ Edit [Viewpoint-2],[Viewpoint-3] section. You can not edit viewpoint 1.<br>
 </p>
 <p>
 <table>
-  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>Details</th></tr>
-  <tr><td>no</td><td>yes</td><td>yes</td><td>X-coordinate</td></tr>
-  <tr><td>Y</td><td>yes</td><td>yes</td><td>Y-coordinate</td></tr>
-  <tr><td>Z</td><td>yes</td><td>yes</td><td>Z-coordinate</td></tr>
-  <tr><td>Phi</td><td>yes</td><td>yes</td><td>Azimuth angle (degree)</td></tr>
-  <tr><td>Theta</td><td>yes</td><td>yes</td><td>Zenith angle (degree)</td></tr>
-  <tr><td>ManualRollAngle</td><td>yes</td><td>yes</td><td>Manual rotation angle (degree)</td></tr>
-  <tr><td>AutoRollVelocity</td><td>yes</td><td>yes</td><td>Automatic rotation velocity (degree/second)</td></tr>
+  <tr><th>Name</th><th>PR-3D/2D</th><th>PR-Rain/2D</th><th>PR-Ring</th><th>Details</th></tr>
+  <tr><td>no</td><td>yes</td><td>yes</td><td>yes</td><td>X-coordinate</td></tr>
+  <tr><td>Y</td><td>yes</td><td>yes</td><td>yes</td><td>Y-coordinate</td></tr>
+  <tr><td>Z</td><td>yes</td><td>yes</td><td>yes</td><td>Z-coordinate</td></tr>
+  <tr><td>Phi</td><td>yes</td><td>yes</td><td>yes</td><td>Azimuth angle (degree)</td></tr>
+  <tr><td>Theta</td><td>yes</td><td>yes</td><td>yes</td><td>Zenith angle (degree)</td></tr>
+  <tr><td>ManualRollAngle</td><td>yes</td><td>yes</td><td>yes</td><td>Manual rotation angle (degree)</td></tr>
+  <tr><td>AutoRollVelocity</td><td>yes</td><td>yes</td><td>yes</td><td>Automatic rotation velocity (degree/second)</td></tr>
 </table>
 </p>
 
@@ -779,7 +849,7 @@ MIDITrail is released under the BSD license.
 </p>
 
 <pre>
-Copyright (c) 2010-2019, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+Copyright (c) 2010-2022, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -815,61 +885,61 @@ POSSIBILITY OF SUCH DAMAGE.
 <p>
 <table>
   <tr><th>Date</th><th>Version</th><th>Changelog</th></tr>
-  <tr><td>2010/03/08</td><td>Ver.0.0.0</td><td>Development start.</td></tr>
-  <tr><td>2010/05/18</td><td>Ver.1.0.0 beta</td><td>Beta release.</td></tr>
-  <tr><td>2010/06/02</td><td>Ver.1.0.0</td><td>First formal release.</td></tr>
+  <tr><td>2010/03/08</td><td>Ver.0.0.0</td><td>Development start</td></tr>
+  <tr><td>2010/05/18</td><td>Ver.1.0.0 beta</td><td>Beta release</td></tr>
+  <tr><td>2010/06/02</td><td>Ver.1.0.0</td><td>First formal release</td></tr>
   <tr><td>2010/06/05</td><td>Ver.1.0.1</td><td>
-#22102 Fixed bug. (execution fails by missing Visual C++ runtime library)<br>
-#22106 Fixed bug. (size of about dialog is big on Windows English version)<br>
+#22102 Fixed bug (execution fails by missing Visual C++ runtime library)<br>
+#22106 Fixed bug (size of about dialog is big on Windows English version)<br>
   </td></tr>
   <tr><td>2010/06/20</td><td>Ver.1.0.2</td><td>
-#22218 Added English manual.<br>
-#22108 Fixed bug. (crash when opening the MIDI file exported from VOCALOID)<br>
-#22217 Fixed bug. (overlapped ripples flicker)<br>
+#22218 Added English manual<br>
+#22108 Fixed bug (crash when opening the MIDI file exported from VOCALOID)<br>
+#22217 Fixed bug (overlapped ripples flicker)<br>
   </td></tr>
   <tr><td>2010/07/11</td><td>Ver.1.0.3</td><td>
-#22319 Added color effect to active piano roll bar.<br>
-#22412 Added pitch bend effect to piano roll bar.<br>
-#22425 Added view mode of piano roll 2D.<br>
-#22442 Added switch interface of display and effect.<br>
-#22413 Fixed bug. (rendering performance has declined by specular effect)<br>
-#22414 Fixed bug. (total count of notes is incorrect)<br>
-#22424 Fixed bug. (duration of a ripple is not constant)<br>
+#22319 Added color effect to active piano roll bar<br>
+#22412 Added pitch bend effect to piano roll bar<br>
+#22425 Added view mode of piano roll 2D<br>
+#22442 Added switch interface of display and effect<br>
+#22413 Fixed bug (rendering performance has declined by specular effect)<br>
+#22414 Fixed bug (total count of notes is incorrect)<br>
+#22424 Fixed bug (duration of a ripple is not constant)<br>
   </td></tr>
   <tr><td>2010/07/25</td><td>Ver.1.0.4</td><td>
-#22320 Added application icon.<br>
-#22522 Added support for Recomposer data file.<br>
-#22523 Added command line interface.<br>
-#22582 Added double speed playback mode.<br>
-#22585 Added function of piano roll rotation by a mouse wheel.<br>
-#22566 Fixed bug. (Playback time was slightly short)<br>
-#22506 Fixed bug. (Note may continue sounding after the end of playback)<br>
+#22320 Added application icon<br>
+#22522 Added support for Recomposer data file<br>
+#22523 Added command line interface<br>
+#22582 Added double speed playback mode<br>
+#22585 Added function of piano roll rotation by a mouse wheel<br>
+#22566 Fixed bug (Playback time was slightly short)<br>
+#22506 Fixed bug (Note may continue sounding after the end of playback)<br>
   </td></tr>
   <tr><td>2010/08/06</td><td>Ver.1.0.5</td><td>
-#22633 Fixed bug. (Piano roll rotation status is not saved by "Save viewpoint")<br>
-#22652 Fixed bug. (Parse error when opening 55MCMDL1.MID "WATANABE Michiaki MEDLEY")<br>
-#22709 Fixed bug. (MIDITrail sends redundant "F7" to MIDI-OUT with multi-packet system exclusive message)<br>
-#22710 Fixed bug. (Auto rotation speed of piano roll is not constant)<br>
+#22633 Fixed bug (Piano roll rotation status is not saved by "Save viewpoint")<br>
+#22652 Fixed bug (Parse error when opening 55MCMDL1.MID "WATANABE Michiaki MEDLEY")<br>
+#22709 Fixed bug (MIDITrail sends redundant "F7" to MIDI-OUT with multi-packet system exclusive message)<br>
+#22710 Fixed bug (Auto rotation speed of piano roll is not constant)<br>
   </td></tr>
-  <tr><td>2010/08/29</td><td>Ver.1.1.0 beta</td><td>Beta release.(Added "Piano Roll Rain")</td></tr>
+  <tr><td>2010/08/29</td><td>Ver.1.1.0 beta</td><td>Beta release (Added "Piano Roll Rain")</td></tr>
   <tr><td>2010/09/19</td><td>Ver.1.1.0</td><td>
 #23174 Added view mode "Piano Roll Rain"<br>
-#23175 Fixed bug. (File open dialog is not modal)<br>
+#23175 Fixed bug (File open dialog is not modal)<br>
   </td></tr>
   <tr><td>2010/10/17</td><td>Ver.1.1.1</td><td>
 #23439 Added Anti-aliasing support<br>
-#23347 Fixed bug. (Key down timing and a piano roll don't synchronize in PianoRollRain)<br>
-#23348 Fixed bug. (Spelling error in file open dialog)<br>
-#23422 Fixed bug. (Position of black is not correct in PianoRollRain)<br>
+#23347 Fixed bug (Key down timing and a piano roll don't synchronize in PianoRollRain)<br>
+#23348 Fixed bug (Spelling error in file open dialog)<br>
+#23422 Fixed bug (Position of black is not correct in PianoRollRain)<br>
   </td></tr>
   <tr><td>2010/12/26</td><td>Ver.1.1.2</td><td>
-This version was released with MIDITrail for Mac OS X.<br>
-#23970 Added eye direction control by key operation.<br>
-#23971 Updated texture images.<br>
-#23972 Updated application icon.<br>
-#23497 Fixed bug. ("Piano Roll Rain" item in "View" menu is always enable)<br>
-#23968 Fixed bug. (Time signature was always 4/4 after loading file)<br>
-#23969 Fixed bug. (Space charactor in the title string has been ignored)<br>
+This version was released with MIDITrail for Mac OS X<br>
+#23970 Added eye direction control by key operation<br>
+#23971 Updated texture images<br>
+#23972 Updated application icon<br>
+#23497 Fixed bug ("Piano Roll Rain" item in "View" menu is always enable)<br>
+#23968 Fixed bug (Time signature was always 4/4 after loading file)<br>
+#23969 Fixed bug (Space charactor in the title string has been ignored)<br>
   </td></tr>
   <tr><td>2012/01/15</td><td>Ver.1.1.3</td><td>
 #27006 Merged features of MIDITrail Ver.1.1.3 for Mac OS X<br>
@@ -879,16 +949,16 @@ This version was released with MIDITrail for Mac OS X.<br>
 #26989 Added stars and counter display control<br>
 #27005 Added figure of player operations guide to "How to view dialog"<br>
 #27091 Added check of DirectX feature support (Index Buffer)<br>
-#26990 Fixed bug. (Typographical errors on the license)<br>
-#27139 Fixed bug. (The color of note boxes are whitish in Piano Roll 3D)<br>
-#27140 Fixed bug. (The color of stars are dark in Piano Roll Rain)<br>
+#26990 Fixed bug (Typographical errors on the license)<br>
+#27139 Fixed bug (The color of note boxes are whitish in Piano Roll 3D)<br>
+#27140 Fixed bug (The color of stars are dark in Piano Roll Rain)<br>
   </td></tr>
   <tr><td>2012/03/04</td><td>Ver.1.2.0</td><td>
 #27711 Merged features of MIDITrail Ver.1.2.0 for Mac OS X<br>
 #27458 Added MIDI IN monitoring<br>
 #27459 Added MIDI OUT auto configuration<br>
 #27712 Added shortcut key of File Open<br>
-#27725 Fixed bug. (Error occurs when the MIDI data contains the track with 6 or more port numbers)<br>
+#27725 Fixed bug (Error occurs when the MIDI data contains the track with 6 or more port numbers)<br>
   </td></tr>
   <tr><td>2013/12/04</td><td>Ver.1.2.1</td><td>
 #30545 Added key display range control<br>
@@ -905,15 +975,15 @@ This version was released with MIDITrail for Mac OS X.<br>
 #32427 Added note color assignment to active key<br>
 #32365 Changed title caption ("TITLE:" string was removed)<br>
 #30552 Improved event message queue mechanism<br>
-#30548 Fixed bug. (At the start of playback, MIDI data transmission is blocked)<br>
-#32359 Fixed bug. (MIDITrail does not send some CC events at skip processing)<br>
+#30548 Fixed bug (At the start of playback, MIDI data transmission is blocked)<br>
+#32359 Fixed bug (MIDITrail does not send some CC events at skip processing)<br>
   </td></tr>
   <tr><td>2014/02/23</td><td>Ver.1.2.1a</td><td>
 #33252 Added support for Windows 64bit<br>
   </td></tr>
   <tr><td>2014/04/20</td><td>Ver.1.2.1b</td><td>
-#33674 Fixed bug. (When NSX-39 was selected as MIDI OUT device, error occurs at the start of playback)<br>
-#33695 Fixed bug. (Program error occurs in MTFont2Bmp::_writeGlyphToBmpBuf.)<br>
+#33674 Fixed bug (When NSX-39 was selected as MIDI OUT device, error occurs at the start of playback)<br>
+#33695 Fixed bug (Program error occurs in MTFont2Bmp::_writeGlyphToBmpBuf)<br>
   </td></tr>
   <tr><td>2016/12/05</td><td>Ver.1.2.2</td><td>
 #35775 Changed URL and mail address in user's manual<br>
@@ -934,11 +1004,38 @@ This version was released with MIDITrail for Mac OS X.<br>
 #39227 Added quarter note length configuration<br>
 #39226 Changed development environment to Visual Studio 2017<br>
 #39228 Changed appendix of user's manual<br>
-#39229 fixed bug (Code analysis found some mistakes)<br>
+#39229 Fixed bug (Code analysis found some mistakes)<br>
   </td></tr>
   <tr><td>2019/06/02</td><td>Ver.1.2.6</td><td>
 #39274 Added full screen mode<br>
 #39275 Added support for game controller<br>
+  </td></tr>
+  <tr><td>2019/10/14</td><td>Ver.1.3.0</td><td>
+#39675 Added view mode "Piano Roll Ring"<br>
+  </td></tr>
+  <tr><td>2019/11/09</td><td>Ver.1.3.1</td><td>
+#39733 Changed keyboard display direction on Piano Roll Ring<br>
+#39734 Changed processing to keep viewpoint when window size changed<br>
+#39735 Fixed bug (Assertion occurs in _controlfp_s when x64 debug configuration)<br>
+#39736 Fixed bug (Exception occurs in "How to view" dialog when x64 debug configuration)<br>
+  </td></tr>
+  <tr><td>2021/05/16</td><td>Ver.1.3.3</td><td>
+#42233 Added Folder Playback feature<br>
+#42234 Added support for Standard MIDI File with illegal chunk size<br>
+#42235 Added support for RIFF-based MIDI File<br>
+#42236 Added sending "All Sound Off" messeage when pause/stop/skip<br>
+#42237 Fixed bug (The color of the ripples becomes dark in Piano Roll 3D)<br>
+  </td></tr>
+  <tr><td>2021/09/13</td><td>Ver.1.3.4</td><td>
+#42859 Added setting of delay between songs<br>
+  </td></tr>
+  <tr><td>2022/07/14</td><td>Ver.1.3.6</td><td>
+#45088 Added menu bar display switch<br>
+#45089 Added feature of saving my viewpoint<br>
+#45090 Added display switch of grid line and time indicator<br>
+#45091 Added feature of saving display switch status<br>
+#45092 Added 2nd light for Piano Roll 3D<br>
+#45093 Added MIDI system message parsing<br>
   </td></tr>
 </table>
 </p>

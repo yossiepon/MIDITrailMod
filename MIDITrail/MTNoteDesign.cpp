@@ -156,7 +156,7 @@ float MTNoteDesign::GetNoteBoxHeight()
 //******************************************************************************
 // ノートボックス横サイズ取得
 //******************************************************************************
-float MTNoteDesign::GetNoteBoxWidht()
+float MTNoteDesign::GetNoteBoxWidth()
 {
 	return m_NoteBoxWidth;
 }
@@ -209,7 +209,7 @@ void MTNoteDesign::GetNoteBoxVirtexPos(
 	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
 
 	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidht();
+	bw = GetNoteBoxWidth();
 
 	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
 	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
@@ -246,7 +246,7 @@ void MTNoteDesign::GetActiveNoteBoxVirtexPos(
 	}
 	
 	bh = GetNoteBoxHeight() * curSizeRatio;
-	bw = GetNoteBoxWidht() * curSizeRatio;
+	bw = GetNoteBoxWidth() * curSizeRatio;
 	
 	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
 	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
@@ -281,7 +281,7 @@ void MTNoteDesign::GetNoteBoxVirtexPosLive(
 	x = -(GetLivePosX(elapsedTime));
 	
 	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidht();
+	bw = GetNoteBoxWidth();
 	
 	*pVector0 = D3DXVECTOR3(x, center.y+(bh/2.0f), center.z+(bw/2.0f));
 	*pVector1 = D3DXVECTOR3(x, center.y+(bh/2.0f), center.z-(bw/2.0f));
@@ -312,7 +312,7 @@ void MTNoteDesign::GetGridBoxVirtexPos(
 	x = GetPlayPosX(curTickTime);
 
 	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidht();
+	bw = GetNoteBoxWidth();
 
 	gridHeight = GetNoteStep() * 127;
 	gridWidth  = GetChStep() * 15;
@@ -349,7 +349,7 @@ void MTNoteDesign::GetGridBoxVirtexPosLive(
 	x = -(GetLivePosX(elapsedTime));
 	
 	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidht();
+	bw = GetNoteBoxWidth();
 	
 	gridHeight = GetNoteStep() * 127;
 	gridWidth  = GetChStep() * 15;

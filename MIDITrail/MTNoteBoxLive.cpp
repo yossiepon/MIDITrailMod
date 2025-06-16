@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ノートボックス描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -29,6 +29,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteBoxLive::MTNoteBoxLive(void)
 {
+	m_pNoteDesign = NULL;
 	m_NoteNum = 0;
 	m_pNoteStatus = NULL;
 }
@@ -53,13 +54,17 @@ int MTNoteBoxLive::Create(
 	int result = 0;
 	
 	Release();
-	
+
+	//ノートデザインオブジェクト生成
+	result = _CreateNoteDesign();
+	if (result != 0) goto EXIT;
+
 	//ノートデザインオブジェクト初期化
-	result = m_NoteDesign.Initialize(pSceneName, NULL);
+	result = m_pNoteDesign->Initialize(pSceneName, NULL);
 	if (result != 0) goto EXIT;
 	
 	//ライブモニタ表示期限
-	m_LiveMonitorDisplayDuration = m_NoteDesign.GetLiveMonitorDisplayDuration();
+	m_LiveMonitorDisplayDuration = m_pNoteDesign->GetLiveMonitorDisplayDuration();
 	
 	//ノート情報配列生成
 	result = _CreateNoteStatus();
@@ -72,6 +77,25 @@ int MTNoteBoxLive::Create(
 	//ピッチベンド情報
 	m_pNotePitchBend = pNotePitchBend;
 	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ノートデザイン生成
+//******************************************************************************
+int MTNoteBoxLive::_CreateNoteDesign()
+{
+	int result = 0;
+
+	try {
+		m_pNoteDesign = new MTNoteDesign();
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
+
 EXIT:;
 	return result;
 }
@@ -202,7 +226,7 @@ int MTNoteBoxLive::Transform(
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 	
 	//移動行列
-	moveVector = m_NoteDesign.GetWorldMoveVector();
+	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 	
 	//行列の合成
@@ -347,6 +371,9 @@ EXIT:;
 //******************************************************************************
 void MTNoteBoxLive::Release()
 {
+	delete m_pNoteDesign;
+	m_pNoteDesign = NULL;
+
 	m_PrimitiveNotes.Release();
 	
 	delete [] m_pNoteStatus;
@@ -398,7 +425,7 @@ int MTNoteBoxLive::_CreateVertexOfNote(
 	if (elapsedTime > m_LiveMonitorDisplayDuration) {
 		elapsedTime = m_LiveMonitorDisplayDuration;
 	}
-	m_NoteDesign.GetNoteBoxVirtexPosLive(
+	m_pNoteDesign->GetNoteBoxVirtexPosLive(
 			elapsedTime,
 			note.portNo,
 			note.chNo,
@@ -415,7 +442,7 @@ int MTNoteBoxLive::_CreateVertexOfNote(
 	if (note.endTime != 0) {
 		elapsedTime = curTime - note.endTime;
 	}
-	m_NoteDesign.GetNoteBoxVirtexPosLive(
+	m_pNoteDesign->GetNoteBoxVirtexPosLive(
 			elapsedTime,
 			note.portNo,
 			note.chNo,
@@ -494,12 +521,12 @@ int MTNoteBoxLive::_CreateVertexOfNote(
 	
 	//各頂点のディフューズ色
 	if (note.endTime != 0) {
-		color = m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+		color = m_pNoteDesign->GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 	}
 	else {
 		//発音中は発音開始からの経過時間によって色が変化する
 		elapsedTime = curTime - note.startTime;
-		color = m_NoteDesign.GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, elapsedTime);
+		color = m_pNoteDesign->GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, elapsedTime);
 	}
 	
 	//頂点の色設定完了

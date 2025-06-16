@@ -177,7 +177,7 @@ void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
 	}
 	
 	bh = GetNoteBoxHeight() * curSizeRatio;
-	bw = GetNoteBoxWidht() * curSizeRatio;
+	bw = GetNoteBoxWidth() * curSizeRatio;
 	
 	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
 	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
