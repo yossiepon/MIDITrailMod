@@ -4,7 +4,7 @@
 //
 // ノートデザインリングクラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -211,19 +211,17 @@ void MTNoteDesignRing::GetNoteBoxVirtexPosLive(
 // グリッドリング基準座標取得
 //******************************************************************************
 void MTNoteDesignRing::GetGridRingBasePos(
-		unsigned long totalTickTime,
-		D3DXVECTOR3* pBasePosStart,
-		D3DXVECTOR3* pBasePosEnd
+		unsigned long tickTime,
+		D3DXVECTOR3* pBasePos
 	)
 {
-	*pBasePosStart = D3DXVECTOR3(
-							GetPlayPosX(0),
-							GetPortOriginY(0),
-							GetPortOriginZ(0));
-	*pBasePosEnd   = D3DXVECTOR3(
-							GetPlayPosX(totalTickTime),
-							GetPortOriginY(0),
-							GetPortOriginZ(0));
+	float chStep = 0.0f;
+	
+	chStep = GetChStep();
+	*pBasePos = D3DXVECTOR3(
+					GetPlayPosX(tickTime),
+					GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
+					GetPortOriginZ(0));
 }
 
 //******************************************************************************
@@ -234,16 +232,18 @@ void MTNoteDesignRing::GetGridRingBasePosLive(
 		D3DXVECTOR3* pBasePosEnd
 	)
 {
-	unsigned long elapsedTime = 0;
-
+	unsigned int elapsedTime = 0;
+	float chStep = 0.0f;
+	
 	elapsedTime = GetLiveMonitorDisplayDuration();
+	chStep = GetChStep();
 	*pBasePosStart = D3DXVECTOR3(
 							GetPlayPosX(0),
-							GetPortOriginY(0),
+							GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
 							GetPortOriginZ(0));
 	*pBasePosEnd   = D3DXVECTOR3(
 							-(GetLivePosX(elapsedTime)),
-							GetPortOriginY(0),
+							GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
 							GetPortOriginZ(0));
 }
 

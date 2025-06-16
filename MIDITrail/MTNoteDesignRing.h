@@ -4,7 +4,7 @@
 //
 // ノートデザインリングクラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -84,9 +84,8 @@ public:
 
 	//グリッドリング基準座標取得
 	void GetGridRingBasePos(
-			unsigned long totalTickTime,
-			D3DXVECTOR3* pBasePosStart,
-			D3DXVECTOR3* pBasePosEnd
+			unsigned long tickTime,
+			D3DXVECTOR3* pBasePos
 		);
 
 	//ライブモニタ用グリッドリング基準座標取得

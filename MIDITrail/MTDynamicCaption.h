@@ -4,7 +4,7 @@
 //
 // 動的キャプション描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -65,9 +65,9 @@ public:
 	//  captionSize キャプション文字数
 	int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
-			const TCHAR* pFontName,
+			const WCHAR* pFontName,
 			unsigned long fontSize,
-			const TCHAR* pCharacters,
+			const WCHAR* pCharacters,
 			unsigned long captionSize
 		);
 
@@ -77,7 +77,7 @@ public:
 	//文字列設定
 	//  Createで指定していない文字は描画されない
 	//  Createで指定したキャプション文字数を超えた文字は描画しない
-	int SetString(TCHAR* pStr);
+	int SetString(WCHAR* pStr);
 
 	//色設定
 	void SetColor(D3DXCOLOR color);
@@ -104,7 +104,7 @@ private:
 	//頂点バッファーのフォーマットの定義：座標変換済みを指定
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-	TCHAR m_Chars[MTDYNAMICCAPTION_MAX_CHARS];
+	WCHAR m_Chars[MTDYNAMICCAPTION_MAX_CHARS];
 	unsigned long m_CaptionSize;
 	MTFontTexture m_FontTexture;
 	MTDYNAMICCAPTION_VERTEX* m_pVertex;
@@ -112,15 +112,15 @@ private:
 
 	int _CreateTexture(
 			LPDIRECT3DDEVICE9 pD3DDevice,
-			const TCHAR* pFontName,
+			const WCHAR* pFontName,
 			unsigned long fontSize,
-			const TCHAR* pCharacters
+			const WCHAR* pCharacters
 		);
 
 	int _CreateVertex();
 
 	int _GetTextureUV(
-			TCHAR target,
+			WCHAR target,
 			D3DXVECTOR2* pV0,
 			D3DXVECTOR2* pV1,
 			D3DXVECTOR2* pV2,

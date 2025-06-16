@@ -29,11 +29,12 @@
 #include "MTScenePianoRollRainLive.h"
 #include "MTScenePianoRollRain2DLive.h"
 #include "MTScenePianoRollRingLive.h"
-#include <ShObjIdl.h>
-#include <mbctype.h>
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
 // <<< add 20190828 yossiepon end
+#include <ShObjIdl.h>
+#include <mbctype.h>
+#include <dwmapi.h>
 
 using namespace YNBaseLib;
 
@@ -57,8 +58,8 @@ MIDITrailApp::MIDITrailApp(void)
 	//ウィンドウ系
 	m_hWnd = NULL;
 	m_Accel = NULL;
-	m_Title[0] = _T('\0');
-	m_WndClassName[0] = _T('\0');
+	m_Title[0] = L'\0';
+	m_WndClassName[0] = L'\0';
 	m_isFullScreen = false;
 	m_isEnableMenuBar = true;
 	m_hMenu = NULL;
@@ -70,6 +71,9 @@ MIDITrailApp::MIDITrailApp(void)
 	//FPS表示系
 	m_PrevTime = 0;
 	m_FPSCount = 0;
+
+	//MIDI制御系
+	m_MIDIINDevName[0] = _T('\0');
 
 	//演奏状態
 	m_PlayStatus = NoData;
@@ -114,7 +118,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_DelayBetweenSongsInMsec = 0;
 
 	//次回オープン対象ファイルパス
-	m_NextFilePath[0] = _T('\0');
+	m_NextFilePath[0] = L'\0';
 
 	//ゲームパッド用視点番号
 	m_GamePadViewPointNo = 0;
@@ -143,11 +147,11 @@ int MIDITrailApp::Initialize(
 	m_hInstance = hInstance;
 
 	//文字列初期化
-	LoadString(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
-	LoadString(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
 
 //>>> add yossiepon 20190828
-	TCHAR* pVersion = NULL;
+	WCHAR* pVersion = NULL;
 
 	//バージョン文字列
 #ifdef _WIN64
@@ -157,9 +161,9 @@ int MIDITrailApp::Initialize(
 	//32bit
 	pVersion = MIDITRAIL_VERSION_STRING_X86;
 #endif
-	_tcscat_s(m_TitleBase, MAX_LOADSTRING, _T(" "));
-	_tcscat_s(m_TitleBase, MAX_LOADSTRING, pVersion);
-	_tcscpy_s(m_Title, MAX_LOADSTRING, m_TitleBase);
+	wcscat_s(m_TitleBase, MAX_LOADSTRING, L" ");
+	wcscat_s(m_TitleBase, MAX_LOADSTRING, (LPCWSTR)pVersion);
+	wcscpy_s(m_Title, MAX_LOADSTRING, m_TitleBase);
 	//<<< add yossiepon 20190828
 
 	//設定ファイル初期化
@@ -180,7 +184,7 @@ int MIDITrailApp::Initialize(
 
 	//二重起動抑止の場合
 	if (m_isExitApp) {
-		_PostFilePathToFirstMIDITrail(pCmdLine);
+		_PostFilePathToFirstMIDITrail();
 		goto EXIT;
 	}
 
@@ -201,7 +205,7 @@ int MIDITrailApp::Initialize(
 	if (result != 0) goto EXIT;
 
 	//アクセラレータテーブル読み込み
-	m_Accel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MIDITRAIL));
+	m_Accel = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(IDC_MIDITRAIL));
 	if (m_Accel == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
@@ -248,8 +252,11 @@ int MIDITrailApp::Initialize(
 	result = _AutoConfigMIDIOUT();
 	if (result != 0) goto EXIT;
 
+	//ウィンドウタイトル更新
+	_UpdateWindowTitle(NULL);
+
 	//コマンドライン解析と実行
-	result = _ParseCmdLine(pCmdLine);
+	result = _ParseCmdLine();
 	if (result != 0) goto EXIT;
 
 	//タイマー開始
@@ -385,9 +392,9 @@ int MIDITrailApp::_RegisterClass(
 {
 	int result = 0;
 	ATOM aresult = 0;
-	WNDCLASSEX wcex;
+	WNDCLASSEXW wcex;
 
-	wcex.cbSize			= sizeof(WNDCLASSEX);				//構造体サイズ
+	wcex.cbSize			= sizeof(WNDCLASSEXW);				//構造体サイズ
 	wcex.style			= CS_HREDRAW | CS_VREDRAW;			//クラススタイル
 	wcex.lpfnWndProc	= _WndProc;							//ウィンドウプロシージャ
 	wcex.cbClsExtra		= 0;								//追加情報のサイズ
@@ -397,7 +404,7 @@ int MIDITrailApp::_RegisterClass(
 															//アイコンリソースハンドル
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//カーソルリソースハンドル
 	wcex.hbrBackground  = CreateSolidBrush(RGB(0, 0, 0));	//背景用ブラシハンドル：黒
-	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MIDITRAIL);	//メニューリソース名称
+	wcex.lpszMenuName	= MAKEINTRESOURCEW(IDC_MIDITRAIL);	//メニューリソース名称
 	wcex.lpszClassName	= m_WndClassName;					//ウィンドウクラス名称
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 				 											//小アイコンリソースハンドル
@@ -406,7 +413,7 @@ int MIDITrailApp::_RegisterClass(
 	// CS_HREDRAW クライアント領域の幅が変化したときに再描画する
 	// CS_VREDRAW クライアント領域の高さが変化したときに再描画する
 
-	aresult = RegisterClassEx(&wcex);
+	aresult = RegisterClassExW(&wcex);
 	if (aresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -426,7 +433,7 @@ int MIDITrailApp::_CreateWindow(
 {
 	int result = 0;
 
-	m_hWnd = CreateWindow(
+	m_hWnd = CreateWindowW(
 				m_WndClassName,			//ウィンドウクラス名
 				m_Title,				//ウィンドウ名
 				MIDITRAIL_WINDOW_STYLE,	//ウィンドウスタイル
@@ -447,12 +454,13 @@ int MIDITrailApp::_CreateWindow(
 	//メニューバー表示切替のためウィンドウ生成直後にハンドルを取得しておく
 	m_hMenu = GetMenu(m_hWnd);
 
+	//ウィンドウ表示
+	//ウィンドウを表示してからでないとウィンドウサイズ変更処理でウィンドウの影の情報を取得できない
+	ShowWindow(m_hWnd, nCmdShow);
+
 	//ユーザー設定ウィンドウサイズ変更
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
-
-	//ウィンドウ表示
-	ShowWindow(m_hWnd, nCmdShow);
 
 	//WM_PAINT呼び出しを止める
 	ValidateRect(m_hWnd, 0);
@@ -470,9 +478,13 @@ int MIDITrailApp::_SetWindowSize()
 {
 	int result = 0;
 	BOOL bresult = FALSE;
+	HRESULT hresult = 0;
 	int width = 0;
 	int height = 0;
-	RECT wrect, crect;
+	RECT rect_client;
+	RECT rect_excludeShadow;
+	RECT rect_includeShadow;
+	RECT rect_shadow;
 	int ww, wh, cw, ch, framew, frameh;
 	int applyToViewArea = 0;
 	LONG apiresult = 0;
@@ -491,7 +503,7 @@ int MIDITrailApp::_SetWindowSize()
 	if (result != 0) goto EXIT;
 	result = m_ViewConf.GetInt(_T("ApplyToViewArea"), &applyToViewArea, 0);
 	if (result != 0) goto EXIT;
-
+	
 	//ウィンドウスタイル設定
 	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
 	if (apiresult == 0) {
@@ -515,15 +527,24 @@ int MIDITrailApp::_SetWindowSize()
 		height = 600;
 	}
 
-	//ウィンドウのサイズ
-	GetWindowRect(m_hWnd, &wrect);
-	ww = wrect.right - wrect.left;
-	wh = wrect.bottom - wrect.top;
+	//ウィンドウのサイズ（影を含まないサイズ）
+	hresult = DwmGetWindowAttribute(
+					m_hWnd,							//ウィンドウハンドル
+					DWMWA_EXTENDED_FRAME_BOUNDS,	//取得値を示すフラグ：拡張フレーム境界
+					&rect_excludeShadow, 			//値の格納先
+					sizeof(RECT)					//値のサイズ
+				);
+	if (hresult != S_OK) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
+		goto EXIT;
+	}
+	ww = rect_excludeShadow.right  - rect_excludeShadow.left;
+	wh = rect_excludeShadow.bottom - rect_excludeShadow.top;
 
 	//クライアント領域のサイズ
-	GetClientRect(m_hWnd, &crect);
-	cw = crect.right - crect.left;
-	ch = crect.bottom - crect.top;
+	GetClientRect(m_hWnd, &rect_client);
+	cw = rect_client.right  - rect_client.left;
+	ch = rect_client.bottom - rect_client.top;
 
 	//枠のサイズ
 	framew = ww - cw;
@@ -534,7 +555,21 @@ int MIDITrailApp::_SetWindowSize()
 		width = width + framew;
 		height = height + frameh;
 	}
-	
+
+	//ウィンドウのサイズ（影を含むサイズ）
+	//  Windows Vista以降においてGetWindowRectは影を含むサイズを返す
+	GetWindowRect(m_hWnd, &rect_includeShadow);
+
+	//影の偏差
+	rect_shadow.left   = rect_includeShadow.left   - rect_excludeShadow.left;	//例：-7
+	rect_shadow.right  = rect_includeShadow.right  - rect_excludeShadow.right;	//例：+7
+	rect_shadow.top    = rect_includeShadow.top    - rect_excludeShadow.top;	//例：-7
+	rect_shadow.bottom = rect_includeShadow.bottom - rect_excludeShadow.bottom;	//例：+7
+
+	//SetWindowPosに指定するウィンドウサイズに影を反映
+	width  = width  + (rect_shadow.right  - rect_shadow.left);
+	height = height + (rect_shadow.bottom - rect_shadow.top);
+
 	//ウィンドウサイズ変更
 	bresult = SetWindowPos(
 					m_hWnd,			//ウィンドウハンドル
@@ -638,6 +673,7 @@ int MIDITrailApp::_InitConfFile()
 	_tcscat_s(userConfDirPath, _MAX_PATH, MT_USER_CONFFILE_DIR);
 
 	//ユーザ設定ファイル格納ディレクトリ作成
+	//TODO: Unicode対応時にSHCreateDirectoryExへ変更
 	bresult = MakeSureDirectoryPathExists(userConfDirPath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -929,6 +965,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuOptionGraphic();
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_OPTION_COLOR:
+					//カラー設定
+					result = _OnMenuOptionColor();
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_HOWTOVIEW:
 					//操作方法ダイアログ表示
 					m_HowToViewDlg.Show(m_hWnd);
@@ -996,6 +1037,10 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				if (result != 0) goto EXIT;
 			}
 			break;
+		case WM_SETTEXT:
+			//Unicode版SetWindowTextW呼び出しに対応
+			lresult = DefWindowProcW(hWnd, message, wParam, lParam);
+			break;
 		default:
 			lresult = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
@@ -1014,7 +1059,7 @@ EXIT:;
 int MIDITrailApp::_OnMenuOpenFile()
 {
 	int result = 0;
-	TCHAR filePath[_MAX_PATH] = {_T('\0')};
+	WCHAR filePath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
 	////演奏中はファイルオープンさせない
@@ -1063,7 +1108,7 @@ EXIT:;
 int MIDITrailApp::_OnMenuOpenFolder()
 {
 	int result = 0;
-	TCHAR folderPath[_MAX_PATH] = { _T('\0') };
+	WCHAR folderPath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
 	//演奏中でもフォルダオープン可とする
@@ -1101,7 +1146,7 @@ int MIDITrailApp::_OnMenuPreviousFile()
 {
 	int result = 0;
 	bool isExist = false;
-	const TCHAR* pFilePath = NULL;
+	const WCHAR* pFilePath = NULL;
 
 	//ファイルリストがなければ何もしない
 	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
@@ -1128,7 +1173,7 @@ int MIDITrailApp::_OnMenuNextFile()
 {
 	int result = 0;
 	bool isExist = false;
-	const TCHAR* pFilePath = NULL;
+	const WCHAR* pFilePath = NULL;
 
 	//ファイルリストがなければ何もしない
 	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
@@ -1156,7 +1201,7 @@ EXIT:;
 int MIDITrailApp::_OnMenuAddFile()
 {
 	int result = 0;
-	TCHAR filePath[MAX_PATH] = {_T('\0')};
+	WCHAR filePath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
 	//演奏中はファイルオープンさせない
@@ -1169,7 +1214,7 @@ int MIDITrailApp::_OnMenuAddFile()
 	}
 
 	//ファイル選択ダイアログ表示
-	result = _SelectMIDIFile(filePath, MAX_PATH, &isSelected);
+	result = _SelectMIDIFile(filePath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
 	//ファイル選択時の処理
@@ -1453,7 +1498,7 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 	result = _SetMonitorPortDev(&m_LiveMonitor, m_pScene);
 	if (result != 0) goto EXIT;
 	
-	//シーンに演奏開始を通知
+	//シーンに演奏開始（ライブモニタ開始）を通知
 	result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
 	if (result != 0) goto EXIT;
 	
@@ -1550,6 +1595,14 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 		else {
 			//ライブモニタのシーン種別切り替え
 			result = _CreateScene(m_SceneType, NULL);
+			if (result != 0) goto EXIT;
+
+			//MIDI IN デバイス名を設定
+			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+			if (result != 0) goto EXIT;
+
+			//デバイス名を画面に反映するためシーンに演奏終了（ライブモニタ停止）を通知
+			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
 			if (result != 0) goto EXIT;
 		}
 	}
@@ -1830,6 +1883,27 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	if (m_GraphicCfgDlg.IsChanged()) {
 		result = _LoadGraphicConf();
 		if (result != 0) goto EXIT;
+		result = _ChangeWindowSize();
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：カラー設定
+//******************************************************************************
+int MIDITrailApp::_OnMenuOptionColor()
+{
+	int result = 0;
+
+	//設定ダイアログ表示
+	result = m_ColorCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+	//変更された場合はレンダラとシーンオブジェクトを再生成
+	if (m_ColorCfgDlg.IsChanged()) {
 		result = _ChangeWindowSize();
 		if (result != 0) goto EXIT;
 	}
@@ -2191,9 +2265,9 @@ int MIDITrailApp::_OnKeyDown(
 				if (result != 0) goto EXIT;
 			}
 			else {
-			//視点リセット
-			result = _OnMenuResetViewpoint();
-			if (result != 0) goto EXIT;
+				//視点リセット
+				result = _OnMenuResetViewpoint();
+				if (result != 0) goto EXIT;
 			}
 			break;
 		case '8':
@@ -2209,9 +2283,9 @@ int MIDITrailApp::_OnKeyDown(
 				if (result != 0) goto EXIT;
 			}
 			else {
-			//静的視点2移動
-			result = _OnMenuViewpoint(2);
-			if (result != 0) goto EXIT;
+				//静的視点2移動
+				result = _OnMenuViewpoint(2);
+				if (result != 0) goto EXIT;
 			}
 			break;
 		case '9':
@@ -2227,9 +2301,9 @@ int MIDITrailApp::_OnKeyDown(
 				if (result != 0) goto EXIT;
 			}
 			else {
-			//静的視点3移動
-			result = _OnMenuViewpoint(3);
-			if (result != 0) goto EXIT;
+				//静的視点3移動
+				result = _OnMenuViewpoint(3);
+				if (result != 0) goto EXIT;
 			}
 			break;
 		case 'O':
@@ -2284,7 +2358,7 @@ int MIDITrailApp::_OnDropFiles(
 	UINT fileNum = 0;
 	UINT charNum = 0;
 	HDROP hDrop = NULL;
-	TCHAR path[_MAX_PATH] = {_T('\0')};
+	WCHAR path[_MAX_PATH] = { L'\0' };
 	bool isMIDIDataFile = false;
 
 	////停止中でなければファイルドロップは無視する
@@ -2312,7 +2386,7 @@ int MIDITrailApp::_OnDropFiles(
 	if (fileNum != 1) goto EXIT;
 
 	//ファイルパス取得
-	charNum = DragQueryFile(
+	charNum = DragQueryFileW(
 					hDrop,		//wParam
 					0,			//ファイルインデックス
 					path,		//ファイル名取得バッファ
@@ -2324,7 +2398,7 @@ int MIDITrailApp::_OnDropFiles(
 	}
 
 	//フォルダをドロップされた場合
-	if (PathIsDirectory(path)) {
+	if (PathIsDirectoryW(path)) {
 		//演奏/モニタ停止とフォルダオープン処理
 		result = _StopPlaybackAndOpenFolder(path);
 		if (result != 0) goto EXIT;
@@ -2332,7 +2406,7 @@ int MIDITrailApp::_OnDropFiles(
 	//ファイルをドロップされた場合
 	else {
 		//ファイル拡張子の確認
-		if (YNPathUtil::IsFileExtMatch(path, _T(".mid"))) {
+		if (YNPathUtil::IsFileExtMatch(path, L".mid")) {
 			isMIDIDataFile = true;
 		}
 		//rcpcv.dllが有効ならサポート対象ファイルであるか追加確認する
@@ -2366,28 +2440,28 @@ EXIT:;
 // ファイル選択
 //******************************************************************************
 int MIDITrailApp::_SelectMIDIFile(
-		TCHAR* pFilePath,
+		WCHAR* pFilePath,
 		unsigned long bufSize,
 		bool* pIsSelected
 	)
 {
 	int result = 0;
 	BOOL apiresult = FALSE;
-	OPENFILENAME ofn;
+	OPENFILENAMEW ofn;
 
 	if ((pFilePath == NULL) || (bufSize == 0) || (pIsSelected ==NULL)) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	pFilePath[0] = _T('\0');
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
+	pFilePath[0] = L'\0';
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
+	ofn.lStructSize = sizeof(OPENFILENAMEW);
 	ofn.hwndOwner   = m_hWnd;
-	ofn.lpstrFilter = _T("Standard MIDI File (*.mid)\0*.mid\0\0");
+	ofn.lpstrFilter = L"Standard MIDI File (*.mid)\0*.mid\0\0";
 	ofn.lpstrFile   = pFilePath;
 	ofn.nMaxFile    = bufSize;
-	ofn.lpstrTitle  = _T("Select Standard MIDI File.");
+	ofn.lpstrTitle  = L"Select Standard MIDI File.";
 	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
 
 	//rcpcv.dllが有効ならファイルフィルタを変更する
@@ -2396,7 +2470,7 @@ int MIDITrailApp::_SelectMIDIFile(
 	}
 
 	//ファイル選択ダイアログ表示
-	apiresult = GetOpenFileName(&ofn);
+	apiresult = GetOpenFileNameW(&ofn);
 	if (!apiresult) {
 		//キャンセルまたはエラー発生：エラーはチェックしない
 		*pIsSelected = false;
@@ -2413,7 +2487,7 @@ EXIT:;
 // フォルダ選択
 //******************************************************************************
 int MIDITrailApp::_SelectFolder(
-		TCHAR* pFolderPath,
+		WCHAR* pFolderPath,
 		unsigned long bufSize,
 		bool* pIsSelected
 	)
@@ -2476,38 +2550,11 @@ int MIDITrailApp::_SelectFolder(
 		goto EXIT;
 	}
 
-#ifdef _UNICODE
-
 	eresult = wcscpy_s(pFolderPath, bufSize, pFolderPathW);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", eresult, 0);
 		goto EXIT;
 	}
-
-#else
-
-	//文字コード変換
-	apiresult = WideCharToMultiByte(
-					_getmbcp(),			//コードページ
-					WC_NO_BEST_FIT_CHARS,	//マップされない文字の処理方法：変換できない文字をデフォルト文字に変換
-					pFolderPathW,		//変換元ワイド文字列
-					-1,					//変換元ワイド文字列の文字数： NULL終端
-					pFolderPath,		//変換後マルチバイト文字列
-					bufSize,			//変換後マルチバイト文字列バッファサイズ（バイト単位）
-					NULL,				//変換できない文字の変換後デフォルト文字：未指定時はシステム既定値を使用
-					&isUsedDefaultChar	//デフォルト文字に変換した文字の有無
-				);
-	if (apiresult == 0) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-		goto EXIT;
-	}
-	if (isUsedDefaultChar) {
-		//マルチバイト文字列に変換できない文字が含まれていた場合はエラーとする
-		result = YN_SET_ERR("The folder path contains characters that cannot be code-converted.", 0, 0);
-		goto EXIT;
-	}
-
-#endif
 
 	*pIsSelected = true;
 
@@ -2528,37 +2575,41 @@ EXIT:;
 // MIDIファイル読み込み
 //******************************************************************************
 int MIDITrailApp::_LoadMIDIFile(
-		const TCHAR* pFilePath
+		const WCHAR* pFilePath
 	)
 {
 	int result = 0;
-	TCHAR* pPath = NULL;
-	TCHAR smfTempPath[_MAX_PATH] = {_T('\0')};
-	TCHAR smfDumpPath[_MAX_PATH] = {_T('\0')};
+	WCHAR* pPath = NULL;
+	WCHAR smfTempPath[_MAX_PATH] = { L'\0' };
+	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
 	SMFileReader smfReader;
 
 	//ウィンドウタイトル更新
 	//ファイル読み込み前に表示してエラー発生時にファイル名を確認可能とする
-	_UpdateWindowTitle(PathFindFileName(pFilePath));
+	_UpdateWindowTitle(PathFindFileNameW(pFilePath));
 
 	//拡張子が*.midの場合
-	if (YNPathUtil::IsFileExtMatch(pFilePath, _T(".mid"))) {
-		pPath = (TCHAR*)pFilePath;
+	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
+		pPath = (WCHAR*)pFilePath;
 	}
-	//拡張子が*.mid以外の場合
-	else {
-		//レコンポーザのデータファイルとみなしてSMFに変換する
-		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, _T("RCP"));
+	//rcpcv.dll有効でかつサポート対象ファイルであればSMFに変換
+	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(pFilePath)) {
+		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, L"RCP");
 		if (result != 0) goto EXIT;
 		result = m_RcpConv.Convert(pFilePath, smfTempPath);
 		if (result != 0) goto EXIT;
 		pPath = smfTempPath;
 	}
+	//いずれにも該当しない場合
+	else {
+		//そのまま読み込む
+		pPath = (WCHAR*)pFilePath;
+	}
 
 	//デバッグモードであればMIDIファイル解析結果をダンプする
 	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
-		_tcscat_s(smfDumpPath, _MAX_PATH, pPath);
-		_tcscat_s(smfDumpPath, _MAX_PATH, _T(".dump.txt"));
+		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
+		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
 		smfReader.SetLogPath(smfDumpPath);
 	}
 
@@ -2567,7 +2618,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	if (result != 0) goto EXIT;
 
 	//ファイル名登録：SMF変換処理実施前のオリジナルのファイル名を設定
-	m_SeqData.SetFileName(PathFindFileName(pFilePath));
+	m_SeqData.SetFileName(PathFindFileNameW(pFilePath));
 
 	//ファイル読み込み時に再生スピードを100%に戻す：_CreateSceneでカウンタに反映
 	m_PlaySpeedRatio = 100;
@@ -2584,8 +2635,8 @@ int MIDITrailApp::_LoadMIDIFile(
 	m_isRewind = false;
 
 EXIT:;
-	if (_tcslen(smfTempPath) != 0) {
-		DeleteFile(smfTempPath);
+	if (wcslen(smfTempPath) != 0) {
+		DeleteFileW(smfTempPath);
 	}
 	return result;
 }
@@ -2598,36 +2649,40 @@ EXIT:;
 // ファイル名に「chXX」が含まれる場合、XXをチャンネル番号と見なす（00-99)
 //******************************************************************************
 int MIDITrailApp::_AddMIDIFile(
-		const TCHAR* pFilePath
+		const WCHAR* pFilePath
 	)
 {
 	int result = 0;
-	TCHAR* pPath = NULL;
-	TCHAR smfTempPath[_MAX_PATH] = {_T('\0')};
-	TCHAR smfDumpPath[_MAX_PATH] = {_T('\0')};
+	WCHAR* pPath = NULL;
+	WCHAR smfTempPath[_MAX_PATH] = { L'\0' };
+	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
 	SMSeqData tmpSeqData;
 	SMFileReader smfReader;
-	short portNo = -1;
-	short chNo = -1;
+	int portNo = -1;
+	int chNo = -1;
 
 	//拡張子が*.midの場合
-	if (YNPathUtil::IsFileExtMatch(pFilePath, _T(".mid"))) {
-		pPath = (TCHAR*)pFilePath;
+	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
+		pPath = (WCHAR*)pFilePath;
 	}
-	//拡張子が*.mid以外の場合
-	else {
-		//レコンポーザのデータファイルとみなしてSMFに変換する
-		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, _T("RCP"));
+	//rcpcv.dll有効でかつサポート対象ファイルであればSMFに変換
+	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(pFilePath)) {
+		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, L"RCP");
 		if (result != 0) goto EXIT;
 		result = m_RcpConv.Convert(pFilePath, smfTempPath);
 		if (result != 0) goto EXIT;
 		pPath = smfTempPath;
 	}
+	//いずれにも該当しない場合
+	else {
+		//そのまま読み込む
+		pPath = (WCHAR*)pFilePath;
+	}
 
 	//デバッグモードであればMIDIファイル解析結果をダンプする
 	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
-		_tcscat_s(smfDumpPath, _MAX_PATH, pPath);
-		_tcscat_s(smfDumpPath, _MAX_PATH, _T(".dump.txt"));
+		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
+		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
 		smfReader.SetLogPath(smfDumpPath);
 	}
 
@@ -2636,18 +2691,18 @@ int MIDITrailApp::_AddMIDIFile(
 	if (result != 0) goto EXIT;
 
 	//ファイル名にポート番号が含まれていれば抽出
-	char *pPortNo = strstr(pPath, "port");
+	WCHAR *pPortNo = wcsstr(pPath, L"port");
 	if(pPortNo != NULL) {
-		portNo = tolower(*(pPortNo + 4)) - 'a';
+		portNo = towlower(*(pPortNo + 4)) - L'a';
 	}
 
 	//ファイル名にチャンネル番号が含まれていれば抽出
-	char *pChNo = strstr(pPath, "ch");
+	WCHAR *pChNo = wcsstr(pPath, L"ch");
 	if(pChNo != NULL) {
-		char bufChNo[3];
-		strncpy_s(bufChNo, 3, pChNo + 2, 2);
-		bufChNo[2] = '\0';
-		chNo = atoi(bufChNo) - 1;
+		WCHAR bufChNo[3];
+		wcsncpy_s(bufChNo, 3, pChNo + 2, 2);
+		bufChNo[2] = L'\0';
+		chNo = _wtoi(bufChNo) - 1;
 	}
 
 	//一時シーケンスをマージ
@@ -2668,8 +2723,8 @@ int MIDITrailApp::_AddMIDIFile(
 	m_isRewind = false;
 
 EXIT:;
-	if (_tcslen(smfTempPath) != 0) {
-		DeleteFile(smfTempPath);
+	if (wcslen(smfTempPath) != 0) {
+		DeleteFileW(smfTempPath);
 	}
 	return result;
 }
@@ -2679,18 +2734,18 @@ EXIT:;
 //******************************************************************************
 // ウィンドウタイトル更新
 //******************************************************************************
-void MIDITrailApp::_UpdateWindowTitle(const TCHAR* pFileName)
+void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 {
 //>>> add yossiepon 20250616 begin
-	TCHAR format[MAX_LOADSTRING];
+	WCHAR format[MAX_LOADSTRING];
 
-	_tcscpy_s(format, MAX_LOADSTRING, m_TitleBase);
+	wcscpy_s(format, MAX_LOADSTRING, m_TitleBase);
 //<<< add yossiepon 20250616 end
 
 //>>> modify yossiepon 20250616 begin
 	//ファイル名なしの場合
 	if (pFileName == NULL) {
-		_tcscpy_s(
+		swprintf_s(
 			m_Title,
 			MAX_LOADSTRING,
 			format
@@ -2699,12 +2754,13 @@ void MIDITrailApp::_UpdateWindowTitle(const TCHAR* pFileName)
 	else {
 		//ファイルリストなしの場合
 		if (m_MIDIFileList.GetFileCount() == 0) {
-			_tcscat_s(
+			wcscat_s(
 				format,
 				MAX_LOADSTRING,
 				MIDITRAIL_WINDOW_TITLE_FILE
 			);
-			_stprintf_s(
+
+			swprintf_s(
 				m_Title,
 				MAX_LOADSTRING,
 				format,
@@ -2713,17 +2769,18 @@ void MIDITrailApp::_UpdateWindowTitle(const TCHAR* pFileName)
 		}
 		//ファイルリストありの場合
 		else {
-			_tcscat_s(
+			wcscat_s(
 				format,
 				MAX_LOADSTRING,
 				MIDITRAIL_WINDOW_TITLE_FILES
 			);
-			_stprintf_s(
+
+			swprintf_s(
 				m_Title,
 				MAX_LOADSTRING,
 				format,
-				m_MIDIFileList.GetSelectedFileIndex() + 1,
-				m_MIDIFileList.GetFileCount(),
+				(int)m_MIDIFileList.GetSelectedFileIndex() + 1,
+				(int)m_MIDIFileList.GetFileCount(),
 				pFileName
 			);
 		}
@@ -2731,7 +2788,7 @@ void MIDITrailApp::_UpdateWindowTitle(const TCHAR* pFileName)
 //<<< modify yossiepon 20250616 end
 
 	//ウィンドウタイトル設定
-	SetWindowText(m_hWnd, m_Title);
+	SetWindowTextW(m_hWnd, m_Title);
 
 	return;
 }
@@ -2744,7 +2801,7 @@ void MIDITrailApp::_UpdateFPS()
 	unsigned long curTime = 0;
 	unsigned long diffTime = 0;
 	double fps = 0;
-	TCHAR title[MAX_LOADSTRING];
+	WCHAR title[MAX_LOADSTRING];
 
 	curTime = timeGetTime();
 	m_FPSCount += 1;
@@ -2759,8 +2816,8 @@ void MIDITrailApp::_UpdateFPS()
 		m_FPSCount = 0;
 
 		//ウィンドウタイトルに設定
-		_stprintf_s(title, MAX_LOADSTRING, MIDITRAIL_WINDOW_TITLE_FPS, m_Title, fps);
-		SetWindowText(m_hWnd, title);
+		swprintf_s(title, MAX_LOADSTRING, MIDITRAIL_WINDOW_TITLE_FPS, m_Title, fps);
+		SetWindowTextW(m_hWnd, title);
 	}
 
 	return;
@@ -2804,7 +2861,7 @@ int MIDITrailApp::_SetMonitorPortDev(
 	)
 {
 	int result = 0;
-	TCHAR devName[MAXPNAMELEN];
+	TCHAR midiOutDevName[MAXPNAMELEN];
 	int checkMIDITHRU = 0;
 	bool isMIDITHRU = false;
 
@@ -2816,7 +2873,7 @@ int MIDITrailApp::_SetMonitorPortDev(
 	if (result != 0) goto EXIT;
 
 	//設定ファイルからユーザ選択デバイス名を取得してシーケンサに登録
-	result = m_MIDIConf.GetStr("PortA", devName, MAXPNAMELEN, _T(""));
+	result = m_MIDIConf.GetStr("PortA", m_MIDIINDevName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 	result = m_MIDIConf.GetInt("MIDITHRU", &checkMIDITHRU, 1);
 	if (result != 0) goto EXIT;
@@ -2824,13 +2881,13 @@ int MIDITrailApp::_SetMonitorPortDev(
 	if (checkMIDITHRU > 0) {
 		isMIDITHRU = true;
 	}
-	if (_tcslen(devName) > 0) {
-		result = pLiveMonitor->SetInPortDev(devName, isMIDITHRU);
+	if (_tcslen(m_MIDIINDevName) > 0) {
+		result = pLiveMonitor->SetInPortDev(m_MIDIINDevName, isMIDITHRU);
 		if (result != 0) goto EXIT;
 	}
 
 	//シーンに MIDI IN デバイス名を登録
-	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", devName);
+	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 	if (result != 0) goto EXIT;
 
 	//--------------------------------------
@@ -2841,11 +2898,11 @@ int MIDITrailApp::_SetMonitorPortDev(
 	if (result != 0) goto EXIT;
 
 	//設定ファイルからユーザ選択デバイス名を取得してシーケンサに登録
-	result = m_MIDIConf.GetStr("PortA", devName, MAXPNAMELEN, _T(""));
+	result = m_MIDIConf.GetStr("PortA", midiOutDevName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 
-	if ((_tcslen(devName) > 0) && (isMIDITHRU)) {
-		result = pLiveMonitor->SetOutPortDev(devName);
+	if ((_tcslen(midiOutDevName) > 0) && (isMIDITHRU)) {
+		result = pLiveMonitor->SetOutPortDev(midiOutDevName);
 		if (result != 0) goto EXIT;
 	}
 
@@ -2900,6 +2957,22 @@ int MIDITrailApp::_ChangeWindowSize()
 		//ライブモニタのシーン生成
 		result = _CreateScene(m_SceneType, NULL);
 		if (result != 0) goto EXIT;
+
+		//MIDI IN デバイス名を設定
+		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+		if (result != 0) goto EXIT;
+
+		//MIDI IN デバイス名を画面に反映
+		if (m_PlayStatus == MonitorON) {
+			//シーンに演奏開始（ライブモニタ開始）を通知
+			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
+			if (result != 0) goto EXIT;
+		}
+		else {
+			//シーンに演奏終了（ライブモニタ停止）を通知
+			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
+			if (result != 0) goto EXIT;
+		}
 	}
 
 	//視点を復帰
@@ -3001,6 +3074,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
 		IDM_OPTION_GRAPHIC,
+		IDM_OPTION_COLOR,
 		IDM_HOWTOVIEW,
 		IDM_MANUAL,
 		IDM_ABOUT
@@ -3055,6 +3129,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_GRAPHIC
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_COLOR
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_HOWTOVIEW
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MANUAL
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	}	//IDM_ABOUT
@@ -3887,7 +3962,7 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 
 	//フルスクリーン
 	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
-	
+
 	//メニューバー
 	_CheckMenuItem(IDM_MENUBAR, m_isEnableMenuBar);
 
@@ -3939,22 +4014,20 @@ void MIDITrailApp::_UpdateEffect()
 //******************************************************************************
 // コマンドライン解析
 //******************************************************************************
-int MIDITrailApp::_ParseCmdLine(
-		LPTSTR pCmdLine
-	)
+int MIDITrailApp::_ParseCmdLine()
 {
 	int result = 0;
 	DWORD dwResult = 0;
-	TCHAR filePath[_MAX_PATH];
+	WCHAR filePath[_MAX_PATH];
 
 	//コマンドライン解析
-	result = m_CmdLineParser.Initialize(pCmdLine);
+	result = m_CmdLineParser.Initialize();
 	if (result != 0) goto EXIT;
 
 	//コマンドラインでファイルを指定されている場合
 	if (m_CmdLineParser.GetSwitch(CMDSW_FILE_PATH) == CMDSW_ON) {
 		//フルパスに変換
-		dwResult = GetFullPathName(
+		dwResult = GetFullPathNameW(
 						m_CmdLineParser.GetFilePath(),	//変換元ファイル名（相対パス指定可能）
 						_MAX_PATH,		//フルパス格納先バッファサイズ
 						filePath,		//フルパス格納先バッファ
@@ -4337,9 +4410,7 @@ EXIT:;
 //******************************************************************************
 // 先行プロセスのMIDITrailへファイルパスをポスト
 //******************************************************************************
-int MIDITrailApp::_PostFilePathToFirstMIDITrail(
-		LPTSTR pCmdLine
-	)
+int MIDITrailApp::_PostFilePathToFirstMIDITrail()
 {
 	int result = 0;
 	BOOL bresult = FALSE;
@@ -4347,11 +4418,11 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail(
 	HANDLE hFile = NULL;
 	size_t size = 0;
 	DWORD written = 0;
-	TCHAR* pFilePart = NULL;
-	TCHAR filePath[_MAX_PATH] = {_T('\0')};
+	WCHAR* pFilePart = NULL;
+	WCHAR filePath[_MAX_PATH] = { L'\0' };
 
 	//先行のMIDITrailのウィンドウを検索する
-	hWnd = FindWindow(
+	hWnd = FindWindowW(
 				m_WndClassName,	//クラス名
 				NULL			//ウィンドウ名
 			);
@@ -4364,7 +4435,7 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail(
 	SetForegroundWindow(hWnd);
 
 	//コマンドライン解析
-	result = m_CmdLineParser.Initialize(pCmdLine);
+	result = m_CmdLineParser.Initialize();
 	if (result != 0) goto EXIT;
 
 	//コマンドラインでファイルを指定されていなければ何もしない
@@ -4373,7 +4444,7 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail(
 	}
 
 	//ファイルパスをフルパスに変換
-	written = GetFullPathName(
+	written = GetFullPathNameW(
 					m_CmdLineParser.GetFilePath(),	//ファイルパス
 					_MAX_PATH,		//バッファサイズ：TCHAR単位
 					filePath,		//バッファ位置
@@ -4406,7 +4477,7 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail(
 
 	//メールスロットにファイルパスを書き込む
 	//_tcscat_s(filePath, _MAX_PATH, m_CmdLineParser.GetFilePath());
-	size = (_tcslen(filePath) + 1) * sizeof(TCHAR);
+	size = (wcslen(filePath) + 1) * sizeof(WCHAR);
 	bresult = WriteFile(
 				hFile,		//ファイルハンドル
 				filePath,	//データバッファ
@@ -4424,9 +4495,10 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail(
 	PostMessage(hWnd, WM_FILEPATH_POSTED, 0, 0);
 
 EXIT:;
-	if (hWnd != NULL) {
-		CloseHandle(hWnd);
-	}
+	//ウィンドウハンドルはクローズしてはならない
+	//if (hWnd != NULL) {
+	//	CloseHandle(hWnd);
+	//}
 	if (hFile != NULL) {
 		CloseHandle(hFile);
 	}
@@ -4443,14 +4515,14 @@ int MIDITrailApp::_OnFilePathPosted()
 	DWORD nextSize = 0;
 	DWORD readSize = 0;
 	DWORD count = 0;
-	TCHAR filePath[_MAX_PATH + 4];
+	WCHAR filePath[_MAX_PATH + 4];
 
-	ZeroMemory(filePath, sizeof(TCHAR)*(_MAX_PATH + 4));
+	ZeroMemory(filePath, sizeof(WCHAR)*(_MAX_PATH + 4));
 
 	//メールスロットが存在しなければ何もしない
 	if (m_hMailSlot == NULL) goto EXIT;
 
-	//メールスロットからファイルパスを取得
+	//メールスロット情報取得
 	bresult = GetMailslotInfo(
 					m_hMailSlot,	//メールスロット
 					NULL,			//最大メッセージサイズ
@@ -4467,7 +4539,7 @@ int MIDITrailApp::_OnFilePathPosted()
 	if (nextSize == MAILSLOT_NO_MESSAGE) goto EXIT;
 
 	//メッセージサイズの整合性チェック
-	if (nextSize > (sizeof(TCHAR)*1024)) {
+	if (nextSize > (sizeof(WCHAR) * (_MAX_PATH))) {
 		result = YN_SET_ERR("Program error.", nextSize, 0);
 		goto EXIT;
 	}
@@ -4497,7 +4569,7 @@ EXIT:;
 // 演奏/モニタ停止とMIDIファイルオープン処理
 //******************************************************************************
 int MIDITrailApp::_StopPlaybackAndOpenFile(
-		const TCHAR* pFilePath
+		const WCHAR* pFilePath
 	)
 {
 	int result = 0;
@@ -4536,7 +4608,7 @@ int MIDITrailApp::_StopPlaybackAndOpenFile(
 		m_Sequencer.Stop();
 		
 		//停止完了後にファイルを開く
-		_tcscpy_s(m_NextFilePath, _MAX_PATH, pFilePath);
+		wcscpy_s(m_NextFilePath, _MAX_PATH, pFilePath);
 		m_isOpenFileAfterStop = true;
 	}
 
@@ -4548,15 +4620,13 @@ EXIT:;
 // 演奏/モニタ停止とフォルダオープン処理
 //******************************************************************************
 int MIDITrailApp::_StopPlaybackAndOpenFolder(
-		const TCHAR* pFolderPath
+		const WCHAR* pFolderPath
 	)
 {
 	int result = 0;
 	int apiresult = 0;
-	TCHAR fileDirPath[_MAX_PATH] = { _T('\0') };
-	TCHAR* pName = NULL;
 	MTFileList midiFileList;
-	const TCHAR* pFilePath = NULL;
+	const WCHAR* pFilePath = NULL;
 	
 	//指定ファイルと同じディレクトリに存在するMIDIデータファイルのリストを作成
 	//事前確認のためテンポラリのリストオブジェクトを指定
@@ -4597,7 +4667,7 @@ EXIT:;
 // MIDIファイルオープン処理
 //******************************************************************************
 int MIDITrailApp::_FileOpenProc(
-		const TCHAR* pFilePath
+		const WCHAR* pFilePath
 	)
 {
 	int result = 0;
@@ -4812,7 +4882,7 @@ EXIT:;
 // フォルダ内ファイルリスト作成
 //******************************************************************************
 int MIDITrailApp::_MakeFileListWithFolder(
-		const TCHAR* pFolderPath,
+		const WCHAR* pFolderPath,
 		MTFileList* pFileList
 	)
 {

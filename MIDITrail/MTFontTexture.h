@@ -4,7 +4,7 @@
 //
 // フォントテクスチャクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -36,14 +36,14 @@ public:
 
 	//フォント設定
 	int SetFont(
-			const TCHAR* pFontName,
+			const WCHAR* pFontName,
 			unsigned long fontSize,
 			unsigned long rgb,
 			bool isForceFixedPitch = false
 		);
 
 	//テクスチャ生成
-	int CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pStr);
+	int CreateTexture(LPDIRECT3DDEVICE9 pD3DDevice, const WCHAR* pStr);
 
 	//テクスチャインターフェースポインタ参照
 	//  テクスチャオブジェクトは本クラスで管理するため、

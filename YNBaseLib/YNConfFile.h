@@ -4,7 +4,7 @@
 //
 // 設定ファイルクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -51,6 +51,10 @@ public:
 	//文字列取得／登録
 	int GetStr(const TCHAR* pKey, TCHAR* pBuf, unsigned long bufSize, const TCHAR* pDefaultVal);
 	int SetStr(const TCHAR* pKey, const TCHAR* pStr);
+
+	//文字列取得／登録（値のみワイド文字列）
+	int GetWStr(const TCHAR* pKey, WCHAR* pBuf, unsigned long bufSize, const WCHAR* pDefaultVal);
+	int SetWStr(const TCHAR* pKey, const WCHAR* pStr);
 
 private:
 

@@ -4,7 +4,7 @@
 //
 // ノートデザインクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,6 +13,7 @@
 #include "DXColorUtil.h"
 #include "MTParam.h"
 #include "MTConfFile.h"
+#include "MTColorConf.h"
 #include "MTNoteDesign.h"
 
 using namespace YNBaseLib;
@@ -675,8 +676,16 @@ int MTNoteDesign::_LoadConfFile(
 	TCHAR noteColorType[16] = {_T('\0')};
 	unsigned long i = 0;
 	MTConfFile confFile;
+	MTColorConf colorConf;
+	MTColorPalette colorPalette;
+	D3DXCOLOR color;
 
+	//設定ファイル初期化
 	result = confFile.Initialize(pSceneName);
+	if (result != 0) goto EXIT;
+
+	//カラー設定初期化
+	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
@@ -721,13 +730,12 @@ int MTNoteDesign::_LoadConfFile(
 		m_NoteColorType = Scale;
 	}
 
-	//ノート色情報を取得
+	//選択カラーパレットからノート色情報を取得
+	colorConf.GetSelectedColorPalette(&colorPalette);
 	for (i = 0; i < 16; i++) {
-		_stprintf_s(key, 32, _T("Ch-%02d-NoteRGBA"), i+1);
-		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
+		result = colorPalette.GetChColor(i, &color);
 		if (result != 0) goto EXIT;
-
-		m_NoteColor[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+		m_NoteColor[i] = color;
 	}
 
 	//音階用ノート色情報を取得
@@ -740,9 +748,8 @@ int MTNoteDesign::_LoadConfFile(
 	}
 
 	//グリッドライン色情報を取得
-	result = confFile.GetStr(_T("GridLineRGBA"), hexColor, 16, _T("444444FF"));
-	if (result != 0) goto EXIT;
-	m_GridLineColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
+	colorPalette.GetGridLineColor(&color);
+	m_GridLineColor = color;
 
 	//再生面色情報を取得
 	result = confFile.GetStr(_T("PlaybackSectionRGBA"), hexColor, 16, _T("AAAAFFFF"));

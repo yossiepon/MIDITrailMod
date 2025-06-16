@@ -4,7 +4,7 @@
 //
 // 標準MIDIファイル読み込みクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -41,7 +41,7 @@ SMFileReader::~SMFileReader(void)
 // ログ出力パス設定
 //******************************************************************************
 int SMFileReader::SetLogPath(
-		const TCHAR* pLogPath
+		const WCHAR* pLogPath
 	)
 {
 	int result = 0;
@@ -50,17 +50,17 @@ int SMFileReader::SetLogPath(
 	m_IsLogOut = false;
 
 	if (pLogPath == NULL) {
-		m_LogPath[0] = '\0';
+		m_LogPath[0] = L'\0';
 	}
 	else {
-		eresult = _tcscpy_s(m_LogPath, MAX_PATH, pLogPath);
+		eresult = wcscpy_s(m_LogPath, MAX_PATH, pLogPath);
 		if (eresult != 0) {
 			result = YN_SET_ERR("Program error.", 0, 0);
 			goto EXIT;
 		}
 	}
 
-	if (_tcslen(m_LogPath) > 0) {
+	if (wcslen(m_LogPath) > 0) {
 		m_IsLogOut = true;
 	}
 
@@ -72,7 +72,7 @@ EXIT:;
 // Standard MIDI File のロード
 //******************************************************************************
 int SMFileReader::Load(
-		const TCHAR *pSMFPath,
+		const WCHAR *pSMFPath,
 		SMSeqData* pSeqData
 	)
 {
@@ -96,7 +96,7 @@ int SMFileReader::Load(
 	if (result != 0 ) goto EXIT;
 
 	//ファイルを開く
-	hFile = mmioOpen((LPTSTR)pSMFPath, NULL, MMIO_READ);
+	hFile = mmioOpenW((LPWSTR)pSMFPath, NULL, MMIO_READ);
 	if (hFile == NULL) {
 		result = YN_SET_ERR("File open error.", GetLastError(), 0);
 		goto EXIT;
@@ -154,7 +154,7 @@ int SMFileReader::Load(
 	if (result != 0 ) goto EXIT;
 
 	//ファイル名登録
-	pSeqData->SetFileName(PathFindFileName(pSMFPath));
+	pSeqData->SetFileName(PathFindFileNameW(pSMFPath));
 
 EXIT:;
 	if (hFile != NULL) {
@@ -773,9 +773,9 @@ int SMFileReader::_OpenLogFile()
 	int result = 0;
 	errno_t eresult = 0;
 
-	if (_tcslen(m_LogPath) == 0) goto EXIT;
+	if (wcslen(m_LogPath) == 0) goto EXIT;
 
-	eresult = _tfopen_s(&m_pLogFile, m_LogPath, _T("w"));
+	eresult = _wfopen_s(&m_pLogFile, m_LogPath, L"w");
 	if (eresult != 0) {
 		result = YN_SET_ERR("Log file open error.", 0, 0);
 		goto EXIT;

@@ -4,7 +4,7 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -71,7 +71,7 @@ private:
 	unsigned long m_MultiSampleType;
 
 	//背景画像ファイルパス
-	TCHAR m_ImageFilePath[_MAX_PATH];
+	WCHAR m_ImageFilePath[_MAX_PATH];
 	
 	//四分音符長拡大率
 	int m_QuarterNoteLengthMag;
@@ -108,7 +108,7 @@ private:
 	int _OnBtnBrowse();
 
 	//画像ファイル選択
-	int _SelectImageFile(TCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
+	int _SelectImageFile(WCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
 
 };
 

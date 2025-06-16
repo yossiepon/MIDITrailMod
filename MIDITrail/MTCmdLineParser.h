@@ -4,7 +4,7 @@
 //
 // コマンドライン解析クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -37,20 +37,20 @@ public:
 	virtual ~MTCmdLineParser(void);
 
 	//初期化
-	int Initialize(LPTSTR pCmdLine);
+	int Initialize();
 
 	//スイッチ状態取得
 	int GetSwitch(unsigned long switchType);
 
 	//ファイルパス取得
-	const TCHAR* GetFilePath();
+	const WCHAR* GetFilePath();
 
 private:
 
 	unsigned char m_CmdSwitchStatus[CMDSW_MAX];
-	TCHAR* m_pFilePath;
+	WCHAR* m_pFilePath;
 
-	int _AnalyzeCmdLine(LPTSTR pCmdLine);
+	int _AnalyzeCmdLine();
 
 };
 

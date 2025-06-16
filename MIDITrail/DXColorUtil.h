@@ -4,7 +4,7 @@
 //
 // カラーユーティリティクラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -26,6 +26,13 @@ public:
 
 	//RGB（16進数文字列）からの数値変換
 	static D3DCOLOR MakeColorFromHexRGB(const TCHAR* pHexRGB);
+
+	//数値からRGBA（16進数文字列）への変換
+	static void MakeHexRGBAFromColor(
+						D3DXCOLOR color,
+						TCHAR* pHexRGBA,
+						unsigned long bufSize
+					);
 
 private:
 

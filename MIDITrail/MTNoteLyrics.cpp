@@ -232,7 +232,7 @@ int MTNoteLyrics::_UpdateStatusOfLyrics(
 						m_pNoteStatus[i].keyStatus = BeforeNoteON;
 						m_pNoteStatus[i].keyDownRate = 0.0f;
 
-						m_pNoteStatus[i].fontTexture.SetFont(_T("HGSSoeiKakugothicUB"), 64, 0x00FFFFFF, false);
+						m_pNoteStatus[i].fontTexture.SetFont(L"HGSSoeiKakugothicUB", 64, 0x00FFFFFF, false);
 						m_pNoteStatus[i].fontTexture.CreateTexture(pD3DDevice, note.lyric);
 						break;
 					}

@@ -287,6 +287,24 @@
     <ClCompile Include="MTFileList.cpp">
       <Filter>Sources\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="MTColorCfgDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTColorPaletteCfgDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTColorParamExportDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTColorParamImportDlg.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MTColorConf.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MTColorPalette.cpp">
+      <Filter>Sources\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MIDITrailApp.h">
@@ -536,6 +554,24 @@
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTFileList.h">
+      <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTColorCfgDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTColorPaletteCfgDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTColorParamExportDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTColorParamImportDlg.h">
+      <Filter>Sources\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MTColorConf.h">
+      <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTColorPalette.h">
       <Filter>Sources\Utility</Filter>
     </ClInclude>
   </ItemGroup>

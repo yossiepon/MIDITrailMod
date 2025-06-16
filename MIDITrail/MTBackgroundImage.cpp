@@ -4,7 +4,7 @@
 //
 // 背景画像描画クラス
 //
-// Copyright (C) 2016 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,6 +13,7 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MTBackgroundImage.h"
+#include <mbctype.h>
 
 
 //******************************************************************************
@@ -308,23 +309,48 @@ int MTBackgroundImage::_LoadTexture(
 	)
 {
 	int result = 0;
+	int apiresult = 0;
 	HRESULT hresult = D3D_OK;
-	TCHAR imageFilePath[_MAX_PATH] = {_T('\0')};
+	WCHAR imageFilePathW[_MAX_PATH] = { L'\0' };
+	TCHAR imageFilePathA[_MAX_PATH] = { _T('\0') };
 
-	//ビットマップファイル名
+	//ビットマップファイルパス
 	result = m_ConfFile.SetCurSection(_T("Background-image"));
 	if (result != 0) goto EXIT;
-	result = m_ConfFile.GetStr(_T("ImageFilePath"), imageFilePath, _MAX_PATH, _T(""));
+	result = m_ConfFile.GetWStr(_T("ImageFilePath_W"), imageFilePathW, _MAX_PATH, L"*** NO DATA ***");
 	if (result != 0) goto EXIT;
 
+	//ワイド文字列ファイルパス未設定の場合
+	if (wcscmp(imageFilePathW, L"*** NO DATA ***") == 0) {
+		//Ver.1.4.0以降でワイド文字列ファイルパスを保存するように変更したため
+		//マルチバイト文字列ファイルパスの取得を試みる
+		memset(imageFilePathW, 0, sizeof(WCHAR) * _MAX_PATH);
+		result = m_ConfFile.GetStr(_T("ImageFilePath"), imageFilePathA, _MAX_PATH, _T(""));
+		if (result != 0) goto EXIT;
+		if (_tcslen(imageFilePathA) > 0) {
+			apiresult = MultiByteToWideChar(
+								_getmbcp(),			//コードページ
+								MB_PRECOMPOSED,		//フラグ：
+								imageFilePathA,		//変換元マルチバイト文字列
+								(int)_tcslen(imageFilePathA),	//変換元マルチバイト文字列バイト数
+								imageFilePathW,		//変換先ワイド文字列バッファ
+								_MAX_PATH - 1		//バッファサイズ（ワイド文字数単位）
+							);
+			if (apiresult == 0) {
+				result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+				goto EXIT;
+			}
+		}
+	}
+
 	//ファイル未指定なら何もしない
-	if (_tcslen(imageFilePath) == 0) goto EXIT;
+	if (wcslen(imageFilePathW) == 0) goto EXIT;
 
 	//ファイルが存在しない場合は何もしない
-	if (!PathFileExists(imageFilePath)) goto EXIT;
+	if (!PathFileExistsW(imageFilePathW)) goto EXIT;
 
 	//読み込む画像の縦横サイズを取得しておく
-	hresult = D3DXGetImageInfoFromFile(imageFilePath, &m_ImgInfo);
+	hresult = D3DXGetImageInfoFromFileW(imageFilePathW, &m_ImgInfo);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
@@ -333,9 +359,9 @@ int MTBackgroundImage::_LoadTexture(
 	//テクスチャ画像として読み込み
 	//  ピクセル等倍で描画する場合にボケないようにするため
 	//  画像サイズを指定して読み込み
-	hresult = D3DXCreateTextureFromFileEx(
+	hresult = D3DXCreateTextureFromFileExW(
 					pD3DDevice,			//デバイス
-					imageFilePath,		//ファイルパス
+					imageFilePathW,		//ファイルパス
 					m_ImgInfo.Width,	//幅（ピクセル）：直接指定
 					m_ImgInfo.Height,	//高さ（ピクセル）：直接指定
 					1,					//ミップレベル

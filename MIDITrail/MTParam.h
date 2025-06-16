@@ -4,7 +4,7 @@
 //
 // パラメータ定義ファイル
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -19,6 +19,7 @@
 #define MT_USER_CONFFILE_VIEW    _T("View.ini")
 #define MT_USER_CONFFILE_MIDI    _T("MIDI.ini")
 #define MT_USER_CONFFILE_GRAPHIC _T("Graphic.ini")
+#define MT_USER_CONFFILE_COLOR   _T("Color.ini")
 
 //画像ファイル：実行ファイルからの相対パス
 #define MT_IMGFILE_RIPPLE      _T("data\\Ripple.png")
