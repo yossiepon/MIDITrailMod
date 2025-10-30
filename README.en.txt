@@ -1,11 +1,11 @@
 ******************************************************************************
 
-  MIDITrail source code Ver.1.4.0 for Windows
+  MIDITrail source code Ver.1.4.1 for Windows
 
-  Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+  Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 
-  Web : https://osdn.jp/projects/miditrail/
-  Mail: yknk@users.osdn.me
+  Web : https://www.yknk.org/miditrail/
+  Mail: wada@yknk.org
 
 ******************************************************************************
 

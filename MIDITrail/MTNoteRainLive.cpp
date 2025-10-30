@@ -4,7 +4,7 @@
 //
 // ライブモニタ用ノートレイン描画クラス
 //
-// Copyright (C) 2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -346,6 +346,11 @@ int MTNoteRainLive::Draw(
 	
 	//発音中ノートの描画
 	if (m_NoteNum > 0) {
+		//テクスチャステージ設定
+		pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+		
+		//描画
 		result = m_PrimitiveNotes.Draw(
 						pD3DDevice,						//デバイス
 						NULL,							//テクスチャ：なし
