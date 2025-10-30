@@ -239,12 +239,6 @@
     <ClCompile Include="MTPianoKeyboardMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
     <ClCompile Include="MTNoteLyrics.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
@@ -304,6 +298,21 @@
     </ClCompile>
     <ClCompile Include="MTColorPalette.cpp">
       <Filter>Sources\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRollRingMod.cpp">
+      <Filter>Sources\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteRippleRingMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTNoteDesignRingMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -508,12 +517,6 @@
     <ClInclude Include="MTPianoKeyboardMod.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
-    <ClInclude Include="MTScenePianoRoll2DMod.h">
-      <Filter>Sources\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="MTScenePianoRoll3DMod.h">
-      <Filter>Sources\SceneObject</Filter>
-    </ClInclude>
     <ClInclude Include="MTNoteLyrics.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
@@ -573,6 +576,21 @@
     </ClInclude>
     <ClInclude Include="MTColorPalette.h">
       <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll2DMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll3DMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRollRingMod.h">
+      <Filter>Sources\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteRippleRingMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTNoteDesignRingMod.h">
+      <Filter>Sources\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

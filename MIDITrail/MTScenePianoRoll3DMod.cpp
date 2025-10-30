@@ -409,6 +409,7 @@ void MTScenePianoRoll3DMod::SetEffect(
 			m_Dashboard.SetEnableFileName(isEnable);
 			break;
 		default:
+			MTScenePianoRoll3D::SetEffect(type, isEnable);
 			break;
 	}
 

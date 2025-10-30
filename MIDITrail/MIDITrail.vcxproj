@@ -22,6 +22,7 @@
     <ProjectGuid>{106FBE78-9698-49DF-B557-B8E591D189F9}</ProjectGuid>
     <RootNamespace>MIDITrail</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -29,7 +30,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -42,7 +43,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -116,6 +117,14 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
+xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>アプリケーションの配置先に必要なリソースファイルをコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -139,6 +148,14 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
+xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>アプリケーションの配置先に必要なリソースファイルをコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -156,12 +173,21 @@
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
+xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>アプリケーションの配置先に必要なリソースファイルをコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -182,12 +208,21 @@
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
+xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>アプリケーションの配置先に必要なリソースファイルをコピーする</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="MIDITrail.ico" />
@@ -197,6 +232,9 @@
     <ResourceCompile Include="MIDITrail.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MTNoteDesignRingMod.cpp" />
+    <ClCompile Include="MTNoteRippleRingMod.cpp" />
+    <ClCompile Include="MTScenePianoRollRingMod.cpp" />
     <ClCompile Include="DIKeyCtrl.cpp" />
     <ClCompile Include="DIMouseCtrl.cpp" />
     <ClCompile Include="DXCamera.cpp" />
@@ -289,6 +327,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MTNoteDesignRingMod.h" />
+    <ClInclude Include="MTNoteRippleRingMod.h" />
+    <ClInclude Include="MTScenePianoRollRingMod.h" />
     <ClInclude Include="DIKeyCtrl.h" />
     <ClInclude Include="DIMouseCtrl.h" />
     <ClInclude Include="DXCamera.h" />
