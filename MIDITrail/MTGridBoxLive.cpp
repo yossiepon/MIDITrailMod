@@ -4,7 +4,7 @@
 //
 // ライブモニタ用グリッドボックス描画クラス
 //
-// Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -157,6 +157,11 @@ int MTGridBoxLive::Draw(
 	int result = 0;
 	
 	if (m_isEnable && m_isVisible) {
+		//テクスチャステージ設定
+		pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+		
+		//描画
 		result = m_Primitive.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 	}
