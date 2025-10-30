@@ -4,7 +4,7 @@
 //
 // ピクチャボードリング描画クラス
 //
-// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -165,6 +165,9 @@ int MTPictBoardRing::Draw(
 	// アルファ演算：引数1を使用  引数1：テクスチャ
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	//  次ステージ無効化
+	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
+	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
 	//テクスチャフィルタ
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);

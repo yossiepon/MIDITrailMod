@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -32,16 +32,22 @@ namespace SMIDILib {
 //******************************************************************************
 SMSequencer::SMSequencer(void)
 {
+	//演奏状態
 	m_Status = StatusStop;
 	m_PlayIndex = 0;
 	m_UserRequest = RequestNone;
+
+	//MIDIデバイス系
 	m_PortNo = 0;
+
+	//MIDIデータ系
 	m_pSeqData = NULL;
+
+	//タイマー制御系
 	m_TimerID = NULL;
 	m_TimerResolution = 0;
 	m_TimeDivision = 0;
 	m_Tempo = SM_DEFAULT_TEMPO;
-
 	m_PrevTimerTime = 0;
 	m_CurPlayTime = 0;
 	m_PrevEventTime = 0;
@@ -69,6 +75,9 @@ SMSequencer::SMSequencer(void)
 
 	//ポート情報クリア
 	_ClearPortInfo();
+
+		//ノートベロシティクリア
+	_ClearNoteVelocity();
 }
 
 //******************************************************************************
@@ -237,6 +246,10 @@ int SMSequencer::Play()
 	//一時停止から演奏再開
 	if (m_Status == StatusPause) {
 		m_PrevTimerTime = _GetCurTimeInNano();
+
+		//アクティブノートにノートONを送信
+		result = _SendNoteOnForActiveNotes();
+		if (result != 0) goto EXIT;
 	}
 	m_Status = StatusPlay;
 	m_UserRequest = RequestNone;
@@ -688,6 +701,8 @@ int SMSequencer::_SendMIDIEvent(
 	int result = 0;
 	unsigned long msg = 0;
 	bool isFiltered = false;
+	unsigned int chNo = 0;
+	unsigned int noteNo = 0;
 
 	//メッセージ取得
 	result = pMIDIEvent->GetMIDIOutShortMsg(&msg);
@@ -706,6 +721,22 @@ int SMSequencer::_SendMIDIEvent(
 		//MIDIイベントメッセージポスト
 		result =  m_EventWatcher.WatchEventMIDI(portNo, pMIDIEvent);
 		if (result != 0) goto EXIT;
+	}
+
+	//ノート状態更新
+	if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
+		chNo = pMIDIEvent->GetChNo();
+		noteNo = pMIDIEvent->GetNoteNo();
+		if ((portNo < SM_MIDIOUT_PORT_NUM_MAX) && (chNo < SM_MAX_CH_NUM) && (noteNo < SM_MAX_NOTE_NUM)) {
+			m_NoteVelocity[portNo][chNo][noteNo] = pMIDIEvent->GetVelocity();
+		}
+	}
+	else if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOff) {
+		chNo = pMIDIEvent->GetChNo();
+		noteNo = pMIDIEvent->GetNoteNo();
+		if ((portNo < SM_MIDIOUT_PORT_NUM_MAX) && (chNo < SM_MAX_CH_NUM) && (noteNo < SM_MAX_NOTE_NUM)) {
+			m_NoteVelocity[portNo][chNo][noteNo] = 0;
+		}
 	}
 
 	//ノートONをカウント
@@ -822,6 +853,10 @@ int SMSequencer::_ProcUserRequest(
 
 	if (m_UserRequest == RequestNone) goto EXIT;
 
+	//All Notes Off メッセージに対応していないMIDI音源を考慮してアクティブノートにノートOFFを送信
+	result = _SendNoteOffForActiveNotes();
+	if (result != 0) goto EXIT;
+
 	//全トラックノートオフ
 	result = _AllTrackNoteOff();
 	if (result != 0) goto EXIT;
@@ -853,6 +888,64 @@ int SMSequencer::_ProcUserRequest(
 
 	m_UserRequest = RequestNone;
 
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// アクティブノートにノートOFFを送信
+//******************************************************************************
+int SMSequencer::_SendNoteOffForActiveNotes()
+{
+	int result = 0;
+	unsigned int portNo = 0;
+	unsigned int chNo = 0;
+	unsigned int noteNo = 0;
+	unsigned int velocity = 0;
+	unsigned long msg = 0;
+	
+	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
+		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+			for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+				velocity = m_NoteVelocity[portNo][chNo][noteNo];
+				if (velocity > 0) {
+					msg = (unsigned long)((0 << 16) | (noteNo << 8) | (0x80 | chNo));
+					result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+					if (result != 0) goto EXIT;
+				}
+			}
+		}
+	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// アクティブノートにノートONを送信
+//******************************************************************************
+int SMSequencer::_SendNoteOnForActiveNotes()
+{
+	int result = 0;
+	unsigned int portNo = 0;
+	unsigned int chNo = 0;
+	unsigned int noteNo = 0;
+	unsigned int velocity = 0;
+	unsigned long msg = 0;
+	
+	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
+		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+			for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+				velocity = m_NoteVelocity[portNo][chNo][noteNo];
+				if (velocity > 0) {
+					msg = (unsigned long)((velocity << 16) | (noteNo << 8) | (0x90 | chNo));
+					result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+					if (result != 0) goto EXIT;
+				}
+			}
+		}
+	}
+	
 EXIT:;
 	return result;
 }
@@ -921,6 +1014,9 @@ int SMSequencer::_InitializeParamsOnPlayStart()
 	//イベントウォッチャー初期化
 	result = m_EventWatcher.Initialize(&m_MsgTrans);
 	if (result != 0) goto EXIT;
+
+	//ノートベロシティクリア
+	_ClearNoteVelocity();
 
 EXIT:;
 	return result;
@@ -1192,6 +1288,10 @@ int SMSequencer::_ProcSkip(
 	endTickTime = m_TotalTickTimeTemp;
 	_SlidePlaybackTime(startPlayTime, startTickTime, endTickTime);
 
+	//アクティブノート単位にノートONを送信
+	result = _SendNoteOnForActiveNotes();
+	if (result != 0) goto EXIT;
+
 	//スキップ移動先の状態を通知
 	m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), endTickTime);
 	m_MsgTrans.PostTempo(m_Tempo);
@@ -1262,6 +1362,14 @@ void SMSequencer::_SlidePlaybackTime(
 	}
 
 	return;
+}
+
+//******************************************************************************
+// ノートベロシティクリア
+//******************************************************************************
+void SMSequencer::_ClearNoteVelocity()
+{
+	memset(m_NoteVelocity, 0, sizeof(unsigned char) * SM_MIDIOUT_PORT_NUM_MAX * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 }
 
 //******************************************************************************

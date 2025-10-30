@@ -78,10 +78,12 @@ private:
 		float keyDownRate;
 	};
 
-private:
+protected:
 
 	//ノートデザイン
-	MTNoteDesignMod m_NoteDesignMod;
+	MTNoteDesignMod *m_pNoteDesignMod;
+
+private:
 
 	//ノートリスト
 	SMNoteList m_NoteListRT;
@@ -93,6 +95,8 @@ private:
 
 	//ノート発音状態情報
 	NoteStatusMod* m_pNoteStatusMod;
+
+	virtual int _CreateNoteDesign();
 
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,
