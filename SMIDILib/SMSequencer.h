@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -147,6 +147,9 @@ private:
 	unsigned char m_CacheCC010_Panpot[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	unsigned char m_CacheCC011_Expression[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 
+	//ノートベロシティ
+	unsigned char m_NoteVelocity[SM_MIDIOUT_PORT_NUM_MAX][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
+
 	//タイマーデバイス処理
 	int _InitializeTimerDev();
 	int _ReleaseTimerDev();
@@ -173,6 +176,8 @@ private:
 	int _SendMIDIEvent(unsigned char portNo, SMEventMIDI* pMIDIEvent);
 	int _SendSysExEvent(unsigned char portNo, SMEventSysEx* pSysExEvent);
 	int _SendMetaEvent(unsigned char portNo, SMEventMeta* pMetaEvent);
+	int _SendNoteOffForActiveNotes();
+	int _SendNoteOnForActiveNotes();
 	int _AllTrackNoteOff();
 	int _AllTrackSoundOff();
 
@@ -187,6 +192,9 @@ private:
 	int _SendMIDIEventCC(unsigned char portNo, unsigned char chNo, unsigned char ccNo, unsigned char ccValue);
 	int _ProcSkip(unsigned long long targetTimeInNanoSec, BOOL* pIsContinue);
 	void _SlidePlaybackTime(unsigned long long startPlayTime, unsigned long startTickTime, unsigned long endTickTime);
+
+	//ノート状態制御
+	void _ClearNoteVelocity();
 
 	//タイマー処理
 	static void CALLBACK _TimerCallBack(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);

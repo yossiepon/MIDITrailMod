@@ -1,23 +1,35 @@
 ピカピカMIDITrail 鍵盤方向自動切替・多ポート・歌詞対応等
 
-MIDITrail 1.3.6 mod. yossiepon_20250616
+MIDITrail 1.4.1 mod. yossiepon_20251030
+
+改造点 20251030：
+・[MERGE] 1.4.0～1.4.1をマージ
+
+Mod 20251030:
+* [MERGE] merge v1.4.0 - v1.4.1
 
 改造点 20250616：
-・[UPDATE] 1.3.1～1.3.6をマージ
+・[MERGE] 1.3.1～1.3.6をマージ
 
 Mod 20250616:
-*[UPDATE] merge v1.3.1 - v1.3.6
+* [MERGE] merge v1.3.1 - v1.3.6
+
+改造点 20191224：
+・[UPDATE] PianoRollRing：波紋をMod化
+
+Mod 20191224:
+* [UPDATE] PianoRollRing: The ripple is modded.
 
 改造点 20190828：
-・[UPDATE] 1.2.4～1.2.6をマージ
+・[MERGE] 1.2.4～1.2.6をマージ
 ・[FIX] x64実行時にFPUの精度変更がサポートされていないため無効化
 
 Mod 20190828:
-*[UPDATE] merge v1.2.4 - v1.2.6
-*[FIX] Disable to change FPU precision on x64 binary.
+* [MERGE] merge v1.2.4 - v1.2.6
+* [FIX] Disable to change FPU precision on x64 binary.
 
 改造点 20180412：
-・[UPDATE] 1.2.3をマージ
+・[MERGE] 1.2.3をマージ
 ・[ADD] リップルと背景画像のブレンド方法を指定できる設定を追加
 　→INIファイル中のRippleセクション SrcBlendおよびDestBlend
 ・[FIX] 多ポートのシーケンスでPianoRoll2Dのキーボードが1つに集約されない不具合を修正
@@ -28,7 +40,7 @@ Mod 20190828:
 ・[FIX] シーケンス中のテキスト取得時にRTRIMをかけるように修正
 
 改造点 20161226：
-・[FIX] original 1.2.1 からの取り込みを保留していた機能を反映
+・[MERGE] original 1.2.1 からの取り込みを保留していた機能を反映
 　#30547 機能追加：音階色指定
 　#32427 機能追加：押下状態のキーにノートの色を反映する
 ・[UPDATE] PianoRoll2D/3DMod : ActiveKeyColorType=NOTE に対応
@@ -36,10 +48,10 @@ Mod 20190828:
 　→INIファイル中のRippleセクション OverwriteTimesおよびSpacing
 
 改造点 20161223：
-・[UPDATE] 1.2.2をベースに再マージ
+・[MERGE] 1.2.2をベースに再マージ
 
 改造点 20140920：
-・[UPDATE] 1.2.1bをベースに再マージ（とりあえず動く程度）
+・[MERGE] 1.2.1bをベースに再マージ（とりあえず動く程度）
 ・[ADD] x64版のバイナリを追加
 
 改造点 20121229：

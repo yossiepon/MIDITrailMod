@@ -4,7 +4,7 @@
 //
 // ノートレイン描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -540,6 +540,10 @@ int MTNoteRain::Draw(
 	//レンダリングステートをカリングなしにする
 	pD3DDevice->GetRenderState(D3DRS_CULLMODE, &value);
 	pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+
+	//テクスチャステージ設定
+	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 	//全ノートの描画
 	result = m_PrimitiveAllNotes.Draw(pD3DDevice);
