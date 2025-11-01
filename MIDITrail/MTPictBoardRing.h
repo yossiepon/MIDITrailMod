@@ -36,7 +36,9 @@ public:
 	virtual ~MTPictBoardRing(void);
 
 	//生成
-	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, bool isReverseMode);
+// >>> modify 20251101 yossiepon begin
+	virtual int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, bool isReverseMode);
+// <<< modify 20251101 yossiepon end
 
 	//更新
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
@@ -60,7 +62,9 @@ public:
 	//表示設定
 	void SetEnable(bool isEnable);
 
-private:
+// >>> modify access level to protected 20251101 yossiepon begin
+protected:
+// <<< modify 20251101 yossiepon end
 
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
@@ -81,11 +85,13 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-	int _CreateVertexOfBoard(
-			MTPICTBOARD_VERTEX* pVertex,
-			unsigned long* pIbIndex,
-			bool isReverseMode
-		);
+	// >>> modify 20251101 yossiepon begin
+	virtual int _CreateVertexOfBoard(
+		MTPICTBOARD_VERTEX* pVertex,
+		unsigned long* pIbIndex,
+		bool isReverseMode
+	);
+	// <<< modify 20251101 yossiepon end
 
 	int _LoadTexture(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 
