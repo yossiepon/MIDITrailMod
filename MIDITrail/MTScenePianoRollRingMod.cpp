@@ -122,6 +122,10 @@ int MTScenePianoRollRingMod::Draw(
 	result = m_BackgroundImage.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//グリッドリング描画
+	result = m_GridRing.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
 	//ノートボックス描画
 	result = m_NoteBox.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
@@ -136,6 +140,10 @@ int MTScenePianoRollRingMod::Draw(
 
 	//メッシュ描画
 	result = m_MeshCtrl.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+	//タイムインジケータ描画
+	result = m_TimeIndicator.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//ノート波紋描画
@@ -189,6 +197,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		m_Dashboard.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
+		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
