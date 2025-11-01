@@ -17,8 +17,8 @@
 
 //バージョン文字列
 // >>> modify 20251030 yossiepon begin
-#define MIDITRAIL_VERSION_STRING_X86  L"1.4.1 (x86), mod. yossiepon_20251030"
-#define MIDITRAIL_VERSION_STRING_X64  L"1.4.1 (x64), mod. yossiepon_20251030"
+#define MIDITRAIL_VERSION_STRING_X86  L"1.4.1 (x86), mod. yossiepon_20251101"
+#define MIDITRAIL_VERSION_STRING_X64  L"1.4.1 (x64), mod. yossiepon_20251101"
 // <<< modify 20251030 yossiepon end
 
 //コピーライト

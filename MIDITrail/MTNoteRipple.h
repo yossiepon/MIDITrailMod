@@ -15,6 +15,7 @@
 #include "SMIDILib.h"
 #include "DXPrimitive.h"
 #include "MTNoteDesign.h"
+#include "MTNoteRipple.h"
 #include "MTNotePitchBend.h"
 
 using namespace SMIDILib;

@@ -112,10 +112,11 @@ private:
 	SMExDataMap m_ExDataMap;
 
 // >>> add 20120728 yossiepon begin
-
 	short m_OverwritePortNo;
-
 // <<< add 20120728 yossiepon end
+// >>> add 20251101 yossiepon begin
+	short m_OverwriteChNo;
+// <<< add 20251101 yossiepon end
 
 	unsigned long _GetNoteKey(unsigned char portNo, unsigned char chNo, unsigned char noteNo);
 	int _GetNoteList(SMNoteList* pNoteList, unsigned long timeDivision);

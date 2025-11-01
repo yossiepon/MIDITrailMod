@@ -117,7 +117,7 @@ protected:
 	BOOL m_IsEnableLight;
 
 // >>> modify access level to protected 20191222 yossiepon begin
-//private:
+protected:
 // <<< modify 20191222 yossiepon end
 
 	//ƒ‰ƒCƒg
