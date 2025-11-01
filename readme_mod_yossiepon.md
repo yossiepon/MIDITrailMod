@@ -1,8 +1,20 @@
-# MIDITrail 1.4.1 mod. yossiepon_20251030
+# MIDITrail 1.4.1 mod. yossiepon_20251101
 
 ## ピカピカMIDITrail 波紋／鍵盤演出向上・鍵盤方向自動切替・多ポート・歌詞対応等
 
 ## Pikapika MIDITrail Mod (Ripple and Piano Keyboard Effect Enhancements / Automatically switch the piano keyboard drawing orientation / Support for multiple MIDI ports in the Piano Roll 3D / Suport for MIDI Lyric Meta Event, etc.)
+
+### 改造点 20251101：
+* [FIX] PianoRollRing：波紋Mod（20191224版）の不具合を修正 ※該当バージョンは未リリース
+* [ADD] PianoRollRing：歌詞表示対応
+* [FIX] 歌詞表示全般：デバッグ実行時にアサーションエラーが発生する問題を修正
+* [FIX] MIDIファイル追加読込機能：チャネル番号の上書き指定が処理されない不具合を修正
+
+### Mod 20251101：
+* [FIX] PianoRollRing: Fixed Issues in Ripple Mod. (since Mod 20191224, unreleased)
+* [ADD] PianoRollRing: Support for Lyrics display.
+* [FIX] Lyrics Display: Resolved an assertion error that occurred when running in debug mode.
+* [FIX] Add File Menu: Fixed a bug where channel number override was not processed.
 
 ### 改造点 20251030：
 * [MERGE] 元ソースの 1.4.0～1.4.1をマージ
