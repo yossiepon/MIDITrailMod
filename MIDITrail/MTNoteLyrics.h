@@ -4,8 +4,8 @@
 //
 // ノート歌詞描画クラス
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2025 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -49,7 +49,7 @@ public:
 	virtual ~MTNoteLyrics(void);
 
 	//生成
-	int Create(
+	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			SMSeqData* pSeqData,
@@ -109,7 +109,7 @@ private:
 	//頂点バッファFVFフォーマット
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-private:
+protected:
 
 	//描画系
 	DXPrimitive m_Primitive;
@@ -120,7 +120,7 @@ private:
 	D3DXVECTOR3 m_CamVector;
 
 	//ノートデザイン
-	MTNoteDesignMod m_NoteDesign;
+	MTNoteDesignMod* m_pNoteDesign;
 
 	//ピッチベンド情報
 	MTNotePitchBend* m_pNotePitchBend;
@@ -143,6 +143,8 @@ private:
 
 	//スキップ状態
 	bool m_isSkipping;
+
+	virtual int _CreateNoteDesign();
 
 	int _CreateNoteStatus();
 	int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
