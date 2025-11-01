@@ -36,7 +36,9 @@ public:
 	virtual ~MTPictBoardRing(void);
 
 	//¶¬
-	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, bool isReverseMode);
+// >>> modify 20251101 yossiepon begin
+	virtual int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, bool isReverseMode);
+// <<< modify 20251101 yossiepon end
 
 	//XV
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
@@ -60,7 +62,9 @@ public:
 	//•\Ž¦Ý’è
 	void SetEnable(bool isEnable);
 
-private:
+// >>> modify access level to protected 20251101 yossiepon begin
+protected:
+// <<< modify 20251101 yossiepon end
 
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;

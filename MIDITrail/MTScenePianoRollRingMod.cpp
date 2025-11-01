@@ -131,7 +131,7 @@ int MTScenePianoRollRingMod::Draw(
 	if (result != 0) goto EXIT;
 
 	//ピクチャボード描画
-	result = m_PictBoard.Draw(pD3DDevice);
+	result = m_PictBoardMod.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//星描画
@@ -164,6 +164,7 @@ EXIT:;
 void MTScenePianoRollRingMod::Release()
 {
 	m_NoteRippleMod.Release();
+	m_PictBoardMod.Release();
 
 	MTScenePianoRollRing::Release();
 }
@@ -200,7 +201,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
-		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
+		m_PictBoardMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
 	}
 	//テンポ変更通知

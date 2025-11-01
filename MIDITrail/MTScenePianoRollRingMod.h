@@ -11,6 +11,7 @@
 #pragma once
 
 #include "MTNoteRippleRingMod.h"
+#include "MTPictBoardRingMod.h"
 #include "MTScenePianoRollRing.h"
 
 using namespace SMIDILib;
@@ -59,6 +60,7 @@ protected:
 
 	//描画オブジェクト
 	MTNoteRippleRingMod m_NoteRippleMod;
+	MTPictBoardRingMod m_PictBoardMod;
 
 	//シーンリセット
 	virtual void _Reset();

@@ -234,6 +234,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
   <ItemGroup>
     <ClCompile Include="MTNoteDesignRingMod.cpp" />
     <ClCompile Include="MTNoteRippleRingMod.cpp" />
+    <ClCompile Include="MTPictBoardRingMod.cpp" />
     <ClCompile Include="MTScenePianoRollRingMod.cpp" />
     <ClCompile Include="DIKeyCtrl.cpp" />
     <ClCompile Include="DIMouseCtrl.cpp" />
@@ -329,6 +330,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
   <ItemGroup>
     <ClInclude Include="MTNoteDesignRingMod.h" />
     <ClInclude Include="MTNoteRippleRingMod.h" />
+    <ClInclude Include="MTPictBoardRingMod.h" />
     <ClInclude Include="MTScenePianoRollRingMod.h" />
     <ClInclude Include="DIKeyCtrl.h" />
     <ClInclude Include="DIMouseCtrl.h" />
