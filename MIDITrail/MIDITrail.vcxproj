@@ -119,7 +119,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
-xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
+xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -150,7 +150,7 @@ xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
-xcopy ..\readme_mod_yossiepon.txt $(TargetDir) /Y
+xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
