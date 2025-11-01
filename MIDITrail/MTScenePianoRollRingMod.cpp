@@ -67,6 +67,11 @@ int MTScenePianoRollRingMod::Create(
 	result = m_NoteRippleMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
+	//ピクチャボード生成
+	result = m_PictBoardMod.Create(pD3DDevice, GetName(), pSeqData, false);
+	if (result != 0) goto EXIT;
+
+
 EXIT:;
 	return result;
 }
@@ -92,6 +97,10 @@ int MTScenePianoRollRingMod::Transform(
 	//回転角度取得
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
 
+	//ピクチャボード更新
+	result = m_PictBoardMod.Transform(pD3DDevice, camVector, rollAngle);
+	if (result != 0) goto EXIT;
+
 	//ノート波紋更新
 	result = m_NoteRippleMod.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
@@ -108,6 +117,7 @@ int MTScenePianoRollRingMod::Draw(
 	)
 {
 	int result = 0;
+	D3DXVECTOR3 camVector;
 
 	if (pD3DDevice == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -118,8 +128,15 @@ int MTScenePianoRollRingMod::Draw(
 	result = Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
+	//カメラ座標取得
+	m_FirstPersonCam.GetPosition(&camVector);
+
 	//背景画像描画
 	result = m_BackgroundImage.Draw(pD3DDevice);
+	if (result != 0) goto EXIT;
+
+	//星描画
+	result = m_Stars.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//グリッドリング描画
@@ -130,25 +147,48 @@ int MTScenePianoRollRingMod::Draw(
 	result = m_NoteBox.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ピクチャボード描画
-	result = m_PictBoard.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
+	// カメラ位置が演奏位置より手前側であれば
+	if(m_TimeIndicator.GetPos() > camVector.x) {
 
-	//星描画
-	result = m_Stars.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
+		//メッシュ＞タイムインジケータ＞歌詞＞波紋＞ピクチャボードの順で奥から描画
 
-	//メッシュ描画
-	result = m_MeshCtrl.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
+		//メッシュ描画
+		result = m_MeshCtrl.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
 
-	//タイムインジケータ描画
-	result = m_TimeIndicator.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
+		//タイムインジケータ描画
+		result = m_TimeIndicator.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
 
-	//ノート波紋描画
-	result = m_NoteRippleMod.Draw(pD3DDevice);
-	if (result != 0) goto EXIT;
+		//ノート波紋描画
+		result = m_NoteRippleMod.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//ピクチャボード描画
+		result = m_PictBoardMod.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+	} else {
+
+		//ピクチャボード＞波紋＞歌詞＞タイムインジケータ＞メッシュの順で奥から描画
+
+		//ピクチャボード描画
+		result = m_PictBoardMod.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//ノート波紋描画
+		result = m_NoteRippleMod.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//タイムインジケータ描画
+		result = m_TimeIndicator.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//メッシュ描画
+		result = m_MeshCtrl.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+	}
 
 	//ダッシュボード描画：座標変換済み頂点を用いるため一番最後に描画する
 	result = m_Dashboard.Draw(pD3DDevice);
@@ -163,6 +203,7 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRollRingMod::Release()
 {
+	m_PictBoardMod.Release();
 	m_NoteRippleMod.Release();
 
 	MTScenePianoRollRing::Release();
@@ -200,7 +241,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
-		m_PictBoard.SetCurTickTime(parser.GetPlayTickTime());
+		m_PictBoardMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
 	}
 	//テンポ変更通知
@@ -258,6 +299,7 @@ void MTScenePianoRollRingMod::_Reset()
 {
 	MTScenePianoRollRing::_Reset();
 
+	m_PictBoardMod.Reset();
 	m_NoteRippleMod.Reset();
 }
 
@@ -270,6 +312,9 @@ void MTScenePianoRollRingMod::SetEffect(
 	)
 {
 	switch (type) {
+		case EffectPianoKeyboard:
+			m_PictBoardMod.SetEnable(isEnable);
+			break;
 		case EffectRipple:
 			m_NoteRippleMod.SetEnable(isEnable);
 			break;

@@ -314,6 +314,9 @@
     <ClCompile Include="MTNoteDesignRingMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
+    <ClCompile Include="MTPictBoardRingMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MIDITrailApp.h">
@@ -590,6 +593,9 @@
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTNoteDesignRingMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTPictBoardRingMod.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
   </ItemGroup>
