@@ -63,9 +63,15 @@ int MTScenePianoRollRingMod::Create(
 	//----------------------------------
 	// 描画オブジェクト
 	//----------------------------------
+
 	//ノート波紋生成
 	result = m_NoteRippleMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
+
+	//ノート歌詞生成
+	result = m_NoteLyrics.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+
 
 	//ピクチャボード生成
 	result = m_PictBoardMod.Create(pD3DDevice, GetName(), pSeqData, false);
@@ -103,6 +109,10 @@ int MTScenePianoRollRingMod::Transform(
 
 	//ノート波紋更新
 	result = m_NoteRippleMod.Transform(pD3DDevice, camVector, rollAngle);
+	if (result != 0) goto EXIT;
+
+	//ノート歌詞更新
+	result = m_NoteLyrics.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -160,6 +170,10 @@ int MTScenePianoRollRingMod::Draw(
 		result = m_TimeIndicator.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
+		//ノート歌詞描画
+		result = m_NoteLyrics.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
 		//ノート波紋描画
 		result = m_NoteRippleMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
@@ -178,6 +192,10 @@ int MTScenePianoRollRingMod::Draw(
 
 		//ノート波紋描画
 		result = m_NoteRippleMod.Draw(pD3DDevice);
+		if (result != 0) goto EXIT;
+
+		//ノート歌詞描画
+		result = m_NoteLyrics.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 		//タイムインジケータ描画
@@ -205,6 +223,7 @@ void MTScenePianoRollRingMod::Release()
 {
 	m_PictBoardMod.Release();
 	m_NoteRippleMod.Release();
+	m_NoteLyrics.Release();
 
 	MTScenePianoRollRing::Release();
 }
@@ -241,6 +260,8 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_TimeIndicator.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteRippleMod.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_NoteRippleMod.SetCurTickTime(parser.GetPlayTickTime());
+		m_NoteLyrics.SetPlayTimeMSec(parser.GetPlayTimeMSec());
+		m_NoteLyrics.SetCurTickTime(parser.GetPlayTickTime());
 		m_PictBoardMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
 	}
@@ -278,6 +299,8 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_NoteBox.SetSkipStatus(true);
 		m_NoteRippleMod.Reset();
 		m_NoteRippleMod.SetSkipStatus(true);
+		m_NoteLyrics.Reset();
+		m_NoteLyrics.SetSkipStatus(true);
 		m_IsSkipping = true;
 	}
 	//スキップ終了通知
@@ -285,6 +308,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
 		m_NoteBox.SetSkipStatus(false);
 		m_NoteRippleMod.SetSkipStatus(false);
+		m_NoteLyrics.SetSkipStatus(false);
 		m_IsSkipping = false;
 	}
 
@@ -301,6 +325,7 @@ void MTScenePianoRollRingMod::_Reset()
 
 	m_PictBoardMod.Reset();
 	m_NoteRippleMod.Reset();
+	m_NoteLyrics.Reset();
 }
 
 //******************************************************************************
@@ -317,6 +342,7 @@ void MTScenePianoRollRingMod::SetEffect(
 			break;
 		case EffectRipple:
 			m_NoteRippleMod.SetEnable(isEnable);
+			m_NoteLyrics.SetEnable(isEnable);
 			break;
 		default:
 			MTScenePianoRollRing::SetEffect(type, isEnable);
