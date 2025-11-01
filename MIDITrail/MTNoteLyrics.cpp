@@ -24,6 +24,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 MTNoteLyrics::MTNoteLyrics(void)
 {
+	m_pNoteDesign = NULL;
 	m_pNoteStatus = NULL;
 	m_PlayTimeMSec = 0;
 	m_CurTickTime = 0;
@@ -59,8 +60,12 @@ int MTNoteLyrics::Create(
 
 	Release();
 
+	//ノートデザインオブジェクト生成
+	result = _CreateNoteDesign();
+	if (result != 0) goto EXIT;
+
 	//ノートデザインオブジェクト初期化
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
+	result = m_pNoteDesign->Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 	//トラック取得
@@ -84,6 +89,25 @@ int MTNoteLyrics::Create(
 
 	//ピッチベンド情報
 	m_pNotePitchBend = pNotePitchBend;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ノート歌詞デザイン生成
+//******************************************************************************
+int MTNoteLyrics::_CreateNoteDesign()
+{
+	int result = 0;
+
+	try {
+		m_pNoteDesign = new MTNoteDesignMod();
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -120,7 +144,7 @@ int MTNoteLyrics::Transform(
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
 	//移動行列
-	moveVector = m_NoteDesign.GetWorldMoveVector();
+	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
 	//行列の合成
@@ -171,8 +195,8 @@ int MTNoteLyrics::_UpdateStatusOfLyrics(
 	SMNote note;
 
 	//歌詞ディケイ・リリース時間(msec)
-	unsigned long decayDuration = m_NoteDesign.GetRippleDecayDuration();
-	unsigned long releaseDuration   = m_NoteDesign.GetRippleReleaseDuration();
+	unsigned long decayDuration = m_pNoteDesign->GetRippleDecayDuration();
+	unsigned long releaseDuration   = m_pNoteDesign->GetRippleReleaseDuration();
 
 	//ノート情報を更新する
 	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
@@ -475,6 +499,9 @@ void MTNoteLyrics::Release()
 {
 	m_Primitive.Release();
 
+	delete[] m_pNoteDesign;
+	m_pNoteDesign = NULL;
+
 	delete [] m_pNoteStatus;
 	m_pNoteStatus = NULL;
 }
@@ -570,7 +597,7 @@ int MTNoteLyrics::_SetVertexPosition(
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo);
 
 	//ノートボックス中心座標取得
-	center = m_NoteDesign.GetNoteBoxCenterPosX(
+	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					note.portNo,
 					note.chNo,
@@ -582,8 +609,8 @@ int MTNoteLyrics::_SetVertexPosition(
 	//歌詞サイズ
 	unsigned long tx, ty;
 	pNoteStatus->fontTexture.GetTextureSize(&tx, &ty);
-	rh = tx * m_NoteDesign.GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
-	rw = ty * m_NoteDesign.GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
+	rh = tx * m_pNoteDesign->GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
+	rw = ty * m_pNoteDesign->GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
 
 	//描画終了確認
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
@@ -621,11 +648,11 @@ int MTNoteLyrics::_SetVertexPosition(
 	}
 
 	//透明度を徐々に落とす
-	alpha = m_NoteDesign.GetRippleAlpha(pNoteStatus->keyDownRate);
+	alpha = m_pNoteDesign->GetRippleAlpha(pNoteStatus->keyDownRate);
 
 	//各頂点のディフューズ色
 	for (i = 0; i < 6; i++) {
-		color = m_NoteDesign.GetNoteBoxColor(
+		color = m_pNoteDesign->GetNoteBoxColor(
 								note.portNo,
 								note.chNo,
 								note.noteNo

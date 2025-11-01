@@ -84,6 +84,13 @@ public:
 	//クリア
 	void Clear();
 
+// >>> add 20251101 yossiepon begin
+
+	//ダンプ出力
+	void Dump();
+
+// <<< add 20251101 yossiepon end
+
 private:
 
 	EventType m_Type;
