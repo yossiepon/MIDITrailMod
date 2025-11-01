@@ -2696,6 +2696,12 @@ int MIDITrailApp::_AddMIDIFile(
 	WCHAR *pPortNo = wcsstr(pPath, L"port");
 	if(pPortNo != NULL) {
 		portNo = towlower(*(pPortNo + 4)) - L'a';
+
+#ifdef _DEBUG
+		char buf[32];
+		sprintf_s(buf, "port %c added.\n", 'A' + portNo);
+		OutputDebugStringA(buf);
+#endif
 	}
 
 	//ファイル名にチャンネル番号が含まれていれば抽出
@@ -2705,6 +2711,12 @@ int MIDITrailApp::_AddMIDIFile(
 		wcsncpy_s(bufChNo, 3, pChNo + 2, 2);
 		bufChNo[2] = L'\0';
 		chNo = _wtoi(bufChNo) - 1;
+
+#ifdef _DEBUG
+		char buf[32];
+		sprintf_s(buf, "chNo %d added.\n", chNo);
+		OutputDebugStringA(buf);
+#endif
 	}
 
 	//一時シーケンスをマージ
