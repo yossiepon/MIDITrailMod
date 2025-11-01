@@ -255,6 +255,37 @@ void SMEvent::Clear()
 	m_pExData = NULL;
 }
 
+// >>> add 20251101 yossiepon begin
+//******************************************************************************
+// É_ÉìÉvèoóÕ
+//******************************************************************************
+
+void SMEvent::Dump()
+{
+#ifdef _DEBUG
+	char buf[256];
+	sprintf_s(buf, "Event %02X: Status %02X, Meta: %02X, DataSize: %d(%04X), Data: [", m_Type, m_Status, m_MetaType, m_DataSize, m_DataSize);
+	if (m_DataSize <= SMEVENT_INTERNAL_DATA_SIZE)
+	{
+		for (int i = 0; i < m_DataSize; i++)
+		{
+			if (i > 0)
+			{
+				strcat_s(buf, "-");
+			}
+			char buf2[8];
+			sprintf_s(buf2, "%02X", m_Data[i]);
+			strcat_s(buf, buf2);
+		}
+	}
+	else
+	{
+		strcat_s(buf, "...");
+	}
+	strcat_s(buf, "]\n");
+	OutputDebugStringA(buf);
+#endif
+}
+// <<< add 20251101 yossiepon end
+
 } // end of namespace
-
-
