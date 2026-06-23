@@ -1,10 +1,10 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple Base Library / YNPathUtil
 //
-// ƒpƒXƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// ãƒ‘ã‚¹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -19,21 +19,21 @@ namespace YNBaseLib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 YNPathUtil::YNPathUtil(void)
 {
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 YNPathUtil::~YNPathUtil(void)
 {
 }
 
 //******************************************************************************
-// ƒvƒƒZƒXŽÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXŽæ“¾
+// ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 //******************************************************************************
 int YNPathUtil::GetModuleDirPath(
 		TCHAR* pBuf,
@@ -49,38 +49,38 @@ int YNPathUtil::GetModuleDirPath(
 	TCHAR fname[_MAX_FNAME];
 	TCHAR ext[_MAX_EXT];
 
-	//ƒvƒƒZƒXŽÀsƒtƒ@ƒCƒ‹ƒpƒXŽæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 	apiresult = GetModuleFileName(GetModuleHandle(NULL), path, _MAX_PATH);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒpƒX—v‘f‚Ì•ªŠ„
+	//ãƒ‘ã‚¹è¦ç´ ã®åˆ†å‰²
 	eresult = _tsplitpath_s(
-					path,		//ƒpƒX
-					drive,		//ƒhƒ‰ƒCƒu•¶Žš—ñƒoƒbƒtƒ@
-					_MAX_DRIVE,	//ƒoƒbƒtƒ@ƒTƒCƒY
-					dir,		//ƒfƒBƒŒƒNƒgƒŠ•¶Žš—ñƒoƒbƒtƒ@
-					_MAX_DIR,	//ƒoƒbƒtƒ@ƒTƒCƒY
-					fname,		//ƒtƒ@ƒCƒ‹–¼•¶Žš—ñƒoƒbƒtƒ@
-					_MAX_FNAME,	//ƒoƒbƒtƒ@ƒTƒCƒY
-					ext,		//Šg’£Žq•¶Žš—ñƒoƒbƒtƒ@
-					_MAX_EXT	//ƒoƒbƒtƒ@ƒTƒCƒY
+					path,		//ãƒ‘ã‚¹
+					drive,		//ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_DRIVE,	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					dir,		//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_DIR,	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					fname,		//ãƒ•ã‚¡ã‚¤ãƒ«åæ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_FNAME,	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					ext,		//æ‹¡å¼µå­æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_EXT	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//ƒpƒXì¬
+	//ãƒ‘ã‚¹ä½œæˆ
 	eresult = _tmakepath_s(
-					pBuf,		//ƒpƒXŠi”[æƒoƒbƒtƒ@
-					bufSize,	//ƒoƒbƒtƒ@ƒTƒCƒY
-					drive,		//ƒhƒ‰ƒCƒu•¶Žš—ñ
-					dir,		//ƒfƒBƒŒƒNƒgƒŠ•¶Žš—ñ
-					NULL,		//ƒtƒ@ƒCƒ‹–¼•¶Žš—ñ
-					NULL		//Šg’£Žq•¶Žš—ñ
+					pBuf,		//ãƒ‘ã‚¹æ ¼ç´å…ˆãƒãƒƒãƒ•ã‚¡
+					bufSize,	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					drive,		//ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—åˆ—
+					dir,		//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ–‡å­—åˆ—
+					NULL,		//ãƒ•ã‚¡ã‚¤ãƒ«åæ–‡å­—åˆ—
+					NULL		//æ‹¡å¼µå­æ–‡å­—åˆ—
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -92,7 +92,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒf[ƒ^ƒfƒBƒŒƒNƒgƒŠƒpƒXŽæ“¾
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 //******************************************************************************
 int YNPathUtil::GetAppDataDirPath(
 		TCHAR* pBuf,
@@ -105,12 +105,12 @@ int YNPathUtil::GetAppDataDirPath(
 	TCHAR path[MAX_PATH];
 
 	hresult = SHGetFolderPath(
-					NULL,				//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-					CSIDL_APPDATA,		//ƒtƒHƒ‹ƒ_Žw’è
-					NULL,				//ƒAƒNƒZƒXƒg[ƒNƒ“
-					SHGFP_TYPE_CURRENT,	//ƒtƒ‰ƒOFŒ»Ý‚ÌƒtƒHƒ‹ƒ_ƒpƒX
-										//  ƒ†[ƒU‚ª•ÏX‚µ‚Ä‚¢‚é‰Â”\«‚ª‚ ‚é
-					path				//ƒpƒXŠi”[æƒoƒbƒtƒ@
+					NULL,				//ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+					CSIDL_APPDATA,		//ãƒ•ã‚©ãƒ«ãƒ€æŒ‡å®š
+					NULL,				//ã‚¢ã‚¯ã‚»ã‚¹ãƒˆãƒ¼ã‚¯ãƒ³
+					SHGFP_TYPE_CURRENT,	//ãƒ•ãƒ©ã‚°ï¼šç¾åœ¨ã®ãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹
+										//  ãƒ¦ãƒ¼ã‚¶ãŒå¤‰æ›´ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹
+					path				//ãƒ‘ã‚¹æ ¼ç´å…ˆãƒãƒƒãƒ•ã‚¡
 				);
 	if (hresult != S_OK) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -134,32 +134,32 @@ EXIT:;
 }
 
 //******************************************************************************
-// Šg’£Žq”»’è
+// æ‹¡å¼µå­åˆ¤å®š
 //******************************************************************************
 bool YNPathUtil::IsFileExtMatch(
-		const WCHAR* pPath,
-		const WCHAR* pExt
+		const TCHAR* pPath,
+		const TCHAR* pExt
 	)
 {
 	bool isMatch = false;
 	errno_t eresult = 0;
-	WCHAR ext[_MAX_EXT] = { L'\0' };
+	TCHAR ext[_MAX_EXT] = {_T('\0')};
 
-	//ƒpƒX—v‘f‚ð•ªŠ„‚µ‚ÄŠg’£Žq‚ðŽæ“¾
-	eresult = _wsplitpath_s(
-					pPath,			//ƒpƒX
-					NULL, 0,		//ƒhƒ‰ƒCƒu•¶Žš—ñƒoƒbƒtƒ@‚ÆƒTƒCƒY
-					NULL, 0,		//ƒfƒBƒŒƒNƒgƒŠ•¶Žš—ñƒoƒbƒtƒ@‚ÆƒTƒCƒY
-					NULL, 0,		//ƒtƒ@ƒCƒ‹–¼•¶Žš—ñƒoƒbƒtƒ@‚ÆƒTƒCƒY
-					ext, _MAX_EXT	//Šg’£Žq•¶Žš—ñƒoƒbƒtƒ@‚ÆƒTƒCƒY
+	//ãƒ‘ã‚¹è¦ç´ ã‚’åˆ†å‰²ã—ã¦æ‹¡å¼µå­ã‚’å–å¾—
+	eresult = _tsplitpath_s(
+					pPath,			//ãƒ‘ã‚¹
+					NULL, 0,		//ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã¨ã‚µã‚¤ã‚º
+					NULL, 0,		//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã¨ã‚µã‚¤ã‚º
+					NULL, 0,		//ãƒ•ã‚¡ã‚¤ãƒ«åæ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã¨ã‚µã‚¤ã‚º
+					ext, _MAX_EXT	//æ‹¡å¼µå­æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã¨ã‚µã‚¤ã‚º
 				);
 	if (eresult != 0) {
 		//result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//‘å•¶Žš‚Æ¬•¶Žš‚ð‹æ•Ê‚¹‚¸‚ÉŠg’£Žq‚ð”äŠr‚·‚é
-	if (_wcsicmp(ext, pExt) == 0) {
+	//å¤§æ–‡å­—ã¨å°æ–‡å­—ã‚’åŒºåˆ¥ã›ãšã«æ‹¡å¼µå­ã‚’æ¯”è¼ƒã™ã‚‹
+	if (_tcsicmp(ext, pExt) == 0) {
 		isMatch = true;
 	}
 
@@ -168,42 +168,42 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹ƒpƒXŽæ“¾
+// ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 //******************************************************************************
 int YNPathUtil::GetTempFilePath(
-		WCHAR* pPathBuf,
+		TCHAR* pPathBuf,
 		unsigned long bufSize,
-		const WCHAR* pPrefix
+		const TCHAR* pPrefix
 	)
 {
 	int result = 0;
 	DWORD apiresult = 0;
-	WCHAR tempDir[_MAX_PATH] = { L'\0' };
+	TCHAR tempDir[_MAX_PATH] = {_T('\0')};
 
-	//ƒeƒ“ƒ|ƒ‰ƒŠƒfƒBƒŒƒNƒgƒŠƒpƒX‚ðŽæ“¾
-	apiresult = GetTempPathW(_MAX_PATH, tempDir);
+	//ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’å–å¾—
+	apiresult = GetTempPath(_MAX_PATH, tempDir);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//GetTmpFileName‚Íƒoƒbƒtƒ@ƒTƒCƒY‚ðŽw’è‚Å‚«‚È‚¢Šï–­‚ÈAPI‚Å‚ ‚é
-	//uƒoƒbƒtƒ@ƒTƒCƒY‚ÍMAX_PATHˆÈã‚É‚¹‚æv‚Æ’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Å
-	//ƒTƒCƒYƒ`ƒFƒbƒN‚ðs‚¤
+	//GetTmpFileNameã¯ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã§ããªã„å¥‡å¦™ãªAPIã§ã‚ã‚‹
+	//ã€Œãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã¯MAX_PATHä»¥ä¸Šã«ã›ã‚ˆã€ã¨å®šç¾©ã•ã‚Œã¦ã„ã‚‹ã®ã§
+	//ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†
 	if (bufSize < MAX_PATH) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹ƒpƒX‚ðŽæ“¾
-	//  ƒtƒ@ƒCƒ‹–¼FPREuuuu.TMP
-	//    PRE FƒvƒŒƒtƒBƒbƒNƒX
-	//    uuuuFƒVƒXƒeƒ€Žž‚ÉŠî‚Ã‚¢‚Ä¶¬‚³‚ê‚½16i•¶Žš—ñ
-	apiresult = GetTempFileNameW(
-						tempDir,	//ƒfƒBƒŒƒNƒgƒŠƒpƒX
-						pPrefix,	//ƒvƒŒƒtƒBƒbƒNƒXi3•¶Žšj
-						0,			//ˆêˆÓ«F—LŒø
-						pPathBuf	//¶¬‚³‚ê‚½ƒtƒ@ƒCƒ‹ƒpƒX
+	//ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—
+	//  ãƒ•ã‚¡ã‚¤ãƒ«åï¼šPREuuuu.TMP
+	//    PRE ï¼šãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹
+	//    uuuuï¼šã‚·ã‚¹ãƒ†ãƒ æ™‚åˆ»ã«åŸºã¥ã„ã¦ç”Ÿæˆã•ã‚ŒãŸ16é€²æ–‡å­—åˆ—
+	apiresult = GetTempFileName(
+						tempDir,	//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹
+						pPrefix,	//ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ï¼ˆ3æ–‡å­—ï¼‰
+						0,			//ä¸€æ„æ€§ï¼šæœ‰åŠ¹
+						pPathBuf	//ç”Ÿæˆã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

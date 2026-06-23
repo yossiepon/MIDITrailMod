@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTWindowSizeCfgDlg
 //
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYİ’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºè¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -14,12 +14,12 @@
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTWindowSizeCfgDlg* MTWindowSizeCfgDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTWindowSizeCfgDlg::MTWindowSizeCfgDlg(void)
 {
@@ -32,14 +32,14 @@ MTWindowSizeCfgDlg::MTWindowSizeCfgDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTWindowSizeCfgDlg::~MTWindowSizeCfgDlg(void)
 {
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTWindowSizeCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -47,7 +47,7 @@ INT_PTR CALLBACK MTWindowSizeCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wP
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTWindowSizeCfgDlg::_WndProcImpl(
 		HWND hDlg,
@@ -79,9 +79,9 @@ INT_PTR MTWindowSizeCfgDlg::_WndProcImpl(
 				EndDialog(hDlg, LOWORD(wParam));
 				bresult = TRUE;
 			}
-			//ƒŠƒXƒgƒ{ƒbƒNƒX
+			//ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹
 			else if (LOWORD(wParam) == IDC_WINDOWSIZE_LIST) {
-				//‘I‘ğó‘Ô•Ï‰»
+				//é¸æŠçŠ¶æ…‹å¤‰åŒ–
 				if  (HIWORD(wParam) == LBN_SELCHANGE){
 					result = _OnSizeListChanged();
 					if (result != 0) goto EXIT;
@@ -98,7 +98,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTWindowSizeCfgDlg::Show(
 		HWND hParentWnd
@@ -110,19 +110,19 @@ int MTWindowSizeCfgDlg::Show(
 
 	m_isSaved = false;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_WINDOWSIZE_CFG),//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_WINDOWSIZE_CFG),//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -134,16 +134,16 @@ EXIT:;
 }
 
 //******************************************************************************
-// •ÏXŠm”F
+// å¤‰æ›´ç¢ºèª
 //******************************************************************************
 bool MTWindowSizeCfgDlg::IsChanged()
 {
-	//–{“–‚Í’l‚Ì•Ï‰»‚ğŠm”F‚·‚×‚«
+	//æœ¬å½“ã¯å€¤ã®å¤‰åŒ–ã‚’ç¢ºèªã™ã¹ã
 	return m_isSaved;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTWindowSizeCfgDlg::_OnInitDlg(
 		HWND hDlg
@@ -151,21 +151,21 @@ int MTWindowSizeCfgDlg::_OnInitDlg(
 {
 	int result = 0;
 
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹æ“¾
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«å–å¾—
 	m_hSizeList = GetDlgItem(hDlg, IDC_WINDOWSIZE_LIST);
 	m_hEditWidth = GetDlgItem(hDlg, IDC_EDIT_WIDTH);
 	m_hEditHeight = GetDlgItem(hDlg, IDC_EDIT_HEIGHT);
 	m_hCheckApplyToView = GetDlgItem(hDlg, IDC_CHECK_APPLY_TO_VIEW);
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY‘I‘ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºé¸æŠã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	result = _InitSizeList();
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒYƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‰Šú‰»
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	result = _InitSizeEditbox();
 	if (result != 0) goto EXIT;
 
@@ -174,7 +174,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 //******************************************************************************
 int MTWindowSizeCfgDlg::_InitConfFile()
 {
@@ -198,7 +198,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY‘I‘ğƒŠƒXƒgƒ{ƒbƒNƒX‰Šú‰»
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºé¸æŠãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 //******************************************************************************
 int MTWindowSizeCfgDlg::_InitSizeList()
 {
@@ -215,7 +215,7 @@ int MTWindowSizeCfgDlg::_InitSizeList()
 	MTWindowSizeList::iterator itr;
 	bool isExist = false;
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒYæ“¾
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
 	result = _GetConfWindowSize(&curWidth, &curHeight);
 	if (result != 0) goto EXIT;
 
@@ -223,23 +223,23 @@ int MTWindowSizeCfgDlg::_InitSizeList()
 
 	for (index = 0; ; index++) {
 
-		//ƒOƒ‰ƒtƒBƒbƒNƒXƒ‚[ƒhî•ñæ“¾
+		//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ¢ãƒ¼ãƒ‰æƒ…å ±å–å¾—
 		bresult = EnumDisplaySettings(
-						NULL,		//æ“¾‘ÎÛƒfƒBƒXƒvƒŒƒCƒfƒoƒCƒX
-						index,		//ƒOƒ‰ƒtƒBƒbƒNƒ‚[ƒhƒCƒ“ƒfƒbƒNƒX
-						&devMode	//æ“¾‚µ‚½ƒOƒ‰ƒtƒBƒbƒNƒXƒ‚[ƒh
+						NULL,		//å–å¾—å¯¾è±¡ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒ‡ãƒã‚¤ã‚¹
+						index,		//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¢ãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+						&devMode	//å–å¾—ã—ãŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ¢ãƒ¼ãƒ‰
 					);
 		if (!bresult) {
-			//ƒ‚[ƒhˆê——æ“¾Š®—¹
+			//ãƒ¢ãƒ¼ãƒ‰ä¸€è¦§å–å¾—å®Œäº†
 			break;
 		}
 
-		//ƒrƒbƒg[“x32bitˆÈŠO‚Í–³‹
+		//ãƒ“ãƒƒãƒˆæ·±åº¦32bitä»¥å¤–ã¯ç„¡è¦–
 		if (devMode.dmBitsPerPel != 32) {
 			continue;
 		}
 
-		//‚·‚Å‚ÉƒŠƒXƒg“o˜^Ï‚İ‚©Šm”F‚·‚é
+		//ã™ã§ã«ãƒªã‚¹ãƒˆç™»éŒ²æ¸ˆã¿ã‹ç¢ºèªã™ã‚‹
 		isExist = false;
 		for (itr = m_SizeList.begin(); itr != m_SizeList.end(); itr++) {
 			if ((itr->width == devMode.dmPelsWidth)
@@ -249,16 +249,16 @@ int MTWindowSizeCfgDlg::_InitSizeList()
 			}
 		}
 
-		//ƒŠƒXƒg“o˜^
+		//ãƒªã‚¹ãƒˆç™»éŒ²
 		if (!isExist) {
 			item.width = devMode.dmPelsWidth;
 			item.height = devMode.dmPelsHeight;
 			m_SizeList.push_back(item);
 			
-			//ƒLƒƒƒvƒVƒ‡ƒ“ì¬
+			//ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ä½œæˆ
 			_stprintf_s(caption, 64, _T("%d x %d  32bit"), item.width, item.height);
 
-			//ƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğƒŠƒXƒgƒ{ƒbƒNƒX‚É’Ç‰Á
+			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’ãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹ã«è¿½åŠ 
 			lresult = SendMessage(m_hSizeList, LB_ADDSTRING, 0, (LPARAM)caption);
 			if ((lresult == LB_ERR) || (lresult == LB_ERRSPACE)) {
 				result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hSizeList);
@@ -271,7 +271,7 @@ int MTWindowSizeCfgDlg::_InitSizeList()
 		}
 	}
 
-	//ƒŠƒXƒgˆê’v‚·‚éƒTƒCƒY‚ªŒ©‚Â‚©‚Á‚½ê‡‚Í‘I‘ğó‘Ô‚É‚·‚é
+	//ãƒªã‚¹ãƒˆä¸€è‡´ã™ã‚‹ã‚µã‚¤ã‚ºãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯é¸æŠçŠ¶æ…‹ã«ã™ã‚‹
 	if (selectedIndex >= 0) {
 		lresult = SendMessage(m_hSizeList, LB_SETCURSEL, selectedIndex, 0);
 		if (lresult == LB_ERR) {
@@ -285,7 +285,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‰Šú‰»
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 //******************************************************************************
 int MTWindowSizeCfgDlg::_InitSizeEditbox()
 {
@@ -296,24 +296,24 @@ int MTWindowSizeCfgDlg::_InitSizeEditbox()
 	int maxsize = 0;
 	int applyToViewArea = 0;
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒYæ“¾
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
 	result = _GetConfWindowSize(&width, &height);
 	if (result != 0) goto EXIT;
 
-	//“ü—Í‰Â”\Å‘å•¶š”‚ğİ’èF5Œ… 99,999‚Ü‚Å
+	//å…¥åŠ›å¯èƒ½æœ€å¤§æ–‡å­—æ•°ã‚’è¨­å®šï¼š5æ¡ 99,999ã¾ã§
 	maxsize = sizeof(TCHAR) * MT_WINDOW_SIZE_CHAR_MAX;
 	SendMessage(m_hEditWidth, EM_SETLIMITTEXT, (WPARAM)maxsize, 0);
 	SendMessage(m_hEditHeight, EM_SETLIMITTEXT, (WPARAM)maxsize, 0);
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚ÉƒEƒBƒ“ƒhƒEƒTƒCƒY‚Ì”’l•¶š—ñ‚ğİ’è
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã®æ•°å€¤æ–‡å­—åˆ—ã‚’è¨­å®š
 	result = _UpdateSizeEditBox(width, height);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒ…[—Ìˆæ“K—pƒtƒ‰ƒOæ“¾
+	//ãƒ“ãƒ¥ãƒ¼é ˜åŸŸé©ç”¨ãƒ•ãƒ©ã‚°å–å¾—
 	result = m_ConfFile.GetInt(_T("ApplyToViewArea"), &applyToViewArea, 0);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒ…[—Ìˆæ“K—pƒ`ƒFƒbƒNƒ{ƒbƒNƒX‰Šú‰»
+	//ãƒ“ãƒ¥ãƒ¼é ˜åŸŸé©ç”¨ãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	if (applyToViewArea == 0) {
 		SendMessage(m_hCheckApplyToView, BM_SETCHECK, BST_UNCHECKED, 0);
 	}
@@ -326,7 +326,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYİ’è’læ“¾
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºè¨­å®šå€¤å–å¾—
 //******************************************************************************
 int MTWindowSizeCfgDlg::_GetConfWindowSize(
 		int* pWidth,
@@ -342,13 +342,13 @@ int MTWindowSizeCfgDlg::_GetConfWindowSize(
 		goto EXIT;
 	}
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒYİ’è’læ“¾
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºè¨­å®šå€¤å–å¾—
 	result = m_ConfFile.GetInt(_T("Width"), &width, 0);
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.GetInt(_T("Height"), &height, 0);
 	if (result != 0) goto EXIT;
 
-	//ƒTƒCƒY‚ªˆÙí‚Èê‡‚Í‰‰ñ‹N“®‚ÌƒEƒBƒ“ƒhƒEƒTƒCƒY‚ÉXV
+	//ã‚µã‚¤ã‚ºãŒç•°å¸¸ãªå ´åˆã¯åˆå›èµ·å‹•æ™‚ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã«æ›´æ–°
 	if ((width <= 0)
 	  || (height <= 0)
 	  || (width > MT_WINDOW_SIZE_MAX)
@@ -365,7 +365,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYî•ñ•Û‘¶
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºæƒ…å ±ä¿å­˜
 //******************************************************************************
 int MTWindowSizeCfgDlg::_Save()
 {
@@ -377,27 +377,27 @@ int MTWindowSizeCfgDlg::_Save()
 	int applyToViewArea = 0;
 	TCHAR str[32] = {_T('\0')};
 
-	//•
+	//å¹…
 	apiresult = GetWindowText(m_hEditWidth, str, 32);
 	if (apiresult == 0) {
-		//ƒeƒLƒXƒg–³‚µ‚Ü‚½‚ÍƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹–³Œø‚Ìê‡
+		//ãƒ†ã‚­ã‚¹ãƒˆç„¡ã—ã¾ãŸã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ç„¡åŠ¹ã®å ´åˆ
 		width = 0;
 	}
 	else {
 		width = _tstoi(str);
 	}
 
-	//‚‚³
+	//é«˜ã•
 	apiresult = GetWindowText(m_hEditHeight, str, 32);
 	if (apiresult == 0) {
-		//ƒeƒLƒXƒg–³‚µ‚Ü‚½‚ÍƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹–³Œø‚Ìê‡
+		//ãƒ†ã‚­ã‚¹ãƒˆç„¡ã—ã¾ãŸã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ç„¡åŠ¹ã®å ´åˆ
 		height = 0;
 	}
 	else {
 		height = _tstoi(str);
 	}
 
-	//ƒNƒŠƒbƒsƒ“ƒO
+	//ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°
 	if (width < MT_WINDOW_SIZE_MIN) {
 		width = MT_WINDOW_SIZE_MIN;
 	}
@@ -405,13 +405,13 @@ int MTWindowSizeCfgDlg::_Save()
 		height = MT_WINDOW_SIZE_MIN;
 	}
 
-	//İ’è•Û‘¶
+	//è¨­å®šä¿å­˜
 	result = m_ConfFile.SetInt(_T("Width"), width);
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("Height"), height);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒ…[—Ìˆæ“K—pƒ`ƒFƒbƒNƒ{ƒbƒNƒXİ’è•Û‘¶
+	//ãƒ“ãƒ¥ãƒ¼é ˜åŸŸé©ç”¨ãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹è¨­å®šä¿å­˜
 	lresult = SendMessage(m_hCheckApplyToView, BM_GETCHECK, 0, 0);
 	if (lresult == BST_CHECKED) {
 		applyToViewArea = 1;
@@ -424,7 +424,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYƒŠƒXƒgƒ{ƒbƒNƒX‘I‘ğó‘Ô•Ï‰»
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºãƒªã‚¹ãƒˆãƒœãƒƒã‚¯ã‚¹é¸æŠçŠ¶æ…‹å¤‰åŒ–
 //******************************************************************************
 int MTWindowSizeCfgDlg::_OnSizeListChanged()
 {
@@ -434,10 +434,10 @@ int MTWindowSizeCfgDlg::_OnSizeListChanged()
 	MTWindowSizeItem item;
 	MTWindowSizeList::iterator itr;
 
-	//‘I‘ğ€–Ú‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	//é¸æŠé …ç›®ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	lresult = SendMessage(m_hSizeList, LB_GETCURSEL, 0, 0);
 	if (lresult == LB_ERR) {
-		//–¢‘I‘ğ‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+		//æœªé¸æŠã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 		goto EXIT;
 	}
 	else if (lresult < 0) {
@@ -445,13 +445,13 @@ int MTWindowSizeCfgDlg::_OnSizeListChanged()
 		goto EXIT;
 	}
 
-	//‘I‘ğƒTƒCƒYæ“¾
+	//é¸æŠã‚µã‚¤ã‚ºå–å¾—
 	selectedIndex = (unsigned long)lresult;
 	itr = m_SizeList.begin();
 	advance(itr, selectedIndex);
 	item = *itr;
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚ÉƒEƒBƒ“ƒhƒEƒTƒCƒY‚Ì”’l•¶š—ñ‚ğİ’è
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã®æ•°å€¤æ–‡å­—åˆ—ã‚’è¨­å®š
 	result = _UpdateSizeEditBox(item.width, item.height);
 	if (result != 0) goto EXIT;
 
@@ -460,7 +460,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYƒGƒfƒBƒbƒgƒ{ƒbƒNƒXXV
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹æ›´æ–°
 //******************************************************************************
 int MTWindowSizeCfgDlg::_UpdateSizeEditBox(
 		int width,
@@ -471,7 +471,7 @@ int MTWindowSizeCfgDlg::_UpdateSizeEditBox(
 	BOOL bresult = FALSE;
 	TCHAR str[32] = {_T('\0')};
 
-	//•
+	//å¹…
 	_stprintf_s(str, 32, _T("%d"), width);
 	bresult = SetWindowText(m_hEditWidth, str);
 	if (!bresult) {
@@ -479,7 +479,7 @@ int MTWindowSizeCfgDlg::_UpdateSizeEditBox(
 		goto EXIT;
 	}
 
-	//‚‚³
+	//é«˜ã•
 	_stprintf_s(str, 32, _T("%d"), height);
 	bresult = SetWindowText(m_hEditHeight, str);
 	if (!bresult) {

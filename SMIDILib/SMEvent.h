@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMEvent
 //
-// ƒCƒxƒ“ƒgƒNƒ‰ƒX
+// ã‚¤ãƒ™ãƒ³ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
@@ -19,19 +19,19 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
 #define SMEVENT_INTERNAL_DATA_SIZE  (16)
 
 
 //******************************************************************************
-// ƒCƒxƒ“ƒgƒNƒ‰ƒX
+// ã‚¤ãƒ™ãƒ³ãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMEvent
 {
 public:
 
-	//ƒCƒxƒ“ƒgí•Ê
+	//ã‚¤ãƒ™ãƒ³ãƒˆç¨®åˆ¥
 	enum EventType {
 		EventNone,
 		EventMIDI,
@@ -40,53 +40,53 @@ public:
 		EventMeta
 	};
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMEvent(void);
 	virtual ~SMEvent(void);
 
-	//ƒf[ƒ^“o˜^
+	//ãƒ‡ãƒ¼ã‚¿ç™»éŒ²
 	int SetData(EventType type, unsigned char status, unsigned char meta, unsigned char* pData, unsigned long size);
 
-	//MIDIƒCƒxƒ“ƒg“o˜^
+	//MIDIã‚¤ãƒ™ãƒ³ãƒˆç™»éŒ²
 	int SetMIDIData(unsigned char status, unsigned char* pData, unsigned long size);
 
-	//SysExƒCƒxƒ“ƒg“o˜^
+	//SysExã‚¤ãƒ™ãƒ³ãƒˆç™»éŒ²
 	int SetSysExData(unsigned char status, unsigned char* pData, unsigned long size);
 
-	//SysMsgƒCƒxƒ“ƒg“o˜^
+	//SysMsgã‚¤ãƒ™ãƒ³ãƒˆç™»éŒ²
 	int SetSysMsgData(unsigned char status, unsigned char* pData, unsigned long size);
 
-	//ƒƒ^ƒCƒxƒ“ƒg“o˜^
+	//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆç™»éŒ²
 	int SetMetaData(unsigned char status, unsigned char type, unsigned char* pData, unsigned long size);
 
-	//ƒCƒxƒ“ƒgí•Êæ“¾
+	//ã‚¤ãƒ™ãƒ³ãƒˆç¨®åˆ¥å–å¾—
 	EventType GetType();
 
-	//ƒXƒe[ƒ^ƒXæ“¾
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å–å¾—
 	unsigned char GetStatus();
 
 // >>> add 20120728 yossiepon begin
 
-	//ƒXƒe[ƒ^ƒXİ’è
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹è¨­å®š
 	void SetStatus(unsigned char status);
 
 // <<< add 20120728 yossiepon end
 
-	//ƒƒ^í•Êæ“¾
+	//ãƒ¡ã‚¿ç¨®åˆ¥å–å¾—
 	unsigned char GetMetaType();
 
-	//ƒf[ƒ^ƒTƒCƒYæ“¾
+	//ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºå–å¾—
 	unsigned long GetDataSize();
 
-	//ƒf[ƒ^ƒ|ƒCƒ“ƒ^æ“¾
+	//ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ã‚¿å–å¾—
 	unsigned char* GetDataPtr();
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void Clear();
 
 // >>> add 20251101 yossiepon begin
 
-	//ƒ_ƒ“ƒvo—Í
+	//ãƒ€ãƒ³ãƒ—å‡ºåŠ›
 	void Dump();
 
 // <<< add 20251101 yossiepon end
@@ -100,7 +100,7 @@ private:
 	unsigned char m_Data[SMEVENT_INTERNAL_DATA_SIZE];
 	unsigned char* m_pExData;
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMEvent&);
 	SMEvent(const SMEvent&);
 

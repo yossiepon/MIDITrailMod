@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMNoteList
 //
-// ƒm[ƒgƒŠƒXƒgƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -22,9 +22,9 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒm[ƒgî•ñ\‘¢‘Ì
+// ãƒŽãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 //******************************************************************************
-//ƒm[ƒgî•ñ
+//ãƒŽãƒ¼ãƒˆæƒ…å ±
 typedef struct {
 	unsigned char portNo;
 	unsigned char chNo;
@@ -33,44 +33,44 @@ typedef struct {
 	unsigned long startTime;
 	unsigned long endTime;
 // >>> add 20120728 yossiepon begin
-	WCHAR lyric[17];
+	char lyric[17];
 // <<< add 20120728 yossiepon end
 } SMNote;
 
 //******************************************************************************
-// ƒm[ƒgƒŠƒXƒgƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMNoteList
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMNoteList(void);
 	virtual ~SMNoteList(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void Clear();
 
-	//ƒm[ƒgî•ñ’Ç‰Á
+	//ãƒŽãƒ¼ãƒˆæƒ…å ±è¿½åŠ 
 	int AddNote(SMNote note);
 
-	//ƒm[ƒgî•ñŽæ“¾
+	//ãƒŽãƒ¼ãƒˆæƒ…å ±å–å¾—
 	int GetNote(unsigned long index, SMNote* pNote);
 
-	//ƒm[ƒgî•ñ“o˜^iã‘‚«j
+	//ãƒŽãƒ¼ãƒˆæƒ…å ±ç™»éŒ²ï¼ˆä¸Šæ›¸ãï¼‰
 	int SetNote(unsigned long index, SMNote* pNote);
 
-	//ƒm[ƒg”Žæ“¾
+	//ãƒŽãƒ¼ãƒˆæ•°å–å¾—
 	unsigned long GetSize();
 
-	//ƒRƒs[
+	//ã‚³ãƒ”ãƒ¼
 	int CopyFrom(SMNoteList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹ÖŽ~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMNoteList&);
 	SMNoteList(const SMNoteList&);
 

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMFPUCtrl
 //
-// •‚“®“_¬”ƒvƒƒZƒbƒT§ŒäƒNƒ‰ƒX
+// æµ®å‹•ç‚¹å°æ•°ãƒ—ãƒ­ã‚»ãƒƒã‚µåˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMFPUCtrl::SMFPUCtrl(void)
 {
@@ -31,11 +31,11 @@ SMFPUCtrl::SMFPUCtrl(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMFPUCtrl::~SMFPUCtrl(void)
 {
-	//İ’èŠJn‚µ‚½‚Ü‚Ü‚Å‚ ‚ê‚Î‰ğœ‚·‚é
+	//è¨­å®šé–‹å§‹ã—ãŸã¾ã¾ã§ã‚ã‚Œã°è§£é™¤ã™ã‚‹
 	if ((m_isLock) && (m_ThreadID == GetCurrentThreadId())) {
 		unsigned int curCtrl = 0;
 #ifndef _WIN64
@@ -46,7 +46,7 @@ SMFPUCtrl::~SMFPUCtrl(void)
 }
 
 //******************************************************************************
-// ¸“xİ’èŠJn
+// ç²¾åº¦è¨­å®šé–‹å§‹
 //******************************************************************************
 int SMFPUCtrl::Start(FPUPrecision precision)
 {
@@ -55,17 +55,17 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 	unsigned int curCtrl = 0;
 	unsigned int flag = 0;
 
-	//‚·‚Å‚Éİ’èŠJnÏ‚İ‚È‚çƒGƒ‰[
+	//ã™ã§ã«è¨­å®šé–‹å§‹æ¸ˆã¿ãªã‚‰ã‚¨ãƒ©ãƒ¼
 	if (m_isLock) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//•ÏX‘O‚Ì§Œäƒtƒ‰ƒO‚ğæ“¾
+	//å¤‰æ›´å‰ã®åˆ¶å¾¡ãƒ•ãƒ©ã‚°ã‚’å–å¾—
 	eresult = _controlfp_s(
-					&m_FPUCtrl,	//Œ»İ‚Ì§Œäƒ[ƒh
-					0,			//§Œäƒ[ƒhF‚È‚µ
-					0			//ƒ}ƒXƒNF‚È‚µ
+					&m_FPUCtrl,	//ç¾åœ¨ã®åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰
+					0,			//åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰ï¼šãªã—
+					0			//ãƒã‚¹ã‚¯ï¼šãªã—
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
@@ -74,7 +74,7 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 
 	_DisplayCurCtrl(_T("Start before"));
 
-	//•‚“®¬”“_¸“x‚ğİ’è
+	//æµ®å‹•å°æ•°ç‚¹ç²¾åº¦ã‚’è¨­å®š
 	switch (precision) {
 		case FPUSingle:
 			flag = _PC_24;
@@ -92,13 +92,13 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 
 #ifdef _WIN64
 	//x64(64bit)
-	//¸“x§Œä‚Ì•K—v‚È‚µ
+	//ç²¾åº¦åˆ¶å¾¡ã®å¿…è¦ãªã—
 #else
 	//x86(32bit)
 	eresult = _controlfp_s(
-					&curCtrl,	//Œ»İ‚Ì§Œäƒ[ƒh
-					flag,		//§Œäƒ[ƒhF§Œäí•Ê
-					_MCW_PC		//ƒ}ƒXƒNF¸“x§Œä
+					&curCtrl,	//ç¾åœ¨ã®åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰
+					flag,		//åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰ï¼šåˆ¶å¾¡ç¨®åˆ¥
+					_MCW_PC		//ãƒã‚¹ã‚¯ï¼šç²¾åº¦åˆ¶å¾¡
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
@@ -116,7 +116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ¸“xİ’èI—¹
+// ç²¾åº¦è¨­å®šçµ‚äº†
 //******************************************************************************
 int SMFPUCtrl::End()
 {
@@ -124,28 +124,28 @@ int SMFPUCtrl::End()
 	errno_t eresult = 0;
 	unsigned int curCtrl = 0;
 
-	//İ’èŠJn‚µ‚Ä‚¢‚È‚¢ê‡‚ÍƒGƒ‰[
+	//è¨­å®šé–‹å§‹ã—ã¦ã„ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if (!m_isLock) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//İ’èŠJn‚ÆˆÙ‚È‚éƒXƒŒƒbƒh‚Åİ’èI—¹‚·‚é‚±‚Æ‚Í‚Å‚«‚È‚¢
+	//è¨­å®šé–‹å§‹æ™‚ã¨ç•°ãªã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ã§è¨­å®šçµ‚äº†ã™ã‚‹ã“ã¨ã¯ã§ããªã„
 	if (m_ThreadID != GetCurrentThreadId()) {
 		result = YN_SET_ERR("Program error.", m_ThreadID, GetCurrentThreadId());
 		goto EXIT;
 	}
 
-	//•‚“®¬”“_¸“x‚ğ•œŒ³‚·‚é
+	//æµ®å‹•å°æ•°ç‚¹ç²¾åº¦ã‚’å¾©å…ƒã™ã‚‹
 #ifdef _WIN64
 	//x64(64bit)
-	//¸“x§Œä‚Ì•K—v‚È‚µ
+	//ç²¾åº¦åˆ¶å¾¡ã®å¿…è¦ãªã—
 #else
 	//x86(32bit)
 	eresult = _controlfp_s(
-					&curCtrl,	//Œ»İ‚Ì§Œäƒ[ƒh
-					m_FPUCtrl,	//§Œäƒ[ƒhFİ’èŠJn“_
-					_MCW_PC		//ƒ}ƒXƒNF¸“x§Œä
+					&curCtrl,	//ç¾åœ¨ã®åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰
+					m_FPUCtrl,	//åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰ï¼šè¨­å®šé–‹å§‹æ™‚ç‚¹
+					_MCW_PC		//ãƒã‚¹ã‚¯ï¼šç²¾åº¦åˆ¶å¾¡
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
@@ -164,7 +164,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ¸“xİ’èó‘ÔŠm”F
+// ç²¾åº¦è¨­å®šçŠ¶æ…‹ç¢ºèª
 //******************************************************************************
 bool SMFPUCtrl::IsLocked()
 {
@@ -172,7 +172,7 @@ bool SMFPUCtrl::IsLocked()
 }
 
 //******************************************************************************
-// •‚“®¬”“_§Œäƒ[ƒh•\¦
+// æµ®å‹•å°æ•°ç‚¹åˆ¶å¾¡ãƒ¯ãƒ¼ãƒ‰è¡¨ç¤º
 //******************************************************************************
 void SMFPUCtrl::_DisplayCurCtrl(
 		TCHAR* pTitle
@@ -197,11 +197,11 @@ void SMFPUCtrl::_DisplayCurCtrl(
 //			_T("_MCW_PC %08X"),
 //			GetCurrentThreadId(),
 //			fpuctrl,
-//			(fpuctrl & _MCW_DN), //DENORMAL§Œä
-//			(fpuctrl & _MCW_EM), //Š„‚è‚İ—áŠOƒ}ƒXƒN
-//			(fpuctrl & _MCW_IC), //–³ŒÀ§Œä
-//			(fpuctrl & _MCW_RC), //ŠÛ‚ß§Œä
-//			(fpuctrl & _MCW_PC)  //¸“x§Œä
+//			(fpuctrl & _MCW_DN), //DENORMALåˆ¶å¾¡
+//			(fpuctrl & _MCW_EM), //å‰²ã‚Šè¾¼ã¿ä¾‹å¤–ãƒã‚¹ã‚¯
+//			(fpuctrl & _MCW_IC), //ç„¡é™åˆ¶å¾¡
+//			(fpuctrl & _MCW_RC), //ä¸¸ã‚åˆ¶å¾¡
+//			(fpuctrl & _MCW_PC)  //ç²¾åº¦åˆ¶å¾¡
 //		);
 //
 //	MessageBox(NULL, msg, pTitle, MB_OK);

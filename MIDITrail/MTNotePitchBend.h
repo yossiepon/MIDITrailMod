@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNotePitchBend
 //
-// ƒsƒbƒ`ƒxƒ“ƒhî•ñƒNƒ‰ƒX
+// ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒ|[ƒg^ƒ`ƒƒƒ“ƒlƒ‹’PˆÊ‚Ìƒsƒbƒ`ƒxƒ“ƒhî•ñ‚ğ•Û‚·‚éB
+// ãƒãƒ¼ãƒˆï¼ãƒãƒ£ãƒ³ãƒãƒ«å˜ä½ã®ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±ã‚’ä¿æŒã™ã‚‹ã€‚
 
 #pragma once
 
@@ -17,20 +17,20 @@
 
 
 //******************************************************************************
-// ƒsƒbƒ`ƒxƒ“ƒhî•ñƒNƒ‰ƒX
+// ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNotePitchBend
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNotePitchBend(void);
 	virtual ~MTNotePitchBend(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize();
 
-	//ƒsƒbƒ`ƒxƒ“ƒh“o˜^
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ç™»éŒ²
 	int SetPitchBend(
 			unsigned char portNo,
 			unsigned char chNo,
@@ -38,21 +38,21 @@ public:
 			unsigned char sensitivity
 		);
 
-	//ƒsƒbƒ`ƒxƒ“ƒh’læ“¾
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰å€¤å–å¾—
 	short GetValue(unsigned long portNo, unsigned long chNo);
 
-	//ƒsƒbƒ`ƒxƒ“ƒhŠ´“xæ“¾
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦å–å¾—
 	unsigned char GetSensitivity(unsigned long portNo, unsigned long chNo);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//ƒsƒbƒ`ƒxƒ“ƒh•\¦Œø‰Êİ’è
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰è¡¨ç¤ºåŠ¹æœè¨­å®š
 	void SetEnable(bool isEnable);
 
 private:
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	struct MTNOTEPITCHBEND_PITCHBEND_INFO {
 		short value;
 		unsigned char sensitivity;
@@ -60,10 +60,10 @@ private:
 
 private:
 
-	//ƒsƒbƒ`ƒxƒ“ƒh•\¦Œø‰Ê
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰è¡¨ç¤ºåŠ¹æœ
 	bool m_isEnable;
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNOTEPITCHBEND_PITCHBEND_INFO m_PitchBend[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 
 };

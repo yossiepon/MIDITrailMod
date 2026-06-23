@@ -1,114 +1,132 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MTGraphicCfgDlg
 //
-// �O���t�B�b�N�ݒ�_�C�A���O�N���X
+// グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
 #include "YNBaseLib.h"
-#include "DXRenderer.h"
 
 using namespace YNBaseLib;
 
+//multisample (MSAA) type range for the graphics config dialog
+//(was in the old DX9 DXRenderer.h; kept here, the dialog that owns it)
+#define DX_MULTI_SAMPLE_TYPE_MIN    (2)
+#define DX_MULTI_SAMPLE_TYPE_MAX    (16)
+
 
 //******************************************************************************
-// �O���t�B�b�N�ݒ��`
+// グラフィック設定定義
 //******************************************************************************
-//�A���`�G�C���A�V���O�F�}���`�T���v����ʃf�t�H���g
+//アンチエイリアシング：マルチサンプル種別デフォルト
 #define MT_GRAPHIC_MULTI_SAMPLE_TYPE_DEF  (0)  //OFF
 
+//ced 20260628: スーパーサンプリング(SSAA)倍率（1=OFF, 2..4）
+#define DX_SUPER_SAMPLE_MIN          (2)
+#define DX_SUPER_SAMPLE_MAX          (4)
+#define MT_GRAPHIC_SUPER_SAMPLE_DEF  (1)  //OFF(=1倍)
+
 
 //******************************************************************************
-// �O���t�B�b�N�ݒ�_�C�A���O�N���X
+// グラフィック設定ダイアログクラス
 //******************************************************************************
 class MTGraphicCfgDlg
 {
 public:
 
-	//�R���X�g���N�^�^�f�X�g���N�^
+	//コンストラクタ／デストラクタ
 	MTGraphicCfgDlg(void);
 	virtual ~MTGraphicCfgDlg(void);
 
-	//�A���`�G�C���A�V���O�T�|�[�g���ݒ�
+	//アンチエイリアシングサポート情報設定
 	void SetAntialiasSupport(unsigned long multiSampleType, bool isSupport);
 
-	//�\���F�_�C�A���O��������܂Ő����Ԃ��Ȃ�
+	//表示：ダイアログが閉じられるまで制御を返さない
 	int Show(HWND hParentWnd);
 
-	//�p�����[�^�ύX�m�F
+	//パラメータ変更確認
 	bool IsChanged();
 
 private:
 
-	//�E�B���h�E�v���V�[�W������p�|�C���^
+	//ウィンドウプロシージャ制御用ポインタ
 	static MTGraphicCfgDlg* m_pThis;
 
-	//�A�v���P�[�V�����C���X�^���X
+	//アプリケーションインスタンス
 	HINSTANCE m_hInstance;
 
-	//�E�B���h�E�n���h��
+	//ウィンドウハンドル
 	HWND m_hWnd;
 
-	//�ݒ�t�@�C��
+	//設定ファイル
 	YNConfFile m_ConfFile;
 
-	//�R���{�{�b�N�X�̃E�B���h�E�n���h��
+	//コンボボックスのウィンドウハンドル
 	HWND m_hComboMultiSampleType;
 	bool m_MultSampleTypeSupport[DX_MULTI_SAMPLE_TYPE_MAX+1];
 
-	//�w�i�摜�t�@�C���p�X�G�f�B�b�g�{�b�N�X�̃E�B���h�E�n���h��
+	//ced 20260628: スーパーサンプリング(SSAA)コンボ
+	HWND m_hComboSuperSample;
+
+	//背景画像ファイルパスエディットボックスのウィンドウハンドル
 	HWND m_hEditImageFilePath;
 	
-	//�l���������g�嗦�G�f�B�b�g�{�b�N�X�̃E�B���h�E�n���h��
+	//四分音符長拡大率エディットボックスのウィンドウハンドル
 	HWND m_hEditQuarterNoteLengthMag;
 
-	//�A���`�G�C���A�V���O�ݒ�
+	//アンチエイリアシング設定
 	unsigned long m_MultiSampleType;
 
-	//�w�i�摜�t�@�C���p�X
-	WCHAR m_ImageFilePath[_MAX_PATH];
+	//ced 20260628: スーパーサンプリング倍率（1=OFF）
+	unsigned long m_SuperSample;
+
+	//背景画像ファイルパス
+	TCHAR m_ImageFilePath[_MAX_PATH];
 	
-	//�l���������g�嗦
+	//四分音符長拡大率
 	int m_QuarterNoteLengthMag;
 
-	//�X�V�t���O
+	//更新フラグ
 	bool m_isChanged;
 
-	//�E�B���h�E�v���V�[�W��
+	//ウィンドウプロシージャ
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//�_�C�A���O�\�����O������
+	//ダイアログ表示直前初期化
 	int _OnInitDlg(HWND hDlg);
 
-	//�ݒ�t�@�C��������
+	//設定ファイル初期化
 	int _InitConfFile();
 
-	//�ݒ�t�@�C���ǂݍ���
+	//設定ファイル読み込み
 	int _LoadConf();
 
-	//�f�o�C�X�I���R���{�{�b�N�X������
+	//デバイス選択コンボボックス初期化
 	int _InitComboMultiSampleType(HWND hCombo, unsigned long selMultiSampleType);
 
-	//�w�i�摜�t�@�C���p�X������
+	//ced 20260628: スーパーサンプリングコンボ初期化
+	int _InitComboSuperSample(HWND hCombo, unsigned long selSuperSample);
+
+	//背景画像ファイルパス初期化
 	int _InitBackgroundImageFilePath();
 	
-	//�l�������ݒ菉����
+	//四分音符設定初期化
 	int _InitQuarterNote();
 
-	//�ۑ�����
+	//保存処理
 	int _Save();
 
-	//�w�i�摜�t�@�C���p�X�u���E�Y�{�^������
+	//背景画像ファイルパスブラウズボタン押下
 	int _OnBtnBrowse();
 
-	//�摜�t�@�C���I��
-	int _SelectImageFile(WCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
+	//画像ファイル選択
+	int _SelectImageFile(TCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
 
 };
 

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMFileReader
 //
-// •W€MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İƒNƒ‰ƒX
+// æ¨™æº–MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -29,52 +29,63 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// •W€MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İƒNƒ‰ƒX
+// æ¨™æº–MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMFileReader
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMFileReader(void);
 	~SMFileReader(void);
 
-	//ƒƒOo—Íæƒtƒ@ƒCƒ‹ƒpƒX“o˜^
+	//ãƒ­ã‚°å‡ºåŠ›å…ˆãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ç™»éŒ²
 	int SetLogPath(const WCHAR* pLogPath);
 
-	//•W€MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İ
-	int Load(const WCHAR* pSMFPath, SMSeqData* pMIDIData);
+	//æ¨™æº–MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+	int Load(const TCHAR* pSMFPath, SMSeqData* pMIDIData);
+	int LoadW(const wchar_t* pSMFPathW, SMSeqData* pMIDIData);
+
+	//Load progress callback (called while parsing SMF events)
+	typedef void (*LoadProgressFunc)(unsigned long current, unsigned long total, void* user);
+	static void SetLoadProgressCallback(LoadProgressFunc func, void* user);
 
 private:
 
-	//ƒ`ƒƒƒ“ƒNƒwƒbƒ_\‘¢
+	//Load progress callback (static)
+	static LoadProgressFunc s_LoadProgressFunc;
+	static void* s_LoadProgressUser;
+
+	int _LoadImpl(const wchar_t* pPathW, const TCHAR* pNameForLog, SMSeqData* pSeqData);
+
+	//ãƒãƒ£ãƒ³ã‚¯ãƒ˜ãƒƒãƒ€æ§‹é€ 
 
 	#pragma pack(push,1)
 
-	//SMFƒ`ƒƒƒ“ƒNƒ^ƒCƒv
+	//SMFãƒãƒ£ãƒ³ã‚¯ã‚¿ã‚¤ãƒ—
 	typedef struct {
-		unsigned char chunkType[4];		//ƒ`ƒƒƒ“ƒNƒ^ƒCƒv MThd/MTrk
-		unsigned long chunkSize;		//ƒ`ƒƒƒ“ƒNƒTƒCƒY
+		unsigned char chunkType[4];		//ãƒãƒ£ãƒ³ã‚¯ã‚¿ã‚¤ãƒ— MThd/MTrk
+		unsigned long chunkSize;		//ãƒãƒ£ãƒ³ã‚¯ã‚µã‚¤ã‚º
 	} SMFChunkTypeSection;
 
-	//SMFƒ`ƒƒƒ“ƒNƒf[ƒ^
+	//SMFãƒãƒ£ãƒ³ã‚¯ãƒ‡ãƒ¼ã‚¿
 	typedef struct {
-		unsigned short format;			//ƒtƒH[ƒ}ƒbƒg 0,1,2
-		unsigned short ntracks;			//ƒgƒ‰ƒbƒN”
-		unsigned short timeDivision;	//4•ª‰¹•„‚ ‚½‚è‚Ì•ª‰ğ”\
+		unsigned short format;			//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ 0,1,2
+		unsigned short ntracks;			//ãƒˆãƒ©ãƒƒã‚¯æ•°
+		unsigned short timeDivision;	//4åˆ†éŸ³ç¬¦ã‚ãŸã‚Šã®åˆ†è§£èƒ½
 	} SMFChunkDataSection;
 
-	//RIFFƒ`ƒƒƒ“ƒN
+	//RIFFãƒãƒ£ãƒ³ã‚¯
 	typedef struct {
-		unsigned char chunkID[4];		//ƒ`ƒƒƒ“ƒNID
-		unsigned long chunkSize;		//ƒ`ƒƒƒ“ƒNƒTƒCƒY
-		unsigned char format[4];		//ƒtƒH[ƒ}ƒbƒg
+		unsigned char chunkID[4];		//ãƒãƒ£ãƒ³ã‚¯ID
+		unsigned long chunkSize;		//ãƒãƒ£ãƒ³ã‚¯ã‚µã‚¤ã‚º
+		unsigned char format[4];		//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	} SMFRIFFChunkHeader;
 
-	//RIFFƒTƒuƒ`ƒƒƒ“ƒN
+	//RIFFã‚µãƒ–ãƒãƒ£ãƒ³ã‚¯
 	typedef struct {
-		unsigned char chunkID[4];		//ƒ`ƒƒƒ“ƒNID
-		unsigned long chunkSize;		//ƒ`ƒƒƒ“ƒNƒTƒCƒY
+		unsigned char chunkID[4];		//ãƒãƒ£ãƒ³ã‚¯ID
+		unsigned long chunkSize;		//ãƒãƒ£ãƒ³ã‚¯ã‚µã‚¤ã‚º
 	} SMFRIFFSubChunkHeader;
 
 	#pragma pack(pop)
@@ -106,7 +117,9 @@ private:
 	int _ReadTrackEvents(
 			HMMIO hFile,
 			unsigned long chunkSize,
-			SMTrack** pPtrTrack
+			SMTrack** pPtrTrack,
+			unsigned long trackIndex,   // for whole-file (not per-track) load progress
+			unsigned long trackCount
 		);
 
 	int _ReadDeltaTime(
@@ -186,7 +199,7 @@ private:
 				unsigned long size
 			);
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMFileReader&);
 	SMFileReader(const SMFileReader&);
 

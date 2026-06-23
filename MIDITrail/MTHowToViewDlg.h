@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTHowToViewDlg
 //
-// ‘€ì•û–@ƒ_ƒCƒAƒƒO
+// æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
@@ -12,17 +12,17 @@
 
 
 //******************************************************************************
-// ‘€ì•û–@ƒ_ƒCƒAƒƒO
+// æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //******************************************************************************
 class MTHowToViewDlg
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTHowToViewDlg(void);
 	virtual ~MTHowToViewDlg(void);
 
-	//•\Ž¦Fƒ_ƒCƒAƒƒO‚ª•Â‚¶‚ç‚ê‚é‚Ü‚Å§Œä‚ð•Ô‚³‚È‚¢
+	//è¡¨ç¤ºï¼šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¾ã§åˆ¶å¾¡ã‚’è¿”ã•ãªã„
 	int Show(HWND hParentWnd);
 
 private:
@@ -34,38 +34,38 @@ private:
 	unsigned long m_PageNo;
 	HWND m_hWnd;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒ|ƒCƒ“ƒ^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒã‚¤ãƒ³ã‚¿
 	static MTHowToViewDlg* m_pThis;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	HINSTANCE m_hInstance;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 	int _OnInitDlg(HWND hDlg);
 
-	//HowToƒrƒbƒgƒ}ƒbƒv“Ç‚Ýž‚Ý
+	//HowToãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—èª­ã¿è¾¼ã¿
 	int _LoadHowToBmp();
 
-	//HowToƒrƒbƒgƒ}ƒbƒv•`‰æ
+	//HowToãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—æç”»
 	int _DrawHowToBmp();
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void _Clear();
 
-	//Previousƒ{ƒ^ƒ“
+	//Previousãƒœã‚¿ãƒ³
 	int _OnPreviousButton();
 
-	//Nextƒ{ƒ^ƒ“
+	//Nextãƒœã‚¿ãƒ³
 	int _OnNextButton();
 
-	//‰æ‘œ•\Ž¦
+	//ç”»åƒè¡¨ç¤º
 	int _DrawHowToImage();
 
-	//ƒ{ƒ^ƒ“ó‘ÔXV
+	//ãƒœã‚¿ãƒ³çŠ¶æ…‹æ›´æ–°
 	void _UpdateButtonStatus();
 
 };

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPictBoardRingMod
 //
-// ƒsƒNƒ`ƒƒƒ{[ƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2025 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -16,14 +16,14 @@
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPictBoardRingMod::MTPictBoardRingMod(void)
 {
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPictBoardRingMod::~MTPictBoardRingMod(void)
 {
@@ -31,7 +31,7 @@ MTPictBoardRingMod::~MTPictBoardRingMod(void)
 }
 
 //******************************************************************************
-// ƒsƒNƒ`ƒƒƒ{[ƒh¶¬
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 //******************************************************************************
 int MTPictBoardRingMod::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -42,11 +42,11 @@ int MTPictBoardRingMod::Create(
 {
 	int result = 0;
 
-	//ƒm[ƒgƒfƒUƒCƒ“ModƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³Modã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	// Šî’êƒNƒ‰ƒX‚Ì¶¬ˆ—‚ğŒÄ‚Ño‚·
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆå‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	result = MTPictBoardRing::Create(pD3DDevice, pSceneName, pSeqData, isReverseMode);
 	if (result != 0) goto EXIT;
 
@@ -56,7 +56,7 @@ EXIT:;
 
 
 //******************************************************************************
-// ƒsƒNƒ`ƒƒƒ{[ƒh’¸“_¶¬
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTPictBoardRingMod::_CreateVertexOfBoard(
 		MTPICTBOARD_VERTEX* pVertex,
@@ -80,11 +80,11 @@ int MTPictBoardRingMod::_CreateVertexOfBoard(
 	D3DXVECTOR2 textureP1;
 	D3DXVECTOR2 textureP2;
 
-	//ƒeƒNƒXƒ`ƒƒƒNƒŠƒbƒv—Ìˆæ‚ÌÀ•W
-	clipAreaP1 = D3DXVECTOR2(0.0f, 0.0f);  //¶ã
-	clipAreaP2 = D3DXVECTOR2(1.0f, 1.0f);  //‰E‰º
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¯ãƒªãƒƒãƒ—é ˜åŸŸã®åº§æ¨™
+	clipAreaP1 = D3DXVECTOR2(0.0f, 0.0f);  //å·¦ä¸Š
+	clipAreaP2 = D3DXVECTOR2(1.0f, 1.0f);  //å³ä¸‹
 
-	//ƒeƒXƒNƒ`ƒƒXÀ•W
+	//ãƒ†ã‚¹ã‚¯ãƒãƒ£Xåº§æ¨™
 	if (isReverseMode) {
 		textureP1.x = clipAreaP1.x;
 		textureP1.y = clipAreaP2.y;
@@ -100,7 +100,7 @@ int MTPictBoardRingMod::_CreateVertexOfBoard(
 		direction = 1.0f;
 	}
 
-	//Šî€À•W
+	//åŸºæº–åº§æ¨™
 	chStep = m_NoteDesignMod.MTNoteDesignRing::GetChStep();
 	basePos = D3DXVECTOR3(
 				m_NoteDesignMod.MTNoteDesignRing::GetPlayPosX(0),
@@ -111,7 +111,7 @@ int MTPictBoardRingMod::_CreateVertexOfBoard(
 	basePos.x -= (boardWidth * m_NoteDesignMod.MTNoteDesignRing::GetPictBoardRelativePos());
 	basePos.x -= GetRippleMargin();
 
-	//’¸“_ì¬FX²‰ñ‚è‚Ì‰~“›
+	//é ‚ç‚¹ä½œæˆï¼šXè»¸å›ã‚Šã®å††ç­’
 	virtexIndexStart = virtexIndex;
 	pVertex[virtexIndex].p = basePos;
 	pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
@@ -126,7 +126,7 @@ int MTPictBoardRingMod::_CreateVertexOfBoard(
 	for (i = 1; i < SM_MAX_NOTE_NUM; i++) {
 		virtexIndex++;
 		
-		//‰ñ“]Œã‚Ì’¸“_
+		//å›è»¢å¾Œã®é ‚ç‚¹
 		angle = (360.0f / (float)SM_MAX_NOTE_NUM) * (float)i;
 		rotatedPos = DXH::RotateYZ(0.0f, 0.0f, basePos, angle);
 		pVertex[virtexIndex].p = rotatedPos;
@@ -140,20 +140,20 @@ int MTPictBoardRingMod::_CreateVertexOfBoard(
 		pVertex[virtexIndex].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		pVertex[virtexIndex].t = D3DXVECTOR2(textureP2.x, textureP1.y + (direction * (float)i / (float)SM_MAX_NOTE_NUM));
 		
-		//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@
-		//  ’¼‘O‚Ì’¸“_0,1‚Æ’Ç‰Á‚µ‚½’¸“_2,3‚ÅOŠpŒ`0-1-3‚Æ0-3-2‚ğ’Ç‰Á
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡
+		//  ç›´å‰ã®é ‚ç‚¹0,1ã¨è¿½åŠ ã—ãŸé ‚ç‚¹2,3ã§ä¸‰è§’å½¢0-1-3ã¨0-3-2ã‚’è¿½åŠ 
 		//  1+--+3-+--+--+--
 		//   | /| /| /| /|  ..
 		//   |/ |/ |/ |/ |  ..
 		//  0+--+2-+--+--+--
-		pIndex[(i-1)*6 + 0] = (i-1)*2 + 0;  //0 1‚Â–Ú‚ÌOŠpŒ`
-		pIndex[(i-1)*6 + 1] = (i-1)*2 + 1;  //1 1‚Â–Ú‚ÌOŠpŒ`
-		pIndex[(i-1)*6 + 2] = (i-1)*2 + 3;  //3 1‚Â–Ú‚ÌOŠpŒ`
-		pIndex[(i-1)*6 + 3] = (i-1)*2 + 0;  //0 2‚Â–Ú‚ÌOŠpŒ`
-		pIndex[(i-1)*6 + 4] = (i-1)*2 + 3;  //3 2‚Â–Ú‚ÌOŠpŒ`
-		pIndex[(i-1)*6 + 5] = (i-1)*2 + 2;  //2 2‚Â–Ú‚ÌOŠpŒ`
+		pIndex[(i-1)*6 + 0] = (i-1)*2 + 0;  //0 1ã¤ç›®ã®ä¸‰è§’å½¢
+		pIndex[(i-1)*6 + 1] = (i-1)*2 + 1;  //1 1ã¤ç›®ã®ä¸‰è§’å½¢
+		pIndex[(i-1)*6 + 2] = (i-1)*2 + 3;  //3 1ã¤ç›®ã®ä¸‰è§’å½¢
+		pIndex[(i-1)*6 + 3] = (i-1)*2 + 0;  //0 2ã¤ç›®ã®ä¸‰è§’å½¢
+		pIndex[(i-1)*6 + 4] = (i-1)*2 + 3;  //3 2ã¤ç›®ã®ä¸‰è§’å½¢
+		pIndex[(i-1)*6 + 5] = (i-1)*2 + 2;  //2 2ã¤ç›®ã®ä¸‰è§’å½¢
 	}
-	//ÅŒã‚Ì’¸“_2,3‚ÍÅ‰0,1‚Ì’¸“_‚Æ“¯‚¶iƒŠƒ“ƒO‚ğ•Â‚¶‚éj
+	//æœ€å¾Œã®é ‚ç‚¹2,3ã¯æœ€åˆ0,1ã®é ‚ç‚¹ã¨åŒã˜ï¼ˆãƒªãƒ³ã‚°ã‚’é–‰ã˜ã‚‹ï¼‰
 	virtexIndex++;
 	pVertex[virtexIndex] =pVertex[0];
 	pVertex[virtexIndex].t = D3DXVECTOR2(textureP1.x, textureP2.y);
@@ -161,19 +161,19 @@ int MTPictBoardRingMod::_CreateVertexOfBoard(
 	pVertex[virtexIndex] =pVertex[1];
 	pVertex[virtexIndex].t = D3DXVECTOR2(textureP2.x, textureP2.y);
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@iƒŠƒ“ƒO‚ğ•Â‚¶‚éj
-	pIndex[(i-1)*6 + 0] = (i-1)*2 + 0;  //0 1‚Â–Ú‚ÌOŠpŒ`
-	pIndex[(i-1)*6 + 1] = (i-1)*2 + 1;  //1 1‚Â–Ú‚ÌOŠpŒ`
-	pIndex[(i-1)*6 + 2] = (i-1)*2 + 3;  //3 1‚Â–Ú‚ÌOŠpŒ`
-	pIndex[(i-1)*6 + 3] = (i-1)*2 + 0;  //0 2‚Â–Ú‚ÌOŠpŒ`
-	pIndex[(i-1)*6 + 4] = (i-1)*2 + 3;  //3 2‚Â–Ú‚ÌOŠpŒ`
-	pIndex[(i-1)*6 + 5] = (i-1)*2 + 2;  //2 2‚Â–Ú‚ÌOŠpŒ`
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ï¼ˆãƒªãƒ³ã‚°ã‚’é–‰ã˜ã‚‹ï¼‰
+	pIndex[(i-1)*6 + 0] = (i-1)*2 + 0;  //0 1ã¤ç›®ã®ä¸‰è§’å½¢
+	pIndex[(i-1)*6 + 1] = (i-1)*2 + 1;  //1 1ã¤ç›®ã®ä¸‰è§’å½¢
+	pIndex[(i-1)*6 + 2] = (i-1)*2 + 3;  //3 1ã¤ç›®ã®ä¸‰è§’å½¢
+	pIndex[(i-1)*6 + 3] = (i-1)*2 + 0;  //0 2ã¤ç›®ã®ä¸‰è§’å½¢
+	pIndex[(i-1)*6 + 4] = (i-1)*2 + 3;  //3 2ã¤ç›®ã®ä¸‰è§’å½¢
+	pIndex[(i-1)*6 + 5] = (i-1)*2 + 2;  //2 2ã¤ç›®ã®ä¸‰è§’å½¢
 
 	return result;
 }
 
 //******************************************************************************
-// ”g–ä•`‰æƒ}[ƒWƒ“æ“¾
+// æ³¢ç´‹æç”»ãƒãƒ¼ã‚¸ãƒ³å–å¾—
 //******************************************************************************
 float MTPictBoardRingMod::GetRippleMargin()
 {

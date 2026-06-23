@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXColorUtil
 //
-// ƒJƒ‰[ƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// ã‚«ãƒ©ãƒ¼ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -11,23 +11,23 @@
 #pragma once
 
 #include <d3d9.h>
-#include <d3dx9.h>
+#include "DXMath9.h"
 
 
 //******************************************************************************
-// ƒJƒ‰[ƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// ã‚«ãƒ©ãƒ¼ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class DXColorUtil
 {
 public:
 
-	//RGBAi16i”•¶Žš—ñj‚©‚ç‚Ì”’l•ÏŠ·
+	//RGBAï¼ˆ16é€²æ•°æ–‡å­—åˆ—ï¼‰ã‹ã‚‰ã®æ•°å€¤å¤‰æ›
 	static D3DXCOLOR MakeColorFromHexRGBA(const TCHAR* pHexRGBA);
 
-	//RGBi16i”•¶Žš—ñj‚©‚ç‚Ì”’l•ÏŠ·
+	//RGBï¼ˆ16é€²æ•°æ–‡å­—åˆ—ï¼‰ã‹ã‚‰ã®æ•°å€¤å¤‰æ›
 	static D3DCOLOR MakeColorFromHexRGB(const TCHAR* pHexRGB);
 
-	//”’l‚©‚çRGBAi16i”•¶Žš—ñj‚Ö‚Ì•ÏŠ·
+	//æ•°å€¤ã‹ã‚‰RGBAï¼ˆ16é€²æ•°æ–‡å­—åˆ—ï¼‰ã¸ã®å¤‰æ›
 	static void MakeHexRGBAFromColor(
 						D3DXCOLOR color,
 						TCHAR* pHexRGBA,
@@ -36,11 +36,11 @@ public:
 
 private:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	DXColorUtil(void);
 	virtual ~DXColorUtil(void);
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹ÖŽ~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const DXColorUtil&);
 	DXColorUtil(const DXColorUtil&);
 

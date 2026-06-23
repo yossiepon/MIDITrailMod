@@ -1,8 +1,8 @@
-#//******************************************************************************
+ï»¿#//******************************************************************************
 //
 // Simple MIDI Library / SMMsgParser
 //
-// ƒƒbƒZ[ƒW‰ğÍƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è§£æã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -19,37 +19,38 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// ƒƒbƒZ[ƒW‰ğÍƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è§£æã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMMsgParser
 {
 public:
 
-	//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWí•Ê
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç¨®åˆ¥
 	enum Message {
-		MsgUnknown,		//ƒƒbƒZ[ƒW•s–¾
-		MsgPlayStatus,	//‰‰‘tó‘Ô’Ê’m
-		MsgPlayTime,	//‰‰‘tŠÔ’Ê’m
-		MsgTempo,		//ƒeƒ“ƒ|•ÏX’Ê’m
-		MsgBar,			//¬ß”Ô†’Ê’m
-		MsgBeat,		//”q‹L†•ÏX’Ê’m
-		MsgNoteOff,		//ƒm[ƒgOFF’Ê’m
-		MsgNoteOn,		//ƒm[ƒgON’Ê’m
-		MsgPitchBend,	//ƒsƒbƒ`ƒxƒ“ƒh’Ê’m
-		MsgSkipStart,	//ƒXƒLƒbƒvŠJn’Ê’m
-		MsgSkipEnd,		//ƒXƒLƒbƒvI—¹’Ê’m
-		MsgAllNoteOff	//ƒI[ƒ‹ƒm[ƒgOFF’Ê’m
+		MsgUnknown,		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¸æ˜
+		MsgPlayStatus,	//æ¼”å¥çŠ¶æ…‹é€šçŸ¥
+		MsgPlayTime,	//æ¼”å¥æ™‚é–“é€šçŸ¥
+		MsgMarker,		//ãƒãƒ¼ã‚«ãƒ¼
+		MsgTempo,		//ãƒ†ãƒ³ãƒå¤‰æ›´é€šçŸ¥
+		MsgBar,			//å°ç¯€ç•ªå·é€šçŸ¥
+		MsgBeat,		//æ‹å­è¨˜å·å¤‰æ›´é€šçŸ¥
+		MsgNoteOff,		//ãƒãƒ¼ãƒˆOFFé€šçŸ¥
+		MsgNoteOn,		//ãƒãƒ¼ãƒˆONé€šçŸ¥
+		MsgPitchBend,	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰é€šçŸ¥
+		MsgSkipStart,	//ã‚¹ã‚­ãƒƒãƒ—é–‹å§‹é€šçŸ¥
+		MsgSkipEnd,		//ã‚¹ã‚­ãƒƒãƒ—çµ‚äº†é€šçŸ¥
+		MsgAllNoteOff	//ã‚ªãƒ¼ãƒ«ãƒãƒ¼ãƒˆOFFé€šçŸ¥
 	};
 
-	//‰‰‘tó‘Ô
+	//æ¼”å¥çŠ¶æ…‹
 	enum PlayStatus {
-		StatusUnknown,	//ƒƒbƒZ[ƒW•s–¾
-		StatusStop,		//’â~
-		StatusPlay,		//‰‰‘t
-		StatusPause		//ˆê’â~
+		StatusUnknown,	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ä¸æ˜
+		StatusStop,		//åœæ­¢
+		StatusPlay,		//æ¼”å¥
+		StatusPause		//ä¸€æ™‚åœæ­¢
 	};
 
-	//ƒXƒLƒbƒv•ûŒü
+	//ã‚¹ã‚­ãƒƒãƒ—æ–¹å‘
 	enum SkipDirection {
 		SkipBack,
 		SkipForward
@@ -57,49 +58,51 @@ public:
 
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMMsgParser(void);
 	virtual ~SMMsgParser(void);
 
-	//ƒƒbƒZ[ƒW‰ğÍ
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è§£æ
 	void Parse(unsigned long param1, unsigned long param2);
 
-	//ƒƒbƒZ[ƒWí•Êæ“¾
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç¨®åˆ¥å–å¾—
 	Message GetMsg();
 
-	//‰‰‘tó‘Ôæ“¾
+	//æ¼”å¥çŠ¶æ…‹å–å¾—
 	PlayStatus GetPlayStatus();
 
-	//‰‰‘tŠÔæ“¾
+	//æ¼”å¥æ™‚é–“å–å¾—
 	unsigned long GetPlayTimeSec();
 	unsigned long GetPlayTimeMSec();
 	unsigned long GetPlayTickTime();
 
-	//ƒeƒ“ƒ|æ“¾
+	//ãƒ†ãƒ³ãƒå–å¾—
 	unsigned long GetTempoBPM();
 
-	//¬ß”Ô†æ“¾
+	//å°ç¯€ç•ªå·å–å¾—
 	unsigned long GetBarNo();
 
-	//”q‹L†æ“¾
+	//æ‹å­è¨˜å·å–å¾—
 	unsigned long GetBeatNumerator();
 	unsigned long GetBeatDenominator();
 
-	//ƒm[ƒgON/OFFî•ñæ“¾
+	//ãƒãƒ¼ãƒˆON/OFFæƒ…å ±å–å¾—
 	unsigned char GetPortNo();
 	unsigned char GetChNo();
 	unsigned char GetNoteNo();
 	unsigned char GetVelocity();
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñæ“¾
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±å–å¾—
 	short GetPitchBendValue();
 	unsigned char GetPitchBendSensitivity();
 
-	//ƒXƒLƒbƒvŠJnî•ñæ“¾
+	//ã‚¹ã‚­ãƒƒãƒ—é–‹å§‹æƒ…å ±å–å¾—
 	SkipDirection GetSkipStartDirection();
 
-	//ƒXƒLƒbƒvI—¹î•ñæ“¾
+	//ã‚¹ã‚­ãƒƒãƒ—çµ‚äº†æƒ…å ±å–å¾—
 	unsigned long GetSkipEndNotesCount();
+
+	char* GetMarker();
 
 private:
 

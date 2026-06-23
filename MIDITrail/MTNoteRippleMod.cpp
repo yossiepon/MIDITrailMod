@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteRippleMod
 //
-// ƒm[ƒg”g–ä•`‰æModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -11,25 +11,46 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTNoteRippleMod.h"
-#include "MTNoteLyrics.h"
+#include "MTNoteDesignRing.h"
 #include <new>
 
 using namespace YNBaseLib;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteRippleMod::MTNoteRippleMod(void) : MTNoteRipple()
 {
-	m_pNoteDesignMod = NULL;
 	m_PlayTimeMSec = 0;
 	m_CurNoteIndex = 0;
 	m_pNoteStatusMod = NULL;
+	m_pTrackNo = NULL;
+	m_RingMode = false;
 	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTERIPPLE_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// note design: ring positions in ring mode (else the base planar design).
+// m_pNoteDesign drives GetNoteBoxCenterPosX (ripple center); the ripple params
+// still come from m_NoteDesignMod.
+//******************************************************************************
+int MTNoteRippleMod::_CreateNoteDesign()
+{
+	int result = 0;
+	try {
+		if (m_RingMode) m_pNoteDesign = new MTNoteDesignRing();
+		else            m_pNoteDesign = new MTNoteDesign();
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteRippleMod::~MTNoteRippleMod(void)
 {
@@ -37,7 +58,7 @@ MTNoteRippleMod::~MTNoteRippleMod(void)
 }
 
 //******************************************************************************
-// ƒm[ƒg”g–ä¶¬
+// ãƒãƒ¼ãƒˆæ³¢ç´‹ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRippleMod::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -49,18 +70,26 @@ int MTNoteRippleMod::Create(
 	int result = 0;
 	SMTrack track;
 
-	//‰ğ•ú‚¨‚æ‚Ñƒm[ƒgƒfƒUƒCƒ“ModƒIƒuƒWƒFƒNƒg¶¬‚ÍŠî’êƒNƒ‰ƒX‚©‚çƒI[ƒoƒ‰ƒCƒhŒo—R‚Ås‚¤
+	Release();
 
-	// Šî’êƒNƒ‰ƒX‚Ì¶¬ˆ—‚ğŒÄ‚Ño‚·
-	result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
+	//// åŸºåº•ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆå‡¦ç†ã‚’å‘¼ã³å‡ºã™
+	//result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
+	//if (result != 0) goto EXIT;
+
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³Modã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
+	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒgƒ‰ƒbƒNæ“¾
+	//ãƒˆãƒ©ãƒƒã‚¯å–å¾—
 	result = pSeqData->GetMergedTrack(&track);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒŠƒXƒgæ“¾FstartTime, endTime ‚ÍƒŠƒAƒ‹ƒ^ƒCƒ€(msec)
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—ï¼šstartTime, endTime ã¯ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ (msec)
 	result = track.GetNoteListWithRealTime(&m_NoteListRT, pSeqData->GetTimeDivision());
+	if (result != 0) goto EXIT;
+
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆå‡¦ç†ã‚’å‘¼ã³å‡ºã™
+	result = MTNoteRipple::Create(pD3DDevice, pSceneName, pSeqData, pNotePitchBend);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -68,28 +97,115 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“¶¬
+// M3 DX11: device-free init (note design Mod + RT note list + status), no device
 //******************************************************************************
-int MTNoteRippleMod::_CreateNoteDesign()
+int MTNoteRippleMod::InitForDX11(const TCHAR* pSceneName, SMSeqData* pSeqData, MTNotePitchBend* pNotePitchBend)
 {
 	int result = 0;
+	SMTrack track;
 
-	try {
-		//ƒm[ƒgƒfƒUƒCƒ“ModƒIƒuƒWƒFƒNƒg¶¬
-		m_pNoteDesignMod = new MTNoteDesignMod();
-		m_pNoteDesign = m_pNoteDesignMod;
+	Release();
+
+	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
+	if (result != 0) goto EXIT;
+	// live monitor: no song -> leave m_NoteListRT empty; notes are appended in real
+	// time via AddLiveNoteOn and the ripple is clocked by timeGetTime.
+	if (pSeqData != NULL)
+	{
+		// realtime note list derived from the cached tick list (no second pairing).
+		// In channel+track color mode also pull the aligned source-track array so
+		// the ripple color matches the note color (not the channel fallback).
+		SMNoteList* pRT = NULL;
+		if (m_NoteDesignMod.IsTrackColorMode()) {
+			const unsigned char* pTrk = NULL;
+			result = pSeqData->GetMergedNoteListWithTrackRealTime(&pRT, &pTrk);
+			if (result != 0) goto EXIT;
+			result = m_NoteListRT.CopyFrom(pRT);
+			if (result != 0) goto EXIT;
+			// own a copy: the shared array is freed after the scene build
+			unsigned long cnt = m_NoteListRT.GetSize();
+			if ((cnt > 0) && (pTrk != NULL)) {
+				try { m_pTrackNo = new unsigned char[cnt]; }
+				catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+				memcpy(m_pTrackNo, pTrk, cnt);
+			}
+		}
+		else {
+			result = pSeqData->GetMergedNoteListRealTime(&pRT);
+			if (result != 0) goto EXIT;
+			result = m_NoteListRT.CopyFrom(pRT);
+			if (result != 0) goto EXIT;
+		}
 	}
-	catch (std::bad_alloc) {
-		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
-		goto EXIT;
-	}
+
+	// device-free parts of the base MTNoteRipple::Create
+	result = _CreateNoteDesign();
+	if (result != 0) goto EXIT;
+	result = m_pNoteDesign->Initialize(pSceneName, pSeqData);
+	if (result != 0) goto EXIT;
+	result = _CreateNoteStatus();   // Mod override -> allocates m_pNoteStatusMod
+	if (result != 0) goto EXIT;
+
+	m_pNotePitchBend = pNotePitchBend;
+	m_isEnable = true;
+	m_CurNoteIndex = 0;
+	m_PlayTimeMSec = 0;
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ”g–ä‚Ì’¸“_XV
+// M3 DX11: update ripple quads into a CPU buffer (device-free).
+//   Replicates _UpdateStatusOfRipple + _UpdateVertexOfRipple, writing to pBuf.
+//   Buffer must hold 6 * MAX_RIPPLE * GetOverwriteTimes() vertices.
+//******************************************************************************
+int MTNoteRippleMod::UpdateCPU(D3DXVECTOR3 camVector, void* pVertexBuf, unsigned long* pActiveNum)
+{
+	MTNOTERIPPLE_VERTEX* pVertex = (MTNOTERIPPLE_VERTEX*)pVertexBuf;
+	unsigned long i = 0, j = 0, activeNoteNum = 0;
+	unsigned long overwriteTimes = 0;
+
+	m_CamVector = camVector;
+
+	if (!m_isEnable || m_isSkipping || (m_pNoteStatusMod == NULL) || (pVertex == NULL)) {
+		m_ActiveNoteNum = 0;
+		if (pActiveNum != NULL) *pActiveNum = 0;
+		return 0;
+	}
+
+	_UpdateStatusOfRipple(NULL);   // status logic only (no device use)
+
+	overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
+	if (overwriteTimes == 0) overwriteTimes = 1;
+	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
+
+	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
+		if (!m_pNoteStatusMod[i].isActive) continue;
+		SMNote note;
+		if (m_NoteListRT.GetNote(m_pNoteStatusMod[i].index, &note) != 0) continue;
+		if ((note.portNo < MTNOTERIPPLE_MAX_PORT_NUM)
+		 && (m_KeyDownRate[note.portNo][note.chNo][note.noteNo] < m_pNoteStatusMod[i].keyDownRate)) {
+			for (j = 0; j < overwriteTimes; j++) {
+				_SetVertexPosition(&(pVertex[activeNoteNum*6]), note, &(m_pNoteStatusMod[i]), i);
+				activeNoteNum++;
+			}
+			m_KeyDownRate[note.portNo][note.chNo][note.noteNo] = m_pNoteStatusMod[i].keyDownRate;
+		}
+	}
+	m_ActiveNoteNum = activeNoteNum;
+	if (pActiveNum != NULL) *pActiveNum = activeNoteNum;
+	return 0;
+}
+
+unsigned long MTNoteRippleMod::GetOverwriteTimes()
+{
+	unsigned long n = m_NoteDesignMod.GetRippleOverwriteTimes();
+	return (n == 0) ? 1 : n;
+}
+
+//******************************************************************************
+// æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteRippleMod::_TransformRipple(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -97,14 +213,14 @@ int MTNoteRippleMod::_TransformRipple(
 {
 	int result = 0;
 
-	//ƒXƒLƒbƒv’†‚È‚ç‰½‚à‚µ‚È‚¢
+	//ã‚¹ã‚­ãƒƒãƒ—ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (m_isSkipping) goto EXIT;
 
-	//”g–ä‚Ìó‘ÔXV
+	//æ³¢ç´‹ã®çŠ¶æ…‹æ›´æ–°
 	result = _UpdateStatusOfRipple(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//”g–ä‚Ì’¸“_XV
+	//æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 	result = _UpdateVertexOfRipple(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -113,7 +229,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”g–ä‚Ìó‘ÔXV
+// æ³¢ç´‹ã®çŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 int MTNoteRippleMod::_UpdateStatusOfRipple(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -125,18 +241,18 @@ int MTNoteRippleMod::_UpdateStatusOfRipple(
 	bool isRegist = false;
 	SMNote note;
 
-	//”g–äƒfƒBƒPƒCEƒŠƒŠ[ƒXŠÔ(msec)
-	unsigned long decayDuration = m_pNoteDesignMod->GetRippleDecayDuration();
-	unsigned long releaseDuration   = m_pNoteDesignMod->GetRippleReleaseDuration();
+	//æ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤ãƒ»ãƒªãƒªãƒ¼ã‚¹æ™‚é–“(msec)
+	unsigned long decayDuration = m_NoteDesignMod.GetRippleDecayDuration();
+	unsigned long releaseDuration   = m_NoteDesignMod.GetRippleReleaseDuration();
 
-	//ƒm[ƒgî•ñ‚ğXV‚·‚é
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 		if (m_pNoteStatusMod[i].isActive) {
-			//ƒm[ƒgî•ñæ“¾
+			//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 			result = m_NoteListRT.GetNote(m_pNoteStatusMod[i].index, &note);
 			if (result != 0) goto EXIT;
 
-			//”­‰¹’†ƒm[ƒgó‘ÔXV
+			//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 			result = _UpdateNoteStatus(
 							m_PlayTimeMSec,
 							decayDuration,
@@ -148,28 +264,28 @@ int MTNoteRippleMod::_UpdateStatusOfRipple(
 		}
 	}
 
-	//‘O‰ñŒŸõI—¹ˆÊ’u‚©‚ç”­‰¹ŠJnƒm[ƒg‚ğŒŸõ
+	//å‰å›æ¤œç´¢çµ‚äº†ä½ç½®ã‹ã‚‰ç™ºéŸ³é–‹å§‹ãƒãƒ¼ãƒˆã‚’æ¤œç´¢
 	while (m_CurNoteIndex < m_NoteListRT.GetSize()) {
-		//ƒm[ƒgî•ñæ“¾
+		//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 		result = m_NoteListRT.GetNote(m_CurNoteIndex, &note);
 		if (result != 0) goto EXIT;
 
-		//‰‰‘tŠÔ‚ªƒL[‰Ÿ‰ºŠJnŠÔi”­‰¹ŠJn’¼‘Oj‚É‚½‚Ç‚è‚Â‚¢‚Ä‚¢‚È‚¯‚ê‚ÎŒŸõI—¹
+		//æ¼”å¥æ™‚é–“ãŒã‚­ãƒ¼æŠ¼ä¸‹é–‹å§‹æ™‚é–“ï¼ˆç™ºéŸ³é–‹å§‹ç›´å‰ï¼‰ã«ãŸã©ã‚Šã¤ã„ã¦ã„ãªã‘ã‚Œã°æ¤œç´¢çµ‚äº†
 		if (m_PlayTimeMSec < note.startTime) {
 			break;
 		}
 
-		//ƒm[ƒgî•ñ“o˜^”»’è
+		//ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²åˆ¤å®š
 		isRegist = false;
 		if ((note.startTime <= m_PlayTimeMSec) && (m_PlayTimeMSec <= note.endTime) && (note.lyric[0] == '\0')) {
 			isRegist = true;
 		}
 
-		//ƒm[ƒgî•ñ“o˜^
-		//  ƒL[‰º~’†^ã¸’†‚Ìî•ñ‚à“o˜^‘ÎÛ‚Æ‚µ‚Ä‚¢‚é‚½‚ß
-		//  “¯ˆêƒm[ƒg‚Å•¡”ƒGƒ“ƒgƒŠ‚³‚ê‚éê‡‚ª‚ ‚é‚±‚Æ‚É’ˆÓ‚·‚é
+		//ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²
+		//  ã‚­ãƒ¼ä¸‹é™ä¸­ï¼ä¸Šæ˜‡ä¸­ã®æƒ…å ±ã‚‚ç™»éŒ²å¯¾è±¡ã¨ã—ã¦ã„ã‚‹ãŸã‚
+		//  åŒä¸€ãƒãƒ¼ãƒˆã§è¤‡æ•°ã‚¨ãƒ³ãƒˆãƒªã•ã‚Œã‚‹å ´åˆãŒã‚ã‚‹ã“ã¨ã«æ³¨æ„ã™ã‚‹
 		if (isRegist) {
-			//‚·‚Å‚É“¯ˆêƒCƒ“ƒfƒbƒNƒX‚Å“o˜^Ï‚İ‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+			//ã™ã§ã«åŒä¸€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã§ç™»éŒ²æ¸ˆã¿ã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 			isFound = false;
 			for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 				if ((m_pNoteStatusMod[i].isActive)
@@ -178,7 +294,7 @@ int MTNoteRippleMod::_UpdateStatusOfRipple(
 					break;
 				}
 			}
-			//‹ó‚¢‚Ä‚¢‚é‚Æ‚±‚ë‚É’Ç‰Á‚·‚é
+			//ç©ºã„ã¦ã„ã‚‹ã¨ã“ã‚ã«è¿½åŠ ã™ã‚‹
 			if (!isFound) {
 				for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 					if (!(m_pNoteStatusMod[i].isActive)) {
@@ -190,7 +306,7 @@ int MTNoteRippleMod::_UpdateStatusOfRipple(
 					}
 				}
 			}
-			//”­‰¹’†ƒm[ƒgó‘ÔXV
+			//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 			result = _UpdateNoteStatus(
 							m_PlayTimeMSec,
 							decayDuration,
@@ -208,7 +324,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgó‘ÔXV
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 int MTNoteRippleMod::_UpdateNoteStatus(
 		unsigned long playTimeMSec,
@@ -220,9 +336,9 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 {
 	int result= 0;
 
-	//”­‰¹I—¹ƒm[ƒg
+	//ç™ºéŸ³çµ‚äº†ãƒãƒ¼ãƒˆ
 	if(playTimeMSec > note.endTime) {
-		//ƒm[ƒgî•ñ‚ğ”jŠü
+		//ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç ´æ£„
 		pNoteStatus->isActive = false;
 		pNoteStatus->keyStatus = BeforeNoteON;
 		pNoteStatus->index = 0;
@@ -237,7 +353,7 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 	float sustainRatio = 0.4f;
 	float releaseRatio = 0.3f;
 
-	//”g–äƒfƒBƒPƒCŠÔ‚ª”­‰¹’·‚æ‚è’·‚¢ê‡AƒfƒBƒPƒC‚ğÁ‰¹ŠÔ‚Ü‚Å‚ÉC³‚·‚é
+	//æ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“ãŒç™ºéŸ³é•·ã‚ˆã‚Šé•·ã„å ´åˆã€ãƒ‡ã‚£ã‚±ã‚¤ã‚’æ¶ˆéŸ³æ™‚é–“ã¾ã§ã«ä¿®æ­£ã™ã‚‹
 	if(noteLen < decayDuration) {
 
 		//decayDuration = noteLen;
@@ -247,7 +363,7 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 		//sustainRatio = 0.0f;
 		//releaseRatio = 0.0f;
 	}
-	//”g–äƒfƒBƒPƒC{ƒŠƒŠ[ƒXŠÔ‚ª”­‰¹’·‚æ‚è’·‚¢ê‡AƒŠƒŠ[ƒXŠJnŠÔ‚ğƒfƒBƒPƒCŠÔŒo‰ß’¼Œã‚ÉC³‚·‚é
+	//æ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤ï¼‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“ãŒç™ºéŸ³é•·ã‚ˆã‚Šé•·ã„å ´åˆã€ãƒªãƒªãƒ¼ã‚¹é–‹å§‹æ™‚é–“ã‚’ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“çµŒéç›´å¾Œã«ä¿®æ­£ã™ã‚‹
 	else if(noteLen < (decayDuration + releaseDuration)) {
 
 		releaseDuration = noteLen - decayDuration;
@@ -255,7 +371,7 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 		sustainRatio = 0.0f;
 		releaseRatio = 0.5f;
 	}
-	//”­‰¹’·‚ªi”g–äƒfƒBƒPƒC{ƒŠƒŠ[ƒXŠÔj~‚QˆÈ“à‚Ìê‡AØ‚è‘Ö‚¦“_‚ğƒfƒBƒPƒCI—¹ŠÔ‚ÆƒŠƒŠ[ƒXŠJnŠÔ‚Ì’†ŠÔ‚É‚·‚é
+	//ç™ºéŸ³é•·ãŒï¼ˆæ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤ï¼‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“ï¼‰Ã—ï¼’ä»¥å†…ã®å ´åˆã€åˆ‡ã‚Šæ›¿ãˆç‚¹ã‚’ãƒ‡ã‚£ã‚±ã‚¤çµ‚äº†æ™‚é–“ã¨ãƒªãƒªãƒ¼ã‚¹é–‹å§‹æ™‚é–“ã®ä¸­é–“ã«ã™ã‚‹
 	else if(noteLen < (decayDuration + releaseDuration) * 2) {
 
 		unsigned long midTime = (note.startTime + decayDuration) / 2 + (note.endTime - releaseDuration) / 2;
@@ -268,7 +384,7 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 		releaseRatio = 0.5f;
 	}
 
-	//ƒm[ƒgONŒãiŒ¸Š’†j
+	//ãƒãƒ¼ãƒˆONå¾Œï¼ˆæ¸›è¡°ä¸­ï¼‰
 	if (playTimeMSec < (note.startTime + decayDuration)) {
 		pNoteStatus->keyStatus = BeforeNoteON;
 		if (decayDuration == 0) {
@@ -278,7 +394,7 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 			pNoteStatus->keyDownRate = decayRatio * (float)(playTimeMSec - note.startTime) / (float)decayDuration;
 		}
 	}
-	//ƒm[ƒgONŒ¸ŠŒã‚©‚çƒŠƒŠ[ƒX‘O‚Ü‚Å
+	//ãƒãƒ¼ãƒˆONæ¸›è¡°å¾Œã‹ã‚‰ãƒªãƒªãƒ¼ã‚¹å‰ã¾ã§
 	else if (((note.startTime + decayDuration) <= playTimeMSec)
 			&& (playTimeMSec <= (note.endTime - releaseDuration))) {
 		pNoteStatus->keyStatus = NoteON;
@@ -291,7 +407,7 @@ int MTNoteRippleMod::_UpdateNoteStatus(
 			pNoteStatus->keyDownRate = decayRatio + sustainRatio;
 		}
 	}
-	//ƒm[ƒgOFF‘OiƒŠƒŠ[ƒX’†j
+	//ãƒãƒ¼ãƒˆOFFå‰ï¼ˆãƒªãƒªãƒ¼ã‚¹ä¸­ï¼‰
 	else if (((note.endTime - releaseDuration) < playTimeMSec) && (playTimeMSec <= note.endTime)) {
 		pNoteStatus->keyStatus = AfterNoteOFF;
 		if (releaseDuration == 0) {
@@ -308,7 +424,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”g–ä‚Ì’¸“_XV
+// æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteRippleMod::_UpdateVertexOfRipple(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -327,35 +443,35 @@ int MTNoteRippleMod::_UpdateVertexOfRipple(
 		goto EXIT;
 	}
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
 	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTERIPPLE_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
-	// ”g–äã‘‚«‰ñ”
-	unsigned long overwriteTimes = m_pNoteDesignMod->GetRippleOverwriteTimes();
+	// æ³¢ç´‹ä¸Šæ›¸ãå›æ•°
+	unsigned long overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
 
-	//”­‰¹’†ƒm[ƒg‚Ì”g–ä‚É‚Â‚¢‚Ä’¸“_‚ğXV
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã®æ³¢ç´‹ã«ã¤ã„ã¦é ‚ç‚¹ã‚’æ›´æ–°
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 		if (m_pNoteStatusMod[i].isActive) {
-			//ƒm[ƒgî•ñæ“¾
+			//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 			SMNote note;
 			result = m_NoteListRT.GetNote(m_pNoteStatusMod[i].index, &note);
 			if (result != 0) goto EXIT;
 
-			//”­‰¹‘ÎÛƒL[‚ğ‰ñ“]
-			//  ‚·‚Å‚É“¯ˆêƒm[ƒg‚É‘Î‚µ‚Ä’¸“_‚ğXV‚µ‚Ä‚¢‚éê‡
-			//  ‰Ÿ‰º—¦‚ª‘O‰ñ‚æ‚è‚àã‰ñ‚éê‡‚ÉŒÀ‚è’¸“_‚ğXV‚·‚é
+			//ç™ºéŸ³å¯¾è±¡ã‚­ãƒ¼ã‚’å›è»¢
+			//  ã™ã§ã«åŒä¸€ãƒãƒ¼ãƒˆã«å¯¾ã—ã¦é ‚ç‚¹ã‚’æ›´æ–°ã—ã¦ã„ã‚‹å ´åˆ
+			//  æŠ¼ä¸‹ç‡ãŒå‰å›ã‚ˆã‚Šã‚‚ä¸Šå›ã‚‹å ´åˆã«é™ã‚Šé ‚ç‚¹ã‚’æ›´æ–°ã™ã‚‹
 			if ((note.portNo < MTNOTERIPPLE_MAX_PORT_NUM)
 			 && (m_KeyDownRate[note.portNo][note.chNo][note.noteNo] < m_pNoteStatusMod[i].keyDownRate)) {
-				//’¸“_XVF”g–ä‚Ì•`‰æˆÊ’u‚ÆƒTƒCƒY‚ğ•Ï‚¦‚é
+				//é ‚ç‚¹æ›´æ–°ï¼šæ³¢ç´‹ã®æç”»ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’å¤‰ãˆã‚‹
 				for(j = 0; j < overwriteTimes; j++) {
 					_SetVertexPosition(
-							&(pVertex[activeNoteNum*6]),	//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-							note,							//ƒm[ƒgî•ñ
-							&(m_pNoteStatusMod[i]),			//ƒm[ƒgó‘Ô
-							i								//ƒm[ƒgó‘Ô“o˜^ƒCƒ“ƒfƒbƒNƒXˆÊ’u
+							&(pVertex[activeNoteNum*6]),	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+							note,							//ãƒãƒ¼ãƒˆæƒ…å ±
+							&(m_pNoteStatusMod[i]),			//ãƒãƒ¼ãƒˆçŠ¶æ…‹
+							i								//ãƒãƒ¼ãƒˆçŠ¶æ…‹ç™»éŒ²ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½ç½®
 						);
 			 		activeNoteNum++;
 			 	}
@@ -367,7 +483,7 @@ int MTNoteRippleMod::_UpdateVertexOfRipple(
 	}
 	m_ActiveNoteNum = activeNoteNum;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -376,7 +492,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTNoteRippleMod::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -391,35 +507,32 @@ int MTNoteRippleMod::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFæZ  ˆø”1FƒeƒNƒXƒ`ƒƒ  ˆø”2Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šä¹—ç®—  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£  å¼•æ•°2ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFæZ  ˆø”1FƒeƒNƒXƒ`ƒƒ  ˆø”2Fƒ|ƒŠƒSƒ“
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
-	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
-	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èFƒuƒŒƒ“ƒhw’è’l
-	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, m_pNoteDesignMod->GetRippleSrcBlend());
-	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, m_pNoteDesignMod->GetRippleDestBlend());
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®šå€¤
+	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, m_NoteDesignMod.GetRippleSrcBlend());
+	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, m_NoteDesignMod.GetRippleDestBlend());
 
-	//ƒvƒŠƒ~ƒeƒBƒu•`‰æ
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 	if (m_ActiveNoteNum > 0) {
-		//ƒoƒbƒtƒ@‘S‘Ì‚Å‚È‚­”g–ä‚Ì”‚É‡‚í‚¹‚Ä•`‰æ‚·‚éƒvƒŠƒ~ƒeƒBƒu‚ğŒ¸‚ç‚·
+		//ãƒãƒƒãƒ•ã‚¡å…¨ä½“ã§ãªãæ³¢ç´‹ã®æ•°ã«åˆã‚ã›ã¦æç”»ã™ã‚‹ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æ¸›ã‚‰ã™
 		result = m_Primitive.Draw(pD3DDevice, m_pTexture, 2 * m_ActiveNoteNum);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èF’Êí‚ÌƒAƒ‹ƒtƒ@‡¬
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šé€šå¸¸ã®ã‚¢ãƒ«ãƒ•ã‚¡åˆæˆ
 	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
@@ -428,29 +541,37 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTNoteRippleMod::Release()
 {
-	delete m_pNoteDesignMod;
-	m_pNoteDesignMod = NULL;
-	m_pNoteDesign = NULL;
+	if(m_pNoteStatusMod != NULL) {
+		delete [] m_pNoteStatusMod;
+		m_pNoteStatusMod = NULL;
+	}
+	if(m_pTrackNo != NULL) {
+		delete [] m_pTrackNo;
+		m_pTrackNo = NULL;
+	}
 
-	delete [] m_pNoteStatusMod;
-	m_pNoteStatusMod = NULL;
+	//clear the realtime note list + scan cursor so a rebuild (esp. switching from
+	//playback to the live monitor) does NOT keep replaying the previous song's notes
+	m_NoteListRT.Clear();
+	m_CurNoteIndex = 0;
+	m_ActiveNoteNum = 0;
 
 	MTNoteRipple::Release();
 }
 
 //******************************************************************************
-// ƒm[ƒgî•ñ”z—ñ¶¬
+// ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRippleMod::_CreateNoteStatus()
 {
 	int result = 0;
 	unsigned long i = 0;
 
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	try {
 		m_pNoteStatusMod = new NoteStatusMod[MTNOTERIPPLE_MAX_RIPPLE_NUM];
 	}
@@ -471,7 +592,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_¶¬
+// é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRippleMod::_CreateVertex(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -481,29 +602,29 @@ int MTNoteRippleMod::_CreateVertex(
 	unsigned long vertexNum = 0;
 	MTNOTERIPPLE_VERTEX* pVertex = NULL;
 
-	// ”g–äã‘‚«‰ñ”
-	unsigned long overwriteTimes = m_pNoteDesignMod->GetRippleOverwriteTimes();
+	// æ³¢ç´‹ä¸Šæ›¸ãå›æ•°
+	unsigned long overwriteTimes = m_NoteDesignMod.GetRippleOverwriteTimes();
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTNOTERIPPLE_VERTEX),//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLELIST			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTNOTERIPPLE_VERTEX),//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLELIST			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * overwriteTimes;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
 	ZeroMemory(pVertex, sizeof(MTNOTERIPPLE_VERTEX) * 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM * overwriteTimes);
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -512,7 +633,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_‚ÌÀ•Wİ’è
+// é ‚ç‚¹ã®åº§æ¨™è¨­å®š
 //******************************************************************************
 int MTNoteRippleMod::_SetVertexPosition(
 		MTNOTERIPPLE_VERTEX* pVertex,
@@ -534,7 +655,7 @@ int MTNoteRippleMod::_SetVertexPosition(
 	pbValue =       m_pNotePitchBend->GetValue(note.portNo, note.chNo);
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•Wæ“¾
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒåº§æ¨™å–å¾—
 	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					note.portNo,
@@ -544,22 +665,22 @@ int MTNoteRippleMod::_SetVertexPosition(
 					pbSensitivity
 				);
 
-	//”g–äƒTƒCƒY
-	rh = m_pNoteDesignMod->GetRippleHeight(pNoteStatus->keyDownRate);
-	rw = m_pNoteDesignMod->GetRippleWidth(pNoteStatus->keyDownRate);
+	//æ³¢ç´‹ã‚µã‚¤ã‚º
+	rh = m_NoteDesignMod.GetRippleHeight(pNoteStatus->keyDownRate);
+	rw = m_NoteDesignMod.GetRippleWidth(pNoteStatus->keyDownRate);
 
-	//”g–ä•`‰æŠÔŠu
-	spacing = m_pNoteDesignMod->GetRippleSpacing();
+	//æ³¢ç´‹æç”»é–“éš”
+	spacing = m_NoteDesignMod.GetRippleSpacing();
 
-	//•`‰æI—¹Šm”F
+	//æç”»çµ‚äº†ç¢ºèª
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
 		goto EXIT;
 	}
 
-	//”g–ä‚ğÄ¶•½–Êã‚©‚çƒJƒƒ‰‘¤‚É­‚µ‚¾‚¯•‚‚©‚¹‚Ä•`‰æ‚·‚é
-	//‚Ü‚½”g–ä“¯m‚ª“¯ˆê•½–Êã‚Åd‚È‚ç‚È‚¢‚æ‚¤‚É•`‰æ‚·‚é
-	//  Zƒtƒ@ƒCƒeƒBƒ“ƒO‚É‚æ‚Á‚Ä”­¶‚·‚é‚¿‚ç‚Â‚«‚â‚©‚·‚ê‚ğ‰ñ”ğ‚·‚é
-	//  ƒOƒ‰ƒtƒBƒbƒNƒJ[ƒh‚É‚æ‚Á‚ÄŒ»Û‚ªˆÙ‚È‚é
+	//æ³¢ç´‹ã‚’å†ç”Ÿå¹³é¢ä¸Šã‹ã‚‰ã‚«ãƒ¡ãƒ©å´ã«å°‘ã—ã ã‘æµ®ã‹ã›ã¦æç”»ã™ã‚‹
+	//ã¾ãŸæ³¢ç´‹åŒå£«ãŒåŒä¸€å¹³é¢ä¸Šã§é‡ãªã‚‰ãªã„ã‚ˆã†ã«æç”»ã™ã‚‹
+	//  Zãƒ•ã‚¡ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã«ã‚ˆã£ã¦ç™ºç”Ÿã™ã‚‹ã¡ã‚‰ã¤ãã‚„ã‹ã™ã‚Œã‚’å›é¿ã™ã‚‹
+	//  ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚«ãƒ¼ãƒ‰ã«ã‚ˆã£ã¦ç¾è±¡ãŒç•°ãªã‚‹
 	if (center.x < m_CamVector.x) {
 		center.x -= spacing * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM - (rippleNo + 1));
 	}
@@ -567,7 +688,12 @@ int MTNoteRippleMod::_SetVertexPosition(
 		center.x -= spacing * (MTNOTELYRICS_MAX_LYRICS_NUM + rippleNo + 1);
 	}
 
-	//’¸“_À•W
+	//ripple position offset ([Ripple] OffsetY/OffsetZ): shift along pitch (Y)
+	//and depth/channel (Z), independent of the ripple size
+	center.y += m_NoteDesignMod.GetRippleOffsetY();
+	center.z += m_NoteDesignMod.GetRippleOffsetZ();
+
+	//é ‚ç‚¹åº§æ¨™
 	pVertex[0].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z+(rw/2.0f));
 	pVertex[1].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z-(rw/2.0f));
 	pVertex[2].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z+(rw/2.0f));
@@ -575,27 +701,28 @@ int MTNoteRippleMod::_SetVertexPosition(
 	pVertex[4].p = pVertex[1].p;
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
 
-	//–@ü
-// >>> revert 20250616 yossiepon begin
+	//æ³•ç·š
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
-// <<< revert 20250616 yossiepon end
 
-	//“§–¾“x‚ğ™X‚É—‚Æ‚·
-	alpha = m_pNoteDesignMod->GetRippleAlpha(pNoteStatus->keyDownRate);
+	//é€æ˜åº¦ã‚’å¾ã€…ã«è½ã¨ã™
+	alpha = m_NoteDesignMod.GetRippleAlpha(pNoteStatus->keyDownRate);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+	//channel+track color mode: match the note color (track-channel loop) via the
+	//note's source track; otherwise the per-channel/scale design color.
+	if (m_pTrackNo != NULL) {
+		color = m_NoteDesignMod.GetTrackChannelColor(m_pTrackNo[pNoteStatus->index], note.chNo);
+	}
+	else {
+		color = m_pNoteDesign->GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+	}
 	for (i = 0; i < 6; i++) {
-		color = m_pNoteDesign->GetNoteBoxColor(
-			note.portNo,
-			note.chNo,
-			note.noteNo
-		);
 		pVertex[i].c = D3DXCOLOR(color.r, color.g, color.b, alpha);
 	}
 
-	//ƒeƒNƒXƒ`ƒƒÀ•W
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
 	pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
 	pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
@@ -608,7 +735,7 @@ EXIT:
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTNoteRippleMod::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -616,24 +743,24 @@ void MTNoteRippleMod::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 	
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 10.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.5f;
 	pMaterial->Emissive.g = 0.5f;
 	pMaterial->Emissive.b = 0.5f;
@@ -641,7 +768,7 @@ void MTNoteRippleMod::_MakeMaterial(
 }
 
 //******************************************************************************
-// ‰‰‘tŠÔİ’è
+// æ¼”å¥æ™‚é–“è¨­å®š
 //******************************************************************************
 void MTNoteRippleMod::SetPlayTimeMSec(
 		unsigned long playTimeMsec
@@ -651,7 +778,40 @@ void MTNoteRippleMod::SetPlayTimeMSec(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// live monitor: append a real-time ripple note (fixed brief hold), and recycle
+// the growing list when it is idle so the live session does not leak memory.
+//******************************************************************************
+int MTNoteRippleMod::AddLiveNoteOn(
+		unsigned char portNo, unsigned char chNo, unsigned char noteNo,
+		unsigned long startMsec
+	)
+{
+	SMNote note;
+	ZeroMemory(&note, sizeof(note));
+	note.portNo = portNo;
+	note.chNo = chNo;
+	note.noteNo = noteNo;
+	note.velocity = 100;
+	note.startTime = startMsec;
+	note.endTime = startMsec + 150;   // brief hold so the ripple pulses then decays
+	note.lyric[0] = '\0';
+	return m_NoteListRT.AddNote(note);
+}
+
+void MTNoteRippleMod::RecycleLiveListIfIdle()
+{
+	// safe to clear only when every note has been scanned and no ripple is active
+	// (active ripples hold an index into the list)
+	if ((m_NoteListRT.GetSize() > 4096)
+	 && (m_CurNoteIndex >= m_NoteListRT.GetSize())
+	 && (m_ActiveNoteNum == 0)) {
+		m_NoteListRT.Clear();
+		m_CurNoteIndex = 0;
+	}
+}
+
+//******************************************************************************
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTNoteRippleMod::Reset()
 {

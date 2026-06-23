@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteRippleMod
 //
-// ƒm[ƒg”g–ä•`‰æModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -15,24 +15,24 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘åƒ|[ƒg”
+//æœ€å¤§ãƒãƒ¼ãƒˆæ•°
 #define MTNOTERIPPLE_MAX_PORT_NUM  (8)
 
 
 //******************************************************************************
-// ƒm[ƒg”g–ä•`‰æModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteRippleMod : public MTNoteRipple
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteRippleMod(void);
 	virtual ~MTNoteRippleMod(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
@@ -40,20 +40,34 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//•`‰æ
+	//æç”»
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	virtual void Release();
 
-	//‰‰‘tŠÔİ’è
+	//æ¼”å¥æ™‚é–“è¨­å®š
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	virtual void Reset();
+
+	//M3 DX11: device-free helpers (vertex layout XYZ|NORMAL|DIFFUSE|TEX1 == DXP11_VERTEX)
+	int InitForDX11(const TCHAR* pSceneName, SMSeqData* pSeqData, MTNotePitchBend* pNotePitchBend);
+	int UpdateCPU(D3DXVECTOR3 camVector, void* pVertexBuf, unsigned long* pActiveNum);
+	unsigned long GetOverwriteTimes();
+
+	//live monitor: feed real-time note-ons (timeGetTime-based ms) into the ripple
+	int  AddLiveNoteOn(unsigned char portNo, unsigned char chNo, unsigned char noteNo, unsigned long startMsec);
+	void RecycleLiveListIfIdle();
+
+	//M4.13 (DX11): use the Ring note design for ripple positions (Ring scene).
+	//Set before InitForDX11. The ripple parameters still come from m_NoteDesignMod.
+	void SetRingMode(bool isRing) { m_RingMode = isRing; }
 
 protected:
 
+	virtual int _CreateNoteDesign();
 	virtual int _CreateNoteStatus();
 	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
@@ -62,15 +76,15 @@ protected:
 
 private:
 
-	//ƒm[ƒg”­‰¹ó‘Ô\‘¢‘Ì
-	//ƒL[ó‘Ô
+	//ãƒãƒ¼ãƒˆç™ºéŸ³çŠ¶æ…‹æ§‹é€ ä½“
+	//ã‚­ãƒ¼çŠ¶æ…‹
 	enum KeyStatus {
 		BeforeNoteON,
 		NoteON,
 		AfterNoteOFF
 	};
 
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatusMod {
 		bool isActive;
 		KeyStatus keyStatus;
@@ -78,25 +92,28 @@ private:
 		float keyDownRate;
 	};
 
-protected:
-
-	//ƒm[ƒgƒfƒUƒCƒ“
-	MTNoteDesignMod *m_pNoteDesignMod;
-
 private:
 
-	//ƒm[ƒgƒŠƒXƒg
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
+	MTNoteDesignMod m_NoteDesignMod;
+
+	//M4.13 (DX11): ring-scene mode (use MTNoteDesignRing for positions)
+	bool m_RingMode;
+
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 	SMNoteList m_NoteListRT;
 
-	//”­‰¹’†ƒm[ƒgŠÇ—
+	//per-note source track aligned with m_NoteListRT (channel+track color mode);
+	//owned copy, NULL when not in track color mode. Indexed by the note's list index.
+	unsigned char* m_pTrackNo;
+
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆç®¡ç†
 	unsigned long m_PlayTimeMSec;
 	unsigned long m_CurNoteIndex;
 	float m_KeyDownRate[MTNOTERIPPLE_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
-	//ƒm[ƒg”­‰¹ó‘Ôî•ñ
+	//ãƒãƒ¼ãƒˆç™ºéŸ³çŠ¶æ…‹æƒ…å ±
 	NoteStatusMod* m_pNoteStatusMod;
-
-	virtual int _CreateNoteDesign();
 
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,

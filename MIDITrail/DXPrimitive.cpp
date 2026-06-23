@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXPrimitive
 //
-// ƒvƒŠƒ~ƒeƒBƒu•`‰æƒNƒ‰ƒX
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXPrimitive::DXPrimitive(void)
 {
@@ -31,10 +31,11 @@ DXPrimitive::DXPrimitive(void)
 	m_IndexNum = 0;
 	m_IsVertexLocked = false;
 	m_IsIndexLocked = false;
+	m_MaxPrimitiveNum = 0;
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXPrimitive::~DXPrimitive(void)
 {
@@ -42,7 +43,7 @@ DXPrimitive::~DXPrimitive(void)
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void DXPrimitive::Release()
 {
@@ -61,7 +62,7 @@ void DXPrimitive::Release()
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int DXPrimitive::Initialize(
 		unsigned long vertexSize,
@@ -82,7 +83,7 @@ int DXPrimitive::Initialize(
 }
 
 //******************************************************************************
-// ’¸“_ƒoƒbƒtƒ@¶¬
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 //******************************************************************************
 int DXPrimitive::CreateVertexBuffer(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -101,15 +102,15 @@ int DXPrimitive::CreateVertexBuffer(
 		goto EXIT;
 	}
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	if (vertexNum > 0) {
 		hresult = pD3DDevice->CreateVertexBuffer(
-						m_VertexSize * vertexNum,	//’¸“_ƒoƒbƒtƒ@‚Ì‘S‘ÌƒTƒCƒY(byte)
-						D3DUSAGE_WRITEONLY,			//’¸“_ƒoƒbƒtƒ@‚Ìg—p•û–@
-						m_FVFFormat,				//’¸“_‚ÌFVFƒtƒH[ƒ}ƒbƒg
-						D3DPOOL_MANAGED,			//ƒŠƒ\[ƒX”z’uêŠ‚Æ‚È‚éƒƒ‚ƒŠƒNƒ‰ƒX
-						&m_pVertexBuffer,			//ì¬‚³‚ê‚½’¸“_ƒoƒbƒtƒ@
-						NULL						//—\–ñƒpƒ‰ƒ[ƒ^
+						m_VertexSize * vertexNum,	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å…¨ä½“ã‚µã‚¤ã‚º(byte)
+						D3DUSAGE_WRITEONLY,			//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ä½¿ç”¨æ–¹æ³•
+						m_FVFFormat,				//é ‚ç‚¹ã®FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+						D3DPOOL_MANAGED,			//ãƒªã‚½ãƒ¼ã‚¹é…ç½®å ´æ‰€ã¨ãªã‚‹ãƒ¡ãƒ¢ãƒªã‚¯ãƒ©ã‚¹
+						&m_pVertexBuffer,			//ä½œæˆã•ã‚ŒãŸé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
+						NULL						//äºˆç´„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, vertexNum);
@@ -124,7 +125,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 //******************************************************************************
 int DXPrimitive::CreateIndexBuffer(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -143,16 +144,16 @@ int DXPrimitive::CreateIndexBuffer(
 		goto EXIT;
 	}
 	
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	if (indexNum > 0) {
 		hresult = pD3DDevice->CreateIndexBuffer(
 						sizeof(unsigned long) * indexNum,
-												//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ì‘S‘ÌƒTƒCƒY(byte)
-						D3DUSAGE_WRITEONLY,		//g—p•û–@
-						D3DFMT_INDEX32,			//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒtƒH[ƒ}ƒbƒg
-						D3DPOOL_MANAGED,		//ƒŠƒ\[ƒX”z’uêŠ‚Æ‚È‚éƒƒ‚ƒŠƒNƒ‰ƒX
-						&m_pIndexBuffer,		//ì¬‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@
-						NULL					//—\–ñƒpƒ‰ƒ[ƒ^
+												//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®å…¨ä½“ã‚µã‚¤ã‚º(byte)
+						D3DUSAGE_WRITEONLY,		//ä½¿ç”¨æ–¹æ³•
+						D3DFMT_INDEX32,			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+						D3DPOOL_MANAGED,		//ãƒªã‚½ãƒ¼ã‚¹é…ç½®å ´æ‰€ã¨ãªã‚‹ãƒ¡ãƒ¢ãƒªã‚¯ãƒ©ã‚¹
+						&m_pIndexBuffer,		//ä½œæˆã•ã‚ŒãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡
+						NULL					//äºˆç´„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, indexNum);
@@ -167,7 +168,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_“o˜^
+// é ‚ç‚¹ç™»éŒ²
 //******************************************************************************
 int DXPrimitive::SetAllVertex(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -177,11 +178,11 @@ int DXPrimitive::SetAllVertex(
 	int result = 0;
 	void* pBuf = NULL;
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = LockVertex(&pBuf);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_ƒf[ƒ^‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
 	try {
 		memcpy(pBuf, pVertex, (m_VertexSize * m_VertexNum));
 	}
@@ -196,7 +197,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒCƒ“ƒfƒbƒNƒX“o˜^
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ç™»éŒ²
 //******************************************************************************
 int DXPrimitive::SetAllIndex(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -206,11 +207,11 @@ int DXPrimitive::SetAllIndex(
 	int result = 0;
 	unsigned long* pBuf = NULL;
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = LockIndex(&pBuf);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_ƒf[ƒ^‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€
 	try {
 		memcpy(pBuf, pIndex, (sizeof(unsigned long)* m_IndexNum));
 	}
@@ -225,7 +226,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹İ’è
+// ãƒãƒ†ãƒªã‚¢ãƒ«è¨­å®š
 //******************************************************************************
 void DXPrimitive::SetMaterial(
 		D3DMATERIAL9 material
@@ -235,7 +236,7 @@ void DXPrimitive::SetMaterial(
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 void DXPrimitive::Transform(
 		D3DXMATRIX worldMatrix
@@ -245,12 +246,13 @@ void DXPrimitive::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int DXPrimitive::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice,
 		LPDIRECT3DTEXTURE9 pTexture,
-		int drawPrimitiveNum
+		int drawPrimitiveNum,
+		int startPrimitiveNum
 	)
 {
 	int result = 0;
@@ -262,22 +264,22 @@ int DXPrimitive::Draw(
 		goto EXIT;
 	}
 
-	//’¸“_‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//é ‚ç‚¹ãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_pVertexBuffer == NULL) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
 	hresult = pD3DDevice->SetStreamSource(
-					0,					//ƒXƒgƒŠ[ƒ€”Ô†
-					m_pVertexBuffer,	//ƒXƒgƒŠ[ƒ€ƒf[ƒ^
-					0,					//’¸“_ƒf[ƒ^ŠJnƒIƒtƒZƒbƒgˆÊ’u(bytes)
-					m_VertexSize		//’¸“_ƒf[ƒ^\‘¢‘ÌƒTƒCƒY
+					0,					//ã‚¹ãƒˆãƒªãƒ¼ãƒ ç•ªå·
+					m_pVertexBuffer,	//ã‚¹ãƒˆãƒªãƒ¼ãƒ ãƒ‡ãƒ¼ã‚¿
+					0,					//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é–‹å§‹ã‚ªãƒ•ã‚»ãƒƒãƒˆä½ç½®(bytes)
+					m_VertexSize		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚µã‚¤ã‚º
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, m_VertexSize);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
 	if (m_pIndexBuffer != NULL) {
 		hresult = pD3DDevice->SetIndices(m_pIndexBuffer);
 		if (FAILED(hresult)) {
@@ -286,41 +288,41 @@ int DXPrimitive::Draw(
 		}
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®š
 	hresult = pD3DDevice->SetFVF(m_FVFFormat);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, m_FVFFormat);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éƒ}ƒeƒŠƒAƒ‹‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’è¨­å®š
 	hresult = pD3DDevice->SetMaterial(&m_Material);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉƒeƒNƒXƒ`ƒƒ‚ğİ’èFƒXƒe[ƒW0
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®šï¼šã‚¹ãƒ†ãƒ¼ã‚¸0
 	hresult = pD3DDevice->SetTexture(0, pTexture);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pTexture);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉˆÚ“®ƒ}ƒgƒŠƒbƒNƒX‚ğƒZƒbƒg
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ç§»å‹•ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 	hresult = pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldMatrix);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒvƒŠƒ~ƒeƒBƒu”æ“¾
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°å–å¾—
 	result = _GetPrimitiveNum(&primitiveNum);
 	if (result != 0) goto EXIT;
 
-	//’¼ÚƒvƒŠƒ~ƒeƒBƒu”‚ğw’è‚³‚ê‚½ê‡‚Í‚»‚ê‚É]‚¤
+	//ç›´æ¥ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°ã‚’æŒ‡å®šã•ã‚ŒãŸå ´åˆã¯ãã‚Œã«å¾“ã†
 	if (drawPrimitiveNum > 0) {
-		//ƒoƒbƒtƒ@ƒTƒCƒY‚ğ’´‚¦‚½w’è‚ÍƒGƒ‰[
+		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆãŸæŒ‡å®šã¯ã‚¨ãƒ©ãƒ¼
 		if ((unsigned long)drawPrimitiveNum > primitiveNum) {
 			result = YN_SET_ERR("Program error.", drawPrimitiveNum, primitiveNum);
 			goto EXIT;
@@ -328,27 +330,46 @@ int DXPrimitive::Draw(
 		primitiveNum = drawPrimitiveNum;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX•t‚«ƒvƒŠƒ~ƒeƒBƒu‚Ì•`‰æ
-	if (m_pIndexBuffer != NULL) {
-		hresult = pD3DDevice->DrawIndexedPrimitive(
-						m_PrimitiveType,	//ƒvƒŠƒ~ƒeƒBƒuí•Ê
-						0,					//’¸“_ƒoƒbƒtƒ@ŠJnƒCƒ“ƒfƒbƒNƒX
-						0,					//’¸“_ƒoƒbƒtƒ@Å¬ƒCƒ“ƒfƒbƒNƒX
-						m_VertexNum,		//QÆ‚·‚é’¸“_‚Ì”
-						0,					//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ŠJnƒCƒ“ƒfƒbƒNƒX
-						primitiveNum		//ƒvƒŠƒ~ƒeƒBƒu”
-					);
-		if (FAILED(hresult)) {
-			result = YN_SET_ERR("DirectX API error.", hresult, primitiveNum);
-			goto EXIT;
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä»˜ããƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®æç”»
+	//Cache device MaxPrimitiveCount (max primitives per single draw call)
+	if (m_MaxPrimitiveNum == 0) {
+		D3DCAPS9 caps;
+		if (SUCCEEDED(pD3DDevice->GetDeviceCaps(&caps))) {
+			m_MaxPrimitiveNum = caps.MaxPrimitiveCount;
 		}
 	}
-	//ƒCƒ“ƒfƒbƒNƒX‚È‚µƒvƒŠƒ~ƒeƒBƒu‚Ì•`‰æ
+
+	//Indexed primitive draw, split into chunks so a huge note count cannot
+	//exceed the device MaxPrimitiveCount (which would drop the whole draw call
+	//and make notes disappear in dense passages)
+	if (m_pIndexBuffer != NULL) {
+		unsigned long drawnPrim = 0;
+		while (drawnPrim < primitiveNum) {
+			unsigned long chunkPrim = primitiveNum - drawnPrim;
+			if ((m_MaxPrimitiveNum > 0) && (chunkPrim > m_MaxPrimitiveNum)) {
+				chunkPrim = m_MaxPrimitiveNum;
+			}
+			hresult = pD3DDevice->DrawIndexedPrimitive(
+						m_PrimitiveType,	//primitive type
+						0,					//base vertex index
+						0,					//min vertex index
+						m_VertexNum,		//number of vertices
+						(startPrimitiveNum + drawnPrim) * 3,	//start index
+						chunkPrim			//primitive count
+					);
+			if (FAILED(hresult)) {
+				result = YN_SET_ERR("DirectX API error.", hresult, chunkPrim);
+				goto EXIT;
+			}
+			drawnPrim += chunkPrim;
+		}
+	}
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãªã—ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®æç”»
 	else {
 		hresult = pD3DDevice->DrawPrimitive(
-						m_PrimitiveType,	//ƒvƒŠƒ~ƒeƒBƒuí•Ê
-						0,					//’¸“_ƒoƒbƒtƒ@ŠJnƒCƒ“ƒfƒbƒNƒX
-						primitiveNum		//ƒvƒŠƒ~ƒeƒBƒu”
+						m_PrimitiveType,	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
+						0,					//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+						primitiveNum		//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, primitiveNum);
@@ -363,7 +384,7 @@ EXIT:;
 // >>> add 20120728 yossiepon begin
 
 //******************************************************************************
-// ‰ÌŒ•`‰æ
+// æ­Œè©æç”»
 //******************************************************************************
 int DXPrimitive::DrawLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -380,59 +401,59 @@ int DXPrimitive::DrawLyrics(
 		goto EXIT;
 	}
 
-	//’¸“_‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//é ‚ç‚¹ãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_pVertexBuffer == NULL) goto EXIT;
 
-	//ƒvƒŠƒ~ƒeƒBƒu”æ“¾
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°å–å¾—
 	primitiveNum = drawPrimitiveNum;
 
 	for(unsigned long i = 0; i < primitiveNum / 2; i++) {
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@‚ğİ’è
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
 		hresult = pD3DDevice->SetStreamSource(
-						0,					//ƒXƒgƒŠ[ƒ€”Ô†
-						m_pVertexBuffer,	//ƒXƒgƒŠ[ƒ€ƒf[ƒ^
-						m_VertexSize * 6 * i,	//’¸“_ƒf[ƒ^ŠJnƒIƒtƒZƒbƒgˆÊ’u(bytes)
-						m_VertexSize		//’¸“_ƒf[ƒ^\‘¢‘ÌƒTƒCƒY
+						0,					//ã‚¹ãƒˆãƒªãƒ¼ãƒ ç•ªå·
+						m_pVertexBuffer,	//ã‚¹ãƒˆãƒªãƒ¼ãƒ ãƒ‡ãƒ¼ã‚¿
+						m_VertexSize * 6 * i,	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é–‹å§‹ã‚ªãƒ•ã‚»ãƒƒãƒˆä½ç½®(bytes)
+						m_VertexSize		//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ã‚µã‚¤ã‚º
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, m_VertexSize);
 			goto EXIT;
 		}
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg‚ğİ’è
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®š
 		hresult = pD3DDevice->SetFVF(m_FVFFormat);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, m_FVFFormat);
 			goto EXIT;
 		}
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éƒ}ƒeƒŠƒAƒ‹‚ğİ’è
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’è¨­å®š
 		hresult = pD3DDevice->SetMaterial(&m_Material);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, 0);
 			goto EXIT;
 		}
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉƒeƒNƒXƒ`ƒƒ‚ğİ’èFƒXƒe[ƒW0
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®šï¼šã‚¹ãƒ†ãƒ¼ã‚¸0
 		hresult = pD3DDevice->SetTexture(0, pTextures[i]);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pTextures[i]);
 			goto EXIT;
 		}
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉˆÚ“®ƒ}ƒgƒŠƒbƒNƒX‚ğƒZƒbƒg
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ç§»å‹•ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 		hresult = pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldMatrix);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, 0);
 			goto EXIT;
 		}
 
-		//ƒCƒ“ƒfƒbƒNƒX‚È‚µƒvƒŠƒ~ƒeƒBƒu‚Ì•`‰æ
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãªã—ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®æç”»
 		hresult = pD3DDevice->DrawPrimitive(
-						m_PrimitiveType,	//ƒvƒŠƒ~ƒeƒBƒuí•Ê
-						0, //i * 2,				//’¸“_ƒoƒbƒtƒ@ŠJnƒCƒ“ƒfƒbƒNƒX
-						2					//ƒvƒŠƒ~ƒeƒBƒu”
+						m_PrimitiveType,	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
+						0, //i * 2,				//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+						2					//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, primitiveNum);
@@ -447,12 +468,12 @@ EXIT:;
 // <<< add 20120728 yossiepon end
 
 //******************************************************************************
-// ’¸“_ƒoƒbƒtƒ@ƒƒbƒN
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ­ãƒƒã‚¯
 //******************************************************************************
 int DXPrimitive::LockVertex(
 		void** pPtrVertex,
-		unsigned long offset,	//È—ª‚Íƒ[ƒ
-		unsigned long size		//È—ª‚Íƒ[ƒ
+		unsigned long offset,	//çœç•¥æ™‚ã¯ã‚¼ãƒ­
+		unsigned long size		//çœç•¥æ™‚ã¯ã‚¼ãƒ­
 	)
 {
 	int result = 0;
@@ -468,13 +489,13 @@ int DXPrimitive::LockVertex(
 		goto EXIT;
 	}
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN‚Æƒoƒbƒtƒ@ƒƒ‚ƒŠƒ|ƒCƒ“ƒ^æ“¾
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯ã¨ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªãƒã‚¤ãƒ³ã‚¿å–å¾—
 	if (m_pVertexBuffer != NULL) {
 		hresult = m_pVertexBuffer->Lock(
-						offset,		//ƒƒbƒN‚·‚é’¸“_‚ÌƒIƒtƒZƒbƒg
-						size,		//ƒƒbƒN‚·‚é’¸“_‚ÌƒTƒCƒY(byte)
-						pPtrVertex,	//ƒoƒbƒtƒ@ƒƒ‚ƒŠƒ|ƒCƒ“ƒ^
-						0			//ƒƒbƒLƒ“ƒOƒtƒ‰ƒO
+						offset,		//ãƒ­ãƒƒã‚¯ã™ã‚‹é ‚ç‚¹ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+						size,		//ãƒ­ãƒƒã‚¯ã™ã‚‹é ‚ç‚¹ã®ã‚µã‚¤ã‚º(byte)
+						pPtrVertex,	//ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªãƒã‚¤ãƒ³ã‚¿
+						0			//ãƒ­ãƒƒã‚­ãƒ³ã‚°ãƒ•ãƒ©ã‚°
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pPtrVertex);
@@ -489,7 +510,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_ƒoƒbƒtƒ@ƒƒbƒN‰ğœ
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ­ãƒƒã‚¯è§£é™¤
 //******************************************************************************
 int DXPrimitive::UnlockVertex()
 {
@@ -512,12 +533,12 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒƒbƒN
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ­ãƒƒã‚¯
 //******************************************************************************
 int DXPrimitive::LockIndex(
 		unsigned long** pPtrIndex,
-		unsigned long offset,	//È—ª‚Íƒ[ƒ
-		unsigned long size		//È—ª‚Íƒ[ƒ
+		unsigned long offset,	//çœç•¥æ™‚ã¯ã‚¼ãƒ­
+		unsigned long size		//çœç•¥æ™‚ã¯ã‚¼ãƒ­
 	)
 {
 	int result = 0;
@@ -533,13 +554,13 @@ int DXPrimitive::LockIndex(
 		goto EXIT;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒƒbƒN‚Æƒoƒbƒtƒ@ƒƒ‚ƒŠƒ|ƒCƒ“ƒ^æ“¾
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯ã¨ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªãƒã‚¤ãƒ³ã‚¿å–å¾—
 	if (m_pIndexBuffer != NULL) {
 		hresult = m_pIndexBuffer->Lock(
-						offset,		//ƒƒbƒN‚·‚éƒCƒ“ƒfƒbƒNƒX‚ÌƒIƒtƒZƒbƒg(byte)
-						size,		//ƒƒbƒN‚·‚éƒCƒ“ƒfƒbƒNƒX‚ÌƒTƒCƒY(byte)
-						(void**)pPtrIndex,	//ƒoƒbƒtƒ@ƒƒ‚ƒŠƒ|ƒCƒ“ƒ^
-						0			//ƒƒbƒLƒ“ƒOƒtƒ‰ƒO
+						offset,		//ãƒ­ãƒƒã‚¯ã™ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ(byte)
+						size,		//ãƒ­ãƒƒã‚¯ã™ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚µã‚¤ã‚º(byte)
+						(void**)pPtrIndex,	//ãƒãƒƒãƒ•ã‚¡ãƒ¡ãƒ¢ãƒªãƒã‚¤ãƒ³ã‚¿
+						0			//ãƒ­ãƒƒã‚­ãƒ³ã‚°ãƒ•ãƒ©ã‚°
 					);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, (DWORD64)pPtrIndex);
@@ -554,7 +575,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒƒbƒN‰ğœ
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ­ãƒƒã‚¯è§£é™¤
 //******************************************************************************
 int DXPrimitive::UnlockIndex()
 {
@@ -577,7 +598,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒvƒŠƒ~ƒeƒBƒu”æ“¾
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°å–å¾—
 //******************************************************************************
 int DXPrimitive::_GetPrimitiveNum(
 		unsigned long* pNum
@@ -647,7 +668,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒtƒHƒ‹ƒgƒ}ƒeƒŠƒAƒ‹
+// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒãƒ†ãƒªã‚¢ãƒ«
 //******************************************************************************
 void DXPrimitive::_GetDefaultMaterial(
 		D3DMATERIAL9* pMaterial
@@ -655,24 +676,24 @@ void DXPrimitive::_GetDefaultMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.0f;
 	pMaterial->Specular.g = 0.0f;
 	pMaterial->Specular.b = 0.0f;
 	pMaterial->Specular.a = 0.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 0.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.0f;
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;

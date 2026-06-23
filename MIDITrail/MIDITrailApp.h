@@ -1,10 +1,10 @@
-//******************************************************************************
+Ôªø//******************************************************************************
 //
 // MIDITrail / MIDITrailApp
 //
-// MIDITrail ÉAÉvÉäÉPÅ[ÉVÉáÉìÉNÉâÉX
+// MIDITrail „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„ÇØ„É©„Çπ
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -14,125 +14,131 @@
 #include "Commdlg.h"
 #include "YNBaseLib.h"
 #include "SMIDILib.h"
-#include "DXRenderer.h"
+#include "DXRenderer11.h"
+#include "MTKeyboard11.h"
+#include "MTFirstPersonCam.h"
+#include "DXNoteBox11.h"
+#include "DXNoteRain11.h"
+#include "DXNoteBoxRing11.h"
+#include "MTGridRing11.h"
+#include "MTTimeIndicatorRing11.h"
+#include "MTPictBoardRing11.h"
+#include "MTBackgroundImage11.h"
+#include "MTStars11.h"
+#include "MTNoteRipple11.h"
+#include "MTNoteLyrics11.h"
+#include "MTNoteBoxLive11.h"
+#include "MTNoteRainLive11.h"
+#include "MTGridBox11.h"
+#include "MTDashboard11.h"
+#include "MTTimeIndicator11.h"
+#include "MTPictBoard11.h"
+#include "MTKeyboardRain11.h"
+#include "MTNotePitchBend.h"
 #include "MTScene.h"
 #include "MTWindowSizeCfgDlg.h"
 #include "MTMIDIOUTCfgDlg.h"
 #include "MTMIDIINCfgDlg.h"
 #include "MTGraphicCfgDlg.h"
 #include "MTColorCfgDlg.h"
+#include "MTConfigManager11.h"
 #include "MTHowToViewDlg.h"
 #include "MTAboutDlg.h"
 #include "MTCmdLineParser.h"
-#include "MTGamePadCtrl.h"
 #include "MTFileList.h"
+#include "MTGamePadCtrl.h"
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ÉpÉâÉÅÅ[É^íËã`
+// „Éë„É©„É°„Éº„ÇøÂÆöÁæ©
 //******************************************************************************
-#define MAX_LOADSTRING  (256)
+#define MAX_LOADSTRING  (100)
 
-//ÉEÉBÉìÉhÉEÉXÉ^ÉCÉã
-//  WS_OVERLAPPEDWINDOW Ç©ÇÁéüÇÃÉXÉ^ÉCÉãÇçÌÇ¡ÇΩÇ‡ÇÃ
-//    WS_THICKFRAME   ÉTÉCÉYïœçXâ¬
+//„Ç¶„Ç£„É≥„Éâ„Ç¶„Çπ„Çø„Ç§„É´
+//  WS_OVERLAPPEDWINDOW „Åã„ÇâÊ¨°„ÅÆ„Çπ„Çø„Ç§„É´„ÇíÂâä„Å£„Åü„ÇÇ„ÅÆ
+//    WS_THICKFRAME   „Çµ„Ç§„Ç∫Â§âÊõ¥ÂèØ
 #define MIDITRAIL_WINDOW_STYLE  (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
 
-//å„ë±ãNìÆÉvÉçÉZÉXÇÃÉtÉ@ÉCÉãÉpÉXÉ|ÉXÉgí ím
+//ÂæåÁ∂öËµ∑Âãï„Éó„É≠„Çª„Çπ„ÅÆ„Éï„Ç°„Ç§„É´„Éë„Çπ„Éù„Çπ„ÉàÈÄöÁü•
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
-//ÉÅÉjÉÖÅ[ÉXÉ^ÉCÉãêßå‰
-//TAG:ÉVÅ[Éìí«â¡
-// >>> modify 20250615 yossiepon begin
-#define MT_MENU_NUM        (47+1)
-// <<< modify 20250615 yossiepon end
+//„É°„Éã„É•„Éº„Çπ„Çø„Ç§„É´Âà∂Âæ°
+//TAG:„Ç∑„Éº„É≥ËøΩÂä†
+// >>> modify 20191219 yossiepon begin
+#define MT_MENU_NUM        (40)
+// <<< modify 20191219 yossiepon end
+
 #define MT_PLAYSTATUS_NUM  (6)
 
-//ÉfÉoÉCÉXÉçÉXÉgåxçêÉÅÉbÉZÅ[ÉW
+//„Éá„Éê„Ç§„Çπ„É≠„Çπ„ÉàË≠¶Âëä„É°„ÉÉ„Çª„Éº„Ç∏
 #define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device is lost.")
 
-//ÉtÉ@ÉCÉãÇ»ÇµåxçêÉÅÉbÉZÅ[ÉW
-#define MIDITRAIL_MSG_FILE_NOT_FOUND  _T("MIDI file (*.mid) not found.")
+//„Çø„Ç§„Éû„ÉºID
+#define MIDITRAIL_TIMER_CHECK_KEY  (1)
 
-//É^ÉCÉ}Å[ID
-#define MIDITRAIL_TIMER_CHECK_KEY           (1)
-#define MIDITRAIL_TIMER_PLAY                (2)
-#define MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY  (3)
-
-//ìÒèdãNìÆó}é~ópÉ~ÉÖÅ[ÉeÉNÉXñºèÃ
+//‰∫åÈáçËµ∑ÂãïÊäëÊ≠¢Áî®„Éü„É•„Éº„ÉÜ„ÇØ„ÇπÂêçÁß∞
 #define MIDITRAIL_MUTEX     _T("yknk.MIDITrail")
 
-//ÉÅÅ[ÉãÉXÉçÉbÉgñºèÃ
+//„É°„Éº„É´„Çπ„É≠„ÉÉ„ÉàÂêçÁß∞
 #define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
-
-//ÉEÉBÉìÉhÉEÉ^ÉCÉgÉã  ex.: "MIDITrail - file_name.mid - FPS:60.0"
-// >>> modify 20250615 yossiepon begin
-//#define MIDITRAIL_WINDOW_TITLE			L"MIDITrail"
-//#define MIDITRAIL_WINDOW_TITLE_FILE		L"MIDITrail - %s"
-//#define MIDITRAIL_WINDOW_TITLE_FILES		L"MIDITrail - [%d/%d] %s"
-
-#define MIDITRAIL_WINDOW_TITLE_FILE			L" - %s"
-#define MIDITRAIL_WINDOW_TITLE_FILES		L" - [%d/%d] %s"
-// <<< modify 20250615 yossiepon end
-#define MIDITRAIL_WINDOW_TITLE_FPS			L"%s - FPS:%.1f"
 
 
 //******************************************************************************
-// MIDITrail ÉAÉvÉäÉPÅ[ÉVÉáÉìÉNÉâÉX
+// MIDITrail „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„ÇØ„É©„Çπ
 //******************************************************************************
 class MIDITrailApp
 {
 public:
 
-	//ÉRÉìÉXÉgÉâÉNÉ^Å^ÉfÉXÉgÉâÉNÉ^
+	//„Ç≥„É≥„Çπ„Éà„É©„ÇØ„ÇøÔºè„Éá„Çπ„Éà„É©„ÇØ„Çø
 	MIDITrailApp(void);
 	virtual ~MIDITrailApp(void);
 
-	//èâä˙âª
+	//ÂàùÊúüÂåñ
 	int Initialize(HINSTANCE hInstance, LPTSTR pCmdLine, int nCmdShow);
 
-	//é¿çs
+	//ÂÆüË°å
 	int Run();
 
-	//í‚é~
+	//ÂÅúÊ≠¢
 	int Terminate();
 
 private:
 
 	//----------------------------------------------------------------
-	//ÉpÉâÉÅÅ[É^íËã`
+	//„Éë„É©„É°„Éº„ÇøÂÆöÁæ©
 	//----------------------------------------------------------------
-	//ââëtèÛë‘
+	//ÊºîÂ•èÁä∂ÊÖã
 	enum PlayStatus {
-		NoData,			//ÉfÅ[É^Ç»Çµ
-		Stop,			//í‚é~èÛë‘
-		Play,			//çƒê∂íÜ
-		Pause,			//àÍéûí‚é~
-		MonitorOFF,		//ÉÇÉjÉ^í‚é~
-		MonitorON		//ÉÇÉjÉ^íÜ
+		NoData,			//„Éá„Éº„Çø„Å™„Åó
+		Stop,			//ÂÅúÊ≠¢Áä∂ÊÖã
+		Play,			//ÂÜçÁîü‰∏≠
+		Pause,			//‰∏ÄÊôÇÂÅúÊ≠¢
+		MonitorOFF,		//„É¢„Éã„ÇøÂÅúÊ≠¢
+		MonitorON		//„É¢„Éã„Çø‰∏≠
 	};
 
-	//ÉVÅ[ÉìéÌï 
-	//TAG:ÉVÅ[Éìí«â¡
+	//„Ç∑„Éº„É≥Á®ÆÂà•
+	//TAG:„Ç∑„Éº„É≥ËøΩÂä†
 	enum SceneType {
-		Title,				//É^ÉCÉgÉã
-		PianoRoll3D,		//ÉsÉAÉmÉçÅ[Éã3D
-		PianoRoll2D,		//ÉsÉAÉmÉçÅ[Éã2D
-		PianoRollRain,		//ÉsÉAÉmÉçÅ[ÉãÉåÉCÉì
-		PianoRollRain2D,	//ÉsÉAÉmÉçÅ[ÉãÉåÉCÉì2D
-		PianoRollRing		//ÉsÉAÉmÉçÅ[ÉãÉäÉìÉO
+		Title,			//„Çø„Ç§„Éà„É´
+		PianoRoll3D,	//„Éî„Ç¢„Éé„É≠„Éº„É´3D
+		PianoRoll2D,	//„Éî„Ç¢„Éé„É≠„Éº„É´2D
+		PianoRollRain,	//„Éî„Ç¢„Éé„É≠„Éº„É´„É¨„Ç§„É≥
+		PianoRollRain2D,	//„Éî„Ç¢„Éé„É≠„Éº„É´„É¨„Ç§„É≥2D
+		PianoRollRing		//„Éî„Ç¢„Éé„É≠„Éº„É´„É™„É≥„Ç∞
 	};
 
-	//ÉVÅ[ÉPÉìÉTÉÅÉbÉZÅ[ÉW
+	//„Ç∑„Éº„Ç±„É≥„Çµ„É°„ÉÉ„Çª„Éº„Ç∏
 	typedef struct {
 		unsigned long param1;
 		unsigned long param2;
 	} MTSequencerMsg;
 
-	//ç≈êVÉVÅ[ÉPÉìÉTÉÅÉbÉZÅ[ÉW
+	//ÊúÄÊñ∞„Ç∑„Éº„Ç±„É≥„Çµ„É°„ÉÉ„Çª„Éº„Ç∏
 	typedef struct {
 		bool isRecvPlayTime;
 		bool isRecvTempo;
@@ -147,159 +153,238 @@ private:
 private:
 
 	//----------------------------------------------------------------
-	//ÉÅÉìÉoíËã`
+	//„É°„É≥„ÉêÂÆöÁæ©
 	//----------------------------------------------------------------
-	//ÉEÉBÉìÉhÉEÉvÉçÉVÅ[ÉWÉÉêßå‰ópÉ|ÉCÉìÉ^
+	//„Ç¶„Ç£„É≥„Éâ„Ç¶„Éó„É≠„Ç∑„Éº„Ç∏„É£Âà∂Âæ°Áî®„Éù„Ç§„É≥„Çø
 	static MIDITrailApp* m_pThis;
 
-	//ÉAÉvÉäÉPÅ[ÉVÉáÉìÉCÉìÉXÉ^ÉìÉX
+	//„Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„Ç§„É≥„Çπ„Çø„É≥„Çπ
 	HINSTANCE m_hInstance;
 
-	//ÉAÉvÉäÉPÅ[ÉVÉáÉììÒèdãNìÆó}é~êßå‰
+	//„Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥‰∫åÈáçËµ∑ÂãïÊäëÊ≠¢Âà∂Âæ°
 	HANDLE m_hAppMutex;
 	HANDLE m_hMailSlot;
 	bool m_isExitApp;
 
-	//ÉRÉ}ÉìÉhÉâÉCÉìÉpÅ[ÉT
+	//„Ç≥„Éû„É≥„Éâ„É©„Ç§„É≥„Éë„Éº„Çµ
 	MTCmdLineParser m_CmdLineParser;
 
-	//ÉEÉBÉìÉhÉEån
+	//„Ç¶„Ç£„É≥„Éâ„Ç¶Á≥ª
 	HWND m_hWnd;
 	HACCEL m_Accel;
-	WCHAR m_Title[MAX_LOADSTRING];
-// >>> add 20250615 yossiepon begin
-	WCHAR m_TitleBase[MAX_LOADSTRING];
-// <<< add 20250615 yossiepon end
-	WCHAR m_WndClassName[MAX_LOADSTRING];
+	TCHAR m_Title[MAX_LOADSTRING];
+	TCHAR m_WndClassName[MAX_LOADSTRING];
 	bool m_isFullScreen;
-	bool m_isEnableMenuBar;
 	HMENU m_hMenu;
 
-	//ÉåÉìÉ_ÉäÉìÉOån
-	DXRenderer m_Renderer;
+	//„É¨„É≥„ÉÄ„É™„É≥„Ç∞Á≥ª
+	DXRenderer11 m_Renderer11;
+	MTKeyboard11 m_Kbd11;  // M2: DX11 keyboard (temporary)
+	MTFirstPersonCam m_FpCam11;  // M2.5: real first-person camera for DX11 path
+	bool m_IsMouseCamMode11;  // M3: DX11 mouse-look toggle
+	bool m_IsAutoRollMode11;  // M3: DX11 auto-roll toggle
+	// ced 20260629: Config Manager(ImGui) „ÇíÈñã„ÅÑ„Å¶„ÅÑ„ÇãÈñì„Ç´„É°„É©ÂÖ•Âäõ„ÇíÊ≠¢„ÇÅ„ÇãÈöõ„ÅÆÁä∂ÊÖãÈÄÄÈÅø„ÄÇ
+	// Èñâ„Åò„Åü„Çâ„Éû„Ç¶„Çπ„Ç´„É°„É©„ÇíÂÖÉ„Å´Êàª„ÅôÔºàÈñã„ÅÑ„Å¶Èñâ„Åò„Çã„Å®Ë¶ãÂõû„Åõ„Å™„Åè„Å™„ÇãÂïèÈ°å„ÅÆÂØæÁ≠ñÔºâ„ÄÇ
+	bool m_CfgWasVisible;       // Ââç„Éï„É¨„Éº„É†„ÅÆ Config Manager Ë°®Á§∫Áä∂ÊÖã
+	bool m_MouseCamBeforeCfg;   // Config „ÇíÈñã„ÅèÁõ¥Ââç„ÅÆ„Éû„Ç¶„Çπ„Ç´„É°„É© ON/OFF
+	// ced 20260628: keep the live viewpoint across a re-setup of the SAME scene
+	// (song switch in same view mode / renderer re-init on resize/AA) so the camera
+	// doesn't snap back to default/last-saved every time _SetupDX11Scene runs.
+	bool m_HasPrevView;
+	SceneType m_PrevViewSceneType;
+	bool m_PrevViewIsLive;
+	DXNoteBox11 m_NoteBox11;  // M3: DX11 instanced note field
+	DXNoteRain11 m_NoteRain11;  // M4.7: DX11 instanced falling-note field (Rain scene)
+	MTKeyboardRain11 m_KbdRain11;  // M4.7b: DX11 Rain-scene keyboard
+	DXNoteBoxRing11 m_NoteBoxRing11;  // M4.9: DX11 Ring-scene circular notes
+	MTGridRing11 m_GridRing11;  // M4.13: DX11 Ring grid
+	MTTimeIndicatorRing11 m_TimeIndicatorRing11;  // M4.13: DX11 Ring time indicator
+	MTPictBoardRing11 m_PictBoardRing11;  // M4.13: DX11 Ring picture board
+	MTBackgroundImage11 m_BackgroundImage11;  // M4.15: DX11 background image
+	MTStars11 m_Stars11;  // M4.16: DX11 starfield
+	MTNotePitchBend m_NotePitchBend11;  // M4.8: per-channel pitch bend state (DX11 path)
+	MTNoteRipple11 m_NoteRipple11;  // M3: DX11 note ripple effect
+	MTNoteLyrics11 m_NoteLyrics11;  // DX11 note lyrics (0x05 text over notes)
+	MTNoteBoxLive11 m_NoteBoxLive11;  // DX11 live-monitor dynamic note boxes (box + ring)
+	MTNoteRainLive11 m_NoteRainLive11;  // DX11 live-monitor dynamic falling notes (Rain)
+	unsigned long m_LiveNoteCount;    // notes played since monitoring started (dashboard)
+	MTGridBox11 m_GridBox11;  // M3: DX11 grid box (piano-roll grid lines)
+	MTDashboard11 m_Dashboard11;  // M4: DX11 on-screen info dashboard
+	MTTimeIndicator11 m_TimeIndicator11;  // M4.4: DX11 time indicator (playback section)
+	MTPictBoard11 m_PictBoard11;  // M4.5: DX11 picture board
+	unsigned long m_NpsNoteCount;  // M4: note-on count for NPS
+	unsigned long m_NpsLastSec;
+	char m_DashFileNameA[MAX_PATH];  // M4: loaded file name for the dashboard (survives re-init)
+	// active DX11 scene family: which note/keyboard components are CREATED for the
+	// current scene. Only these are fed/reset per frame; the others may never have
+	// been created (e.g. loaded straight into Rain) so touching them would crash.
+	enum { DX11_FAMILY_NONE = 0, DX11_FAMILY_BOX = 1, DX11_FAMILY_RAIN = 2, DX11_FAMILY_RING = 3 };
+	int m_DX11Family;
+
+	// current SONG tempo (BPM, from tempo meta events; not scaled by play speed). Used
+	// to map the keyboard's KeyDown/UpDuration (ms) to ticks for the press envelope.
+	unsigned long m_CurSongBPM;
+
+	int _SetupDX11Scene();  // (re)create the DX11 scene components for the loaded song
+	void _ApplyDX11Visibility();  // attach/detach DX11 components per the View effect toggles
+	const TCHAR* _DX11SceneName();  // conf/scene name for the current SceneType (NULL if none)
+	void _FeedDX11Tick(unsigned long tick, unsigned long playMs);  // drive the active components' tick
+	int _ExportVideo(const struct MTVideoExportParams& params);    // M6: offline video export
+	int _OnMenuExportVideo();  // M6: "Export Video..." menu handler
+	bool m_isExporting;  // M6: guard against re-entry while exporting
+	TCHAR m_ExportErrorMsg[1024];  // M6: ffmpeg stderr tail captured on a failed export
+	wchar_t m_LoadFilePathW[MAX_PATH];  // true (Unicode) path of the file being opened
+	bool m_isLoading;
 	MTScene* m_pScene;
 	unsigned long m_MultiSampleType;
+	unsigned long m_SuperSample;   //ced 20260628: SSAA ÂÄçÁéáÔºà1=OFFÔºâ
 
-	//FPSï\é¶ån
+	//FPSË°®Á§∫Á≥ª
 	DWORD m_PrevTime;
 	DWORD m_FPSCount;
 
-	//MIDIêßå‰ån
+	//MIDIÂà∂Âæ°Á≥ª
 	SMSeqData m_SeqData;
 	SMSequencer m_Sequencer;
 	SMRcpConv m_RcpConv;
 	SMMsgQueue m_MsgQueue;
 	SMLiveMonitor m_LiveMonitor;
-	TCHAR m_MIDIINDevName[MAXPNAMELEN];
 
-	//ââëtèÛë‘
+	//ÊºîÂ•èÁä∂ÊÖã
 	PlayStatus m_PlayStatus;
 	bool m_isRepeat;
-	bool m_isFolderPlayback;
 	bool m_isRewind;
 	bool m_isOpenFileAfterStop;
 	MTSequencerLastMsg m_SequencerLastMsg;
 	unsigned long m_PlaySpeedRatio;
 
-	//ï\é¶å¯â 
+	//Ë°®Á§∫ÂäπÊûú
 	bool m_isEnablePianoKeyboard;
+	bool m_IsSingleKeyboard11;  // M4.6c: DX11 box keyboard - single (default) vs per-port
 	bool m_isEnableRipple;
+	bool m_isEnableLyrics;   // ced 20260713: lyrics toggle (used to follow m_isEnableRipple)
 	bool m_isEnablePitchBend;
+	bool m_isEnablePitchBendAllNotes;  // M4.22: bend the whole channel, not just sounding notes
 	bool m_isEnableStars;
 	bool m_isEnableCounter;
 	bool m_isEnableFileName;
 	bool m_isEnableBackgroundImage;
-	bool m_isEnableGridLine;
+// >>> add 20180404 yossiepon begin
 	bool m_isEnableTimeIndicator;
+	bool m_isEnableGridBox;
+// <<< add 20180404 yossiepon end
 
-	//ÉVÅ[ÉìéÌï 
+	//„Ç∑„Éº„É≥Á®ÆÂà•
 	SceneType m_SceneType;
 	SceneType m_SelectedSceneType;
 
-	//ÉEÉBÉìÉhÉEÉTÉCÉYê›íËÉ_ÉCÉAÉçÉO
+	//„Ç¶„Ç£„É≥„Éâ„Ç¶„Çµ„Ç§„Ç∫Ë®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
 	MTWindowSizeCfgDlg m_WindowSizeCfgDlg;
 
-	//MIDI OUTê›íËÉ_ÉCÉAÉçÉO
+	//MIDI OUTË®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
 	MTMIDIOUTCfgDlg m_MIDIOUTCfgDlg;
 
-	//MIDI INê›íËÉ_ÉCÉAÉçÉO
+	//MIDI INË®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
 	MTMIDIINCfgDlg m_MIDIINCfgDlg;
 
-	//ÉOÉâÉtÉBÉbÉNê›íËÉ_ÉCÉAÉçÉO
+	//„Ç∞„É©„Éï„Ç£„ÉÉ„ÇØË®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞
 	MTGraphicCfgDlg m_GraphicCfgDlg;
 
-	//ÉJÉâÅ[ê›íËÉ_ÉCÉAÉçÉO
+	//„Ç´„É©„ÉºË®≠ÂÆö„ÉÄ„Ç§„Ç¢„É≠„Ç∞Ôºà1.4.1 ÁßªÊ§çÔºâ
 	MTColorCfgDlg m_ColorCfgDlg;
 
-	//ëÄçÏï˚ñ@É_ÉCÉAÉçÉO
+	//Ë®≠ÂÆö„Éû„Éç„Éº„Ç∏„É£Ôºàconf/*.ini „Çí GUI Á∑®ÈõÜÔºöMod Mod Áã¨Ëá™Ôºâ
+	MTConfigManager11 m_ConfigMgr11;
+
+	//Êìç‰ΩúÊñπÊ≥ï„ÉÄ„Ç§„Ç¢„É≠„Ç∞
 	MTHowToViewDlg m_HowToViewDlg;
 
-	//ÉoÅ[ÉWÉáÉìèÓïÒÉ_ÉCÉAÉçÉO
+	//„Éê„Éº„Ç∏„Éß„É≥ÊÉÖÂ†±„ÉÄ„Ç§„Ç¢„É≠„Ç∞
 	MTAboutDlg m_AboutDlg;
 
-	//ê›íËÉtÉ@ÉCÉã
+	//Ë®≠ÂÆö„Éï„Ç°„Ç§„É´
 	YNConfFile m_MIDIConf;
 	YNConfFile m_ViewConf;
 	YNConfFile m_GraphicConf;
 
-	//ÉvÉåÅ[ÉÑÅ[êßå‰
+	//„Éó„É¨„Éº„É§„ÉºÂà∂Âæ°
 	int m_AllowMultipleInstances;
 	int m_AutoPlaybackAfterOpenFile;
 
-	//ÉXÉLÉbÉvêßå‰
+	//„Çπ„Ç≠„ÉÉ„ÉóÂà∂Âæ°
 	int m_SkipBackTimeSpanInMsec;
 	int m_SkipForwardTimeSpanInMsec;
 
-	//ââëtÉXÉsÅ[Éhêßå‰
+	//ÊºîÂ•è„Çπ„Éî„Éº„ÉâÂà∂Âæ°
 	unsigned long m_SpeedStepInPercent;
 	unsigned long m_MaxSpeedInPercent;
 
-	//ââëtêßå‰
-	int m_DelayBetweenSongsInMsec;
-
-	//é©ìÆéãì_ï€ë∂
+	//Ëá™ÂãïË¶ñÁÇπ‰øùÂ≠ò
 	bool m_isAutoSaveViewpoint;
 
-	//éüâÒÉIÅ[ÉvÉìëŒè€ÉtÉ@ÉCÉãÉpÉX
-	WCHAR m_NextFilePath[_MAX_PATH];
+	//ced 20260628: View Ë°®Á§∫„Éà„Ç∞„É´Áæ§„ÇíÂÜçËµ∑ÂãïÂæå„ÇÇ‰øùÊåÅ„Åô„ÇãÔºàAuto save view settingsÔºâ
+	bool m_isAutoSaveViewSettings;
 
-	//ÉQÅ[ÉÄÉpÉbÉhêßå‰
+	//Ê¨°Âõû„Ç™„Éº„Éó„É≥ÂØæË±°„Éï„Ç°„Ç§„É´„Éë„Çπ
+	TCHAR m_NextFilePath[_MAX_PATH];
+
+	// >>> add ced 20260627: 1.4.1 folder playback / file navigation
+	//„Éï„Ç©„É´„ÉÄÊºîÂ•èÔºà„Éï„Ç©„É´„ÉÄÂÜÖ MIDI „ÇíÈÄ£Á∂öÂÜçÁîüÔºâ
+	bool m_isFolderPlayback;
+	//„É°„Éã„É•„Éº„Éê„ÉºË°®Á§∫
+	bool m_isEnableMenuBar;
+	//„Éï„Ç©„É´„ÉÄÊºîÂ•èÊôÇ„ÅÆÊõ≤Èñì„Éá„Ç£„É¨„Ç§(msec)
+	int m_DelayBetweenSongsInMsec;
+	//„Éï„Ç©„É´„ÉÄÂÜÖ MIDI „Éï„Ç°„Ç§„É´„É™„Çπ„Éà
+	MTFileList m_MIDIFileList;
+	// <<< add ced 20260627
+
+	//„Ç≤„Éº„É†„Éë„ÉÉ„ÉâÂà∂Âæ°
 	MTGamePadCtrl m_GamePadCtrl;
 
-	//ÉQÅ[ÉÄÉpÉbÉhópéãì_î‘çÜ
+	//„Ç≤„Éº„É†„Éë„ÉÉ„ÉâÁî®Ë¶ñÁÇπÁï™Âè∑
 	int m_GamePadViewPointNo;
 
-	//MIDIÉfÅ[É^ÉtÉ@ÉCÉãÉäÉXÉg
-	MTFileList m_MIDIFileList;
-
 	//----------------------------------------------------------------
-	//ÉÅÉ\ÉbÉhíËã`
+	//„É°„ÇΩ„ÉÉ„ÉâÂÆöÁæ©
 	//----------------------------------------------------------------
-	//ÉEÉBÉìÉhÉEêßå‰
+	//„Ç¶„Ç£„É≥„Éâ„Ç¶Âà∂Âæ°
 	int _RegisterClass(HINSTANCE hInstance);
 	int _CreateWindow(HINSTANCE hInstance, int nCmdShow);
 	int _SetWindowSize();
 	int _SetWindowSizeFullScreen();
 
-	//ê›íËÉtÉ@ÉCÉãèâä˙âª
+	//Ë®≠ÂÆö„Éï„Ç°„Ç§„É´ÂàùÊúüÂåñ
 	int _InitConfFile();
 
-	//ÉEÉBÉìÉhÉEÉvÉçÉVÅ[ÉWÉÉ
+	//„Ç¶„Ç£„É≥„Éâ„Ç¶„Éó„É≠„Ç∑„Éº„Ç∏„É£
 	static LRESULT CALLBACK _WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ÉÅÉjÉÖÅ[ÉCÉxÉìÉgèàóù
-	int _OnMenuOpenFile();
+	//„É°„Éã„É•„Éº„Ç§„Éô„É≥„ÉàÂá¶ÁêÜ
+	int _OnMenuFileOpen();
 // >>> add 20120728 yossiepon begin
-	int _OnMenuAddFile();
+	int _OnMenuFileAdd();
 // <<< add 20120728 yossiepon end
+// >>> add ced 20260627: 1.4.1 features
 	int _OnMenuOpenFolder();
 	int _OnMenuPreviousFile();
 	int _OnMenuNextFile();
+	int _OnMenuFolderPlayback();
+	int _OnMenuMenuBar();
+	int _OnMenuMyViewpoint(unsigned long viewpointNo);
+	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
+	int _SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
+	int _MakeFileListWithFolder(const WCHAR* pFolderPath, MTFileList* pFileList);
+	int _StopPlaybackAndOpenFolder(const WCHAR* pFolderPath);
+	int _OpenFileW(const WCHAR* pFilePathW);
+	int _ToggleMenuBar();
+	int _MoveToMyViewpoint(unsigned long viewpointNo);
+	int _SaveMyViewpoint(unsigned long viewpointNo);
+// <<< add ced 20260627
 	int _OnMenuPlay();
 	int _OnMenuStop();
 	int _OnMenuRepeat();
-	int _OnMenuFolderPlayback();
 	int _OnMenuSkipBack();
 	int _OnMenuSkipForward();
 	int _OnMenuPlaySpeedDown();
@@ -307,24 +392,25 @@ private:
 	int _OnMenuStartMonitoring();
 	int _OnMenuStopMonitoring();
 	int _OnMenuAutoSaveViewpoint();
+	int _OnMenuAutoSaveViewSettings();  //ced 20260628
 	int _OnMenuResetViewpoint();
 	int _OnMenuViewpoint(unsigned long viewpointNo);
-	int _OnMenuMyViewpoint(unsigned long viewpointNo);
-	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
 	int _OnMenuWindowSize();
 	int _OnMenuFullScreen();
-	int _OnMenuMenuBar();
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
 	int _OnMenuOptionGraphic();
 	int _OnMenuOptionColor();
+	int _OnMenuConfigManager();
 	int _OnMenuManual();
 	int _OnMenuSelectSceneType(SceneType type);
+	int _OnMenuToggleSingleKeyboard();
+	int _OnMenuTogglePitchBendAllNotes();
 	int _OnFilePathPosted();
 
-	//ÇªÇÃëºÉCÉxÉìÉgèàóù
+	//„Åù„ÅÆ‰ªñ„Ç§„Éô„É≥„ÉàÂá¶ÁêÜ
 	int _SequencerMsgProc();
 	int _OnRecvSequencerMsg(unsigned long wParam, unsigned long lParam);
 	int _OnMouseButtonDown(UINT button, WPARAM wParam, LPARAM lParam);
@@ -332,13 +418,13 @@ private:
 	int _OnKeyDown(WPARAM wParam, LPARAM lParam);
 	int _OnDropFiles(WPARAM wParam, LPARAM lParam);
 
-	int _SelectMIDIFile(WCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
-	int _SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
-	int _LoadMIDIFile(const WCHAR* pFilePath);
+	int _SelectMIDIFile(TCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
+	int _LoadMIDIFile(const TCHAR* pFilePath);
+	static void _LoadProgressCallback(unsigned long current, unsigned long total, void* user);
+	static void _ParseProgressCallback(unsigned long current, unsigned long total, void* user);
 // >>> add 20120728 yossiepon begin
-	int _AddMIDIFile(const WCHAR* pFilePath);
+	int _AddMIDIFile(const TCHAR* pFilePath);
 // <<< add 20120728 yossiepon end
-	void _UpdateWindowTitle(const WCHAR* pFileName);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
 	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);
@@ -350,12 +436,12 @@ private:
 	int _SaveSceneType();
 	int _LoadSceneConf();
 	int _SaveSceneConf();
-	int _LoadEffectStatus();
-	int _SaveEffectStatus();
 	int _LoadViewpoint();
 	int _SaveViewpoint();
-	int _MoveToMyViewpoint(unsigned long viewpointNo);
-	int _SaveMyViewpoint(unsigned long viewpointNo);
+	//ced 20260703: reset the live DX11 camera to the saved viewpoint (conf "Viewpoint-<scene>"),
+	//falling back to the scene default when none is saved. Used by the manual-stop viewpoint
+	//reset so it returns to the user's saved viewpoint instead of the hard-coded default.
+	void _ResetViewpointToSaved();
 	int _LoadGraphicConf();
 	int _LoadPlayerConf();
 	int _OnDestroy();
@@ -364,28 +450,23 @@ private:
 	int _UpdateMenuCheckmark();
 	void _CheckMenuItem(UINT uIDCheckItem, bool isEnable);
 	void _UpdateEffect();
-	int _ParseCmdLine();
+	int _ParseCmdLine(LPTSTR pCmdLine);
 	int _StartTimer();
 	int _StopTimer();
-	int _StartTimer_Play(int delayBetweenSongsInMsec);
-	int _StartTimer_OpenFileAndPlay(int delayBetweenSongsInMsec);
 	int _OnTimer(WPARAM timerId);
 	int _CheckRenderer();
 	int _AutoConfigMIDIOUT();
 	int _SearchMicrosoftWavetableSynth(std::string& productName);
 	int _CheckMultipleInstances(bool* pIsExitApp);
 	int _CreateMailSlot();
-	int _PostFilePathToFirstMIDITrail();
-	int _StopPlaybackAndOpenFile(const WCHAR* pFilePath);
-	int _StopPlaybackAndOpenFolder(const WCHAR* pFolderPath);
-	int _FileOpenProc(const WCHAR* pFilePath);
+	int _PostFilePathToFirstMIDITrail(LPTSTR pCmdLine);
+	int _StopPlaybackAndOpenFile(TCHAR* pFilePath);
+	int _FileOpenProc(TCHAR* pFilePath);
 	int _ToggleFullScreen();
-	int _ToggleMenuBar();
 	int _ShowMenu();
 	int _HideMenu();
 	int _GamePadProc();
 	int _ChangeViewPoint(int step);
-	int _MakeFileListWithFolder(const WCHAR* pFolderPath, MTFileList* pFileList);
 
 };
 

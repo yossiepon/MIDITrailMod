@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMEventWatcher
 //
-// ƒCƒxƒ“ƒgƒEƒHƒbƒ`ƒƒ[ƒNƒ‰ƒX
+// ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒãƒ£ãƒ¼ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
@@ -11,6 +11,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "SMEventWatcher.h"
+#include <iostream>
 #include "SMEventSysMsg.h"
 
 using namespace YNBaseLib;
@@ -19,7 +20,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMEventWatcher::SMEventWatcher(void)
 {
@@ -28,14 +29,14 @@ SMEventWatcher::SMEventWatcher(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMEventWatcher::~SMEventWatcher(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int SMEventWatcher::Initialize(SMMsgTransmitter* pMsgTrans)
 {
@@ -49,7 +50,7 @@ int SMEventWatcher::Initialize(SMMsgTransmitter* pMsgTrans)
 }
 
 //******************************************************************************
-// ƒCƒxƒ“ƒgƒEƒHƒbƒ`
+// ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒ
 //******************************************************************************
 int SMEventWatcher::WatchEvent(
 		unsigned char portNo,
@@ -63,11 +64,11 @@ int SMEventWatcher::WatchEvent(
 	if (pEvent->GetType() == SMEvent::EventMIDI) {
 		eventMIDI.Attach(pEvent);
 		
-		//MIDIƒCƒxƒ“ƒgŠÄ‹
+		//MIDIã‚¤ãƒ™ãƒ³ãƒˆç›£è¦–
 		result = _WatchEventMIDI(portNo, &eventMIDI);
 		if (result != 0) goto EXIT;
 		
-		//ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒWŠÄ‹
+		//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸ç›£è¦–
 		if (eventMIDI.GetChMsg() == SMEventMIDI::ControlChange) {
 			result = _WatchEventControlChange(portNo, &eventMIDI);
 			if (result != 0) goto EXIT;
@@ -75,10 +76,20 @@ int SMEventWatcher::WatchEvent(
 			if (result != 0) goto EXIT;
 		}
 	}
+	else if (pEvent->GetType() == SMEvent::EventMeta)
+	{
+		eventMIDI.Attach(pEvent);
+
+
+		if (eventMIDI.GetChMsg() == SMEventMIDI::Marker) {
+			result = _WatchEventMarker(portNo, &eventMIDI);
+			if (result != 0) goto EXIT;
+		}
+	}
 	else if (pEvent->GetType() == SMEvent::EventSysMsg) {
 		eventSysMsg.Attach(pEvent);
-		
-		//ƒVƒXƒeƒ€ƒƒbƒZ[ƒWƒCƒxƒ“ƒgŠÄ‹
+
+		//ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚¤ãƒ™ãƒ³ãƒˆç›£è¦–
 		result = _WatchEventSysMsg(portNo, &eventSysMsg);
 		if (result != 0) goto EXIT;
 	}
@@ -88,7 +99,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒCƒxƒ“ƒgƒEƒHƒbƒ`
+// MIDIã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒ
 //******************************************************************************
 int SMEventWatcher::WatchEventMIDI(
 		unsigned char portNo,
@@ -99,7 +110,7 @@ int SMEventWatcher::WatchEventMIDI(
 }
 
 //******************************************************************************
-// ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒWƒCƒxƒ“ƒgƒEƒHƒbƒ`
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒ
 //******************************************************************************
 int SMEventWatcher::WatchEventControlChange(
 		unsigned char portNo,
@@ -110,7 +121,7 @@ int SMEventWatcher::WatchEventControlChange(
 }
 
 //******************************************************************************
-// ƒ`ƒƒƒ“ƒlƒ‹î•ñƒNƒŠƒA
+// ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ±ã‚¯ãƒªã‚¢
 //******************************************************************************
 void SMEventWatcher::_ClearChInfo()
 {
@@ -119,12 +130,12 @@ void SMEventWatcher::_ClearChInfo()
 	
 	for (portNo = 0; portNo < SM_MAX_PORT_NUM; portNo++) {
 		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-			//RPN/NRPN‘I‘ğó‘Ô
+			//RPN/NRPNé¸æŠçŠ¶æ…‹
 			m_RPN_NRPN_Select[portNo][chNo] = RPN_NULL;
 			//RPN
 			m_RPN_MSB[portNo][chNo] = 0x7F; //RPN NULL
 			m_RPN_LSB[portNo][chNo] = 0x7F; //RPN NULL
-			//ƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+			//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			m_PitchBendSensitivity[portNo][chNo] = SM_DEFAULT_PITCHBEND_SENSITIVITY;
 		}
 	}
@@ -133,7 +144,7 @@ void SMEventWatcher::_ClearChInfo()
 }
 
 //******************************************************************************
-// MIDIƒCƒxƒ“ƒgŠÄ‹ˆ—
+// MIDIã‚¤ãƒ™ãƒ³ãƒˆç›£è¦–å‡¦ç†
 //******************************************************************************
 int SMEventWatcher::_WatchEventMIDI(
 		unsigned char portNo,
@@ -142,7 +153,7 @@ int SMEventWatcher::_WatchEventMIDI(
 {
 	int result = 0;
 	
-	//ƒm[ƒgOFF‚ğ’Ê’m
+	//ãƒãƒ¼ãƒˆOFFã‚’é€šçŸ¥
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOff) {
 		m_pMsgTrans->PostNoteOff(
 				portNo,
@@ -150,7 +161,7 @@ int SMEventWatcher::_WatchEventMIDI(
 				pMIDIEvent->GetNoteNo()
 			);
 	}
-	//ƒm[ƒgON‚ğ’Ê’m
+	//ãƒãƒ¼ãƒˆONã‚’é€šçŸ¥
 	else if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
 		m_pMsgTrans->PostNoteOn(
 				portNo,
@@ -159,7 +170,7 @@ int SMEventWatcher::_WatchEventMIDI(
 				pMIDIEvent->GetVelocity()
 			);
 	}
-	//ƒsƒbƒ`ƒxƒ“ƒh‚ğ’Ê’m
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã‚’é€šçŸ¥
 	else if (pMIDIEvent->GetChMsg() == SMEventMIDI::PitchBend) {
 		m_pMsgTrans->PostPitchBend(
 				portNo,
@@ -173,7 +184,7 @@ int SMEventWatcher::_WatchEventMIDI(
 }
 
 //******************************************************************************
-// ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒWŠÄ‹ˆ—
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸ç›£è¦–å‡¦ç†
 //******************************************************************************
 int SMEventWatcher::_WatchEventControlChange(
 		unsigned char portNo,
@@ -221,19 +232,19 @@ int SMEventWatcher::_WatchEventControlChange(
 	//----------------------------------------------------------------
 	//Data Entry MSB (CC#6)
 	if (pMIDIEvent->GetCCNo() == 0x06) {
-		//ƒsƒbƒ`ƒxƒ“ƒhŠ´“x MSB
+		//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦ MSB
 		if (_GetCurRPNType(portNo, chNo) == PitchBendSensitivity) {
 			m_PitchBendSensitivity[portNo][chNo] = pMIDIEvent->GetCCValue();
 		}
 	}
 	//Data Entry LSB (CC#38)
 	if (pMIDIEvent->GetCCNo() == 0x26) {
-		//“Á‚É§Œä‚È‚µ
+		//ç‰¹ã«åˆ¶å¾¡ãªã—
 	}
 	
 	//Data Increment (CC#96)
 	if (pMIDIEvent->GetCCNo() == 0x60) {
-		//ƒsƒbƒ`ƒxƒ“ƒhŠ´“x MSB
+		//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦ MSB
 		if (_GetCurRPNType(portNo, chNo) == PitchBendSensitivity) {
 			msb = m_PitchBendSensitivity[portNo][chNo];
 			if (msb < 24) {
@@ -243,7 +254,7 @@ int SMEventWatcher::_WatchEventControlChange(
 	}
 	//Data Decremnet (CC#97)
 	if (pMIDIEvent->GetCCNo() == 0x61) {
-		//ƒsƒbƒ`ƒxƒ“ƒhŠ´“x MSB
+		//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦ MSB
 		if (_GetCurRPNType(portNo, chNo) == PitchBendSensitivity) {
 			msb = m_PitchBendSensitivity[portNo][chNo]++;
 			if (msb > 0) {
@@ -253,31 +264,31 @@ int SMEventWatcher::_WatchEventControlChange(
 	}
 	
 	//----------------------------------------------------------------
-	// ƒŠƒZƒbƒgƒI[ƒ‹ƒRƒ“ƒgƒ[ƒ‰
+	// ãƒªã‚»ãƒƒãƒˆã‚ªãƒ¼ãƒ«ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©
 	//----------------------------------------------------------------
 	//Reset All Controllers (CC#121)
 	if (pMIDIEvent->GetCCNo() == 0x79) {
-		//ƒsƒbƒ`ƒxƒ“ƒh‚ğ’Ê’mF0
+		//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã‚’é€šçŸ¥ï¼š0
 		m_pMsgTrans->PostPitchBend(portNo, chNo, 0, m_PitchBendSensitivity[portNo][chNo]);
-		//RPN/NRPN‘I‘ğó‘Ô
+		//RPN/NRPNé¸æŠçŠ¶æ…‹
 		m_RPN_NRPN_Select[portNo][chNo] = RPN_NULL;
 		//RPN
 		m_RPN_MSB[portNo][chNo] = 0x7F; //RPN NULL
 		m_RPN_LSB[portNo][chNo] = 0x7F; //RPN NULL
 		
-		//Roland SCƒVƒŠ[ƒY,Yamaha MUƒVƒŠ[ƒY‚Ìê‡
-		//CC#121 ƒŠƒZƒbƒgƒI[ƒ‹ƒRƒ“ƒgƒ[ƒ‰‚ÅŸ‚Ì’l‚ªƒNƒŠƒA‚³‚ê‚é
-		//  An     ƒ|ƒŠƒtƒHƒjƒbƒNƒL[ƒvƒŒƒbƒVƒƒ[  0
-		//  Dn     ƒ`ƒƒƒ“ƒlƒ‹ƒvƒŒƒbƒVƒƒ[  0
-		//  En     ƒsƒbƒ`ƒxƒ“ƒh  0
-		//  CC#1   ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“  0
-		//  CC#11  ƒGƒNƒXƒvƒŒƒbƒVƒ‡ƒ“  127
-		//  CC#64  ƒz[ƒ‹ƒh1    0
-		//  CC#65  ƒ|ƒ‹ƒ^ƒƒ“ƒg  0
-		//  CC#66  ƒ\ƒXƒeƒk[ƒg  0
-		//  CC#67  ƒ\ƒtƒg  0
-		//  CC#98,99   NRPN  –¢İ’èó‘Ôiİ’èÏ‚İƒf[ƒ^‚Í•Ï‰»‚µ‚È‚¢j
-		//  CC#100,101 RPN   –¢İ’èó‘Ôiİ’èÏ‚İƒf[ƒ^‚Í•Ï‰»‚µ‚È‚¢j
+		//Roland SCã‚·ãƒªãƒ¼ã‚º,Yamaha MUã‚·ãƒªãƒ¼ã‚ºã®å ´åˆ
+		//CC#121 ãƒªã‚»ãƒƒãƒˆã‚ªãƒ¼ãƒ«ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã§æ¬¡ã®å€¤ãŒã‚¯ãƒªã‚¢ã•ã‚Œã‚‹
+		//  An     ãƒãƒªãƒ•ã‚©ãƒ‹ãƒƒã‚¯ã‚­ãƒ¼ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼  0
+		//  Dn     ãƒãƒ£ãƒ³ãƒãƒ«ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼  0
+		//  En     ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰  0
+		//  CC#1   ãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³  0
+		//  CC#11  ã‚¨ã‚¯ã‚¹ãƒ—ãƒ¬ãƒƒã‚·ãƒ§ãƒ³  127
+		//  CC#64  ãƒ›ãƒ¼ãƒ«ãƒ‰1    0
+		//  CC#65  ãƒãƒ«ã‚¿ãƒ¡ãƒ³ãƒˆ  0
+		//  CC#66  ã‚½ã‚¹ãƒ†ãƒŒãƒ¼ãƒˆ  0
+		//  CC#67  ã‚½ãƒ•ãƒˆ  0
+		//  CC#98,99   NRPN  æœªè¨­å®šçŠ¶æ…‹ï¼ˆè¨­å®šæ¸ˆã¿ãƒ‡ãƒ¼ã‚¿ã¯å¤‰åŒ–ã—ãªã„ï¼‰
+		//  CC#100,101 RPN   æœªè¨­å®šçŠ¶æ…‹ï¼ˆè¨­å®šæ¸ˆã¿ãƒ‡ãƒ¼ã‚¿ã¯å¤‰åŒ–ã—ãªã„ï¼‰
 	}
 	
 	//EXIT:;
@@ -285,7 +296,23 @@ int SMEventWatcher::_WatchEventControlChange(
 }
 
 //******************************************************************************
-// RPNí•Êæ“¾
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸ç›£è¦–å‡¦ç†
+//******************************************************************************
+int SMEventWatcher::_WatchEventMarker(
+	unsigned char portNo,
+	SMEventMIDI* pMIDIEvent
+)
+{
+	if (pMIDIEvent->GetChMsg() == SMEventMIDI::Marker) {
+		cout << "aaa" << endl;
+	}
+
+	//EXIT:;
+	return 0;
+}
+
+//******************************************************************************
+// RPNç¨®åˆ¥å–å¾—
 //******************************************************************************
 SMEventWatcher::RPN_Type SMEventWatcher::_GetCurRPNType(
 		unsigned char portNo,
@@ -313,7 +340,7 @@ SMEventWatcher::RPN_Type SMEventWatcher::_GetCurRPNType(
 }
 
 //******************************************************************************
-// ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒWŠÄ‹ˆ—2
+// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸ç›£è¦–å‡¦ç†2
 //******************************************************************************
 int SMEventWatcher::_WatchEventControlChange2(
 		unsigned char portNo,
@@ -335,7 +362,7 @@ int SMEventWatcher::_WatchEventControlChange2(
 }
 
 //******************************************************************************
-// ƒVƒXƒeƒ€ƒƒbƒZ[ƒWƒCƒxƒ“ƒgŠÄ‹ˆ—
+// ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚¤ãƒ™ãƒ³ãƒˆç›£è¦–å‡¦ç†
 //******************************************************************************
 int SMEventWatcher::_WatchEventSysMsg(
 		unsigned char portNo,
@@ -344,7 +371,7 @@ int SMEventWatcher::_WatchEventSysMsg(
 {
 	int result = 0;
 
-	//Œ»ó‚Í‰½‚à‚µ‚È‚¢
+	//ç¾çŠ¶ã¯ä½•ã‚‚ã—ãªã„
 	goto EXIT;
 
 	switch (pEventSysMsg->GetSysMsg()) {

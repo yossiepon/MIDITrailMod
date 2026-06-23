@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRollRingMod
 //
-// ƒsƒAƒmƒ[ƒ‹ƒŠƒ“ƒOƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒªãƒ³ã‚°ã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -21,14 +21,14 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTScenePianoRollRingMod::MTScenePianoRollRingMod()
 {
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTScenePianoRollRingMod::~MTScenePianoRollRingMod()
 {
@@ -36,7 +36,7 @@ MTScenePianoRollRingMod::~MTScenePianoRollRingMod()
 }
 
 //******************************************************************************
-// –¼Ìæ“¾
+// åç§°å–å¾—
 //******************************************************************************
 const TCHAR* MTScenePianoRollRingMod::GetName()
 {
@@ -44,7 +44,7 @@ const TCHAR* MTScenePianoRollRingMod::GetName()
 }
 
 //******************************************************************************
-// ƒV[ƒ“¶¬
+// ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTScenePianoRollRingMod::Create(
 		HWND hWnd,
@@ -56,24 +56,24 @@ int MTScenePianoRollRingMod::Create(
 
 	Release();
 
-	//Šî’êƒNƒ‰ƒX‚ÌƒV[ƒ“¶¬ˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®ã‚·ãƒ¼ãƒ³ç”Ÿæˆå‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	result = MTScenePianoRollRing::Create(hWnd, pD3DDevice, pSeqData);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	// •`‰æƒIƒuƒWƒFƒNƒg
+	// æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	//----------------------------------
 
-	//ƒm[ƒg”g–ä¶¬
+	//ãƒãƒ¼ãƒˆæ³¢ç´‹ç”Ÿæˆ
 	result = m_NoteRippleMod.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒg‰ÌŒ¶¬
+	//ãƒãƒ¼ãƒˆæ­Œè©ç”Ÿæˆ
 	result = m_NoteLyrics.Create(pD3DDevice, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
 
-	//ƒsƒNƒ`ƒƒƒ{[ƒh¶¬
+	//ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 	result = m_PictBoardMod.Create(pD3DDevice, GetName(), pSeqData, false);
 	if (result != 0) goto EXIT;
 
@@ -83,7 +83,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •ÏŠ·ˆ—
+// å¤‰æ›å‡¦ç†
 //******************************************************************************
 int MTScenePianoRollRingMod::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -93,25 +93,25 @@ int MTScenePianoRollRingMod::Transform(
 	float rollAngle = 0.0f;
 	D3DXVECTOR3 camVector;
 
-	//Šî’êƒNƒ‰ƒX‚Ì•ÏŠ·ˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®å¤‰æ›å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	result = MTScenePianoRollRing::Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒƒ‰À•Wæ“¾
+	//ã‚«ãƒ¡ãƒ©åº§æ¨™å–å¾—
 	m_FirstPersonCam.GetPosition(&camVector);
 
-	//‰ñ“]Šp“xæ“¾
+	//å›è»¢è§’åº¦å–å¾—
 	rollAngle = m_FirstPersonCam.GetManualRollAngle();
 
-	//ƒsƒNƒ`ƒƒƒ{[ƒhXV
+	//ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰æ›´æ–°
 	result = m_PictBoardMod.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒg”g–äXV
+	//ãƒãƒ¼ãƒˆæ³¢ç´‹æ›´æ–°
 	result = m_NoteRippleMod.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒg‰ÌŒXV
+	//ãƒãƒ¼ãƒˆæ­Œè©æ›´æ–°
 	result = m_NoteLyrics.Transform(pD3DDevice, camVector, rollAngle);
 	if (result != 0) goto EXIT;
 
@@ -120,7 +120,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTScenePianoRollRingMod::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -134,81 +134,81 @@ int MTScenePianoRollRingMod::Draw(
 		goto EXIT;
 	}
 
-	//XV
+	//æ›´æ–°
 	result = Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒƒ‰À•Wæ“¾
+	//ã‚«ãƒ¡ãƒ©åº§æ¨™å–å¾—
 	m_FirstPersonCam.GetPosition(&camVector);
 
-	//”wŒi‰æ‘œ•`‰æ
+	//èƒŒæ™¯ç”»åƒæç”»
 	result = m_BackgroundImage.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//¯•`‰æ
+	//æ˜Ÿæç”»
 	result = m_Stars.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒOƒŠƒbƒhƒŠƒ“ƒO•`‰æ
+	//ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°æç”»
 	result = m_GridRing.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒ{ƒbƒNƒX•`‰æ
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æç”»
 	result = m_NoteBox.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	// ƒJƒƒ‰ˆÊ’u‚ª‰‰‘tˆÊ’u‚æ‚èè‘O‘¤‚Å‚ ‚ê‚Î
+	// ã‚«ãƒ¡ãƒ©ä½ç½®ãŒæ¼”å¥ä½ç½®ã‚ˆã‚Šæ‰‹å‰å´ã§ã‚ã‚Œã°
 	if(m_TimeIndicator.GetPos() > camVector.x) {
 
-		//ƒƒbƒVƒ…„ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^„‰ÌŒ„”g–ä„ƒsƒNƒ`ƒƒƒ{[ƒh‚Ì‡‚Å‰œ‚©‚ç•`‰æ
+		//ãƒ¡ãƒƒã‚·ãƒ¥ï¼ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ï¼æ­Œè©ï¼æ³¢ç´‹ï¼ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ã®é †ã§å¥¥ã‹ã‚‰æç”»
 
-		//ƒƒbƒVƒ…•`‰æ
+		//ãƒ¡ãƒƒã‚·ãƒ¥æç”»
 		result = m_MeshCtrl.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^•`‰æ
+		//ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿æç”»
 		result = m_TimeIndicator.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒm[ƒg‰ÌŒ•`‰æ
+		//ãƒãƒ¼ãƒˆæ­Œè©æç”»
 		result = m_NoteLyrics.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒm[ƒg”g–ä•`‰æ
+		//ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»
 		result = m_NoteRippleMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒsƒNƒ`ƒƒƒ{[ƒh•`‰æ
+		//ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰æç”»
 		result = m_PictBoardMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 	} else {
 
-		//ƒsƒNƒ`ƒƒƒ{[ƒh„”g–ä„‰ÌŒ„ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^„ƒƒbƒVƒ…‚Ì‡‚Å‰œ‚©‚ç•`‰æ
+		//ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ï¼æ³¢ç´‹ï¼æ­Œè©ï¼ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ï¼ãƒ¡ãƒƒã‚·ãƒ¥ã®é †ã§å¥¥ã‹ã‚‰æç”»
 
-		//ƒsƒNƒ`ƒƒƒ{[ƒh•`‰æ
+		//ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰æç”»
 		result = m_PictBoardMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒm[ƒg”g–ä•`‰æ
+		//ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»
 		result = m_NoteRippleMod.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒm[ƒg‰ÌŒ•`‰æ
+		//ãƒãƒ¼ãƒˆæ­Œè©æç”»
 		result = m_NoteLyrics.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^•`‰æ
+		//ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿æç”»
 		result = m_TimeIndicator.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
-		//ƒƒbƒVƒ…•`‰æ
+		//ãƒ¡ãƒƒã‚·ãƒ¥æç”»
 		result = m_MeshCtrl.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 
 	}
 
-	//ƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æFÀ•W•ÏŠ·Ï‚İ’¸“_‚ğ—p‚¢‚é‚½‚ßˆê”ÔÅŒã‚É•`‰æ‚·‚é
+	//ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ï¼šåº§æ¨™å¤‰æ›æ¸ˆã¿é ‚ç‚¹ã‚’ç”¨ã„ã‚‹ãŸã‚ä¸€ç•ªæœ€å¾Œã«æç”»ã™ã‚‹
 	result = m_Dashboard.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -217,7 +217,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”jŠü
+// ç ´æ£„
 //******************************************************************************
 void MTScenePianoRollRingMod::Release()
 {
@@ -229,7 +229,7 @@ void MTScenePianoRollRingMod::Release()
 }
 
 //******************************************************************************
-// ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 //******************************************************************************
 int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 	unsigned long param1,
@@ -241,19 +241,19 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 
 	parser.Parse(param1, param2);
 
-	//‰‰‘tó‘Ô’Ê’m
+	//æ¼”å¥çŠ¶æ…‹é€šçŸ¥
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
 		if (parser.GetPlayStatus() == SMMsgParser::StatusStop) {
-			//’â~iI—¹j
+			//åœæ­¢ï¼ˆçµ‚äº†ï¼‰
 		}
 		else if (parser.GetPlayStatus() == SMMsgParser::StatusPlay) {
-			//‰‰‘t
+			//æ¼”å¥
 		}
 		else if (parser.GetPlayStatus() == SMMsgParser::StatusPause) {
-			//ˆê’â~
+			//ä¸€æ™‚åœæ­¢
 		}
 	}
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€’Ê’m
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		m_Dashboard.SetPlayTimeMSec(parser.GetPlayTimeMSec());
 		m_FirstPersonCam.SetCurTickTime(parser.GetPlayTickTime());
@@ -265,32 +265,32 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_PictBoardMod.SetCurTickTime(parser.GetPlayTickTime());
 		m_NoteBox.SetCurTickTime(parser.GetPlayTickTime());
 	}
-	//ƒeƒ“ƒ|•ÏX’Ê’m
+	//ãƒ†ãƒ³ãƒå¤‰æ›´é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
 		m_Dashboard.SetTempoBPM(parser.GetTempoBPM());
 	}
-	//¬ß”Ô†’Ê’m
+	//å°ç¯€ç•ªå·é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
 		m_Dashboard.SetBarNo(parser.GetBarNo());
 	}
-	//”q‹L†•ÏX’Ê’m
+	//æ‹å­è¨˜å·å¤‰æ›´é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
 		m_Dashboard.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
 	}
-	//ƒm[ƒgOFF’Ê’m
+	//ãƒãƒ¼ãƒˆOFFé€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOff) {
 		// NOP
 	}
-	//ƒm[ƒgON’Ê’m
+	//ãƒãƒ¼ãƒˆONé€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
 		m_Dashboard.SetNoteOn();
 		// NOP
 	}
-	//ƒsƒbƒ`ƒxƒ“ƒh’Ê’m
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
 		m_NotePitchBend.SetPitchBend(parser.GetPortNo(), parser.GetChNo(), parser.GetPitchBendValue(), parser.GetPitchBendSensitivity());
 	}
-	//ƒXƒLƒbƒvŠJn’Ê’m
+	//ã‚¹ã‚­ãƒƒãƒ—é–‹å§‹é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipStart) {
 		if (parser.GetSkipStartDirection() == SMMsgParser::SkipBack) {
 			m_NotePitchBend.Reset();
@@ -303,7 +303,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 		m_NoteLyrics.SetSkipStatus(true);
 		m_IsSkipping = true;
 	}
-	//ƒXƒLƒbƒvI—¹’Ê’m
+	//ã‚¹ã‚­ãƒƒãƒ—çµ‚äº†é€šçŸ¥
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
 		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
 		m_NoteBox.SetSkipStatus(false);
@@ -317,7 +317,7 @@ int MTScenePianoRollRingMod::OnRecvSequencerMsg(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTScenePianoRollRingMod::_Reset()
 {
@@ -329,7 +329,7 @@ void MTScenePianoRollRingMod::_Reset()
 }
 
 //******************************************************************************
-// •\¦Œø‰Êİ’è
+// è¡¨ç¤ºåŠ¹æœè¨­å®š
 //******************************************************************************
 void MTScenePianoRollRingMod::SetEffect(
 		MTScene::EffectType type,

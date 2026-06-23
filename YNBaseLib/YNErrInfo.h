@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple Base Library / YNErrInfo
 //
-// ƒGƒ‰[î•ñƒNƒ‰ƒX
+// ã‚¨ãƒ©ãƒ¼æƒ…å ±ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -22,20 +22,20 @@ using namespace std;
 namespace YNBaseLib {
 
 //******************************************************************************
-// ƒGƒ‰[î•ñƒNƒ‰ƒX
+// ã‚¨ãƒ©ãƒ¼æƒ…å ±ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class YNBASELIB_API YNErrInfo
 {
 public:
 
-	//ƒGƒ‰[ƒŒƒxƒ‹
+	//ã‚¨ãƒ©ãƒ¼ãƒ¬ãƒ™ãƒ«
 	enum ErrLevel {
 		LVL_ERR,
 		LVL_WARN,
 		LVL_INFO
 	};
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	YNErrInfo(
 			ErrLevel errLevel,
 			unsigned long lineNo,
@@ -46,19 +46,19 @@ public:
 		);
 	virtual ~YNErrInfo(void);
 
-	//ƒGƒ‰[ƒŒƒxƒ‹æ“¾
+	//ã‚¨ãƒ©ãƒ¼ãƒ¬ãƒ™ãƒ«å–å¾—
 	ErrLevel GetErrLevel();
 
-	//s”Ô†æ“¾
+	//è¡Œç•ªå·å–å¾—
 	unsigned long GetLineNo();
 
-	//ŠÖ”–¼æ“¾
+	//é–¢æ•°åå–å¾—
 	const TCHAR* GetFuncName();
 
-	//ƒƒbƒZ[ƒWæ“¾
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–å¾—
 	const TCHAR* GetMessage();
 
-	//ƒGƒ‰[î•ñæ“¾
+	//ã‚¨ãƒ©ãƒ¼æƒ…å ±å–å¾—
 	unsigned long long GetErrInfo1();
 	unsigned long long GetErrInfo2();
 
@@ -69,7 +69,7 @@ private:
 	unsigned long long m_ErrInfo1;
 	unsigned long long m_ErrInfo2;
 
-//CRT‚ğƒXƒ^ƒeƒBƒbƒNƒŠƒ“ƒN(/MT)‚·‚é‚ÆŒx‚ªo‚é
+//CRTã‚’ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒªãƒ³ã‚¯(/MT)ã™ã‚‹ã¨è­¦å‘ŠãŒå‡ºã‚‹
 #pragma warning(disable:4251)
 #ifdef _UNICODE
 	wstring m_FuncName;
@@ -80,7 +80,7 @@ private:
 #endif
 #pragma warning(default:4251)
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const YNErrInfo&);
 	YNErrInfo(const YNErrInfo&);
 

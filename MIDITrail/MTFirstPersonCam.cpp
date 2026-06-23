@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFirstPersonCam
 //
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// ä¸€äººç§°ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -19,7 +19,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFirstPersonCam::MTFirstPersonCam(void)
 {
@@ -27,6 +27,7 @@ MTFirstPersonCam::MTFirstPersonCam(void)
 	m_CamDirPhi = 0.0f;
 	m_CamDirTheta = 0.0f;
 	m_IsMouseCamMode = false;
+	m_InputEnabled = true;
 	m_IsAutoRollMode = false;
 	m_hWnd = NULL;
 
@@ -34,7 +35,7 @@ MTFirstPersonCam::MTFirstPersonCam(void)
 	m_VelocityLR = 15.0f; // m/sec.
 	m_VelocityUD = 10.0f; // m/sec.
 	m_VelocityPT =  6.0f; // degrees/sec.
-	m_AcceleRate =  2.0f; // ‰Á‘¬”{—¦
+	m_AcceleRate =  2.0f; // åŠ é€Ÿå€ç‡
 	m_PrevTime = 0;
 	m_DeltaTime = 0;
 
@@ -48,7 +49,7 @@ MTFirstPersonCam::MTFirstPersonCam(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFirstPersonCam::~MTFirstPersonCam(void)
 {
@@ -58,7 +59,7 @@ MTFirstPersonCam::~MTFirstPersonCam(void)
 }
 
 //******************************************************************************
-// ‰Šú‰»ˆ—
+// åˆæœŸåŒ–å‡¦ç†
 //******************************************************************************
 int MTFirstPersonCam::Initialize(
 		HWND hWnd,
@@ -70,46 +71,46 @@ int MTFirstPersonCam::Initialize(
 
 	m_hWnd = hWnd;
 
-	//ƒpƒ‰ƒ[ƒ^İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒL[ƒ{[ƒhƒfƒoƒCƒX§Œä‰Šú‰»
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡åˆæœŸåŒ–
 	result = m_DIKeyCtrl.Initialize(hWnd);
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒEƒXƒfƒoƒCƒX§Œä‰Šú‰»
+	//ãƒã‚¦ã‚¹ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡åˆæœŸåŒ–
 	result = m_DIMouseCtrl.Initialize(hWnd);
 	if (result != 0) goto EXIT;
 
-	//ƒfƒoƒCƒXƒAƒNƒZƒXŒ æ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚¢ã‚¯ã‚»ã‚¹æ¨©å–å¾—
 	m_DIKeyCtrl.Acquire();
 	m_DIMouseCtrl.Acquire();
 
-	//ƒQ[ƒ€ƒpƒbƒh‰Šú‰»Fƒ†[ƒUƒCƒ“ƒfƒbƒNƒX0ŒÅ’è
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰åˆæœŸåŒ–ï¼šãƒ¦ãƒ¼ã‚¶ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹0å›ºå®š
 	result = m_GamePadCtrl.Initialize(0);
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒƒ‰‰Šú‰»
+	//ã‚«ãƒ¡ãƒ©åˆæœŸåŒ–
 	result = m_Camera.Initialize();
 	if (result != 0) goto EXIT;
 
-	//Šî–{ƒpƒ‰ƒ[ƒ^İ’è
+	//åŸºæœ¬ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	m_Camera.SetBaseParam(
-			45.0f,		//‰æŠp
-			1.0f,		//NearƒvƒŒ[ƒ“F0‚¾‚ÆZ²‡§Œä‚ª‚¨‚©‚µ‚­‚È‚é
-			1000.0f		//FarƒvƒŒ[ƒ“
+			45.0f,		//ç”»è§’
+			1.0f,		//Nearãƒ—ãƒ¬ãƒ¼ãƒ³ï¼š0ã ã¨Zè»¸é †åˆ¶å¾¡ãŒãŠã‹ã—ããªã‚‹
+			1000.0f		//Farãƒ—ãƒ¬ãƒ¼ãƒ³
 		);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	m_Camera.SetPosition(
-			D3DXVECTOR3(0.0f, 0.0f, 0.0f),	//ƒJƒƒ‰ˆÊ’u
-			D3DXVECTOR3(0.0f, 0.0f, 1.0f), 	//’–Ú“_
-			D3DXVECTOR3(0.0f, 1.0f, 0.0f)	//ƒJƒƒ‰ã•ûŒü
+			D3DXVECTOR3(0.0f, 0.0f, 0.0f),	//ã‚«ãƒ¡ãƒ©ä½ç½®
+			D3DXVECTOR3(0.0f, 0.0f, 1.0f), 	//æ³¨ç›®ç‚¹
+			D3DXVECTOR3(0.0f, 1.0f, 0.0f)	//ã‚«ãƒ¡ãƒ©ä¸Šæ–¹å‘
 		);
 
 EXIT:;
@@ -117,17 +118,19 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uİ’è
+// ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 //******************************************************************************
 void MTFirstPersonCam::SetPosition(
 		D3DXVECTOR3 camVector
 	)
 {
 	m_CamVector = camVector;
+	m_CachedPosition = camVector;
+	m_IsPositionDirty = true;
 }
 
 //******************************************************************************
-// ƒJƒƒ‰•ûŒüİ’è
+// ã‚«ãƒ¡ãƒ©æ–¹å‘è¨­å®š
 //******************************************************************************
 void MTFirstPersonCam::SetDirection(
 		float phi,
@@ -138,17 +141,21 @@ void MTFirstPersonCam::SetDirection(
 	m_CamDirTheta = theta;
 }
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uæ“¾
+// ã‚«ãƒ¡ãƒ©ä½ç½®å–å¾—
 //******************************************************************************
 void MTFirstPersonCam::GetPosition(
 		D3DXVECTOR3* pCamVector
 	)
 {
+	if (m_IsPositionDirty) {
+		// ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+		m_IsPositionDirty = false;
+	}
 	*pCamVector = m_CamVector;
 }
 
 //******************************************************************************
-// ƒJƒƒ‰•ûŒüæ“¾
+// ã‚«ãƒ¡ãƒ©æ–¹å‘å–å¾—
 //******************************************************************************
 void MTFirstPersonCam::GetDirection(
 		float* pPhi,
@@ -160,7 +167,7 @@ void MTFirstPersonCam::GetDirection(
 }
 
 //******************************************************************************
-// ƒ}ƒEƒX‹üˆÚ“®ƒ‚[ƒh“o˜^
+// ãƒã‚¦ã‚¹è¦–ç·šç§»å‹•ãƒ¢ãƒ¼ãƒ‰ç™»éŒ²
 //******************************************************************************
 void MTFirstPersonCam::SetMouseCamMode(
 		bool isEnable
@@ -179,7 +186,7 @@ void MTFirstPersonCam::SetMouseCamMode(
 }
 
 //******************************************************************************
-// ©“®‰ñ“]ƒ‚[ƒh“o˜^
+// è‡ªå‹•å›è»¢ãƒ¢ãƒ¼ãƒ‰ç™»éŒ²
 //******************************************************************************
 void MTFirstPersonCam::SetAutoRollMode(
 		bool isEnable
@@ -189,16 +196,16 @@ void MTFirstPersonCam::SetAutoRollMode(
 }
 
 //******************************************************************************
-// ©“®‰ñ“]•ûŒüØ‚è‘Ö‚¦
+// è‡ªå‹•å›è»¢æ–¹å‘åˆ‡ã‚Šæ›¿ãˆ
 //******************************************************************************
 void MTFirstPersonCam::SwitchAutoRllDirecton()
 {
-	//‰ñ“]•ûŒü‚ğ‹t‚É‚·‚é
+	//å›è»¢æ–¹å‘ã‚’é€†ã«ã™ã‚‹
 	m_VelocityAutoRoll *= -1.0f;
 }
 
 //******************************************************************************
-// •ÏŠ·ˆ—
+// å¤‰æ›å‡¦ç†
 //******************************************************************************
 int MTFirstPersonCam::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -210,49 +217,49 @@ int MTFirstPersonCam::Transform(
 	int dY = 0;
 	int dW = 0;
 	
-	//ƒfƒ‹ƒ^ƒ^ƒCƒ€
+	//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ 
 	dt = (float)m_DeltaTime / 1000.0f;
 	
-	//TODO: ‚±‚±‚¶‚á‚È‚¢‚Ç‚±‚©‚ÖˆÚ‚·
+	//TODO: ã“ã“ã˜ã‚ƒãªã„ã©ã“ã‹ã¸ç§»ã™
 	m_DIKeyCtrl.Acquire();
 	m_DIMouseCtrl.Acquire();
 
-	//ƒEƒBƒ“ƒhƒE‚ª”ñƒAƒNƒeƒBƒuó‘Ô‚Ì‚Æ‚«ó‘Ôæ“¾‚ªƒGƒ‰[‚É‚È‚é
-	//‚Æ‚è‚ ‚¦‚¸–³‹‚·‚é‚¯‚ÇEEE
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒéã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã®ã¨ãçŠ¶æ…‹å–å¾—ãŒã‚¨ãƒ©ãƒ¼ã«ãªã‚‹
+	//ã¨ã‚Šã‚ãˆãšç„¡è¦–ã™ã‚‹ã‘ã©ãƒ»ãƒ»ãƒ»
 
-	//Œ»İ‚ÌƒL[ƒ{[ƒhó‘Ô‚ğæ“¾
+	//ç¾åœ¨ã®ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰çŠ¶æ…‹ã‚’å–å¾—
 	result = m_DIKeyCtrl.GetKeyStatus();
 	//if (result != 0) goto EXIT;
 	result = 0;
 
-	//ƒ}ƒEƒXó‘Ôæ“¾
+	//ãƒã‚¦ã‚¹çŠ¶æ…‹å–å¾—
 	result = m_DIMouseCtrl.GetMouseStatus();
 	//if (result != 0) goto EXIT;
 	result = 0;
 
-	//ƒQ[ƒ€ƒpƒbƒhó‘ÔXV
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰çŠ¶æ…‹æ›´æ–°
 	result = m_GamePadCtrl.UpdateState();
 	if (result != 0) goto EXIT;
 
 	//_RPTN(_CRT_WARN, "GamePad: %f %f\n", m_GamePadCtrl.GetState_ThumbRX(), m_GamePadCtrl.GetState_ThumbRY());
 	
-	//ƒ}ƒEƒX^ƒzƒC[ƒ‹ˆÚ“®—Ê
+	//ãƒã‚¦ã‚¹ï¼ãƒ›ã‚¤ãƒ¼ãƒ«ç§»å‹•é‡
 	dX = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisX);
 	dY = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisY);
 	dW = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisWheel);
 
-	//ƒ}ƒEƒX‹üˆÚ“®ƒ‚[ƒhOFF‚È‚çˆÚ“®—Ê‚ğ–³‹‚·‚é
+	//ãƒã‚¦ã‚¹è¦–ç·šç§»å‹•ãƒ¢ãƒ¼ãƒ‰OFFãªã‚‰ç§»å‹•é‡ã‚’ç„¡è¦–ã™ã‚‹
 	if (!m_IsMouseCamMode) {
 		dX = 0;
 		dY = 0;
 	}
 
-	//ƒQ[ƒ€ƒpƒbƒh‘€ìF‰EƒXƒeƒBƒbƒN
-	//ƒXƒeƒBƒbƒN’l‚Í-1.0‚©‚ç1.0‚Ì”ÍˆÍ
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œï¼šå³ã‚¹ãƒ†ã‚£ãƒƒã‚¯
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯å€¤ã¯-1.0ã‹ã‚‰1.0ã®ç¯„å›²
 	dX += (int)(m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRX() * (100.0f));
 	dY += (int)(m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRY() * (-100.0f));
 	
-	//CTRL+ˆÚ“®ƒL[‚Å‹ü•ûŒü‚ğ•Ï‰»‚³‚¹‚é
+	//CTRL+ç§»å‹•ã‚­ãƒ¼ã§è¦–ç·šæ–¹å‘ã‚’å¤‰åŒ–ã•ã›ã‚‹
 	if (m_DIKeyCtrl.IsKeyDown(DIK_LCONTROL) || m_DIKeyCtrl.IsKeyDown(DIK_RCONTROL)) {
 		if (m_DIKeyCtrl.IsKeyDown(DIK_W) || m_DIKeyCtrl.IsKeyDown(DIK_UP)) {
 			dY -= (int)m_VelocityPT;
@@ -268,26 +275,26 @@ int MTFirstPersonCam::Transform(
 		}
 	}
 
-	//ƒfƒ‹ƒ^ƒ^ƒCƒ€Zo
+	//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ç®—å‡º
 	_CalcDeltaTime();
 
-	//‹ü•ûŒü‚ÌXV
+	//è¦–ç·šæ–¹å‘ã®æ›´æ–°
 	result = _TransformEyeDirection(dX, dY);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒƒ‰ˆÊ’u‚ÌXV
+	//ã‚«ãƒ¡ãƒ©ä½ç½®ã®æ›´æ–°
 	result = _TransformCamPosition();
 	if (result != 0) goto EXIT;
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	result = _SetCamPosition();
 	if (result != 0) goto EXIT;
 
-	//ƒJƒƒ‰XV
+	//ã‚«ãƒ¡ãƒ©æ›´æ–°
 	result = m_Camera.Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//‰ñ“]‘Î‰
+	//å›è»¢å¯¾å¿œ
 	result = _TransformRolling(dW);
 	if (result != 0) goto EXIT;
 
@@ -296,7 +303,241 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹ü•ûŒüXV
+// DX11: update without a D3D9 device
+//   Same input/position pipeline as Transform() but does NOT push matrices to a
+//   D3D9 device. Use GetMatrices() afterwards to read view/proj for the shader.
+//******************************************************************************
+int MTFirstPersonCam::TransformDX11()
+{
+	int result = 0;
+	int dX = 0;
+	int dY = 0;
+	int dW = 0;
+	float dt = 0.0f;
+
+	dt = (float)m_DeltaTime / 1000.0f;
+
+	m_DIKeyCtrl.Acquire();
+	m_DIMouseCtrl.Acquire();
+
+	m_DIKeyCtrl.GetKeyStatus();
+	m_DIMouseCtrl.GetMouseStatus();
+
+	result = m_GamePadCtrl.UpdateState();
+	if (result != 0) goto EXIT;
+
+	dX = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisX);
+	dY = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisY);
+	dW = m_DIMouseCtrl.GetDelta(DIMouseCtrl::AxisWheel);
+
+	if (!m_IsMouseCamMode) {
+		dX = 0;
+		dY = 0;
+	}
+
+	dX += (int)(m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRX() * (100.0f));
+	dY += (int)(m_VelocityPT * dt * m_GamePadCtrl.GetState_ThumbRY() * (-100.0f));
+
+	if (m_DIKeyCtrl.IsKeyDown(DIK_LCONTROL) || m_DIKeyCtrl.IsKeyDown(DIK_RCONTROL)) {
+		if (m_DIKeyCtrl.IsKeyDown(DIK_W) || m_DIKeyCtrl.IsKeyDown(DIK_UP)) {
+			dY -= (int)m_VelocityPT;
+		}
+		if (m_DIKeyCtrl.IsKeyDown(DIK_S) || m_DIKeyCtrl.IsKeyDown(DIK_DOWN)) {
+			dY += (int)m_VelocityPT;
+		}
+		if (m_DIKeyCtrl.IsKeyDown(DIK_A) || m_DIKeyCtrl.IsKeyDown(DIK_LEFT)) {
+			dX -= (int)m_VelocityPT;
+		}
+		if (m_DIKeyCtrl.IsKeyDown(DIK_D) || m_DIKeyCtrl.IsKeyDown(DIK_RIGHT)) {
+			dX += (int)m_VelocityPT;
+		}
+	}
+
+	//ImGui ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦(Config Manager ç­‰)è¡¨ç¤ºä¸­ã¯ãƒ¦ãƒ¼ã‚¶å…¥åŠ›ã‚’ç„¡è¦–ã™ã‚‹ã€‚
+	//è‡ªå‹•ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«/è‡ªå‹•ãƒ­ãƒ¼ãƒ«ã¯ _TransformCamPosition / _TransformRolling å´ã§ç¶™ç¶šã€‚
+	if (!m_InputEnabled) { dX = 0; dY = 0; dW = 0; }
+
+	_CalcDeltaTime();
+
+	result = _TransformEyeDirection(dX, dY);
+	if (result != 0) goto EXIT;
+
+	result = _TransformCamPosition();
+	if (result != 0) goto EXIT;
+
+	result = _SetCamPosition();
+	if (result != 0) goto EXIT;
+
+	result = _TransformRolling(dW);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// M6 (video export): apply only the tick-based scroll, no input polling
+//******************************************************************************
+int MTFirstPersonCam::UpdateScrollForExport()
+{
+	// playback follow: advance the camera along the progress axis by the scroll
+	// delta between the previous and current tick (same as _TransformCamPosition,
+	// minus all the mouse/keyboard/gamepad movement). The first export frame
+	// telescopes the camera back to the frame's tick regardless of where it was.
+	float progress = m_NoteDesign.GetPlayPosX(m_CurTickTime) - m_NoteDesign.GetPlayPosX(m_PrevTickTime);
+	switch (m_ProgressDirection) {
+		case DirX: m_CamVector.x += progress; break;
+		case DirY: m_CamVector.y += progress; break;
+		case DirZ: m_CamVector.z += progress; break;
+	}
+	_ClipCamVector(&m_CamVector);
+	m_PrevTickTime = m_CurTickTime;
+
+	// rebuild the look-at target from the camera vector + current eye direction
+	return _SetCamPosition();
+}
+
+//******************************************************************************
+// DX11: fetch view/projection matrices
+//******************************************************************************
+int MTFirstPersonCam::GetMatrices(
+		float aspect,
+		D3DXMATRIX* pView,
+		D3DXMATRIX* pProj
+	)
+{
+	return m_Camera.GetMatrices(aspect, pView, pProj);
+}
+
+//******************************************************************************
+// DX11: move to the authentic PianoRoll3D default viewpoint
+//   Mirrors MTScenePianoRoll3D::GetDefaultViewParam using this camera's own
+//   note design: eye at note 64 (+ world move), backed off 18 in Z, looking
+//   toward +Z (Phi=90) and level (Theta=90).
+//******************************************************************************
+void MTFirstPersonCam::SetDefaultViewpoint()
+{
+	// Rain scene (DirY progress): falling-note viewpoint - eye in front looking
+	// toward +Z, the scroll offset goes on Y (camera rises with playback while the
+	// notes stay static). Mirrors MTScenePianoRollRain::GetDefaultViewParam
+	// (Z = -(1.5*16/2) - 10 = -22), level (Phi=90, Theta=90).
+	if (m_ProgressDirection == DirY) {
+		D3DXVECTOR3 vp(0.0f, 0.0f, -(1.5f * 16.0f / 2.0f) - 10.0f);
+		vp.y += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+		SetPosition(vp);
+		SetDirection(90.0f, 90.0f);
+		SetManualRollAngle(0.0f);
+		SetAutoRollMode(false);
+		return;
+	}
+
+	// Box scenes (DirX progress): eye at note 64 (+ world move), backed off 18 in Z.
+	D3DXVECTOR3 e4 = m_NoteDesign.GetNoteBoxCenterPosX(0, 0, 0, 64);
+	D3DXVECTOR3 mv = m_NoteDesign.GetWorldMoveVector();
+	D3DXVECTOR3 vp = e4 + mv;
+	vp.z -= 18.0f;
+	// X is relative to the now-line; add the current scroll offset so a reset
+	// mid-playback frames the current position, not the song start.
+	vp.x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+
+	SetPosition(vp);
+	SetDirection(90.0f, 90.0f);
+	SetManualRollAngle(0.0f);
+	SetAutoRollMode(false);
+}
+
+//******************************************************************************
+// DX11: Ring scene default viewpoint
+//   Looking down +X (the time axis) at the ring; eye = worldMove(=0) + (-13,0,0),
+//   Phi=0/Theta=90, scroll offset on X (DirX). Mirrors
+//   MTScenePianoRollRing::GetDefaultViewParam.
+//******************************************************************************
+void MTFirstPersonCam::SetDefaultViewpointRing()
+{
+	D3DXVECTOR3 vp(-13.0f, 0.0f, 0.0f);
+	vp.x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+	SetPosition(vp);
+	SetDirection(0.0f, 90.0f);
+	SetManualRollAngle(0.0f);
+	SetAutoRollMode(false);
+}
+
+//******************************************************************************
+// DX11: apply a saved static viewpoint from the [Viewpoint-N] config section
+//******************************************************************************
+void MTFirstPersonCam::SetViewpointFromConf(
+		const TCHAR* pSceneName,
+		unsigned long viewpointNo
+	)
+{
+	MTConfFile confFile;
+	TCHAR sectionStr[32] = { 0 };
+	float x = 0.0f, y = 0.0f, z = 0.0f, phi = 0.0f, theta = 0.0f;
+	float manualRollAngle = 0.0f, autoRollVelocity = 0.0f;
+
+	if (confFile.Initialize(pSceneName) != 0) return;
+	if (_stprintf_s(sectionStr, 32, _T("Viewpoint-%d"), viewpointNo) < 0) return;
+	if (confFile.SetCurSection(sectionStr) != 0) return;
+
+	confFile.GetFloat(_T("X"), &x, 0.0f);
+	confFile.GetFloat(_T("Y"), &y, 0.0f);
+	confFile.GetFloat(_T("Z"), &z, 0.0f);
+	confFile.GetFloat(_T("Phi"), &phi, 0.0f);
+	confFile.GetFloat(_T("Theta"), &theta, 0.0f);
+	confFile.GetFloat(_T("ManualRollAngle"), &manualRollAngle, 0.0f);
+	confFile.GetFloat(_T("AutoRollVelocity"), &autoRollVelocity, 0.0f);
+
+	// saved position is relative to the now-line; add the current scroll offset
+	// on the progress axis (Rain scrolls on Y, box/ring on X).
+	if (m_ProgressDirection == DirY) y += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+	else x += m_NoteDesign.GetPlayPosX(m_CurTickTime);
+
+	SetPosition(D3DXVECTOR3(x, y, z));
+	SetDirection(phi, theta);
+	SetManualRollAngle(manualRollAngle);
+
+	bool isAutoRoll = (autoRollVelocity != 0.0f);
+	if (isAutoRoll) SetAutoRollVelocity(autoRollVelocity);
+	SetAutoRollMode(isAutoRoll);
+}
+
+//******************************************************************************
+// DX11: read the current viewpoint (now-line relative) for saving
+//******************************************************************************
+void MTFirstPersonCam::GetViewpointParam(
+		float* pX, float* pY, float* pZ, float* pPhi, float* pTheta, float* pManualRoll
+	)
+{
+	D3DXVECTOR3 pos;
+	GetPosition(&pos);
+	float off = m_NoteDesign.GetPlayPosX(m_CurTickTime);
+	if (m_ProgressDirection == DirY) pos.y -= off; else pos.x -= off;
+	if (pX) *pX = pos.x;
+	if (pY) *pY = pos.y;
+	if (pZ) *pZ = pos.z;
+	GetDirection(pPhi, pTheta);
+	if (pManualRoll) *pManualRoll = GetManualRollAngle();
+}
+
+//******************************************************************************
+// DX11: apply a saved viewpoint (now-line relative -> add the scroll offset)
+//******************************************************************************
+void MTFirstPersonCam::SetViewpointParam(
+		float x, float y, float z, float phi, float theta, float manualRoll, float autoRollVel
+	)
+{
+	float off = m_NoteDesign.GetPlayPosX(m_CurTickTime);
+	if (m_ProgressDirection == DirY) y += off; else x += off;
+	SetPosition(D3DXVECTOR3(x, y, z));
+	SetDirection(phi, theta);
+	SetManualRollAngle(manualRoll);
+	bool isAutoRoll = (autoRollVel != 0.0f);
+	if (isAutoRoll) SetAutoRollVelocity(autoRollVel);
+	SetAutoRollMode(isAutoRoll);
+}
+
+//******************************************************************************
+// è¦–ç·šæ–¹å‘æ›´æ–°
 //******************************************************************************
 int MTFirstPersonCam::_TransformEyeDirection(
 		int dX,
@@ -308,16 +549,16 @@ int MTFirstPersonCam::_TransformEyeDirection(
 	float dPhi = 0.0f;
 	float dTheta = 0.0f;
 
-	//ƒfƒ‹ƒ^ƒ^ƒCƒ€
+	//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ 
 	dt = (float)m_DeltaTime / 1000.0f;
 
-	//ƒ}ƒEƒXˆÚ“®—Ê‚©‚ç•ûˆÊŠp‚Æ“V’¸Šp‚Ì‘‰Á—Ê‚ğZo
+	//ãƒã‚¦ã‚¹ç§»å‹•é‡ã‹ã‚‰æ–¹ä½è§’ã¨å¤©é ‚è§’ã®å¢—åŠ é‡ã‚’ç®—å‡º
 	dPhi   = (float)-dX * m_VelocityPT * dt;
 	dTheta = (float) dY * m_VelocityPT * dt;
 
-	//‹É’[‚ÈŠp“x‚Ì•Ï‰»‚ğ—}~‚·‚é
-	//  ‰æ–Ê•`‰æ‚ªˆø‚Á‚©‚©‚Á‚½ê‡‚Éƒ}ƒEƒXˆÚ“®—Ê‚ª’~Ï‚³‚ê
-	//  “Ë‘R‚ ‚ç‚Ê•ûŒü‚ğŒü‚¢‚Ä‚µ‚Ü‚¤‚±‚Æ‚ğ”ğ‚¯‚½‚¢
+	//æ¥µç«¯ãªè§’åº¦ã®å¤‰åŒ–ã‚’æŠ‘æ­¢ã™ã‚‹
+	//  ç”»é¢æç”»ãŒå¼•ã£ã‹ã‹ã£ãŸå ´åˆã«ãƒã‚¦ã‚¹ç§»å‹•é‡ãŒè“„ç©ã•ã‚Œ
+	//  çªç„¶ã‚ã‚‰ã¬æ–¹å‘ã‚’å‘ã„ã¦ã—ã¾ã†ã“ã¨ã‚’é¿ã‘ãŸã„
 	if (abs(dPhi) > 45.0f) {
 		dPhi = 0.0f;
 	}
@@ -325,11 +566,11 @@ int MTFirstPersonCam::_TransformEyeDirection(
 		dTheta = 0.0f;
 	}
 
-	//ƒ}ƒEƒXˆÚ“®—Ê‚ğ•ûˆÊŠp‚Æ“V’¸Šp‚É”½‰f‚·‚é
+	//ãƒã‚¦ã‚¹ç§»å‹•é‡ã‚’æ–¹ä½è§’ã¨å¤©é ‚è§’ã«åæ˜ ã™ã‚‹
 	m_CamDirPhi += dPhi;
 	m_CamDirTheta += dTheta;
 
-	//ƒNƒŠƒbƒsƒ“ƒOˆ—
+	//ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°å‡¦ç†
 	if (m_CamDirPhi >= 360.0f) {
 		m_CamDirPhi -= 360.0f;
 	}
@@ -342,14 +583,14 @@ int MTFirstPersonCam::_TransformEyeDirection(
 	else if (m_CamDirTheta >= 179.0f) {
 		m_CamDirTheta = 179.0f;
 	}
-	//ª“V’¸Šp‚ª0“x‚Ü‚½‚Í180“x‚É‚È‚é‚Æ•`‰æ‚ª‚¨‚©‚µ‚­‚È‚éEEE
+	//â†‘å¤©é ‚è§’ãŒ0åº¦ã¾ãŸã¯180åº¦ã«ãªã‚‹ã¨æç”»ãŒãŠã‹ã—ããªã‚‹ãƒ»ãƒ»ãƒ»
 
 //EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uXV
+// ã‚«ãƒ¡ãƒ©ä½ç½®æ›´æ–°
 //******************************************************************************
 int MTFirstPersonCam::_TransformCamPosition()
 {
@@ -364,61 +605,64 @@ int MTFirstPersonCam::_TransformCamPosition()
 	float progress = 0.0f;
 	D3DXVECTOR3 moveVector;
 
-	//ƒfƒ‹ƒ^ƒ^ƒCƒ€
+	//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ 
 	dt = (float)m_DeltaTime / 1000.0f;
 
-	//ˆÚ“®•ûŒü‚Ì•ûˆÊŠp
+	//ç§»å‹•æ–¹å‘ã®æ–¹ä½è§’
 	phi = m_CamDirPhi;
 
+	//ImGui ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºä¸­ãªã©ã¯ãƒ¦ãƒ¼ã‚¶å…¥åŠ›(ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰/ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰)ã«ã‚ˆã‚‹ç§»å‹•ã‚’ç„¡è¦–ã€‚
+	//ä»¥ä¸‹ã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’ä¸¸ã”ã¨ã‚¹ã‚­ãƒƒãƒ—ã—ã€å¾Œæ®µã®æ¼”å¥è¿½è·¡ï¼ˆè‡ªå‹•ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ï¼‰ã ã‘å®Ÿè¡Œã™ã‚‹ã€‚
+	if (m_InputEnabled) {
 	if (m_DIKeyCtrl.IsKeyDown(DIK_LCONTROL) || m_DIKeyCtrl.IsKeyDown(DIK_RCONTROL)) {
-		//¶CTRL‚Ü‚½‚Í‰ECTRLƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚ÍƒL[“ü—Í‚ğ–³‹‚·‚é
+		//å·¦CTRLã¾ãŸã¯å³CTRLã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã‚­ãƒ¼å…¥åŠ›ã‚’ç„¡è¦–ã™ã‚‹
 	}
 	else {
-		//ˆÚ“®‘¬“x‚Ì‰Á‘¬”{—¦
+		//ç§»å‹•é€Ÿåº¦ã®åŠ é€Ÿå€ç‡
 		rate = 1.0f;
 		if (m_DIKeyCtrl.IsKeyDown(DIK_LSHIFT) || m_DIKeyCtrl.IsKeyDown(DIK_RSHIFT)) {
 			rate = m_AcceleRate;
 		}
 		
-		//‘OˆÚ“®
+		//å‰ç§»å‹•
 		if (m_DIKeyCtrl.IsKeyDown(DIK_W) || m_DIKeyCtrl.IsKeyDown(DIK_UP)) {
 			distance = m_VelocityFB * dt * rate;
 			phi += 0.0f;
 		}
-		//Œã‚ëˆÚ“®F‹ü‚Í‘O‚ğŒü‚¢‚½‚Ü‚Ü
+		//å¾Œã‚ç§»å‹•ï¼šè¦–ç·šã¯å‰ã‚’å‘ã„ãŸã¾ã¾
 		if (m_DIKeyCtrl.IsKeyDown(DIK_S) || m_DIKeyCtrl.IsKeyDown(DIK_DOWN)) {
 			distance = m_VelocityFB * dt * rate;
 			phi += 180.0f;
 		}
-		//¶ˆÚ“®F‹ü‚Í‘O‚ğŒü‚¢‚½‚Ü‚Ü
+		//å·¦ç§»å‹•ï¼šè¦–ç·šã¯å‰ã‚’å‘ã„ãŸã¾ã¾
 		if (m_DIKeyCtrl.IsKeyDown(DIK_A) || m_DIKeyCtrl.IsKeyDown(DIK_LEFT)) {
 			distance = m_VelocityLR * dt * rate;
 			phi += 90.0f;
 		}
-		//‰EˆÚ“®F‹ü‚Í‘O‚ğŒü‚¢‚½‚Ü‚Ü
+		//å³ç§»å‹•ï¼šè¦–ç·šã¯å‰ã‚’å‘ã„ãŸã¾ã¾
 		if (m_DIKeyCtrl.IsKeyDown(DIK_D) || m_DIKeyCtrl.IsKeyDown(DIK_RIGHT)) {
 			distance = m_VelocityLR * dt * rate;
 			phi += -90.0f;
 		}
-		//ã¸F‹ü•ÏX‚È‚µ
+		//ä¸Šæ˜‡ï¼šè¦–ç·šå¤‰æ›´ãªã—
 		if (m_DIKeyCtrl.IsKeyDown(DIK_Q) || m_DIKeyCtrl.IsKeyDown(DIK_PRIOR)) {
 			m_CamVector.y += +(m_VelocityUD * dt * rate);
 		}
-		//‰º~F‹ü•ÏX‚È‚µ
+		//ä¸‹é™ï¼šè¦–ç·šå¤‰æ›´ãªã—
 		if (m_DIKeyCtrl.IsKeyDown(DIK_E) ||  m_DIKeyCtrl.IsKeyDown(DIK_NEXT)) {
 			m_CamVector.y += -(m_VelocityUD * dt * rate);
 		}
-		//-X²•ûŒüi‹ÈÄ¶‹t•ûŒüj‚ÉˆÚ“®F‹ü•ÏX‚È‚µ
+		//-Xè»¸æ–¹å‘ï¼ˆæ›²å†ç”Ÿé€†æ–¹å‘ï¼‰ã«ç§»å‹•ï¼šè¦–ç·šå¤‰æ›´ãªã—
 		if (m_DIKeyCtrl.IsKeyDown(DIK_Z) || m_DIKeyCtrl.IsKeyDown(DIK_COMMA)) {
 			m_CamVector.x +=  -(m_VelocityFB * dt * rate);
 		}
-		//+X²•ûŒüi‹ÈÄ¶•ûŒüj‚ÉˆÚ“®F‹ü•ÏX‚È‚µ
+		//+Xè»¸æ–¹å‘ï¼ˆæ›²å†ç”Ÿæ–¹å‘ï¼‰ã«ç§»å‹•ï¼šè¦–ç·šå¤‰æ›´ãªã—
 		if (m_DIKeyCtrl.IsKeyDown(DIK_C) || m_DIKeyCtrl.IsKeyDown(DIK_PERIOD)) {
 			m_CamVector.x +=  +(m_VelocityFB * dt * rate);
 		}
 	}
 	
-	//ƒQ[ƒ€ƒpƒbƒh‘€ìF\šƒL[„‘OŒã¶‰EˆÚ“®
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œï¼šåå­—ã‚­ãƒ¼ï¼å‰å¾Œå·¦å³ç§»å‹•
 	if (distance == 0.0f) {
 		if (m_GamePadCtrl.GetState_DPadUp()) {
 			dFB = m_VelocityFB * dt * (1.0f);
@@ -435,23 +679,24 @@ int MTFirstPersonCam::_TransformCamPosition()
 		distance = sqrt((dFB * dFB) + (dLR * dLR));
 		phi += D3DXToDegree(atan2(dLR, dFB));
 	}
-	//ƒQ[ƒ€ƒpƒbƒh‘€ìF¶ƒXƒeƒBƒbƒN„‘OŒã¶‰EˆÚ“®
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œï¼šå·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯ï¼å‰å¾Œå·¦å³ç§»å‹•
 	if (distance == 0.0f) {
-		//ƒXƒeƒBƒbƒN’l‚Í-1.0‚©‚ç1.0‚Ì”ÍˆÍ
+		//ã‚¹ãƒ†ã‚£ãƒƒã‚¯å€¤ã¯-1.0ã‹ã‚‰1.0ã®ç¯„å›²
 		dFB += m_VelocityFB * dt * m_GamePadCtrl.GetState_ThumbLX() * -1.0f;
 		dLR += m_VelocityLR * dt * m_GamePadCtrl.GetState_ThumbLY();
 		distance = sqrt((dFB * dFB) + (dLR * dLR));
 		phi += D3DXToDegree(atan2(dFB, dLR));
 	}
-	//ƒQ[ƒ€ƒpƒbƒh‘€ìFX,Yƒ{ƒ^ƒ“„‰º~,ã¸ˆÚ“®
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œï¼šX,Yãƒœã‚¿ãƒ³ï¼ä¸‹é™,ä¸Šæ˜‡ç§»å‹•
 	if (m_GamePadCtrl.GetState_X()) {
 		m_CamVector.y += -(m_VelocityUD * dt);
 	}
 	if (m_GamePadCtrl.GetState_Y()) {
 		m_CamVector.y += +(m_VelocityUD * dt);
 	}
-	
-	//ƒNƒŠƒbƒsƒ“ƒO
+	}  //if (m_InputEnabled)
+
+	//ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°
 	if (phi >= 360.0f) {
 		phi -= 360.0f;
 	}
@@ -459,18 +704,18 @@ int MTFirstPersonCam::_TransformCamPosition()
 		phi += 360.0f;
 	}
 
-	//ˆÚ“®ƒxƒNƒgƒ‹ì¬i‹ÉÀ•W‚©‚ç’¼sÀ•W‚Ö•ÏŠ·j
+	//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ä½œæˆï¼ˆæ¥µåº§æ¨™ã‹ã‚‰ç›´è¡Œåº§æ¨™ã¸å¤‰æ›ï¼‰
 	phiRad = D3DXToRadian(phi);
 	moveVector.x = distance * cos(phiRad);  // r * sin(90) * cos(phi)
 	moveVector.y = 0.0f;                    // r * cos(90)
 	moveVector.z = distance * sin(phiRad);  // r * sin(90) * cos(phi)
 
-	//ƒJƒƒ‰ˆÊ’u‚ğˆÚ“®
+	//ã‚«ãƒ¡ãƒ©ä½ç½®ã‚’ç§»å‹•
 	m_CamVector.x += moveVector.x;
 	m_CamVector.y += moveVector.y;
 	m_CamVector.z += moveVector.z;
 
-	//‰‰‘t’ÇÕ
+	//æ¼”å¥è¿½è·¡
 	progress = m_NoteDesign.GetPlayPosX(m_CurTickTime) - m_NoteDesign.GetPlayPosX(m_PrevTickTime);
 	switch (m_ProgressDirection) {
 		case DirX:
@@ -484,7 +729,7 @@ int MTFirstPersonCam::_TransformCamPosition()
 			break;
 	}
 
-	//ƒJƒƒ‰ˆÊ’uƒNƒŠƒbƒsƒ“ƒO
+	//ã‚«ãƒ¡ãƒ©ä½ç½®ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°
 	_ClipCamVector(&m_CamVector);
 
 	m_PrevTickTime = m_CurTickTime;
@@ -494,7 +739,7 @@ int MTFirstPersonCam::_TransformCamPosition()
 }
 
 //******************************************************************************
-// ‰ñ“]‘Î‰
+// å›è»¢å¯¾å¿œ
 //******************************************************************************
 int MTFirstPersonCam::_TransformRolling(
 		int dW
@@ -504,28 +749,28 @@ int MTFirstPersonCam::_TransformRolling(
 	float dt = 0.0f;
 	float domega = 0.0f;
 
-	//ƒfƒ‹ƒ^ƒ^ƒCƒ€
+	//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ 
 	dt = (float)m_DeltaTime / 1000.0f;
 
-	//ƒzƒC[ƒ‹ˆÚ“®—Ê‚©‚çŠp“x‚ğZo
+	//ãƒ›ã‚¤ãƒ¼ãƒ«ç§»å‹•é‡ã‹ã‚‰è§’åº¦ã‚’ç®—å‡º
 	domega = (float)dW * m_VelocityManualRoll * dt;
 
-	//‹É’[‚ÈŠp“x‚Ì•Ï‰»‚ğ—}~‚·‚é
-	//  ‰æ–Ê•`‰æ‚ªˆø‚Á‚©‚©‚Á‚½ê‡‚Éƒ}ƒEƒXˆÚ“®—Ê‚ª’~Ï‚³‚ê
-	//  “Ë‘R‚ ‚ç‚Ê•ûŒü‚ğŒü‚¢‚Ä‚µ‚Ü‚¤‚±‚Æ‚ğ”ğ‚¯‚½‚¢
+	//æ¥µç«¯ãªè§’åº¦ã®å¤‰åŒ–ã‚’æŠ‘æ­¢ã™ã‚‹
+	//  ç”»é¢æç”»ãŒå¼•ã£ã‹ã‹ã£ãŸå ´åˆã«ãƒã‚¦ã‚¹ç§»å‹•é‡ãŒè“„ç©ã•ã‚Œ
+	//  çªç„¶ã‚ã‚‰ã¬æ–¹å‘ã‚’å‘ã„ã¦ã—ã¾ã†ã“ã¨ã‚’é¿ã‘ãŸã„
 	if (abs(domega) > 45.0f) {
 		domega = 0.0f;
 	}
 
-	//©“®‰ñ“]
+	//è‡ªå‹•å›è»¢
 	if (m_IsAutoRollMode) {
 		domega += m_VelocityAutoRoll * dt;
 	}
 
-	//‰ñ“]Šp“xXV
+	//å›è»¢è§’åº¦æ›´æ–°
 	m_RollAngle += domega;
 
-	//‰ñ“]Šp“x‚ÌƒNƒŠƒbƒv
+	//å›è»¢è§’åº¦ã®ã‚¯ãƒªãƒƒãƒ—
 	if (m_RollAngle >= 360.0f) {
 		m_RollAngle -= 360.0f;
 	}
@@ -538,7 +783,7 @@ int MTFirstPersonCam::_TransformRolling(
 }
 
 //******************************************************************************
-// è“®‰ñ“]Šp“xæ“¾
+// æ‰‹å‹•å›è»¢è§’åº¦å–å¾—
 //******************************************************************************
 float MTFirstPersonCam::GetManualRollAngle()
 {
@@ -546,7 +791,7 @@ float MTFirstPersonCam::GetManualRollAngle()
 }
 
 //******************************************************************************
-// è“®‰ñ“]Šp“xİ’è
+// æ‰‹å‹•å›è»¢è§’åº¦è¨­å®š
 //******************************************************************************
 void MTFirstPersonCam::SetManualRollAngle(
 		float rollAngle
@@ -556,7 +801,7 @@ void MTFirstPersonCam::SetManualRollAngle(
 }
 
 //******************************************************************************
-// ©“®‰ñ“]‘¬“xæ“¾
+// è‡ªå‹•å›è»¢é€Ÿåº¦å–å¾—
 //******************************************************************************
 float MTFirstPersonCam::GetAutoRollVelocity()
 {
@@ -564,7 +809,7 @@ float MTFirstPersonCam::GetAutoRollVelocity()
 }
 
 //******************************************************************************
-// ©“®‰ñ“]‘¬“xİ’è
+// è‡ªå‹•å›è»¢é€Ÿåº¦è¨­å®š
 //******************************************************************************
 void MTFirstPersonCam::SetAutoRollVelocity(
 		float rollVelocity
@@ -574,7 +819,7 @@ void MTFirstPersonCam::SetAutoRollVelocity(
 }
 
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uİ’è
+// ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 //******************************************************************************
 int MTFirstPersonCam::_SetCamPosition()
 {
@@ -585,34 +830,34 @@ int MTFirstPersonCam::_SetCamPosition()
 	D3DXVECTOR3 camLookAtVector;
 	D3DXVECTOR3 camUpVector;
 
-	//‹üƒxƒNƒgƒ‹i‹ÉÀ•W‚©‚ç’¼ŒğÀ•W‚Ö•ÏŠ·j
+	//è¦–ç·šãƒ™ã‚¯ãƒˆãƒ«ï¼ˆæ¥µåº§æ¨™ã‹ã‚‰ç›´äº¤åº§æ¨™ã¸å¤‰æ›ï¼‰
 	phiRad    = D3DXToRadian(m_CamDirPhi);
 	thetaRad  = D3DXToRadian(m_CamDirTheta);
 	lookVector.x = 10.0f * sin(thetaRad) * cos(phiRad);
 	lookVector.y = 10.0f * cos(thetaRad);
 	lookVector.z = 10.0f * sin(thetaRad) * sin(phiRad);
 
-	//ƒJƒƒ‰ˆÊ’u‚É‹üƒxƒNƒgƒ‹‚ğ‘«‚µ‚Ä’–Ú“_‚ğZo
+	//ã‚«ãƒ¡ãƒ©ä½ç½®ã«è¦–ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¶³ã—ã¦æ³¨ç›®ç‚¹ã‚’ç®—å‡º
 	camLookAtVector = m_CamVector;
 	camLookAtVector.x += lookVector.x;
 	camLookAtVector.y += lookVector.y;
 	camLookAtVector.z += lookVector.z;
 
-	//ƒJƒƒ‰ã•ûŒü
+	//ã‚«ãƒ¡ãƒ©ä¸Šæ–¹å‘
 	camUpVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
-	//ƒJƒƒ‰ˆÊ’u“o˜^
+	//ã‚«ãƒ¡ãƒ©ä½ç½®ç™»éŒ²
 	m_Camera.SetPosition(
-			m_CamVector,		//ƒJƒƒ‰ˆÊ’u
-			camLookAtVector, 	//’–Ú“_
-			camUpVector			//ƒJƒƒ‰ã•ûŒü
+			m_CamVector,		//ã‚«ãƒ¡ãƒ©ä½ç½®
+			camLookAtVector, 	//æ³¨ç›®ç‚¹
+			camUpVector			//ã‚«ãƒ¡ãƒ©ä¸Šæ–¹å‘
 		);
 
 	return result;
 }
 
 //******************************************************************************
-// ƒJ[ƒ\ƒ‹ˆÚ“®”ÍˆÍ§ŒÀ
+// ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•ç¯„å›²åˆ¶é™
 //******************************************************************************
 int MTFirstPersonCam::_ClipCursor(
 		bool isClip
@@ -663,7 +908,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒ‹ƒ^ƒ^ƒCƒ€æ“¾
+// ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ å–å¾—
 //******************************************************************************
 void MTFirstPersonCam::_CalcDeltaTime()
 {
@@ -672,12 +917,12 @@ void MTFirstPersonCam::_CalcDeltaTime()
 	curTime = timeGetTime();
 	
 	if (m_PrevTime == 0) {
-		//‰‰ñ‘ª’è‚Í•Ï‰»‚È‚µ‚Æ‚·‚é
+		//åˆå›æ¸¬å®šæ™‚ã¯å¤‰åŒ–ãªã—ã¨ã™ã‚‹
 		m_DeltaTime = 0;
 	}
 	else {
-		//ƒfƒ‹ƒ^ƒ^ƒCƒ€
-		//49.71“ú‚ğ‚Ü‚½‚®ê‡‚à‚±‚ÌŒvZ‚Å–â‘è‚È‚¢‚Í‚¸
+		//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ 
+		//49.71æ—¥ã‚’ã¾ãŸãå ´åˆã‚‚ã“ã®è¨ˆç®—ã§å•é¡Œãªã„ã¯ãš
 		m_DeltaTime = curTime - m_PrevTime;
 	}
 	
@@ -687,7 +932,7 @@ void MTFirstPersonCam::_CalcDeltaTime()
 }
 
 //******************************************************************************
-// ƒ`ƒbƒNƒ^ƒCƒ€İ’è
+// ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ è¨­å®š
 //******************************************************************************
 void MTFirstPersonCam::SetCurTickTime(
 		unsigned long curTickTime
@@ -697,7 +942,7 @@ void MTFirstPersonCam::SetCurTickTime(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTFirstPersonCam::Reset()
 {
@@ -708,7 +953,7 @@ void MTFirstPersonCam::Reset()
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTFirstPersonCam::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -720,7 +965,7 @@ int MTFirstPersonCam::_LoadConfFile(
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒƒ‰ˆÚ“®‘¬“xî•ñæ“¾
+	//ã‚«ãƒ¡ãƒ©ç§»å‹•é€Ÿåº¦æƒ…å ±å–å¾—
 	result = confFile.SetCurSection(_T("FirstPersonCam"));
 	if (result != 0) goto EXIT;
 	result = confFile.GetFloat(_T("VelocityFB"), &m_VelocityFB, 15.0f);
@@ -743,7 +988,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uƒNƒŠƒbƒsƒ“ƒO
+// ã‚«ãƒ¡ãƒ©ä½ç½®ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°
 //******************************************************************************
 void MTFirstPersonCam::_ClipCamVector(
 		D3DXVECTOR3* pVector
@@ -770,7 +1015,7 @@ void MTFirstPersonCam::_ClipCamVector(
 }
 
 //******************************************************************************
-// is•ûŒüİ’è
+// é€²è¡Œæ–¹å‘è¨­å®š
 //******************************************************************************
 void MTFirstPersonCam::SetProgressDirection(
 		MTProgressDirection dir

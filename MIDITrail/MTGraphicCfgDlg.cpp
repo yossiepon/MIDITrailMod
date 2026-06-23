@@ -1,10 +1,10 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGraphicCfgDlg
 //
-// ƒOƒ‰ƒtƒBƒbƒNİ’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,23 +13,22 @@
 #include "Commdlg.h"
 #include "MTParam.h"
 #include "MTGraphicCfgDlg.h"
-#include <mbctype.h>
 
 
 //******************************************************************************
-// ƒOƒ‰ƒtƒBƒbƒNİ’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX ƒpƒ‰ƒƒ^’è‹`
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹ ãƒ‘ãƒ©ãƒ¡ã‚¿å®šç¾©
 //******************************************************************************
-//ƒm[ƒg’·Šg‘å—¦ Å¬’l/Å‘å’l
+//ãƒãƒ¼ãƒˆé•·æ‹¡å¤§ç‡ æœ€å°å€¤/æœ€å¤§å€¤
 #define MT_QNOTE_LENGTH_MAG_MIN		(0)
 #define MT_QNOTE_LENGTH_MAG_MAX		(1000)
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTGraphicCfgDlg* MTGraphicCfgDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 {
@@ -39,9 +38,11 @@ MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 	m_hWnd = NULL;
 	m_MultiSampleType = 0;
 	m_hComboMultiSampleType = NULL;
+	m_SuperSample = 1;                  //ced 20260628
+	m_hComboSuperSample = NULL;         //ced 20260628
 	m_hEditImageFilePath = NULL;
 	m_hEditQuarterNoteLengthMag = NULL;
-	m_ImageFilePath[0] = L'\0';
+	m_ImageFilePath[0] = _T('\0');
 	m_QuarterNoteLengthMag = 100;
 	m_isChanged = false;
 
@@ -53,14 +54,14 @@ MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTGraphicCfgDlg::~MTGraphicCfgDlg(void)
 {
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTGraphicCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -68,7 +69,7 @@ INT_PTR CALLBACK MTGraphicCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wPara
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTGraphicCfgDlg::_WndProcImpl(
 		HWND hDlg,
@@ -78,7 +79,7 @@ INT_PTR MTGraphicCfgDlg::_WndProcImpl(
 	)
 {
 	int result = 0;
-	LRESULT lresult = 0;
+	BOOL bresult = FALSE;
 
 	UNREFERENCED_PARAMETER(lParam);
 
@@ -86,23 +87,23 @@ INT_PTR MTGraphicCfgDlg::_WndProcImpl(
 		case WM_INITDIALOG:
 			result = _OnInitDlg(hDlg);
 			if (result != 0) goto EXIT;
+			bresult = TRUE;
 			break;
 		case WM_COMMAND:
 			if (LOWORD(wParam) == IDOK) {
 				result = _Save();
 				if (result != 0) goto EXIT;
 				EndDialog(hDlg, LOWORD(wParam));
+				bresult = TRUE;
 			}
 			else if (LOWORD(wParam) == IDCANCEL) {
 				EndDialog(hDlg, LOWORD(wParam));
+				bresult = TRUE;
 			}
 			else if (LOWORD(wParam) == IDC_BTN_BROWSE) {
 				result = _OnBtnBrowse();
 				if (result != 0) goto EXIT;
 			}
-			break;
-		default:
-			//ˆ—‚µ‚È‚¢ƒƒbƒZ[ƒW
 			break;
 	}
 
@@ -110,11 +111,11 @@ EXIT:;
 	if (result != 0) {
 		YN_SHOW_ERR(hDlg);
 	}
-	return lresult;
+	return (INT_PTR)bresult;
 }
 
 //******************************************************************************
-// ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒOƒTƒ|[ƒgî•ñİ’è
+// ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°ã‚µãƒãƒ¼ãƒˆæƒ…å ±è¨­å®š
 //******************************************************************************
 void MTGraphicCfgDlg::SetAntialiasSupport(
 		unsigned long multiSampleType,	//2-16
@@ -129,7 +130,7 @@ void MTGraphicCfgDlg::SetAntialiasSupport(
 }
 
 //******************************************************************************
-// •\¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTGraphicCfgDlg::Show(
 		HWND hParentWnd
@@ -139,21 +140,19 @@ int MTGraphicCfgDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\¦
-	//  ƒtƒ@ƒCƒ‹ƒpƒX‚ÌƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚ÅUNICODE•¶š‚ğ•\¦‰Â”\‚Æ‚·‚é‚½‚ß
-	//  ƒƒCƒh•¶š—ñ”Å‚ÌAPI‚ğ—p‚¢‚Ä•\¦‚·‚é
-	dresult = DialogBoxW(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCEW(IDD_GRAPHIC_CFG),	//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	dresult = DialogBox(
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_GRAPHIC_CFG),	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -165,7 +164,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTGraphicCfgDlg::_OnInitDlg(
 		HWND hDlg
@@ -176,25 +175,30 @@ int MTGraphicCfgDlg::_OnInitDlg(
 	m_hWnd = hDlg;
 	m_isChanged = false;
 
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConf();
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒ‹ƒ`ƒTƒ“ƒvƒ‹í•Ê‘I‘ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒ«ç¨®åˆ¥é¸æŠã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	m_hComboMultiSampleType = GetDlgItem(hDlg, IDC_COMBO_MULTISAMPLETYPE);
 	result = _InitComboMultiSampleType(m_hComboMultiSampleType, m_MultiSampleType);
 	if (result != 0) goto EXIT;
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX‰Šú‰»
+	//ced 20260628: ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°(SSAA)ã‚³ãƒ³ãƒœåˆæœŸåŒ–
+	m_hComboSuperSample = GetDlgItem(hDlg, IDC_COMBO_SUPERSAMPLE);
+	result = _InitComboSuperSample(m_hComboSuperSample, m_SuperSample);
+	if (result != 0) goto EXIT;
+
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹åˆæœŸåŒ–
 	m_hEditImageFilePath = GetDlgItem(hDlg, IDC_EDIT_IMAGE_FILE_PATH);
 	result = _InitBackgroundImageFilePath();
 	if (result != 0) goto EXIT;
 
-	//l•ª‰¹•„’·Šg‘å—¦‰Šú‰»
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§ç‡åˆæœŸåŒ–
 	m_hEditQuarterNoteLengthMag = GetDlgItem(hDlg, IDC_EDIT_QUARTER_NOTE_LENGTH_MAG);
 	result = _InitQuarterNote();
 	if (result != 0) goto EXIT;
@@ -204,7 +208,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 //******************************************************************************
 int MTGraphicCfgDlg::_InitConfFile()
 {
@@ -225,16 +229,15 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTGraphicCfgDlg::_LoadConf()
 {
 	int result = 0;
-	int apiresult = 0;
 	int multiSampleType = 0;
-	TCHAR imageFilePathA[_MAX_PATH] = { _T('\0') };
+	int superSample = 0;   //ced 20260628
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒXİ’è’læ“¾
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹è¨­å®šå€¤å–å¾—
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
 
@@ -245,7 +248,7 @@ int MTGraphicCfgDlg::_LoadConf()
 				);
 	if (result != 0) goto EXIT;
 
-	//–³Œø’l‚ÍƒAƒ“ƒ`ƒGƒCƒŠƒAƒXOFF‚É‚·‚é
+	//ç„¡åŠ¹å€¤ã¯ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹OFFã«ã™ã‚‹
 	if ((DX_MULTI_SAMPLE_TYPE_MIN <= multiSampleType)
 	 && (multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX)) {
 		m_MultiSampleType = multiSampleType;
@@ -254,36 +257,24 @@ int MTGraphicCfgDlg::_LoadConf()
 		m_MultiSampleType = 0;
 	}
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒXİ’è’læ“¾
-	result = m_ConfFile.SetCurSection(_T("Background-image"));
+	//ced 20260628: ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°(SSAA)å€ç‡ï¼ˆåŒã˜ Anti-aliasing ã‚»ã‚¯ã‚·ãƒ§ãƒ³ï¼‰
+	result = m_ConfFile.GetInt(_T("SuperSample"), &superSample, MT_GRAPHIC_SUPER_SAMPLE_DEF);
 	if (result != 0) goto EXIT;
-	result = m_ConfFile.GetWStr(_T("ImageFilePath_W"), m_ImageFilePath, _MAX_PATH, L"*** NO DATA ***");
-	if (result != 0) goto EXIT;
-	
-	//ƒƒCƒh•¶š—ñƒtƒ@ƒCƒ‹ƒpƒX–¢İ’è‚Ìê‡
-	if (wcscmp(m_ImageFilePath, L"*** NO DATA ***") == 0) {
-		//Ver.1.4.0ˆÈ~‚ÅƒƒCƒh•¶š—ñƒtƒ@ƒCƒ‹ƒpƒX‚ğ•Û‘¶‚·‚é‚æ‚¤‚É•ÏX‚µ‚½‚½‚ß
-		//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñƒtƒ@ƒCƒ‹ƒpƒX‚Ìæ“¾‚ğ‚İ‚é
-		memset(m_ImageFilePath, 0, sizeof(WCHAR) * _MAX_PATH);
-		result = m_ConfFile.GetStr(_T("ImageFilePath"), imageFilePathA, _MAX_PATH, _T(""));
-		if (result != 0) goto EXIT;
-		if (_tcslen(imageFilePathA) > 0) {
-			apiresult = MultiByteToWideChar(
-								_getmbcp(),			//ƒR[ƒhƒy[ƒW
-								MB_PRECOMPOSED,		//ƒtƒ‰ƒOF
-								imageFilePathA,	//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñ
-								(int)_tcslen(imageFilePathA),	//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñƒoƒCƒg”
-								m_ImageFilePath,	//•ÏŠ·æƒƒCƒh•¶š—ñƒoƒbƒtƒ@
-								_MAX_PATH - 1		//ƒoƒbƒtƒ@ƒTƒCƒYiƒƒCƒh•¶š”’PˆÊj
-							);
-			if (apiresult == 0) {
-				result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-				goto EXIT;
-			}
-		}
+	if ((DX_SUPER_SAMPLE_MIN <= superSample) && (superSample <= DX_SUPER_SAMPLE_MAX)) {
+		m_SuperSample = superSample;
+	}
+	else {
+		m_SuperSample = 1;   //OFF
 	}
 
-	//l•ª‰¹•„’·Šg‘å—¦İ’è’læ“¾
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹è¨­å®šå€¤å–å¾—
+	result = m_ConfFile.SetCurSection(_T("Background-image"));
+	if (result != 0) goto EXIT;
+
+	result = m_ConfFile.GetStr(_T("ImageFilePath"), m_ImageFilePath, _MAX_PATH, _T(""));
+	if (result != 0) goto EXIT;
+
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§ç‡è¨­å®šå€¤å–å¾—
 	result = m_ConfFile.SetCurSection(_T("QuarterNote"));
 	if (result != 0) goto EXIT;
 	
@@ -295,7 +286,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX‘I‘ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+// ãƒ‡ãƒã‚¤ã‚¹é¸æŠã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 //******************************************************************************
 int MTGraphicCfgDlg::_InitComboMultiSampleType(
 		HWND hCombo,
@@ -310,14 +301,14 @@ int MTGraphicCfgDlg::_InitComboMultiSampleType(
 	bool isSupportAA = false;
 	TCHAR itemStr[256];
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒOƒTƒ|[ƒgŠm”F
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°ã‚µãƒãƒ¼ãƒˆç¢ºèª
 	for (type = DX_MULTI_SAMPLE_TYPE_MIN; type <= DX_MULTI_SAMPLE_TYPE_MAX; type++) {
 		if (m_MultSampleTypeSupport[type]) {
 			isSupportAA = true;
 		}
 	}
 
-	//æ“ª€–Ú‚ğ“o˜^
+	//å…ˆé ­é …ç›®ã‚’ç™»éŒ²
 	if (isSupportAA) {
 		_stprintf_s(itemStr, 256, _T("OFF"));
 	}
@@ -337,10 +328,10 @@ int MTGraphicCfgDlg::_InitComboMultiSampleType(
 	selectedIndex = comboIndex;
 	comboIndex++;
 
-	//ƒ}ƒ‹ƒ`ƒTƒ“ƒvƒ‹í•Ê‚ğ’Ç‰Á“o˜^
+	//ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒ«ç¨®åˆ¥ã‚’è¿½åŠ ç™»éŒ²
 	for (type = DX_MULTI_SAMPLE_TYPE_MIN; type <= DX_MULTI_SAMPLE_TYPE_MAX; type++) {
 		if (m_MultSampleTypeSupport[type]) {
-			//ƒ}ƒ‹ƒ`ƒTƒ“ƒvƒŠƒ“ƒOí•Ê‚ğƒRƒ“ƒ{ƒ{ƒbƒNƒX‚É’Ç‰Á
+			//ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç¨®åˆ¥ã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¿½åŠ 
 			_stprintf_s(itemStr, 256, _T("%dx"), type);
 			lresult = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)itemStr);
 			if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
@@ -359,14 +350,14 @@ int MTGraphicCfgDlg::_InitComboMultiSampleType(
 		}
 	}
 
-	//‘I‘ğó‘Ôİ’è
+	//é¸æŠçŠ¶æ…‹è¨­å®š
 	lresult = SendMessage(hCombo, CB_SETCURSEL, selectedIndex, 0);
 	if (lresult == CB_ERR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
 		goto EXIT;
 	}
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒO‚ğƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¯‚ê‚Î•sŠˆ«‚É‚·‚é
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã‘ã‚Œã°ä¸æ´»æ€§ã«ã™ã‚‹
 	if (!isSupportAA) {
 		EnableWindow(hCombo, FALSE);
 	}
@@ -376,18 +367,60 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX‰Šú‰»
+// ced 20260628: ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°(SSAA)ã‚³ãƒ³ãƒœåˆæœŸåŒ–ï¼ˆOFF / 2x / 3x / 4xï¼‰
+//******************************************************************************
+int MTGraphicCfgDlg::_InitComboSuperSample(
+		HWND hCombo,
+		unsigned long selSuperSample
+	)
+{
+	int result = 0;
+	LRESULT lresult = 0;
+	int comboIndex = 0;
+	int selectedIndex = 0;
+	unsigned long ss = 0;
+	TCHAR itemStr[256];
+
+	if (hCombo == NULL) return 0;
+
+	//å…ˆé ­ï¼šOFFï¼ˆ=1å€ï¼‰
+	SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("OFF"));
+	SendMessage(hCombo, CB_SETITEMDATA, comboIndex, (LPARAM)1);
+	if (selSuperSample <= 1) selectedIndex = comboIndex;
+	comboIndex++;
+
+	//2x / 3x / 4x
+	for (ss = DX_SUPER_SAMPLE_MIN; ss <= DX_SUPER_SAMPLE_MAX; ss++) {
+		_stprintf_s(itemStr, 256, _T("%dx"), ss);
+		lresult = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)itemStr);
+		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
+			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+			goto EXIT;
+		}
+		SendMessage(hCombo, CB_SETITEMDATA, comboIndex, (LPARAM)ss);
+		if (ss == selSuperSample) selectedIndex = comboIndex;
+		comboIndex++;
+	}
+
+	SendMessage(hCombo, CB_SETCURSEL, selectedIndex, 0);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹åˆæœŸåŒ–
 //******************************************************************************
 int MTGraphicCfgDlg::_InitBackgroundImageFilePath()
 {
 	int result = 0;
 	BOOL bresult = FALSE;
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚É“ü—Í‰Â”\Å‘å•¶š”‚ğİ’è
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«å…¥åŠ›å¯èƒ½æœ€å¤§æ–‡å­—æ•°ã‚’è¨­å®š
 	SendMessage(m_hEditImageFilePath, EM_SETLIMITTEXT, (WPARAM)_MAX_PATH, 0);
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚Éƒtƒ@ƒCƒ‹ƒpƒX‚ğİ’è
-	bresult = SetWindowTextW(m_hEditImageFilePath, m_ImageFilePath);
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’è¨­å®š
+	bresult = SetWindowText(m_hEditImageFilePath, m_ImageFilePath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -398,7 +431,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// l•ª‰¹•„İ’è‰Šú‰»
+// å››åˆ†éŸ³ç¬¦è¨­å®šåˆæœŸåŒ–
 //******************************************************************************
 int MTGraphicCfgDlg::_InitQuarterNote()
 {
@@ -406,10 +439,10 @@ int MTGraphicCfgDlg::_InitQuarterNote()
 	BOOL bresult = FALSE;
 	TCHAR str[32] = { _T('\0') };
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚É“ü—Í‰Â”\Å‘å•¶š”‚ğİ’èFÅ‘å4•¶š("1000")
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«å…¥åŠ›å¯èƒ½æœ€å¤§æ–‡å­—æ•°ã‚’è¨­å®šï¼šæœ€å¤§4æ–‡å­—("1000")
 	SendMessage(m_hEditQuarterNoteLengthMag, EM_SETLIMITTEXT, (WPARAM)4, 0);
 	
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚Él•ª‰¹•„’·Šg‘å—¦‚Ì”’l•¶š—ñ‚ğİ’è
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§ç‡ã®æ•°å€¤æ–‡å­—åˆ—ã‚’è¨­å®š
 	_stprintf_s(str, 32, _T("%d"), m_QuarterNoteLengthMag);
 	bresult = SetWindowText(m_hEditQuarterNoteLengthMag, str);
 	if (!bresult) {
@@ -422,7 +455,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èî•ñ•Û‘¶
+// è¨­å®šæƒ…å ±ä¿å­˜
 //******************************************************************************
 int MTGraphicCfgDlg::_Save()
 {
@@ -431,14 +464,14 @@ int MTGraphicCfgDlg::_Save()
 	LRESULT lresult = 0;
 	unsigned long selectedIndex = 0;
 	unsigned long selectedMultiSampleType = 0;
-	WCHAR filePath[_MAX_PATH] = { L'\0' };
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
 	TCHAR strMag[32] = { _T('\0') };
 	int mag = 0;
 
 	//------------------------------
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒO
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°
 	//------------------------------
-	//‘I‘ğ€–Ú‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+	//é¸æŠé …ç›®ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETCURSEL, 0, 0);
 	if ((lresult == CB_ERR) || (lresult < 0)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -446,7 +479,7 @@ int MTGraphicCfgDlg::_Save()
 	}
 	selectedIndex = (unsigned long)lresult;
 
-	//‘I‘ğ€–Ú‚Ìƒ†[ƒUƒf[ƒ^‚ğæ“¾Fƒ}ƒ‹ƒ`ƒTƒ“ƒvƒ‹í•Ê
+	//é¸æŠé …ç›®ã®ãƒ¦ãƒ¼ã‚¶ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼šãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒ«ç¨®åˆ¥
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETITEMDATA, selectedIndex, 0);
 	if (lresult == CB_ERR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
@@ -454,54 +487,73 @@ int MTGraphicCfgDlg::_Save()
 	}
 	selectedMultiSampleType = (unsigned long)lresult;
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒXİ’è•Û‘¶
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹è¨­å®šä¿å­˜
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("MultiSampleType"), selectedMultiSampleType);
 	if (result != 0) goto EXIT;
 
-	//•ÏXŠm”F
+	//å¤‰æ›´ç¢ºèª
 	if (m_MultiSampleType != selectedMultiSampleType) {
 		m_isChanged = true;
 	}
 	m_MultiSampleType = selectedMultiSampleType;
 
 	//------------------------------
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX
+	//ced 20260628: ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°(SSAA)
 	//------------------------------
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX‚ğƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚©‚çæ“¾
-	apiresult = GetWindowTextW(m_hEditImageFilePath, filePath, _MAX_PATH);
-	if (apiresult == 0) {
-		//ƒeƒLƒXƒg–³‚µ‚Ü‚½‚ÍƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹–³Œø‚Ìê‡
-		filePath[0] = L'\0';
+	{
+		unsigned long selSS = 1;
+		lresult = SendMessage(m_hComboSuperSample, CB_GETCURSEL, 0, 0);
+		if ((lresult != CB_ERR) && (lresult >= 0)) {
+			LRESULT data = SendMessage(m_hComboSuperSample, CB_GETITEMDATA, (WPARAM)lresult, 0);
+			if (data != CB_ERR) selSS = (unsigned long)data;
+		}
+		if (selSS < 1) selSS = 1;
+		result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
+		if (result != 0) goto EXIT;
+		result = m_ConfFile.SetInt(_T("SuperSample"), selSS);
+		if (result != 0) goto EXIT;
+		if (m_SuperSample != selSS) m_isChanged = true;
+		m_SuperSample = selSS;
 	}
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒXİ’è•Û‘¶
+	//------------------------------
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+	//------------------------------
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã‹ã‚‰å–å¾—
+	apiresult = GetWindowText(m_hEditImageFilePath, filePath, _MAX_PATH);
+	if (apiresult == 0) {
+		//ãƒ†ã‚­ã‚¹ãƒˆç„¡ã—ã¾ãŸã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ç„¡åŠ¹ã®å ´åˆ
+		filePath[0] = _T('\0');
+	}
+
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹è¨­å®šä¿å­˜
 	result = m_ConfFile.SetCurSection(_T("Background-image"));
 	if (result != 0) goto EXIT;
-	result = m_ConfFile.SetWStr(_T("ImageFilePath_W"), filePath);
+	result = m_ConfFile.SetStr(_T("ImageFilePath"), filePath);
 	if (result != 0) goto EXIT;
 
-	//•ÏXŠm”F
-	if (wcscmp(m_ImageFilePath, filePath) != 0) {
+	//å¤‰æ›´ç¢ºèª
+	if (_tcscmp(m_ImageFilePath, filePath) != 0) {
 		m_isChanged = true;
 	}
-	wcscpy_s(m_ImageFilePath, _MAX_PATH, filePath);
+	_tcscpy_s(m_ImageFilePath, _MAX_PATH, filePath);
 	
 	//------------------------------
-	//l•ª‰¹•„’·Šg‘å—¦
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§ç‡
 	//------------------------------
-	//l•ª‰¹•„’·Šg‘å—¦‚ğæ“¾
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§ç‡ã‚’å–å¾—
 	apiresult = GetWindowText(m_hEditQuarterNoteLengthMag, strMag, 32);
 	if (apiresult == 0) {
-		//ƒeƒLƒXƒg–³‚µ‚Ü‚½‚ÍƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹–³Œø‚Ìê‡
+		//ãƒ†ã‚­ã‚¹ãƒˆç„¡ã—ã¾ãŸã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ç„¡åŠ¹ã®å ´åˆ
 		mag = 100;
 	}
 	else {
 		mag = _tstoi(strMag);
 	}
 
-	//ƒNƒŠƒbƒsƒ“ƒO
+	//ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°
 	if (mag < MT_QNOTE_LENGTH_MAG_MIN) {
 		mag = MT_QNOTE_LENGTH_MAG_MIN;
 	}
@@ -509,13 +561,13 @@ int MTGraphicCfgDlg::_Save()
 		mag = MT_QNOTE_LENGTH_MAG_MAX;
 	}
 	
-	//l•ª‰¹•„’·Šg‘å—¦•Û‘¶
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§ç‡ä¿å­˜
 	result = m_ConfFile.SetCurSection(_T("QuarterNote"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("LengthMagnification"), mag);
 	if (result != 0) goto EXIT;
 
-	//•ÏXŠm”F
+	//å¤‰æ›´ç¢ºèª
 	if (m_QuarterNoteLengthMag != mag) {
 		m_isChanged = true;
 	}
@@ -526,7 +578,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^•ÏXŠm”F
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¤‰æ›´ç¢ºèª
 //******************************************************************************
 bool MTGraphicCfgDlg::IsChanged()
 {
@@ -534,24 +586,24 @@ bool MTGraphicCfgDlg::IsChanged()
 }
 
 //******************************************************************************
-// ”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX ƒuƒ‰ƒEƒYƒ{ƒ^ƒ“‰Ÿ‰º
+// èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ ãƒ–ãƒ©ã‚¦ã‚ºãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTGraphicCfgDlg::_OnBtnBrowse()
 {
 	int result = 0;
 	BOOL bresult = FALSE;
-	WCHAR filePath[_MAX_PATH] = { L'\0' };
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
 	bool isSelected = false;
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = _SelectImageFile(filePath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹–¢‘I‘ğ‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+	//ãƒ•ã‚¡ã‚¤ãƒ«æœªé¸æŠã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (!isSelected) goto EXIT;
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚Éƒtƒ@ƒCƒ‹ƒpƒX‚ğİ’è
-	bresult = SetWindowTextW(m_hEditImageFilePath, filePath);
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’è¨­å®š
+	bresult = SetWindowText(m_hEditImageFilePath, filePath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -562,37 +614,37 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰æ‘œƒtƒ@ƒCƒ‹‘I‘ğ
+// ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
 int MTGraphicCfgDlg::_SelectImageFile(
-		WCHAR* pFilePath,
+		TCHAR* pFilePath,
 		unsigned long bufSize,
 		bool* pIsSelected
 	)
 {
 	int result = 0;
 	BOOL apiresult = FALSE;
-	OPENFILENAMEW ofn;
+	OPENFILENAME ofn;
 
 	if ((pFilePath == NULL) || (bufSize == 0) || (pIsSelected ==NULL)) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	pFilePath[0] = L'\0';
-	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
-	ofn.lStructSize = sizeof(OPENFILENAMEW);
+	pFilePath[0] = _T('\0');
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner   = m_hWnd;
-	ofn.lpstrFilter = L"Image file (*.jpg *.png *.bmp)\0*.jpg;*.png;*.bmp\0";
+	ofn.lpstrFilter = _T("Image file (*.jpg *.png *.bmp)\0*.jpg;*.png;*.bmp\0");
 	ofn.lpstrFile   = pFilePath;
 	ofn.nMaxFile    = bufSize;
-	ofn.lpstrTitle  = L"Select image file.";
+	ofn.lpstrTitle  = _T("Select image file.");
 	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
-	apiresult = GetOpenFileNameW(&ofn);
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	apiresult = GetOpenFileName(&ofn);
 	if (!apiresult) {
-		//ƒLƒƒƒ“ƒZƒ‹‚Ü‚½‚ÍƒGƒ‰[”­¶FƒGƒ‰[‚Íƒ`ƒFƒbƒN‚µ‚È‚¢
+		//ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã¾ãŸã¯ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿï¼šã‚¨ãƒ©ãƒ¼ã¯ãƒã‚§ãƒƒã‚¯ã—ãªã„
 		*pIsSelected = false;
 		goto EXIT;
 	}

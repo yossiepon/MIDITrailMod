@@ -1,133 +1,157 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MIDITrailApp
 //
-// MIDITrail ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒNƒ‰ƒX
+// MIDITrail ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "imagehlp.h"
 #include "shellapi.h"
-#include "shlwapi.h"
+#include "ShObjIdl.h"   // IFileOpenDialog (folder select) - 1.4.1 feature port
+#include "imgui.h"      // ImGui IO (config manager input capture guard)
 #include "YNBaseLib.h"
 #include "MTParam.h"
 #include "MTConfFile.h"
+#include "DXColorUtil.h"
+#include "MTVideoExporter.h"
+#include "MTVideoExportDlg.h"
+#include "SMSimpleList.h"
 #include "MIDITrailApp.h"
-#include "MTSceneTitle.h"
-// >>> modify 20120729 yossiepon begin
-#include "MTScenePianoRoll3DMod.h"
-#include "MTScenePianoRoll2DMod.h"
-// <<< modify 20120729 yossiepon end
-#include "MTScenePianoRollRain.h"
-#include "MTScenePianoRollRain2D.h"
-// >>> modify 20191222 yossiepon begin
-#include "MTScenePianoRollRingMod.h"
-// <<< modify 20191222 yossiepon end
-#include "MTScenePianoRoll3DLive.h"
-#include "MTScenePianoRoll2DLive.h"
-#include "MTScenePianoRollRainLive.h"
-#include "MTScenePianoRollRain2DLive.h"
-#include "MTScenePianoRollRingLive.h"
-// >>> add 20190828 yossiepon begin
+#include <vector>
+// M5: DX9 scene tree removed from the DX11 build. _CreateScene is a stub
+// (m_pScene stays NULL), so the concrete DX9 scene classes are no longer
+// referenced and their headers are not included here.
 #include "MIDITrailVersion.h"
-// <<< add 20190828 yossiepon end
-#include <ShObjIdl.h>
-#include <mbctype.h>
-#include <dwmapi.h>
+// >>> add 20231016 c30 begin
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include <locale.h>
+// <<< add 20231016 c30 end
 
 using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MIDITrailApp* MIDITrailApp::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MIDITrailApp::MIDITrailApp(void)
 {
 	m_pThis = this;
+	m_isLoading = false;
+	m_isExporting = false;
+	m_ExportErrorMsg[0] = _T('\0');
 	m_hInstance = NULL;
 	m_hAppMutex = NULL;
 	m_hMailSlot = NULL;
 	m_isExitApp = false;
 
-	//ƒEƒBƒ“ƒhƒEŒn
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç³»
 	m_hWnd = NULL;
 	m_Accel = NULL;
-	m_Title[0] = L'\0';
-	m_WndClassName[0] = L'\0';
+	m_Title[0] = _T('\0');
+	m_WndClassName[0] = _T('\0');
 	m_isFullScreen = false;
-	m_isEnableMenuBar = true;
 	m_hMenu = NULL;
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOŒn
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç³»
 	m_pScene = NULL;
+	m_LoadFilePathW[0] = L'\0';
 	m_MultiSampleType = 0;
+	m_SuperSample = 1;   //ced 20260628
 
-	//FPS•\¦Œn
+	//FPSè¡¨ç¤ºç³»
 	m_PrevTime = 0;
 	m_FPSCount = 0;
 
-	//MIDI§ŒäŒn
-	m_MIDIINDevName[0] = _T('\0');
-
-	//‰‰‘tó‘Ô
+	//æ¼”å¥çŠ¶æ…‹
 	m_PlayStatus = NoData;
 	m_isRepeat = false;
-	m_isFolderPlayback = true;
 	m_isRewind = false;
 	m_isOpenFileAfterStop = false;
 	ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
 	m_PlaySpeedRatio = 100;
 
-	//•\¦ó‘Ô
+	//è¡¨ç¤ºçŠ¶æ…‹
 	m_isEnablePianoKeyboard = true;
 	m_isEnableRipple = true;
+	m_isEnableLyrics = true;
 	m_isEnablePitchBend = true;
+	m_isEnablePitchBendAllNotes = false;
 	m_isEnableStars = true;
 	m_isEnableCounter = true;
 	m_isEnableFileName = false;
 	m_isEnableBackgroundImage = true;
-	m_isEnableGridLine = true;
+// >>> add 20180404 yossiepon begin
 	m_isEnableTimeIndicator = true;
+	m_isEnableGridBox = true;
+// <<< add 20180404 yossiepon end
 
-	//ƒV[ƒ“í•Ê
+	//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥
 	m_SceneType = Title;
 	m_SelectedSceneType = PianoRoll3D;
 
-	//©“®‹“_•Û‘¶
-	m_isAutoSaveViewpoint = false;
+	//M3 (DX11) camera toggles
+	m_IsMouseCamMode11 = false;
+	m_IsAutoRollMode11 = false;
+	m_CfgWasVisible = false;        //ced 20260629
+	m_MouseCamBeforeCfg = false;    //ced 20260629
+	m_HasPrevView = false;
+	m_PrevViewSceneType = PianoRoll3D;
+	m_PrevViewIsLive = false;
 
-	//ƒvƒŒ[ƒ„[§Œä
+	//M4 (DX11) dashboard NPS
+	m_NpsNoteCount = 0;
+	m_NpsLastSec = 0;
+	m_DX11Family = DX11_FAMILY_NONE;
+	m_CurSongBPM = 120;
+	m_LiveNoteCount = 0;
+	m_IsSingleKeyboard11 = true;   //M4.6c: default to a single keyboard
+
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
+	m_isAutoSaveViewpoint = false;
+	m_isAutoSaveViewSettings = false;  //ced 20260628
+
+	//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ / ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ï¼ˆ1.4.1 ç§»æ¤ï¼‰
+	m_isFolderPlayback = false;
+	m_isEnableMenuBar = true;
+	m_DelayBetweenSongsInMsec = 0;
+
+	//ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼åˆ¶å¾¡
 	m_AllowMultipleInstances = 0;
 	m_AutoPlaybackAfterOpenFile = 0;
 
-	//ƒŠƒƒCƒ“ƒh^ƒXƒLƒbƒv§Œä
+	//ãƒªãƒ¯ã‚¤ãƒ³ãƒ‰ï¼ã‚¹ã‚­ãƒƒãƒ—åˆ¶å¾¡
 	m_SkipBackTimeSpanInMsec = 10000;
 	m_SkipForwardTimeSpanInMsec = 10000;
 
-	//‰‰‘tƒXƒs[ƒh§Œä
+	//æ¼”å¥ã‚¹ãƒ”ãƒ¼ãƒ‰åˆ¶å¾¡
 	m_SpeedStepInPercent = 1;
 	m_MaxSpeedInPercent = 400;
 
-	//‰‰‘t§Œä
-	m_DelayBetweenSongsInMsec = 0;
+	//æ¬¡å›ã‚ªãƒ¼ãƒ—ãƒ³å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+	m_NextFilePath[0] = _T('\0');
 
-	//Ÿ‰ñƒI[ƒvƒ“‘ÎÛƒtƒ@ƒCƒ‹ƒpƒX
-	m_NextFilePath[0] = L'\0';
-
-	//ƒQ[ƒ€ƒpƒbƒh—p‹“_”Ô†
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ç”¨è¦–ç‚¹ç•ªå·
 	m_GamePadViewPointNo = 0;
+
+	// Data
+	static LPDIRECT3D9              g_pD3D = nullptr;
+	static LPDIRECT3DDEVICE9        g_pd3dDevice = nullptr;
+	static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
+	static D3DPRESENT_PARAMETERS    g_d3dpp = {};
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MIDITrailApp::~MIDITrailApp(void)
 {
@@ -135,7 +159,7 @@ MIDITrailApp::~MIDITrailApp(void)
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int MIDITrailApp::Initialize(
 		HINSTANCE hInstance,
@@ -148,14 +172,16 @@ int MIDITrailApp::Initialize(
 
 	m_hInstance = hInstance;
 
-	//•¶š—ñ‰Šú‰»
-	LoadStringW(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
+	setlocale(LC_ALL, "Japanese");
+
+	//æ–‡å­—åˆ—åˆæœŸåŒ–
+	LoadString(hInstance, IDS_APP_TITLE, m_Title, MAX_LOADSTRING);
+	LoadString(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
 
 //>>> add yossiepon 20190828
-	WCHAR* pVersion = NULL;
+	TCHAR* pVersion = NULL;
 
-	//ƒo[ƒWƒ‡ƒ“•¶š—ñ
+	//ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ—
 #ifdef _WIN64
 	//64bit
 	pVersion = MIDITRAIL_VERSION_STRING_X64;
@@ -163,109 +189,111 @@ int MIDITrailApp::Initialize(
 	//32bit
 	pVersion = MIDITRAIL_VERSION_STRING_X86;
 #endif
-	wcscat_s(m_TitleBase, MAX_LOADSTRING, L" ");
-	wcscat_s(m_TitleBase, MAX_LOADSTRING, (LPCWSTR)pVersion);
-	wcscpy_s(m_Title, MAX_LOADSTRING, m_TitleBase);
-	//<<< add yossiepon 20190828
+	_tcscat_s(m_Title, MAX_LOADSTRING, _T(" "));
+	_tcscat_s(m_Title, MAX_LOADSTRING, pVersion);
+//<<< add yossiepon 20190828
 
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 
-	//ƒOƒ‰ƒtƒBƒbƒNİ’è“Ç‚İ‚İ
+	//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadGraphicConf();
 	if (result != 0) goto EXIT;
 
-	//ƒvƒŒ[ƒ„[İ’è“Ç‚İ‚İ
+	//ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadPlayerConf();
 	if (result != 0) goto EXIT;
 
-	//“ñd‹N“®ƒ`ƒFƒbƒN
+	//äºŒé‡èµ·å‹•ãƒã‚§ãƒƒã‚¯
 	result = _CheckMultipleInstances(&m_isExitApp);
 	if (result != 0) goto EXIT;
 
-	//“ñd‹N“®—}~‚Ìê‡
+	//äºŒé‡èµ·å‹•æŠ‘æ­¢ã®å ´åˆ
 	if (m_isExitApp) {
-		_PostFilePathToFirstMIDITrail();
+		_PostFilePathToFirstMIDITrail(pCmdLine);
 		goto EXIT;
 	}
 
-	//ƒ[ƒ‹ƒXƒƒbƒgì¬
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆä½œæˆ
 	result = _CreateMailSlot();
 	if (result != 0) goto EXIT;
 
-	//ƒƒbƒZ[ƒWƒLƒ…[‰Šú‰»
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚­ãƒ¥ãƒ¼åˆæœŸåŒ–
 	result = m_MsgQueue.Initialize(10000);
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX“o˜^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ç™»éŒ²
 	result = _RegisterClass(hInstance);
 	if (result != 0) goto EXIT;
 
-	//ƒƒCƒ“ƒEƒBƒ“ƒhƒE¶¬
+	//ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆ
 	result = _CreateWindow(hInstance, nCmdShow);
 	if (result != 0) goto EXIT;
 
-	//ƒAƒNƒZƒ‰ƒŒ[ƒ^ƒe[ƒuƒ‹“Ç‚İ‚İ
-	m_Accel = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(IDC_MIDITRAIL));
+	//ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ«èª­ã¿è¾¼ã¿
+	m_Accel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MIDITRAIL));
 	if (m_Accel == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(NoData);
 	if (result != 0) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒ‰‰Šú‰»
-	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
+	//ãƒ¬ãƒ³ãƒ€ãƒ©åˆæœŸåŒ–
+	result = m_Renderer11.Initialize(m_hWnd, m_MultiSampleType, false, m_SuperSample);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//M4: DX11 dashboard (created now, but only shown once a song is loaded -
+	//not on the startup / title screen; SetDashboard11 happens on load)
+	if (m_Renderer11.GetDevice() != NULL) {
+		m_Dashboard11.Create(m_Renderer11.GetDevice(), m_Renderer11.GetContext());
+	}
+
+	//è¨­å®šãƒãƒãƒ¼ã‚¸ãƒ£ï¼ˆconf/*.ini ã‚’ GUI ç·¨é›†ï¼šMod Mod ç‹¬è‡ªï¼‰ã‚’åˆæœŸåŒ–ã—ãƒ¬ãƒ³ãƒ€ãƒ©ã¸ç™»éŒ²
+	m_ConfigMgr11.Initialize();
+	m_Renderer11.SetConfigManager11(&m_ConfigMgr11);
+
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	m_SceneType = Title;
 	result = _CreateScene(m_SceneType, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“í•Ê“Ç‚İ‚İ
+	//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥èª­ã¿è¾¼ã¿
 	result = _LoadSceneType();
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“İ’è“Ç‚İ‚İ
+	//ã‚·ãƒ¼ãƒ³è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadSceneConf();
 	if (result != 0) goto EXIT;
 
-	//•\¦Œø‰Ê‘I‘ğó‘Ô“Ç‚İ‚İ
-	result = _LoadEffectStatus();
-	if (result != 0) goto EXIT;
-
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
-	//RCPƒtƒ@ƒCƒ‹ƒRƒ“ƒo[ƒ^‰Šú‰»
+	//RCPãƒ•ã‚¡ã‚¤ãƒ«ã‚³ãƒ³ãƒãƒ¼ã‚¿åˆæœŸåŒ–
 	result = m_RcpConv.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒ‰ƒ`ƒFƒbƒN
+	//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒã‚§ãƒƒã‚¯
 	result = _CheckRenderer();
 	if (result != 0) goto EXIT;
 
-	//MIDI OUT ©“®İ’è
+	//MIDI OUT è‡ªå‹•è¨­å®š
 	result = _AutoConfigMIDIOUT();
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
-	_UpdateWindowTitle(NULL);
-
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ‚ÆÀs
-	result = _ParseCmdLine();
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æã¨å®Ÿè¡Œ
+	result = _ParseCmdLine(pCmdLine);
 	if (result != 0) goto EXIT;
 
-	//ƒ^ƒCƒ}[ŠJn
+	//ã‚¿ã‚¤ãƒãƒ¼é–‹å§‹
 	result = _StartTimer();
 	if (result != 0) goto EXIT;
 
-	//ƒQ[ƒ€ƒpƒbƒh§ŒäFƒ†[ƒUƒCƒ“ƒfƒbƒNƒX0ŒÅ’è
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰åˆ¶å¾¡ï¼šãƒ¦ãƒ¼ã‚¶ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹0å›ºå®š
 	result = m_GamePadCtrl.Initialize(0);
 	if (result != 0) goto EXIT;
 
@@ -274,7 +302,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::Terminate()
 {
@@ -282,7 +310,8 @@ int MIDITrailApp::Terminate()
 
 	_StopTimer();
 
-	m_Renderer.Terminate();
+	m_Renderer11.Terminate();
+
 
 	if (m_pScene != NULL) {
 		m_pScene->Release();
@@ -304,7 +333,7 @@ int MIDITrailApp::Terminate()
 }
 
 //******************************************************************************
-// Às
+// å®Ÿè¡Œ
 //******************************************************************************
 int MIDITrailApp::Run()
 {
@@ -318,14 +347,14 @@ int MIDITrailApp::Run()
 
 	m_PrevTime = timeGetTime();
 
-	//ƒƒbƒZ[ƒWƒ‹[ƒv
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—
 	while (TRUE) {
 		isExist = PeekMessage(
-						&msg,		//æ“¾‚µ‚½ƒƒbƒZ[ƒW
-						NULL,		//æ“¾Œ³ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-						0,			//æ“¾‘ÎÛƒƒbƒZ[ƒWÅ¬’l
-						0,			//æ“¾‘ÎÛƒƒbƒZ[ƒWÅ‘å’l
-						PM_REMOVE	//ƒƒbƒZ[ƒWˆ—•û–@FƒLƒ…[‚©‚çíœ
+						&msg,		//å–å¾—ã—ãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+						NULL,		//å–å¾—å…ƒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+						0,			//å–å¾—å¯¾è±¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æœ€å°å€¤
+						0,			//å–å¾—å¯¾è±¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æœ€å¤§å€¤
+						PM_REMOVE	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†æ–¹æ³•ï¼šã‚­ãƒ¥ãƒ¼ã‹ã‚‰å‰Šé™¤
 					);
 		if (isExist) {
 			if (msg.message == WM_QUIT) {
@@ -337,31 +366,75 @@ int MIDITrailApp::Run()
 				DispatchMessage(&msg);
 			}
 		}
-		else if (m_pScene != NULL) {
-			//ƒV[ƒPƒ“ƒT[ƒƒbƒZ[ƒWˆ—
+		else {
+			if (true) {  /* DX11: always pump sequencer msgs */
+			//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
 			result = _SequencerMsgProc();
 			if (result != 0) {
 				YN_SHOW_ERR(m_hWnd);
 			}
 
-			//ƒQ[ƒ€ƒpƒbƒh‘€ìˆ—
+			//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œå‡¦ç†
 			result = _GamePadProc();
 			if (result != 0) {
 				YN_SHOW_ERR(m_hWnd);
 			}
 
-			//ƒEƒBƒ“ƒhƒE•\¦ó‘Ô‚Å‚Ì‚İ•`‰æ‚ğs‚¤
+			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºçŠ¶æ…‹ã§ã®ã¿æç”»ã‚’è¡Œã†
+			}
+
+			//M3 (DX11): poll the live playback tick straight from the sequencer
+			//(independent of the message queue, so heavy-load message drops
+			//cannot stall the scroll or the keyboard key-press state)
+			{
+				//live monitor: the live components are timeGetTime-driven and the
+				//camera must NOT scroll to the (stale) sequencer position left by the
+				//previous playback, so feed tick/ms 0 while monitoring.
+				//Playback/Stop both follow the sequencer's reported position. The "weird
+				//position after stop+load" case is fixed at the source: loading a new song
+				//(and the manual Stop) rewinds the sequencer to 0 (m_Sequencer.Rewind),
+				//while a natural end leaves it at the last tick (DX9 keeps the view there
+				//and only rewinds on the next Play).
+				bool liveMon = (m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF);
+				unsigned long tick = liveMon ? 0 : m_Sequencer.GetCurrentTickTime();
+				unsigned long playMs = liveMon ? 0 : m_Sequencer.GetCurrentPlayTimeMSec();
+				_FeedDX11Tick(tick, playMs);
+			}
+
 			GetWindowPlacement(m_hWnd, &wndpl);
 			if ((wndpl.showCmd != SW_HIDE) &&
 				(wndpl.showCmd != SW_MINIMIZE) &&
 				(wndpl.showCmd != SW_SHOWMINIMIZED) &&
 				(wndpl.showCmd != SW_SHOWMINNOACTIVE)) {
-				//•`‰æ
-				result = m_Renderer.RenderScene(m_pScene);
+				//Config Manager(ImGui) è¡¨ç¤ºä¸­ã¯ DirectInput ã«ã‚ˆã‚‹ã‚«ãƒ¡ãƒ©æ“ä½œã‚’æ­¢ã‚ã‚‹
+				//ï¼ˆãƒã‚¦ã‚¹/ã‚­ãƒ¼/ãƒ‘ãƒƒãƒ‰ãŒè£ã§åŠ¹ãã®ã‚’é˜²ãã€‚è‡ªå‹•ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«/ãƒ­ãƒ¼ãƒ«ã¯ç¶™ç¶šï¼‰ã€‚
+				//ãƒã‚¦ã‚¹ã‚«ãƒ¡ãƒ©ãƒ¢ãƒ¼ãƒ‰ãŒ ON ãªã‚‰è§£é™¤ã—ã¦ã‚«ãƒ¼ã‚½ãƒ«ã‚’ ImGui æ“ä½œå¯èƒ½ã«æˆ»ã™ã€‚
+				{
+					bool cfgVisible = m_ConfigMgr11.IsVisible();
+					m_FpCam11.SetInputEnabled(!cfgVisible);
+					//ced 20260629: é–‹ã„ãŸç¬é–“ã¯ãƒã‚¦ã‚¹ã‚«ãƒ¡ãƒ©ã‚’é€€é¿ã—ã¦è§£é™¤ï¼ˆã‚«ãƒ¼ã‚½ãƒ«ã‚’ä½¿ãˆã‚‹ã‚ˆã†ã«ï¼‰ã€
+					//é–‰ã˜ãŸç¬é–“ã«å…ƒã®çŠ¶æ…‹ã¸å¾©å…ƒã™ã‚‹ã€‚ã“ã‚Œã§ã€Œé–‹ã„ã¦é–‰ã˜ã‚‹ã¨è¦‹å›ã›ãªã„ã€ã‚’é˜²ãã€‚
+					if (cfgVisible && !m_CfgWasVisible) {
+						m_MouseCamBeforeCfg = m_IsMouseCamMode11;
+						if (m_IsMouseCamMode11) {
+							m_IsMouseCamMode11 = false;
+							m_FpCam11.SetMouseCamMode(false);
+						}
+					}
+					else if (!cfgVisible && m_CfgWasVisible) {
+						if (m_MouseCamBeforeCfg && (m_PlayStatus != NoData)) {
+							m_IsMouseCamMode11 = true;
+							m_FpCam11.SetMouseCamMode(true);
+						}
+					}
+					m_CfgWasVisible = cfgVisible;
+				}
+				//æç”»
+				result = m_Renderer11.RenderScene(m_pScene);
 				if (result != 0) {
-					if (result == DXRENDERER_ERR_DEVICE_LOST) {
-						//ƒfƒoƒCƒXƒƒXƒg
-						//b’è“I‘Îô‚Æ‚µ‚ÄƒV[ƒ“‚ğÄ¶¬‚·‚é
+					if (result == DXRENDERER11_ERR_DEVICE_LOST) {
+						//ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆ
+						//æš«å®šçš„å¯¾ç­–ã¨ã—ã¦ã‚·ãƒ¼ãƒ³ã‚’å†ç”Ÿæˆã™ã‚‹
 						result = _RebuildScene();
 						if (result != 0) {
 							YN_SHOW_ERR(m_hWnd);
@@ -374,19 +447,28 @@ int MIDITrailApp::Run()
 					}
 				}
 				_UpdateFPS();
+
+				//Config Manager ã§ .ini ã‚’ä¿å­˜ã—ãŸã‚‰ç¾ã‚·ãƒ¼ãƒ³ã‚’å†æ§‹ç¯‰ã—ã¦åæ˜ ã™ã‚‹
+				if (m_ConfigMgr11.ConsumeApplyRequest()) {
+					result = _ChangeWindowSize();
+					if (result != 0) {
+						YN_SHOW_ERR(m_hWnd);
+						PostMessage(m_hWnd, WM_DESTROY, 0, 0);
+					}
+				}
 			}
 		}
     }
 
 EXIT:;
-	//ŠÖ”‚ªWM_QUITƒƒbƒZ[ƒW‚ğó‚¯æ‚Á‚Ä³í‚ÉI—¹‚·‚éê‡‚Í
-	//wParam‚ÉŠi”[‚³‚ê‚Ä‚¢‚éI—¹ƒR[ƒh‚ğ•Ô‚·
-	//ƒƒbƒZ[ƒWƒ‹[ƒv‚É“ü‚é‘O‚ÉI—¹‚·‚éê‡‚Í0‚ğ•Ô‚·
+	//é–¢æ•°ãŒWM_QUITãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å—ã‘å–ã£ã¦æ­£å¸¸ã«çµ‚äº†ã™ã‚‹å ´åˆã¯
+	//wParamã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹çµ‚äº†ã‚³ãƒ¼ãƒ‰ã‚’è¿”ã™
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚‹å‰ã«çµ‚äº†ã™ã‚‹å ´åˆã¯0ã‚’è¿”ã™
 	return quitCode;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX“o˜^
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ç™»éŒ²
 //******************************************************************************
 int MIDITrailApp::_RegisterClass(
 		HINSTANCE hInstance
@@ -394,28 +476,31 @@ int MIDITrailApp::_RegisterClass(
 {
 	int result = 0;
 	ATOM aresult = 0;
-	WNDCLASSEXW wcex;
+	WNDCLASSEX wcex;
 
-	wcex.cbSize			= sizeof(WNDCLASSEXW);				//\‘¢‘ÌƒTƒCƒY
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;			//ƒNƒ‰ƒXƒXƒ^ƒCƒ‹
-	wcex.lpfnWndProc	= _WndProc;							//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
-	wcex.cbClsExtra		= 0;								//’Ç‰Áî•ñ‚ÌƒTƒCƒY
-	wcex.cbWndExtra		= 0;								//’Ç‰Áî•ñ‚ÌƒTƒCƒY
-	wcex.hInstance		= hInstance;						//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
+	wcex.cbSize			= sizeof(WNDCLASSEX);				//æ§‹é€ ä½“ã‚µã‚¤ã‚º
+	wcex.style			= CS_HREDRAW | CS_VREDRAW;			//ã‚¯ãƒ©ã‚¹ã‚¹ã‚¿ã‚¤ãƒ«
+	wcex.lpfnWndProc	= _WndProc;							//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+	wcex.cbClsExtra		= 0;								//è¿½åŠ æƒ…å ±ã®ã‚µã‚¤ã‚º
+	wcex.cbWndExtra		= 0;								//è¿½åŠ æƒ…å ±ã®ã‚µã‚¤ã‚º
+	wcex.hInstance		= hInstance;						//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MIDITRAIL));
-															//ƒAƒCƒRƒ“ƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//ƒJ[ƒ\ƒ‹ƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
-	wcex.hbrBackground  = CreateSolidBrush(RGB(0, 0, 0));	//”wŒi—pƒuƒ‰ƒVƒnƒ“ƒhƒ‹F•
-	wcex.lpszMenuName	= MAKEINTRESOURCEW(IDC_MIDITRAIL);	//ƒƒjƒ…[ƒŠƒ\[ƒX–¼Ì
-	wcex.lpszClassName	= m_WndClassName;					//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼Ì
+															//ã‚¢ã‚¤ã‚³ãƒ³ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//ã‚«ãƒ¼ã‚½ãƒ«ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+// >>> modify 20120728 yossiepon begin
+	// COLOR+WINDOW+1ã ã¨ã¡ã‚‰ã¤ãæ™‚ã«ç™½ä¸€è‰²ã«ãªã£ã¦ç›®ç«‹ã¤ã®ã§ã€èƒŒæ™¯è‰²ã‚’é»’ã«ã—ã¦ã¡ã‚‰ã¤ãã‚’æŠ‘ãˆã‚‹
+	wcex.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH); //(COLOR_WINDOW+1);			//èƒŒæ™¯ç”¨ãƒ–ãƒ©ã‚·ãƒãƒ³ãƒ‰ãƒ«
+// <<< modify 20120728 yossiepon end
+	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MIDITRAIL);	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒªã‚½ãƒ¼ã‚¹åç§°
+	wcex.lpszClassName	= m_WndClassName;					//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹åç§°
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-				 											//¬ƒAƒCƒRƒ“ƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
+				 											//å°ã‚¢ã‚¤ã‚³ãƒ³ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
 
-	//ˆÚ“®‚âƒTƒCƒY•ÏX‚É‚¨‚¯‚éƒEƒCƒ“ƒhƒE–³Œø—Ìˆæ‚ÌÄ•`‰æw’è
-	// CS_HREDRAW ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚Ì•‚ª•Ï‰»‚µ‚½‚Æ‚«‚ÉÄ•`‰æ‚·‚é
-	// CS_VREDRAW ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚Ì‚‚³‚ª•Ï‰»‚µ‚½‚Æ‚«‚ÉÄ•`‰æ‚·‚é
+	//ç§»å‹•ã‚„ã‚µã‚¤ã‚ºå¤‰æ›´ã«ãŠã‘ã‚‹ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ç„¡åŠ¹é ˜åŸŸã®å†æç”»æŒ‡å®š
+	// CS_HREDRAW ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®å¹…ãŒå¤‰åŒ–ã—ãŸã¨ãã«å†æç”»ã™ã‚‹
+	// CS_VREDRAW ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®é«˜ã•ãŒå¤‰åŒ–ã—ãŸã¨ãã«å†æç”»ã™ã‚‹
 
-	aresult = RegisterClassExW(&wcex);
+	aresult = RegisterClassEx(&wcex);
 	if (aresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -426,7 +511,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒE¶¬
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆ
 //******************************************************************************
 int MIDITrailApp::_CreateWindow(
 		HINSTANCE hInstance,
@@ -435,36 +520,35 @@ int MIDITrailApp::_CreateWindow(
 {
 	int result = 0;
 
-	m_hWnd = CreateWindowW(
-				m_WndClassName,			//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼
-				m_Title,				//ƒEƒBƒ“ƒhƒE–¼
-				MIDITRAIL_WINDOW_STYLE,	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹
-				CW_USEDEFAULT,			//ƒEƒBƒ“ƒhƒE‚Ì‰¡•ûŒü‚ÌˆÊ’uFƒfƒtƒHƒ‹ƒg
-				0,						//ƒEƒBƒ“ƒhƒE‚Ìc•ûŒü‚ÌˆÊ’u
-				CW_USEDEFAULT,			//ƒEƒBƒ“ƒhƒE‚Ì•FƒfƒtƒHƒ‹ƒg
-				0,						//ƒEƒBƒ“ƒhƒE‚Ì‚‚³
-				NULL,					//e‚Ü‚½‚ÍƒI[ƒi[‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-				NULL,					//ƒƒjƒ…[ƒnƒ“ƒhƒ‹‚Ü‚½‚ÍqƒEƒBƒ“ƒhƒEID
-				hInstance,				//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-				NULL					//ƒEƒBƒ“ƒhƒEì¬ƒf[ƒ^
+	m_hWnd = CreateWindow(
+				m_WndClassName,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹å
+				m_Title,				//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
+				MIDITRAIL_WINDOW_STYLE,	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«
+				CW_USEDEFAULT,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ¨ªæ–¹å‘ã®ä½ç½®ï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+				0,						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç¸¦æ–¹å‘ã®ä½ç½®
+				CW_USEDEFAULT,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹…ï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+				0,						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã•
+				NULL,					//è¦ªã¾ãŸã¯ã‚ªãƒ¼ãƒŠãƒ¼ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+				NULL,					//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«ã¾ãŸã¯å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ID
+				hInstance,				//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+				NULL					//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆãƒ‡ãƒ¼ã‚¿
 			);
 	if (m_hWnd == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 	
-	//ƒƒjƒ…[ƒo[•\¦Ø‘Ö‚Ì‚½‚ßƒEƒBƒ“ƒhƒE¶¬’¼Œã‚Éƒnƒ“ƒhƒ‹‚ğæ“¾‚µ‚Ä‚¨‚­
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºåˆ‡æ›¿ã®ãŸã‚ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆç›´å¾Œã«ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã—ã¦ãŠã
 	m_hMenu = GetMenu(m_hWnd);
 
-	//ƒEƒBƒ“ƒhƒE•\¦
-	//ƒEƒBƒ“ƒhƒE‚ğ•\¦‚µ‚Ä‚©‚ç‚Å‚È‚¢‚ÆƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏXˆ—‚ÅƒEƒBƒ“ƒhƒE‚Ì‰e‚Ìî•ñ‚ğæ“¾‚Å‚«‚È‚¢
-	ShowWindow(m_hWnd, nCmdShow);
-
-	//ƒ†[ƒU[İ’èƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
 
-	//WM_PAINTŒÄ‚Ño‚µ‚ğ~‚ß‚é
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤º
+	ShowWindow(m_hWnd, nCmdShow);
+
+	//WM_PAINTå‘¼ã³å‡ºã—ã‚’æ­¢ã‚ã‚‹
 	ValidateRect(m_hWnd, 0);
 
 	UpdateWindow(m_hWnd);
@@ -474,19 +558,15 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_SetWindowSize()
 {
 	int result = 0;
 	BOOL bresult = FALSE;
-	HRESULT hresult = 0;
 	int width = 0;
 	int height = 0;
-	RECT rect_client;
-	RECT rect_excludeShadow;
-	RECT rect_includeShadow;
-	RECT rect_shadow;
+	RECT wrect, crect;
 	int ww, wh, cw, ch, framew, frameh;
 	int applyToViewArea = 0;
 	LONG apiresult = 0;
@@ -496,7 +576,7 @@ int MIDITrailApp::_SetWindowSize()
 		goto EXIT;
 	}
 
-	//ƒ†[ƒU‘I‘ğƒEƒBƒ“ƒhƒEƒTƒCƒYæ“¾
+	//ãƒ¦ãƒ¼ã‚¶é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
 	result = m_ViewConf.SetCurSection(_T("WindowSize"));
 	if (result != 0) goto EXIT;
 	result = m_ViewConf.GetInt(_T("Width"), &width, 0);
@@ -505,82 +585,58 @@ int MIDITrailApp::_SetWindowSize()
 	if (result != 0) goto EXIT;
 	result = m_ViewConf.GetInt(_T("ApplyToViewArea"), &applyToViewArea, 0);
 	if (result != 0) goto EXIT;
-	
-	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹İ’è
-	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
-	if (apiresult == 0) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
-		goto EXIT;
-	}
 
-	//ƒƒjƒ…[ƒo[•\¦
-	if (m_isEnableMenuBar) {
-		result = _ShowMenu();
-		if (result != 0) goto EXIT;
-	}
-	else {
-		result = _HideMenu();
-		if (result != 0) goto EXIT;
-	}
-
-	//‰‰ñ‹N“®‚ÌƒEƒBƒ“ƒhƒEƒTƒCƒY
+	//åˆå›èµ·å‹•æ™‚ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚º
 	if ((width <= 0) || (height <= 0)) {
 		width = 800;
 		height = 600;
 	}
 
-	//ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒYi‰e‚ğŠÜ‚Ü‚È‚¢ƒTƒCƒYj
-	hresult = DwmGetWindowAttribute(
-					m_hWnd,							//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					DWMWA_EXTENDED_FRAME_BOUNDS,	//æ“¾’l‚ğ¦‚·ƒtƒ‰ƒOFŠg’£ƒtƒŒ[ƒ€‹«ŠE
-					&rect_excludeShadow, 			//’l‚ÌŠi”[æ
-					sizeof(RECT)					//’l‚ÌƒTƒCƒY
-				);
-	if (hresult != S_OK) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
-		goto EXIT;
-	}
-	ww = rect_excludeShadow.right  - rect_excludeShadow.left;
-	wh = rect_excludeShadow.bottom - rect_excludeShadow.top;
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚º
+	GetWindowRect(m_hWnd, &wrect);
+	ww = wrect.right - wrect.left;
+	wh = wrect.bottom - wrect.top;
 
-	//ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒTƒCƒY
-	GetClientRect(m_hWnd, &rect_client);
-	cw = rect_client.right  - rect_client.left;
-	ch = rect_client.bottom - rect_client.top;
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚µã‚¤ã‚º
+	GetClientRect(m_hWnd, &crect);
+	cw = crect.right - crect.left;
+	ch = crect.bottom - crect.top;
 
-	//˜g‚ÌƒTƒCƒY
+	//æ ã®ã‚µã‚¤ã‚º
 	framew = ww - cw;
 	frameh = wh - ch;
 
-	//•`‰æ—Ìˆæ‚Éw’èƒTƒCƒY‚ğ“K—p‚·‚éê‡
+	//æç”»é ˜åŸŸã«æŒ‡å®šã‚µã‚¤ã‚ºã‚’é©ç”¨ã™ã‚‹å ´åˆ
 	if (applyToViewArea != 0) {
 		width = width + framew;
 		height = height + frameh;
 	}
+	
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«è¨­å®š
+	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
+		goto EXIT;
+	}
+	
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºï¼ˆãƒ¦ãƒ¼ã‚¶ãŒãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã‚’ç„¡åŠ¹åŒ–ã—ã¦ã„ã‚Œã°éš ã™ï¼š1.4.1 ç§»æ¤ï¼‰
+	if (m_isEnableMenuBar) {
+		result = _ShowMenu();
+	}
+	else {
+		result = _HideMenu();
+	}
+	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒYi‰e‚ğŠÜ‚ŞƒTƒCƒYj
-	//  Windows VistaˆÈ~‚É‚¨‚¢‚ÄGetWindowRect‚Í‰e‚ğŠÜ‚ŞƒTƒCƒY‚ğ•Ô‚·
-	GetWindowRect(m_hWnd, &rect_includeShadow);
-
-	//‰e‚Ì•Î·
-	rect_shadow.left   = rect_includeShadow.left   - rect_excludeShadow.left;	//—áF-7
-	rect_shadow.right  = rect_includeShadow.right  - rect_excludeShadow.right;	//—áF+7
-	rect_shadow.top    = rect_includeShadow.top    - rect_excludeShadow.top;	//—áF-7
-	rect_shadow.bottom = rect_includeShadow.bottom - rect_excludeShadow.bottom;	//—áF+7
-
-	//SetWindowPos‚Éw’è‚·‚éƒEƒBƒ“ƒhƒEƒTƒCƒY‚É‰e‚ğ”½‰f
-	width  = width  + (rect_shadow.right  - rect_shadow.left);
-	height = height + (rect_shadow.bottom - rect_shadow.top);
-
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	bresult = SetWindowPos(
-					m_hWnd,			//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					HWND_TOP,		//”z’u‡˜FZƒI[ƒ_[æ“ª
-					0,				//‰¡•ûŒü‚ÌˆÊ’u
-					0,				//c•ûŒü‚ÌˆÊ’u
-					width,			//•
-					height,			//‚‚³
-					SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ƒEƒBƒ“ƒhƒEˆÊ’uw’è
+					m_hWnd,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					HWND_TOP,		//é…ç½®é †åºï¼šZã‚ªãƒ¼ãƒ€ãƒ¼å…ˆé ­
+					0,				//æ¨ªæ–¹å‘ã®ä½ç½®
+					0,				//ç¸¦æ–¹å‘ã®ä½ç½®
+					width,			//å¹…
+					height,			//é«˜ã•
+					SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®æŒ‡å®š
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -592,7 +648,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏXFƒtƒ‹ƒXƒNƒŠ[ƒ“
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´ï¼šãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 //******************************************************************************
 int MIDITrailApp::_SetWindowSizeFullScreen()
 {
@@ -605,17 +661,17 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 	int width = 0;
 	int height = 0;
 
-	//ƒ}ƒEƒXƒJ[ƒ\ƒ‹ˆÊ’u‚ğæ“¾
+	//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 	bresult = GetCursorPos(&mouseCursorPoint);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ÌˆÊ’u‚ÉŠY“–‚·‚éƒ‚ƒjƒ^‚ğ‘I‘ğ
+	//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®ã«è©²å½“ã™ã‚‹ãƒ¢ãƒ‹ã‚¿ã‚’é¸æŠ
 	hMonitor = MonitorFromPoint(mouseCursorPoint, MONITOR_DEFAULTTONEAREST);
 
-	//ƒ‚ƒjƒ^î•ñæ“¾
+	//ãƒ¢ãƒ‹ã‚¿æƒ…å ±å–å¾—
 	monitorInfo.cbSize = sizeof(MONITORINFOEX);
 	bresult = GetMonitorInfo(hMonitor, &monitorInfo);
 	if (!bresult) {
@@ -623,30 +679,30 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 		goto EXIT;
 	}
 
-	//ƒEƒBƒ“ƒhƒEc‰¡ƒTƒCƒY
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç¸¦æ¨ªã‚µã‚¤ã‚º
 	width  = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 	height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
 
-	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹İ’è
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«è¨­å®š
 	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, WS_POPUP);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
 		goto EXIT;
 	}
 
-	//ƒƒjƒ…[ƒo[”ñ•\¦
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤º
 	result = _HideMenu();
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	bresult = SetWindowPos(
-					m_hWnd,						//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					HWND_TOP,					//”z’u‡˜FZƒI[ƒ_[æ“ª
-					monitorInfo.rcMonitor.left,	//‰¡•ûŒü‚ÌˆÊ’u
-					monitorInfo.rcMonitor.top,	//c•ûŒü‚ÌˆÊ’u
-					width,						//•
-					height,						//‚‚³
-					SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ƒEƒBƒ“ƒhƒEˆÊ’uw’è
+					m_hWnd,						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					HWND_TOP,					//é…ç½®é †åºï¼šZã‚ªãƒ¼ãƒ€ãƒ¼å…ˆé ­
+					monitorInfo.rcMonitor.left,	//æ¨ªæ–¹å‘ã®ä½ç½®
+					monitorInfo.rcMonitor.top,	//ç¸¦æ–¹å‘ã®ä½ç½®
+					width,						//å¹…
+					height,						//é«˜ã•
+					SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®æŒ‡å®š
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -658,7 +714,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 //******************************************************************************
 int MIDITrailApp::_InitConfFile()
 {
@@ -669,32 +725,31 @@ int MIDITrailApp::_InitConfFile()
 	TCHAR midiOutConfPath[_MAX_PATH] = {_T('\0')};
 	TCHAR graphicConfPath[_MAX_PATH] = {_T('\0')};
 
-	//ƒ†[ƒUİ’èƒtƒ@ƒCƒ‹Ši”[ƒfƒBƒŒƒNƒgƒŠƒpƒXì¬
+	//ãƒ¦ãƒ¼ã‚¶è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æ ¼ç´ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ä½œæˆ
 	result = YNPathUtil::GetAppDataDirPath(userConfDirPath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 	_tcscat_s(userConfDirPath, _MAX_PATH, MT_USER_CONFFILE_DIR);
 
-	//ƒ†[ƒUİ’èƒtƒ@ƒCƒ‹Ši”[ƒfƒBƒŒƒNƒgƒŠì¬
-	//TODO: Unicode‘Î‰‚ÉSHCreateDirectoryEx‚Ö•ÏX
+	//ãƒ¦ãƒ¼ã‚¶è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æ ¼ç´ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
 	bresult = MakeSureDirectoryPathExists(userConfDirPath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒrƒ…[î•ñİ’èƒtƒ@ƒCƒ‹
+	//ãƒ“ãƒ¥ãƒ¼æƒ…å ±è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	_tcscat_s(viewConfPath, _MAX_PATH, userConfDirPath);
 	_tcscat_s(viewConfPath, _MAX_PATH, MT_USER_CONFFILE_VIEW);
 	result = m_ViewConf.Initialize(viewConfPath);
 	if (result != 0) goto EXIT;
 
-	//MIDIî•ñİ’èƒtƒ@ƒCƒ‹
+	//MIDIæƒ…å ±è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	_tcscat_s(midiOutConfPath, _MAX_PATH, userConfDirPath);
 	_tcscat_s(midiOutConfPath, _MAX_PATH, MT_USER_CONFFILE_MIDI);
 	result = m_MIDIConf.Initialize(midiOutConfPath);
 	if (result != 0) goto EXIT;
 
-	//ƒOƒ‰ƒtƒBƒbƒNî•ñİ’èƒtƒ@ƒCƒ‹
+	//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯æƒ…å ±è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	_tcscat_s(graphicConfPath, _MAX_PATH, userConfDirPath);
 	_tcscat_s(graphicConfPath, _MAX_PATH, MT_USER_CONFFILE_GRAPHIC);
 	result = m_GraphicConf.Initialize(graphicConfPath);
@@ -705,7 +760,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒEFƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 LRESULT CALLBACK MIDITrailApp::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -713,7 +768,7 @@ LRESULT CALLBACK MIDITrailApp::_WndProc(HWND hWnd, UINT message, WPARAM wParam, 
 }
 
 //******************************************************************************
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒEFƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 LRESULT MIDITrailApp::_WndProcImpl(
 		HWND hWnd,
@@ -729,260 +784,334 @@ LRESULT MIDITrailApp::_WndProcImpl(
 	HDC hdc = NULL;
 	PAINTSTRUCT ps;
 
+	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return false;
+
+	//Config Manager (ImGui) ã‚’æ“ä½œä¸­ã ã‘ã€ãã®å…¥åŠ›ã‚’ã‚¢ãƒ—ãƒªå´ï¼ˆã‚«ãƒ¡ãƒ©æ“ä½œãƒ»ã‚·ãƒ§ãƒ¼ãƒˆ
+	//ã‚«ãƒƒãƒˆï¼‰ã«æ¸¡ã•ãªã„ã€‚éè¡¨ç¤ºæ™‚ã¯ä¸€åˆ‡ã‚¬ãƒ¼ãƒ‰ã—ãªã„ï¼ˆãƒã‚¦ã‚¹è¦–ç‚¹ç§»å‹•ãªã©ã‚’é˜»å®³ã—ãªã„ï¼‰ã€‚
+	if (m_ConfigMgr11.IsVisible()) {
+		ImGuiIO& io = ImGui::GetIO();
+		switch (message) {
+			case WM_LBUTTONDOWN: case WM_LBUTTONUP:
+			case WM_RBUTTONDOWN: case WM_RBUTTONUP:
+			case WM_MBUTTONDOWN: case WM_MBUTTONUP:
+			case WM_MOUSEMOVE:   case WM_MOUSEWHEEL:
+				if (io.WantCaptureMouse) return DefWindowProc(hWnd, message, wParam, lParam);
+				break;
+			case WM_KEYDOWN: case WM_KEYUP: case WM_CHAR: case WM_SYSKEYDOWN:
+				if (io.WantCaptureKeyboard) return DefWindowProc(hWnd, message, wParam, lParam);
+				break;
+			default:
+				break;
+		}
+	}
+
+	//Ignore user input and scene-affecting messages while a file is loading
+	if (m_isLoading) {
+		switch (message) {
+			case WM_COMMAND:
+			case WM_KEYDOWN:
+			case WM_LBUTTONDOWN:
+			case WM_RBUTTONDOWN:
+			case WM_MBUTTONDOWN:
+			case WM_MOUSEMOVE:
+			case WM_DROPFILES:
+			case WM_SIZE:
+			case WM_TIMER:
+			case WM_FILEPATH_POSTED:
+				return DefWindowProc(hWnd, message, wParam, lParam);
+			default:
+				break;
+		}
+	}
+
 	switch (message) {
 		case WM_COMMAND:
 			wmId    = LOWORD(wParam);
 			wmEvent = HIWORD(wParam);
+			//M6: ignore menu commands while a video export is running (the export
+			//pumps messages for its progress UI, so a menu action would otherwise
+			//run mid-export and corrupt the scene/sequencer state).
+			if (m_isExporting) break;
 			switch (wmId) {
 				case IDM_OPEN_FILE:
-					//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
-					result = _OnMenuOpenFile();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_OPEN_FOLDER:
-					//ƒtƒHƒ‹ƒ_ƒI[ƒvƒ“
-					result = _OnMenuOpenFolder();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_PREVIOUS_FILE:
-					//‘Oƒtƒ@ƒCƒ‹
-					result = _OnMenuPreviousFile();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_NEXT_FILE:
-					//Ÿƒtƒ@ƒCƒ‹
-					result = _OnMenuNextFile();
+					//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+					result = _OnMenuFileOpen();
 					if (result != 0) goto EXIT;
 					break;
 // >>> add 20120728 yossiepon begin
 				case IDM_ADD_FILE:
-					//ƒtƒ@ƒCƒ‹’Ç‰Á
-					result = _OnMenuAddFile();
+					//ãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ 
+					result = _OnMenuFileAdd();
 					if (result != 0) goto EXIT;
 					break;
 // <<< add 20120728 yossiepon end
-				case IDM_EXIT:
-					//I—¹
-					DestroyWindow(hWnd);
-					break;
-				case IDM_PLAY:
-					//‰‰‘tŠJn^ˆê’â~^ÄŠJ
-					result = _OnMenuPlay();
+// >>> add ced 20260627: 1.4.1 features
+				case IDM_OPEN_FOLDER:
+					result = _OnMenuOpenFolder();
 					if (result != 0) goto EXIT;
 					break;
-				case IDM_STOP:
-					//‰‰‘t’â~
-					result = _OnMenuStop();
+				case IDM_PREVIOUS_FILE:
+					result = _OnMenuPreviousFile();
 					if (result != 0) goto EXIT;
 					break;
-				case IDM_REPEAT:
-					//ƒŠƒs[ƒg
-					result = _OnMenuRepeat();
+				case IDM_NEXT_FILE:
+					result = _OnMenuNextFile();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_FOLDER_PLAYBACK:
-					//ƒtƒHƒ‹ƒ_‰‰‘t
 					result = _OnMenuFolderPlayback();
 					if (result != 0) goto EXIT;
 					break;
-				case IDM_SKIP_BACK:
-					//Ä¶ƒXƒLƒbƒvƒoƒbƒN
-					result = _OnMenuSkipBack();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_SKIP_FORWARD:
-					//Ä¶ƒXƒLƒbƒvƒtƒHƒ[ƒh
-					result = _OnMenuSkipForward();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_PLAY_SPEED_DOWN:
-					//Ä¶ƒXƒs[ƒhƒ_ƒEƒ“
-					result = _OnMenuPlaySpeedDown();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_PLAY_SPEED_UP:
-					//Ä¶ƒXƒs[ƒhƒAƒbƒv
-					result = _OnMenuPlaySpeedUp();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_START_MONITORING:
-					//ƒ‚ƒjƒ^ƒŠƒ“ƒOŠJn
-					result = _OnMenuStartMonitoring();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_STOP_MONITORING:
-					//ƒ‚ƒjƒ^ƒŠƒ“ƒO’â~
-					result = _OnMenuStopMonitoring();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEW_3DPIANOROLL:
-					//ƒrƒ…[•ÏXF3DƒsƒAƒmƒ[ƒ‹
-					result = _OnMenuSelectSceneType(PianoRoll3D);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEW_2DPIANOROLL:
-					//ƒrƒ…[•ÏXF2DƒsƒAƒmƒ[ƒ‹
-					result = _OnMenuSelectSceneType(PianoRoll2D);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEW_PIANOROLLRAIN:
-					//ƒrƒ…[•ÏXFƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“
-					result = _OnMenuSelectSceneType(PianoRollRain);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEW_PIANOROLLRAIN2D:
-					//ƒrƒ…[•ÏXFƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“2D
-					result = _OnMenuSelectSceneType(PianoRollRain2D);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEW_PIANOROLLRING:
-					//ƒrƒ…[•ÏXFƒsƒAƒmƒ[ƒ‹ƒŠƒ“ƒO
-					result = _OnMenuSelectSceneType(PianoRollRing);
-					if (result != 0) goto EXIT;
-					break;
-				//TAG: ƒV[ƒ“’Ç‰Á
-				case IDM_ENABLE_PIANOKEYBOARD:
-					//•\¦Œø‰ÊFƒsƒAƒmƒL[ƒ{[ƒh
-					result = _OnMenuEnableEffect(MTScene::EffectPianoKeyboard);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_RIPPLE:
-					//•\¦Œø‰ÊF”g–ä
-					result = _OnMenuEnableEffect(MTScene::EffectRipple);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_PITCHBEND:
-					//•\¦Œø‰ÊFƒsƒbƒ`ƒxƒ“ƒh
-					result = _OnMenuEnableEffect(MTScene::EffectPitchBend);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_STARS:
-					//•\¦Œø‰ÊF¯
-					result = _OnMenuEnableEffect(MTScene::EffectStars);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_COUNTER:
-					//•\¦Œø‰ÊFƒJƒEƒ“ƒ^
-					result = _OnMenuEnableEffect(MTScene::EffectCounter);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_BACKGROUNDIMAGE:
-					//•\¦Œø‰ÊF”wŒi‰æ‘œ
-					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_GRIDLINE:
-					//•\¦Œø‰ÊFƒOƒŠƒbƒhƒ‰ƒCƒ“
-					result = _OnMenuEnableEffect(MTScene::EffectGridLine);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_ENABLE_TIMEINDICATOR:
-					//•\¦Œø‰ÊFƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^
-					result = _OnMenuEnableEffect(MTScene::EffectTimeIndicator);
-					if (result != 0) goto EXIT;
-					break;
-				//©“®‹“_•Û‘¶‚Æ‹“_•Û‘¶‚Í”p~
-				//case IDM_AUTO_SAVE_VIEWPOINT:
-				//	//©“®‹“_•Û‘¶
-				//	result = _OnMenuAutoSaveViewpoint();
-				//	if (result != 0) goto EXIT;
-				//	break;
-				//case IDM_SAVE_VIEWPOINT:
-				//	//‹“_•Û‘¶
-				//	result = _OnMenuSaveViewpoint();
-				//	if (result != 0) goto EXIT;
-				//	break;
-				case IDM_RESET_VIEWPOINT:
-					//Ã“I‹“_1‚ÉˆÚ“®i‹“_ƒŠƒZƒbƒgj
-					result = _OnMenuResetViewpoint();
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEWPOINT2:
-					//Ã“I‹“_2‚ÉˆÚ“®
-					result = _OnMenuViewpoint(2);
-					if (result != 0) goto EXIT;
-					break;
-				case IDM_VIEWPOINT3:
-					//Ã“I‹“_3‚ÉˆÚ“®
-					result = _OnMenuViewpoint(3);
+				case IDM_MENUBAR:
+					result = _OnMenuMenuBar();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MYVIEWPOINT1:
-					//„‚Ì‹“_1‚ÉˆÚ“®
 					result = _OnMenuMyViewpoint(1);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MYVIEWPOINT2:
-					//„‚Ì‹“_2‚ÉˆÚ“®
 					result = _OnMenuMyViewpoint(2);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MYVIEWPOINT3:
-					//„‚Ì‹“_3‚ÉˆÚ“®
 					result = _OnMenuMyViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SAVE_MYVIEWPOINT1:
-					//„‚Ì‹“_1‚ğ•Û‘¶
 					result = _OnMenuSaveMyViewpoint(1);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SAVE_MYVIEWPOINT2:
-					//„‚Ì‹“_2‚ğ•Û‘¶
 					result = _OnMenuSaveMyViewpoint(2);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SAVE_MYVIEWPOINT3:
-					//„‚Ì‹“_3‚ğ•Û‘¶
 					result = _OnMenuSaveMyViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
+// <<< add ced 20260627
+				case IDM_EXPORT_VIDEO:
+					//M6: ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
+					result = _OnMenuExportVideo();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_EXIT:
+					//çµ‚äº†
+					DestroyWindow(hWnd);
+					break;
+				case IDM_PLAY:
+					//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢ï¼å†é–‹
+					result = _OnMenuPlay();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_STOP:
+					//æ¼”å¥åœæ­¢
+					result = _OnMenuStop();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_REPEAT:
+					//ãƒªãƒ”ãƒ¼ãƒˆ
+					result = _OnMenuRepeat();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_SKIP_BACK:
+					//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒãƒƒã‚¯
+					result = _OnMenuSkipBack();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_SKIP_FORWARD:
+					//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰
+					result = _OnMenuSkipForward();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_PLAY_SPEED_DOWN:
+					//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
+					result = _OnMenuPlaySpeedDown();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_PLAY_SPEED_UP:
+					//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
+					result = _OnMenuPlaySpeedUp();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_START_MONITORING:
+					//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°é–‹å§‹
+					result = _OnMenuStartMonitoring();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_STOP_MONITORING:
+					//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°åœæ­¢
+					result = _OnMenuStopMonitoring();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_3DPIANOROLL:
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼š3Dãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«
+					result = _OnMenuSelectSceneType(PianoRoll3D);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_2DPIANOROLL:
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼š2Dãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«
+					result = _OnMenuSelectSceneType(PianoRoll2D);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_PIANOROLLRAIN:
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼šãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³
+					result = _OnMenuSelectSceneType(PianoRollRain);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_PIANOROLLRAIN2D:
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼šãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³2D
+					result = _OnMenuSelectSceneType(PianoRollRain2D);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_PIANOROLLRING:
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼šãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒªãƒ³ã‚°
+					result = _OnMenuSelectSceneType(PianoRollRing);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEW_SINGLEKEYBOARD:
+					//M4.6c (DX11): toggle single vs per-port keyboard, rebuild scene
+					result = _OnMenuToggleSingleKeyboard();
+					if (result != 0) goto EXIT;
+					break;
+				//TAG: ã‚·ãƒ¼ãƒ³è¿½åŠ 
+				case IDM_ENABLE_PIANOKEYBOARD:
+					//è¡¨ç¤ºåŠ¹æœï¼šãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
+					result = _OnMenuEnableEffect(MTScene::EffectPianoKeyboard);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_RIPPLE:
+					//è¡¨ç¤ºåŠ¹æœï¼šæ³¢ç´‹
+					result = _OnMenuEnableEffect(MTScene::EffectRipple);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_LYRICS:
+					//è¡¨ç¤ºåŠ¹æœï¼šæ­Œè©
+					result = _OnMenuEnableEffect(MTScene::EffectLyrics);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_PITCHBEND:
+					//è¡¨ç¤ºåŠ¹æœï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+					result = _OnMenuEnableEffect(MTScene::EffectPitchBend);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_PITCHBEND_ALLNOTES:
+					//M4.22: pitch bend the whole channel (all notes, not just sounding)
+					result = _OnMenuTogglePitchBendAllNotes();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_STARS:
+					//è¡¨ç¤ºåŠ¹æœï¼šæ˜Ÿ
+					result = _OnMenuEnableEffect(MTScene::EffectStars);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_COUNTER:
+					//è¡¨ç¤ºåŠ¹æœï¼šã‚«ã‚¦ãƒ³ã‚¿
+					result = _OnMenuEnableEffect(MTScene::EffectCounter);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_BACKGROUNDIMAGE:
+					//è¡¨ç¤ºåŠ¹æœï¼šèƒŒæ™¯ç”»åƒ
+					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
+					if (result != 0) goto EXIT;
+					break;
+// >>> add 20180404 yossiepon begin
+				case IDM_ENABLE_TIMEINDICATOR:
+					//è¡¨ç¤ºåŠ¹æœï¼šã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
+					result = _OnMenuEnableEffect(MTScene::EffectTimeIndicator);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_GRIDBOX:
+					//è¡¨ç¤ºåŠ¹æœï¼šã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹
+					result = _OnMenuEnableEffect(MTScene::EffectGridBox);
+					if (result != 0) goto EXIT;
+					break;
+// <<< add 20180404 yossiepon end
+				case IDM_AUTO_SAVE_VIEWPOINT:
+					//è‡ªå‹•è¦–ç‚¹ä¿å­˜ã®æœ‰åŠ¹ï¼ç„¡åŠ¹ã‚’åˆ‡ã‚Šæ›¿ãˆ
+					result = _OnMenuAutoSaveViewpoint();
+					if (result != 0) goto EXIT;
+					break;
+// >>> add ced 20260628: View è¡¨ç¤ºè¨­å®šã®è‡ªå‹•ä¿å­˜ã®æœ‰åŠ¹ï¼ç„¡åŠ¹ã‚’åˆ‡ã‚Šæ›¿ãˆ
+				case IDM_AUTO_SAVE_VIEWSETTINGS:
+					result = _OnMenuAutoSaveViewSettings();
+					if (result != 0) goto EXIT;
+					break;
+// <<< add ced 20260628
+				//è¦–ç‚¹ä¿å­˜ï¼ˆæ‰‹å‹•ï¼‰ã¯å»ƒæ­¢
+				//case IDM_SAVE_VIEWPOINT:
+				//	//è¦–ç‚¹ä¿å­˜
+				//	result = _OnMenuSaveViewpoint();
+				//	if (result != 0) goto EXIT;
+				//	break;
+				case IDM_RESET_VIEWPOINT:
+					//é™çš„è¦–ç‚¹1ã«ç§»å‹•ï¼ˆè¦–ç‚¹ãƒªã‚»ãƒƒãƒˆï¼‰
+					result = _OnMenuResetViewpoint();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEWPOINT2:
+					//é™çš„è¦–ç‚¹2ã«ç§»å‹•
+					result = _OnMenuViewpoint(2);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEWPOINT3:
+					//é™çš„è¦–ç‚¹3ã«ç§»å‹•
+					result = _OnMenuViewpoint(3);
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_WINDOWSIZE:
-					//ƒEƒBƒ“ƒhƒEƒTƒCƒYİ’è
+					//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºè¨­å®š
 					result = _OnMenuWindowSize();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_FULLSCREEN:
-					//ƒtƒ‹ƒXƒNƒŠ[ƒ“
+					//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 					result = _OnMenuFullScreen();
 					if (result != 0) goto EXIT;
 					break;
-				case IDM_MENUBAR:
-					//ƒƒjƒ…[ƒo[
-					result = _OnMenuMenuBar();
-					if (result != 0) goto EXIT;
-					break;
 				case IDM_OPTION_MIDIOUT:
-					//MIDIo—ÍƒfƒoƒCƒXİ’è
+					//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
 					result = _OnMenuOptionMIDIOUT();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_MIDIIN:
-					//MIDI“ü—ÍƒfƒoƒCƒXİ’è
+					//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
 					result = _OnMenuOptionMIDIIN();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_GRAPHIC:
-					//ƒOƒ‰ƒtƒBƒbƒNİ’è
+					//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®š
 					result = _OnMenuOptionGraphic();
 					if (result != 0) goto EXIT;
 					break;
+// >>> add ced 20260627: 1.4.1 colour palette config
 				case IDM_OPTION_COLOR:
-					//ƒJƒ‰[İ’è
+					//ã‚«ãƒ©ãƒ¼è¨­å®š
 					result = _OnMenuOptionColor();
 					if (result != 0) goto EXIT;
 					break;
+// <<< add ced 20260627
+// >>> add ced 20260627: config manager (conf/*.ini GUI editor)
+				case IDM_OPTION_CONFIGMANAGER:
+					result = _OnMenuConfigManager();
+					if (result != 0) goto EXIT;
+					break;
+// <<< add ced 20260627
 				case IDM_HOWTOVIEW:
-					//‘€ì•û–@ƒ_ƒCƒAƒƒO•\¦
+					//æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 					m_HowToViewDlg.Show(m_hWnd);
 					break;
 				case IDM_MANUAL:
-					//ƒ}ƒjƒ…ƒAƒ‹•\¦
+					//ãƒãƒ‹ãƒ¥ã‚¢ãƒ«è¡¨ç¤º
 					result = _OnMenuManual();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ABOUT:
-					//ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒO•\¦
+					//ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 					m_AboutDlg.Show(m_hWnd);
 					break;
 				default:
@@ -995,14 +1124,14 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			EndPaint(hWnd, &ps);
 			break;
 		case WM_KEYDOWN:
-			//ƒL[‰Ÿ‰ºƒƒbƒZ[ƒW
+			//ã‚­ãƒ¼æŠ¼ä¸‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			result = _OnKeyDown(wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 		case WM_MBUTTONDOWN:
-			//ƒ}ƒEƒXƒ{ƒ^ƒ“‰Ÿ‰ºƒƒbƒZ[ƒW
+			//ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³æŠ¼ä¸‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			result = _OnMouseButtonDown(message, wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
@@ -1011,37 +1140,33 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			if (result != 0) goto EXIT;
 			break;
 		case WM_DROPFILES:
-			//ƒtƒ@ƒCƒ‹ƒhƒƒbƒv
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—
 			result = _OnDropFiles(wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
 		case WM_TIMER:
-			//ƒ^ƒCƒ}[
+			//ã‚¿ã‚¤ãƒãƒ¼
 			result = _OnTimer(wParam);
 			if (result != 0) goto EXIT;
 			break;
 		case WM_DESTROY:
-			//”jŠü
+			//ç ´æ£„
 			result = _OnDestroy();
-			//–ß‚è’l‚Í–³‹‚·‚é
+			//æˆ»ã‚Šå€¤ã¯ç„¡è¦–ã™ã‚‹
 			PostQuitMessage(0);
 			break;
 		case WM_FILEPATH_POSTED:
-			//ƒtƒ@ƒCƒ‹ƒpƒXƒ|ƒXƒg’Ê’m
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒã‚¹ãƒˆé€šçŸ¥
 			result = _OnFilePathPosted();
 			if (result != 0) goto EXIT;
 			break;
 		case WM_SIZE:
-			//ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 			if (wParam == SIZE_MAXIMIZED) {
-				//Å‘å‰»Fƒtƒ‹ƒXƒNƒŠ[ƒ“
+				//æœ€å¤§åŒ–ï¼šãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 				result = _OnMenuFullScreen();
 				if (result != 0) goto EXIT;
 			}
-			break;
-		case WM_SETTEXT:
-			//Unicode”ÅSetWindowTextWŒÄ‚Ño‚µ‚É‘Î‰
-			lresult = DefWindowProcW(hWnd, message, wParam, lParam);
 			break;
 		default:
 			lresult = DefWindowProc(hWnd, message, wParam, lParam);
@@ -1056,138 +1181,40 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 //******************************************************************************
-int MIDITrailApp::_OnMenuOpenFile()
+int MIDITrailApp::_OnMenuFileOpen()
 {
 	int result = 0;
-	WCHAR filePath[_MAX_PATH] = { L'\0' };
+	TCHAR filePath[MAX_PATH] = {_T('\0')};
 	bool isSelected = false;
 
-	////‰‰‘t’†‚Íƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚³‚¹‚È‚¢
+	////æ¼”å¥ä¸­ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã•ã›ãªã„
 	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-	//	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“OK
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³OK
 	//}
 	//else {
-	//	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“NG
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³NG
 	//	goto EXIT;
 	//}
 
-	//‰‰‘t’†‚Å‚àƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‰Â‚Æ‚·‚é
+	//æ¼”å¥ä¸­ã§ã‚‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å¯ã¨ã™ã‚‹
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
-	result = _SelectMIDIFile(filePath, _MAX_PATH, &isSelected);
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = _SelectMIDIFile(filePath, MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğ‚Ìˆ—
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠæ™‚ã®å‡¦ç†
 	if (isSelected) {
-		//ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Åƒƒjƒ…[‚©‚çƒtƒ@ƒCƒ‹‘I‘ğ‚µ‚½ê‡
-		//  ƒV[ƒ“¶¬ˆ—‚ÅƒNƒ‰ƒCƒAƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğQÆ‚µ‚Ä‚¢‚é‚½‚ß
-		//  ˆê“I‚É•\¦‚µ‚½ƒƒjƒ…[‚ğ”ñ•\¦‚É–ß‚µ‚Ä‚¨‚­
+		//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã§ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠã—ãŸå ´åˆ
+		//  ã‚·ãƒ¼ãƒ³ç”Ÿæˆå‡¦ç†ã§ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’å‚ç…§ã—ã¦ã„ã‚‹ãŸã‚
+		//  ä¸€æ™‚çš„ã«è¡¨ç¤ºã—ãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’éè¡¨ç¤ºã«æˆ»ã—ã¦ãŠã
 		if (m_isFullScreen) {
 			_HideMenu();
 		}
-		
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg”jŠü
-		m_MIDIFileList.Clear();
 
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		result = _StopPlaybackAndOpenFile(filePath);
-		if (result != 0) goto EXIT;
-	}
-
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
-	result = _ChangeMenuStyle();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒtƒHƒ‹ƒ_ƒI[ƒvƒ“
-//******************************************************************************
-int MIDITrailApp::_OnMenuOpenFolder()
-{
-	int result = 0;
-	WCHAR folderPath[_MAX_PATH] = { L'\0' };
-	bool isSelected = false;
-
-	//‰‰‘t’†‚Å‚àƒtƒHƒ‹ƒ_ƒI[ƒvƒ“‰Â‚Æ‚·‚é
-
-	//ƒtƒHƒ‹ƒ_‘I‘ğƒ_ƒCƒAƒƒO•\¦
-	result = _SelectFolder(folderPath, _MAX_PATH, &isSelected);
-	if (result != 0) goto EXIT;
-
-	//ƒtƒHƒ‹ƒ_‘I‘ğ‚Ìˆ—
-	if (isSelected) {
-		//ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Åƒƒjƒ…[‚©‚çƒtƒ@ƒCƒ‹‘I‘ğ‚µ‚½ê‡
-		//  ƒV[ƒ“¶¬ˆ—‚ÅƒNƒ‰ƒCƒAƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğQÆ‚µ‚Ä‚¢‚é‚½‚ß
-		//  ˆê“I‚É•\¦‚µ‚½ƒƒjƒ…[‚ğ”ñ•\¦‚É–ß‚µ‚Ä‚¨‚­
-		if (m_isFullScreen) {
-			_HideMenu();
-		}
-
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆƒtƒHƒ‹ƒ_ƒI[ƒvƒ“ˆ—
-		result = _StopPlaybackAndOpenFolder(folderPath);
-		if (result != 0) goto EXIT;
-	}
-
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
-	result = _ChangeMenuStyle();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ‘Oƒtƒ@ƒCƒ‹
-//******************************************************************************
-int MIDITrailApp::_OnMenuPreviousFile()
-{
-	int result = 0;
-	bool isExist = false;
-	const WCHAR* pFilePath = NULL;
-
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
-	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
-
-	//‘Oƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
-	m_MIDIFileList.SelectPreviousFile(&isExist);
-
-	//‘Oƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
-	if (isExist) {
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
-		pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
-		result = _StopPlaybackAndOpenFile(pFilePath);
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// Ÿƒtƒ@ƒCƒ‹
-//******************************************************************************
-int MIDITrailApp::_OnMenuNextFile()
-{
-	int result = 0;
-	bool isExist = false;
-	const WCHAR* pFilePath = NULL;
-
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
-	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
-
-	//Ÿƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
-	m_MIDIFileList.SelectNextFile(&isExist);
-
-	//Ÿƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
-	if (isExist) {
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
-		pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
-		result = _StopPlaybackAndOpenFile(pFilePath);
 		if (result != 0) goto EXIT;
 	}
 
@@ -1198,30 +1225,30 @@ EXIT:;
 // >>> add 20120728 yossiepon begin
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹’Ç‰Á
+// ãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ 
 //******************************************************************************
-int MIDITrailApp::_OnMenuAddFile()
+int MIDITrailApp::_OnMenuFileAdd()
 {
 	int result = 0;
-	WCHAR filePath[_MAX_PATH] = { L'\0' };
+	TCHAR filePath[MAX_PATH] = {_T('\0')};
 	bool isSelected = false;
 
-	//‰‰‘t’†‚Íƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚³‚¹‚È‚¢
+	//æ¼”å¥ä¸­ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã•ã›ãªã„
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“OK
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³OK
 	}
 	else {
-		//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“NG
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³NG
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
-	result = _SelectMIDIFile(filePath, _MAX_PATH, &isSelected);
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = _SelectMIDIFile(filePath, MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğ‚Ìˆ—
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠæ™‚ã®å‡¦ç†
 	if (isSelected) {
-		//MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
+		//MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‡¦ç†
 		result = _AddMIDIFile(filePath);
 		if (result != 0) goto EXIT;
 	}
@@ -1232,1306 +1259,288 @@ EXIT:;
 
 // <<< add 20120728 yossiepon end
 
+// >>> add ced 20260627: upstream 1.4.1 features ported to the DX11 / MBCS app
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFÄ¶^ˆê’â~^ÄŠJ
+// wide path -> DX11 char load pipeline bridge
+//   The DX11 app is MBCS (char). Folder/file navigation yields Unicode (WCHAR)
+//   paths; route them via m_LoadFilePathW so _LoadMIDIFile uses LoadW (Unicode
+//   preserved), with a CP_ACP char copy for the existing char-based open chain.
 //******************************************************************************
-int MIDITrailApp::_OnMenuPlay()
+int MIDITrailApp::_OpenFileW(const WCHAR* pFilePathW)
 {
 	int result = 0;
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
 
-	if (m_PlayStatus == Stop) {
-		//ƒV[ƒPƒ“ƒT‰Šú‰»
-		result = m_Sequencer.Initialize(&m_MsgQueue);
-		if (result != 0) goto EXIT;
-
-		//ƒV[ƒPƒ“ƒT‚Éƒ|[ƒgî•ñ‚ğ“o˜^
-		result = _SetPortDev(&m_Sequencer);
-		if (result != 0) goto EXIT;
-
-		//ƒV[ƒPƒ“ƒT‚ÉƒV[ƒPƒ“ƒXƒf[ƒ^‚ğ“o˜^
-		result = m_Sequencer.SetSeqData(&m_SeqData);
-		if (result != 0) goto EXIT;
-
-		//Šª‚«–ß‚µ
-		if (m_isRewind) {
-			m_isRewind = false;
-			result = m_pScene->Rewind();
-			if (result != 0) goto EXIT;
-		}
-
-		//ƒV[ƒ“‚É‰‰‘tŠJn‚ğ’Ê’m
-		result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-		if (result != 0) goto EXIT;
-
-		//ÅVƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWƒNƒŠƒA
-		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
-
-		//‰‰‘t‘¬“x
-		m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
-
-		//‰‰‘tŠJn
-		result = m_Sequencer.Play();
-		if (result != 0) goto EXIT;
-
-		//‰‰‘tó‘Ô•ÏX
-		result = _ChangePlayStatus(Play);
-		if (result != 0) goto EXIT;
-	}
-	else if (m_PlayStatus == Play) {
-		//‰‰‘tˆê’â~
-		m_Sequencer.Pause();
-
-		//‰‰‘tó‘Ô•ÏX
-		result = _ChangePlayStatus(Pause);
-		if (result != 0) goto EXIT;
-	}
-	else if (m_PlayStatus == Pause) {
-		//‰‰‘tÄŠJ
-		result = m_Sequencer.Resume();
-		if (result != 0) goto EXIT;
-
-		//‰‰‘tó‘Ô•ÏX
-		result = _ChangePlayStatus(Play);
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF’â~
-//******************************************************************************
-int MIDITrailApp::_OnMenuStop()
-{
-	int result = 0;
-
-	if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		m_Sequencer.Stop();
-		//‰‰‘tó‘Ô’Ê’m‚ª“Í‚­‚Ü‚ÅÄ¶’†‚Æ‚İ‚È‚·
-		//‚±‚±‚Å‚Í‰‰‘tó‘Ô‚ğ•ÏX‚µ‚È‚¢
-
-		//I—¹Œã‚ÉŠª‚«–ß‚·
-		m_isRewind = true;
-	}
-
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒŠƒs[ƒg
-//******************************************************************************
-int MIDITrailApp::_OnMenuRepeat()
-{
-	int result = 0;
-
-	//ƒŠƒs[ƒgØ‚è‘Ö‚¦
-	if (m_isRepeat) {
-		m_isRepeat = false;
-	}
-	else {
-		m_isRepeat = true;
-	}
-
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
-	result = _UpdateMenuCheckmark();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒtƒHƒ‹ƒ_‰‰‘t
-//******************************************************************************
-int MIDITrailApp::_OnMenuFolderPlayback()
-{
-	int result = 0;
-
-	//ƒtƒHƒ‹ƒ_‰‰‘tØ‚è‘Ö‚¦
-	if (m_isFolderPlayback) {
-		m_isFolderPlayback = false;
-	}
-	else {
-		m_isFolderPlayback = true;
-	}
-
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
-	result = _UpdateMenuCheckmark();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒLƒbƒvƒoƒbƒN
-//******************************************************************************
-int MIDITrailApp::_OnMenuSkipBack()
-{
-	int result = 0;
-
-	result = m_Sequencer.Skip((-1) * m_SkipBackTimeSpanInMsec);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒLƒbƒvƒtƒHƒ[ƒh
-//******************************************************************************
-int MIDITrailApp::_OnMenuSkipForward()
-{
-	int result = 0;
-
-	result = m_Sequencer.Skip((+1) * m_SkipForwardTimeSpanInMsec);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒs[ƒhƒ_ƒEƒ“
-//******************************************************************************
-int MIDITrailApp::_OnMenuPlaySpeedDown()
-{
-	int result = 0;
-
-	//‰‰‘tó‘ÔŠm”F
-	if ((m_PlayStatus == Stop) || (m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		//•ÏXOK
-	}
-	else {
-		//•ÏXNG
+	if (pFilePathW == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
-
-	//‰‰‘t‘¬“xƒ_ƒEƒ“
-	m_PlaySpeedRatio -= m_SpeedStepInPercent;
-
-	//ƒŠƒ~ƒbƒg
-	if (m_PlaySpeedRatio < m_SpeedStepInPercent) {
-		m_PlaySpeedRatio = m_SpeedStepInPercent;
-	}
-
-	//‰‰‘t‘¬“xİ’è
-	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
-	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒs[ƒhƒAƒbƒv
-//******************************************************************************
-int MIDITrailApp::_OnMenuPlaySpeedUp()
-{
-	int result = 0;
-
-	//‰‰‘tó‘ÔŠm”F
-	if ((m_PlayStatus == Stop) || (m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		//•ÏXOK
-	}
-	else {
-		//•ÏXNG
-		goto EXIT;
-	}
-
-	//‰‰‘t‘¬“xƒAƒbƒv
-	m_PlaySpeedRatio += m_SpeedStepInPercent;
-
-	//ƒŠƒ~ƒbƒg 400%
-	if (m_PlaySpeedRatio > m_MaxSpeedInPercent) {
-		m_PlaySpeedRatio = m_MaxSpeedInPercent;
-	}
-
-	//‰‰‘t‘¬“xİ’è
-	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
-	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒ‰ƒCƒuƒ‚ƒjƒ^ŠJn
-//******************************************************************************
-int MIDITrailApp::_OnMenuStartMonitoring()
-{
-	int result = 0;
-	
-	//‰‰‘tó‘ÔŠm”F
-	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒ‚ƒjƒ^ŠJnOK
-	}
-	else {
-		//ƒ‚ƒjƒ^ŠJnNG
-		goto EXIT;
-	}
-	
-	//ƒV[ƒPƒ“ƒT‰Šú‰»
-	//  ƒV[ƒPƒ“ƒT‚ÍÄ¶I—¹‚ÉƒfƒoƒCƒX‚ğƒNƒ[ƒY‚µ‚È‚¢‚½‚ß
-	//  ‰Šú‰»‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄƒNƒ[ƒY‚³‚¹‚é
-	result = m_Sequencer.Initialize(&m_MsgQueue);
+	wcscpy_s(m_LoadFilePathW, MAX_PATH, pFilePathW);
+	WideCharToMultiByte(CP_ACP, 0, pFilePathW, -1, filePath, _MAX_PATH, NULL, NULL);
+	result = _StopPlaybackAndOpenFile(filePath);
 	if (result != 0) goto EXIT;
-	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒV[ƒ“¶¬
-	if (m_PlayStatus != MonitorOFF) {
-		//‹“_•Û‘¶
-		if (m_isAutoSaveViewpoint) {
-			result = _OnMenuSaveViewpoint();
-			if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ã
+//******************************************************************************
+int MIDITrailApp::_OnMenuOpenFolder()
+{
+	int result = 0;
+	WCHAR folderPath[_MAX_PATH] = { L'\0' };
+	bool isSelected = false;
+
+	result = _SelectFolder(folderPath, _MAX_PATH, &isSelected);
+	if (result != 0) goto EXIT;
+
+	if (isSelected) {
+		//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³æ™‚ã¯ã‚·ãƒ¼ãƒ³ç”ŸæˆãŒã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚’å‚ç…§ã™ã‚‹ãŸã‚ä¸€æ—¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’éš ã™
+		if (m_isFullScreen) {
+			_HideMenu();
 		}
-		
-		//ƒV[ƒ“í•Ê
-		m_SceneType = m_SelectedSceneType;
-		
-		//ƒV[ƒ“¶¬
-		result = _CreateScene(m_SceneType, NULL);
-		if (result != 0) goto EXIT;
-	}
-	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^‰Šú‰»
-	result = m_LiveMonitor.Initialize(&m_MsgQueue);
-	if (result != 0) goto EXIT;
-	result = _SetMonitorPortDev(&m_LiveMonitor, m_pScene);
-	if (result != 0) goto EXIT;
-	
-	//ƒV[ƒ“‚É‰‰‘tŠJniƒ‰ƒCƒuƒ‚ƒjƒ^ŠJnj‚ğ’Ê’m
-	result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-	if (result != 0) goto EXIT;
-	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^ŠJn
-	result = m_LiveMonitor.Start();
-	if (result != 0) goto EXIT;
-	
-	//‰‰‘tó‘Ô•ÏX
-	result = _ChangePlayStatus(MonitorON);
-	if (result != 0) goto EXIT;
-
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
-	_UpdateWindowTitle(NULL);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒ‰ƒCƒuƒ‚ƒjƒ^’â~
-//******************************************************************************
-int MIDITrailApp::_OnMenuStopMonitoring()
-{
-	int result = 0;
-	
-	//‰‰‘tó‘ÔŠm”F
-	if (m_PlayStatus == MonitorON) {
-		//ƒ‚ƒjƒ^ŠJnOK
-	}
-	else {
-		//ƒ‚ƒjƒ^ŠJnNG
-		goto EXIT;
-	}
-	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^’â~
-	result = m_LiveMonitor.Stop();
-	if (result != 0) goto EXIT;
-	
-	//‰‰‘tó‘Ô•ÏX
-	result = _ChangePlayStatus(MonitorOFF);
-	if (result != 0) goto EXIT;
-	
-	//ƒV[ƒ“‚É‰‰‘tI—¹‚ğ’Ê’m
-	if (m_pScene != NULL) {
-		result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-		if (result != 0) goto EXIT;
-	}
-	
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒV[ƒ“í•Ê
-//******************************************************************************
-int MIDITrailApp::_OnMenuSelectSceneType(
-		MIDITrailApp::SceneType type
-	)
-{
-	int result = 0;
-
-	//‰‰‘tó‘ÔŠm”F
-	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒV[ƒ“ƒ^ƒCƒv‘I‘ğOK
-	}
-	else {
-		//ƒV[ƒ“ƒ^ƒCƒv‘I‘ğNG
-		goto EXIT;
-	}
-
-	//•Û‘¶
-	m_SelectedSceneType = type;
-	result = _SaveSceneType();
-	if (result != 0) goto EXIT;
-
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
-	result = _UpdateMenuCheckmark();
-	if (result != 0) goto EXIT;
-
-	//’â~’†‚Ìê‡‚ÍƒV[ƒ“‚ğÄ\’z
-	if ((m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//‹“_•Û‘¶
-		if (m_isAutoSaveViewpoint) {
-			result = _OnMenuSaveViewpoint();
-			if (result != 0) goto EXIT;
-		}
-
-		m_SceneType = m_SelectedSceneType;
-		if (m_PlayStatus == Stop) {
-			//ƒvƒŒƒCƒ„‚ÌƒV[ƒ“í•ÊØ‚è‘Ö‚¦
-			result = _CreateScene(m_SceneType, &m_SeqData);
-			if (result != 0) goto EXIT;
-		}
-		else {
-			//ƒ‰ƒCƒuƒ‚ƒjƒ^‚ÌƒV[ƒ“í•ÊØ‚è‘Ö‚¦
-			result = _CreateScene(m_SceneType, NULL);
-			if (result != 0) goto EXIT;
-
-			//MIDI IN ƒfƒoƒCƒX–¼‚ğİ’è
-			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-			if (result != 0) goto EXIT;
-
-			//ƒfƒoƒCƒX–¼‚ğ‰æ–Ê‚É”½‰f‚·‚é‚½‚ßƒV[ƒ“‚É‰‰‘tI—¹iƒ‰ƒCƒuƒ‚ƒjƒ^’â~j‚ğ’Ê’m
-			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
-		}
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF©“®‹“_•Û‘¶
-//******************************************************************************
-int MIDITrailApp::_OnMenuAutoSaveViewpoint()
-{
-	int result = 0;
-
-	m_isAutoSaveViewpoint = m_isAutoSaveViewpoint ? false : true;
-
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
-	result = _UpdateMenuCheckmark();
-	if (result != 0) goto EXIT;
-
-	//ƒV[ƒ“İ’è•Û‘¶
-	result = _SaveSceneConf();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFÃ“I‹“_ˆÚ“®
-//******************************************************************************
-int MIDITrailApp::_OnMenuViewpoint(
-		unsigned long viewpointNo
-	)
-{
-	int result = 0;
-
-	if (m_PlayStatus == NoData) goto EXIT;
-
-	//Ã“I‹“_‚ÉˆÚ“®
-	m_pScene->MoveToStaticViewpoint(viewpointNo);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF„‚Ì‹“_ˆÚ“®
-//******************************************************************************
-int MIDITrailApp::_OnMenuMyViewpoint(
-		unsigned long viewpointNo
-	)
-{
-	int result = 0;
-
-	if (m_PlayStatus == NoData) goto EXIT;
-
-	//„‚Ì‹“_‚ÉˆÚ“®
-	result = _MoveToMyViewpoint(viewpointNo);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF„‚Ì‹“_•Û‘¶
-//******************************************************************************
-int MIDITrailApp::_OnMenuSaveMyViewpoint(
-		unsigned long viewpointNo
-	)
-{
-	int result = 0;
-
-	if (m_PlayStatus == NoData) goto EXIT;
-
-	//„‚Ì‹“_‚ğ•Û‘¶
-	result = _SaveMyViewpoint(viewpointNo);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF‹“_ƒŠƒZƒbƒg
-//******************************************************************************
-int MIDITrailApp::_OnMenuResetViewpoint()
-{
-	int result = 0;
-
-	if (m_PlayStatus == NoData) goto EXIT;
-
-	//ƒV[ƒ“‚Ì‹“_‚ğƒŠƒZƒbƒg
-	m_pScene->ResetViewpoint();
-
-	//‹“_•Û‘¶
-	result = _SaveViewpoint();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF‹“_•Û‘¶
-//******************************************************************************
-int MIDITrailApp::_OnMenuSaveViewpoint()
-{
-	int result = 0;
-
-	if (m_PlayStatus == NoData) goto EXIT;
-
-	//‹“_•Û‘¶
-	result = _SaveViewpoint();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğF•\¦Œø‰Êİ’è
-//******************************************************************************
-int MIDITrailApp::_OnMenuEnableEffect(
-		MTScene::EffectType type
-	)
-{
-	int result = 0;
-
-	switch (type) {
-		case MTScene::EffectPianoKeyboard:
-			m_isEnablePianoKeyboard = m_isEnablePianoKeyboard ? false : true;
-			break;
-		case MTScene::EffectRipple:
-			m_isEnableRipple = m_isEnableRipple ? false : true;
-			break;
-		case MTScene::EffectPitchBend:
-			m_isEnablePitchBend = m_isEnablePitchBend ? false : true;
-			break;
-		case MTScene::EffectStars:
-			m_isEnableStars = m_isEnableStars ? false : true;
-			break;
-		case MTScene::EffectCounter:
-			m_isEnableCounter = m_isEnableCounter ? false : true;
-			break;
-		case MTScene::EffectBackgroundImage:
-			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
-			break;
-		case MTScene::EffectGridLine:
-			m_isEnableGridLine = m_isEnableGridLine ? false : true;
-			break;
-		case MTScene::EffectTimeIndicator:
-			m_isEnableTimeIndicator = m_isEnableTimeIndicator ? false : true;
-			break;
-		default:
-			break;
-	}
-
-	//•\¦Œø‰Ê”½‰f
-	_UpdateEffect();
-
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
-	_UpdateMenuCheckmark();
-
-	//•\¦Œø‰Ê‘I‘ğó‘Ô•Û‘¶
-	result = _SaveEffectStatus();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
-//******************************************************************************
-int MIDITrailApp::_OnMenuWindowSize()
-{
-	int result = 0;
-
-	//İ’èƒ_ƒCƒAƒƒO•\¦
-	result = m_WindowSizeCfgDlg.Show(m_hWnd);
-	if (result != 0) goto EXIT;
-
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğXV
-	if (m_WindowSizeCfgDlg.IsChanged()) {
-		result = _ChangeWindowSize();
+		result = _StopPlaybackAndOpenFolder(folderPath);
 		if (result != 0) goto EXIT;
 	}
 
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒtƒ‹ƒXƒNƒŠ[ƒ“
-//******************************************************************************
-int MIDITrailApp::_OnMenuFullScreen()
-{
-	int result = 0;
-
-	//ƒtƒ‹ƒXƒNƒŠ[ƒ“Ø‘Ö
-	result = _ToggleFullScreen();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒƒjƒ…[ƒo[
-//******************************************************************************
-int MIDITrailApp::_OnMenuMenuBar()
-{
-	int result = 0;
-
-	//ƒƒjƒ…[ƒo[•\¦Ø‘Ö
-	result = _ToggleMenuBar();
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFMIDIo—ÍƒfƒoƒCƒXİ’è
-//******************************************************************************
-int MIDITrailApp::_OnMenuOptionMIDIOUT()
-{
-	int result = 0;
-
-	//İ’èƒ_ƒCƒAƒƒO•\¦
-	result = m_MIDIOUTCfgDlg.Show(m_hWnd);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFMIDI“ü—ÍƒfƒoƒCƒXİ’è
-//******************************************************************************
-int MIDITrailApp::_OnMenuOptionMIDIIN()
-{
-	int result = 0;
-
-	//İ’èƒ_ƒCƒAƒƒO•\¦
-	result = m_MIDIINCfgDlg.Show(m_hWnd);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒOƒ‰ƒtƒBƒbƒNİ’è
-//******************************************************************************
-int MIDITrailApp::_OnMenuOptionGraphic()
-{
-	int result = 0;
-	unsigned long multiSampleType = 0;
-	bool isSupport = false;
-
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒXƒTƒ|[ƒgî•ñ‚ğƒ_ƒCƒAƒƒO‚Éİ’è
-	for (multiSampleType = DX_MULTI_SAMPLE_TYPE_MIN; multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX; multiSampleType++) {
-		result = m_Renderer.IsSupportAntialias(multiSampleType, &isSupport);
-		if (result != 0) goto EXIT;
-		m_GraphicCfgDlg.SetAntialiasSupport(multiSampleType, isSupport);
-	}
-
-	//İ’èƒ_ƒCƒAƒƒO•\¦
-	result = m_GraphicCfgDlg.Show(m_hWnd);
-	if (result != 0) goto EXIT;
-
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ğÄ¶¬
-	if (m_GraphicCfgDlg.IsChanged()) {
-		result = _LoadGraphicConf();
-		if (result != 0) goto EXIT;
-		result = _ChangeWindowSize();
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒJƒ‰[İ’è
-//******************************************************************************
-int MIDITrailApp::_OnMenuOptionColor()
-{
-	int result = 0;
-
-	//İ’èƒ_ƒCƒAƒƒO•\¦
-	result = m_ColorCfgDlg.Show(m_hWnd);
-	if (result != 0) goto EXIT;
-
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ğÄ¶¬
-	if (m_ColorCfgDlg.IsChanged()) {
-		result = _ChangeWindowSize();
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒ}ƒjƒ…ƒAƒ‹•\¦
-//******************************************************************************
-int MIDITrailApp::_OnMenuManual()
-{
-	int result = 0;
-	HINSTANCE hresult = 0;
-	TCHAR manualPath[_MAX_PATH] = {_T('\0')};
-
-	//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
-	result = YNPathUtil::GetModuleDirPath(manualPath, _MAX_PATH);
-	if (result != 0) goto EXIT;
-
-	//ƒ}ƒjƒ…ƒAƒ‹ƒtƒ@ƒCƒ‹ƒpƒXì¬
-	_tcscat_s(manualPath, _MAX_PATH, MT_MANUALFILE);
-
-	//ƒ}ƒjƒ…ƒAƒ‹ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	hresult = ShellExecute(
-					NULL,			//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_T("open"),		//‘€ì
-					manualPath,		//‘€ì‘ÎÛ‚Ìƒtƒ@ƒCƒ‹
-					NULL,			//‘€ìƒpƒ‰ƒ[ƒ^
-					NULL,			//Šù’èƒfƒBƒŒƒNƒgƒŠ
-					SW_SHOWNORMAL	//•\¦ó‘Ô
-				);
-	if (hresult <= (HINSTANCE)32) {
-		result = YN_SET_ERR("File open error.", (DWORD64)hresult, 0);
-		goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWˆ—
-//******************************************************************************
-int MIDITrailApp::_SequencerMsgProc()
-{
-	int result = 0;
-	bool isExist = false;
-	unsigned long param1 = 0;
-	unsigned long param2 = 0;
-	SMMsgParser parser;
-	
-	while (true) {
-		//ƒƒbƒZ[ƒWæ‚èo‚µ
-		result = m_MsgQueue.GetMessage(&isExist, &param1, &param2);
-		if (result != 0) goto EXIT;
-		
-		//ƒƒbƒZ[ƒW‚ª‚È‚¯‚ê‚ÎI—¹
-		if (!isExist) break;
-		
-		//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóMˆ—
-		result = _OnRecvSequencerMsg(param1, param2);
-		if (result != 0) goto EXIT;	
-	}
-	
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
-//******************************************************************************
-int MIDITrailApp::_OnRecvSequencerMsg(
-		unsigned long param1,
-		unsigned long param2
-	)
-{
-	int result = 0;
-	SMMsgParser parser;
-	bool isExist = false;
-
-	//ƒV[ƒ“‚ÉƒV[ƒPƒ“ƒTƒƒbƒZ[ƒW‚ğ“n‚·
-	if (m_pScene != NULL) {
-		result = m_pScene->OnRecvSequencerMsg(param1, param2);
-		if (result != 0) goto EXIT;
-	}
-
-	//‰‰‘tó‘Ô•ÏX’Ê’m‚Ö‚Ì‘Î‰
-	parser.Parse(param1, param2);
-	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
-		//ˆê’â~
-		if (parser.GetPlayStatus() == SMMsgParser::StatusPause) {
-			result = _ChangePlayStatus(Pause);
-			if (result != 0) goto EXIT;
-		}
-		//’â~i‰‰‘tI—¹j
-		if (parser.GetPlayStatus() == SMMsgParser::StatusStop) {
-			result = _ChangePlayStatus(Stop);
-			if (result != 0) goto EXIT;
-
-			//ƒV[ƒ“‚É‰‰‘tI—¹‚ğ’Ê’m
-			if (m_pScene != NULL) {
-				result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-				if (result != 0) goto EXIT;
-			}
-
-			//‹“_•Û‘¶
-			if (m_isAutoSaveViewpoint) {
-				result = _OnMenuSaveViewpoint();
-				if (result != 0) goto EXIT;
-			}
-
-			//ƒ†[ƒU[‚Ì—v‹‚É‚æ‚Á‚Ä’â~‚µ‚½ê‡‚ÍŠª‚«–ß‚·
-			if ((m_isRewind) && (m_pScene != NULL)) {
-				m_isRewind = false;
-				result = m_pScene->Rewind();
-				if (result != 0) goto EXIT;
-			}
-			//’â~Œã‚Ìƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ªw’è‚³‚ê‚Ä‚¢‚éê‡
-			else if ((m_isOpenFileAfterStop) && (m_pScene != NULL)) {
-				m_isOpenFileAfterStop = false;
-				//ƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
-				result = _FileOpenProc(m_NextFilePath);
-				if (result != 0) goto EXIT;
-			}
-			//’Êí‚Ì‰‰‘tI—¹‚Ìê‡
-			else {
-				//’Êí‚Ì‰‰‘tI—¹‚Ìê‡‚ÍŸ‰ñ‚Ì‰‰‘t‚ÉŠª‚«–ß‚·
-				m_isRewind = true;
-				//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚È‚µ‚Ìê‡
-				if (m_MIDIFileList.GetFileCount() == 0) {
-					//ƒŠƒs[ƒg—LŒø‚È‚çÄ¶ŠJn
-					if (m_isRepeat) {
-						//ƒŠƒs[ƒg‚É‚æ‚éMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
-						result = _StartTimer_Play(m_DelayBetweenSongsInMsec);
-						if (result != 0) goto EXIT;
-					}
-				}
-				//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ ‚è‚Ìê‡
-				else {
-					//ƒtƒHƒ‹ƒ_‰‰‘t–³Œø‚©‚ÂƒŠƒs[ƒg—LŒø‚È‚çÄ¶ŠJn
-					if (!m_isFolderPlayback && m_isRepeat) {
-						//ƒŠƒs[ƒg‚É‚æ‚éMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
-						result = _StartTimer_Play(m_DelayBetweenSongsInMsec);
-						if (result != 0) goto EXIT;
-					}
-					//ƒtƒHƒ‹ƒ_‰‰‘t—LŒø‚È‚çŸƒtƒ@ƒCƒ‹‚ğ©“®‘I‘ğ
-					else if (m_isFolderPlayback) {
-						m_MIDIFileList.SelectNextFile(&isExist);
-						if (isExist) {
-							//Ÿƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
-							//ƒtƒHƒ‹ƒ_‰‰‘t‚É‚æ‚éŸMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
-							result = _StartTimer_OpenFileAndPlay(m_DelayBetweenSongsInMsec);
-							if (result != 0) goto EXIT;
-						}
-						else if (m_isRepeat) {
-							//Ÿƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢‚ªƒŠƒs[ƒg—LŒø‚Ìê‡
-							//ƒtƒHƒ‹ƒ_‰‰‘t‚É‚æ‚éŸMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
-							result = _StartTimer_OpenFileAndPlay(m_DelayBetweenSongsInMsec);
-							if (result != 0) goto EXIT;
-							//æ“ªƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
-							m_MIDIFileList.SelectFirstFile();
-						}
-					}
-				}
-			}
-
-			//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ÅI—¹w’è‚³‚ê‚Ä‚¢‚éê‡
-			if (m_CmdLineParser.GetSwitch(CMDSW_QUIET) == CMDSW_ON) {
-				DestroyWindow(m_hWnd);
-			}
-		}
-	}
-
-	//ƒfƒoƒCƒXƒƒXƒg‘Îô
-	//ƒV[ƒ“‚É“n‚µ‚½ÅVƒƒbƒZ[ƒW‚ğ‹L˜^‚µ‚Ä‚¨‚­
-	if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€’Ê’m
-		m_SequencerLastMsg.isRecvPlayTime = true;
-		m_SequencerLastMsg.playTime.param1 = param1;
-		m_SequencerLastMsg.playTime.param2 = param2;
-	}
-	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
-		//ƒeƒ“ƒ|•ÏX’Ê’m
-		m_SequencerLastMsg.isRecvTempo = true;
-		m_SequencerLastMsg.tempo.param1 = param1;
-		m_SequencerLastMsg.tempo.param2 = param2;
-	}
-	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
-		//¬ß”Ô†’Ê’m
-		m_SequencerLastMsg.isRecvBar = true;
-		m_SequencerLastMsg.bar.param1 = param1;
-		m_SequencerLastMsg.bar.param2 = param2;
-	}
-	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
-		//”q‹L†•ÏX’Ê’m
-		m_SequencerLastMsg.isRecvBeat = true;
-		m_SequencerLastMsg.beat.param1 = param1;
-		m_SequencerLastMsg.beat.param2 = param2;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒNƒŠƒbƒNƒCƒxƒ“ƒg
-//******************************************************************************
-int MIDITrailApp::_OnMouseButtonDown(
-		UINT button,
-		WPARAM wParam,
-		LPARAM lParam
-	)
-{
-	int result = 0;
-	
-	if ((m_pScene != NULL) && (m_PlayStatus != NoData)) {
-		result = m_pScene->OnWindowClicked(button, wParam, lParam);
-		if (result != 0) goto EXIT;
-	}
-	
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒ}ƒEƒXˆÚ“®ƒCƒxƒ“ƒg
-//******************************************************************************
-int MIDITrailApp::_OnMouseMove(
-		UINT button,
-		WPARAM wParam,
-		LPARAM lParam
-	)
-{
-	int result = 0;
-	LONG apiresult = 0;
-	POINT point;
-
-	point.x = LOWORD(lParam);
-	point.y = HIWORD(lParam);
-	
-	//ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Ìê‡
-	if (m_isFullScreen) {
-		//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªƒXƒNƒŠ[ƒ“ã’[‚ÉˆÚ“®‚µ‚½ê‡
-		if (point.y == 0) {
-			//ƒƒjƒ…[ƒo[•\¦
-			result = _ShowMenu();
-			if (result != 0) goto EXIT;
-		}
-		else {
-			//ƒƒjƒ…[ƒo[”ñ•\¦
-			result = _HideMenu();
-			if (result != 0) goto EXIT;
-		}
-	}
-	//ƒEƒBƒ“ƒhƒE•\¦‚Ìê‡
-	else {
-		//ƒƒjƒ…[”ñ•\¦‚Ìê‡
-		//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªƒEƒBƒ“ƒhƒEã’[‹ß‚­‚ÉˆÚ“®‚µ‚½‚Æ‚«‚¾‚¯ƒƒjƒ…[‚ğ•\¦‚·‚é
-		if (!m_isEnableMenuBar) {
-			if (point.y <= 5) {
-				//ƒƒjƒ…[ƒo[•\¦
-				result = _ShowMenu();
-				if (result != 0) goto EXIT;
-			}
-			else {
-				//ƒƒjƒ…[ƒo[”ñ•\¦
-				result = _HideMenu();
-				if (result != 0) goto EXIT;
-			}
-		}
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒL[“ü—ÍƒCƒxƒ“ƒg
-//******************************************************************************
-int MIDITrailApp::_OnKeyDown(
-		WPARAM wParam,
-		LPARAM lParam
-	)
-{
-	int result = 0;
-	unsigned short keycode = 0;
-
-	keycode = LOWORD((DWORD)wParam);
-
-	switch (keycode) {
-		case VK_SPACE:
-		case VK_NUMPAD0:
-			if (GetKeyState(VK_SHIFT) & 0x8000) {
-				//ƒ‚ƒjƒ^ƒŠƒ“ƒOŠJn
-				result = _OnMenuStartMonitoring();
-				if (result != 0) goto EXIT;
-			}
-			else {
-				//‰‰‘tŠJn^ˆê’â~
-				result = _OnMenuPlay();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case VK_ESCAPE:
-			if (m_PlayStatus == MonitorON) {
-				//ƒ‚ƒjƒ^ƒŠƒ“ƒO’â~
-				result = _OnMenuStopMonitoring();
-				if (result != 0) goto EXIT;
-			}
-			else {
-				//‰‰‘t’â~
-				result = _OnMenuStop();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case VK_RETURN:
-			//‰‰‘t’â~Fƒeƒ“ƒL[‚ÌENTER‚Å‚©‚ÂNUMLOCKƒIƒ“‚Ìê‡
-			if ((HIWORD((DWORD)lParam) & KF_EXTENDED) && (GetKeyState(VK_NUMLOCK) & 0x01)) {
-				result = _OnMenuStop();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case '1':
-		case VK_NUMPAD1:
-			//Ä¶ƒXƒLƒbƒvƒoƒbƒN
-			result = _OnMenuSkipBack();
-			if (result != 0) goto EXIT;
-			break;
-		case '2':
-		case VK_NUMPAD2:
-			//Ä¶ƒXƒLƒbƒvƒtƒHƒ[ƒh
-			result = _OnMenuSkipForward();
-			if (result != 0) goto EXIT;
-			break;
-		case '4':
-		case VK_NUMPAD4:
-			//Ä¶ƒXƒs[ƒhƒ_ƒEƒ“
-			result = _OnMenuPlaySpeedDown();
-			if (result != 0) goto EXIT;
-			break;
-		case '5':
-		case VK_NUMPAD5:
-			//Ä¶ƒXƒs[ƒhƒAƒbƒv
-			result = _OnMenuPlaySpeedUp();
-			if (result != 0) goto EXIT;
-			break;
-		case '7':
-		case VK_NUMPAD7:
-			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
-				//„‚Ì‹“_1•Û‘¶
-				result = _OnMenuSaveMyViewpoint(1);
-				if (result != 0) goto EXIT;
-			}
-			else if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//„‚Ì‹“_1ˆÚ“®
-				result = _OnMenuMyViewpoint(1);
-				if (result != 0) goto EXIT;
-			}
-			else {
-				//‹“_ƒŠƒZƒbƒg
-				result = _OnMenuResetViewpoint();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case '8':
-		case VK_NUMPAD8:
-			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
-				//„‚Ì‹“_2•Û‘¶
-				result = _OnMenuSaveMyViewpoint(2);
-				if (result != 0) goto EXIT;
-			}
-			else if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//„‚Ì‹“_2ˆÚ“®
-				result = _OnMenuMyViewpoint(2);
-				if (result != 0) goto EXIT;
-			}
-			else {
-				//Ã“I‹“_2ˆÚ“®
-				result = _OnMenuViewpoint(2);
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case '9':
-		case VK_NUMPAD9:
-			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
-				//„‚Ì‹“_3•Û‘¶
-				result = _OnMenuSaveMyViewpoint(3);
-				if (result != 0) goto EXIT;
-			}
-			else if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//„‚Ì‹“_3ˆÚ“®
-				result = _OnMenuMyViewpoint(3);
-				if (result != 0) goto EXIT;
-			}
-			else {
-				//Ã“I‹“_3ˆÚ“®
-				result = _OnMenuViewpoint(3);
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case 'O':
-			if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
-				result = _OnMenuOpenFile();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case 'B':
-		case 'P':
-			if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//‘Oƒtƒ@ƒCƒ‹
-				result = _OnMenuPreviousFile();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case 'N':
-			if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//Ÿƒtƒ@ƒCƒ‹
-				result = _OnMenuNextFile();
-				if (result != 0) goto EXIT;
-			}
-			break;
-		case VK_F11:
-			//ƒtƒ‹ƒXƒNƒŠ[ƒ“
-			result = _OnMenuFullScreen();
-			if (result != 0) goto EXIT;
-			break;
-		case VK_F12:
-			//ƒƒjƒ…[ƒo[
-			result = _OnMenuMenuBar();
-			if (result != 0) goto EXIT;
-			break;
-		default:
-			break;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒhƒƒbƒvƒCƒxƒ“ƒg
-//******************************************************************************
-int MIDITrailApp::_OnDropFiles(
-		WPARAM wParam,
-		LPARAM lParam
-	)
-{
-	int result = 0;
-	UINT fileNum = 0;
-	UINT charNum = 0;
-	HDROP hDrop = NULL;
-	WCHAR path[_MAX_PATH] = { L'\0' };
-	bool isMIDIDataFile = false;
-
-	////’â~’†‚Å‚È‚¯‚ê‚Îƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚Í–³‹‚·‚é
-	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-	//	//ƒtƒ@ƒCƒ‹ƒhƒƒbƒvOK
-	//}
-	//else {
-	//	//ƒtƒ@ƒCƒ‹ƒhƒƒbƒvNG
-	//	goto EXIT;
-	//}
-
-	//í‚Éƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚ğ‹–‰Â‚·‚é
-
-	hDrop = (HDROP)wParam;
-
-	//ƒtƒ@ƒCƒ‹”Šm”F
-	fileNum = DragQueryFile(
-					hDrop,		//wParam
-					0xFFFFFFFF,	//ƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒX
-					NULL,		//ƒtƒ@ƒCƒ‹–¼æ“¾ƒoƒbƒtƒ@
-					0			//ƒoƒbƒtƒ@ƒTƒCƒY
-				);
-
-	//•¡”ƒtƒ@ƒCƒ‹‚Ìê‡‚Í–³‹‚·‚é
-	if (fileNum != 1) goto EXIT;
-
-	//ƒtƒ@ƒCƒ‹ƒpƒXæ“¾
-	charNum = DragQueryFileW(
-					hDrop,		//wParam
-					0,			//ƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒX
-					path,		//ƒtƒ@ƒCƒ‹–¼æ“¾ƒoƒbƒtƒ@
-					_MAX_PATH	//ƒoƒbƒtƒ@ƒTƒCƒY
-				);
-	if (charNum == 0) {
-		result = YN_SET_ERR("Windows API error.", wParam, lParam);
-		goto EXIT;
-	}
-
-	//ƒtƒHƒ‹ƒ_‚ğƒhƒƒbƒv‚³‚ê‚½ê‡
-	if (PathIsDirectoryW(path)) {
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆƒtƒHƒ‹ƒ_ƒI[ƒvƒ“ˆ—
-		result = _StopPlaybackAndOpenFolder(path);
-		if (result != 0) goto EXIT;
-	}
-	//ƒtƒ@ƒCƒ‹‚ğƒhƒƒbƒv‚³‚ê‚½ê‡
-	else {
-		//ƒtƒ@ƒCƒ‹Šg’£q‚ÌŠm”F
-		if (YNPathUtil::IsFileExtMatch(path, L".mid")) {
-			isMIDIDataFile = true;
-		}
-		//rcpcv.dll‚ª—LŒø‚È‚çƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚é‚©’Ç‰ÁŠm”F‚·‚é
-		else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(path)) {
-			isMIDIDataFile = true;
-		}
-
-		//ƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
-		if (!isMIDIDataFile) goto EXIT;
-
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg”jŠü
-		m_MIDIFileList.Clear();
-
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
-		result = _StopPlaybackAndOpenFile(path);
-		if (result != 0) goto EXIT;
-	}
-
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
 EXIT:;
-	if (hDrop != NULL) {
-		DragFinish(hDrop);
-	}
 	return result;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹‘I‘ğ
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šå‰ãƒ•ã‚¡ã‚¤ãƒ«
 //******************************************************************************
-int MIDITrailApp::_SelectMIDIFile(
-		WCHAR* pFilePath,
-		unsigned long bufSize,
-		bool* pIsSelected
-	)
+int MIDITrailApp::_OnMenuPreviousFile()
 {
 	int result = 0;
-	BOOL apiresult = FALSE;
-	OPENFILENAMEW ofn;
+	bool isExist = false;
+	const WCHAR* pFilePath = NULL;
 
-	if ((pFilePath == NULL) || (bufSize == 0) || (pIsSelected ==NULL)) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
+	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
+
+	m_MIDIFileList.SelectPreviousFile(&isExist);
+	if (isExist) {
+		pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
+		result = _OpenFileW(pFilePath);
+		if (result != 0) goto EXIT;
 	}
-
-	pFilePath[0] = L'\0';
-	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
-	ofn.lStructSize = sizeof(OPENFILENAMEW);
-	ofn.hwndOwner   = m_hWnd;
-	ofn.lpstrFilter = L"Standard MIDI File (*.mid)\0*.mid\0\0";
-	ofn.lpstrFile   = pFilePath;
-	ofn.nMaxFile    = bufSize;
-	ofn.lpstrTitle  = L"Select Standard MIDI File.";
-	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
-
-	//rcpcv.dll‚ª—LŒø‚È‚çƒtƒ@ƒCƒ‹ƒtƒBƒ‹ƒ^‚ğ•ÏX‚·‚é
-	if (m_RcpConv.IsAvailable()) {
-		ofn.lpstrFilter = m_RcpConv.GetOpenFileNameFilter();
-	}
-
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
-	apiresult = GetOpenFileNameW(&ofn);
-	if (!apiresult) {
-		//ƒLƒƒƒ“ƒZƒ‹‚Ü‚½‚ÍƒGƒ‰[”­¶FƒGƒ‰[‚Íƒ`ƒFƒbƒN‚µ‚È‚¢
-		*pIsSelected = false;
-		goto EXIT;
-	}
-
-	*pIsSelected = true;
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒtƒHƒ‹ƒ_‘I‘ğ
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šæ¬¡ãƒ•ã‚¡ã‚¤ãƒ«
 //******************************************************************************
-int MIDITrailApp::_SelectFolder(
-		WCHAR* pFolderPath,
-		unsigned long bufSize,
-		bool* pIsSelected
-	)
+int MIDITrailApp::_OnMenuNextFile()
 {
 	int result = 0;
-	int apiresult = 0;
+	bool isExist = false;
+	const WCHAR* pFilePath = NULL;
+
+	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
+
+	m_MIDIFileList.SelectNextFile(&isExist);
+	if (isExist) {
+		pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
+		result = _OpenFileW(pFilePath);
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥åˆ‡æ›¿
+//******************************************************************************
+int MIDITrailApp::_OnMenuFolderPlayback()
+{
+	int result = 0;
+	m_isFolderPlayback = m_isFolderPlayback ? false : true;
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºåˆ‡æ›¿
+//******************************************************************************
+int MIDITrailApp::_OnMenuMenuBar()
+{
+	int result = 0;
+	result = _ToggleMenuBar();
+	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºåˆ‡æ›¿
+//******************************************************************************
+int MIDITrailApp::_ToggleMenuBar()
+{
+	int result = 0;
+	m_isEnableMenuBar = m_isEnableMenuBar ? false : true;
+	if (m_isEnableMenuBar) {
+		result = _ShowMenu();
+	}
+	else {
+		result = _HideMenu();
+	}
+	if (result != 0) goto EXIT;
+	result = _ChangeWindowSize();
+	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šMyViewpoint ã¸ç§»å‹•
+//******************************************************************************
+int MIDITrailApp::_OnMenuMyViewpoint(unsigned long viewpointNo)
+{
+	int result = 0;
+	if (m_PlayStatus == NoData) goto EXIT;
+	result = _MoveToMyViewpoint(viewpointNo);
+	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šMyViewpoint ä¿å­˜
+//******************************************************************************
+int MIDITrailApp::_OnMenuSaveMyViewpoint(unsigned long viewpointNo)
+{
+	int result = 0;
+	if (m_PlayStatus == NoData) goto EXIT;
+	result = _SaveMyViewpoint(viewpointNo);
+	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// MyViewpoint ã¸ç§»å‹•ï¼ˆè¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰è¦–ç‚¹ã‚’å¾©å…ƒï¼‰
+//******************************************************************************
+int MIDITrailApp::_MoveToMyViewpoint(unsigned long viewpointNo)
+{
+	int result = 0;
+	const float SENT = -1.0e30f;
+	const TCHAR* pName = NULL;
+	TCHAR section[256] = {_T('\0')};
+
+	//M3 (DX11): no MTScene -> drive the live camera (m_FpCam11) directly, mirroring
+	//the per-scene auto viewpoint (section "MyViewpoint-<N>-<sceneName>", now-line rel).
+	pName = _DX11SceneName();
+	if ((m_DX11Family == DX11_FAMILY_NONE) || (pName == NULL)) goto EXIT;
+
+	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
+	_tcscat_s(section, 256, pName);
+	//live monitor keeps its own viewpoint, separate from playback
+	if ((m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF)) {
+		_tcscat_s(section, 256, _T("Live"));
+	}
+	if (m_ViewConf.SetCurSection(section) == 0) {
+		float x = SENT, y = 0, z = 0, phi = 0, theta = 0, roll = 0, autoRoll = 0;
+		m_ViewConf.GetFloat(_T("X"), &x, SENT);
+		if (x != SENT) {   // a viewpoint was saved for this slot
+			m_ViewConf.GetFloat(_T("Y"), &y, 0.0f);
+			m_ViewConf.GetFloat(_T("Z"), &z, 0.0f);
+			m_ViewConf.GetFloat(_T("Phi"), &phi, 0.0f);
+			m_ViewConf.GetFloat(_T("Theta"), &theta, 0.0f);
+			m_ViewConf.GetFloat(_T("ManualRollAngle"), &roll, 0.0f);
+			m_ViewConf.GetFloat(_T("AutoRollVelocity"), &autoRoll, 0.0f);
+			m_FpCam11.SetViewpointParam(x, y, z, phi, theta, roll, autoRoll);
+			m_IsAutoRollMode11 = (autoRoll != 0.0f);
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// MyViewpoint ä¿å­˜ï¼ˆç¾åœ¨ã®è¦–ç‚¹ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã¸ï¼‰
+//******************************************************************************
+int MIDITrailApp::_SaveMyViewpoint(unsigned long viewpointNo)
+{
+	int result = 0;
+	const TCHAR* pName = NULL;
+	TCHAR section[256] = {_T('\0')};
+
+	//M3 (DX11): no MTScene -> snapshot the live camera (m_FpCam11) into m_ViewConf
+	//(section "MyViewpoint-<N>-<sceneName>", now-line relative position).
+	pName = _DX11SceneName();
+	if ((m_DX11Family == DX11_FAMILY_NONE) || (pName == NULL)) goto EXIT;
+
+	{
+		float x = 0, y = 0, z = 0, phi = 0, theta = 0, roll = 0;
+		m_FpCam11.GetViewpointParam(&x, &y, &z, &phi, &theta, &roll);
+		float autoRoll = m_IsAutoRollMode11 ? m_FpCam11.GetAutoRollVelocity() : 0.0f;
+		_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
+		_tcscat_s(section, 256, pName);
+		//live monitor keeps its own viewpoint, separate from playback
+		if ((m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF)) {
+			_tcscat_s(section, 256, _T("Live"));
+		}
+		if (m_ViewConf.SetCurSection(section) == 0) {
+			m_ViewConf.SetFloat(_T("X"), x);
+			m_ViewConf.SetFloat(_T("Y"), y);
+			m_ViewConf.SetFloat(_T("Z"), z);
+			m_ViewConf.SetFloat(_T("Phi"), phi);
+			m_ViewConf.SetFloat(_T("Theta"), theta);
+			m_ViewConf.SetFloat(_T("ManualRollAngle"), roll);
+			m_ViewConf.SetFloat(_T("AutoRollVelocity"), autoRoll);
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ•ã‚©ãƒ«ãƒ€é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ï¼ˆIFileOpenDialog, FOS_PICKFOLDERSï¼‰
+//******************************************************************************
+int MIDITrailApp::_SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected)
+{
+	int result = 0;
 	errno_t eresult = 0;
 	HRESULT hresult = 0;
+	HRESULT hrInit = 0;
 	DWORD options = 0;
 	IFileOpenDialog* pFileOpenDialog = NULL;
 	LPWSTR pFolderPathW = NULL;
 	IShellItem* pShellItem = NULL;
-	BOOL isUsedDefaultChar = FALSE;
-	
+
 	if ((pFolderPath == NULL) || (bufSize == 0) || (pIsSelected == NULL)) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
-
 	*pIsSelected = false;
 
-	//ƒ_ƒCƒAƒƒO¶¬
-	hresult = CoCreateInstance(
-					CLSID_FileOpenDialog,			//CLSID
-					NULL,							//ƒAƒOƒŠƒQ[ƒgƒIƒuƒWƒFƒNƒg
-					CLSCTX_INPROC_SERVER,			//ƒRƒ“ƒeƒLƒXƒg
-					IID_PPV_ARGS(&pFileOpenDialog)	//IID‚Æ•Ï”ƒAƒhƒŒƒX
-				);
+	//COM åˆæœŸåŒ–ï¼ˆã“ã®appæœ¬ä½“ã¯COMã‚’åˆæœŸåŒ–ã—ã¦ã„ãªã„ãŸã‚ã‚¹ã‚³ãƒ¼ãƒ—å†…ã§è¡Œã†ï¼‰
+	hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+
+	hresult = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFileOpenDialog));
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
 		goto EXIT;
 	}
 
-	//ƒIƒvƒVƒ‡ƒ“İ’è
 	pFileOpenDialog->GetOptions(&options);
 	pFileOpenDialog->SetOptions(options | FOS_PICKFOLDERS);
 
-	//ƒ_ƒCƒAƒƒO•\¦iƒtƒHƒ‹ƒ_‘I‘ğ‚Ì‚İ‰Â”\j
-	//  m_hWnd‚ğw’è‚·‚é‚Æ‰‰‘tŠJnŒã‚Ìƒ_ƒCƒAƒƒO•\¦‚Åƒnƒ“ƒO‚·‚éiŒ´ˆö•s–¾j
+	//m_hWndã‚’æŒ‡å®šã™ã‚‹ã¨æ¼”å¥é–‹å§‹å¾Œã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºã§ãƒãƒ³ã‚°ã™ã‚‹ãŸã‚NULLæŒ‡å®š
 	hresult = pFileOpenDialog->Show(NULL);
 	if (hresult == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
-		//ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½ê‡‚Í‰½‚à‚¹‚¸I—¹
 		goto EXIT;
 	}
 	if (FAILED(hresult)) {
@@ -2539,8 +1548,6 @@ int MIDITrailApp::_SelectFolder(
 		goto EXIT;
 	}
 
-	//ƒtƒHƒ‹ƒ_‘I‘ğ‚³‚ê‚½ê‡‚ÍƒpƒX‚ğæ“¾
-	//ƒƒCƒh•¶š—ñ‚Å‚µ‚©æ“¾‚Å‚«‚È‚¢‚±‚Æ‚É’ˆÓ
 	hresult = pFileOpenDialog->GetResult(&pShellItem);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
@@ -2557,188 +1564,2492 @@ int MIDITrailApp::_SelectFolder(
 		result = YN_SET_ERR("Program error.", eresult, 0);
 		goto EXIT;
 	}
-
 	*pIsSelected = true;
 
 EXIT:;
-	if (pFolderPathW != NULL) {
-		CoTaskMemFree(pFolderPathW);
+	if (pFolderPathW != NULL) CoTaskMemFree(pFolderPathW);
+	if (pShellItem != NULL) pShellItem->Release();
+	if (pFileOpenDialog != NULL) pFileOpenDialog->Release();
+	if (SUCCEEDED(hrInit)) CoUninitialize();
+	return result;
+}
+
+//******************************************************************************
+// æŒ‡å®šãƒ•ã‚©ãƒ«ãƒ€ç›´ä¸‹ã® MIDI ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚’ä½œæˆ
+//******************************************************************************
+int MIDITrailApp::_MakeFileListWithFolder(const WCHAR* pFolderPath, MTFileList* pFileList)
+{
+	int result = 0;
+	if ((pFolderPath == NULL) || (pFileList == NULL)) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
 	}
-	if (pShellItem != NULL) {
-		pShellItem->Release();
+	result = pFileList->MakeFileListWithDirectory(pFolderPath, &m_RcpConv);
+	if (result != 0) goto EXIT;
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// æ¼”å¥åœæ­¢ã¨ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³ï¼ˆå…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ãï¼‰
+//******************************************************************************
+int MIDITrailApp::_StopPlaybackAndOpenFolder(const WCHAR* pFolderPath)
+{
+	int result = 0;
+	MTFileList midiFileList;
+	const WCHAR* pFilePath = NULL;
+
+	//äº‹å‰ç¢ºèªç”¨ã®ä¸€æ™‚ãƒªã‚¹ãƒˆã§ MIDI ãƒ•ã‚¡ã‚¤ãƒ«æœ‰ç„¡ã‚’ç¢ºèª
+	result = _MakeFileListWithFolder(pFolderPath, &midiFileList);
+	if (result != 0) goto EXIT;
+
+	if (midiFileList.GetFileCount() == 0) {
+		MessageBox(m_hWnd, _T("MIDI data file is not found in the folder."), _T("WARNING"), MB_OK | MB_ICONWARNING);
+		goto EXIT;
 	}
-	if (pFileOpenDialog != NULL) {
-		pFileOpenDialog->Release();
+
+	//æœ¬ç•ªã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚’ä½œæˆã—ã€å…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	result = _MakeFileListWithFolder(pFolderPath, &m_MIDIFileList);
+	if (result != 0) goto EXIT;
+
+	m_MIDIFileList.SelectFirstFile();
+	pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
+	result = _OpenFileW(pFilePath);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+// <<< add ced 20260627
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šå†ç”Ÿï¼ä¸€æ™‚åœæ­¢ï¼å†é–‹
+//******************************************************************************
+int MIDITrailApp::_OnMenuPlay()
+{
+	int result = 0;
+
+	if (m_PlayStatus == Stop) {
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µåˆæœŸåŒ–
+		result = m_Sequencer.Initialize(&m_MsgQueue);
+		if (result != 0) goto EXIT;
+
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç™»éŒ²
+		result = _SetPortDev(&m_Sequencer);
+		if (result != 0) goto EXIT;
+
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²
+		result = m_Sequencer.SetSeqData(&m_SeqData);
+		if (result != 0) goto EXIT;
+
+		//å·»ãæˆ»ã—
+		if (m_isRewind) {
+			m_isRewind = false;
+			if (m_pScene != NULL) result = m_pScene->Rewind();
+			if (result != 0) goto EXIT;
+		}
+
+		//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
+		if (m_pScene != NULL) result = m_pScene->OnPlayStart(NULL /*M5: DX9 device removed; m_pScene is always NULL here*/);
+		if (result != 0) goto EXIT;
+
+		//æœ€æ–°ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚¯ãƒªã‚¢
+		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
+
+		//æ¼”å¥é€Ÿåº¦
+		m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
+
+		//æ¼”å¥é–‹å§‹
+		result = m_Sequencer.Play();
+		if (result != 0) goto EXIT;
+
+		//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
+		result = _ChangePlayStatus(Play);
+		if (result != 0) goto EXIT;
+	}
+	else if (m_PlayStatus == Play) {
+		//æ¼”å¥ä¸€æ™‚åœæ­¢
+		m_Sequencer.Pause();
+
+		//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
+		result = _ChangePlayStatus(Pause);
+		if (result != 0) goto EXIT;
+	}
+	else if (m_PlayStatus == Pause) {
+		//æ¼”å¥å†é–‹
+		result = m_Sequencer.Resume();
+		if (result != 0) goto EXIT;
+
+		//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
+		result = _ChangePlayStatus(Play);
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šåœæ­¢
+//******************************************************************************
+int MIDITrailApp::_OnMenuStop()
+{
+	int result = 0;
+
+	if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
+		m_Sequencer.Stop();
+		//æ¼”å¥çŠ¶æ…‹é€šçŸ¥ãŒå±Šãã¾ã§å†ç”Ÿä¸­ã¨ã¿ãªã™
+		//ã“ã“ã§ã¯æ¼”å¥çŠ¶æ…‹ã‚’å¤‰æ›´ã—ãªã„
+
+		//çµ‚äº†å¾Œã«å·»ãæˆ»ã™
+		m_isRewind = true;
+	}
+
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒªãƒ”ãƒ¼ãƒˆ
+//******************************************************************************
+int MIDITrailApp::_OnMenuRepeat()
+{
+	int result = 0;
+
+	//ãƒªãƒ”ãƒ¼ãƒˆåˆ‡ã‚Šæ›¿ãˆ
+	if (m_isRepeat) {
+		m_isRepeat = false;
+	}
+	else {
+		m_isRepeat = true;
+	}
+
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ã‚­ãƒƒãƒ—ãƒãƒƒã‚¯
+//******************************************************************************
+int MIDITrailApp::_OnMenuSkipBack()
+{
+	int result = 0;
+
+	result = m_Sequencer.Skip((-1) * m_SkipBackTimeSpanInMsec);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ã‚­ãƒƒãƒ—ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰
+//******************************************************************************
+int MIDITrailApp::_OnMenuSkipForward()
+{
+	int result = 0;
+
+	result = m_Sequencer.Skip((+1) * m_SkipForwardTimeSpanInMsec);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
+//******************************************************************************
+int MIDITrailApp::_OnMenuPlaySpeedDown()
+{
+	int result = 0;
+
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
+	if ((m_PlayStatus == Stop) || (m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
+		//å¤‰æ›´OK
+	}
+	else {
+		//å¤‰æ›´NG
+		goto EXIT;
+	}
+
+	//æ¼”å¥é€Ÿåº¦ãƒ€ã‚¦ãƒ³
+	m_PlaySpeedRatio -= m_SpeedStepInPercent;
+
+	//ãƒªãƒŸãƒƒãƒˆ
+	if (m_PlaySpeedRatio < m_SpeedStepInPercent) {
+		m_PlaySpeedRatio = m_SpeedStepInPercent;
+	}
+
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
+	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
+	if (m_pScene != NULL) m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
+	//ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã®é€Ÿåº¦è¡¨ç¤ºï¼ˆ"SPEED:NNN%"ï¼‰ã‚’æ›´æ–°ï¼ˆ100%ä»¥å¤–ã§è¡¨ç¤ºï¼‰
+	m_Dashboard11.SetPlaySpeedRatio(m_PlaySpeedRatio);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
+//******************************************************************************
+int MIDITrailApp::_OnMenuPlaySpeedUp()
+{
+	int result = 0;
+
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
+	if ((m_PlayStatus == Stop) || (m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
+		//å¤‰æ›´OK
+	}
+	else {
+		//å¤‰æ›´NG
+		goto EXIT;
+	}
+
+	//æ¼”å¥é€Ÿåº¦ã‚¢ãƒƒãƒ—
+	m_PlaySpeedRatio += m_SpeedStepInPercent;
+
+	//ãƒªãƒŸãƒƒãƒˆ 400%
+	if (m_PlaySpeedRatio > m_MaxSpeedInPercent) {
+		m_PlaySpeedRatio = m_MaxSpeedInPercent;
+	}
+
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
+	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
+	if (m_pScene != NULL) m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
+	//ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ã®é€Ÿåº¦è¡¨ç¤ºï¼ˆ"SPEED:NNN%"ï¼‰ã‚’æ›´æ–°ï¼ˆ100%ä»¥å¤–ã§è¡¨ç¤ºï¼‰
+	m_Dashboard11.SetPlaySpeedRatio(m_PlaySpeedRatio);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿é–‹å§‹
+//******************************************************************************
+int MIDITrailApp::_OnMenuStartMonitoring()
+{
+	int result = 0;
+	
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
+	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹OK
+	}
+	else {
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹NG
+		goto EXIT;
+	}
+	
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µåˆæœŸåŒ–
+	//  ã‚·ãƒ¼ã‚±ãƒ³ã‚µã¯å†ç”Ÿçµ‚äº†æ™‚ã«ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚¯ãƒ­ãƒ¼ã‚ºã—ãªã„ãŸã‚
+	//  åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã«ã‚ˆã£ã¦ã‚¯ãƒ­ãƒ¼ã‚ºã•ã›ã‚‹
+	result = m_Sequencer.Initialize(&m_MsgQueue);
+	if (result != 0) goto EXIT;
+	
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
+	if (m_PlayStatus != MonitorOFF) {
+		//è¦–ç‚¹ä¿å­˜
+		if (m_isAutoSaveViewpoint) {
+			result = _OnMenuSaveViewpoint();
+			if (result != 0) goto EXIT;
+		}
+		
+		//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥
+		m_SceneType = m_SelectedSceneType;
+		
+		//ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
+		result = _CreateScene(m_SceneType, NULL);
+		if (result != 0) goto EXIT;
+	}
+	
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åˆæœŸåŒ–
+	result = m_LiveMonitor.Initialize(&m_MsgQueue);
+	if (result != 0) goto EXIT;
+	//M5/DX11ï¿½Fï¿½ï¿½ï¿½Íƒfï¿½oï¿½Cï¿½Xï¿½İ’ï¿½Ì“Vï¿½[ï¿½ï¿½ï¿½É”ï¿½Ë‘ï¿½ï¿½Bm_pScene ï¿½ï¿½ NULL ï¿½Å‚ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
+	//ï¿½iï¿½ï¿½ï¿½Oï¿½Ì“ï¿½ï¿½ï¿½Å‚ï¿½ m_pScene != NULL ï¿½Qï¿½[ï¿½gï¿½Ì‚ï¿½ï¿½ï¿½ SetInPortDev ï¿½ï¿½ï¿½Ä‚Î‚ê‚¸ï¿½A
+	//  ï¿½ï¿½ï¿½jï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ó‚¯ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
+	result = _SetMonitorPortDev(&m_LiveMonitor, m_pScene);
+	if (result != 0) goto EXIT;
+	
+	//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
+	if (m_pScene != NULL) result = m_pScene->OnPlayStart(NULL /*M5: DX9 device removed; m_pScene is always NULL here*/);
+	if (result != 0) goto EXIT;
+	
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿é–‹å§‹
+	result = m_LiveMonitor.Start();
+	if (result != 0) goto EXIT;
+	
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
+	result = _ChangePlayStatus(MonitorON);
+	if (result != 0) goto EXIT;
+
+	//DX11: build the live scene components (dynamic note boxes + keyboard + grid)
+	m_NoteBoxLive11.Reset();
+	m_NoteRainLive11.Reset();
+	_SetupDX11Scene();
+
+	//dashboard: live monitor mode (MIDI IN device name + played-note count)
+	{
+		TCHAR devName[MAXPNAMELEN] = { _T('\0') };
+		if (m_MIDIConf.SetCurSection(_T("MIDIIN")) == 0) {
+			m_MIDIConf.GetStr(_T("PortA"), devName, MAXPNAMELEN, _T(""));
+		}
+		m_LiveNoteCount = 0;
+		m_Dashboard11.SetMonitorMode(true, devName);
+		m_Dashboard11.SetCurNotes(0);
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åœæ­¢
+//******************************************************************************
+int MIDITrailApp::_OnMenuStopMonitoring()
+{
+	int result = 0;
+	
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
+	if (m_PlayStatus == MonitorON) {
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹OK
+	}
+	else {
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹NG
+		goto EXIT;
+	}
+	
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åœæ­¢
+	result = m_LiveMonitor.Stop();
+	if (result != 0) goto EXIT;
+	
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
+	result = _ChangePlayStatus(MonitorOFF);
+	if (result != 0) goto EXIT;
+	
+	//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥çµ‚äº†ã‚’é€šçŸ¥
+	if (m_pScene != NULL) {
+		result = m_pScene->OnPlayEnd(NULL /*M5: DX9 device removed; m_pScene is always NULL here*/);
+		if (result != 0) goto EXIT;
+	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚·ãƒ¼ãƒ³ç¨®åˆ¥
+//******************************************************************************
+int MIDITrailApp::_OnMenuSelectSceneType(
+		MIDITrailApp::SceneType type
+	)
+{
+	int result = 0;
+
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
+	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//ã‚·ãƒ¼ãƒ³ã‚¿ã‚¤ãƒ—é¸æŠOK
+	}
+	else {
+		//ã‚·ãƒ¼ãƒ³ã‚¿ã‚¤ãƒ—é¸æŠNG
+		goto EXIT;
+	}
+
+	//ä¿å­˜
+	m_SelectedSceneType = type;
+	result = _SaveSceneType();
+	if (result != 0) goto EXIT;
+
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//åœæ­¢ä¸­ã®å ´åˆã¯ã‚·ãƒ¼ãƒ³ã‚’å†æ§‹ç¯‰
+	if ((m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+		//è¦–ç‚¹ä¿å­˜
+		if (m_isAutoSaveViewpoint) {
+			result = _OnMenuSaveViewpoint();
+			if (result != 0) goto EXIT;
+		}
+
+		m_SceneType = m_SelectedSceneType;
+		if (m_PlayStatus == Stop) {
+			//ãƒ—ãƒ¬ã‚¤ãƒ¤ã®ã‚·ãƒ¼ãƒ³ç¨®åˆ¥åˆ‡ã‚Šæ›¿ãˆ
+			result = _CreateScene(m_SceneType, &m_SeqData);
+			if (result != 0) goto EXIT;
+		}
+		else {
+			//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã®ã‚·ãƒ¼ãƒ³ç¨®åˆ¥åˆ‡ã‚Šæ›¿ãˆ
+			result = _CreateScene(m_SceneType, NULL);
+			if (result != 0) goto EXIT;
+		}
+
+		//M3 (DX11): _CreateScene is a stub in the DX11 path, so rebuild the DX11
+		//scene components for the newly selected scene type (3D/2D supported;
+		//Rain/Ring detach until ported).
+		_SetupDX11Scene();
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// Attach/detach the DX11 components per the View-menu effect toggles (DX11 has
+// no MTScene, so SetEffect can't reach it; we toggle the renderer pointers).
+// Notes are always shown; only the optional effects honor the flags.
+//******************************************************************************
+void MIDITrailApp::_ApplyDX11Visibility()
+{
+	//M4.8: pitch bend on/off (View > Pitch Bend). Disabling makes the bend
+	//state report 0 so neither the keyboards nor the note boxes shift.
+	m_NotePitchBend11.SetEnable(m_isEnablePitchBend);
+
+	//M4.22: bend the whole channel (all notes) vs only the sounding notes.
+	//Member objects always exist, so it is safe to set on all three.
+	m_NoteBox11.SetPitchBendAllNotes(m_isEnablePitchBendAllNotes);
+	m_NoteRain11.SetPitchBendAllNotes(m_isEnablePitchBendAllNotes);
+	m_NoteBoxRing11.SetPitchBendAllNotes(m_isEnablePitchBendAllNotes);
+
+	//M4.15: background image shows in every scene family (honors the toggle)
+	m_Renderer11.SetBackgroundImage11(
+			((m_DX11Family != DX11_FAMILY_NONE) && m_isEnableBackgroundImage) ? &m_BackgroundImage11 : NULL);
+
+	//M4.16: starfield shows in every scene family (honors the toggle)
+	m_Renderer11.SetStars11(
+			((m_DX11Family != DX11_FAMILY_NONE) && m_isEnableStars) ? &m_Stars11 : NULL);
+
+	if (m_DX11Family == DX11_FAMILY_BOX) {
+		bool live = (m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF);
+		if (live) {
+			//live: the dynamic note box + keyboard + the real-time ripple (note-on
+			//driven). Lyrics/grid/time-indicator need a pre-built note list - re-enabling
+			//the stale playback ones would draw garbage, so force those off.
+			m_Renderer11.SetKeyboard11(m_isEnablePianoKeyboard ? &m_Kbd11 : NULL);
+			m_Renderer11.SetNoteRipple11(m_isEnableRipple ? &m_NoteRipple11 : NULL);
+			m_Renderer11.SetNoteLyrics11(NULL);
+			m_Renderer11.SetGridBox11(NULL);
+			m_Renderer11.SetTimeIndicator11(NULL);
+			m_Renderer11.SetDashboard11(m_isEnableCounter ? &m_Dashboard11 : NULL);
+		}
+		else {
+			m_Renderer11.SetKeyboard11(m_isEnablePianoKeyboard ? &m_Kbd11 : NULL);
+			m_Renderer11.SetNoteRipple11(m_isEnableRipple ? &m_NoteRipple11 : NULL);
+			m_Renderer11.SetNoteLyrics11(m_isEnableLyrics ? &m_NoteLyrics11 : NULL);
+			m_Renderer11.SetGridBox11(m_isEnableGridBox ? &m_GridBox11 : NULL);
+			m_Renderer11.SetTimeIndicator11(m_isEnableTimeIndicator ? &m_TimeIndicator11 : NULL);
+			m_Renderer11.SetDashboard11(m_isEnableCounter ? &m_Dashboard11 : NULL);
+		}
+	}
+	else if (m_DX11Family == DX11_FAMILY_RAIN) {
+		//rain keyboard is the same object for live + playback (live builds it with no
+		//song and lights keys via SetNoteOnLive); always route through SetKeyboardRain11.
+		m_Renderer11.SetKeyboard11(NULL);
+		m_Renderer11.SetKeyboardRain11(m_isEnablePianoKeyboard ? &m_KbdRain11 : NULL);
+		m_Renderer11.SetNoteLyrics11(NULL);   //rain scene has no lyrics
+		m_Renderer11.SetDashboard11(m_isEnableCounter ? &m_Dashboard11 : NULL);
+	}
+	else if (m_DX11Family == DX11_FAMILY_RING) {
+		bool live = (m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF);
+		//live ring shows the dynamic circular notes + textured picture board + the
+		//real-time ripple + dashboard; grid/time need a pre-built note list, off in live.
+		m_Renderer11.SetGridRing11((!live && m_isEnableGridBox) ? &m_GridRing11 : NULL);
+		m_Renderer11.SetTimeIndicatorRing11((!live && m_isEnableTimeIndicator) ? &m_TimeIndicatorRing11 : NULL);
+		m_Renderer11.SetNoteRipple11(m_isEnableRipple ? &m_NoteRipple11 : NULL);
+		m_Renderer11.SetPictBoardRing11(m_isEnablePianoKeyboard ? &m_PictBoardRing11 : NULL);
+		//ring lyrics (1.4.1 ported): playback only (needs the pre-built note list)
+		m_Renderer11.SetNoteLyrics11((!live && m_isEnableLyrics) ? &m_NoteLyrics11 : NULL);
+		m_Renderer11.SetDashboard11(m_isEnableCounter ? &m_Dashboard11 : NULL);
+	}
+}
+
+//******************************************************************************
+// conf / scene name for the current SceneType (DX11 path)
+//******************************************************************************
+const TCHAR* MIDITrailApp::_DX11SceneName()
+{
+	switch (m_SceneType) {
+		case PianoRoll3D:     return _T("PianoRoll3D");
+		case PianoRoll2D:     return _T("PianoRoll2D");
+		case PianoRollRain:   return _T("PianoRollRain");
+		case PianoRollRain2D: return _T("PianoRollRain2D");
+		case PianoRollRing:   return _T("PianoRollRing");
+		default:              return NULL;
+	}
+}
+
+//******************************************************************************
+// M4.22 Menu: toggle "bend the whole channel" (all notes vs sounding only)
+//******************************************************************************
+int MIDITrailApp::_OnMenuTogglePitchBendAllNotes()
+{
+	int result = 0;
+
+	m_isEnablePitchBendAllNotes = m_isEnablePitchBendAllNotes ? false : true;
+
+	//update the menu checkmark
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//reflect it in the DX11 note renderers (live)
+	_ApplyDX11Visibility();
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// Menu: toggle single vs per-port keyboard (DX11 box scenes), then rebuild
+//******************************************************************************
+int MIDITrailApp::_OnMenuToggleSingleKeyboard()
+{
+	int result = 0;
+
+	m_IsSingleKeyboard11 = m_IsSingleKeyboard11 ? false : true;
+
+	//update the menu checkmark
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//rebuild the DX11 scene so the keyboard is recreated in the new mode
+	//(only meaningful while a song is loaded and stopped/paused)
+	if (m_PlayStatus != NoData) {
+		_SetupDX11Scene();
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè‡ªå‹•è¦–ç‚¹ä¿å­˜
+//******************************************************************************
+int MIDITrailApp::_OnMenuAutoSaveViewpoint()
+{
+	int result = 0;
+
+	m_isAutoSaveViewpoint = m_isAutoSaveViewpoint ? false : true;
+
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//ã‚·ãƒ¼ãƒ³è¨­å®šä¿å­˜
+	result = _SaveSceneConf();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šView è¡¨ç¤ºè¨­å®šã®è‡ªå‹•ä¿å­˜ï¼ˆced 20260628ï¼‰
+//******************************************************************************
+int MIDITrailApp::_OnMenuAutoSaveViewSettings()
+{
+	int result = 0;
+
+	m_isAutoSaveViewSettings = m_isAutoSaveViewSettings ? false : true;
+
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+
+	//ã‚·ãƒ¼ãƒ³è¨­å®šä¿å­˜ï¼ˆãƒ•ãƒ©ã‚°ã¨ã€æœ‰åŠ¹æ™‚ã¯ç¾åœ¨ã® View è¡¨ç¤ºãƒˆã‚°ãƒ«ã‚’æ›¸ãå‡ºã™ï¼‰
+	result = _SaveSceneConf();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šé™çš„è¦–ç‚¹ç§»å‹•
+//******************************************************************************
+int MIDITrailApp::_OnMenuViewpoint(
+		unsigned long viewpointNo
+	)
+{
+	int result = 0;
+
+	if (m_PlayStatus == NoData) goto EXIT;
+
+	//é™çš„è¦–ç‚¹ã«ç§»å‹•
+	if (m_pScene != NULL) {
+		m_pScene->MoveToStaticViewpoint(viewpointNo);
+	}
+	else {
+		//M3 (DX11): apply the static viewpoint directly to the camera, using the
+		//ACTUAL scene's conf (Rain/Ring have their own [Viewpoint-N], and the
+		//camera reads the scroll offset on the right axis per progress direction).
+		if (viewpointNo == 1) {
+			if (m_SceneType == PianoRollRing) m_FpCam11.SetDefaultViewpointRing();
+			else m_FpCam11.SetDefaultViewpoint();
+		}
+		else {
+			const TCHAR* pSceneName = _DX11SceneName();
+			if (pSceneName != NULL) m_FpCam11.SetViewpointFromConf(pSceneName, viewpointNo);
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
+//******************************************************************************
+int MIDITrailApp::_OnMenuResetViewpoint()
+{
+	int result = 0;
+
+	if (m_PlayStatus == NoData) goto EXIT;
+
+	//ã‚·ãƒ¼ãƒ³ã®è¦–ç‚¹ã‚’ãƒªã‚»ãƒƒãƒˆ
+	if (m_pScene != NULL) m_pScene->ResetViewpoint();
+	else if (m_SceneType == PianoRollRing) m_FpCam11.SetDefaultViewpointRing();  //M3 (DX11)
+	else m_FpCam11.SetDefaultViewpoint();
+
+	//è¦–ç‚¹ä¿å­˜
+	result = _SaveViewpoint();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¦–ç‚¹ä¿å­˜
+//******************************************************************************
+int MIDITrailApp::_OnMenuSaveViewpoint()
+{
+	int result = 0;
+
+	if (m_PlayStatus == NoData) goto EXIT;
+
+	//è¦–ç‚¹ä¿å­˜
+	result = _SaveViewpoint();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¡¨ç¤ºåŠ¹æœè¨­å®š
+//******************************************************************************
+int MIDITrailApp::_OnMenuEnableEffect(
+		MTScene::EffectType type
+	)
+{
+	int result = 0;
+
+	switch (type) {
+		case MTScene::EffectPianoKeyboard:
+			m_isEnablePianoKeyboard = m_isEnablePianoKeyboard ? false : true;
+			break;
+		case MTScene::EffectRipple:
+			m_isEnableRipple = m_isEnableRipple ? false : true;
+			break;
+		case MTScene::EffectLyrics:
+			m_isEnableLyrics = m_isEnableLyrics ? false : true;
+			break;
+		case MTScene::EffectPitchBend:
+			m_isEnablePitchBend = m_isEnablePitchBend ? false : true;
+			break;
+		case MTScene::EffectStars:
+			m_isEnableStars = m_isEnableStars ? false : true;
+			break;
+		case MTScene::EffectCounter:
+			m_isEnableCounter = m_isEnableCounter ? false : true;
+			break;
+		case MTScene::EffectBackgroundImage:
+			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
+			break;
+// >>> add 20180404 yossiepon begin
+		case MTScene::EffectTimeIndicator:
+			m_isEnableTimeIndicator = !m_isEnableTimeIndicator;
+			break;
+		case MTScene::EffectGridBox:
+			m_isEnableGridBox = !m_isEnableGridBox;
+			break;
+// <<< add 20180404 yossiepon end
+		default:
+			break;
+	}
+
+	_UpdateEffect();
+	_ApplyDX11Visibility();   //M4.10: reflect the toggle in the DX11 renderer
+	_UpdateMenuCheckmark();
+
+//EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
+//******************************************************************************
+int MIDITrailApp::_OnMenuWindowSize()
+{
+	int result = 0;
+
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = m_WindowSizeCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’æ›´æ–°
+	if (m_WindowSizeCfgDlg.IsChanged()) {
+		result = _ChangeWindowSize();
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
+//******************************************************************************
+int MIDITrailApp::_OnMenuFullScreen()
+{
+	int result = 0;
+
+	//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åˆ‡æ›¿
+	result = _ToggleFullScreen();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šMIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
+//******************************************************************************
+int MIDITrailApp::_OnMenuOptionMIDIOUT()
+{
+	int result = 0;
+
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = m_MIDIOUTCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šMIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
+//******************************************************************************
+int MIDITrailApp::_OnMenuOptionMIDIIN()
+{
+	int result = 0;
+
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = m_MIDIINCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®š
+//******************************************************************************
+int MIDITrailApp::_OnMenuOptionGraphic()
+{
+	int result = 0;
+	unsigned long multiSampleType = 0;
+	bool isSupport = false;
+
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚µãƒãƒ¼ãƒˆæƒ…å ±ã‚’ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«è¨­å®š
+	//M4 (DX11): query actual MSAA support from the D3D11 device
+	for (multiSampleType = DX_MULTI_SAMPLE_TYPE_MIN; multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX; multiSampleType++) {
+		isSupport = m_Renderer11.IsMultiSampleSupported(multiSampleType);
+		m_GraphicCfgDlg.SetAntialiasSupport(multiSampleType, isSupport);
+	}
+
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = m_GraphicCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ãƒ¬ãƒ³ãƒ€ãƒ©ã¨ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å†ç”Ÿæˆ
+	if (m_GraphicCfgDlg.IsChanged()) {
+		result = _LoadGraphicConf();
+		if (result != 0) goto EXIT;
+		result = _ChangeWindowSize();
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚«ãƒ©ãƒ¼è¨­å®šï¼ˆ1.4.1 ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆç§»æ¤ï¼‰
+//******************************************************************************
+int MIDITrailApp::_OnMenuOptionColor()
+{
+	int result = 0;
+
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	result = m_ColorCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ã‚·ãƒ¼ãƒ³ã‚’å†ç”Ÿæˆï¼ˆMTNoteDesign ãŒé¸æŠãƒ‘ãƒ¬ãƒƒãƒˆã‚’å†èª­è¾¼ã™ã‚‹ï¼‰
+	if (m_ColorCfgDlg.IsChanged()) {
+		result = _ChangeWindowSize();
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¨­å®šãƒãƒãƒ¼ã‚¸ãƒ£ï¼ˆconf/*.ini ã‚’ GUI ç·¨é›†ï¼šMod Mod ç‹¬è‡ªï¼‰
+//   ImGui ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®è¡¨ç¤º/éè¡¨ç¤ºã‚’ãƒˆã‚°ãƒ«ã™ã‚‹ã€‚å®Ÿæç”»ã¯ãƒ¬ãƒ³ãƒ€ãƒ©ã® ImGui ãƒ•ãƒ¬ãƒ¼ãƒ å†…ã€‚
+//******************************************************************************
+int MIDITrailApp::_OnMenuConfigManager()
+{
+	m_ConfigMgr11.Toggle();
+	return 0;
+}
+
+//******************************************************************************
+// ãƒãƒ‹ãƒ¥ã‚¢ãƒ«è¡¨ç¤º
+//******************************************************************************
+int MIDITrailApp::_OnMenuManual()
+{
+	int result = 0;
+	HINSTANCE hresult = 0;
+	TCHAR manualPath[_MAX_PATH] = {_T('\0')};
+
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
+	result = YNPathUtil::GetModuleDirPath(manualPath, _MAX_PATH);
+	if (result != 0) goto EXIT;
+
+	//ãƒãƒ‹ãƒ¥ã‚¢ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
+	_tcscat_s(manualPath, _MAX_PATH, MT_MANUALFILE);
+
+	//ãƒãƒ‹ãƒ¥ã‚¢ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	hresult = ShellExecute(
+					NULL,			//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_T("open"),		//æ“ä½œ
+					manualPath,		//æ“ä½œå¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«
+					NULL,			//æ“ä½œãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+					NULL,			//æ—¢å®šãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+					SW_SHOWNORMAL	//è¡¨ç¤ºçŠ¶æ…‹
+				);
+	if (hresult <= (HINSTANCE)32) {
+		result = YN_SET_ERR("File open error.", (DWORD64)hresult, 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
+//******************************************************************************
+int MIDITrailApp::_SequencerMsgProc()
+{
+	int result = 0;
+	bool isExist = false;
+	unsigned long param1 = 0;
+	unsigned long param2 = 0;
+	SMMsgParser parser;
+	
+	while (true) {
+		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–ã‚Šå‡ºã—
+		result = m_MsgQueue.GetMessage(&isExist, &param1, &param2);
+		if (result != 0) goto EXIT;
+		
+		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒãªã‘ã‚Œã°çµ‚äº†
+		if (!isExist) break;
+		
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡å‡¦ç†
+		result = _OnRecvSequencerMsg(param1, param2);
+		if (result != 0) goto EXIT;	
+	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+//******************************************************************************
+int MIDITrailApp::_OnRecvSequencerMsg(
+		unsigned long param1,
+		unsigned long param2
+	)
+{
+	int result = 0;
+	SMMsgParser parser;
+
+	//ã‚·ãƒ¼ãƒ³ã«ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ¸¡ã™
+	if (m_pScene != NULL) {
+		result = m_pScene->OnRecvSequencerMsg(param1, param2);
+		if (result != 0) goto EXIT;
+	}
+
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´é€šçŸ¥ã¸ã®å¯¾å¿œ
+	parser.Parse(param1, param2);
+	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
+		//ä¸€æ™‚åœæ­¢
+		if (parser.GetPlayStatus() == SMMsgParser::StatusPause) {
+			result = _ChangePlayStatus(Pause);
+			if (result != 0) goto EXIT;
+		}
+		//åœæ­¢ï¼ˆæ¼”å¥çµ‚äº†ï¼‰
+		if (parser.GetPlayStatus() == SMMsgParser::StatusStop) {
+			result = _ChangePlayStatus(Stop);
+			if (result != 0) goto EXIT;
+
+			//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥çµ‚äº†ã‚’é€šçŸ¥
+			if (m_pScene != NULL) {
+				result = m_pScene->OnPlayEnd(NULL /*M5: DX9 device removed; m_pScene is always NULL here*/);
+				if (result != 0) goto EXIT;
+			}
+
+			//è¦–ç‚¹ä¿å­˜
+			if (m_isAutoSaveViewpoint) {
+				result = _OnMenuSaveViewpoint();
+				if (result != 0) goto EXIT;
+			}
+
+			//ï¿½ï¿½~ï¿½ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Iï¿½[ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½wï¿½è‚³ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡ï¿½iï¿½Äï¿½ï¿½ï¿½ï¿½É•Êƒtï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½
+			//ï¿½hï¿½ï¿½ï¿½bï¿½v/Openï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½jï¿½B M3 (DX11): m_pScene ï¿½ï¿½ NULL ï¿½È‚Ì‚ÅAï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½
+			//ï¿½ï¿½ m_pScene ï¿½Qï¿½[ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½iï¿½Oï¿½ï¿½ï¿½ÆƒLï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ê‚½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½jï¿½B
+			if (m_isOpenFileAfterStop) {
+				m_isOpenFileAfterStop = false;
+				result = _FileOpenProc(m_NextFilePath);
+				if (result != 0) goto EXIT;
+			}
+			//ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒåœæ­¢ãƒœã‚¿ãƒ³ã§æ­¢ã‚ãŸå ´åˆã¯æ›²ã®å…ˆé ­ã¸å·»ãæˆ»ã™ï¼ˆDX9 ã¨åŒã˜ã€‚è‡ªç„¶
+			//çµ‚äº†æ™‚ã¯ä¸‹ã® else ã«å…¥ã‚Šã€å·»ãæˆ»ã•ãšãƒ“ãƒ¥ãƒ¼ã‚’æœ«å°¾ã«æ®‹ã™ï¼æ¬¡å›å†ç”Ÿæ™‚ã«æˆ»ã‚‹ï¼‰
+			else if (m_isRewind) {
+				m_isRewind = false;
+				//DX11: m_pScene ã¯ NULLã€‚ã‚·ãƒ¼ã‚±ãƒ³ã‚µä½ç½®ã‚’å…ˆé ­ã¸æˆ»ã—ã€Run ãƒ«ãƒ¼ãƒ—ã®
+				//tick ãƒ•ã‚£ãƒ¼ãƒ‰ã§ãƒ“ãƒ¥ãƒ¼ãŒå…ˆé ­ã¸æˆ»ã‚‹ï¼ˆDX9 ã® scene->Rewind ç›¸å½“ï¼‰ã€‚
+				m_Sequencer.Rewind();
+				if (m_pScene != NULL) result = m_pScene->Rewind();
+				if (result != 0) goto EXIT;
+				//ced 20260630: DX9 äº’æ› â€” æ‰‹å‹•åœæ­¢æ™‚ã¯ãƒã‚¦ã‚¹ã§å‹•ã‹ã—ãŸè¦–ç‚¹ã‚’æˆ»ã™ã€‚
+				//ced 20260703: æˆ»ã—å…ˆã¯ãƒãƒ¼ãƒ‰ã‚³ãƒ¼ãƒ‰æ—¢å®šã§ã¯ãªãã€Œä¿å­˜æ¸ˆã¿(ãªã‘ã‚Œã°æ—¢å®š)ã€è¦–ç‚¹ã€‚
+				//ï¼ˆAuto save viewpoint ON ãªã‚‰ç›´å‰ã®ä¿å­˜ã§ç¾åœ¨ä½ç½®ï¼ä¿å­˜è¦–ç‚¹ã¨ãªã‚Šå®Ÿè³ªç¶­æŒã€
+				//ã€€OFF ã§ã‚‚åˆæœŸå€¤ã§ã¯ãªããƒ¦ãƒ¼ã‚¶ãƒ¼ãŒä¿å­˜ã—ãŸè¦–ç‚¹ã¸æˆ»ã‚‹ï¼‰
+				_ResetViewpointToSaved();
+			}
+			//é€šå¸¸ã®æ¼”å¥çµ‚äº†ã®å ´åˆã¯æ¬¡å›ã®æ¼”å¥æ™‚ã«å·»ãæˆ»ã™
+			else {
+				m_isRewind = true;
+				//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ãŒæœ‰åŠ¹ãªã‚‰æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ã¸è‡ªå‹•é€ã‚Šï¼ˆ1.4.1 ç§»æ¤ã€‚æœ€å¾Œã®ãƒ•ã‚¡ã‚¤ãƒ«
+				//ãªã‚‰é€ã‚‰ãšã«åœæ­¢ã®ã¾ã¾ï¼‰ã€‚ãƒªãƒ”ãƒ¼ãƒˆã‚ˆã‚Šãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ã‚’å„ªå…ˆã™ã‚‹ã€‚
+				if (m_isFolderPlayback && (m_MIDIFileList.GetFileCount() > 0)) {
+					bool isExist = false;
+					m_MIDIFileList.SelectNextFile(&isExist);
+					if (isExist) {
+						const WCHAR* pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
+						result = _OpenFileW(pFilePath);
+						if (result != 0) goto EXIT;
+						result = _OnMenuPlay();
+						if (result != 0) goto EXIT;
+					}
+				}
+				//ãƒªãƒ”ãƒ¼ãƒˆæœ‰åŠ¹ãªã‚‰å†ç”Ÿé–‹å§‹
+				else if (m_isRepeat) {
+					result = _OnMenuPlay();
+					if (result != 0) goto EXIT;
+				}
+			}
+
+			//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§çµ‚äº†æŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
+			if (m_CmdLineParser.GetSwitch(CMDSW_QUIET) == CMDSW_ON) {
+				DestroyWindow(m_hWnd);
+			}
+		}
+	}
+
+	//DX11 live monitor: route real-time MIDI note on/off to the dynamic note
+	//boxes (and the keyboard's live key-press state). Only while monitoring.
+	if (m_PlayStatus == MonitorON) {
+		SMMsgParser::Message msg = parser.GetMsg();
+		//the active live renderer (box/ring or rain) is the only one created; the
+		//others no-op (NULL note buffer), so route to both unconditionally.
+		if (msg == SMMsgParser::MsgNoteOn) {
+			if (parser.GetVelocity() > 0) {
+				m_NoteBoxLive11.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
+				m_NoteRainLive11.SetNoteOn(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo(), parser.GetVelocity());
+				m_NoteRipple11.SetNoteOnLive(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+				m_Kbd11.SetNoteOnLive(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+				m_KbdRain11.SetNoteOnLive(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+				m_LiveNoteCount++;
+				m_Dashboard11.SetCurNotes(m_LiveNoteCount);
+			} else {
+				m_NoteBoxLive11.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+				m_NoteRainLive11.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+				m_Kbd11.SetNoteOffLive(parser.GetNoteNo());
+				m_KbdRain11.SetNoteOffLive(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+			}
+		}
+		else if (msg == SMMsgParser::MsgNoteOff) {
+			m_NoteBoxLive11.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+			m_NoteRainLive11.SetNoteOff(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+			m_Kbd11.SetNoteOffLive(parser.GetNoteNo());
+			m_KbdRain11.SetNoteOffLive(parser.GetPortNo(), parser.GetChNo(), parser.GetNoteNo());
+		}
+		else if (msg == SMMsgParser::MsgAllNoteOff) {
+			m_NoteBoxLive11.AllNoteOff();
+			m_NoteRainLive11.AllNoteOff();
+			m_Kbd11.AllNoteOffLive();
+			m_KbdRain11.AllNoteOffLive();
+		}
+	}
+
+	//ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆå¯¾ç­–
+	//ã‚·ãƒ¼ãƒ³ã«æ¸¡ã—ãŸæœ€æ–°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¨˜éŒ²ã—ã¦ãŠã
+	//M3 (DX11): on a skip, rebuild the DX11 active-note windows so the keyboard
+	//and ripple don't stay stuck on the pre-skip state. The skip runs
+	//synchronously in the sequencer timer callback that posts this message, so by
+	//the time we read it the playback tick is already at the target; Reset() makes
+	//the next per-frame poll re-fold the window at the new position.
+	if ((parser.GetMsg() == SMMsgParser::MsgSkipStart)
+	 || (parser.GetMsg() == SMMsgParser::MsgSkipEnd)) {
+		// reset only the components created for the active scene family
+		if (m_DX11Family == DX11_FAMILY_RAIN) {
+			m_KbdRain11.Reset();
+			m_NoteRain11.Reset();
+		}
+		else if (m_DX11Family == DX11_FAMILY_RING) {
+			m_NoteBoxRing11.Reset();
+			m_NoteRipple11.Reset();
+			m_NoteLyrics11.Reset();   //ring lyrics (1.4.1 ported)
+		}
+		else if (m_DX11Family == DX11_FAMILY_BOX) {
+			m_Kbd11.Reset();
+			m_NoteRipple11.Reset();
+			m_NoteLyrics11.Reset();
+			m_TimeIndicator11.Reset();
+		}
+		m_NotePitchBend11.Reset();   //M4.8: clear pitch bend on skip (DX9 resets on skip-back)
+		m_NpsNoteCount = 0;
+		//the smooth scroll to the target is driven by the sequencer's slide
+		//(_SlidePlaybackTime updates the polled tick); the component resets above rebuild
+		//their forward windows from 0 so they re-fold correctly as the tick sweeps across.
+	}
+
+	//M4 (DX11): the played-note count is derived per-frame from the tick (see Run
+	//loop), so it stays accurate even when note-on messages drop under load.
+
+	if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
+		//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ é€šçŸ¥
+		m_SequencerLastMsg.isRecvPlayTime = true;
+		m_SequencerLastMsg.playTime.param1 = param1;
+		m_SequencerLastMsg.playTime.param2 = param2;
+		//M3 (DX11): the playback tick + dashboard time are polled per-frame
+		//straight from the sequencer (see Run loop), so heavy-load message drops
+		//cannot stall the scroll / keyboard / dashboard time.
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
+		//ãƒ†ãƒ³ãƒå¤‰æ›´é€šçŸ¥
+		m_SequencerLastMsg.isRecvTempo = true;
+		m_SequencerLastMsg.tempo.param1 = param1;
+		m_SequencerLastMsg.tempo.param2 = param2;
+		m_Dashboard11.SetTempo(parser.GetTempoBPM());
+		if (parser.GetTempoBPM() > 0) m_CurSongBPM = parser.GetTempoBPM();   //keyboard envelope scale
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
+		//å°ç¯€ç•ªå·é€šçŸ¥
+		m_SequencerLastMsg.isRecvBar = true;
+		m_SequencerLastMsg.bar.param1 = param1;
+		m_SequencerLastMsg.bar.param2 = param2;
+		m_Dashboard11.SetCurBar(parser.GetBarNo());
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
+		//æ‹å­è¨˜å·å¤‰æ›´é€šçŸ¥
+		m_SequencerLastMsg.isRecvBeat = true;
+		m_SequencerLastMsg.beat.param1 = param1;
+		m_SequencerLastMsg.beat.param2 = param2;
+		m_Dashboard11.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
+		//M4.8 (DX11): per-channel pitch bend -> shifts the keyboard (and notes)
+		m_NotePitchBend11.SetPitchBend(
+				parser.GetPortNo(), parser.GetChNo(),
+				parser.GetPitchBendValue(), parser.GetPitchBendSensitivity());
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆ
+//******************************************************************************
+int MIDITrailApp::_OnMouseButtonDown(
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
+	)
+{
+	int result = 0;
+	
+	if ((m_pScene != NULL) && (m_PlayStatus != NoData)) {
+		result = m_pScene->OnWindowClicked(button, wParam, lParam);
+		if (result != 0) goto EXIT;
+	}
+	//M3 (DX11, scene is NULL): toggle mouse-look (L) / auto-roll (M) on the camera.
+	//Allowed whenever a song is LOADED (Stop/Play/Pause/Monitor) - matching DX9 where
+	//the scene handled the click in any non-title state. Only the title/no-song state
+	//(NoData) is excluded so a click there doesn't grab the mouse (hidden+clipped cursor).
+	//(ced 20260628: was also excluding Stop, which wrongly disabled mouse-look while
+	// paused/stopped on a loaded song; _ChangePlayStatus still auto-releases on stop.)
+	else if (m_PlayStatus != NoData) {
+		if (button == WM_LBUTTONDOWN) {
+			m_IsMouseCamMode11 = !m_IsMouseCamMode11;
+			m_FpCam11.SetMouseCamMode(m_IsMouseCamMode11);
+		}
+		else if (button == WM_MBUTTONDOWN) {
+			m_IsAutoRollMode11 = !m_IsAutoRollMode11;
+			m_FpCam11.SetAutoRollMode(m_IsAutoRollMode11);
+			if (m_IsAutoRollMode11) m_FpCam11.SwitchAutoRllDirecton();
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒã‚¦ã‚¹ç§»å‹•ã‚¤ãƒ™ãƒ³ãƒˆ
+//******************************************************************************
+int MIDITrailApp::_OnMouseMove(
+		UINT button,
+		WPARAM wParam,
+		LPARAM lParam
+	)
+{
+	int result = 0;
+	LONG apiresult = 0;
+	POINT point;
+
+	point.x = LOWORD(lParam);
+	point.y = HIWORD(lParam);
+	
+	//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®å ´åˆ
+	if (m_isFullScreen) {
+		//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒã‚¹ã‚¯ãƒªãƒ¼ãƒ³ä¸Šç«¯ã«ç§»å‹•ã—ãŸå ´åˆ
+		if (point.y == 0) {
+			//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤º
+			result = _ShowMenu();
+			if (result != 0) goto EXIT;
+		}
+		else {
+			//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤º
+			result = _HideMenu();
+			if (result != 0) goto EXIT;
+		}
+	}
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºã®å ´åˆï¼ˆ1.4.1 ç§»æ¤ï¼šMenu Bar ã‚’éè¡¨ç¤ºã«ã—ã¦ã„ã‚‹æ™‚ã¯ã€
+	//ãƒã‚¦ã‚¹ã‚’ä¸Šç«¯è¿‘ãã«ä¹—ã›ãŸæ™‚ã ã‘ä¸€æ™‚çš„ã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ï¼‰
+	else if (!m_isEnableMenuBar) {
+		if (point.y <= 5) {
+			result = _ShowMenu();
+			if (result != 0) goto EXIT;
+		}
+		else {
+			result = _HideMenu();
+			if (result != 0) goto EXIT;
+		}
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ã‚­ãƒ¼å…¥åŠ›ã‚¤ãƒ™ãƒ³ãƒˆ
+//******************************************************************************
+int MIDITrailApp::_OnKeyDown(
+		WPARAM wParam,
+		LPARAM lParam
+	)
+{
+	int result = 0;
+	unsigned short keycode = 0;
+
+	keycode = LOWORD((DWORD)wParam);
+
+	switch (keycode) {
+		case VK_SPACE:
+		case VK_NUMPAD0:
+			if (GetKeyState(VK_SHIFT) & 0x8000) {
+				//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°é–‹å§‹
+				result = _OnMenuStartMonitoring();
+				if (result != 0) goto EXIT;
+			}
+			else {
+				//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢
+				result = _OnMenuPlay();
+				if (result != 0) goto EXIT;
+			}
+			break;
+		case VK_ESCAPE:
+			if (m_PlayStatus == MonitorON) {
+				//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°åœæ­¢
+				result = _OnMenuStopMonitoring();
+				if (result != 0) goto EXIT;
+			}
+			else {
+				//æ¼”å¥åœæ­¢
+				result = _OnMenuStop();
+				if (result != 0) goto EXIT;
+			}
+			break;
+		case VK_RETURN:
+			//æ¼”å¥åœæ­¢ï¼šãƒ†ãƒ³ã‚­ãƒ¼ã®ENTERã§ã‹ã¤NUMLOCKã‚ªãƒ³ã®å ´åˆ
+			if ((HIWORD((DWORD)lParam) & KF_EXTENDED) && (GetKeyState(VK_NUMLOCK) & 0x01)) {
+				result = _OnMenuStop();
+				if (result != 0) goto EXIT;
+			}
+			break;
+		case '1':
+		case VK_NUMPAD1:
+			//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒãƒƒã‚¯
+			result = _OnMenuSkipBack();
+			if (result != 0) goto EXIT;
+			break;
+		case '2':
+		case VK_NUMPAD2:
+			//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰
+			result = _OnMenuSkipForward();
+			if (result != 0) goto EXIT;
+			break;
+		case '4':
+		case VK_NUMPAD4:
+			//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
+			result = _OnMenuPlaySpeedDown();
+			if (result != 0) goto EXIT;
+			break;
+		case '5':
+		case VK_NUMPAD5:
+			//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
+			result = _OnMenuPlaySpeedUp();
+			if (result != 0) goto EXIT;
+			break;
+		case '7':
+		case VK_NUMPAD7:
+			//è¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
+			result = _OnMenuResetViewpoint();
+			if (result != 0) goto EXIT;
+			break;
+		case '8':
+		case VK_NUMPAD8:
+			//é™çš„è¦–ç‚¹2ç§»å‹•
+			result = _OnMenuViewpoint(2);
+			if (result != 0) goto EXIT;
+			break;
+		case '9':
+		case VK_NUMPAD9:
+			//é™çš„è¦–ç‚¹3ç§»å‹•
+			result = _OnMenuViewpoint(3);
+			if (result != 0) goto EXIT;
+			break;
+		case 'O':
+			if (GetKeyState(VK_CONTROL) & 0x8000) {
+				//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+				result = _OnMenuFileOpen();
+				if (result != 0) goto EXIT;
+			}
+			break;
+		case VK_F11:
+			//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
+			result = _OnMenuFullScreen();
+			if (result != 0) goto EXIT;
+			break;
+		default:
+			break;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã‚¤ãƒ™ãƒ³ãƒˆ
+//******************************************************************************
+//******************************************************************************
+// Convert an ANSI double-null-terminated filter string to wide
+//******************************************************************************
+static void _AnsiFilterToWide(const char* pAnsi, wchar_t* pWide, int wideCount)
+{
+	int len = 0;
+	if (pAnsi == NULL) { pWide[0] = L'\0'; pWide[1] = L'\0'; return; }
+	while (!(pAnsi[len] == '\0' && pAnsi[len + 1] == '\0')) len++;
+	len += 2;
+	MultiByteToWideChar(CP_ACP, 0, pAnsi, len, pWide, wideCount);
+}
+
+int MIDITrailApp::_OnDropFiles(
+		WPARAM wParam,
+		LPARAM lParam
+	)
+{
+	int result = 0;
+	UINT fileNum = 0;
+	UINT charNum = 0;
+	HDROP hDrop = NULL;
+	TCHAR path[_MAX_PATH] = {_T('\0')};
+	bool isMIDIDataFile = false;
+
+	////åœæ­¢ä¸­ã§ãªã‘ã‚Œã°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã¯ç„¡è¦–ã™ã‚‹
+	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—OK
+	//}
+	//else {
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—NG
+	//	goto EXIT;
+	//}
+
+	//å¸¸ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã‚’è¨±å¯ã™ã‚‹
+
+	hDrop = (HDROP)wParam;
+
+	//ãƒ•ã‚¡ã‚¤ãƒ«æ•°ç¢ºèª
+	fileNum = DragQueryFile(
+					hDrop,		//wParam
+					0xFFFFFFFF,	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+					NULL,		//ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—ãƒãƒƒãƒ•ã‚¡
+					0			//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+				);
+
+	//è¤‡æ•°ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆã¯ç„¡è¦–ã™ã‚‹
+	if (fileNum != 1) goto EXIT;
+
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
+	{
+		//get the true (Unicode) path so file names with Unicode chars open correctly
+		wchar_t pathW[_MAX_PATH];
+		pathW[0] = L'\0';
+		charNum = DragQueryFileW(hDrop, 0, pathW, _MAX_PATH);
+		if (charNum == 0) {
+			result = YN_SET_ERR("Windows API error.", wParam, lParam);
+			goto EXIT;
+		}
+		wcscpy_s(m_LoadFilePathW, MAX_PATH, pathW);
+		WideCharToMultiByte(CP_ACP, 0, pathW, -1, path, _MAX_PATH, NULL, NULL);
+	}
+
+	//ãƒ•ã‚¡ã‚¤ãƒ«æ‹¡å¼µå­ã®ç¢ºèª
+	if (YNPathUtil::IsFileExtMatch(path, _T(".mid"))) {
+		isMIDIDataFile = true;
+	}
+	//rcpcv.dllãŒæœ‰åŠ¹ãªã‚‰ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚ã‚‹ã‹è¿½åŠ ç¢ºèªã™ã‚‹
+	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(path)) {
+		isMIDIDataFile = true;
+	}
+
+	//ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
+	if (!isMIDIDataFile) goto EXIT;
+
+	//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
+	result = _StopPlaybackAndOpenFile(path);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	if (hDrop != NULL) {
+		DragFinish(hDrop);
 	}
 	return result;
 }
 
 //******************************************************************************
-// MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
-int MIDITrailApp::_LoadMIDIFile(
-		const WCHAR* pFilePath
+int MIDITrailApp::_SelectMIDIFile(
+		TCHAR* pFilePath,
+		unsigned long bufSize,
+		bool* pIsSelected
 	)
 {
 	int result = 0;
-	WCHAR* pPath = NULL;
-	WCHAR smfTempPath[_MAX_PATH] = { L'\0' };
-	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
+	BOOL apiresult = FALSE;
+	OPENFILENAMEW ofn;
+	wchar_t fileW[MAX_PATH];
+	wchar_t filterW[1024];
+
+	if ((pFilePath == NULL) || (bufSize == 0) || (pIsSelected ==NULL)) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	pFilePath[0] = _T('\0');
+	fileW[0] = L'\0';
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEW));
+	ofn.lStructSize = sizeof(OPENFILENAMEW);
+	ofn.hwndOwner   = m_hWnd;
+	ofn.lpstrFilter = L"Standard MIDI File (*.mid)\0*.mid\0\0";
+	ofn.lpstrFile   = fileW;
+	ofn.nMaxFile    = MAX_PATH;
+	ofn.lpstrTitle  = L"Select Standard MIDI File.";
+	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
+
+	//rcpcv.dllãŒæœ‰åŠ¹ãªã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚£ãƒ«ã‚¿ã‚’å¤‰æ›´ã™ã‚‹
+	if (m_RcpConv.IsAvailable()) {
+		_AnsiFilterToWide(m_RcpConv.GetOpenFileNameFilter(), filterW, 1024);
+		ofn.lpstrFilter = filterW;
+	}
+
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
+	apiresult = GetOpenFileNameW(&ofn);
+	if (!apiresult) {
+		//ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã¾ãŸã¯ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿï¼šã‚¨ãƒ©ãƒ¼ã¯ãƒã‚§ãƒƒã‚¯ã—ãªã„
+		*pIsSelected = false;
+		goto EXIT;
+	}
+
+	wcscpy_s(m_LoadFilePathW, MAX_PATH, fileW);
+	WideCharToMultiByte(CP_ACP, 0, fileW, -1, pFilePath, bufSize, NULL, NULL);
+	*pIsSelected = true;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+//******************************************************************************
+//******************************************************************************
+// Loading progress callback (drives the loading screen during note build)
+//******************************************************************************
+void MIDITrailApp::_LoadProgressCallback(
+		unsigned long current,
+		unsigned long total,
+		void* user
+	)
+{
+	MIDITrailApp* pThis = (MIDITrailApp*)user;
+	float local = 0.0f;
+	char message[128];
+
+	if (pThis == NULL) return;
+	if (total > 0) local = (float)current / (float)total;
+
+	// the note-field build occupies the 35%..85% band of the overall progress
+	sprintf_s(message, sizeof(message), "Building note field:  %lu / %lu notes", current, total);
+	pThis->m_Renderer11.DrawLoadingScreen(message, 0.35f + local * 0.50f);
+}
+
+//******************************************************************************
+// Parse progress callback (drives the loading screen during SMF parsing)
+//******************************************************************************
+void MIDITrailApp::_ParseProgressCallback(
+		unsigned long current,
+		unsigned long total,
+		void* user
+	)
+{
+	MIDITrailApp* pThis = (MIDITrailApp*)user;
+	float local = 0.0f;
+	char message[128];
+
+	if (pThis == NULL) return;
+	if (total > 0) local = (float)current / (float)total;
+
+	// current/total are whole-file units of 10000 per track (see SMFileReader), so the
+	// bar no longer restarts per track. Show the track being read for context.
+	unsigned long trackCount = (total >= 10000) ? (total / 10000) : 1;
+	unsigned long curTrack   = (current / 10000) + 1;
+	if (curTrack > trackCount) curTrack = trackCount;
+	sprintf_s(message, sizeof(message), "Reading MIDI file...  (track %lu / %lu)", curTrack, trackCount);
+	pThis->m_Renderer11.DrawLoadingScreen(message, local * 0.30f);   // parse = 0%..30% band
+}
+
+int MIDITrailApp::_LoadMIDIFile(
+		const TCHAR* pFilePath
+	)
+{
+	int result = 0;
+	TCHAR* pPath = NULL;
+	TCHAR smfTempPath[_MAX_PATH] = {_T('\0')};
+	TCHAR smfDumpPath[_MAX_PATH] = {_T('\0')};
 	SMFileReader smfReader;
 
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‘O‚É•\¦‚µ‚ÄƒGƒ‰[”­¶‚Éƒtƒ@ƒCƒ‹–¼‚ğŠm”F‰Â”\‚Æ‚·‚é
-	_UpdateWindowTitle(PathFindFileNameW(pFilePath));
+	//Begin loading: show loading screen and ignore input until done. Draw it BEFORE the
+	//file open/memory-map (a single blocking call that can't report % mid-way) so the
+	//window is already up and labelled when a large file takes a moment to open.
+	m_isLoading = true;
+	m_Renderer11.DrawLoadingScreen("Opening MIDI file...", 0.0f);
 
-	//Šg’£q‚ª*.mid‚Ìê‡
-	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
-		pPath = (WCHAR*)pFilePath;
+	//æ‹¡å¼µå­ãŒ*.midã®å ´åˆ
+	if (YNPathUtil::IsFileExtMatch(pFilePath, _T(".mid"))) {
+		pPath = (TCHAR*)pFilePath;
 	}
-	//rcpcv.dll—LŒø‚Å‚©‚ÂƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚ê‚ÎSMF‚É•ÏŠ·
-	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(pFilePath)) {
-		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, L"RCP");
+	//æ‹¡å¼µå­ãŒ*.midä»¥å¤–ã®å ´åˆ
+	else {
+		//ãƒ¬ã‚³ãƒ³ãƒãƒ¼ã‚¶ã®ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã¿ãªã—ã¦SMFã«å¤‰æ›ã™ã‚‹
+		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, _T("RCP"));
 		if (result != 0) goto EXIT;
 		result = m_RcpConv.Convert(pFilePath, smfTempPath);
 		if (result != 0) goto EXIT;
 		pPath = smfTempPath;
 	}
-	//‚¢‚¸‚ê‚É‚àŠY“–‚µ‚È‚¢ê‡
-	else {
-		//‚»‚Ì‚Ü‚Ü“Ç‚İ‚Ş
-		pPath = (WCHAR*)pFilePath;
-	}
 
-	//ƒfƒoƒbƒOƒ‚[ƒh‚Å‚ ‚ê‚ÎMIDIƒtƒ@ƒCƒ‹‰ğÍŒ‹‰Ê‚ğƒ_ƒ“ƒv‚·‚é
+	//ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰ã§ã‚ã‚Œã°MIDIãƒ•ã‚¡ã‚¤ãƒ«è§£æçµæœã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹
 	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
-		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
-		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
-		smfReader.SetLogPath(smfDumpPath);
+		_tcscat_s(smfDumpPath, _MAX_PATH, pPath);
+		_tcscat_s(smfDumpPath, _MAX_PATH, _T(".dump.txt"));
+		WCHAR smfDumpPathW[_MAX_PATH] = { L'\0' };
+		MultiByteToWideChar(CP_ACP, 0, smfDumpPath, -1, smfDumpPathW, _MAX_PATH);
+		smfReader.SetLogPath(smfDumpPathW);
 	}
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
-	result = smfReader.Load(pPath, &m_SeqData);
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+	//32bitä¸Šé™(ç´„42.9å„„ã‚¤ãƒ™ãƒ³ãƒˆ/ç´„21å„„ãƒãƒ¼ãƒˆ)ã‚’è¶…ãˆã‚‹å·¨å¤§ãƒ•ã‚¡ã‚¤ãƒ«ã¯å…¨éƒ¨ã¯èª­ã‚ãªã„ã€‚
+	//ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¦ãŠãã€èª­ã¿è¾¼ã¿å¾Œã«åˆ‡ã‚Šæ¨ã¦ãŒèµ·ããŸã‹ç¢ºèªã™ã‚‹ã€‚
+	SMSimpleList::ResetTruncatedFlag();
+	SMFileReader::SetLoadProgressCallback(&MIDITrailApp::_ParseProgressCallback, this);
+	if ((m_LoadFilePathW[0] != L'\0') && (pPath == pFilePath)) {
+		result = smfReader.LoadW(m_LoadFilePathW, &m_SeqData);
+	}
+	else {
+		result = smfReader.Load(pPath, &m_SeqData);
+	}
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹–¼“o˜^FSMF•ÏŠ·ˆ—À{‘O‚ÌƒIƒŠƒWƒiƒ‹‚Ìƒtƒ@ƒCƒ‹–¼‚ğİ’è
-	m_SeqData.SetFileName(PathFindFileNameW(pFilePath));
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãŒå¤§ãã™ãã¦ä¸€éƒ¨ã®ãƒãƒ¼ãƒˆã‚’èª­ã¿è¾¼ã‚ãªã‹ã£ãŸå ´åˆã¯ã€èª­ã‚ãŸåˆ†ã‚’è¡¨ç¤ºã™ã‚‹ã‹ç¢ºèª
+	if (SMSimpleList::WasTruncated()) {
+		int answer = MessageBox(m_hWnd,
+				_T("This file is too large to load completely (over the 32-bit limit of\n")
+				_T("~2.1 billion notes); some notes could not be read.\n\n")
+				_T("Display the portion that was loaded anyway?"),
+				_T("MIDITrail - File too large"),
+				MB_YESNO | MB_ICONWARNING);
+		if (answer != IDYES) {
+			//è¡¨ç¤ºã—ãªã„ï¼šèª­ã¿è¾¼ã¿ã‚’ä¸­æ­¢ã—ã€ç©ºã‚·ãƒ¼ãƒ³(NoData)ã¸æˆ»ã™ï¼ˆã“ã®èª­ã¿è¾¼ã¿ã§
+			//å‰ã®æ›²ã® m_SeqData ã¯ä¸Šæ›¸ãæ¸ˆã¿ãªã®ã§ã€å®‰å…¨å´ã¨ã—ã¦æœªèª­è¾¼çŠ¶æ…‹ã«ã™ã‚‹ï¼‰ã€‚
+			m_SeqData.Clear();
+			_ChangePlayStatus(NoData);
+			_SetupDX11Scene();   //NoData çµŒè·¯ï¼šå…¨ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’åˆ‡ã‚Šé›¢ã™
+			result = 0;
+			goto EXIT;
+		}
+		//Yesï¼šèª­ã¿è¾¼ã‚ãŸåˆ†ã§ã“ã®ã¾ã¾ç¶šè¡Œ
+	}
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÉÄ¶ƒXƒs[ƒh‚ğ100%‚É–ß‚·F_CreateScene‚ÅƒJƒEƒ“ƒ^‚É”½‰f
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿æ™‚ã«å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’100%ã«æˆ»ã™ï¼š_CreateSceneã§ã‚«ã‚¦ãƒ³ã‚¿ã«åæ˜ 
 	m_PlaySpeedRatio = 100;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	m_SceneType = m_SelectedSceneType;
+	m_Renderer11.DrawLoadingScreen("Building scene...", 0.32f);
+
 	result = _CreateScene(m_SceneType, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//‰‰‘tó‘Ô•ÏX
+	//M3 (DX11 migration): build the instanced note field for the loaded song.
+	//Capture the file name (basename) for the dashboard; it must survive a later
+	//renderer re-init (AA / window-size change clears m_LoadFilePathW).
+	{
+		const wchar_t* pBaseW = wcsrchr(m_LoadFilePathW, L'\\');
+		pBaseW = (pBaseW != NULL) ? (pBaseW + 1) : m_LoadFilePathW;
+		WideCharToMultiByte(CP_ACP, 0, pBaseW, -1, m_DashFileNameA, MAX_PATH, NULL, NULL);
+	}
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
+
+	//rewind the sequencer to the song head so the freshly loaded scene starts at
+	//tick 0 (otherwise GetCurrentTickTime still reports the previous song's stop
+	//position and the new scene would render at a wrong scroll until Play).
+	m_Sequencer.Rewind();
+
+	//M3 (DX11): build the scene components now that the play status is set
+	//(so _SetupDX11Scene sees a loaded song, not NoData).
+	_SetupDX11Scene();
+	m_Renderer11.DrawLoadingScreen("Ready", 1.0f);
 
 	m_isRewind = false;
 
 EXIT:;
-	if (wcslen(smfTempPath) != 0) {
-		DeleteFileW(smfTempPath);
+	m_LoadFilePathW[0] = L'\0';
+	SMFileReader::SetLoadProgressCallback(NULL, NULL);
+	m_isLoading = false;
+	//ced 20260629: ãƒ­ãƒ¼ãƒ‰å¾Œã«ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å¿…ãšã‚¢ã‚¯ãƒ†ã‚£ãƒ–(ãƒ•ã‚©ã‚¢ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰)åŒ–ã™ã‚‹ã€‚
+	//DirectInput ã¯ DISCL_FOREGROUND ã®ãŸã‚ã€ãƒ‰ãƒ©ãƒƒã‚°&ãƒ‰ãƒ­ãƒƒãƒ—ç­‰ã§ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒ
+	//éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã®ã¾ã¾ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã¨ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰/ãƒã‚¦ã‚¹(ã‚«ãƒ¡ãƒ©)ãŒå–å¾—ã§ããšæ“ä½œä¸èƒ½ã«
+	//ãªã‚‹ï¼ˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ç­‰ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ã‚¢ã‚¯ãƒ†ã‚£ãƒ–åŒ–ã™ã‚‹ã¨ç›´ã‚‹ã€ã®æ ¹æœ¬åŸå› ï¼‰ã€‚
+	if (m_hWnd != NULL) {
+		SetForegroundWindow(m_hWnd);
+		SetFocus(m_hWnd);
+	}
+	if (_tcslen(smfTempPath) != 0) {
+		DeleteFile(smfTempPath);
 	}
 	return result;
+}
+
+//******************************************************************************
+// (Re)create the DX11 scene components for the currently loaded song.
+//
+// Called on load and again after the renderer re-initializes (AA / window-size
+// change recreates the D3D11 device, so every device resource must be rebuilt -
+// otherwise the stale components reference a destroyed device => "Device lost").
+// Safe to call with no song loaded (NoData): it just detaches all components.
+//******************************************************************************
+//******************************************************************************
+// M6: feed the live playback tick to the active DX11 scene components
+//******************************************************************************
+void MIDITrailApp::_FeedDX11Tick(unsigned long tick, unsigned long playMs)
+{
+	// `tick` is polled straight from the sequencer. A seek scrolls smoothly because the
+	// sequencer's _SlidePlaybackTime slides this tick from the old to the new position
+	// over MovingTimeSpanInMsec (DX9's seek slide); no extra easing is needed here.
+	m_FpCam11.SetCurTickTime(tick);
+	m_Dashboard11.SetPlayTimeMSec(playMs);
+	// feed only the components created for the active scene family; the others
+	// may never have been created (crash if touched).
+	if (m_DX11Family == DX11_FAMILY_RAIN) {
+		m_NoteRain11.SetCurTickTime(tick);
+		m_KbdRain11.SetCurTickTime(tick);
+		//live: the note count is the played-note counter (note-on driven), not the
+		//static field's GetPlayedNoteCount (0 with no song) - else it overwrites to 0.
+		if (m_PlayStatus != MonitorON) {
+			m_Dashboard11.SetCurNotes(m_NoteRain11.GetPlayedNoteCount(tick));
+		}
+	}
+	else if (m_DX11Family == DX11_FAMILY_RING) {
+		m_NoteBoxRing11.SetCurTickTime(tick);
+		m_TimeIndicatorRing11.SetCurTickTime(tick);
+		m_PictBoardRing11.SetCurTickTime(tick);
+		m_NoteRipple11.SetCurTickTime(tick);
+		m_NoteRipple11.SetPlayTimeMSec(playMs);
+		m_NoteLyrics11.SetCurTickTime(tick);   //ring lyrics (1.4.1 ported)
+		m_NoteLyrics11.SetPlayTimeMSec(playMs);
+		if (m_PlayStatus != MonitorON) {
+			m_Dashboard11.SetCurNotes(m_NoteBoxRing11.GetPlayedNoteCount(tick));
+		}
+	}
+	else if (m_DX11Family == DX11_FAMILY_BOX) {
+		m_NoteBox11.SetCurTickTime(tick);
+		// song time scale (ticks/ms) for the keyboard press envelope: TimeDivision*BPM/60000.
+		// Uses the SONG tempo (not play speed) - the polled tick already carries speed.
+		// The note box uses the same scale to decay the active-note flash over a fixed time.
+		{
+			unsigned long tpqn = m_SeqData.GetTimeDivision();
+			if (tpqn > 0) {
+				double tickPerMs = (double)tpqn * (double)m_CurSongBPM / 60000.0;
+				m_Kbd11.SetSongTickPerMs(tickPerMs);
+				m_NoteBox11.SetSongTickPerMs(tickPerMs);
+			}
+		}
+		m_Kbd11.SetCurTickTime(tick);
+		m_NoteRipple11.SetCurTickTime(tick);
+		m_NoteRipple11.SetPlayTimeMSec(playMs);
+		m_NoteLyrics11.SetCurTickTime(tick);
+		m_NoteLyrics11.SetPlayTimeMSec(playMs);
+		m_TimeIndicator11.SetCurTickTime(tick);
+		//live: the note count is the played-note counter (maintained on note-on),
+		//not the static field's GetPlayedNoteCount (which is 0 with no song).
+		if (m_PlayStatus != MonitorON) {
+			m_Dashboard11.SetCurNotes(m_NoteBox11.GetPlayedNoteCount(tick));
+		}
+	}
+}
+
+//******************************************************************************
+// M6: offline video export. Drives the tick from a fixed-FPS timeline (via the
+// tempo map), renders each frame off-screen at the chosen resolution with the
+// current camera viewpoint, and streams raw BGRA frames to ffmpeg.
+//******************************************************************************
+int MIDITrailApp::_ExportVideo(const MTVideoExportParams& params)
+{
+	int result = 0;
+
+	if (m_Renderer11.GetDevice() == NULL) return YN_SET_ERR("Program error.", 0, 0);
+	if (m_DX11Family == DX11_FAMILY_NONE) return YN_SET_ERR("No scene to export.", 0, 0);
+	if ((params.width <= 0) || (params.height <= 0) || (params.fps <= 0)) {
+		return YN_SET_ERR("Program error.", 0, 0);
+	}
+
+	// stop live playback (export drives the tick manually; no audio meanwhile)
+	if ((m_PlayStatus != Stop) && (m_PlayStatus != NoData)) {
+		_ChangePlayStatus(Stop);
+	}
+
+	MTTempoMap tempo;
+	if (tempo.Build(&m_SeqData) != 0) return YN_SET_ERR("Tempo map build failed.", 0, 0);
+
+	// pitch bend is normally fed by the live message queue; replay it offline
+	MTPitchBendTimeline pbTimeline;
+	pbTimeline.Build(&m_SeqData);
+	m_NotePitchBend11.Reset();
+
+	// End the video at the last NOTE-OFF (end of musical content) rather than at
+	// the End-Of-Track event, which some files pad well past the last note. Fall
+	// back to the total play time if no note range is available.
+	unsigned long endTick = 0;
+	if (m_DX11Family == DX11_FAMILY_BOX)       endTick = m_NoteBox11.GetMaxEndTick();
+	else if (m_DX11Family == DX11_FAMILY_RAIN) endTick = m_NoteRain11.GetMaxEndTick();
+	else if (m_DX11Family == DX11_FAMILY_RING) endTick = m_NoteBoxRing11.GetMaxEndTick();
+
+	double endMs = (endTick > 0) ? tempo.TickToMs(endTick) : (double)m_SeqData.GetTotalPlayTime();
+	const double tailMs = 700.0;   // short tail so the last ripples / release finish
+	int fps = params.fps;
+	int totalFrames = (int)((endMs + tailMs) * (double)fps / 1000.0) + 1;
+	if (totalFrames < 1) totalFrames = 1;
+
+	// 360: force a 2:1 equirectangular frame; the cubemap face resolution provides
+	// the detail, so the ffmpeg-downscale supersample is not used.
+	int ss, ow, oh, beginRes;
+	if (params.equirect360) {
+		ss = 1;
+		ow = params.width;
+		oh = ow / 2;                  // equirectangular is always 2:1 (dialog forced this too)
+		beginRes = m_Renderer11.BeginOffscreen(ow, oh, true);
+		if (beginRes != 0) return YN_SET_ERR("Offscreen target failed.", ow, oh);
+	}
+	else {
+		// supersample for cleaner edges: render at 2x then let ffmpeg downscale (lanczos).
+		// Skip it for already-large outputs (cost/memory), and fall back to native res if
+		// the 2x offscreen target can't be allocated.
+		ss = ((params.width <= 1920) && (params.height <= 1080)) ? 2 : 1;
+		ow = params.width * ss; oh = params.height * ss;
+		beginRes = m_Renderer11.BeginOffscreen(ow, oh);
+		if ((beginRes != 0) && (ss > 1)) {
+			ss = 1; ow = params.width; oh = params.height;
+			beginRes = m_Renderer11.BeginOffscreen(ow, oh);
+		}
+		if (beginRes != 0) {
+			return YN_SET_ERR("Offscreen target failed.", ow, oh);
+		}
+	}
+
+	MTVideoExportParams ep = params;   // tell ffmpeg the effective supersample factor
+	ep.superSample = ss;
+	if (params.equirect360) { ep.width = ow; ep.height = oh; }   // 2:1 frame, no supersample
+
+	MTFFmpegPipe pipe;
+	if (pipe.Open(ep) != 0) {
+		m_Renderer11.EndOffscreen();
+		return YN_SET_ERR("Could not start ffmpeg.", 0, 0);
+	}
+
+	int rowBytes = ow * 4;
+
+	m_isExporting = true;
+	for (int f = 0; f < totalFrames; f++) {
+		double ms = (double)f * 1000.0 / (double)fps;
+		unsigned long tick = tempo.MsToTick(ms);
+		_FeedDX11Tick(tick, (unsigned long)(ms + 0.5));
+
+		// pitch bend at this tick (per channel), normally fed by the message queue
+		pbTimeline.Apply(tick, &m_NotePitchBend11);
+
+		// dashboard counters normally fed by the live sequencer message queue
+		// (which does not run offline): tempo / bar / beat at the current tick
+		{
+			MTPlaybackState st;
+			tempo.GetStateAtTick(tick, &st);
+			m_Dashboard11.SetTempo(st.tempoBPM);
+			m_Dashboard11.SetCurBar(st.barNo);
+			m_Dashboard11.SetBeat(st.beatNum, st.beatDenom);
+		}
+
+		// 3-stage pipeline: render frame f (GPU) + queue its copy to staging[f&1],
+		// then read back frame f-1 (staging[(f-1)&1], already done) and hand it to the
+		// async ffmpeg writer. So GPU render(f) || readback(f-1) || encode(f-2) overlap.
+		if (m_Renderer11.RenderOffscreenFrame(params.transparent, f & 1) != 0) { result = -1; break; }
+		if (f >= 1) {
+			int slot = pipe.AcquireBuffer();
+			if (slot < 0) { result = -1; break; }   // ffmpeg pipe died
+			if (m_Renderer11.ReadOffscreenBGRA((f - 1) & 1, pipe.BufferPtr(slot), rowBytes) != 0) { result = -1; break; }
+			pipe.SubmitBuffer(slot);
+		}
+
+		// progress overlay on the real window (DrawLoadingScreen pumps messages,
+		// so the window stays responsive and re-entry is guarded by m_isExporting)
+		if ((f % 8) == 0) {
+			char msg[128];
+			_snprintf_s(msg, sizeof(msg), _TRUNCATE, "Exporting video...  %d / %d", f + 1, totalFrames);
+			m_Renderer11.DrawLoadingScreen(msg, (float)f / (float)totalFrames);
+		}
+	}
+
+	// drain the final rendered frame (the readback runs one frame behind the render)
+	if ((result == 0) && (totalFrames >= 1)) {
+		int slot = pipe.AcquireBuffer();
+		if (slot >= 0) {
+			if (m_Renderer11.ReadOffscreenBGRA((totalFrames - 1) & 1, pipe.BufferPtr(slot), rowBytes) == 0) {
+				pipe.SubmitBuffer(slot);
+			}
+		}
+	}
+	m_isExporting = false;
+
+	int code = pipe.Close();
+	m_Renderer11.EndOffscreen();
+	if ((result == 0) && (code != 0)) result = YN_SET_ERR("ffmpeg returned an error.", code, 0);
+
+	// on failure, grab ffmpeg's stderr tail (the real reason) before pipe destructs
+	m_ExportErrorMsg[0] = _T('\0');
+	if (result != 0) pipe.GetErrorTail(m_ExportErrorMsg, _countof(m_ExportErrorMsg));
+	return result;
+}
+
+//******************************************************************************
+// M6: "Export Video..." menu - pick an output file then export (v1 defaults:
+// current window size, 60fps, H.264/libx264, opaque). Encoder/resolution dialog
+// comes later; ffmpeg must be on PATH.
+//******************************************************************************
+int MIDITrailApp::_OnMenuExportVideo()
+{
+	if (m_isExporting) return 0;
+
+	// 1) pick the MIDI file to render (export always loads a freshly chosen file)
+	TCHAR midiPath[MAX_PATH] = { _T('\0') };
+	bool isSelected = false;
+	int sel = _SelectMIDIFile(midiPath, MAX_PATH, &isSelected);
+	if (sel != 0) return sel;
+	if (!isSelected) return 0;   // cancelled
+
+	if (m_isFullScreen) _HideMenu();
+
+	// 2) load it (stops playback + builds the DX11 scene for the song)
+	sel = _StopPlaybackAndOpenFile(midiPath);
+	if (sel != 0) return sel;
+
+	if (m_DX11Family == DX11_FAMILY_NONE) {
+		MessageBox(m_hWnd, _T("Could not build a scene for this MIDI."), _T("Export Video"), MB_OK | MB_ICONWARNING);
+		return 0;
+	}
+
+	// 3) settings dialog (codec / resolution / fps / quality). Defaults: current
+	//    window client size (even), 60fps, H.264 CPU.
+	RECT rc;
+	GetClientRect(m_hWnd, &rc);
+	int w = (int)(rc.right - rc.left) & ~1;
+	int h = (int)(rc.bottom - rc.top) & ~1;
+	if (w < 16) w = 1280;
+	if (h < 16) h = 720;
+
+	MTVideoExportParams params;
+	ZeroMemory(&params, sizeof(params));
+	params.codec = MTVC_H264_CPU;
+	params.width = w;
+	params.height = h;
+	params.fps = 60;
+	params.quality = 0;
+	params.transparent = false;
+	params.equirect360 = false;
+
+	// restore the last-used export settings (conf/Video.ini), if any
+	{
+		MTConfFile vconf;
+		if ((vconf.Initialize(_T("Video")) == 0) && (vconf.SetCurSection(_T("Video")) == 0)) {
+			int v = (int)params.codec;
+			vconf.GetInt(_T("Codec"), &v, (int)params.codec);
+			if ((v >= 0) && (v <= (int)MTVC_HEVC_AMF)) params.codec = (MTVideoCodec)v;
+			vconf.GetInt(_T("Width"),   &params.width,   params.width);
+			vconf.GetInt(_T("Height"),  &params.height,  params.height);
+			vconf.GetInt(_T("Fps"),     &params.fps,     params.fps);
+			vconf.GetInt(_T("Quality"), &params.quality, params.quality);
+			int tr = params.transparent ? 1 : 0;
+			vconf.GetInt(_T("Transparent"), &tr, tr);
+			params.transparent = (tr != 0);
+			int eq = params.equirect360 ? 1 : 0;
+			vconf.GetInt(_T("Equirect360"), &eq, eq);
+			params.equirect360 = (eq != 0);
+		}
+	}
+
+	MTVideoExportDlg dlg;
+	if (!dlg.Show(m_hWnd, &params)) {
+		// cancelled: return to the title screen (a song was opened for the export)
+		m_Sequencer.Stop();
+		m_SceneType = Title;
+		_ChangePlayStatus(NoData);
+		_SetupDX11Scene();
+		return 0;
+	}
+
+	// remember the confirmed settings for next time (conf/Video.ini)
+	{
+		MTConfFile vconf;
+		if (vconf.Initialize(_T("Video")) == 0) {
+			vconf.SetCurSection(_T("Video"));
+			vconf.SetInt(_T("Codec"),       (int)params.codec);
+			vconf.SetInt(_T("Width"),       params.width);
+			vconf.SetInt(_T("Height"),      params.height);
+			vconf.SetInt(_T("Fps"),         params.fps);
+			vconf.SetInt(_T("Quality"),     params.quality);
+			vconf.SetInt(_T("Transparent"), params.transparent ? 1 : 0);
+			vconf.SetInt(_T("Equirect360"), params.equirect360 ? 1 : 0);
+		}
+	}
+
+	// 4) output path via Save dialog (default = MIDI base name + codec extension)
+	const TCHAR* ext = MTVideoCodecExt(params.codec);
+	TCHAR path[MAX_PATH] = _T("miditrail");
+	{
+		const TCHAR* base = _tcsrchr(midiPath, _T('\\'));
+		base = (base != NULL) ? (base + 1) : midiPath;
+		_tcsncpy_s(path, MAX_PATH, base, _TRUNCATE);
+		TCHAR* dot = _tcsrchr(path, _T('.'));
+		if (dot != NULL) *dot = _T('\0');
+		_tcscat_s(path, MAX_PATH, ext);
+	}
+	TCHAR filter[64];
+	_sntprintf_s(filter, _countof(filter), _TRUNCATE, _T("Video (*%s)|*%s|All Files|*.*|"), ext, ext);
+	for (int k = 0; filter[k] != _T('\0'); k++) { if (filter[k] == _T('|')) filter[k] = _T('\0'); }
+
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = m_hWnd;
+	ofn.lpstrFilter = filter;
+	ofn.lpstrFile = path;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.lpstrDefExt = ext + 1;   // skip the leading dot
+	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
+	if (!GetSaveFileName(&ofn)) {
+		m_Sequencer.Stop();
+		m_SceneType = Title;
+		_ChangePlayStatus(NoData);
+		_SetupDX11Scene();
+		return 0;
+	}
+	_tcsncpy_s(params.outPath, MAX_PATH, path, _TRUNCATE);
+
+	int result = _ExportVideo(params);
+
+	// return to the title screen (close the exported song so the session is not
+	// left sitting on a file the user only opened to render)
+	m_Sequencer.Stop();
+	m_SceneType = Title;
+	_ChangePlayStatus(NoData);
+	_SetupDX11Scene();   // NoData -> detaches all scene components; the logo shows
+
+	if (result == 0) {
+		MessageBox(m_hWnd, _T("Video export finished."), _T("Export Video"), MB_OK | MB_ICONINFORMATION);
+	} else {
+		TCHAR msg[1280];
+		if (m_ExportErrorMsg[0] != _T('\0')) {
+			// show ffmpeg's own error (e.g. "Unknown encoder 'libx264'", odd size)
+			_sntprintf_s(msg, _countof(msg), _TRUNCATE,
+				_T("Video export failed.\n\nffmpeg:\n%s"), m_ExportErrorMsg);
+		} else {
+			_tcscpy_s(msg, _countof(msg),
+				_T("Video export failed. Make sure ffmpeg is installed and on PATH."));
+		}
+		MessageBox(m_hWnd, msg, _T("Export Video"), MB_OK | MB_ICONWARNING);
+	}
+	return 0;
+}
+
+int MIDITrailApp::_SetupDX11Scene()
+{
+	if (m_Renderer11.GetDevice() == NULL) return 0;
+	ID3D11Device* pDevice = m_Renderer11.GetDevice();
+	ID3D11DeviceContext* pContext = m_Renderer11.GetContext();
+
+	//(re)create the dashboard on the current device
+	m_Dashboard11.Create(pDevice, pContext);
+
+	//M4.15: background image (Graphic.ini [Background-image] ImageFilePath; empty = off)
+	{
+		TCHAR bgPath[_MAX_PATH] = { _T('\0') };
+		if (m_GraphicConf.SetCurSection(_T("Background-image")) == 0) {
+			m_GraphicConf.GetStr(_T("ImageFilePath"), bgPath, _MAX_PATH, _T(""));
+		}
+		m_BackgroundImage11.Create(pDevice, pContext, bgPath);
+	}
+
+	//Scene family: BOX = PianoRoll3D/2D (note boxes); RAIN = PianoRollRain
+	//(falling notes); RING = PianoRollRing (circular notes).
+	const TCHAR* pSceneName = NULL;
+	enum { FAMILY_NONE, FAMILY_BOX, FAMILY_RAIN, FAMILY_RING } family = FAMILY_NONE;
+	switch (m_SceneType) {
+		case PianoRoll3D:   pSceneName = _T("PianoRoll3D");   family = FAMILY_BOX;  break;
+		case PianoRoll2D:   pSceneName = _T("PianoRoll2D");   family = FAMILY_BOX;  break;
+		case PianoRollRain:   pSceneName = _T("PianoRollRain");   family = FAMILY_RAIN; break;
+		case PianoRollRain2D: pSceneName = _T("PianoRollRain2D"); family = FAMILY_RAIN; break;
+		case PianoRollRing:   pSceneName = _T("PianoRollRing");   family = FAMILY_RING; break;
+		default: break;
+	}
+
+	//no song / unsupported scene: detach everything
+	if ((family == FAMILY_NONE) || (m_PlayStatus == NoData)) {
+		m_DX11Family = DX11_FAMILY_NONE;
+		m_Renderer11.SetNoteBox11(NULL);
+		m_Renderer11.SetNoteRain11(NULL);
+		m_Renderer11.SetNoteBoxRing11(NULL);
+		m_Renderer11.SetKeyboard11(NULL);
+		m_Renderer11.SetKeyboardRain11(NULL);
+		m_Renderer11.SetNoteRipple11(NULL);
+		m_Renderer11.SetNoteLyrics11(NULL);
+		m_Renderer11.SetNoteBoxLive11(NULL);
+		m_Renderer11.SetGridBox11(NULL);
+		m_Renderer11.SetCamera11(NULL);
+		m_Renderer11.SetDashboard11(NULL);
+		m_Renderer11.SetTimeIndicator11(NULL);
+		m_Renderer11.SetPictBoard11(NULL);
+		m_Renderer11.SetGridRing11(NULL);
+		m_Renderer11.SetTimeIndicatorRing11(NULL);
+		m_Renderer11.SetPictBoardRing11(NULL);
+		m_Renderer11.SetBackgroundImage11(NULL);
+		m_Renderer11.SetStars11(NULL);
+		return 0;
+	}
+
+	unsigned long totalNotes = 0;
+	m_DX11Family = (family == FAMILY_RAIN) ? DX11_FAMILY_RAIN
+	             : (family == FAMILY_RING) ? DX11_FAMILY_RING : DX11_FAMILY_BOX;
+
+	bool isLiveBox = (m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF);
+	//Live has its own conf (e.g. PianoRoll2DLive.ini) and its own saved viewpoint,
+	//kept separate from playback. EVERY conf read below (note box / keyboard /
+	//camera / background colour / starfield) uses this name in live mode.
+	TCHAR liveSceneName[256] = { _T('\0') };
+	_tcscpy_s(liveSceneName, 256, pSceneName);
+	_tcscat_s(liveSceneName, 256, _T("Live"));
+	//in live mode every scene reads its own *Live conf (matches the separate live
+	//viewpoint). Live note drawing itself is only implemented for the box scenes.
+	const TCHAR* sceneConfName = isLiveBox ? liveSceneName : pSceneName;
+
+	//M5: background clear color from the scene conf [Color] BackGroundRGB. The DX9
+	//scene's SetBGColor path is dead (m_pScene is NULL), so read it here directly.
+	{
+		MTConfFile bgConf;
+		TCHAR hexColor[16] = { _T('\0') };
+		if ((bgConf.Initialize(sceneConfName) == 0) && (bgConf.SetCurSection(_T("Color")) == 0)) {
+			bgConf.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000"));
+			m_Renderer11.SetBackgroundColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
+			//dashboard text color: DX9 read [Color] CaptionRGBA (shipped confs use the
+			//translucent grey AAAAAAAA); the DX11 port hardcoded solid white, making the
+			//counter/filename text look brighter than DX9. Restore the conf color.
+			TCHAR hexCaption[16] = { _T('\0') };
+			bgConf.GetStr(_T("CaptionRGBA"), hexCaption, 16, _T("FFFFFFFF"));
+			D3DXCOLOR cap = DXColorUtil::MakeColorFromHexRGBA(hexCaption);
+			m_Dashboard11.SetTextColor(cap.r, cap.g, cap.b, cap.a);
+		}
+	}
+
+	//M4.8: per-channel pitch bend state (fed from MsgPitchBend); multi-keyboard
+	//mode enables it (single keyboard disables it, matching the DX9 scenes).
+	m_NotePitchBend11.Initialize();
+	m_NotePitchBend11.SetEnable(true);
+
+	if ((family == FAMILY_BOX) && isLiveBox) {
+		//live monitor: real-time dynamic note boxes (no pre-built field / tick).
+		//The note field, keyboard and grid mirror the playback 2D look; ripple /
+		//lyrics / time-indicator need a pre-built note list, so they stay off.
+		m_NoteBoxLive11.SetPitchBend(&m_NotePitchBend11);
+		//live has no song: pass NULL seq data (matches DX9 MTNoteBoxLive)
+		m_NoteBoxLive11.Create(pDevice, pContext, liveSceneName, NULL);
+		m_Renderer11.SetNoteBoxLive11(&m_NoteBoxLive11);
+		m_Renderer11.SetNoteRainLive11(NULL);
+		m_Renderer11.SetNoteBox11(NULL);
+		m_Renderer11.SetNoteRain11(NULL);
+		m_Renderer11.SetNoteBoxRing11(NULL);
+		m_Renderer11.SetGridRing11(NULL);
+		m_Renderer11.SetTimeIndicatorRing11(NULL);
+		m_Renderer11.SetPictBoardRing11(NULL);
+
+		//keyboard with live key-press reaction (single keyboard, NULL seq = no song;
+		//keys are lit directly from real-time MIDI via SetNoteOnLive/OffLive).
+		m_Kbd11.Create(pDevice, pContext, liveSceneName, NULL, true);
+		m_Kbd11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetKeyboard11(&m_Kbd11);
+		m_Renderer11.SetKeyboardRain11(NULL);
+
+		//grid box uses the live conf (no song); off if it can't build cleanly
+		m_Renderer11.SetGridBox11(NULL);
+
+		//live ripple: real-time note-on driven (no song), clocked by timeGetTime
+		m_NoteRipple11.SetPitchBend(&m_NotePitchBend11);
+		m_NoteRipple11.Create(pDevice, pContext, liveSceneName, NULL);
+		m_Renderer11.SetNoteRipple11(&m_NoteRipple11);
+		m_Renderer11.SetNoteLyrics11(NULL);
+		m_Renderer11.SetTimeIndicator11(NULL);
+		m_Renderer11.SetPictBoard11(NULL);
+		totalNotes = 0;
+	}
+	else if (family == FAMILY_BOX) {
+		m_Renderer11.SetNoteBoxLive11(NULL);
+		m_Renderer11.SetNoteRainLive11(NULL);
+		//single keyboard -> collapse all ports onto one note row to match it
+		m_Renderer11.DrawLoadingScreen("Building note field...", 0.35f);
+		//drive the loading bar from inside the (huge) instance-buffer build
+		DXNoteBox11::SetBuildProgressCallback(&MIDITrailApp::_LoadProgressCallback, this);
+		m_NoteBox11.Create(pDevice, pContext, pSceneName, &m_SeqData, m_IsSingleKeyboard11);
+		DXNoteBox11::SetBuildProgressCallback(NULL, NULL);
+		m_NoteBox11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetNoteBox11(&m_NoteBox11);
+		m_Renderer11.SetNoteRain11(NULL);
+		m_Renderer11.SetNoteBoxRing11(NULL);
+		m_Renderer11.SetGridRing11(NULL);
+		m_Renderer11.SetTimeIndicatorRing11(NULL);
+		m_Renderer11.SetPictBoardRing11(NULL);
+		totalNotes = m_NoteBox11.GetNoteCount();
+
+		//M3: faithful keyboard (real key geometry + HDKeyboard.png + Mod transform)
+		m_Renderer11.DrawLoadingScreen("Building keyboard...", 0.88f);
+		m_Kbd11.Create(pDevice, pContext, pSceneName, &m_SeqData, m_IsSingleKeyboard11);
+		m_Kbd11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetKeyboard11(&m_Kbd11);
+		m_Renderer11.SetKeyboardRain11(NULL);
+
+		//M3: note ripple effect (note-on driven)
+		m_NoteRipple11.SetPitchBend(&m_NotePitchBend11);   //M4.23: ripple follows the bend
+		m_Renderer11.DrawLoadingScreen("Building ripple...", 0.93f);
+		m_NoteRipple11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetNoteRipple11(&m_NoteRipple11);
+
+		//note lyrics (0x05 text drawn over the played notes); View > Lyrics toggles it
+		m_NoteLyrics11.SetPitchBend(&m_NotePitchBend11);
+		m_NoteLyrics11.SetRingMode(false);   //planar layout for 3D/2D
+		m_NoteLyrics11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetNoteLyrics11(m_isEnableLyrics ? &m_NoteLyrics11 : NULL);
+
+		//M3: grid box (piano-roll grid lines, spatial reference)
+		m_Renderer11.DrawLoadingScreen("Building grid...", 0.97f);
+		m_GridBox11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetGridBox11(&m_GridBox11);
+
+		//M4.4: time indicator (translucent "now playing" playback section)
+		m_TimeIndicator11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetTimeIndicator11(&m_TimeIndicator11);
+
+		//M4.5: picture board disabled in the Mod scenes (see M4.5a)
+		m_Renderer11.SetPictBoard11(NULL);
+	}
+	else if ((family == FAMILY_RAIN) && isLiveBox) {
+		//live monitor: real-time falling notes (Rain). No song / pre-built field.
+		m_NoteRainLive11.SetPitchBend(&m_NotePitchBend11);
+		m_NoteRainLive11.Create(pDevice, pContext, liveSceneName, NULL);
+		m_Renderer11.SetNoteRainLive11(&m_NoteRainLive11);
+		m_Renderer11.SetNoteBoxLive11(NULL);
+		m_Renderer11.SetNoteBox11(NULL);
+		m_Renderer11.SetNoteRain11(NULL);
+		m_Renderer11.SetNoteBoxRing11(NULL);
+		m_Renderer11.SetGridRing11(NULL);
+		m_Renderer11.SetTimeIndicatorRing11(NULL);
+		m_Renderer11.SetPictBoardRing11(NULL);
+
+		//live Rain keyboard with key-press reaction (the rain-specific keyboard so it
+		//sits at the right place/orientation; lit directly from real-time MIDI).
+		m_KbdRain11.Create(pDevice, pContext, liveSceneName, NULL);
+		m_KbdRain11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetKeyboardRain11(&m_KbdRain11);
+		m_Renderer11.SetKeyboard11(NULL);
+
+		m_Renderer11.SetGridBox11(NULL);
+		m_Renderer11.SetNoteRipple11(NULL);
+		m_Renderer11.SetNoteLyrics11(NULL);
+		m_Renderer11.SetTimeIndicator11(NULL);
+		m_Renderer11.SetPictBoard11(NULL);
+		totalNotes = 0;
+	}
+	else if ((family == FAMILY_RING) && isLiveBox) {
+		//live monitor: real-time circular notes (Ring). Reuse the box-live renderer
+		//slot, built in ring mode (MTNoteDesignRing live placement).
+		m_NoteBoxLive11.SetPitchBend(&m_NotePitchBend11);
+		m_NoteBoxLive11.Create(pDevice, pContext, liveSceneName, NULL, true);   //ringMode
+		m_Renderer11.SetNoteBoxLive11(&m_NoteBoxLive11);
+		m_Renderer11.SetNoteRainLive11(NULL);
+		m_Renderer11.SetNoteBox11(NULL);
+		m_Renderer11.SetNoteRain11(NULL);
+		m_Renderer11.SetNoteBoxRing11(NULL);
+		m_Renderer11.SetGridRing11(NULL);
+		m_Renderer11.SetTimeIndicatorRing11(NULL);
+
+		//ring "keyboard" = the textured picture board (DX9 EffectPianoKeyboard). It is
+		//static (no song needed), so build it for live too.
+		m_PictBoardRing11.Create(pDevice, pContext, liveSceneName, NULL);
+		m_Renderer11.SetPictBoardRing11(&m_PictBoardRing11);
+
+		m_Renderer11.SetKeyboard11(NULL);
+		m_Renderer11.SetKeyboardRain11(NULL);
+		m_Renderer11.SetGridBox11(NULL);
+		//ring live ripple (real-time note-on driven, ring positions)
+		m_NoteRipple11.SetPitchBend(&m_NotePitchBend11);
+		m_NoteRipple11.Create(pDevice, pContext, liveSceneName, NULL, true);
+		m_Renderer11.SetNoteRipple11(&m_NoteRipple11);
+		m_Renderer11.SetNoteLyrics11(NULL);
+		m_Renderer11.SetTimeIndicator11(NULL);
+		m_Renderer11.SetPictBoard11(NULL);
+		totalNotes = 0;
+	}
+	else if (family == FAMILY_RAIN) {
+		m_Renderer11.SetNoteRainLive11(NULL);
+		m_NoteRain11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_NoteRain11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetNoteRain11(&m_NoteRain11);
+		m_Renderer11.SetNoteBox11(NULL);
+		m_Renderer11.SetNoteBoxRing11(NULL);
+		m_Renderer11.SetGridRing11(NULL);
+		m_Renderer11.SetTimeIndicatorRing11(NULL);
+		m_Renderer11.SetPictBoardRing11(NULL);
+		totalNotes = m_NoteRain11.GetNoteCount();
+
+		//M4.7b: Rain keyboard (non-Mod, per channel, rises with playback in Y)
+		m_KbdRain11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_KbdRain11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetKeyboardRain11(&m_KbdRain11);
+
+		//Rain has no box keyboard / grid / ripple / lyrics / time indicator / picture board.
+		m_Renderer11.SetKeyboard11(NULL);
+		m_Renderer11.SetNoteRipple11(NULL);
+		m_Renderer11.SetNoteLyrics11(NULL);
+		m_Renderer11.SetNoteBoxLive11(NULL);
+		m_Renderer11.SetGridBox11(NULL);
+		m_Renderer11.SetTimeIndicator11(NULL);
+		m_Renderer11.SetPictBoard11(NULL);
+	}
+	else {  // FAMILY_RING
+		//M4.9 circular notes + M4.13 ring decorations (grid / board / time
+		//indicator). Ring note ripple not ported yet.
+		m_NoteBoxRing11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_NoteBoxRing11.SetPitchBend(&m_NotePitchBend11);
+		m_Renderer11.SetNoteBoxRing11(&m_NoteBoxRing11);
+		totalNotes = m_NoteBoxRing11.GetNoteCount();
+
+		m_GridRing11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetGridRing11(&m_GridRing11);
+		m_TimeIndicatorRing11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetTimeIndicatorRing11(&m_TimeIndicatorRing11);
+		m_PictBoardRing11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetPictBoardRing11(&m_PictBoardRing11);
+
+		//M4.13: ring ripple (reuse MTNoteRipple11 in ring mode)
+		m_NoteRipple11.SetPitchBend(&m_NotePitchBend11);   //M4.23: ripple follows the bend
+		m_NoteRipple11.Create(pDevice, pContext, pSceneName, &m_SeqData, true);
+		m_Renderer11.SetNoteRipple11(&m_NoteRipple11);
+
+		//ring lyrics (1.4.1 PianoRollRing lyrics, ported to DX11): reuse MTNoteLyrics11
+		//in ring mode so 0x05 text is laid on the ring like the notes.
+		m_NoteLyrics11.SetPitchBend(&m_NotePitchBend11);
+		m_NoteLyrics11.SetRingMode(true);
+		m_NoteLyrics11.Create(pDevice, pContext, pSceneName, &m_SeqData);
+		m_Renderer11.SetNoteLyrics11(m_isEnableLyrics ? &m_NoteLyrics11 : NULL);
+
+		m_Renderer11.SetNoteBox11(NULL);
+		m_Renderer11.SetNoteRain11(NULL);
+		m_Renderer11.SetKeyboard11(NULL);
+		m_Renderer11.SetKeyboardRain11(NULL);
+		m_Renderer11.SetGridBox11(NULL);
+		m_Renderer11.SetTimeIndicator11(NULL);
+		m_Renderer11.SetNoteLyrics11(NULL);   //ring scene has no lyrics
+		m_Renderer11.SetNoteBoxLive11(NULL);  //ring scene has no live notes
+		m_Renderer11.SetNoteRainLive11(NULL);
+		m_Renderer11.SetPictBoard11(NULL);
+	}
+
+	//M4: dashboard - file name (basename), totals, reset counters
+	{
+		SMBarList barList;
+		unsigned long totalBars = 0;
+		if (m_SeqData.GetBarList(&barList) == 0) totalBars = barList.GetSize();
+
+		m_NpsNoteCount = 0;
+		m_Dashboard11.Reset();
+		//playback: ensure the dashboard is in normal (non-monitor) mode; live mode
+		//is (re)enabled by _OnMenuStartMonitoring after this runs.
+		if ((m_PlayStatus != MonitorON) && (m_PlayStatus != MonitorOFF)) {
+			m_Dashboard11.SetMonitorMode(false, "");
+		}
+		m_Dashboard11.SetFileName(m_DashFileNameA);
+		m_Dashboard11.SetTotals(m_SeqData.GetTotalPlayTime(), totalBars, totalNotes);
+		//loading resets the play speed to 100% (m_PlaySpeedRatio above); mirror that
+		//on the dashboard so a leftover "SPEED:NNN%" from the previous song clears.
+		m_Dashboard11.SetPlaySpeedRatio(m_PlaySpeedRatio);
+		m_Renderer11.SetDashboard11(&m_Dashboard11);   //show only once a song is loaded
+	}
+
+	//M4.16: starfield (scene conf [Stars] NumberOfStars; 0 = off). The sky
+	//follows the camera and is drawn behind everything in every scene family.
+	{
+		int numStars = 0;
+		MTConfFile starsConf;
+		if (starsConf.Initialize(sceneConfName) == 0) {
+			if (starsConf.SetCurSection(_T("Stars")) == 0) {
+				starsConf.GetInt(_T("NumberOfStars"), &numStars, 2000);
+			}
+		}
+		m_Stars11.Create(pDevice, pContext, numStars);
+	}
+
+	//M2.5: real first-person camera (free look + playback follow scroll).
+	//Rain progresses along Y (falling notes); box/ring scenes along X (time).
+	//ced 20260628: if this is just a re-setup of the SAME scene (switching songs in
+	//the same view mode, or a renderer re-init on resize/AA), keep the user's current
+	//viewpoint instead of snapping back to default/last-saved. Capture it NOW - while
+	//the OLD note-design + current tick are still active - so the now-line-relative
+	//position transfers correctly; reapplied after Initialize/Reset + the restore below.
+	bool keepView = m_HasPrevView && (m_SceneType == m_PrevViewSceneType)
+			&& (isLiveBox == m_PrevViewIsLive);
+	float kvX = 0, kvY = 0, kvZ = 0, kvPhi = 0, kvTheta = 0, kvRoll = 0, kvAutoRoll = 0;
+	if (keepView) {
+		m_FpCam11.GetViewpointParam(&kvX, &kvY, &kvZ, &kvPhi, &kvTheta, &kvRoll);
+		kvAutoRoll = m_IsAutoRollMode11 ? m_FpCam11.GetAutoRollVelocity() : 0.0f;
+	}
+
+	//Live: no song -> init with the live conf + NULL seq data (matches DX9;
+	//passing the empty &m_SeqData makes the camera divide by a 0 time-division
+	//and crash in TransformDX11).
+	if (isLiveBox) {
+		m_FpCam11.Initialize(m_hWnd, liveSceneName, NULL);   // live: own conf, no song
+	} else {
+		m_FpCam11.Initialize(m_hWnd, pSceneName, &m_SeqData);
+	}
+	// reset the playback tick baseline so the scroll offset is applied from tick 0
+	// (Initialize does not clear it; a stale value - e.g. left by a video export -
+	// would otherwise bake a wrong scroll offset into the viewpoint => blank scene).
+	m_FpCam11.Reset();
+	// seed the keyboard-envelope tempo with the song's initial tempo (tempo meta
+	// events update it during playback); guard against a 0 / missing tempo.
+	{ unsigned long bpm = m_SeqData.GetTempoBPM(); m_CurSongBPM = (bpm > 0) ? bpm : 120; }
+	m_FpCam11.SetProgressDirection((family == FAMILY_RAIN)
+			? MTFirstPersonCam::DirY : MTFirstPersonCam::DirX);
+	//Live uses the SAME default + saved viewpoint as playback 2D so the orientation
+	//(roll/angle the user tuned) matches; the live now-line sits at tick 0 (no scroll).
+	if (family == FAMILY_RING) m_FpCam11.SetDefaultViewpointRing();
+	else m_FpCam11.SetDefaultViewpoint();
+
+	//M3 (DX11): restore the saved viewpoint (m_ViewConf "Viewpoint-<sceneName>")
+	//so it persists across restarts; if none saved, keep the default above.
+	{
+		const float SENT = -1.0e30f;
+		TCHAR section[256] = { _T('\0') };
+		_tcscat_s(section, 256, _T("Viewpoint-"));
+		_tcscat_s(section, 256, pSceneName);
+		//live monitor keeps its own viewpoint, separate from playback
+		if (isLiveBox) _tcscat_s(section, 256, _T("Live"));
+		if (m_ViewConf.SetCurSection(section) == 0) {
+			float x = SENT, y = 0, z = 0, phi = 0, theta = 0, roll = 0, autoRoll = 0;
+			m_ViewConf.GetFloat(_T("X"), &x, SENT);
+			if (x != SENT) {   // a viewpoint was saved for this scene
+				m_ViewConf.GetFloat(_T("Y"), &y, 0.0f);
+				m_ViewConf.GetFloat(_T("Z"), &z, 0.0f);
+				m_ViewConf.GetFloat(_T("Phi"), &phi, 0.0f);
+				m_ViewConf.GetFloat(_T("Theta"), &theta, 0.0f);
+				m_ViewConf.GetFloat(_T("ManualRollAngle"), &roll, 0.0f);
+				m_ViewConf.GetFloat(_T("AutoRollVelocity"), &autoRoll, 0.0f);
+				m_FpCam11.SetViewpointParam(x, y, z, phi, theta, roll, autoRoll);
+				m_IsAutoRollMode11 = (autoRoll != 0.0f);
+			}
+		}
+	}
+	//ced 20260628: restore the captured live viewpoint (overrides default/saved above)
+	//so the same-scene re-setup keeps exactly where the user was looking.
+	if (keepView) {
+		m_FpCam11.SetViewpointParam(kvX, kvY, kvZ, kvPhi, kvTheta, kvRoll, kvAutoRoll);
+		m_IsAutoRollMode11 = (kvAutoRoll != 0.0f);
+	}
+	m_PrevViewSceneType = m_SceneType;
+	m_PrevViewIsLive = isLiveBox;
+	m_HasPrevView = true;
+	m_Renderer11.SetCamera11(&m_FpCam11);
+
+	//M4.10: honor the View-menu effect toggles (keyboard/ripple/grid/etc.)
+	_ApplyDX11Visibility();
+
+	// free the shared note-list cache now that every component has built its
+	// buffers (large for Black MIDI; rebuilt on the next scene setup if needed).
+	m_SeqData.ReleaseMergedNoteList();
+
+	return 0;
 }
 
 // >>> add 20120728 yossiepon begin
 
 //******************************************************************************
-// MIDIƒtƒ@ƒCƒ‹’Ç‰Á“Ç‚İ‚İ
-// ƒtƒ@ƒCƒ‹–¼‚ÉuportXv‚ªŠÜ‚Ü‚ê‚éê‡AX‚ğƒ|[ƒg”Ô†‚Æ‚İ‚È‚·ia-Z:‘å¬“¯ˆê‹j
-// ƒtƒ@ƒCƒ‹–¼‚ÉuchXXv‚ªŠÜ‚Ü‚ê‚éê‡AXX‚ğƒ`ƒƒƒ“ƒlƒ‹”Ô†‚ÆŒ©‚È‚·i00-99)
+// MIDIãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ èª­ã¿è¾¼ã¿
+// ãƒ•ã‚¡ã‚¤ãƒ«åã«ã€ŒportXã€ãŒå«ã¾ã‚Œã‚‹å ´åˆã€Xã‚’ãƒãƒ¼ãƒˆç•ªå·ã¨ã¿ãªã™ï¼ˆa-Z:å¤§å°åŒä¸€è¦–ï¼‰
+// ãƒ•ã‚¡ã‚¤ãƒ«åã«ã€ŒchXXã€ãŒå«ã¾ã‚Œã‚‹å ´åˆã€XXã‚’ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ã¨è¦‹ãªã™ï¼ˆ00-99)
 //******************************************************************************
 int MIDITrailApp::_AddMIDIFile(
-		const WCHAR* pFilePath
+		const TCHAR* pFilePath
 	)
 {
 	int result = 0;
-	WCHAR* pPath = NULL;
-	WCHAR smfTempPath[_MAX_PATH] = { L'\0' };
-	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
+	TCHAR* pPath = NULL;
+	TCHAR smfTempPath[_MAX_PATH] = {_T('\0')};
+	TCHAR smfDumpPath[_MAX_PATH] = {_T('\0')};
 	SMSeqData tmpSeqData;
 	SMFileReader smfReader;
-	int portNo = -1;
-	int chNo = -1;
+	short portNo = -1;
+	short chNo = -1;
 
-	//Šg’£q‚ª*.mid‚Ìê‡
-	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
-		pPath = (WCHAR*)pFilePath;
+	//æ‹¡å¼µå­ãŒ*.midã®å ´åˆ
+	if (YNPathUtil::IsFileExtMatch(pFilePath, _T(".mid"))) {
+		pPath = (TCHAR*)pFilePath;
 	}
-	//rcpcv.dll—LŒø‚Å‚©‚ÂƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚ê‚ÎSMF‚É•ÏŠ·
-	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(pFilePath)) {
-		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, L"RCP");
+	//æ‹¡å¼µå­ãŒ*.midä»¥å¤–ã®å ´åˆ
+	else {
+		//ãƒ¬ã‚³ãƒ³ãƒãƒ¼ã‚¶ã®ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã¿ãªã—ã¦SMFã«å¤‰æ›ã™ã‚‹
+		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, _T("RCP"));
 		if (result != 0) goto EXIT;
 		result = m_RcpConv.Convert(pFilePath, smfTempPath);
 		if (result != 0) goto EXIT;
 		pPath = smfTempPath;
 	}
-	//‚¢‚¸‚ê‚É‚àŠY“–‚µ‚È‚¢ê‡
-	else {
-		//‚»‚Ì‚Ü‚Ü“Ç‚İ‚Ş
-		pPath = (WCHAR*)pFilePath;
-	}
 
-	//ƒfƒoƒbƒOƒ‚[ƒh‚Å‚ ‚ê‚ÎMIDIƒtƒ@ƒCƒ‹‰ğÍŒ‹‰Ê‚ğƒ_ƒ“ƒv‚·‚é
+	//ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰ã§ã‚ã‚Œã°MIDIãƒ•ã‚¡ã‚¤ãƒ«è§£æçµæœã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹
 	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
-		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
-		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
-		smfReader.SetLogPath(smfDumpPath);
+		_tcscat_s(smfDumpPath, _MAX_PATH, pPath);
+		_tcscat_s(smfDumpPath, _MAX_PATH, _T(".dump.txt"));
+		WCHAR smfDumpPathW[_MAX_PATH] = { L'\0' };
+		MultiByteToWideChar(CP_ACP, 0, smfDumpPath, -1, smfDumpPathW, _MAX_PATH);
+		smfReader.SetLogPath(smfDumpPathW);
 	}
 
-	//ƒtƒ@ƒCƒ‹‚ğˆêƒV[ƒPƒ“ƒX‚É“Ç‚İ‚İ
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¸€æ™‚ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«èª­ã¿è¾¼ã¿
 	result = smfReader.Load(pPath, &tmpSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹–¼‚Éƒ|[ƒg”Ô†‚ªŠÜ‚Ü‚ê‚Ä‚¢‚ê‚Î’Šo
-	WCHAR *pPortNo = wcsstr(pPath, L"port");
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã«ãƒãƒ¼ãƒˆç•ªå·ãŒå«ã¾ã‚Œã¦ã„ã‚Œã°æŠ½å‡º
+	char *pPortNo = strstr(pPath, "port");
 	if(pPortNo != NULL) {
-		portNo = towlower(*(pPortNo + 4)) - L'a';
-
-#ifdef _DEBUG
-		char buf[32];
-		sprintf_s(buf, "port %c added.\n", 'A' + portNo);
-		OutputDebugStringA(buf);
-#endif
+		portNo = tolower(*(pPortNo + 4)) - 'a';
 	}
 
-	//ƒtƒ@ƒCƒ‹–¼‚Éƒ`ƒƒƒ“ƒlƒ‹”Ô†‚ªŠÜ‚Ü‚ê‚Ä‚¢‚ê‚Î’Šo
-	WCHAR *pChNo = wcsstr(pPath, L"ch");
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã«ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ãŒå«ã¾ã‚Œã¦ã„ã‚Œã°æŠ½å‡º
+	char *pChNo = strstr(pPath, "ch");
 	if(pChNo != NULL) {
-		WCHAR bufChNo[3];
-		wcsncpy_s(bufChNo, 3, pChNo + 2, 2);
-		bufChNo[2] = L'\0';
-		chNo = _wtoi(bufChNo) - 1;
-
-#ifdef _DEBUG
-		char buf[32];
-		sprintf_s(buf, "chNo %d added.\n", chNo);
-		OutputDebugStringA(buf);
-#endif
+		char bufChNo[3];
+		strncpy_s(bufChNo, 3, pChNo + 2, 2);
+		bufChNo[2] = '\0';
+		chNo = atoi(bufChNo) - 1;
 	}
 
-	//ˆêƒV[ƒPƒ“ƒX‚ğƒ}[ƒW
+	//ä¸€æ™‚ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ãƒãƒ¼ã‚¸
 	m_SeqData.AddSequence(tmpSeqData, portNo, chNo);
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÉÄ¶ƒXƒs[ƒh‚ğ100%‚É–ß‚·F_CreateScene‚ÅƒJƒEƒ“ƒ^‚É”½‰f
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿æ™‚ã«å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’100%ã«æˆ»ã™ï¼š_CreateSceneã§ã‚«ã‚¦ãƒ³ã‚¿ã«åæ˜ 
 	m_PlaySpeedRatio = 100;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	m_SceneType = m_SelectedSceneType;
 	result = _CreateScene(m_SceneType, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
 
 	m_isRewind = false;
 
 EXIT:;
-	if (wcslen(smfTempPath) != 0) {
-		DeleteFileW(smfTempPath);
+	if (_tcslen(smfTempPath) != 0) {
+		DeleteFile(smfTempPath);
 	}
 	return result;
 }
@@ -2746,81 +4057,19 @@ EXIT:;
 // <<< add 20120728 yossiepon end
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
-//******************************************************************************
-void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
-{
-//>>> add yossiepon 20250616 begin
-	WCHAR format[MAX_LOADSTRING];
-
-	wcscpy_s(format, MAX_LOADSTRING, m_TitleBase);
-//<<< add yossiepon 20250616 end
-
-//>>> modify yossiepon 20250616 begin
-	//ƒtƒ@ƒCƒ‹–¼‚È‚µ‚Ìê‡
-	if (pFileName == NULL) {
-		swprintf_s(
-			m_Title,
-			MAX_LOADSTRING,
-			format
-		);
-	}
-	else {
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚È‚µ‚Ìê‡
-		if (m_MIDIFileList.GetFileCount() == 0) {
-			wcscat_s(
-				format,
-				MAX_LOADSTRING,
-				MIDITRAIL_WINDOW_TITLE_FILE
-			);
-
-			swprintf_s(
-				m_Title,
-				MAX_LOADSTRING,
-				format,
-				pFileName
-			);
-		}
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ ‚è‚Ìê‡
-		else {
-			wcscat_s(
-				format,
-				MAX_LOADSTRING,
-				MIDITRAIL_WINDOW_TITLE_FILES
-			);
-
-			swprintf_s(
-				m_Title,
-				MAX_LOADSTRING,
-				format,
-				(int)m_MIDIFileList.GetSelectedFileIndex() + 1,
-				(int)m_MIDIFileList.GetFileCount(),
-				pFileName
-			);
-		}
-	}
-//<<< modify yossiepon 20250616 end
-
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹İ’è
-	SetWindowTextW(m_hWnd, m_Title);
-
-	return;
-}
-
-//******************************************************************************
-// FPSXV
+// FPSæ›´æ–°
 //******************************************************************************
 void MIDITrailApp::_UpdateFPS()
 {
 	unsigned long curTime = 0;
 	unsigned long diffTime = 0;
 	double fps = 0;
-	WCHAR title[MAX_LOADSTRING];
+	TCHAR title[256];
 
 	curTime = timeGetTime();
 	m_FPSCount += 1;
 
-	//1•b‚²‚Æ‚ÉFPS‚ğŒvZ
+	//1ç§’ã”ã¨ã«FPSã‚’è¨ˆç®—
 	diffTime = curTime - m_PrevTime;
 	if (diffTime > 1000) {
 
@@ -2829,16 +4078,16 @@ void MIDITrailApp::_UpdateFPS()
 		m_PrevTime = curTime;
 		m_FPSCount = 0;
 
-		//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹‚Éİ’è
-		swprintf_s(title, MAX_LOADSTRING, MIDITRAIL_WINDOW_TITLE_FPS, m_Title, fps);
-		SetWindowTextW(m_hWnd, title);
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«ã«è¨­å®š
+		_stprintf_s(title, 256, _T("%s - FPS:%.1f"), m_Title, fps);
+		SetWindowText(m_hWnd, title);
 	}
 
 	return;
 }
 
 //******************************************************************************
-// ƒ|[ƒgî•ñ“o˜^
+// ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²
 //******************************************************************************
 int MIDITrailApp::_SetPortDev(
 		SMSequencer* pSequencer
@@ -2852,7 +4101,7 @@ int MIDITrailApp::_SetPortDev(
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚çƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚ÄƒV[ƒPƒ“ƒT‚É“o˜^
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ç™»éŒ²
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
 		result = m_MIDIConf.GetStr(portName[portNo], devName, MAXPNAMELEN, _T(""));
@@ -2867,7 +4116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN ƒ‚ƒjƒ^î•ñ“o˜^
+// MIDI IN ãƒ¢ãƒ‹ã‚¿æƒ…å ±ç™»éŒ²
 //******************************************************************************
 int MIDITrailApp::_SetMonitorPortDev(
 		SMLiveMonitor* pLiveMonitor,
@@ -2875,19 +4124,19 @@ int MIDITrailApp::_SetMonitorPortDev(
 	)
 {
 	int result = 0;
-	TCHAR midiOutDevName[MAXPNAMELEN];
+	TCHAR devName[MAXPNAMELEN];
 	int checkMIDITHRU = 0;
 	bool isMIDITHRU = false;
 
 	//--------------------------------------
 	// MIDI IN
 	//--------------------------------------
-	//ƒJƒeƒSƒŠ^ƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ†ã‚´ãƒªï¼ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	result = m_MIDIConf.SetCurSection(_T("MIDIIN"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚çƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚ÄƒV[ƒPƒ“ƒT‚É“o˜^
-	result = m_MIDIConf.GetStr("PortA", m_MIDIINDevName, MAXPNAMELEN, _T(""));
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ç™»éŒ²
+	result = m_MIDIConf.GetStr("PortA", devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 	result = m_MIDIConf.GetInt("MIDITHRU", &checkMIDITHRU, 1);
 	if (result != 0) goto EXIT;
@@ -2895,29 +4144,33 @@ int MIDITrailApp::_SetMonitorPortDev(
 	if (checkMIDITHRU > 0) {
 		isMIDITHRU = true;
 	}
-	if (_tcslen(m_MIDIINDevName) > 0) {
-		result = pLiveMonitor->SetInPortDev(m_MIDIINDevName, isMIDITHRU);
+	if (_tcslen(devName) > 0) {
+		result = pLiveMonitor->SetInPortDev(devName, isMIDITHRU);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒV[ƒ“‚É MIDI IN ƒfƒoƒCƒX–¼‚ğ“o˜^
-	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-	if (result != 0) goto EXIT;
+	//ï¿½Vï¿½[ï¿½ï¿½ï¿½ï¿½ MIDI IN ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½oï¿½^ï¿½iM5/DX11ï¿½F m_pScene ï¿½ï¿½ NULL ï¿½È‚Ì‚ÅƒXï¿½Lï¿½bï¿½vï¿½j
+	if (pScene != NULL) {
+		result = pScene->SetParam("MIDI_IN_DEVICE_NAME", devName);
+		if (result != 0) goto EXIT;
+	}
 
 	//--------------------------------------
 	// MIDI OUT (MIDITHRU)
 	//--------------------------------------
-	//ƒJƒeƒSƒŠ^ƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ†ã‚´ãƒªï¼ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚çƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚ÄƒV[ƒPƒ“ƒT‚É“o˜^
-	result = m_MIDIConf.GetStr("PortA", midiOutDevName, MAXPNAMELEN, _T(""));
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ç™»éŒ²
+	result = m_MIDIConf.GetStr("PortA", devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 
-	if ((_tcslen(midiOutDevName) > 0) && (isMIDITHRU)) {
-		result = pLiveMonitor->SetOutPortDev(midiOutDevName);
-		if (result != 0) goto EXIT;
+	if ((_tcslen(devName) > 0) && (isMIDITHRU)) {
+		//MIDITHRU is a convenience pass-through to a synth; if the OUT device can't
+		//be opened (e.g. no/busy device) the monitor + visualization should still
+		//run, so swallow the error here instead of aborting the whole monitor start.
+		(void)pLiveMonitor->SetOutPortDev(devName);
 	}
 
 EXIT:;
@@ -2925,7 +4178,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_ChangeWindowSize()
 {
@@ -2933,63 +4186,51 @@ int MIDITrailApp::_ChangeWindowSize()
 	bool isMonitor = false;
 	MTScene::MTViewParamMap viewParamMap;
 
-	//ƒ‚ƒjƒ^ó‘Ô‚ÌŠm”F
+	//ãƒ¢ãƒ‹ã‚¿çŠ¶æ…‹ã®ç¢ºèª
 	if ((m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON)) {
 		isMonitor = true;
 	}
 
-	//Œ»İ‚Ì‹“_‚ğ‘Ş”ğ
+	//ç¾åœ¨ã®è¦–ç‚¹ã‚’é€€é¿
 	if (m_pScene != NULL) {
 		m_pScene->GetViewParam(&viewParamMap);
 	}
 
-	//ƒV[ƒ“”jŠü
+	//ã‚·ãƒ¼ãƒ³ç ´æ£„
 	if (m_pScene != NULL) {
 		m_pScene->Release();
 		delete m_pScene;
 		m_pScene = NULL;
 	}
 
-	//ƒŒƒ“ƒ_ƒ‰I—¹
-	m_Renderer.Terminate();
+	//ãƒ¬ãƒ³ãƒ€ãƒ©çµ‚äº†
+	m_Renderer11.Terminate();
 
-	//ƒ†[ƒU[İ’èƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒ‰‰Šú‰»
-	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
+	//ãƒ¬ãƒ³ãƒ€ãƒ©åˆæœŸåŒ–
+	result = m_Renderer11.Initialize(m_hWnd, m_MultiSampleType, false, m_SuperSample);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//M3 (DX11): the device was recreated - rebuild every DX11 component for the
+	//loaded song, else they reference the destroyed device ("Device lost").
+	_SetupDX11Scene();
+
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	if (!isMonitor) {
-		//ƒvƒŒƒCƒ„‚ÌƒV[ƒ“¶¬
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ã®ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 		result = _CreateScene(m_SceneType, &m_SeqData);
 		if (result != 0) goto EXIT;
 	}
 	else {
-		//ƒ‰ƒCƒuƒ‚ƒjƒ^‚ÌƒV[ƒ“¶¬
+		//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã®ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 		result = _CreateScene(m_SceneType, NULL);
 		if (result != 0) goto EXIT;
-
-		//MIDI IN ƒfƒoƒCƒX–¼‚ğİ’è
-		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-		if (result != 0) goto EXIT;
-
-		//MIDI IN ƒfƒoƒCƒX–¼‚ğ‰æ–Ê‚É”½‰f
-		if (m_PlayStatus == MonitorON) {
-			//ƒV[ƒ“‚É‰‰‘tŠJniƒ‰ƒCƒuƒ‚ƒjƒ^ŠJnj‚ğ’Ê’m
-			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
-		}
-		else {
-			//ƒV[ƒ“‚É‰‰‘tI—¹iƒ‰ƒCƒuƒ‚ƒjƒ^’â~j‚ğ’Ê’m
-			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
-		}
 	}
 
-	//‹“_‚ğ•œ‹A
+	//è¦–ç‚¹ã‚’å¾©å¸°
 	if (m_pScene != NULL) {
 		m_pScene->SetViewParam(&viewParamMap);
 	}
@@ -2999,7 +4240,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘tó‘Ô•ÏX
+// æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_ChangePlayStatus(
 		PlayStatus status
@@ -3007,10 +4248,18 @@ int MIDITrailApp::_ChangePlayStatus(
 {
 	int result = 0;
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	m_PlayStatus = status;
 
-	////ƒtƒ@ƒCƒ‹ƒhƒ‰ƒbƒN‹–‰Â
+	//ced 20260628: æ›²ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰(NoData)æ™‚ã®ã¿ãƒã‚¦ã‚¹ã‚«ãƒ¡ãƒ©æ´ã¿ã‚’è§£é™¤ã™ã‚‹ã€‚
+	//ä»¥å‰ã¯ Stop ã§ã‚‚è§£é™¤ã—ã¦ã„ãŸãŒã€ãã‚Œã ã¨åœæ­¢ä¸­ã«ãƒã‚¦ã‚¹ã§è¦‹å›ã›ãªããªã‚‹ãŸã‚ã€
+	//åœæ­¢ä¸­ã¯ãƒã‚¦ã‚¹ã‚«ãƒ¡ãƒ©ã‚’ç¶­æŒã™ã‚‹ï¼ˆã‚«ãƒ¼ã‚½ãƒ«ã‚’æˆ»ã—ãŸã„æ™‚ã¯å·¦ã‚¯ãƒªãƒƒã‚¯ã§ãƒˆã‚°ãƒ« offï¼‰ã€‚
+	if ((status == NoData) && m_IsMouseCamMode11) {
+		m_IsMouseCamMode11 = false;
+		m_FpCam11.SetMouseCamMode(false);
+	}
+
+	////ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ©ãƒƒã‚¯è¨±å¯
 	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
 	//	DragAcceptFiles(m_hWnd, TRUE);
 	//}
@@ -3018,10 +4267,10 @@ int MIDITrailApp::_ChangePlayStatus(
 	//	DragAcceptFiles(m_hWnd, FALSE);
 	//}
 
-	//í‚Éƒtƒ@ƒCƒ‹ƒhƒ‰ƒbƒO‹–‰Â
+	//å¸¸ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ©ãƒƒã‚°è¨±å¯
 	DragAcceptFiles(m_hWnd, TRUE);
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -3030,7 +4279,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 //******************************************************************************
 int MIDITrailApp::_ChangeMenuStyle()
 {
@@ -3039,21 +4288,17 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long statusIndex = 0;
 	unsigned long style = 0;
 
-	//ƒƒjƒ…[IDˆê——
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼IDä¸€è¦§
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
 // >>> add 20120728 yossiepon begin
 		IDM_ADD_FILE,
 // <<< add 20120728 yossiepon end
-		IDM_OPEN_FOLDER,
-		IDM_PREVIOUS_FILE,
-		IDM_NEXT_FILE,
 		IDM_EXIT,
 		IDM_PLAY,
 		IDM_STOP,
 		IDM_REPEAT,
-		IDM_FOLDER_PLAYBACK,
 		IDM_SKIP_BACK,
 		IDM_SKIP_FORWARD,
 		IDM_PLAY_SPEED_DOWN,
@@ -3065,50 +4310,44 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_VIEW_PIANOROLLRAIN,
 		IDM_VIEW_PIANOROLLRAIN2D,
 		IDM_VIEW_PIANOROLLRING,
+		IDM_VIEW_SINGLEKEYBOARD,
 		IDM_ENABLE_PIANOKEYBOARD,
 		IDM_ENABLE_RIPPLE,
+		IDM_ENABLE_LYRICS,
 		IDM_ENABLE_PITCHBEND,
+		IDM_ENABLE_PITCHBEND_ALLNOTES,
 		IDM_ENABLE_STARS,
 		IDM_ENABLE_COUNTER,
 		IDM_ENABLE_BACKGROUNDIMAGE,
-		IDM_ENABLE_GRIDLINE,
+// >>> add 20180404 yossiepon begin
 		IDM_ENABLE_TIMEINDICATOR,
+		IDM_ENABLE_GRIDBOX,
+// <<< add 20180404 yossiepon end
 		IDM_RESET_VIEWPOINT,
 		IDM_VIEWPOINT2,
 		IDM_VIEWPOINT3,
-		IDM_MYVIEWPOINT1,
-		IDM_MYVIEWPOINT2,
-		IDM_MYVIEWPOINT3,
-		IDM_SAVE_MYVIEWPOINT1,
-		IDM_SAVE_MYVIEWPOINT2,
-		IDM_SAVE_MYVIEWPOINT3,
+		IDM_AUTO_SAVE_VIEWPOINT,
 		IDM_WINDOWSIZE,
 		IDM_FULLSCREEN,
-		IDM_MENUBAR,
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
 		IDM_OPTION_GRAPHIC,
-		IDM_OPTION_COLOR,
 		IDM_HOWTOVIEW,
 		IDM_MANUAL,
 		IDM_ABOUT
 	};
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹ˆê——
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«ä¸€è¦§
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
-		//ƒf[ƒ^–³,     ’â~,       Ä¶’†,     ˆê’â~,   ƒ‚ƒjƒ^’â~, ƒ‚ƒjƒ^’†
+		//ãƒ‡ãƒ¼ã‚¿ç„¡, åœæ­¢, å†ç”Ÿä¸­, ä¸€æ™‚åœæ­¢, ãƒ¢ãƒ‹ã‚¿åœæ­¢, ãƒ¢ãƒ‹ã‚¿ä¸­
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FILE
 // >>> add 20120728 yossiepon begin
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
 // <<< add 20120728 yossiepon end
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FOLDER
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PREVIOUS_FILE
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_NEXT_FILE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_EXIT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_STOP
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_REPEAT
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_FOLDER_PLAYBACK
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED	},	//IDM_SKIP_BACK
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED	},	//IDM_SKIP_FORWARD
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY_SPEED_DOWN
@@ -3120,30 +4359,28 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRAIN2D
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_PIANOROLLRING
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_VIEW_SINGLEKEYBOARD
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PIANOKEYBOARD
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_RIPPLE
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_LYRICS
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_PITCHBEND_ALLNOTES
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_STARS
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_COUNTER
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_BACKGROUNDIMAGE
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_GRIDLINE
+// >>> add 20180404 yossiepon begin
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_TIMEINDICATOR
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_GRIDBOX
+// <<< add 20180404 yossiepon end
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT2
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT3
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MYVIEWPOINT1
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MYVIEWPOINT2
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MYVIEWPOINT3
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT1
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT2
-		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT3
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_AUTO_SAVE_VIEWPOINT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_WINDOWSIZE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_FULLSCREEN
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MENUBAR
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_GRAPHIC
-		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_COLOR
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_HOWTOVIEW
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MANUAL
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	}	//IDM_ABOUT
@@ -3158,122 +4395,40 @@ int MIDITrailApp::_ChangeMenuStyle()
 		case MonitorON:  statusIndex = 5; break;
 	}
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	for (menuIndex = 0; menuIndex < MT_MENU_NUM; menuIndex++) {
 		style = menuStyle[menuIndex][statusIndex];
 		EnableMenuItem(GetMenu(m_hWnd), menuID[menuIndex], style);
-	}
-
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ª‘¶İ‚µ‚È‚¢ê‡"Previous File","Next File"‚Í‘I‘ğ•s‰Â
-	if (m_MIDIFileList.GetFileCount() == 0) {
-		EnableMenuItem(GetMenu(m_hWnd), IDM_PREVIOUS_FILE, MF_GRAYED);
-		EnableMenuItem(GetMenu(m_hWnd), IDM_NEXT_FILE, MF_GRAYED);
-		EnableMenuItem(GetMenu(m_hWnd), IDM_FOLDER_PLAYBACK, MF_GRAYED);
 	}
 
 	return result;
 }
 
 //******************************************************************************
-// ƒV[ƒ“¶¬
+// ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MIDITrailApp::_CreateScene(
 		SceneType type,
-		SMSeqData* pSeqData  //ƒ‰ƒCƒuƒ‚ƒjƒ^‚ÍNULL
+		SMSeqData* pSeqData  //ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿æ™‚ã¯NULL
 	)
 {
 	int result = 0;
 
-	//ƒV[ƒ“”jŠü
+	//ã‚·ãƒ¼ãƒ³ç ´æ£„
 	if (m_pScene != NULL) {
 		m_pScene->Release();
 		delete m_pScene;
 		m_pScene = NULL;
 	}
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
-	//TAG:ƒV[ƒ“’Ç‰Á
-	try {
-		if (type == Title) {
-			m_pScene = new MTSceneTitle();
-		}
-		else {
-			//ƒvƒŒƒCƒ„—pƒV[ƒ“¶¬
-			if (pSeqData != NULL) {
-				if (type == PianoRoll3D) {
-// >>> modify 20120729 yossiepon begin
-					m_pScene = new MTScenePianoRoll3DMod();
-// <<< modify 20120729 yossiepon end
-				}
-				else if (type == PianoRoll2D) {
-// >>> modify 20120729 yossiepon begin
-					m_pScene = new MTScenePianoRoll2DMod();
-// <<< modify 20120729 yossiepon end
-				}
-				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRain();
-				}
-				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain2D();
-				}
-				else if (type == PianoRollRing) {
-					// >>> modify 20191222 yossiepon begin
-					m_pScene = new MTScenePianoRollRingMod();
-					// <<< modify 20191222 yossiepon end
-				}
-			}
-			//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒV[ƒ“¶¬
-			else {
-				if (type == PianoRoll3D) {
-					m_pScene = new MTScenePianoRoll3DLive();
-				}
-				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll2DLive();
-				}
-				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRainLive();
-				}
-				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain2DLive();
-				}
-				else if (type == PianoRollRing) {
-					m_pScene = new MTScenePianoRollRingLive();
-				}
-			}
-		}
-	}
-	catch (std::bad_alloc) {
-		result = YN_SET_ERR("Could not allocate memory.", type, 0);
-		goto EXIT;
-	}
-
-	if (m_pScene == NULL) {
-		result = YN_SET_ERR("Program error.", type, 0);
-		goto EXIT;
-	}
-
-	//ƒV[ƒ“‚Ì¶¬
-	result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), pSeqData);
-	if (result != 0) goto EXIT;
-
-	//•Û‘¶‚³‚ê‚Ä‚¢‚é‹“_‚ğƒV[ƒ“‚É”½‰f‚·‚é
-	if (type != Title) {
-		result = _LoadViewpoint();
-		if (result != 0) goto EXIT;
-	}
-
-	//•\¦Œø‰Ê”½‰f
-	_UpdateEffect();
-
-	//‰‰‘t‘¬“xİ’è
-	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
-
-EXIT:;
-	return result;
+	//M5: DX9 scene rendering removed. The DX11 path renders via m_Renderer11 and
+	//the *11 components (set up in _SetupDX11Scene), so this runs with no scene.
+	m_pScene = NULL;
+	return 0;
 }
 
 //******************************************************************************
-// ƒV[ƒ“í•Ê“Ç‚İ‚İ
+// ã‚·ãƒ¼ãƒ³ç¨®åˆ¥èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadSceneType()
 {
@@ -3286,7 +4441,7 @@ int MIDITrailApp::_LoadSceneType()
 	result = m_ViewConf.GetStr(_T("Type"), type, 256, _T(""));
 	if (result != 0) goto EXIT;
 
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	if (_tcscmp(type, _T("PianoRoll3D")) == 0) {
 		m_SelectedSceneType = PianoRoll3D;
 	}
@@ -3311,14 +4466,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒ“í•Ê•Û‘¶
+// ã‚·ãƒ¼ãƒ³ç¨®åˆ¥ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveSceneType()
 {
 	int result = 0;
 	TCHAR* pType = _T("");
 
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	switch (m_SelectedSceneType) {
 		case PianoRoll3D:
 			pType = _T("PianoRoll3D");
@@ -3352,34 +4507,51 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒ“İ’è“Ç‚İ‚İ
+// ã‚·ãƒ¼ãƒ³è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadSceneConf()
 {
 	int result = 0;
 	int autoSaveViewpoint = 0;
+	int val = 0;
 
 	result = m_ViewConf.SetCurSection(_T("Scene"));
 	if (result != 0) goto EXIT;
 
-	//©“®‹“_•Û‘¶
-	//result = m_ViewConf.GetInt(_T("AutoSaveViewpoint"), &autoSaveViewpoint, 0);
-	//if (result != 0) goto EXIT;
-	//
-	//m_isAutoSaveViewpoint = false;
-	//if (autoSaveViewpoint == 1) {
-	//	m_isAutoSaveViewpoint = true;
-	//}
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜ï¼šãƒ¡ãƒ‹ãƒ¥ãƒ¼ã® On/Off ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å¾©å…ƒï¼ˆæ—¢å®šã¯æœ‰åŠ¹ï¼‰
+	result = m_ViewConf.GetInt(_T("AutoSaveViewpoint"), &autoSaveViewpoint, 1);
+	if (result != 0) goto EXIT;
 
-	//©“®‹“_•Û‘¶Fí‚É—LŒø‚Æ‚·‚é
-	m_isAutoSaveViewpoint = true;
+	m_isAutoSaveViewpoint = (autoSaveViewpoint == 1);
+
+	//ced 20260628: View è¡¨ç¤ºè¨­å®šã®è‡ªå‹•ä¿å­˜ãƒ•ãƒ©ã‚°ï¼ˆæ—¢å®šã¯ç„¡åŠ¹ï¼‰
+	result = m_ViewConf.GetInt(_T("AutoSaveViewSettings"), &val, 0);
+	if (result != 0) goto EXIT;
+	m_isAutoSaveViewSettings = (val == 1);
+
+	//æœ‰åŠ¹æ™‚ã®ã¿ã€ä¿å­˜æ¸ˆã¿ã® View è¡¨ç¤ºãƒˆã‚°ãƒ«ã‚’å¾©å…ƒã™ã‚‹ã€‚
+	//ï¼ˆæœªè¨­å®šã‚­ãƒ¼ã¯ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿æ—¢å®šå€¤ã‚’ãã®ã¾ã¾æ¡ç”¨ã€‚å®Ÿéš›ã®æç”»åæ˜ ã¯æ¬¡ã®
+	//  ã‚·ãƒ¼ãƒ³æ§‹ç¯‰æ™‚ _ApplyDX11Visibility / ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒã‚§ãƒƒã‚¯ã¯ _UpdateMenuCheckmarkï¼‰
+	if (m_isAutoSaveViewSettings) {
+		m_ViewConf.GetInt(_T("EnablePianoKeyboard"),     &val, m_isEnablePianoKeyboard    ? 1 : 0); m_isEnablePianoKeyboard     = (val == 1);
+		m_ViewConf.GetInt(_T("EnableRipple"),            &val, m_isEnableRipple           ? 1 : 0); m_isEnableRipple            = (val == 1);
+		m_ViewConf.GetInt(_T("EnableLyrics"),            &val, m_isEnableLyrics           ? 1 : 0); m_isEnableLyrics            = (val == 1);
+		m_ViewConf.GetInt(_T("EnablePitchBend"),         &val, m_isEnablePitchBend        ? 1 : 0); m_isEnablePitchBend         = (val == 1);
+		m_ViewConf.GetInt(_T("EnablePitchBendAllNotes"), &val, m_isEnablePitchBendAllNotes? 1 : 0); m_isEnablePitchBendAllNotes = (val == 1);
+		m_ViewConf.GetInt(_T("EnableStars"),             &val, m_isEnableStars            ? 1 : 0); m_isEnableStars             = (val == 1);
+		m_ViewConf.GetInt(_T("EnableCounter"),           &val, m_isEnableCounter          ? 1 : 0); m_isEnableCounter           = (val == 1);
+		m_ViewConf.GetInt(_T("EnableBackgroundImage"),   &val, m_isEnableBackgroundImage  ? 1 : 0); m_isEnableBackgroundImage   = (val == 1);
+		m_ViewConf.GetInt(_T("EnableTimeIndicator"),     &val, m_isEnableTimeIndicator    ? 1 : 0); m_isEnableTimeIndicator     = (val == 1);
+		m_ViewConf.GetInt(_T("EnableGridBox"),           &val, m_isEnableGridBox          ? 1 : 0); m_isEnableGridBox           = (val == 1);
+		m_ViewConf.GetInt(_T("SingleKeyboard"),          &val, m_IsSingleKeyboard11       ? 1 : 0); m_IsSingleKeyboard11        = (val == 1);
+	}
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒV[ƒ“İ’è•Û‘¶
+// ã‚·ãƒ¼ãƒ³è¨­å®šä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveSceneConf()
 {
@@ -3389,111 +4561,37 @@ int MIDITrailApp::_SaveSceneConf()
 	result = m_ViewConf.SetCurSection(_T("Scene"));
 	if (result != 0) goto EXIT;
 
-	//©“®‹“_•Û‘¶
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
 	autoSaveViewpoint = m_isAutoSaveViewpoint ? 1 : 0;
 	result = m_ViewConf.SetInt(_T("AutoSaveViewpoint"), autoSaveViewpoint);
 	if (result != 0) goto EXIT;
 
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// •\¦Œø‰Ê‘I‘ğó‘Ô“Ç‚İ‚İ
-//******************************************************************************
-int MIDITrailApp::_LoadEffectStatus()
-{
-	int result = 0;
-	int value = 0;
-
-	result = m_ViewConf.SetCurSection(_T("Effect"));
+	//ced 20260628: View è¡¨ç¤ºè¨­å®šã®è‡ªå‹•ä¿å­˜ãƒ•ãƒ©ã‚°
+	result = m_ViewConf.SetInt(_T("AutoSaveViewSettings"), m_isAutoSaveViewSettings ? 1 : 0);
 	if (result != 0) goto EXIT;
 
-	result = m_ViewConf.GetInt(_T("PianoKeyboard"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnablePianoKeyboard = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("Ripple"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnableRipple = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("PitchBend"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnablePitchBend = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("Stars"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnableStars = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("Counter"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnableCounter = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("BackgroundImage"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnableBackgroundImage = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("GridLine"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnableGridLine = (value > 0)? true : false;
-
-	result = m_ViewConf.GetInt(_T("TimeIndicator"), &value, 1);
-	if (result != 0) goto EXIT;
-	m_isEnableTimeIndicator = (value > 0)? true : false;
+	//æœ‰åŠ¹æ™‚ã®ã¿ã€ç¾åœ¨ã® View è¡¨ç¤ºãƒˆã‚°ãƒ«ã‚’æ›¸ãå‡ºã™ï¼ˆç„¡åŠ¹æ™‚ã¯è§¦ã‚‰ãªã„ï¼æ—§å€¤ã‚’æ®‹ã™ãŒ
+	//å¾©å…ƒå´ã‚‚ãƒ•ãƒ©ã‚°ã§ gate ã—ã¦ã„ã‚‹ã®ã§å½±éŸ¿ã—ãªã„ï¼‰
+	if (m_isAutoSaveViewSettings) {
+		m_ViewConf.SetInt(_T("EnablePianoKeyboard"),     m_isEnablePianoKeyboard     ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableRipple"),            m_isEnableRipple            ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableLyrics"),            m_isEnableLyrics            ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnablePitchBend"),         m_isEnablePitchBend         ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnablePitchBendAllNotes"), m_isEnablePitchBendAllNotes ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableStars"),             m_isEnableStars             ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableCounter"),           m_isEnableCounter           ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableBackgroundImage"),   m_isEnableBackgroundImage   ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableTimeIndicator"),     m_isEnableTimeIndicator     ? 1 : 0);
+		m_ViewConf.SetInt(_T("EnableGridBox"),           m_isEnableGridBox           ? 1 : 0);
+		m_ViewConf.SetInt(_T("SingleKeyboard"),          m_IsSingleKeyboard11        ? 1 : 0);
+	}
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// •\¦Œø‰Ê‘I‘ğó‘Ô•Û‘¶
-//******************************************************************************
-int MIDITrailApp::_SaveEffectStatus()
-{
-	int result = 0;
-	int value = 0;
-
-	result = m_ViewConf.SetCurSection(_T("Effect"));
-	if (result != 0) goto EXIT;
-
-	value = m_isEnablePianoKeyboard ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("PianoKeyboard"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnableRipple ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("Ripple"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnablePitchBend ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("PitchBend"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnableStars ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("Stars"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnableCounter ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("Counter"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnableBackgroundImage ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("BackgroundImage"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnableGridLine ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("GridLine"), value);
-	if (result != 0) goto EXIT;
-
-	value = m_isEnableTimeIndicator ? 1 : 0;
-	result = m_ViewConf.SetInt(_T("TimeIndicator"), value);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ‹“_“Ç‚İ‚İ
+// è¦–ç‚¹èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadViewpoint()
 {
@@ -3504,23 +4602,23 @@ int MIDITrailApp::_LoadViewpoint()
 	TCHAR section[256] = {_T('\0')};
 	float param = 0.0f;
 
-	//ƒV[ƒ“‚©‚çƒfƒtƒHƒ‹ƒg‚Ì‹“_‚ğæ“¾
+	//ã‚·ãƒ¼ãƒ³ã‹ã‚‰ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è¦–ç‚¹ã‚’å–å¾—
 	m_pScene->GetDefaultViewParam(&defParamMap);
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
+	//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 	_tcscat_s(section, 256, _T("Viewpoint-"));
 	_tcscat_s(section, 256, m_pScene->GetName());
 	result = m_ViewConf.SetCurSection(section);
 	if (result != 0) goto EXIT;
 
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚©‚çæ“¾
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å–å¾—
 	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
 		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
 		if (result != 0) goto EXIT;
 		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
 	}
 
-	//ƒV[ƒ“‚É‹“_‚ğ“o˜^
+	//ã‚·ãƒ¼ãƒ³ã«è¦–ç‚¹ã‚’ç™»éŒ²
 	m_pScene->SetViewParam(&viewParamMap);
 
 EXIT:;
@@ -3528,7 +4626,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹“_•Û‘¶
+// è¦–ç‚¹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveViewpoint()
 {
@@ -3537,22 +4635,47 @@ int MIDITrailApp::_SaveViewpoint()
 	MTScene::MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 
-	//ƒV[ƒ“‚©‚çŒ»İ‚Ì‹“_‚ğæ“¾
+	//M3 (DX11): no MTScene -> save the live camera viewpoint to m_ViewConf so it
+	//persists across restarts (section "Viewpoint-<sceneName>", now-line relative).
+	if (m_pScene == NULL) {
+		const TCHAR* pName = _DX11SceneName();
+		if ((m_DX11Family != DX11_FAMILY_NONE) && (pName != NULL)) {
+			float x = 0, y = 0, z = 0, phi = 0, theta = 0, roll = 0;
+			m_FpCam11.GetViewpointParam(&x, &y, &z, &phi, &theta, &roll);
+			float autoRoll = m_IsAutoRollMode11 ? m_FpCam11.GetAutoRollVelocity() : 0.0f;
+			_tcscat_s(section, 256, _T("Viewpoint-"));
+			_tcscat_s(section, 256, pName);
+			//live monitor keeps its own viewpoint, separate from playback
+			if ((m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF)) {
+				_tcscat_s(section, 256, _T("Live"));
+			}
+			if (m_ViewConf.SetCurSection(section) == 0) {
+				m_ViewConf.SetFloat(_T("X"), x);
+				m_ViewConf.SetFloat(_T("Y"), y);
+				m_ViewConf.SetFloat(_T("Z"), z);
+				m_ViewConf.SetFloat(_T("Phi"), phi);
+				m_ViewConf.SetFloat(_T("Theta"), theta);
+				m_ViewConf.SetFloat(_T("ManualRollAngle"), roll);
+				m_ViewConf.SetFloat(_T("AutoRollVelocity"), autoRoll);
+			}
+		}
+		goto EXIT;
+	}
 	m_pScene->GetViewParam(&viewParamMap);
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
+	//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 	_tcscat_s(section, 256, _T("Viewpoint-"));
 	_tcscat_s(section, 256, m_pScene->GetName());
 	result = m_ViewConf.SetCurSection(section);
 	if (result != 0) goto EXIT;
 
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚É“o˜^
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã«ç™»éŒ²
 	for (itr = viewParamMap.begin(); itr != viewParamMap.end(); itr++) {
 		result = m_ViewConf.SetFloat((itr->first).c_str(), itr->second);
 		if (result != 0) goto EXIT;
 	}
 
-	//‹“_‚ªØ‚è‘Ö‚¦‚ç‚ê‚½‚±‚Æ‚ğƒV[ƒ“‚É“`’B
+	//è¦–ç‚¹ãŒåˆ‡ã‚Šæ›¿ãˆã‚‰ã‚ŒãŸã“ã¨ã‚’ã‚·ãƒ¼ãƒ³ã«ä¼é”
 	m_pScene->SetViewParam(&viewParamMap);
 
 EXIT:;
@@ -3560,80 +4683,49 @@ EXIT:;
 }
 
 //******************************************************************************
-// „‚Ì‹“_‚ÉˆÚ“®
+// ced 20260703: è¦–ç‚¹ã‚’ã€Œä¿å­˜æ¸ˆã¿(ãªã‘ã‚Œã°æ—¢å®š)ã€ã¸æˆ»ã™ï¼ˆDX11 ãƒ©ã‚¤ãƒ–ã‚«ãƒ¡ãƒ©ï¼‰
+//   æ‰‹å‹•åœæ­¢æ™‚ã®ãƒªã‚»ãƒƒãƒˆå…ˆã‚’ã€ãƒãƒ¼ãƒ‰ã‚³ãƒ¼ãƒ‰æ—¢å®šã§ã¯ãªã _LoadViewpoint ã¨åŒã˜
+//   ä¿å­˜è¦–ç‚¹ã«ã™ã‚‹ã€‚ãƒ­ãƒ¼ãƒ‰æ™‚ (Initialize ç›´å¾Œ) ã®è¦–ç‚¹å¾©å…ƒãƒ­ã‚¸ãƒƒã‚¯ã¨åŒä¸€æ‰‹é †ã€‚
 //******************************************************************************
-int MIDITrailApp::_MoveToMyViewpoint(
-		unsigned long viewpointNo
-	)
+void MIDITrailApp::_ResetViewpointToSaved()
 {
-	int result = 0;
-	MTScene::MTViewParamMap defParamMap;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
-	TCHAR section[256] = {_T('\0')};
-	float param = 0.0f;
+	//ã¾ãšæ—¢å®šè¦–ç‚¹ï¼ˆä¿å­˜ãŒç„¡ã‘ã‚Œã°ã“ã‚ŒãŒæœ€çµ‚çµæœï¼‰
+	if (m_SceneType == PianoRollRing) m_FpCam11.SetDefaultViewpointRing();
+	else m_FpCam11.SetDefaultViewpoint();
 
-	//ƒV[ƒ“‚©‚çƒfƒtƒHƒ‹ƒg‹“_‚ğæ“¾
-	m_pScene->GetDefaultViewParam(&defParamMap);
+	const TCHAR* pName = _DX11SceneName();
+	if ((m_DX11Family == DX11_FAMILY_NONE) || (pName == NULL)) return;
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
-	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
-	_tcscat_s(section, 256, m_pScene->GetName());
-	result = m_ViewConf.SetCurSection(section);
-	if (result != 0) goto EXIT;
-
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚©‚çæ“¾i–¢İ’è‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg‹“_‚ğ“K—pj
-	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
-		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
-		if (result != 0) goto EXIT;
-		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
+	//ä¿å­˜æ¸ˆã¿è¦–ç‚¹ãŒã‚ã‚Œã°ä¸Šæ›¸ãï¼ˆconf "Viewpoint-<scene>"ã€ãƒ©ã‚¤ãƒ–ã¯ "...Live"ï¼‰
+	const float SENT = -1.0e30f;
+	TCHAR section[256] = { _T('\0') };
+	_tcscat_s(section, 256, _T("Viewpoint-"));
+	_tcscat_s(section, 256, pName);
+	if ((m_PlayStatus == MonitorON) || (m_PlayStatus == MonitorOFF)) _tcscat_s(section, 256, _T("Live"));
+	if (m_ViewConf.SetCurSection(section) == 0) {
+		float x = SENT, y = 0, z = 0, phi = 0, theta = 0, roll = 0, autoRoll = 0;
+		m_ViewConf.GetFloat(_T("X"), &x, SENT);
+		if (x != SENT) {   // a viewpoint was saved for this scene
+			m_ViewConf.GetFloat(_T("Y"), &y, 0.0f);
+			m_ViewConf.GetFloat(_T("Z"), &z, 0.0f);
+			m_ViewConf.GetFloat(_T("Phi"), &phi, 0.0f);
+			m_ViewConf.GetFloat(_T("Theta"), &theta, 0.0f);
+			m_ViewConf.GetFloat(_T("ManualRollAngle"), &roll, 0.0f);
+			m_ViewConf.GetFloat(_T("AutoRollVelocity"), &autoRoll, 0.0f);
+			m_FpCam11.SetViewpointParam(x, y, z, phi, theta, roll, autoRoll);
+			m_IsAutoRollMode11 = (autoRoll != 0.0f);
+		}
 	}
-
-	//‹“_‚ªØ‚è‘Ö‚¦‚ç‚ê‚½‚±‚Æ‚ğƒV[ƒ“‚É“`’B
-	m_pScene->SetViewParam(&viewParamMap);
-
-EXIT:;
-	return result;
 }
 
 //******************************************************************************
-// „‚Ì‹“_•Û‘¶
-//******************************************************************************
-int MIDITrailApp::_SaveMyViewpoint(
-		unsigned long viewpointNo
-	)
-{
-	int result = 0;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
-	TCHAR section[256] = {_T('\0')};
-
-	//ƒV[ƒ“‚©‚çŒ»İ‚Ì‹“_‚ğæ“¾
-	m_pScene->GetViewParam(&viewParamMap);
-
-	//ƒZƒNƒVƒ‡ƒ“–¼
-	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
-	_tcscat_s(section, 256, m_pScene->GetName());
-	result = m_ViewConf.SetCurSection(section);
-	if (result != 0) goto EXIT;
-
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚É“o˜^
-	for (itr = viewParamMap.begin(); itr != viewParamMap.end(); itr++) {
-		result = m_ViewConf.SetFloat((itr->first).c_str(), itr->second);
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒOƒ‰ƒtƒBƒbƒNİ’è“Ç‚İ‚İ
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadGraphicConf()
 {
 	int result = 0;
 	int multiSampleType = 0;
+	int superSample = 0;   //ced 20260628
 
 	result = m_GraphicConf.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
@@ -3645,7 +4737,7 @@ int MIDITrailApp::_LoadGraphicConf()
 				);
 	if (result != 0) goto EXIT;
 
-	//–³Œø’l‚ÍƒAƒ“ƒ`ƒGƒCƒŠƒAƒXOFF‚É‚·‚é
+	//ç„¡åŠ¹å€¤ã¯ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹OFFã«ã™ã‚‹
 	if ((DX_MULTI_SAMPLE_TYPE_MIN <= multiSampleType)
 	 && (multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX)) {
 		m_MultiSampleType = multiSampleType;
@@ -3654,12 +4746,22 @@ int MIDITrailApp::_LoadGraphicConf()
 		m_MultiSampleType = 0;
 	}
 
+	//ced 20260628: ã‚¹ãƒ¼ãƒ‘ãƒ¼ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°(SSAA)å€ç‡ï¼ˆåŒ Anti-aliasing ã‚»ã‚¯ã‚·ãƒ§ãƒ³ï¼‰
+	result = m_GraphicConf.GetInt(_T("SuperSample"), &superSample, MT_GRAPHIC_SUPER_SAMPLE_DEF);
+	if (result != 0) goto EXIT;
+	if ((DX_SUPER_SAMPLE_MIN <= superSample) && (superSample <= DX_SUPER_SAMPLE_MAX)) {
+		m_SuperSample = superSample;
+	}
+	else {
+		m_SuperSample = 1;   //OFF
+	}
+
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒvƒŒ[ƒ„[İ’è“Ç‚İ‚İ
+// ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadPlayerConf()
 {
@@ -3674,7 +4776,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//ƒvƒŒ[ƒ„[§Œä
+	//ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("PlayerControl");
 	if (result != 0) goto EXIT;
@@ -3684,7 +4786,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//•\¦§Œä
+	//è¡¨ç¤ºåˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("ViewControl");
 	if (result != 0) goto EXIT;
@@ -3693,7 +4795,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	m_isEnableFileName = (showFileName > 0) ? true : false;
 
 	//----------------------------------
-	//ƒŠƒƒCƒ“ƒh^ƒXƒLƒbƒv§Œä
+	//ãƒªãƒ¯ã‚¤ãƒ³ãƒ‰ï¼ã‚¹ã‚­ãƒƒãƒ—åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("SkipControl");
 	if (result != 0) goto EXIT;
@@ -3704,11 +4806,11 @@ int MIDITrailApp::_LoadPlayerConf()
 	result = confFile.GetInt("MovingTimeSpanInMsec", &timeSpan, 400);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒPƒ“ƒT‚ÉƒŠƒƒCƒ“ƒh^ƒXƒLƒbƒvˆÚ“®ŠÔ‚ğİ’è
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ãƒªãƒ¯ã‚¤ãƒ³ãƒ‰ï¼ã‚¹ã‚­ãƒƒãƒ—ç§»å‹•æ™‚é–“ã‚’è¨­å®š
 	m_Sequencer.SetMovingTimeSpanInMsec(timeSpan);
 
 	//----------------------------------
-	//‰‰‘tƒXƒs[ƒh§Œä
+	//æ¼”å¥ã‚¹ãƒ”ãƒ¼ãƒ‰åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("PlaybackSpeedControl");
 	if (result != 0) goto EXIT;
@@ -3720,47 +4822,37 @@ int MIDITrailApp::_LoadPlayerConf()
 	m_SpeedStepInPercent = (unsigned long)speedStepInPercent;
 	m_MaxSpeedInPercent = (unsigned long)maxSpeedInPercent;
 
-	//----------------------------------
-	//‰‰‘t§Œä
-	//----------------------------------
-	result = confFile.SetCurSection("Playback");
-	if (result != 0) goto EXIT;
-	result = confFile.GetInt("DelayBetweenSongsInMsec", &m_DelayBetweenSongsInMsec, 0);
-	if (result != 0) goto EXIT;
-	if (m_DelayBetweenSongsInMsec < 0) {
-		m_DelayBetweenSongsInMsec = 0;
-	}
-	else if (m_DelayBetweenSongsInMsec > 10000) {
-		m_DelayBetweenSongsInMsec = 10000;
-	}
-
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒE”jŠü
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´æ£„
 //******************************************************************************
 int MIDITrailApp::_OnDestroy()
 {
 	int result = 0;
 
-	//‹“_•Û‘¶
+	//è¦–ç‚¹ä¿å­˜
 	if (m_isAutoSaveViewpoint) {
 		result = _OnMenuSaveViewpoint();
 		//if (result != 0) goto EXIT;
-		//ƒGƒ‰[‚ª”­¶‚µ‚Ä‚àˆ—‚ğ‘±s‚·‚é
+		//ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¦ã‚‚å‡¦ç†ã‚’ç¶šè¡Œã™ã‚‹
 	}
 
-	//‰‰‘t‚ğ~‚ß‚é
+	//ced 20260628: View è¡¨ç¤ºè¨­å®šã®ä¿å­˜ï¼ˆæœ‰åŠ¹æ™‚ã¯ç¾åœ¨ã®ãƒˆã‚°ãƒ«ã‚’æ›¸ãå‡ºã™ï¼‰ã€‚
+	//ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¦ã‚‚å‡¦ç†ã‚’ç¶šè¡Œã™ã‚‹ã€‚
+	_SaveSceneConf();
+
+	//æ¼”å¥ã‚’æ­¢ã‚ã‚‹
 	if (m_PlayStatus == Play) {
 		m_Sequencer.Stop();
-		//ƒV[ƒPƒ“ƒT‘¤‚ÌƒXƒŒƒbƒhI—¹‚ğ‘Ò‚¿‡‚í‚¹‚é‚×‚«‚¾‚ªè‚ğ”²‚­
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µå´ã®ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ã‚’å¾…ã¡åˆã‚ã›ã‚‹ã¹ãã ãŒæ‰‹ã‚’æŠœã
 		Sleep(100);
 	}
 	else if (m_PlayStatus == MonitorON) {
 		m_LiveMonitor.Stop();
-		//Œµ–§‚É‚ÍƒR[ƒ‹ƒoƒbƒNŠÖ”I—¹‚ğ‘Ò‚¿‡‚í‚¹‚é‚×‚«‚¾‚ªè‚ğ”²‚­
+		//å³å¯†ã«ã¯ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°çµ‚äº†ã‚’å¾…ã¡åˆã‚ã›ã‚‹ã¹ãã ãŒæ‰‹ã‚’æŠœã
 		Sleep(100);
 	}
 
@@ -3769,7 +4861,7 @@ int MIDITrailApp::_OnDestroy()
 }
 
 //******************************************************************************
-// ƒV[ƒ“Ä¶¬
+// ã‚·ãƒ¼ãƒ³å†ç”Ÿæˆ
 //******************************************************************************
 int MIDITrailApp::_RebuildScene()
 {
@@ -3779,57 +4871,57 @@ int MIDITrailApp::_RebuildScene()
 	bool m_isResumeMonitoring = false;
 	MTScene::MTViewParamMap viewParamMap;
 
-	//b’è‘Îô
-	//  ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚é‚±‚Æ‚É‚æ‚è
-	//  ƒ†[ƒU[‚ªOKƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚Ü‚Å‚ÌŠÔ‚É
-	//  ƒfƒoƒCƒX‚ªƒŠƒZƒbƒg‰Â”\ó‘Ô‚É‚È‚é‚±‚Æ‚ğŠú‘Ò‚·‚é
+	//æš«å®šå¯¾ç­–
+	//  ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’è¡¨ç¤ºã™ã‚‹ã“ã¨ã«ã‚ˆã‚Š
+	//  ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒOKãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã¾ã§ã®é–“ã«
+	//  ãƒ‡ãƒã‚¤ã‚¹ãŒãƒªã‚»ãƒƒãƒˆå¯èƒ½çŠ¶æ…‹ã«ãªã‚‹ã“ã¨ã‚’æœŸå¾…ã™ã‚‹
 
-	//Œ»İ‚Ì‹“_‚ğ‘Ş”ğ
+	//ç¾åœ¨ã®è¦–ç‚¹ã‚’é€€é¿
 	if (m_pScene != NULL) {
 		m_pScene->GetViewParam(&viewParamMap);
 	}
 
-	//‰‰‘t‚ğˆê’â~‚·‚é
-	//  ‚È‚º‚©ˆê’â~‚µ‚È‚¢‚ÆƒfƒoƒCƒX‚ğÄ¶¬‚µ‚Ä‚à
-	//  ƒfƒoƒCƒXƒƒXƒg‚©‚ç•œ‹A‚Å‚«‚È‚¢
+	//æ¼”å¥ã‚’ä¸€æ™‚åœæ­¢ã™ã‚‹
+	//  ãªãœã‹ä¸€æ™‚åœæ­¢ã—ãªã„ã¨ãƒ‡ãƒã‚¤ã‚¹ã‚’å†ç”Ÿæˆã—ã¦ã‚‚
+	//  ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆã‹ã‚‰å¾©å¸°ã§ããªã„
 	if (m_PlayStatus == Play) {
 		m_Sequencer.Pause();
 		m_isResume = true;
 	}
 	else if (m_PlayStatus == MonitorON) {
-		//ƒ‚ƒjƒ^’â~
+		//ãƒ¢ãƒ‹ã‚¿åœæ­¢
 		result = _OnMenuStopMonitoring();
 		if (result != 0) goto EXIT;
 		m_isResumeMonitoring = true;
 	}
 
-	//ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤º
 	apiresult = MessageBox(
-					m_hWnd,						//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-					MIDITRAIL_MSG_DEVICELOST,	//ƒƒbƒZ[ƒW
-					_T("WARNING"),				//ƒ^ƒCƒgƒ‹
-					MB_OK | MB_ICONWARNING		//ƒtƒ‰ƒO
+					m_hWnd,						//ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+					MIDITRAIL_MSG_DEVICELOST,	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+					_T("WARNING"),				//ã‚¿ã‚¤ãƒˆãƒ«
+					MB_OK | MB_ICONWARNING		//ãƒ•ãƒ©ã‚°
 				);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ÌÄ¶¬
+	//ãƒ¬ãƒ³ãƒ€ãƒ©ã¨ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ç”Ÿæˆ
 	result = _ChangeWindowSize();
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“‚ÌÄİ’è
+	//ã‚·ãƒ¼ãƒ³ã®å†è¨­å®š
 	if (m_pScene != NULL) {
-		//‹“_‚ğ•œ‹A
+		//è¦–ç‚¹ã‚’å¾©å¸°
 		m_pScene->SetViewParam(&viewParamMap);
 
-		//‰‰‘t’†‚Ìê‡‚ÍƒV[ƒ“‚É‰‰‘tŠJn‚ğ’Ê’m
+		//æ¼”å¥ä¸­ã®å ´åˆã¯ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
 		if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
+			if (m_pScene != NULL) result = m_pScene->OnPlayStart(NULL /*M5: DX9 device removed; m_pScene is always NULL here*/);
 			if (result != 0) goto EXIT;
 		}
-		//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€’Ê’m
+		//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvPlayTime) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.playTime.param1,
@@ -3837,7 +4929,7 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//ƒeƒ“ƒ|•ÏX’Ê’m
+		//ãƒ†ãƒ³ãƒå¤‰æ›´é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvTempo) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.tempo.param1,
@@ -3845,7 +4937,7 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//¬ß”Ô†’Ê’m
+		//å°ç¯€ç•ªå·é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvBar) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.bar.param1,
@@ -3853,7 +4945,7 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//”q‹L†•ÏX’Ê’m
+		//æ‹å­è¨˜å·å¤‰æ›´é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvBeat) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.beat.param1,
@@ -3861,17 +4953,17 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//TODO: ƒm[ƒg”‚ÌƒJƒEƒ“ƒ^•\¦‚ª•œŒ³‚Å‚«‚Ä‚¢‚È‚¢
-		//TODO: ƒsƒbƒ`ƒxƒ“ƒh‚ª•œŒ³‚Å‚«‚Ä‚¢‚È‚¢
+		//TODO: ãƒãƒ¼ãƒˆæ•°ã®ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºãŒå¾©å…ƒã§ãã¦ã„ãªã„
+		//TODO: ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ãŒå¾©å…ƒã§ãã¦ã„ãªã„
 	}
 
-	//ˆê’â~‚µ‚½ê‡‚Í‰‰‘t‚ğÄŠJ‚³‚¹‚é
+	//ä¸€æ™‚åœæ­¢ã—ãŸå ´åˆã¯æ¼”å¥ã‚’å†é–‹ã•ã›ã‚‹
 	if (m_isResume) {
 		result = m_Sequencer.Resume();
 		if (result != 0) goto EXIT;
 	}
 	else if (m_isResumeMonitoring) {
-		//ƒ‚ƒjƒ^ÄŠJ
+		//ãƒ¢ãƒ‹ã‚¿å†é–‹
 		result = _OnMenuStartMonitoring();
 		if (result != 0) goto EXIT;
 	}
@@ -3881,7 +4973,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// HowToView•\¦
+// HowToViewè¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_DispHowToView()
 {
@@ -3895,7 +4987,7 @@ int MIDITrailApp::_DispHowToView()
 	if (result != 0) goto EXIT;
 
 	if (count != 2) {
-		//‘€ì•û–@ƒ_ƒCƒAƒƒO•\¦
+		//æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 		m_HowToViewDlg.Show(m_hWnd);
 	}
 
@@ -3908,20 +5000,20 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 //******************************************************************************
 int MIDITrailApp::_UpdateMenuCheckmark()
 {
 	int result = 0;
 
-	//ƒŠƒs[ƒg
+	//ãƒªãƒ”ãƒ¼ãƒˆ
 	_CheckMenuItem(IDM_REPEAT, m_isRepeat);
-	
-	//ƒtƒHƒ‹ƒ_‰‰‘t
+
+	//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ï¼ˆ1.4.1 ç§»æ¤ï¼‰
 	_CheckMenuItem(IDM_FOLDER_PLAYBACK, m_isFolderPlayback);
 
-	//ƒV[ƒ“í•Ê‘I‘ğ
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥é¸æŠ
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	_CheckMenuItem(IDM_VIEW_3DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_2DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN, false);
@@ -3949,45 +5041,54 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 			break;
 	}
 
-	//ƒsƒAƒmƒL[ƒ{[ƒh•\¦
+	//M4.6c: single keyboard (DX11)
+	_CheckMenuItem(IDM_VIEW_SINGLEKEYBOARD, m_IsSingleKeyboard11);
+
+	//ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰è¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_PIANOKEYBOARD, m_isEnablePianoKeyboard);
 
-	//”g–äŒø‰Ê
+	//æ³¢ç´‹åŠ¹æœ
 	_CheckMenuItem(IDM_ENABLE_RIPPLE, m_isEnableRipple);
 
-	//ƒsƒbƒ`ƒxƒ“ƒhŒø‰Ê
+	//æ­Œè©
+	_CheckMenuItem(IDM_ENABLE_LYRICS, m_isEnableLyrics);
+
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰åŠ¹æœ
 	_CheckMenuItem(IDM_ENABLE_PITCHBEND, m_isEnablePitchBend);
 
-	//¯•\¦
+	//ï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½iï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Sï¿½Ìj
+	_CheckMenuItem(IDM_ENABLE_PITCHBEND_ALLNOTES, m_isEnablePitchBendAllNotes);
+
+	//æ˜Ÿè¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_STARS, m_isEnableStars);
 
-	//ƒJƒEƒ“ƒ^•\¦
+	//ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_COUNTER, m_isEnableCounter);
 
-	//”wŒi‰æ‘œ•\¦
+	//èƒŒæ™¯ç”»åƒè¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_BACKGROUNDIMAGE, m_isEnableBackgroundImage);
 
-	//©“®‹“_•Û‘¶‚Í”p~
-	//_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
-
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“
-	_CheckMenuItem(IDM_ENABLE_GRIDLINE, m_isEnableGridLine);
-
-	//ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^
+// >>> add 20180404 yossiepon begin
+	//ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿è¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_TIMEINDICATOR, m_isEnableTimeIndicator);
 
-	//ƒtƒ‹ƒXƒNƒŠ[ƒ“
+	//ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤º
+	_CheckMenuItem(IDM_ENABLE_GRIDBOX, m_isEnableGridBox);
+// <<< add 20180404 yossiepon end
+
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
+	_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
+	_CheckMenuItem(IDM_AUTO_SAVE_VIEWSETTINGS, m_isAutoSaveViewSettings);  //ced 20260628
+
+	//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
-
-	//ƒƒjƒ…[ƒo[
-	_CheckMenuItem(IDM_MENUBAR, m_isEnableMenuBar);
-
+	
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğƒ}[ƒNİ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯è¨­å®š
 //******************************************************************************
 void MIDITrailApp::_CheckMenuItem(
 		UINT uIDCheckItem,
@@ -4009,7 +5110,7 @@ void MIDITrailApp::_CheckMenuItem(
 }
 
 //******************************************************************************
-// •\¦Œø‰Ê”½‰f
+// è¡¨ç¤ºåŠ¹æœåæ˜ 
 //******************************************************************************
 void MIDITrailApp::_UpdateEffect()
 {
@@ -4019,46 +5120,37 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTScene::EffectPitchBend, m_isEnablePitchBend);
 		m_pScene->SetEffect(MTScene::EffectStars, m_isEnableStars);
 		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
-		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
-		m_pScene->SetEffect(MTScene::EffectGridLine, m_isEnableGridLine);
-		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
 		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
+		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
+// >>> add 20180404 yossiepon begin
+		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
+		m_pScene->SetEffect(MTScene::EffectGridBox, m_isEnableGridBox);
+// <<< add 20180404 yossiepon end
 	}
 	return;
 }
 
 //******************************************************************************
-// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
 //******************************************************************************
-int MIDITrailApp::_ParseCmdLine()
+int MIDITrailApp::_ParseCmdLine(
+		LPTSTR pCmdLine
+	)
 {
 	int result = 0;
-	DWORD dwResult = 0;
-	WCHAR filePath[_MAX_PATH];
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
-	result = m_CmdLineParser.Initialize();
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
+	result = m_CmdLineParser.Initialize(pCmdLine);
 	if (result != 0) goto EXIT;
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Åƒtƒ@ƒCƒ‹‚ğw’è‚³‚ê‚Ä‚¢‚éê‡
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 	if (m_CmdLineParser.GetSwitch(CMDSW_FILE_PATH) == CMDSW_ON) {
-		//ƒtƒ‹ƒpƒX‚É•ÏŠ·
-		dwResult = GetFullPathNameW(
-						m_CmdLineParser.GetFilePath(),	//•ÏŠ·Œ³ƒtƒ@ƒCƒ‹–¼i‘Š‘ÎƒpƒXw’è‰Â”\j
-						_MAX_PATH,		//ƒtƒ‹ƒpƒXŠi”[æƒoƒbƒtƒ@ƒTƒCƒY
-						filePath,		//ƒtƒ‹ƒpƒXŠi”[æƒoƒbƒtƒ@
-						NULL			//ƒtƒ@ƒCƒ‹–¼‚Ö‚Ìƒ|ƒCƒ“ƒ^
-					);
-		if (dwResult == 0) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-			goto EXIT;
-		}
 
-		//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-		result = _LoadMIDIFile(filePath);
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+		result = _LoadMIDIFile(m_CmdLineParser.GetFilePath());
 		if (result != 0) goto EXIT;
 
-		//Ä¶w’è‚³‚ê‚Ä‚¢‚éê‡‚ÍÄ¶ŠJn
+		//å†ç”ŸæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å†ç”Ÿé–‹å§‹
 		if ((m_CmdLineParser.GetSwitch(CMDSW_PLAY) == CMDSW_ON) ||
 		    (m_AutoPlaybackAfterOpenFile > 0)) {
 			result = _OnMenuPlay();
@@ -4071,19 +5163,19 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[ŠJn
+// ã‚¿ã‚¤ãƒãƒ¼é–‹å§‹
 //******************************************************************************
 int MIDITrailApp::_StartTimer()
 {
 	int result = 0;
 	UINT_PTR apiresult = 0;
 
-	//ƒL[ó‘ÔŠm”Fƒ^ƒCƒ}[
+	//ã‚­ãƒ¼çŠ¶æ…‹ç¢ºèªã‚¿ã‚¤ãƒãƒ¼
 	apiresult = SetTimer(
-						m_hWnd,			//’Ê’mæƒEƒBƒ“ƒhƒE
-						MIDITRAIL_TIMER_CHECK_KEY,	//ƒ^ƒCƒ}[ID
-						200,			//ƒ^ƒCƒ€ƒAƒEƒg’liƒ~ƒŠ•bj
-						NULL			//ƒ^ƒCƒ}[ŠÖ”
+						m_hWnd,			//é€šçŸ¥å…ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+						MIDITRAIL_TIMER_CHECK_KEY,	//ã‚¿ã‚¤ãƒãƒ¼ID
+						200,			//ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤ï¼ˆãƒŸãƒªç§’ï¼‰
+						NULL			//ã‚¿ã‚¤ãƒãƒ¼é–¢æ•°
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4095,69 +5187,19 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[’â~
+// ã‚¿ã‚¤ãƒãƒ¼åœæ­¢
 //******************************************************************************
 int MIDITrailApp::_StopTimer()
 {
 	int result = 0;
 
 	KillTimer(m_hWnd, MIDITRAIL_TIMER_CHECK_KEY);
-	KillTimer(m_hWnd, MIDITRAIL_TIMER_PLAY);
-	KillTimer(m_hWnd, MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY);
 
 	return result;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[ŠJnF‰‰‘tŠJn
-//******************************************************************************
-int MIDITrailApp::_StartTimer_Play(int delayBetweenSongsInMsec)
-{
-	int result = 0;
-	UINT_PTR apiresult = 0;
-
-	//ƒ^ƒCƒ}[“o˜^
-	apiresult = SetTimer(
-						m_hWnd,						//’Ê’mæƒEƒBƒ“ƒhƒE
-						MIDITRAIL_TIMER_PLAY,		//ƒ^ƒCƒ}[ID
-						delayBetweenSongsInMsec,	//ƒ^ƒCƒ€ƒAƒEƒg’liƒ~ƒŠ•bj
-						NULL						//ƒ^ƒCƒ}[ŠÖ”
-					);
-	if (apiresult == 0) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-		goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒ^ƒCƒ}[ŠJnFƒtƒ@ƒCƒ‹ƒI[ƒvƒ“•‰‰‘tŠJn
-//******************************************************************************
-int MIDITrailApp::_StartTimer_OpenFileAndPlay(int delayBetweenSongsInMsec)
-{
-	int result = 0;
-	UINT_PTR apiresult = 0;
-
-	//ƒ^ƒCƒ}[“o˜^
-	apiresult = SetTimer(
-						m_hWnd,						//’Ê’mæƒEƒBƒ“ƒhƒE
-						MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY,	//ƒ^ƒCƒ}[ID
-						delayBetweenSongsInMsec,	//ƒ^ƒCƒ€ƒAƒEƒg’liƒ~ƒŠ•bj
-						NULL						//ƒ^ƒCƒ}[ŠÖ”
-					);
-	if (apiresult == 0) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-		goto EXIT;
-	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒ^ƒCƒ}[ŒÄ‚Ño‚µ
+// ã‚¿ã‚¤ãƒãƒ¼å‘¼ã³å‡ºã—
 //******************************************************************************
 int MIDITrailApp::_OnTimer(
 		WPARAM timerId
@@ -4165,42 +5207,22 @@ int MIDITrailApp::_OnTimer(
 {
 	int result = 0;
 
-	//ƒL[ó‘ÔŠm”Fƒ^ƒCƒ}[
+	//ã‚­ãƒ¼çŠ¶æ…‹ç¢ºèªã‚¿ã‚¤ãƒãƒ¼
 	if (timerId == MIDITRAIL_TIMER_CHECK_KEY) {
-		//Ä¶‘¬“x§Œä
+		//å†ç”Ÿé€Ÿåº¦åˆ¶å¾¡
 		if ((GetKeyState(VK_F2) & 0x8000) && (GetForegroundWindow() == m_hWnd)) {
-			m_Sequencer.SetPlaybackSpeed(2);  //2”{‘¬
+			m_Sequencer.SetPlaybackSpeed(2);  //2å€é€Ÿ
 		}
 		else {
 			m_Sequencer.SetPlaybackSpeed(1);
 		}
 	}
-	//‰‰‘tŠJnƒ^ƒCƒ}[
-	else if (timerId == MIDITRAIL_TIMER_PLAY) {
-		//ƒ^ƒCƒ}[’â~
-		KillTimer(m_hWnd, MIDITRAIL_TIMER_PLAY);
-		//‰‰‘tŠJn
-		result = _OnMenuPlay();
-		if (result != 0) goto EXIT;
-	}
-	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“•‰‰‘tŠJnƒ^ƒCƒ}[
-	else if (timerId == MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY) {
-		//ƒ^ƒCƒ}[’â~
-		KillTimer(m_hWnd, MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY);
-		//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-		result = _LoadMIDIFile(m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex()));
-		if (result != 0) goto EXIT;
-		//‰‰‘tŠJn
-		result = _OnMenuPlay();
-		if (result != 0) goto EXIT;
-	}
 
-EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒŒƒ“ƒ_ƒ‰ƒ`ƒFƒbƒN
+// ãƒ¬ãƒ³ãƒ€ãƒ©ãƒã‚§ãƒƒã‚¯
 //******************************************************************************
 int MIDITrailApp::_CheckRenderer()
 {
@@ -4208,16 +5230,16 @@ int MIDITrailApp::_CheckRenderer()
 	bool isSupport = true;
 	unsigned long maxVertexIndex = 0;
 
-	result = m_Renderer.IsSupportIndexBuffer(&isSupport, &maxVertexIndex);
-	if (result != 0) goto EXIT;
+	isSupport = true;  // M1b: DX11 supports 32-bit index buffers
+	maxVertexIndex = 0xFFFFFFFF;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢ê‡‚ÍŒxƒƒbƒZ[ƒW‚ğ•\¦
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„å ´åˆã¯è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
 	if (!isSupport) {
 		YN_SET_WARN("This PC does not have sufficient graphics capabilities.\n"
 					"Therefore, MIDITrail will not work correctly.",
 					maxVertexIndex, 0);
 		YN_SHOW_ERR(NULL);
-		//–ß‚è’l‚É‚Í”½‰f‚¹‚¸ˆ—‚ğ‘±s‚³‚¹‚é
+		//æˆ»ã‚Šå€¤ã«ã¯åæ˜ ã›ãšå‡¦ç†ã‚’ç¶šè¡Œã•ã›ã‚‹
 	}
 
 EXIT:;
@@ -4225,7 +5247,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI OUT ©“®İ’è
+// MIDI OUT è‡ªå‹•è¨­å®š
 //******************************************************************************
 int MIDITrailApp::_AutoConfigMIDIOUT()
 {
@@ -4236,34 +5258,34 @@ int MIDITrailApp::_AutoConfigMIDIOUT()
 	int autoConfigConfirm = 0;
 	std::string productName;
 
-	//ƒJƒeƒSƒŠ^ƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ†ã‚´ãƒªï¼ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚ç MIDI OUT ƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ MIDI OUT ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—
 	result = m_MIDIConf.GetStr("PortA", devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 
 	if (_tcslen(devName) == 0) {
-		//İ’è‚È‚µ‚Ìê‡
+		//è¨­å®šãªã—ã®å ´åˆ
 		result = m_MIDIConf.GetInt("AutoConfigConfirm", &autoConfigConfirm, 0);
 		if (result != 0) goto EXIT;
 
 		if (autoConfigConfirm == 0) {
-			//©“®İ’è–¢Šm”F‚Ìê‡‚ÍMIDI OUTƒfƒoƒCƒX‚ğ©“®İ’è‚·‚é
+			//è‡ªå‹•è¨­å®šæœªç¢ºèªã®å ´åˆã¯MIDI OUTãƒ‡ãƒã‚¤ã‚¹ã‚’è‡ªå‹•è¨­å®šã™ã‚‹
 			result = m_MIDIConf.SetInt("AutoConfigConfirm", 1);
 			if (result != 0) goto EXIT;
 
-			//Microsoft GS Wavetable Synth‚ğŒŸõ
+			//Microsoft GS Wavetable Synthã‚’æ¤œç´¢
 			result = _SearchMicrosoftWavetableSynth(productName);
 			if (result != 0) goto EXIT;
 
-			//Œ©‚Â‚©‚Á‚½ê‡‚ÍMIDI OUTƒfƒoƒCƒX‚É“o˜^‚·‚é
+			//è¦‹ã¤ã‹ã£ãŸå ´åˆã¯MIDI OUTãƒ‡ãƒã‚¤ã‚¹ã«ç™»éŒ²ã™ã‚‹
 			if (productName.size() > 0) {
 				result = m_MIDIConf.SetStr("PortA", productName.c_str());
 				if (result != 0) goto EXIT;
 
-				//©“®İ’èŠm”FƒAƒ‰[ƒgƒpƒlƒ‹•\¦
+				//è‡ªå‹•è¨­å®šç¢ºèªã‚¢ãƒ©ãƒ¼ãƒˆãƒ‘ãƒãƒ«è¡¨ç¤º
 				_stprintf_s(
 						message,
 						512,
@@ -4272,10 +5294,10 @@ int MIDITrailApp::_AutoConfigMIDIOUT()
 						productName.c_str()
 					);
 				apiresult = MessageBox(
-								m_hWnd,						//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-								message,					//ƒƒbƒZ[ƒW
-								_T("INFORMATION"),			//ƒ^ƒCƒgƒ‹
-								MB_OK | MB_ICONINFORMATION	//ƒtƒ‰ƒO
+								m_hWnd,						//ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+								message,					//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+								_T("INFORMATION"),			//ã‚¿ã‚¤ãƒˆãƒ«
+								MB_OK | MB_ICONINFORMATION	//ãƒ•ãƒ©ã‚°
 							);
 				if (apiresult == 0) {
 					result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4284,11 +5306,11 @@ int MIDITrailApp::_AutoConfigMIDIOUT()
 			}
 		}
 		else {
-			//©“®İ’èŠm”FÏ‚İ‚Ì‚½‚ß‰½‚à‚µ‚È‚¢
+			//è‡ªå‹•è¨­å®šç¢ºèªæ¸ˆã¿ã®ãŸã‚ä½•ã‚‚ã—ãªã„
 		}
 	}
 	else {
-		//İ’è‚ ‚è‚Ìê‡
+		//è¨­å®šã‚ã‚Šã®å ´åˆ
 		result = m_MIDIConf.SetInt("AutoConfigConfirm", 1);
 		if (result != 0) goto EXIT;
 	}
@@ -4298,7 +5320,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Microsoft GS Wavetable SynthŒŸõ
+// Microsoft GS Wavetable Synthæ¤œç´¢
 //******************************************************************************
 int MIDITrailApp::_SearchMicrosoftWavetableSynth(
 		std::string& productName
@@ -4311,11 +5333,11 @@ int MIDITrailApp::_SearchMicrosoftWavetableSynth(
 	string::size_type pos;
 	SMOutDevCtrl outDevCtrl;
 
-	//ŒŸõ‘ÎÛMIDIƒfƒoƒCƒX
-	//  Windows XPˆÈ‘O    : Microsoft GS Wavetable SW Synth
-	//  Windows VistaˆÈ~ : Microsoft GS Wavetable Synth
+	//æ¤œç´¢å¯¾è±¡MIDIãƒ‡ãƒã‚¤ã‚¹
+	//  Windows XPä»¥å‰    : Microsoft GS Wavetable SW Synth
+	//  Windows Vistaä»¥é™ : Microsoft GS Wavetable Synth
 
-	//ŒŸõ‘ÎÛ•¶š—ñ
+	//æ¤œç´¢å¯¾è±¡æ–‡å­—åˆ—
 	target = "Microsoft GS Wavetable";
 
 	result = outDevCtrl.Initialize();
@@ -4328,7 +5350,7 @@ int MIDITrailApp::_SearchMicrosoftWavetableSynth(
 
 		pos = name.find(target);
 		if (pos != string::npos) {
-			//Œ©‚Â‚©‚Á‚½
+			//è¦‹ã¤ã‹ã£ãŸ
 			productName = name;
 			break;
 		}
@@ -4339,7 +5361,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// “ñd‹N“®ƒ`ƒFƒbƒN
+// äºŒé‡èµ·å‹•ãƒã‚§ãƒƒã‚¯
 //******************************************************************************
 int MIDITrailApp::_CheckMultipleInstances(
 		 bool* pIsExitApp
@@ -4351,41 +5373,41 @@ int MIDITrailApp::_CheckMultipleInstances(
 
 	*pIsExitApp = false;
 
-	//“ñd‹N“®‚ğ‹–‰Â‚·‚éê‡‚Í‰½‚à‚µ‚È‚¢
+	//äºŒé‡èµ·å‹•ã‚’è¨±å¯ã™ã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_AllowMultipleInstances > 0) {
 		goto EXIT;
 	}
 
-	//ƒZƒLƒ…ƒŠƒeƒB‹Lqq‰Šú‰»
+	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­åˆæœŸåŒ–
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
 
-	//ƒZƒLƒ…ƒŠƒeƒB‹Lqq‚ÉˆÓƒAƒNƒZƒX§ŒäƒŠƒXƒg(DACL)‚ğİ’è
+	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­ã«éšæ„ã‚¢ã‚¯ã‚»ã‚¹åˆ¶å¾¡ãƒªã‚¹ãƒˆ(DACL)ã‚’è¨­å®š
 	SetSecurityDescriptorDacl(
-			&sd,	//ƒZƒLƒ…ƒŠƒeƒB‹Lqq‚ÌƒAƒhƒŒƒX
-			TRUE,	//DACL‚Ì‘¶İƒtƒ‰ƒO
-			NULL,	//DACL‚ÌƒAƒhƒŒƒXFƒIƒuƒWƒFƒNƒg‚Ö‚Ì‚·‚×‚Ä‚ÌƒAƒNƒZƒX‚ğ‹–‰Â
-			FALSE	//DACL‚ÌŠù’èƒtƒ‰ƒO
+			&sd,	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+			TRUE,	//DACLã®å­˜åœ¨ãƒ•ãƒ©ã‚°
+			NULL,	//DACLã®ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ã™ã¹ã¦ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’è¨±å¯
+			FALSE	//DACLã®æ—¢å®šãƒ•ãƒ©ã‚°
 		);
 
-	//ƒZƒLƒ…ƒŠƒeƒB‘®«
-	secAttribute.nLength = sizeof(SECURITY_ATTRIBUTES);	//\‘¢‘ÌƒTƒCƒY
-	secAttribute.lpSecurityDescriptor = &sd;			//ƒZƒLƒ…ƒŠƒeƒB‹Lqq
-	secAttribute.bInheritHandle = TRUE; 				//Œp³ƒtƒ‰ƒO
+	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§
+	secAttribute.nLength = sizeof(SECURITY_ATTRIBUTES);	//æ§‹é€ ä½“ã‚µã‚¤ã‚º
+	secAttribute.lpSecurityDescriptor = &sd;			//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­
+	secAttribute.bInheritHandle = TRUE; 				//ç¶™æ‰¿ãƒ•ãƒ©ã‚°
 
-	//ƒ~ƒ…[ƒeƒNƒXì¬
-	//  u•Ê‚Ìƒ†[ƒU[‚Æ‚µ‚ÄÀsv‚ğ‘I‘ğ‚µ‚½‚Æ‚«ƒ~ƒ…[ƒeƒNƒXì¬‚ª¸”s‚·‚é‚½‚ß
-	//  ƒZƒLƒ…ƒŠƒeƒB‘®«‚ğw’è‚·‚é
+	//ãƒŸãƒ¥ãƒ¼ãƒ†ã‚¯ã‚¹ä½œæˆ
+	//  ã€Œåˆ¥ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¨ã—ã¦å®Ÿè¡Œã€ã‚’é¸æŠã—ãŸã¨ããƒŸãƒ¥ãƒ¼ãƒ†ã‚¯ã‚¹ä½œæˆãŒå¤±æ•—ã™ã‚‹ãŸã‚
+	//  ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§ã‚’æŒ‡å®šã™ã‚‹
 	m_hAppMutex = CreateMutex(
-						&secAttribute,	//ƒZƒLƒ…ƒŠƒeƒB‘®«
-						FALSE,			//ƒIƒuƒWƒFƒNƒg‚ÌŠ—LŒ ‚ğæ“¾‚µ‚È‚¢
-						MIDITRAIL_MUTEX	//ƒIƒuƒWƒFƒNƒg–¼Ì
+						&secAttribute,	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§
+						FALSE,			//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ‰€æœ‰æ¨©ã‚’å–å¾—ã—ãªã„
+						MIDITRAIL_MUTEX	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåç§°
 					);
 	if (m_hAppMutex == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 	else if (GetLastError() ==  ERROR_ALREADY_EXISTS) {
-		//‚·‚Å‚É‘¶İ‚·‚éê‡
+		//ã™ã§ã«å­˜åœ¨ã™ã‚‹å ´åˆ
 		CloseHandle(m_hAppMutex);
 		m_hAppMutex = NULL;
 		*pIsExitApp = true;
@@ -4396,23 +5418,23 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ[ƒ‹ƒXƒƒbƒgì¬
+// ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆä½œæˆ
 //******************************************************************************
 int MIDITrailApp::_CreateMailSlot()
 {
 	int result = 0;
 
-	//“ñd‹N“®‚ğ‹–‰Â‚·‚éê‡‚Í‰½‚à‚µ‚È‚¢
+	//äºŒé‡èµ·å‹•ã‚’è¨±å¯ã™ã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_AllowMultipleInstances > 0) {
 		goto EXIT;
 	}
 
-	//ƒ[ƒ‹ƒXƒƒbƒgì¬
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆä½œæˆ
 	m_hMailSlot = CreateMailslot(
-						MIDITRAIL_MAILSLOT,	//ƒ[ƒ‹ƒXƒƒbƒg–¼Ì
-						1024,				//Å‘åƒƒbƒZ[ƒWƒTƒCƒY(byte)F§ŒÀ‚È‚µ
-						0,					//“Ç‚İæ‚èƒ^ƒCƒ€ƒAƒEƒg’l(ms)FƒƒbƒZ[ƒW‚ª‚È‚¯‚ê‚Î‘¦À‚É§Œä‚ğ•Ô‚·
-						NULL				//Œp³ƒIƒvƒVƒ‡ƒ“
+						MIDITRAIL_MAILSLOT,	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆåç§°
+						1024,				//æœ€å¤§ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚º(byte)ï¼šåˆ¶é™ãªã—
+						0,					//èª­ã¿å–ã‚Šã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤(ms)ï¼šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒãªã‘ã‚Œã°å³åº§ã«åˆ¶å¾¡ã‚’è¿”ã™
+						NULL				//ç¶™æ‰¿ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 					);
 	if (m_hMailSlot == INVALID_HANDLE_VALUE) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4424,9 +5446,11 @@ EXIT:;
 }
 
 //******************************************************************************
-// æsƒvƒƒZƒX‚ÌMIDITrail‚Öƒtƒ@ƒCƒ‹ƒpƒX‚ğƒ|ƒXƒg
+// å…ˆè¡Œãƒ—ãƒ­ã‚»ã‚¹ã®MIDITrailã¸ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ãƒã‚¹ãƒˆ
 //******************************************************************************
-int MIDITrailApp::_PostFilePathToFirstMIDITrail()
+int MIDITrailApp::_PostFilePathToFirstMIDITrail(
+		LPTSTR pCmdLine
+	)
 {
 	int result = 0;
 	BOOL bresult = FALSE;
@@ -4434,37 +5458,37 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail()
 	HANDLE hFile = NULL;
 	size_t size = 0;
 	DWORD written = 0;
-	WCHAR* pFilePart = NULL;
-	WCHAR filePath[_MAX_PATH] = { L'\0' };
+	TCHAR* pFilePart = NULL;
+	TCHAR filePath[_MAX_PATH] = {_T('\0')};
 
-	//æs‚ÌMIDITrail‚ÌƒEƒBƒ“ƒhƒE‚ğŒŸõ‚·‚é
-	hWnd = FindWindowW(
-				m_WndClassName,	//ƒNƒ‰ƒX–¼
-				NULL			//ƒEƒBƒ“ƒhƒE–¼
+	//å…ˆè¡Œã®MIDITrailã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ¤œç´¢ã™ã‚‹
+	hWnd = FindWindow(
+				m_WndClassName,	//ã‚¯ãƒ©ã‚¹å
+				NULL			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
 			);
 	if (hWnd == NULL) {
-		//ƒEƒBƒ“ƒhƒE‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 		goto EXIT;
 	}
 
-	//æs‚ÌMIDITrail‚ÌƒEƒBƒ“ƒhƒE‚ğ‘O–Ê‚ÉˆÚ“®
+	//å…ˆè¡Œã®MIDITrailã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰é¢ã«ç§»å‹•
 	SetForegroundWindow(hWnd);
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
-	result = m_CmdLineParser.Initialize();
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
+	result = m_CmdLineParser.Initialize(pCmdLine);
 	if (result != 0) goto EXIT;
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Åƒtƒ@ƒCƒ‹‚ğw’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã•ã‚Œã¦ã„ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_CmdLineParser.GetSwitch(CMDSW_FILE_PATH) != CMDSW_ON) {
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒtƒ‹ƒpƒX‚É•ÏŠ·
-	written = GetFullPathNameW(
-					m_CmdLineParser.GetFilePath(),	//ƒtƒ@ƒCƒ‹ƒpƒX
-					_MAX_PATH,		//ƒoƒbƒtƒ@ƒTƒCƒYFTCHAR’PˆÊ
-					filePath,		//ƒoƒbƒtƒ@ˆÊ’u
-					&pFilePart		//ƒtƒ@ƒCƒ‹–¼‚ÌˆÊ’u
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ãƒ•ãƒ«ãƒ‘ã‚¹ã«å¤‰æ›
+	written = GetFullPathName(
+					m_CmdLineParser.GetFilePath(),	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+					_MAX_PATH,		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼šTCHARå˜ä½
+					filePath,		//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					&pFilePart		//ãƒ•ã‚¡ã‚¤ãƒ«åã®ä½ç½®
 				);
 	if (written == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4475,46 +5499,45 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail()
 		goto EXIT;
 	}
 
-	//æs‹N“®ƒvƒƒZƒX‚Ìƒ[ƒ‹ƒXƒƒbƒg‚ğŠJ‚­
+	//å…ˆè¡Œèµ·å‹•ãƒ—ãƒ­ã‚»ã‚¹ã®ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆã‚’é–‹ã
 	hFile = CreateFile(
-				MIDITRAIL_MAILSLOT,		//ƒ[ƒ‹ƒXƒƒbƒg–¼Ì
-				GENERIC_WRITE,			//ƒAƒNƒZƒXƒ^ƒCƒv
-				FILE_SHARE_READ,		//‹¤—L•û–@
-				NULL,					//ƒZƒLƒ…ƒŠƒeƒB‘®«
-				OPEN_EXISTING,			//¶¬w’è
-				FILE_ATTRIBUTE_NORMAL,	//ƒtƒ@ƒCƒ‹‘®«‚Æƒtƒ‰ƒO
-				NULL					//ƒeƒ“ƒvƒŒ[ƒgƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
+				MIDITRAIL_MAILSLOT,		//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆåç§°
+				GENERIC_WRITE,			//ã‚¢ã‚¯ã‚»ã‚¹ã‚¿ã‚¤ãƒ—
+				FILE_SHARE_READ,		//å…±æœ‰æ–¹æ³•
+				NULL,					//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§
+				OPEN_EXISTING,			//ç”ŸæˆæŒ‡å®š
+				FILE_ATTRIBUTE_NORMAL,	//ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§ã¨ãƒ•ãƒ©ã‚°
+				NULL					//ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
 			);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		//ƒ[ƒ‹ƒXƒƒbƒg‚ªŠJ‚¯‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
-		//æsƒvƒƒZƒX‚Ìó‘Ô‚ÉˆË‘¶‚·‚é‚½‚ß¸”s‚·‚é‰Â”\«‚Í‚ ‚é
+		//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆãŒé–‹ã‘ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
+		//å…ˆè¡Œãƒ—ãƒ­ã‚»ã‚¹ã®çŠ¶æ…‹ã«ä¾å­˜ã™ã‚‹ãŸã‚å¤±æ•—ã™ã‚‹å¯èƒ½æ€§ã¯ã‚ã‚‹
 		goto EXIT;
 	}
 
-	//ƒ[ƒ‹ƒXƒƒbƒg‚Éƒtƒ@ƒCƒ‹ƒpƒX‚ğ‘‚«‚Ş
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	//_tcscat_s(filePath, _MAX_PATH, m_CmdLineParser.GetFilePath());
-	size = (wcslen(filePath) + 1) * sizeof(WCHAR);
+	size = (_tcslen(filePath) + 1) * sizeof(TCHAR);
 	bresult = WriteFile(
-				hFile,		//ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
-				filePath,	//ƒf[ƒ^ƒoƒbƒtƒ@
-				(DWORD)size,	//‘‚«‚İƒTƒCƒY(byte)
-				&written,	//‘‚«‚ñ‚¾ƒTƒCƒY(byte)
-				NULL		//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ì
+				hFile,		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+				filePath,	//ãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡
+				(DWORD)size,	//æ›¸ãè¾¼ã¿ã‚µã‚¤ã‚º(byte)
+				&written,	//æ›¸ãè¾¼ã‚“ã ã‚µã‚¤ã‚º(byte)
+				NULL		//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“
 			);
 	if (!bresult) {
-		//‘‚«‚ß‚È‚©‚Á‚½ê‡‚Í‰½‚à‚µ‚È‚¢
-		//æsƒvƒƒZƒX‚Ìó‘Ô‚ÉˆË‘¶‚·‚é‚½‚ß¸”s‚·‚é‰Â”\«‚Í‚ ‚é
+		//æ›¸ãè¾¼ã‚ãªã‹ã£ãŸå ´åˆã¯ä½•ã‚‚ã—ãªã„
+		//å…ˆè¡Œãƒ—ãƒ­ã‚»ã‚¹ã®çŠ¶æ…‹ã«ä¾å­˜ã™ã‚‹ãŸã‚å¤±æ•—ã™ã‚‹å¯èƒ½æ€§ã¯ã‚ã‚‹
 		goto EXIT;
 	}
 
-	//æs‚ÌMIDITrail‚ÌƒEƒBƒ“ƒhƒE‚Éƒtƒ@ƒCƒ‹ƒpƒXƒ|ƒXƒg’Ê’m
+	//å…ˆè¡Œã®MIDITrailã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒã‚¹ãƒˆé€šçŸ¥
 	PostMessage(hWnd, WM_FILEPATH_POSTED, 0, 0);
 
 EXIT:;
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ÍƒNƒ[ƒY‚µ‚Ä‚Í‚È‚ç‚È‚¢
-	//if (hWnd != NULL) {
-	//	CloseHandle(hWnd);
-	//}
+	if (hWnd != NULL) {
+		CloseHandle(hWnd);
+	}
 	if (hFile != NULL) {
 		CloseHandle(hFile);
 	}
@@ -4522,7 +5545,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Œã‘±ƒvƒƒZƒX‚©‚ç‚Ìƒtƒ@ƒCƒ‹ƒpƒXƒ|ƒXƒg’Ê’m
+// å¾Œç¶šãƒ—ãƒ­ã‚»ã‚¹ã‹ã‚‰ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒã‚¹ãƒˆé€šçŸ¥
 //******************************************************************************
 int MIDITrailApp::_OnFilePathPosted()
 {
@@ -4531,49 +5554,49 @@ int MIDITrailApp::_OnFilePathPosted()
 	DWORD nextSize = 0;
 	DWORD readSize = 0;
 	DWORD count = 0;
-	WCHAR filePath[_MAX_PATH + 4];
+	TCHAR filePath[_MAX_PATH + 4];
 
-	ZeroMemory(filePath, sizeof(WCHAR)*(_MAX_PATH + 4));
+	ZeroMemory(filePath, sizeof(TCHAR)*(_MAX_PATH + 4));
 
-	//ƒ[ƒ‹ƒXƒƒbƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_hMailSlot == NULL) goto EXIT;
 
-	//ƒ[ƒ‹ƒXƒƒbƒgî•ñæ“¾
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—
 	bresult = GetMailslotInfo(
-					m_hMailSlot,	//ƒ[ƒ‹ƒXƒƒbƒg
-					NULL,			//Å‘åƒƒbƒZ[ƒWƒTƒCƒY
-					&nextSize,		//ŸƒƒbƒZ[ƒWƒTƒCƒY
-					&count,			//ƒƒbƒZ[ƒW”
-					NULL			//“Ç‚İæ‚èƒ^ƒCƒ€ƒAƒEƒgŠÔ
+					m_hMailSlot,	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆ
+					NULL,			//æœ€å¤§ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚º
+					&nextSize,		//æ¬¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚º
+					&count,			//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°
+					NULL			//èª­ã¿å–ã‚Šã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆæ™‚é–“
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒƒbƒZ[ƒW‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (nextSize == MAILSLOT_NO_MESSAGE) goto EXIT;
 
-	//ƒƒbƒZ[ƒWƒTƒCƒY‚Ì®‡«ƒ`ƒFƒbƒN
-	if (nextSize > (sizeof(WCHAR) * (_MAX_PATH))) {
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚ºã®æ•´åˆæ€§ãƒã‚§ãƒƒã‚¯
+	if (nextSize > (sizeof(TCHAR)*1024)) {
 		result = YN_SET_ERR("Program error.", nextSize, 0);
 		goto EXIT;
 	}
 
-	//ƒƒbƒZ[ƒW“Ç‚İ‚İ
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸èª­ã¿è¾¼ã¿
 	bresult = ReadFile(
-					m_hMailSlot,	//ƒ[ƒ‹ƒXƒƒbƒg
-					filePath,		//ƒoƒbƒtƒ@
-					nextSize,		//“Ç‚İæ‚èƒTƒCƒY(byte)
-					&readSize,		//“Ç‚İæ‚Á‚½ƒTƒCƒY(byte)
-					NULL			//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ì
+					m_hMailSlot,	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆ
+					filePath,		//ãƒãƒƒãƒ•ã‚¡
+					nextSize,		//èª­ã¿å–ã‚Šã‚µã‚¤ã‚º(byte)
+					&readSize,		//èª­ã¿å–ã£ãŸã‚µã‚¤ã‚º(byte)
+					NULL			//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+	//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 	result = _StopPlaybackAndOpenFile(filePath);
 	if (result != 0) goto EXIT;
 
@@ -4582,49 +5605,49 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆMIDIƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+// æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨MIDIãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_StopPlaybackAndOpenFile(
-		const WCHAR* pFilePath
+		TCHAR* pFilePath
 	)
 {
 	int result = 0;
 
-	//‰‰‘tƒXƒe[ƒ^ƒX‚²‚Æ‚Ì‘Î‰•û®
-	//  ƒf[ƒ^–³   ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ’â~       ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  Ä¶’†     ¨ ƒV[ƒPƒ“ƒT‚É’â~—v‹‚ğo‚· ¨ ’â~’Ê’m‚ğó‚¯‚½Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ˆê’â~   ¨ ƒV[ƒPƒ“ƒT‚É’â~—v‹‚ğo‚· ¨ ’â~’Ê’m‚ğó‚¯‚½Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ƒ‚ƒjƒ^’â~ ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ƒ‚ƒjƒ^’†   ¨ ƒ‚ƒjƒ^‚ğ’â~‚µ‚Äƒ‚ƒjƒ^’â~ó‘Ô‚Ö‘JˆÚ ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//æ¼”å¥ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã”ã¨ã®å¯¾å¿œæ–¹å¼
+	//  ãƒ‡ãƒ¼ã‚¿ç„¡   â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  åœæ­¢       â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  å†ç”Ÿä¸­     â†’ ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«åœæ­¢è¦æ±‚ã‚’å‡ºã™ â†’ åœæ­¢é€šçŸ¥ã‚’å—ã‘ãŸå¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  ä¸€æ™‚åœæ­¢   â†’ ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«åœæ­¢è¦æ±‚ã‚’å‡ºã™ â†’ åœæ­¢é€šçŸ¥ã‚’å—ã‘ãŸå¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  ãƒ¢ãƒ‹ã‚¿åœæ­¢ â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  ãƒ¢ãƒ‹ã‚¿ä¸­   â†’ ãƒ¢ãƒ‹ã‚¿ã‚’åœæ­¢ã—ã¦ãƒ¢ãƒ‹ã‚¿åœæ­¢çŠ¶æ…‹ã¸é·ç§» â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 
-	//‹“_•Û‘¶
+	//è¦–ç‚¹ä¿å­˜
 	if (m_isAutoSaveViewpoint) {
 		result = _OnMenuSaveViewpoint();
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒ‚ƒjƒ^’†‚Å‚ ‚ê‚Î’â~‚·‚é
+	//ãƒ¢ãƒ‹ã‚¿ä¸­ã§ã‚ã‚Œã°åœæ­¢ã™ã‚‹
 	if (m_PlayStatus == MonitorON) {
 		result = _OnMenuStopMonitoring();
 		if (result != 0) goto EXIT;
-		//‚±‚Ì“_‚Åƒ‚ƒjƒ^’â~‚É‘JˆÚÏ‚İ
+		//ã“ã®æ™‚ç‚¹ã§ãƒ¢ãƒ‹ã‚¿åœæ­¢ã«é·ç§»æ¸ˆã¿
 	}
 
-	//’â~’†‚Å‚ ‚ê‚Î‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//åœæ­¢ä¸­ã§ã‚ã‚Œã°ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
+		//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‡¦ç†
 		result = _FileOpenProc(pFilePath);
 		if (result != 0) goto EXIT;
 	}
-	//‰‰‘t’†‚Ìê‡‚Í‰‰‘t’â~Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//æ¼”å¥ä¸­ã®å ´åˆã¯æ¼”å¥åœæ­¢å¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	else if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		//‰‰‘tó‘Ô’Ê’m‚ª“Í‚­‚Ü‚ÅÄ¶’†‚Æ‚İ‚È‚·
-		//‚±‚±‚Å‚Í‰‰‘tó‘Ô‚ğ•ÏX‚µ‚È‚¢
+		//æ¼”å¥çŠ¶æ…‹é€šçŸ¥ãŒå±Šãã¾ã§å†ç”Ÿä¸­ã¨ã¿ãªã™
+		//ã“ã“ã§ã¯æ¼”å¥çŠ¶æ…‹ã‚’å¤‰æ›´ã—ãªã„
 		m_Sequencer.Stop();
 		
-		//’â~Š®—¹Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-		wcscpy_s(m_NextFilePath, _MAX_PATH, pFilePath);
+		//åœæ­¢å®Œäº†å¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+		_tcscpy_s(m_NextFilePath, _MAX_PATH, pFilePath);
 		m_isOpenFileAfterStop = true;
 	}
 
@@ -4633,70 +5656,23 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆƒtƒHƒ‹ƒ_ƒI[ƒvƒ“ˆ—
-//******************************************************************************
-int MIDITrailApp::_StopPlaybackAndOpenFolder(
-		const WCHAR* pFolderPath
-	)
-{
-	int result = 0;
-	int apiresult = 0;
-	MTFileList midiFileList;
-	const WCHAR* pFilePath = NULL;
-	
-	//w’èƒtƒ@ƒCƒ‹‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚É‘¶İ‚·‚éMIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚ğì¬
-	//–‘OŠm”F‚Ì‚½‚ßƒeƒ“ƒ|ƒ‰ƒŠ‚ÌƒŠƒXƒgƒIƒuƒWƒFƒNƒg‚ğw’è
-	result = _MakeFileListWithFolder(pFolderPath, &midiFileList);
-	if (result != 0) goto EXIT;
-
-	//MIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍƒƒbƒZ[ƒW‚ğ•\¦‚µ‚ÄI—¹
-	if (midiFileList.GetFileCount() == 0) {
-		//ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦
-		apiresult = MessageBox(
-							m_hWnd,							//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-							MIDITRAIL_MSG_FILE_NOT_FOUND,	//ƒƒbƒZ[ƒW
-							_T("WARNING"),					//ƒ^ƒCƒgƒ‹
-							MB_OK | MB_ICONWARNING			//ƒtƒ‰ƒO
-						);
-		if (apiresult == 0) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-			goto EXIT;
-		}
-		goto EXIT;
-	}
-
-	//w’èƒtƒ@ƒCƒ‹‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚É‘¶İ‚·‚éMIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚ğì¬
-	result = _MakeFileListWithFolder(pFolderPath, &m_MIDIFileList);
-	if (result != 0) goto EXIT;
-
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚Ìæ“ªƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚ÄŠJ‚­
-	m_MIDIFileList.SelectFirstFile();
-	pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
-	result = _StopPlaybackAndOpenFile(pFilePath);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// MIDIƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+// MIDIãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_FileOpenProc(
-		const WCHAR* pFilePath
+		TCHAR* pFilePath
 	)
 {
 	int result = 0;
 
-	//MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadMIDIFile(pFilePath);
 	if (result != 0) goto EXIT;
 
-	//HowToView•\¦
+	//HowToViewè¡¨ç¤º
 	result = _DispHowToView();
 	if (result != 0) goto EXIT;
 
-	//Ä¶w’è‚³‚ê‚Ä‚¢‚éê‡‚ÍÄ¶ŠJn
+	//å†ç”ŸæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å†ç”Ÿé–‹å§‹
 	if (m_AutoPlaybackAfterOpenFile > 0) {
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
@@ -4707,7 +5683,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ‹ƒXƒNƒŠ[ƒ“Ø‘Ö
+// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åˆ‡æ›¿
 //******************************************************************************
 int MIDITrailApp::_ToggleFullScreen()
 {
@@ -4723,30 +5699,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[ƒo[•\¦Ø‘Ö
-//******************************************************************************
-int MIDITrailApp::_ToggleMenuBar()
-{
-	int result = 0;
-	
-	m_isEnableMenuBar = m_isEnableMenuBar ? false : true;
-	
-	result = _ChangeWindowSize();
-	if (result != 0) goto EXIT;
-	
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒƒjƒ…[•\¦
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_ShowMenu()
 {
 	int result = 0;
 	LONG apiresult = 0;
 	
-	//ƒƒjƒ…[ƒo[•\¦ˆ—
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºå‡¦ç†
 	if (GetMenu(m_hWnd) == NULL) {
 		apiresult = SetMenu(m_hWnd, m_hMenu);
 		if (apiresult == 0) {
@@ -4755,11 +5715,11 @@ int MIDITrailApp::_ShowMenu()
 		}
 	}
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -4768,17 +5728,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[”ñ•\¦
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼éè¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_HideMenu()
 {
 	int result = 0;
 	LONG apiresult = 0;
 
-	//ƒƒjƒ…[ƒo[”ñ•\¦ˆ—
-	//‚·‚Å‚Éƒƒjƒ…[ƒo[”ñ•\¦‚È‚ç‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤ºå‡¦ç†
+	//ã™ã§ã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤ºãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (GetMenu(m_hWnd) != NULL) {
-		//GetMenu‚Åæ“¾‚µ‚½ƒnƒ“ƒhƒ‹‚Í”jŠü‚³‚ê‚È‚¢
+		//GetMenuã§å–å¾—ã—ãŸãƒãƒ³ãƒ‰ãƒ«ã¯ç ´æ£„ã•ã‚Œãªã„
 		apiresult = SetMenu(m_hWnd, NULL);
 		if (apiresult == 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -4791,7 +5751,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒQ[ƒ€ƒpƒbƒh‘€ìˆ—
+// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œå‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_GamePadProc()
 {
@@ -4802,51 +5762,51 @@ int MIDITrailApp::_GamePadProc()
 	
 	//_RPTN(_CRT_WARN, "GamePad: %d %d\n", m_GamePadCtrl.DidPressNow_A(), m_GamePadCtrl.DidPressNow_B());
 
-	//ƒXƒ^[ƒg ‰Ÿ‰º
+	//ã‚¹ã‚¿ãƒ¼ãƒˆ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_Start()) {
-		//‰‰‘tŠJn^ˆê’â~
+		//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒ{ƒ^ƒ“A ‰Ÿ‰º
+	//ãƒœã‚¿ãƒ³A æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_A()) {
-		//‰‰‘tŠJn^ˆê’â~
+		//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
 	}
 	
-	//ƒ{ƒ^ƒ“B ‰Ÿ‰º
+	//ãƒœã‚¿ãƒ³B æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_B()) {
-		//‰‰‘t’â~
+		//æ¼”å¥åœæ­¢
 		result = _OnMenuStop();
 		if (result != 0) goto EXIT;
 	}
 	
-	//¶ƒVƒ‡ƒ‹ƒ_[ ‰Ÿ‰º
+	//å·¦ã‚·ãƒ§ãƒ«ãƒ€ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_LShoulder()) {
-		//‹“_Ø‚è‘Ö‚¦
+		//è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 		result = _ChangeViewPoint(-1);
 		if (result != 0) goto EXIT;
 	}
 	
-	//‰EƒVƒ‡ƒ‹ƒ_[ ‰Ÿ‰º
+	//å³ã‚·ãƒ§ãƒ«ãƒ€ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_RShoulder()) {
-		//‹“_Ø‚è‘Ö‚¦
+		//è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 		result = _ChangeViewPoint(+1);
 		if (result != 0) goto EXIT;
 	}
 	
-	//¶ƒgƒŠƒK[ ‰Ÿ‰º
+	//å·¦ãƒˆãƒªã‚¬ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_LTrigger()) {
-		//Ä¶ƒŠƒƒCƒ“ƒh
+		//å†ç”Ÿãƒªãƒ¯ã‚¤ãƒ³ãƒ‰
 		result = _OnMenuSkipBack();
 		if (result != 0) goto EXIT;
 	}
 	
-	//‰EƒgƒŠƒK[ ‰Ÿ‰º
+	//å³ãƒˆãƒªã‚¬ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_RTrigger()) {
-		//Ä¶ƒXƒLƒbƒv
+		//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—
 		result = _OnMenuSkipForward();
 		if (result != 0) goto EXIT;
 	}
@@ -4856,13 +5816,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹“_Ø‚è‘Ö‚¦
+// è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 //******************************************************************************
 int MIDITrailApp::_ChangeViewPoint(int step)
 {
 	int result = 0;
 
-	//ƒQ[ƒ€ƒpƒbƒh—p‹“_”Ô†XV
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ç”¨è¦–ç‚¹ç•ªå·æ›´æ–°
 	m_GamePadViewPointNo += step;
 
 	if (m_GamePadViewPointNo < 0) {
@@ -4872,7 +5832,7 @@ int MIDITrailApp::_ChangeViewPoint(int step)
 		m_GamePadViewPointNo = 0;
 	}
 
-	//‹“_Ø‚è‘Ö‚¦
+	//è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 	switch (m_GamePadViewPointNo) {
 	case 0:
 		result = _OnMenuResetViewpoint();
@@ -4893,28 +5853,3 @@ int MIDITrailApp::_ChangeViewPoint(int step)
 EXIT:;
 	return result;
 }
-
-//******************************************************************************
-// ƒtƒHƒ‹ƒ_“àƒtƒ@ƒCƒ‹ƒŠƒXƒgì¬
-//******************************************************************************
-int MIDITrailApp::_MakeFileListWithFolder(
-		const WCHAR* pFolderPath,
-		MTFileList* pFileList
-	)
-{
-	int result = 0;
-
-	if ((pFolderPath == NULL) || (pFileList == NULL)) {
-		result = YN_SET_ERR("Program Error.", 0, 0);
-		goto EXIT;
-	}
-
-	//w’èƒtƒHƒ‹ƒ_’¼‰º‚É‘¶İ‚·‚éMIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚ğì¬
-	result = pFileList->MakeFileListWithDirectory(pFolderPath, &m_RcpConv);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
-}
-
-

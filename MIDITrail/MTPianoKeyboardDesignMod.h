@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesignMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -14,66 +14,66 @@
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboardDesignMod : public MTPianoKeyboardDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPianoKeyboardDesignMod(void);
 	virtual ~MTPianoKeyboardDesignMod(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//ƒL[ƒ{[ƒhŠî€À•Wæ“¾
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åŸºæº–åº§æ¨™å–å¾—
 	D3DXVECTOR3 GetKeyboardBasePos(
 			int keyboardIndex,
 			float angle
 		);
 
-	//ƒ|[ƒgŒ´“_À•Wæ“¾
+	//ãƒãƒ¼ãƒˆåŸç‚¹åº§æ¨™å–å¾—
 	float GetPortOriginX();
 	float GetPortOriginY(int keyboardIndex, bool flip);
 	float GetPortOriginZ(int keyboardIndex, bool flip);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX‚‚³E•æ“¾
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é«˜ã•ãƒ»å¹…å–å¾—
 	float GetNoteBoxHeight();
 	float GetNoteBoxWidth();
 
-	//ƒm[ƒgŠÔŠuæ“¾
+	//ãƒãƒ¼ãƒˆé–“éš”å–å¾—
 	float GetNoteStep();
 
-	//ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠuæ“¾
+	//ãƒãƒ£ãƒ³ãƒãƒ«é–“éš”å–å¾—
 	float GetChStep();
 
-	//ƒL[ƒ{[ƒh‚‚³E•æ“¾
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é«˜ã•ãƒ»å¹…å–å¾—
 	float GetKeyboardHeight();
 	float GetKeyboardWidth();
 
-	//ƒOƒŠƒbƒh‚‚³E•æ“¾
+	//ã‚°ãƒªãƒƒãƒ‰é«˜ã•ãƒ»å¹…å–å¾—
 	float GetGridHeight();
 	float GetGridWidth();
 
-	//ƒ|[ƒg‚‚³E•æ“¾
+	//ãƒãƒ¼ãƒˆé«˜ã•ãƒ»å¹…å–å¾—
 	float GetPortHeight();
 	float GetPortWidth();
 
-	//Ä¶–Ê‚‚³E•æ“¾
+	//å†ç”Ÿé¢é«˜ã•ãƒ»å¹…å–å¾—
 	float GetPlaybackSectionHeight();
 	float GetPlaybackSectionWidth();
 
-	//”g–ä•`‰æŠÔŠuæ“¾
+	//æ³¢ç´‹æç”»é–“éš”å–å¾—
 	float GetRippleSpacing();
 
-	//”g–ä•`‰æƒ}[ƒWƒ“æ“¾
+	//æ³¢ç´‹æç”»ãƒãƒ¼ã‚¸ãƒ³å–å¾—
 	float GetRippleMargin();
 
-	//ƒL[ƒ{[ƒhƒŠƒTƒCƒY”äæ“¾
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒªã‚µã‚¤ã‚ºæ¯”å–å¾—
 	float GetKeyboardResizeRatio();
 
-	//”­‰¹’†ƒL[ƒJƒ‰[æ“¾
+	//ç™ºéŸ³ä¸­ã‚­ãƒ¼ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetActiveKeyColor(
 			unsigned char chNo,
 			unsigned char noteNo,
@@ -88,19 +88,19 @@ protected:
 
 private:
 
-	//ƒm[ƒgƒ{ƒbƒNƒX‚‚³
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é«˜ã•
 	float m_NoteBoxHeight;
-	//ƒm[ƒgƒ{ƒbƒNƒX•
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹å¹…
 	float m_NoteBoxWidth;
-	//ƒm[ƒgŠÔŠu
+	//ãƒãƒ¼ãƒˆé–“éš”
 	float m_NoteStep;
-	//ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠu
+	//ãƒãƒ£ãƒ³ãƒãƒ«é–“éš”
 	float m_ChStep;
 
-	//”g–ä•`‰æŠÔŠu
+	//æ³¢ç´‹æç”»é–“éš”
 	float m_RippleSpacing;
 
-	//”­‰¹’†ƒL[Fî•ñ
+	//ç™ºéŸ³ä¸­ã‚­ãƒ¼è‰²æƒ…å ±
 	D3DXCOLOR m_ActiveKeyColorList[16];
 
 };

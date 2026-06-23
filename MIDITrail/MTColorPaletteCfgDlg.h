@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorPaletteCfgDlg
 //
-// ƒJƒ‰[ƒpƒŒƒbƒgİ’èƒ_ƒCƒAƒƒO
+// ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -15,123 +15,132 @@
 
 
 //******************************************************************************
-// ƒJƒ‰[İ’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ã‚«ãƒ©ãƒ¼è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTColorPaletteCfgDlg
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTColorPaletteCfgDlg(void);
 	virtual ~MTColorPaletteCfgDlg(void);
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgİ’è
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®š
 	void SetColorPalette(
 				MTColorPalette* pColorPalette, 
 				MTColorPalette* pDefaultColorPalette,
 			 	unsigned long colorPaletteNo
 			 );
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgæ“¾
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆå–å¾—
 	void GetColorPalette(MTColorPalette* pColorPalette);
 
-	//•\¦Fƒ_ƒCƒAƒƒO‚ª•Â‚¶‚ç‚ê‚é‚Ü‚Å§Œä‚ğ•Ô‚³‚È‚¢
+	//è¡¨ç¤ºï¼šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¾ã§åˆ¶å¾¡ã‚’è¿”ã•ãªã„
 	int Show(HWND hParentWnd);
 
-	//ƒpƒ‰ƒ[ƒ^•ÏXŠm”F
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¤‰æ›´ç¢ºèª
 	bool IsChanged();
 
 private:
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒ|ƒCƒ“ƒ^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒã‚¤ãƒ³ã‚¿
 	static MTColorPaletteCfgDlg* m_pThis;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	HINSTANCE m_hInstance;
 
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hWnd;
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“ƒŠƒXƒgFCh.1-16, BG/GL/CT, Start/End
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆï¼šCh.1-16, BG/GL/CT, Start/End
 	HWND m_hColorButtonList[SM_MAX_CH_NUM + 3 + 2];
 
-	//ƒJƒ‰[ƒeƒLƒXƒgƒŠƒXƒgFCh.1-16, BG/GL/CT, Start/End
+	//ã‚«ãƒ©ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆãƒªã‚¹ãƒˆï¼šCh.1-16, BG/GL/CT, Start/Endï¼ˆRGB 6æ¡16é€²ï¼‰
 	HWND m_hColorTextList[SM_MAX_CH_NUM + 3 + 2];
 
-	//ƒJƒ‰[ƒpƒŒƒbƒg
+	//ced 20260628: ã‚¢ãƒ«ãƒ•ã‚¡å…¥åŠ›ãƒªã‚¹ãƒˆï¼ˆ0-255ï¼‰ï¼šCh.1-16, BG/GL/CT, Start/End
+	HWND m_hColorAlphaList[SM_MAX_CH_NUM + 3 + 2];
+
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ
 	MTColorPalette m_ColorPalette;
 	MTColorPalette m_DefaultColorPalette;
 	unsigned long m_ColorPaletteNo;
 	D3DXCOLOR m_ColorStart;
 	D3DXCOLOR m_ColorEnd;
 
-	//F‘I‘ğƒ_ƒCƒAƒƒO—pƒpƒ‰ƒ[ƒ^
+	//è‰²é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	COLORREF m_CustColors[16];
 
-	//•ÏXƒtƒ‰ƒO
+	//å¤‰æ›´ãƒ•ãƒ©ã‚°
 	bool m_isChanged;
 
-	//ƒJƒ‰[ƒpƒ‰ƒ[ƒ^ƒ}ƒbƒv
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒãƒƒãƒ—
 	typedef std::map<std::string, std::string> MTColorParamDictionary;
 	typedef std::pair<std::string, std::string> MTColorParamDictionaryPair;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ƒ_ƒCƒAƒƒO•\¦’¼‘O‰Šú‰»
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 	int _OnInitDlg(HWND hDlg);
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 	void _InitColorButtonList();
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³åˆæœŸåŒ–
 	int _InitColorButtons();
 
-	//ƒJƒ‰[ƒeƒLƒXƒg‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆåˆæœŸåŒ–
 	int _InitColorText();
 
-	//ƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//ced 20260628: 1è‰²åˆ†ã®è¡¨ç¤ºæ›´æ–°ï¼ˆhex æ¬„=RGB6æ¡ã€ã‚¢ãƒ«ãƒ•ã‚¡æ¬„=0-255ï¼‰
+	void _SetColorFields(unsigned long targetNo, D3DXCOLOR color);
+
+	//ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	int _InitCombobox(HWND hCombobox, int selectedIndex);
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“‰Ÿ‰º
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnColor(unsigned long targetNo);
 
-	//ƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒc[ƒ‹FSet Gradation Colors ƒ{ƒ^ƒ“‰Ÿ‰º
+	//ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ„ãƒ¼ãƒ«ï¼šSet Gradation Colors ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnSetGradationColors();
 
-	//ƒpƒ‰ƒ[ƒ^ƒZƒbƒgƒAƒbƒvƒc[ƒ‹FSet Default Colors ƒ{ƒ^ƒ“‰Ÿ‰º
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ãƒ„ãƒ¼ãƒ«ï¼šSet Default Colors ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnSetDefaultColors();
 
-	//ƒpƒ‰ƒ[ƒ^ƒZƒbƒgƒAƒbƒvƒc[ƒ‹FExport Color Parameters ƒ{ƒ^ƒ“‰Ÿ‰º
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ãƒ„ãƒ¼ãƒ«ï¼šExport Color Parameters ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OonBtnExportColorParameters();
 
-	//ƒpƒ‰ƒ[ƒ^ƒZƒbƒgƒAƒbƒvƒc[ƒ‹FImport Color Parameters ƒ{ƒ^ƒ“‰Ÿ‰º
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ãƒ„ãƒ¼ãƒ«ï¼šImport Color Parameters ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnImportColorParameters();
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“XV
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æ›´æ–°
 	int _UpdateColorButtons();
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“•`‰æ
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æç”»
 	int _DrawColorButton(DRAWITEMSTRUCT* pDrawItem);
 
-	//ƒJƒ‰[ƒeƒLƒXƒgXV
+	//ã‚«ãƒ©ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆæ›´æ–°
 	int _UpdateColorText();
 
-	//ƒJƒ‰[æ“¾
+	//è‰²ãƒ†ã‚­ã‚¹ãƒˆæ¬„(8æ¡RGBA)ã‚’ãƒ‘ãƒ¬ãƒƒãƒˆã¸åæ˜ ï¼ˆé€æ˜åº¦å¤‰æ›´å¯¾å¿œï¼šced 20260627ï¼‰
+	int _ApplyColorTextFields();
+
+	//ã‚«ãƒ©ãƒ¼å–å¾—
 	int _GetCurColor(unsigned long targetNo, D3DXCOLOR* pColor);
 
-	//ƒJƒ‰[İ’è
+	//ã‚«ãƒ©ãƒ¼è¨­å®š
 	int _SetCurColor(unsigned long targetNo, D3DXCOLOR color);
 
-	//ƒJƒ‰[‘I‘ğƒ_ƒCƒAƒƒO•\¦
+	//ã‚«ãƒ©ãƒ¼é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	int _ShowChooseColorDlg(
 				D3DXCOLOR color,
 				D3DXCOLOR* pNewColor,
 				bool* pIsChoosed
 			);
 
-	//ƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒJƒ‰[İ’è
+	//ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³ã‚«ãƒ©ãƒ¼è¨­å®š
 	int _SetGradationColor(
 				unsigned long chNoStart,
 				unsigned long chNoEnd,
@@ -139,16 +148,16 @@ private:
 				D3DXCOLOR colorEnd
 			);
 
-	//o—Í—pƒpƒ‰ƒ[ƒ^•¶š—ñ¶¬
+	//å‡ºåŠ›ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—ç”Ÿæˆ
 	int _MakeColorParamForExport(TCHAR* pTextBuf, unsigned long bufSize);
 
-	//ƒpƒ‰ƒ[ƒ^“ü—Íˆ—
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å…¥åŠ›å‡¦ç†
 	int _ImportColorParam(TCHAR* pParamString);
 
-	//ƒpƒ‰ƒ[ƒ^ƒ}ƒbƒvì¬
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒãƒƒãƒ—ä½œæˆ
 	int _MakeImportKeyValueMap(TCHAR* pParamString, MTColorParamDictionary* pParamDictionary);
 
-	//ƒpƒ‰ƒ[ƒ^“Ç‚İ‚İ
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	int _LoadParam(MTColorParamDictionary* pParamDictionary);
 
 };

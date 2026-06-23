@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMOutDevCtrl
 //
-// MIDIo—ÍƒfƒoƒCƒX§ŒäƒNƒ‰ƒX
+// MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
@@ -25,45 +25,57 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘åƒ|[ƒg”FA,B,C,D,E,F
+//æœ€å¤§ãƒãƒ¼ãƒˆæ•°ï¼šA,B,C,D,E,F
 #define SM_MIDIOUT_PORT_NUM_MAX   (6)
 
+//KDMAPI (OmniMIDI) sentinel device
+#define SM_KDMAPI_DEVNAME  "OmniMIDI (KDMAPI)"
+#define SM_KDMAPI_DEVID    (0xFFFFFFFE)
+
+//KDMAPI function pointer typedefs (OmniMIDI.dll, loaded dynamically)
+typedef int          (WINAPI *LPFN_IsKDMAPIAvailable)(void);
+typedef int          (WINAPI *LPFN_InitializeKDMAPIStream)(void);
+typedef int          (WINAPI *LPFN_TerminateKDMAPIStream)(void);
+typedef void         (WINAPI *LPFN_ResetKDMAPIStream)(void);
+typedef unsigned int (WINAPI *LPFN_SendDirectData)(unsigned long dwMsg);
+typedef unsigned int (WINAPI *LPFN_SendDirectLongData)(MIDIHDR* pHdr, unsigned int hdrSize);
+
 //******************************************************************************
-// MIDIo—ÍƒfƒoƒCƒX§ŒäƒNƒ‰ƒX
+// MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMOutDevCtrl
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMOutDevCtrl(void);
 	virtual ~SMOutDevCtrl(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize();
 
-	//ƒfƒoƒCƒX”æ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹æ•°å–å¾—
 	unsigned long GetDevNum();
 
-	//ƒfƒoƒCƒXƒvƒƒ_ƒNƒg–¼Ìæ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆåç§°å–å¾—
 	int GetDevProductName(unsigned long index, std::string& name);
 
-	//ƒ|[ƒg‘Î‰ƒfƒoƒCƒX“o˜^
+	//ãƒãƒ¼ãƒˆå¯¾å¿œãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²
 	int SetPortDev(unsigned char portNo, const char* pProductName);
 
-	//ƒ|[ƒg‘Î‰ƒfƒoƒCƒXIDæ“¾
+	//ãƒãƒ¼ãƒˆå¯¾å¿œãƒ‡ãƒã‚¤ã‚¹IDå–å¾—
 	int GetPortDevId(unsigned char portNo, unsigned long* pDevId);
 
-	//‘SƒfƒoƒCƒX‚ÌƒI[ƒvƒ“^ƒNƒ[ƒY
+	//å…¨ãƒ‡ãƒã‚¤ã‚¹ã®ã‚ªãƒ¼ãƒ—ãƒ³ï¼ã‚¯ãƒ­ãƒ¼ã‚º
 	int OpenPortDevAll();
 	int ClosePortDevAll();
 
-	//ƒ|[ƒgî•ñƒNƒŠƒA
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 	int ClearPortInfo();
 
-	//MIDIo—ÍƒƒbƒZ[ƒW‘—M
+	//MIDIå‡ºåŠ›ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 	int SendShortMsg(unsigned char portNo, unsigned long msg);
 	int SendLongMsg(unsigned char portNo, unsigned char* pMsg, unsigned long size);
 	int NoteOffAll();
@@ -75,6 +87,7 @@ private:
 		bool isExist;
 		unsigned long devId;
 		HMIDIOUT hMIDIOut;
+		bool isKDMAPI;
 	} SMPortInfo;
 
 	SMPortInfo m_PortInfo[SM_MIDIOUT_PORT_NUM_MAX];
@@ -91,7 +104,21 @@ private:
 
 	int _InitDevList();
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//KDMAPI (OmniMIDI) direct output
+	HMODULE m_hOmniMIDI;
+	bool m_isKDMAPIAvailable;
+	bool m_isKDMAPIInit;
+	LPFN_IsKDMAPIAvailable      m_pIsKDMAPIAvailable;
+	LPFN_InitializeKDMAPIStream m_pInitializeKDMAPIStream;
+	LPFN_TerminateKDMAPIStream  m_pTerminateKDMAPIStream;
+	LPFN_ResetKDMAPIStream      m_pResetKDMAPIStream;
+	LPFN_SendDirectData         m_pSendDirectData;
+	LPFN_SendDirectLongData     m_pSendDirectLongData;
+
+	void _LoadKDMAPI();
+	void _UnloadKDMAPI();
+
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMOutDevCtrl&);
 	SMOutDevCtrl(const SMOutDevCtrl&);
 

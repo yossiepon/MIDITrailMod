@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMLiveMonitor
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^ƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
@@ -27,60 +27,60 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
 
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^ƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMLiveMonitor
 {
 public:
 	
-	//‰‰‘tó‘Ô
+	//æ¼”å¥çŠ¶æ…‹
 	enum Status {
 		StatusMonitorOFF,
 		StatusMonitorON
 	};
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMLiveMonitor(void);
 	virtual ~SMLiveMonitor(void);
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(SMMsgQueue* pMsgQueue);
 	
-	//ƒ|[ƒg‘Î‰ƒfƒoƒCƒX“o˜^
+	//ãƒãƒ¼ãƒˆå¯¾å¿œãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²
 	int SetInPortDev(const char* pProductName, bool isMIDITHRU);
 	int SetOutPortDev(const char* pProductName);
 	
-	//“ü—Íƒ|[ƒgƒfƒoƒCƒX•\¦–¼æ“¾
+	//å…¥åŠ›ãƒãƒ¼ãƒˆãƒ‡ãƒã‚¤ã‚¹è¡¨ç¤ºåå–å¾—
 	//NSString* GetInPortDevDisplayName(NSString* pIdName);
 	int GetInPortDevDisplayName(std::string& name);
 	
-	//ƒ‚ƒjƒ^ŠJn
+	//ãƒ¢ãƒ‹ã‚¿é–‹å§‹
 	int Start();
 	
-	//ƒ‚ƒjƒ^’â~
+	//ãƒ¢ãƒ‹ã‚¿åœæ­¢
 	int Stop();
 	
 private:
 	
-	//‰‰‘tó‘Ô
+	//æ¼”å¥çŠ¶æ…‹
 	Status m_Status;
 	SMMsgTransmitter m_MsgTrans;
 	SMMsgQueue* m_pMsgQue;
 	SMEventWatcher m_EventWatcher;
 	
-	//MIDIƒfƒoƒCƒXŒn
+	//MIDIãƒ‡ãƒã‚¤ã‚¹ç³»
 	char m_InPortDevName[MAXPNAMELEN];
 	char m_OutPortDevName[MAXPNAMELEN];
 	bool m_isMIDITHRU;
 	SMInDevCtrl m_InDevCtrl;
 	SMOutDevCtrl m_OutDevCtrl;
 	
-	//ƒ|[ƒg§Œä
+	//ãƒãƒ¼ãƒˆåˆ¶å¾¡
 	void _ClearPortInfo();
 	int _OpenMIDIDev();
 	int _CloseMIDIDev();

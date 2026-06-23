@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesign
 //
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒL[ƒ{[ƒh‚ÌŠî–{”z’uÀ•W
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®åŸºæœ¬é…ç½®åº§æ¨™
 //
 //  +y   +z
 //  |    /
@@ -22,37 +22,37 @@
 #pragma once
 
 #include <d3d9.h>
-#include <d3dx9.h>
+#include "DXMath9.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboardDesign
 {
 public:
 
-	//ƒL[í•Ê
-	//  •Œ®‚Í”’Œ®‚Æ”’Œ®‚Ì’†S‚©‚ç”÷–­‚É‚¸‚ê‚Ä”z’u‚³‚ê‚Ä‚¢‚é
-	//  ‚±‚Ì‚½‚ß”’Œ®‚ÌŒ`‚ÍC‚©‚çB‚Ü‚Å‚·‚×‚ÄˆÙ‚È‚é
+	//ã‚­ãƒ¼ç¨®åˆ¥
+	//  é»’éµã¯ç™½éµã¨ç™½éµã®ä¸­å¿ƒã‹ã‚‰å¾®å¦™ã«ãšã‚Œã¦é…ç½®ã•ã‚Œã¦ã„ã‚‹
+	//  ã“ã®ãŸã‚ç™½éµã®å½¢ã¯Cã‹ã‚‰Bã¾ã§ã™ã¹ã¦ç•°ãªã‚‹
 	enum KeyType {
-		KeyWhiteC,	//”’Œ®C
-		KeyWhiteD,	//”’Œ®D
-		KeyWhiteE,	//”’Œ®E
-		KeyWhiteF,	//”’Œ®F
-		KeyWhiteG,	//”’Œ®G
-		KeyWhiteA,	//”’Œ®A
-		KeyWhiteB,	//”’Œ®B
-		KeyBlack	//•Œ®
+		KeyWhiteC,	//ç™½éµC
+		KeyWhiteD,	//ç™½éµD
+		KeyWhiteE,	//ç™½éµE
+		KeyWhiteF,	//ç™½éµF
+		KeyWhiteG,	//ç™½éµG
+		KeyWhiteA,	//ç™½éµA
+		KeyWhiteB,	//ç™½éµB
+		KeyBlack	//é»’éµ
 	};
 
-	//”­‰¹’†ƒL[Fí•Ê
+	//ç™ºéŸ³ä¸­ã‚­ãƒ¼è‰²ç¨®åˆ¥
 	enum ActiveKeyColorType {
-		DefaultColor,	//ƒfƒtƒHƒ‹ƒgF
-		NoteColor		//ƒm[ƒgF
+		DefaultColor,	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè‰²
+		NoteColor		//ãƒãƒ¼ãƒˆè‰²
 	};
 
 public:
@@ -60,81 +60,81 @@ public:
 	MTPianoKeyboardDesign(void);
 	virtual ~MTPianoKeyboardDesign(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 // >>> modify 20120728 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 // <<< modify 20120728 yossiepon end
 
-	//ƒ|[ƒgŒ´“_À•Wæ“¾
+	//ãƒãƒ¼ãƒˆåŸç‚¹åº§æ¨™å–å¾—
 	float GetPortOriginX(unsigned char portNo);
 	float GetPortOriginY(unsigned char portNo);
 	float GetPortOriginZ(unsigned char portNo);
 
-	//ƒL[í•Êæ“¾
+	//ã‚­ãƒ¼ç¨®åˆ¥å–å¾—
 	KeyType GetKeyType(unsigned char noteNo);
 
-	//ƒL[’†SXÀ•Wæ“¾
+	//ã‚­ãƒ¼ä¸­å¿ƒXåº§æ¨™å–å¾—
 	float GetKeyCenterPosX(unsigned char noteNo);
 
-	//”’Œ®”z’uŠÔŠuæ“¾
+	//ç™½éµé…ç½®é–“éš”å–å¾—
 	float GetWhiteKeyStep();
 
-	//”’Œ®‰¡ƒTƒCƒYæ“¾
+	//ç™½éµæ¨ªã‚µã‚¤ã‚ºå–å¾—
 	float GetWhiteKeyWidth();
 
-	//”’Œ®‚‚³æ“¾
+	//ç™½éµé«˜ã•å–å¾—
 	float GetWhiteKeyHeight();
 
-	//”’Œ®’·‚³æ“¾
+	//ç™½éµé•·ã•å–å¾—
 	float GetWhiteKeyLen();
 
-	//•Œ®‰¡ƒTƒCƒYæ“¾
+	//é»’éµæ¨ªã‚µã‚¤ã‚ºå–å¾—
 	float GetBlackKeyWidth();
 
-	//•Œ®‚‚³æ“¾
+	//é»’éµé«˜ã•å–å¾—
 	float GetBlackKeyHeight();
 
-	//•Œ®ŒXÎ’·‚³æ“¾
+	//é»’éµå‚¾æ–œé•·ã•å–å¾—
 	float GetBlackKeySlopeLen();
 
-	//•Œ®’·‚³æ“¾
+	//é»’éµé•·ã•å–å¾—
 	float GetBlackKeyLen();
 
-	//ƒL[ŠÔŠuƒTƒCƒYæ“¾
+	//ã‚­ãƒ¼é–“éš”ã‚µã‚¤ã‚ºå–å¾—
 	float GetKeySpaceSize();
 
-	//ƒL[‰Ÿ‰º‰ñ“]’†SY²À•Wæ“¾
+	//ã‚­ãƒ¼æŠ¼ä¸‹å›è»¢ä¸­å¿ƒYè»¸åº§æ¨™å–å¾—
 	float GetKeyRotateAxisXPos();
 
-	//ƒL[‰Ÿ‰º‰ñ“]Šp“x
+	//ã‚­ãƒ¼æŠ¼ä¸‹å›è»¢è§’åº¦
 	float GetKeyRotateAngle();
 
-	//ƒL[‰º~ŠÔæ“¾(msec)
+	//ã‚­ãƒ¼ä¸‹é™æ™‚é–“å–å¾—(msec)
 	unsigned long GetKeyDownDuration();
 
-	//ƒL[ã¸ŠÔæ“¾(msec)
+	//ã‚­ãƒ¼ä¸Šæ˜‡æ™‚é–“å–å¾—(msec)
 	unsigned long GetKeyUpDuration();
 
-	//ƒsƒbƒ`ƒxƒ“ƒhƒL[ƒ{[ƒhƒVƒtƒg—Êæ“¾
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚·ãƒ•ãƒˆé‡å–å¾—
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
 
-	//ƒm[ƒgƒhƒƒbƒvÀ•Wæ“¾
+	//ãƒãƒ¼ãƒˆãƒ‰ãƒ­ãƒƒãƒ—åº§æ¨™å–å¾—
 	float GetNoteDropPosZ(unsigned char noteNo);
 
-	//”’Œ®ƒJƒ‰[æ“¾
+	//ç™½éµã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetWhiteKeyColor();
 
-	//•Œ®ƒJƒ‰[æ“¾
+	//é»’éµã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetBlackKeyColor();
 
-	//”­‰¹’†ƒL[ƒJƒ‰[æ“¾
+	//ç™ºéŸ³ä¸­ã‚­ãƒ¼ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetActiveKeyColor(
 			unsigned char noteNo,
 			unsigned long elapsedTime,
 			D3DXCOLOR* pNoteColor = NULL
 		);
 
-	//”’Œ®ƒeƒNƒXƒ`ƒƒÀ•Wæ“¾
+	//ç™½éµãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å–å¾—
 	void GetWhiteKeyTexturePosTop(
 			unsigned char noteNo,
 			D3DXVECTOR2* pTexPos0,
@@ -158,7 +158,7 @@ public:
 			D3DXVECTOR2* pTexPos
 		);
 
-	//•Œ®ƒeƒNƒXƒ`ƒƒÀ•Wæ“¾
+	//é»’éµãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å–å¾—
 	void GetBlackKeyTexturePos(
 			unsigned char noteNo,
 			D3DXVECTOR2* pTexPos0,
@@ -179,24 +179,27 @@ public:
 			bool isColored = false
 		);
 
-	//ƒL[ƒ{[ƒhŠî€À•Wæ“¾
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åŸºæº–åº§æ¨™å–å¾—
 	D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
 
-	//ƒL[ƒ{[ƒhÅ‘å•\¦”æ“¾
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æœ€å¤§è¡¨ç¤ºæ•°å–å¾—
 	unsigned long GetKeyboardMaxDispNum();
 
 // >>> add 20180404 yossiepon begin
 	void SetKeyboardSingle();
 // <<< add 20180404 yossiepon end
 
-	//ƒL[•\¦”ÍˆÍæ“¾
+	//ã‚­ãƒ¼è¡¨ç¤ºç¯„å›²å–å¾—
 	unsigned char GetKeyDispRangeStart();
 	unsigned char GetKeyDispRangeEnd();
 	bool IsKeyDisp(unsigned char noteNo);
 
+	//ced 20260629: ç„¡é™éµç›¤ï¼ˆ0-127 ã®å¤–ã«ã‚‚ã‚ªã‚¯ã‚¿ãƒ¼ãƒ–ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å»¶é•·ï¼‰
+	bool IsInfiniteKeyboard() { return m_InfiniteKeyboard; }
+
 private:
 
-	//ƒL[î•ñ
+	//ã‚­ãƒ¼æƒ…å ±
 	typedef struct {
 		KeyType keyType;
 		float keyCenterPosX;
@@ -204,14 +207,14 @@ private:
 
 private:
 
-	//ƒL[î•ñ”z—ñ
+	//ã‚­ãƒ¼æƒ…å ±é…åˆ—
 	MTKeyInfo m_KeyInfo[SM_MAX_NOTE_NUM];
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ƒ|[ƒgî•ñ
+	//ãƒãƒ¼ãƒˆæƒ…å ±
 	SMPortList m_PortList;
 	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
 
@@ -219,7 +222,7 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒXƒP[ƒ‹î•ñ
+	//ã‚¹ã‚±ãƒ¼ãƒ«æƒ…å ±
 	float m_WhiteKeyStep;
 	float m_WhiteKeyWidth;
 	float m_WhiteKeyHeight;
@@ -234,13 +237,13 @@ private:
 	float m_BlackKeyShiftCDE;
 	float m_BlackKeyShiftFGAB;
 
-	//ƒL[‰ñ“]î•ñ
+	//ã‚­ãƒ¼å›è»¢æƒ…å ±
 	float m_KeyRotateAxisXPos;
 	float m_KeyRotateAngle;
 	int m_KeyDownDuration;
 	int m_KeyUpDuration;
 
-	//ƒL[ƒ{[ƒh”z’uî•ñ
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é…ç½®æƒ…å ±
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
@@ -255,11 +258,11 @@ private:
 	float m_KeyboardStepZ;
 	int m_KeyboardMaxDispNum;
 
-	//ƒL[Fî•ñ
+	//ã‚­ãƒ¼è‰²æƒ…å ±
 	D3DXCOLOR m_WhiteKeyColor;
 	D3DXCOLOR m_BlackKeyColor;
 
-	//”­‰¹’†ƒL[Fî•ñ
+	//ç™ºéŸ³ä¸­ã‚­ãƒ¼è‰²æƒ…å ±
 	D3DXCOLOR m_ActiveKeyColor;
 
 // >>> modify access level to protected 20161224 yossiepon begin
@@ -274,9 +277,10 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒL[•\¦”ÍˆÍ
+	//ã‚­ãƒ¼è¡¨ç¤ºç¯„å›²
 	int m_KeyDispRangeStart;
 	int m_KeyDispRangeEnd;
+	bool m_InfiniteKeyboard;   //ced 20260629: ç„¡é™éµç›¤
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
