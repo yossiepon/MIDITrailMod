@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorCfgDlg
 //
-// ƒJƒ‰[Ý’èƒ_ƒCƒAƒƒO
+// ã‚«ãƒ©ãƒ¼è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -18,86 +18,86 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒJƒ‰[Ý’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ã‚«ãƒ©ãƒ¼è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTColorCfgDlg
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTColorCfgDlg(void);
 	virtual ~MTColorCfgDlg(void);
 
-	//•\Ž¦Fƒ_ƒCƒAƒƒO‚ª•Â‚¶‚ç‚ê‚é‚Ü‚Å§Œä‚ð•Ô‚³‚È‚¢
+	//è¡¨ç¤ºï¼šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¾ã§åˆ¶å¾¡ã‚’è¿”ã•ãªã„
 	int Show(HWND hParentWnd);
 
-	//ƒpƒ‰ƒ[ƒ^•ÏXŠm”F
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¤‰æ›´ç¢ºèª
 	bool IsChanged();
 
 private:
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒ|ƒCƒ“ƒ^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒã‚¤ãƒ³ã‚¿
 	static MTColorCfgDlg* m_pThis;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	HINSTANCE m_hInstance;
 
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hWnd;
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“ƒŠƒXƒg
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆ
 	HWND m_hBtnRadioPaletteList[MT_COLOR_PALETTE_NUM_MAX];
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“ƒŠƒXƒg
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆ
 	HWND m_hBtnColorList[MT_COLOR_PALETTE_NUM_MAX][SM_MAX_CH_NUM + 3];
 
-	//ƒJƒ‰[î•ñ
+	//ã‚«ãƒ©ãƒ¼æƒ…å ±
 	MTColorConf m_ColorConf;
 
-	//‘I‘ðƒJƒ‰[ƒpƒŒƒbƒg”Ô†
+	//é¸æŠžã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·
 	int m_SelectedColorPaletteNo;
 
-	//•ÏXƒtƒ‰ƒO
+	//å¤‰æ›´ãƒ•ãƒ©ã‚°
 	bool m_isChanged;
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgÝ’èƒ_ƒCƒAƒƒO
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 	MTColorPaletteCfgDlg m_ColorPaletteCfgDlg;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 	int _OnInitDlg(HWND hDlg);
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 	void _InitRadioButtonList();
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 	void _InitColorButtonList();
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“‰Šú‰»
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³åˆæœŸåŒ–
 	int _InitRadioButtons();
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³åˆæœŸåŒ–
 	int _InitColorButtons();
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“‰Ÿ‰º
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnRadio(unsigned long buttonNo);
 
-	//•ÒWƒ{ƒ^ƒ“‰Ÿ‰º
+	//ç·¨é›†ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnEdit(unsigned long paletteNo);
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgÝ’èƒ_ƒCƒAƒƒO•\Ž¦
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	int _ShowColorPaletteCfgDlg(unsigned long colorPaletteNo);
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“XV
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æ›´æ–°
 	int _UpdateColorButtons(unsigned long colorPaletteNo);
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“•`‰æ
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æç”»
 	int _DrawColorButton(DRAWITEMSTRUCT* pDrawItem);
 
-	//ƒJƒ‰[Ý’è•Û‘¶
+	//ã‚«ãƒ©ãƒ¼è¨­å®šä¿å­˜
 	int _Save();
 
 };

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTMIDIOUTCfgDlg
 //
-// MIDI OUT Ý’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// MIDI OUT è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -18,34 +18,34 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// MIDI OUT Ý’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// MIDI OUT è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTMIDIOUTCfgDlg
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTMIDIOUTCfgDlg(void);
 	virtual ~MTMIDIOUTCfgDlg(void);
 
-	//•\Ž¦Fƒ_ƒCƒAƒƒO‚ª•Â‚¶‚ç‚ê‚é‚Ü‚Å§Œä‚ð•Ô‚³‚È‚¢
+	//è¡¨ç¤ºï¼šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¾ã§åˆ¶å¾¡ã‚’è¿”ã•ãªã„
 	int Show(HWND hParentWnd);
 
 private:
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒ|ƒCƒ“ƒ^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒã‚¤ãƒ³ã‚¿
 	static MTMIDIOUTCfgDlg* m_pThis;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	HINSTANCE m_hInstance;
 
-	//Ý’èƒtƒ@ƒCƒ‹
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	YNConfFile m_ConfFile;
 
-	//MIDIo—ÍƒfƒoƒCƒX§ŒäƒIƒuƒWƒFƒNƒg
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	SMOutDevCtrl m_MIDIOutDevCtrl;
 
-	//ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hComboDevA;
 	HWND m_hComboDevB;
 	HWND m_hComboDevC;
@@ -53,20 +53,20 @@ private:
 	HWND m_hComboDevE;
 	HWND m_hComboDevF;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 	int _OnInitDlg(HWND hDlg);
 
-	//Ý’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	int _InitConfFile();
 
-	//ƒfƒoƒCƒX‘I‘ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//ãƒ‡ãƒã‚¤ã‚¹é¸æŠžã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	int _InitComboDev(HWND hComboDev, TCHAR* pPortName);
 
-	//•Û‘¶ˆ—
+	//ä¿å­˜å‡¦ç†
 	int _Save();
 	int _SavePortCfg(HWND hComboDev, TCHAR* pPortName);
 

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFileList
 //
-// ƒtƒ@ƒCƒ‹ƒŠƒXƒgƒNƒ‰ƒX
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFileList::MTFileList(void)
 {
@@ -27,7 +27,7 @@ MTFileList::MTFileList(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFileList::~MTFileList(void)
 {
@@ -35,7 +35,7 @@ MTFileList::~MTFileList(void)
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTFileList::Clear()
 {
@@ -46,7 +46,7 @@ void MTFileList::Clear()
 }
 
 //******************************************************************************
-// ƒfƒBƒŒƒNƒgƒŠ”z‰ºƒtƒ@ƒCƒ‹ƒŠƒXƒgì¬
+// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªé…ä¸‹ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆä½œæˆ
 //******************************************************************************
 int MTFileList::MakeFileListWithDirectory(
 		const WCHAR* pTargetDirPath,
@@ -72,48 +72,54 @@ int MTFileList::MakeFileListWithDirectory(
 	
 	Clear();
 	
-	//ƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğ•Û‚·‚é
+	//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’ä¿æŒã™ã‚‹
 	wcscpy_s(m_TargetDirPath, _MAX_PATH, pTargetDirPath);
 	if (pTargetDirPath[wcslen(pTargetDirPath) - 1] != L'\\') {
 		wcscat_s(m_TargetDirPath, _MAX_PATH, L"\\");
 	}
 	
-	//ƒtƒ@ƒCƒ‹ŒŸõ—pƒpƒXì¬
+	//ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢ç”¨ãƒ‘ã‚¹ä½œæˆ
 	findPath[0] = L'\0';
 	wcscat_s(findPath, _MAX_PATH, m_TargetDirPath);
 	wcscat_s(findPath, _MAX_PATH, L"*.*");
 
-	//ƒtƒ@ƒCƒ‹ŒŸõ
+	//ãƒ•ã‚¡ã‚¤ãƒ«æ¤œç´¢
 	hFind = FindFirstFileW(findPath, &findData);
 	if (hFind == INVALID_HANDLE_VALUE) {
-		//ƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚ç‚È‚¢
+		//ãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚‰ãªã„
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹–¼ƒŠƒXƒg‚ğì¬
+	//ãƒ•ã‚¡ã‚¤ãƒ«åãƒªã‚¹ãƒˆã‚’ä½œæˆ
 	while (isFind) {
 		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			//ƒfƒBƒŒƒNƒgƒŠ‚Í–³‹‚·‚é
+			//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¯ç„¡è¦–ã™ã‚‹
 		}
 		else {
-			//ƒtƒ@ƒCƒ‹Šg’£q‚ğŠm”F
+			//ãƒ•ã‚¡ã‚¤ãƒ«æ‹¡å¼µå­ã‚’ç¢ºèª
+			//  DX11 Mod Mod ã¯ MBCS ãƒ“ãƒ«ãƒ‰ã®ãŸã‚ã€æ‹¡å¼µå­åˆ¤å®š API ã¯ char(TCHAR)ã€‚
+			//  FindFirstFileW ã®ãƒ¯ã‚¤ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ CP_ACP ã§ char ã«å¤‰æ›ã—ã¦æ¸¡ã™ã€‚
 			isMIDIDataFile = false;
-			if (YNPathUtil::IsFileExtMatch(findData.cFileName, L".mid")) {
-				isMIDIDataFile = true;
-			}
-			else if (pRcpConv->IsAvailable() && pRcpConv->IsSupportFileExt(findData.cFileName)) {
-				isMIDIDataFile = true;
+			{
+				char nameA[_MAX_PATH] = { '\0' };
+				WideCharToMultiByte(CP_ACP, 0, findData.cFileName, -1, nameA, _MAX_PATH, NULL, NULL);
+				if (YNPathUtil::IsFileExtMatch(nameA, ".mid")) {
+					isMIDIDataFile = true;
+				}
+				else if (pRcpConv->IsAvailable() && pRcpConv->IsSupportFileExt(nameA)) {
+					isMIDIDataFile = true;
+				}
 			}
 			if (isMIDIDataFile) {
-				//ƒtƒ@ƒCƒ‹–¼‚ğƒŠƒXƒg‚É’Ç‰Á
+				//ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ãƒªã‚¹ãƒˆã«è¿½åŠ 
 				m_FileNameList.push_back(findData.cFileName);
 			}
 		}
-		//Ÿ‚Ìƒtƒ@ƒCƒ‹‚ğŒŸõ
+		//æ¬¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¤œç´¢
 		isFind = FindNextFileW(hFind, &findData);
 	}
 
-	//ƒtƒ@ƒCƒ‹–¼ƒ\[ƒg
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã‚½ãƒ¼ãƒˆ
 	m_FileNameList.sort();
 
 EXIT:;
@@ -122,7 +128,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹”æ“¾
+// ãƒ•ã‚¡ã‚¤ãƒ«æ•°å–å¾—
 //******************************************************************************
 size_t MTFileList::GetFileCount()
 {
@@ -130,7 +136,7 @@ size_t MTFileList::GetFileCount()
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒpƒXæ“¾
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 //******************************************************************************
 const WCHAR* MTFileList::GetFilePath(unsigned long index)
 {
@@ -153,7 +159,7 @@ const WCHAR* MTFileList::GetFilePath(unsigned long index)
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹–¼æ“¾
+// ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—
 //******************************************************************************
 const WCHAR* MTFileList::GetFileName(unsigned long index)
 {
@@ -169,7 +175,7 @@ const WCHAR* MTFileList::GetFileName(unsigned long index)
 }
 
 //******************************************************************************
-// ‘I‘ğƒtƒ@ƒCƒ‹“o˜^
+// é¸æŠãƒ•ã‚¡ã‚¤ãƒ«ç™»éŒ²
 //******************************************************************************
 int MTFileList::SetSelectedFileName(const WCHAR* pFileName)
 {
@@ -184,7 +190,7 @@ int MTFileList::SetSelectedFileName(const WCHAR* pFileName)
 
 	m_SelectedFileIndex = 0;
 
-	//ƒtƒ@ƒCƒ‹–¼ƒŠƒXƒg‚©‚çŒŸõi‘å•¶š¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢j
+	//ãƒ•ã‚¡ã‚¤ãƒ«åãƒªã‚¹ãƒˆã‹ã‚‰æ¤œç´¢ï¼ˆå¤§æ–‡å­—å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ï¼‰
 	for (itr = m_FileNameList.begin(); itr != m_FileNameList.end(); itr++) {
 		if (_wcsicmp((*itr).c_str(), pFileName) == 0) {
 			m_SelectedFileIndex = index;
@@ -198,7 +204,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// æ“ªƒtƒ@ƒCƒ‹‘I‘ğ
+// å…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
 void MTFileList::SelectFirstFile()
 {
@@ -206,22 +212,22 @@ void MTFileList::SelectFirstFile()
 }
 
 //******************************************************************************
-// ‘Oƒtƒ@ƒCƒ‹‘I‘ğ
+// å‰ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
 void MTFileList::SelectPreviousFile(bool* pIsExist)
 {
 	bool isExist = false;
 
-	//ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆ
 	if (m_FileNameList.size() == 0) {
-		//‘Oƒtƒ@ƒCƒ‹‚È‚µ‚ÅI—¹
+		//å‰ãƒ•ã‚¡ã‚¤ãƒ«ãªã—ã§çµ‚äº†
 	}
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒgæ“ª‚ğ‘I‘ğ’†‚Ìê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆå…ˆé ­ã‚’é¸æŠä¸­ã®å ´åˆ
 	else if (m_SelectedFileIndex == 0) {
-		//‘Oƒtƒ@ƒCƒ‹‚È‚µ‚ÅI—¹
+		//å‰ãƒ•ã‚¡ã‚¤ãƒ«ãªã—ã§çµ‚äº†
 	}
 	else {
-		//‘Oƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
+		//å‰ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ
 		m_SelectedFileIndex -= 1;
 		isExist = true;
 	}
@@ -234,22 +240,22 @@ void MTFileList::SelectPreviousFile(bool* pIsExist)
 }
 
 //******************************************************************************
-// Ÿƒtƒ@ƒCƒ‹‘I‘ğ
+// æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
 void MTFileList::SelectNextFile(bool* pIsExist)
 {
 	bool isExist = false;
 
-	//ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆ
 	if (m_FileNameList.size() == 0) {
-		//Ÿƒtƒ@ƒCƒ‹‚È‚µ‚ÅI—¹
+		//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ãªã—ã§çµ‚äº†
 	}
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg––”ö‚ğ‘I‘ğ’†‚Ìê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆæœ«å°¾ã‚’é¸æŠä¸­ã®å ´åˆ
 	else if (m_SelectedFileIndex >= (m_FileNameList.size() - 1)) {
-		//Ÿƒtƒ@ƒCƒ‹‚È‚µ‚ÅI—¹
+		//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ãªã—ã§çµ‚äº†
 	}
 	else {
-		//Ÿƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
+		//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ
 		m_SelectedFileIndex += 1;
 		isExist = true;
 	}
@@ -262,7 +268,7 @@ void MTFileList::SelectNextFile(bool* pIsExist)
 }
 
 //******************************************************************************
-// æ“ªƒtƒ@ƒCƒ‹‘I‘ğ
+// å…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
 unsigned long MTFileList::GetSelectedFileIndex()
 {

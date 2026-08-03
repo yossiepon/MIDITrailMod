@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMInDevCtrl
 //
-// MIDI“ü—ÍƒfƒoƒCƒX§ŒäƒNƒ‰ƒX
+// MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
@@ -18,26 +18,26 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMInDevCtrl::SMInDevCtrl(void)
 {
-	//ƒ|[ƒgî•ñ
+	//ãƒãƒ¼ãƒˆæƒ…å ±
 	m_PortInfo.isExist = false;
 	m_PortInfo.devId = 0;
 	m_PortInfo.hMidiIn = NULL;
 	memset((void*)&(m_PortInfo.midiHdr), 0, sizeof(MIDIHDR));
 	
-	//ƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	m_pInReadCallBack = NULL;
 	m_pCallBackUserParam = NULL;
 	
-	//ƒpƒPƒbƒg‰ğÍŒn
+	//ãƒ‘ã‚±ãƒƒãƒˆè§£æç³»
 	m_isContinueSysEx = false;
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMInDevCtrl::~SMInDevCtrl()
 {
@@ -46,17 +46,17 @@ SMInDevCtrl::~SMInDevCtrl()
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int SMInDevCtrl::Initialize()
 {
 	int result = 0;
 	
-	//ƒ|[ƒgî•ñƒNƒŠƒA
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 	result = ClearPortInfo();
 	if (result != 0) goto EXIT;
 	
-	//MIDI“ü—ÍƒfƒoƒCƒXˆê——‚ğì¬
+	//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ä¸€è¦§ã‚’ä½œæˆ
 	result = _InitDevList();
 	if (result != 0) goto EXIT;
 	
@@ -65,7 +65,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒXƒŠƒXƒg‰Šú‰»
+// ãƒ‡ãƒã‚¤ã‚¹ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 //******************************************************************************
 int SMInDevCtrl::_InitDevList()
 {
@@ -78,10 +78,10 @@ int SMInDevCtrl::_InitDevList()
 
 	m_InDevList.clear();
 
-	//MIDIo—ÍƒfƒoƒCƒX‚Ì”
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹ã®æ•°
 	devNum = midiInGetNumDevs();
 
-	//MIDIo—ÍƒfƒoƒCƒX‚Ìî•ñ‚ğæ“¾‚·‚é
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	for (devId = 0; devId < devNum; devId++) {
 
 		ZeroMemory(&mic, sizeof(MIDIINCAPS));
@@ -95,7 +95,7 @@ int SMInDevCtrl::_InitDevList()
 		devInfo.devId = devId;
 		memcpy(devInfo.productName, mic.szPname, MAXPNAMELEN);
 
-		//æ“¾‚µ‚½î•ñ‚ğƒŠƒXƒg‚É“o˜^
+		//å–å¾—ã—ãŸæƒ…å ±ã‚’ãƒªã‚¹ãƒˆã«ç™»éŒ²
 		m_InDevList.push_back(devInfo);
 	}
 	
@@ -104,7 +104,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX”æ“¾
+// ãƒ‡ãƒã‚¤ã‚¹æ•°å–å¾—
 //******************************************************************************
 unsigned long SMInDevCtrl::GetDevNum()
 {
@@ -112,7 +112,7 @@ unsigned long SMInDevCtrl::GetDevNum()
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒXƒvƒƒ_ƒNƒg–¼Ìæ“¾
+// ãƒ‡ãƒã‚¤ã‚¹ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆåç§°å–å¾—
 //******************************************************************************
 int SMInDevCtrl::GetDevProductName(
 		unsigned long index,
@@ -137,7 +137,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒX‚ğİ’è
+// ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’è¨­å®š
 //******************************************************************************
 int SMInDevCtrl::SetPortDev(
 		const char* pProductName
@@ -171,7 +171,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒCƒxƒ“ƒg“Ç‚İ‚İƒR[ƒ‹ƒoƒbƒNŠÖ”“o˜^
+// MIDIã‚¤ãƒ™ãƒ³ãƒˆèª­ã¿è¾¼ã¿ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ç™»éŒ²
 //******************************************************************************
 void SMInDevCtrl::SetInReadCallBack(
 		SMInReadCallBack pCallBack,
@@ -183,7 +183,7 @@ void SMInDevCtrl::SetInReadCallBack(
 }
 
 //******************************************************************************
-// ƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒX‚ğŠJ‚­
+// ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 //******************************************************************************
 int SMInDevCtrl::OpenPortDev()
 {
@@ -195,18 +195,18 @@ int SMInDevCtrl::OpenPortDev()
 	result = ClosePortDev();
 	if (result != 0) goto EXIT;
 	
-	//ƒ|[ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+	//ãƒãƒ¼ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 	if (!m_PortInfo.isExist) goto EXIT;;
 	
 	m_isContinueSysEx = false;
 	
-	//ƒfƒoƒCƒX‚ğŠJ‚­
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 	apiresult = midiInOpen(
-					&hMidiIn,			//ƒnƒ“ƒhƒ‹‚ÌƒAƒhƒŒƒX
-					m_PortInfo.devId,	//ƒfƒoƒCƒX¯•Êq
-					(DWORD_PTR)_InReadCallBack,	//ƒR[ƒ‹ƒoƒbƒNŠÖ”
-					(DWORD_PTR)this,	//ƒR[ƒ‹ƒoƒbƒNŠÖ”‚É“n‚·ƒ†[ƒU[ƒCƒ“ƒXƒ^ƒ“ƒXƒf[ƒ^
-					CALLBACK_FUNCTION	//ƒR[ƒ‹ƒoƒbƒNƒtƒ‰ƒOFƒR[ƒ‹ƒoƒbƒNŠÖ”
+					&hMidiIn,			//ãƒãƒ³ãƒ‰ãƒ«ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+					m_PortInfo.devId,	//ãƒ‡ãƒã‚¤ã‚¹è­˜åˆ¥å­
+					(DWORD_PTR)_InReadCallBack,	//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+					(DWORD_PTR)this,	//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã«æ¸¡ã™ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿
+					CALLBACK_FUNCTION	//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ãƒ•ãƒ©ã‚°ï¼šã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 				);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device open error.", apiresult, 0);
@@ -214,7 +214,7 @@ int SMInDevCtrl::OpenPortDev()
 	}
 	m_PortInfo.hMidiIn = hMidiIn;
 	
-	//MIDI“ü—Íƒoƒbƒtƒ@ì¬
+	//MIDIå…¥åŠ›ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 	try {
 		pBuf = new unsigned char[SM_MIDIIN_BUF_SIZE];
 	}
@@ -223,28 +223,28 @@ int SMInDevCtrl::OpenPortDev()
 		goto EXIT;
 	}
 	
-	//ƒwƒbƒ_ì¬
+	//ãƒ˜ãƒƒãƒ€ä½œæˆ
 	memset((void*)&(m_PortInfo.midiHdr), 0, sizeof(MIDIHDR));
 	m_PortInfo.midiHdr.lpData         = (LPSTR)pBuf;
 	m_PortInfo.midiHdr.dwBufferLength = SM_MIDIIN_BUF_SIZE;
 	m_PortInfo.midiHdr.dwFlags        = 0;
 	pBuf = NULL;
 	
-	//MIDI“ü—Íƒoƒbƒtƒ@€”õ
+	//MIDIå…¥åŠ›ãƒãƒƒãƒ•ã‚¡æº–å‚™
 	apiresult = midiInPrepareHeader(hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
 		goto EXIT;
 	}
 	
-	//MIDI“ü—Íƒoƒbƒtƒ@“o˜^
+	//MIDIå…¥åŠ›ãƒãƒƒãƒ•ã‚¡ç™»éŒ²
 	apiresult = midiInAddBuffer(hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
 		goto EXIT;
 	}
 	
-	//MIDI“ü—ÍŠJn
+	//MIDIå…¥åŠ›é–‹å§‹
 	apiresult = midiInStart(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device open error.", apiresult, 0);
@@ -257,50 +257,50 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒX‚ğ•Â‚¶‚é
+// ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 //******************************************************************************
 int SMInDevCtrl::ClosePortDev()
 {
 	int result = 0;
 	UINT apiresult = 0;
 	
-	//ƒ|[ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+	//ãƒãƒ¼ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 	if (!m_PortInfo.isExist) goto EXIT;
 	
-	//ƒ|[ƒg‚ğŠJ‚¢‚Ä‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+	//ãƒãƒ¼ãƒˆã‚’é–‹ã„ã¦ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 	if (m_PortInfo.hMidiIn == NULL) goto EXIT;
 	
-	//MIDI“ü—Í’â~
-	//  ƒLƒ…[‚Éƒoƒbƒtƒ@‚ª‘¶İ‚·‚éê‡‚ÍŒ»İ‚Ìƒoƒbƒtƒ@‚Íˆ—Ï‚İ‚É‚³‚ê‚é
-	//  MIDIHDR‚ÌdwBytesRecordedƒƒ“ƒo‚É‚Íƒf[ƒ^‚ÌÀÛ‚Ì’·‚³‚ª“ü‚é
-	//  ‚½‚¾‚µƒLƒ…[‚É‚ ‚é‹ó‚Ìƒoƒbƒtƒ@‚Íc‚³‚êˆ—Ï‚İ‚Æ‚Í‚³‚ê‚È‚¢
+	//MIDIå…¥åŠ›åœæ­¢
+	//  ã‚­ãƒ¥ãƒ¼ã«ãƒãƒƒãƒ•ã‚¡ãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯ç¾åœ¨ã®ãƒãƒƒãƒ•ã‚¡ã¯å‡¦ç†æ¸ˆã¿ã«ã•ã‚Œã‚‹
+	//  MIDIHDRã®dwBytesRecordedãƒ¡ãƒ³ãƒã«ã¯ãƒ‡ãƒ¼ã‚¿ã®å®Ÿéš›ã®é•·ã•ãŒå…¥ã‚‹
+	//  ãŸã ã—ã‚­ãƒ¥ãƒ¼ã«ã‚ã‚‹ç©ºã®ãƒãƒƒãƒ•ã‚¡ã¯æ®‹ã•ã‚Œå‡¦ç†æ¸ˆã¿ã¨ã¯ã•ã‚Œãªã„
 	apiresult = midiInStop(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", apiresult, 0);
 		goto EXIT;
 	}
 	
-	//MIDI“ü—Í’â~
-	//  –¢ˆ—‚Ì“ü—Íƒoƒbƒtƒ@‚ğƒR[ƒ‹ƒoƒbƒNŠÖ”‚É•Ô‚·
-	//  MIDIHDR‚ÌdwFlagsƒƒ“ƒo‚ÉMHDR_DONEƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
+	//MIDIå…¥åŠ›åœæ­¢
+	//  æœªå‡¦ç†ã®å…¥åŠ›ãƒãƒƒãƒ•ã‚¡ã‚’ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã«è¿”ã™
+	//  MIDIHDRã®dwFlagsãƒ¡ãƒ³ãƒã«MHDR_DONEãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	apiresult = midiInReset(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", apiresult, 0);
 		goto EXIT;
 	}
 	
-	//MIDI“ü—Íƒoƒbƒtƒ@‰ğœ
+	//MIDIå…¥åŠ›ãƒãƒƒãƒ•ã‚¡è§£é™¤
 	apiresult = midiInUnprepareHeader(m_PortInfo.hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", apiresult, 0);
 		goto EXIT;
 	}
 	
-	//ƒoƒbƒtƒ@”jŠü
+	//ãƒãƒƒãƒ•ã‚¡ç ´æ£„
 	delete [] (unsigned char*)(m_PortInfo.midiHdr.lpData);
 	m_PortInfo.midiHdr.lpData = NULL;
 	
-	//ƒfƒoƒCƒX‚ğ•Â‚¶‚é
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 	apiresult = midiInClose(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", 0, 0);
@@ -314,7 +314,7 @@ EXIT:;
 
 
 //******************************************************************************
-// ƒ|[ƒgî•ñƒNƒŠƒA
+// ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 //******************************************************************************
 int SMInDevCtrl::ClearPortInfo()
 {
@@ -333,7 +333,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN “Ç‚İ‚İƒR[ƒ‹ƒoƒbƒNŠÖ”
+// MIDI IN èª­ã¿è¾¼ã¿ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 //******************************************************************************
 void SMInDevCtrl::_InReadCallBack(
 		HMIDIIN hMidiIn,
@@ -352,7 +352,7 @@ void SMInDevCtrl::_InReadCallBack(
 }
 
 //******************************************************************************
-// MIDI IN “Ç‚İ‚İˆ—
+// MIDI IN èª­ã¿è¾¼ã¿å‡¦ç†
 //******************************************************************************
 void SMInDevCtrl::_InReadProc(
 		HMIDIIN hMidiIn,
@@ -366,41 +366,41 @@ void SMInDevCtrl::_InReadProc(
 	
 	switch (wMsg) {
 		case MIM_OPEN:
-			//MIDI“ü—ÍƒfƒoƒCƒXƒI[ƒvƒ“
+			//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ¼ãƒ—ãƒ³
 			break;
 		case MIM_CLOSE:
-			//MIDI“ü—ÍƒfƒoƒCƒXƒNƒ[ƒY
+			//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ã‚¯ãƒ­ãƒ¼ã‚º
 			break;
 		case MIM_DATA:
-			//MIDIƒƒbƒZ[ƒWóM
-			//  dwParam1 MIDIƒƒbƒZ[ƒW
-			//  dwParam2 ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv
+			//MIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
+			//  dwParam1 MIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+			//  dwParam2 ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—
 			m_isContinueSysEx = false;
 			result = _InReadProcMIDI(dwParam1, dwParam2, &event);
 			if (result != 0) goto EXIT;
 			break;
 		case MIM_LONGDATA:
-			//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒuóM
-			//  dwParam1 MIDIHDR\‘¢‘Ì‚Ö‚Ìƒ|ƒCƒ“ƒ^
-			//  dwParam2 ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv
+			//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–å—ä¿¡
+			//  dwParam1 MIDIHDRæ§‹é€ ä½“ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+			//  dwParam2 ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—
 			result = _InReadProcSysEx((MIDIHDR*)dwParam1, dwParam2, &m_isContinueSysEx, &event);
 			if (result != 0) goto EXIT;
 			break;
 		case MIM_ERROR:
-			//–³Œø‚ÈMIDIƒƒbƒZ[ƒWóM
+			//ç„¡åŠ¹ãªMIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 			break;
 		case MIM_LONGERROR:
-			//–³Œø‚ÈƒGƒNƒXƒNƒ‹[ƒVƒuƒƒbƒZ[ƒWóM
+			//ç„¡åŠ¹ãªã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 			break;
 		case MIM_MOREDATA:
-			//–¢ˆ—‚ÌMIDIƒƒbƒZ[ƒW
-			//midiInOpen‚ÅMIDI_IO_STATUS‚ğw’è‚µ‚½ê‡‚Ì‚İ”­¶‚·‚é
+			//æœªå‡¦ç†ã®MIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+			//midiInOpenã§MIDI_IO_STATUSã‚’æŒ‡å®šã—ãŸå ´åˆã®ã¿ç™ºç”Ÿã™ã‚‹
 			break;
 		default:
 			break;
 	}
 	
-	//ƒR[ƒ‹ƒoƒbƒNŒÄ‚Ño‚µ
+	//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å‘¼ã³å‡ºã—
 	if ((m_pInReadCallBack != NULL) &&
 		(event.GetType() != SMEvent::EventNone)) {
 		result = m_pInReadCallBack(&event, m_pCallBackUserParam);
@@ -415,7 +415,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒƒbƒZ[ƒW“Ç‚İ‚İˆ—
+// MIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸èª­ã¿è¾¼ã¿å‡¦ç†
 //******************************************************************************
 int SMInDevCtrl::_InReadProcMIDI(
 		DWORD_PTR midiMessage,
@@ -433,19 +433,19 @@ int SMInDevCtrl::_InReadProcMIDI(
 	data[1] = (unsigned char)((midiMessage >> 16) & 0x000000FF);
 	
 	if ((status & 0xF0) != 0xF0) {
-		//MIDIƒƒbƒZ[ƒW
+		//MIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		dataLength = _GetMIDIMsgSize(status) - 1;
 		result = pEvent->SetMIDIData(status, data, dataLength);
 		if (result != 0) goto EXIT;
 	}
 	else if (status == 0xF0) {
-		//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒuƒƒbƒZ[ƒW
-		//‚ ‚è‚¦‚È‚¢API‚Ì‹““®
+		//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+		//ã‚ã‚Šãˆãªã„APIã®æŒ™å‹•
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 	else {
-		//ƒVƒXƒeƒ€ƒRƒ‚ƒ“ƒƒbƒZ[ƒW‚Ü‚½‚ÍƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒW
+		//ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒ¢ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¾ãŸã¯ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 		dataLength = _GetSysMsgSize(status) - 1;
 		result = pEvent->SetSysMsgData(status, data, dataLength);
 		if (result != 0) goto EXIT;
@@ -456,7 +456,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu“Ç‚İ‚İˆ—
+// ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–èª­ã¿è¾¼ã¿å‡¦ç†
 //******************************************************************************
 int SMInDevCtrl::_InReadProcSysEx(
 		MIDIHDR* pMIDIHDR,
@@ -469,40 +469,40 @@ int SMInDevCtrl::_InReadProcSysEx(
 	unsigned char* pData = NULL;
 	UINT apiresult = 0;
 	
-	//óMƒf[ƒ^ƒTƒCƒY‚ªƒ[ƒ‚È‚ç‰½‚à‚µ‚È‚¢
+	//å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒã‚¼ãƒ­ãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (pMIDIHDR->dwBytesRecorded == 0) goto EXIT;
 	
-	//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu‰‰ñ“Ç‚İ‚İ
+	//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–åˆå›èª­ã¿è¾¼ã¿
 	if (!(*pIsContinueSysEx)) {
 		pData = (unsigned char*)(pMIDIHDR->lpData);
 		result = pEvent->SetSysExData(0xF0, pData + 1, pMIDIHDR->dwBytesRecorded - 1);
 		if (result != 0) goto EXIT;
 	}
-	//2”Ô–ÚˆÈ~‚ÌƒpƒPƒbƒg
+	//2ç•ªç›®ä»¥é™ã®ãƒ‘ã‚±ãƒƒãƒˆ
 	else {
 		pData = (unsigned char*)(pMIDIHDR->lpData);
 		result = pEvent->SetSysExData(0xF7, pData, pMIDIHDR->dwBytesRecorded);
 		if (result != 0) goto EXIT;
 	}
 	
-	//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu‚ÌI’[‚ğŠm”F
+	//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–ã®çµ‚ç«¯ã‚’ç¢ºèª
 	if (pData[(pMIDIHDR->dwBytesRecorded)-1] == 0xF7) {
-		//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu‚ª•Â‚¶‚é
+		//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–ãŒé–‰ã˜ã‚‹
 		*pIsContinueSysEx = false;
 	}
 	else {
-		//––”ö‚ª0xF7‚Å‚È‚¯‚ê‚ÎŸ‚Éƒf[ƒ^‚ª‚Ü‚½‚ª‚é
+		//æœ«å°¾ãŒ0xF7ã§ãªã‘ã‚Œã°æ¬¡ã«ãƒ‡ãƒ¼ã‚¿ãŒã¾ãŸãŒã‚‹
 		*pIsContinueSysEx = true;
 	}
 	
-	//MIDI“ü—Íƒoƒbƒtƒ@€”õ
+	//MIDIå…¥åŠ›ãƒãƒƒãƒ•ã‚¡æº–å‚™
 	apiresult = midiInPrepareHeader(m_PortInfo.hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
 		goto EXIT;
 	}
 	
-	//MIDI“ü—Íƒoƒbƒtƒ@“o˜^
+	//MIDIå…¥åŠ›ãƒãƒƒãƒ•ã‚¡ç™»éŒ²
 	apiresult = midiInAddBuffer(m_PortInfo.hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
@@ -514,20 +514,20 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒƒbƒZ[ƒWƒTƒCƒYæ“¾
+// MIDIãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 unsigned long SMInDevCtrl::_GetMIDIMsgSize(unsigned char status)
 {
 	unsigned long size = 0;
 
 	switch (status & 0xF0) {
-		case 0x80: size = 3; break;  //ƒm[ƒgƒIƒt
-		case 0x90: size = 3; break;  //ƒm[ƒgƒIƒ“
-		case 0xA0: size = 3; break;  //ƒ|ƒŠƒtƒHƒjƒbƒNƒL[ƒvƒŒƒbƒVƒƒ[
-		case 0xB0: size = 3; break;  //ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒW
-		case 0xC0: size = 2; break;  //ƒvƒƒOƒ‰ƒ€ƒ`ƒFƒ“ƒW
-		case 0xD0: size = 2; break;  //ƒ`ƒƒƒ“ƒlƒ‹ƒvƒŒƒbƒVƒƒ[
-		case 0xE0: size = 3; break;  //ƒsƒbƒ`ƒxƒ“ƒh
+		case 0x80: size = 3; break;  //ãƒãƒ¼ãƒˆã‚ªãƒ•
+		case 0x90: size = 3; break;  //ãƒãƒ¼ãƒˆã‚ªãƒ³
+		case 0xA0: size = 3; break;  //ãƒãƒªãƒ•ã‚©ãƒ‹ãƒƒã‚¯ã‚­ãƒ¼ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼
+		case 0xB0: size = 3; break;  //ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸
+		case 0xC0: size = 2; break;  //ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒã‚§ãƒ³ã‚¸
+		case 0xD0: size = 2; break;  //ãƒãƒ£ãƒ³ãƒãƒ«ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼
+		case 0xE0: size = 3; break;  //ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
 		case 0xF0:
 			size = _GetSysMsgSize(status);
 			break;
@@ -537,29 +537,29 @@ unsigned long SMInDevCtrl::_GetMIDIMsgSize(unsigned char status)
 }
 
 //******************************************************************************
-// ƒVƒXƒeƒ€ƒƒbƒZ[ƒWƒTƒCƒYæ“¾
+// ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 unsigned long SMInDevCtrl::_GetSysMsgSize(unsigned char status)
 {
 	unsigned long size = 0;
 	
 	switch (status) {
-		case 0xF0: size = 0; break;  // F0 ... F7 ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu
-		case 0xF1: size = 2; break;  // F1 dd     ƒVƒXƒeƒ€ƒRƒ‚ƒ“ƒƒbƒZ[ƒWFƒNƒI[ƒ^[ƒtƒŒ[ƒ€(MTC)
-		case 0xF2: size = 3; break;  // F2 dl dm  ƒVƒXƒeƒ€ƒRƒ‚ƒ“ƒƒbƒZ[ƒWFƒ\ƒ“ƒOƒ|ƒWƒVƒ‡ƒ“ƒ|ƒCƒ“ƒ^
-		case 0xF3: size = 2; break;  // F3 dd     ƒVƒXƒeƒ€ƒRƒ‚ƒ“ƒƒbƒZ[ƒWFƒ\ƒ“ƒOƒZƒŒƒNƒg
-		case 0xF4: size = 1; break;  // F4 –¢’è‹`
-		case 0xF5: size = 1; break;  // F5 –¢’è‹`
-		case 0xF6: size = 1; break;  // F6 ƒVƒXƒeƒ€ƒRƒ‚ƒ“ƒƒbƒZ[ƒWFƒ`ƒ…[ƒ“ƒŠƒNƒGƒXƒg
-		case 0xF7: size = 1; break;  // F7 ƒGƒ“ƒhƒIƒuƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu
-		case 0xF8: size = 1; break;  // F8 ƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒWFƒ^ƒCƒ~ƒ“ƒOƒNƒƒbƒN
-		case 0xF9: size = 1; break;  // F9 –¢’è‹`
-		case 0xFA: size = 1; break;  // FA ƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒWFƒXƒ^[ƒg
-		case 0xFB: size = 1; break;  // FB ƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒWFƒRƒ“ƒeƒBƒjƒ…[
-		case 0xFC: size = 1; break;  // FC ƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒWFƒXƒgƒbƒv
-		case 0xFD: size = 1; break;  // FD –¢’è‹`
-		case 0xFE: size = 1; break;  // FE ƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒWFƒAƒNƒeƒBƒuƒZƒ“ƒVƒ“ƒO
-		case 0xFF: size = 1; break;  // FF ƒVƒXƒeƒ€ƒŠƒAƒ‹ƒ^ƒCƒ€ƒƒbƒZ[ƒWFƒVƒXƒeƒ€ƒŠƒZƒbƒg
+		case 0xF0: size = 0; break;  // F0 ... F7 ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–
+		case 0xF1: size = 2; break;  // F1 dd     ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒ¢ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚¯ã‚ªãƒ¼ã‚¿ãƒ¼ãƒ•ãƒ¬ãƒ¼ãƒ (MTC)
+		case 0xF2: size = 3; break;  // F2 dl dm  ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒ¢ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚½ãƒ³ã‚°ãƒã‚¸ã‚·ãƒ§ãƒ³ãƒã‚¤ãƒ³ã‚¿
+		case 0xF3: size = 2; break;  // F3 dd     ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒ¢ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚½ãƒ³ã‚°ã‚»ãƒ¬ã‚¯ãƒˆ
+		case 0xF4: size = 1; break;  // F4 æœªå®šç¾©
+		case 0xF5: size = 1; break;  // F5 æœªå®šç¾©
+		case 0xF6: size = 1; break;  // F6 ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒ¢ãƒ³ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šãƒãƒ¥ãƒ¼ãƒ³ãƒªã‚¯ã‚¨ã‚¹ãƒˆ
+		case 0xF7: size = 1; break;  // F7 ã‚¨ãƒ³ãƒ‰ã‚ªãƒ–ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–
+		case 0xF8: size = 1; break;  // F8 ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚¿ã‚¤ãƒŸãƒ³ã‚°ã‚¯ãƒ­ãƒƒã‚¯
+		case 0xF9: size = 1; break;  // F9 æœªå®šç¾©
+		case 0xFA: size = 1; break;  // FA ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚¹ã‚¿ãƒ¼ãƒˆ
+		case 0xFB: size = 1; break;  // FB ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚³ãƒ³ãƒ†ã‚£ãƒ‹ãƒ¥ãƒ¼
+		case 0xFC: size = 1; break;  // FC ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚¹ãƒˆãƒƒãƒ—
+		case 0xFD: size = 1; break;  // FD æœªå®šç¾©
+		case 0xFE: size = 1; break;  // FE ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‚»ãƒ³ã‚·ãƒ³ã‚°
+		case 0xFF: size = 1; break;  // FF ã‚·ã‚¹ãƒ†ãƒ ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šã‚·ã‚¹ãƒ†ãƒ ãƒªã‚»ãƒƒãƒˆ
 	}
 	
 	return size;

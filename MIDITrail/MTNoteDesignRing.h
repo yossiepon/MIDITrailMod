@@ -1,10 +1,10 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignRing
 //
-// ƒm[ƒgƒfƒUƒCƒ“ƒŠƒ“ƒOƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ãƒªãƒ³ã‚°ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -16,111 +16,110 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteDesignRing : public MTNoteDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteDesignRing(void);
 	virtual ~MTNoteDesignRing(void);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^ƒ‚[ƒhÝ’è
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 	void SetLiveMode(void);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•WŽæ“¾
+	//ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒåº§æ¨™å–å¾—
 	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-				unsigned long elapsedTime = 0            //È—ª‰ÂFŒo‰ßŽžŠÔiƒ~ƒŠ•bj
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0,	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
+				unsigned long elapsedTime = 0            //çœç•¥å¯ï¼šçµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 			);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	virtual void GetNoteBoxVirtexPosLive(
-				unsigned long elapsedTime,	//Œo‰ßŽžŠÔiƒ~ƒŠ•bj
+				unsigned long elapsedTime,	//çµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			);
 
-	//ƒOƒŠƒbƒhƒŠƒ“ƒOŠî€À•WŽæ“¾
+	//ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°åŸºæº–åº§æ¨™å–å¾—
 	void GetGridRingBasePos(
-			unsigned long tickTime,
-			D3DXVECTOR3* pBasePos
+			unsigned long totalTickTime,
+			D3DXVECTOR3* pBasePosStart,
+			D3DXVECTOR3* pBasePosEnd
 		);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒOƒŠƒbƒhƒŠƒ“ƒOŠî€À•WŽæ“¾
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°åŸºæº–åº§æ¨™å–å¾—
 	void GetGridRingBasePosLive(
 			D3DXVECTOR3* pBasePosStart,
 			D3DXVECTOR3* pBasePosEnd
 		);
 
-	//ƒ|[ƒgŒ´“_À•WŽæ“¾
+	//ãƒãƒ¼ãƒˆåŽŸç‚¹åº§æ¨™å–å¾—
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
 
-	//¢ŠEÀ•W”z’uˆÚ“®ƒxƒNƒgƒ‹Žæ“¾
+	//ä¸–ç•Œåº§æ¨™é…ç½®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 	virtual D3DXVECTOR3 GetWorldMoveVector();
 
-// >>> modify access level to proteced 20191224 yossiepon begin
-protected:
-// <<< modify access level to proteced 20191224 yossiepon end
+private:
 
 	bool m_isLiveMode;
 	float m_NoteAngleStep;
 	float m_RingRadius;
 
-	// ƒm[ƒgŠî€À•WŽæ“¾
+	// ãƒŽãƒ¼ãƒˆåŸºæº–åº§æ¨™å–å¾—
 	D3DXVECTOR3 _GetNoteBasePos(
 			unsigned long curTickTime,
 			unsigned char portNo,
 			unsigned char chNo
 		);
 
-	// ƒm[ƒgŠp“xŽæ“¾
+	// ãƒŽãƒ¼ãƒˆè§’åº¦å–å¾—
 	float _GetNoteAngle(
 			unsigned char noteNo,
-			short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-			unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+			short pitchBendValue,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+			unsigned char pitchBendSensitivity	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 		);
 
 	virtual int _LoadConfFile(const TCHAR* pSceneName);

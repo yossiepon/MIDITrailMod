@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRollRingMod
 //
-// ƒsƒAƒmƒ[ƒ‹ƒŠƒ“ƒOƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒªãƒ³ã‚°ã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -19,52 +19,52 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒ[ƒ‹ƒŠƒ“ƒOƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒªãƒ³ã‚°ã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScenePianoRollRingMod : public MTScenePianoRollRing
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^l
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿l
 	MTScenePianoRollRingMod();
 	virtual ~MTScenePianoRollRingMod();
 
-	//–¼Ìæ“¾
+	//åç§°å–å¾—
 	const TCHAR* GetName();
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			SMSeqData* pSeqData
 		);
 
-	//•ÏŠ·
+	//å¤‰æ›
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//•`‰æ
+	//æç”»
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//”jŠü
+	//ç ´æ£„
 	virtual void Release();
 
-	//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 	virtual int OnRecvSequencerMsg(
 		unsigned long param1,
 		unsigned long param2
 	);
 
-	//ƒGƒtƒFƒNƒgİ’è
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¨­å®š
 	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
 
 protected:
 
-	//•`‰æƒIƒuƒWƒFƒNƒg
+	//æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	MTNoteRippleRingMod m_NoteRippleMod;
 	MTNoteLyricsRing m_NoteLyrics;
 	MTPictBoardRingMod m_PictBoardMod;
 
-	//ƒV[ƒ“ƒŠƒZƒbƒg
+	//ã‚·ãƒ¼ãƒ³ãƒªã‚»ãƒƒãƒˆ
 	virtual void _Reset();
 
 private:

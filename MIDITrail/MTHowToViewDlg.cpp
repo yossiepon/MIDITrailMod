@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTHowToViewDlg
 //
-// ‘€ì•û–@ƒ_ƒCƒAƒƒO
+// æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -17,18 +17,18 @@
 using namespace YNBaseLib;
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//•\Ž¦‰æ‘œ”
+//è¡¨ç¤ºç”»åƒæ•°
 #define MT_HOWTOVIEW_IMAGE_NUM  (3)
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^Ý’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTHowToViewDlg* MTHowToViewDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTHowToViewDlg::MTHowToViewDlg(void)
 {
@@ -40,7 +40,7 @@ MTHowToViewDlg::MTHowToViewDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTHowToViewDlg::~MTHowToViewDlg(void)
 {
@@ -48,7 +48,7 @@ MTHowToViewDlg::~MTHowToViewDlg(void)
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTHowToViewDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -56,7 +56,7 @@ INT_PTR CALLBACK MTHowToViewDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFŽÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTHowToViewDlg::_WndProcImpl(
 		HWND hDlg,
@@ -115,7 +115,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\Ž¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTHowToViewDlg::Show(
 		HWND hParentWnd
@@ -127,19 +127,19 @@ int MTHowToViewDlg::Show(
 
 	m_PageNo = 0;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ðŽæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_HOWTOVIEW),		//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_HOWTOVIEW),		//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -151,7 +151,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTHowToViewDlg::_OnInitDlg(
 		HWND hDlg
@@ -161,11 +161,11 @@ int MTHowToViewDlg::_OnInitDlg(
 
 	m_hWnd = hDlg;
 
-	//HowToƒrƒbƒgƒ}ƒbƒv“Ç‚Ýž‚Ý
+	//HowToãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—èª­ã¿è¾¼ã¿
 	result = _LoadHowToBmp();
 	if (result != 0) goto EXIT;
 
-	//ƒ{ƒ^ƒ“ó‘ÔXV
+	//ãƒœã‚¿ãƒ³çŠ¶æ…‹æ›´æ–°
 	_UpdateButtonStatus();
 
 EXIT:;
@@ -173,7 +173,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// HowToƒrƒbƒgƒ}ƒbƒv“Ç‚Ýž‚Ý
+// HowToãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTHowToViewDlg::_LoadHowToBmp()
 {
@@ -191,9 +191,9 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	_Clear();
 
 	//----------------------------------------------------------------
-	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 	//----------------------------------------------------------------
-	//ƒvƒƒZƒXŽÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXŽæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 	result = YNPathUtil::GetModuleDirPath(bmpFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
@@ -202,18 +202,18 @@ int MTHowToViewDlg::_LoadHowToBmp()
 		goto EXIT;
 	}
 
-	//BMPƒtƒ@ƒCƒ‹ƒpƒXì¬
+	//BMPãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
 	_tcscat_s(bmpFilePath, _MAX_PATH, pBmpFileName[m_PageNo]);
 
-	//BMPƒtƒ@ƒCƒ‹‚ðŠJ‚­
+	//BMPãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hFile = CreateFile(
-				bmpFilePath,			//ƒtƒ@ƒCƒ‹ƒpƒX
-				GENERIC_READ,			//ƒAƒNƒZƒXƒ^ƒCƒv
-				0,						//‹¤—L•û–@
-				NULL,					//ƒZƒLƒ…ƒŠƒeƒB‘®«
-				OPEN_EXISTING,			//¶¬Žw’è
-				FILE_ATTRIBUTE_NORMAL,	//ƒtƒ@ƒCƒ‹‘®«‚Æƒtƒ‰ƒO
-				NULL					//ƒeƒ“ƒvƒŒ[ƒgƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
+				bmpFilePath,			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+				GENERIC_READ,			//ã‚¢ã‚¯ã‚»ã‚¹ã‚¿ã‚¤ãƒ—
+				0,						//å…±æœ‰æ–¹æ³•
+				NULL,					//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±žæ€§
+				OPEN_EXISTING,			//ç”ŸæˆæŒ‡å®š
+				FILE_ATTRIBUTE_NORMAL,	//ãƒ•ã‚¡ã‚¤ãƒ«å±žæ€§ã¨ãƒ•ãƒ©ã‚°
+				NULL					//ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
 			);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		result = YN_SET_ERR("File open error.", GetLastError(), 0);
@@ -221,70 +221,70 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	}
 
 	//----------------------------------------------------------------
-	//BMPƒtƒ@ƒCƒ‹ƒwƒbƒ_
+	//BMPãƒ•ã‚¡ã‚¤ãƒ«ãƒ˜ãƒƒãƒ€
 	//----------------------------------------------------------------
-	//BMPƒtƒ@ƒCƒ‹ƒwƒbƒ_“Ç‚Ýž‚Ý
+	//BMPãƒ•ã‚¡ã‚¤ãƒ«ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 	bresult = ReadFile(
-					hFile,							//ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
-					&m_BmpHead,						//ƒoƒbƒtƒ@ˆÊ’u
-					sizeof(BITMAPFILEHEADER),		//“Ç‚ÝŽæ‚èƒTƒCƒY
-					&numOfBytesRead,				//“Ç‚ÝŽæ‚Á‚½ƒTƒCƒY
-					NULL							//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ìƒoƒbƒtƒ@
+					hFile,							//ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+					&m_BmpHead,						//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					sizeof(BITMAPFILEHEADER),		//èª­ã¿å–ã‚Šã‚µã‚¤ã‚º
+					&numOfBytesRead,				//èª­ã¿å–ã£ãŸã‚µã‚¤ã‚º
+					NULL							//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“ãƒãƒƒãƒ•ã‚¡
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("File read error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹ƒ^ƒCƒv‚ÌŠm”F "BM"
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒ—ã®ç¢ºèª "BM"
 	if (m_BmpHead.bfType != 0x4D42) {
 		result = YN_SET_ERR("Invalid data found.", m_BmpHead.bfType, 0);
 		goto EXIT;
 	}
 
 	//----------------------------------------------------------------
-	//BMPî•ñƒwƒbƒ_
+	//BMPæƒ…å ±ãƒ˜ãƒƒãƒ€
 	//----------------------------------------------------------------
-	//BMPî•ñƒwƒbƒ_“Ç‚Ýž‚Ý
+	//BMPæƒ…å ±ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 	bresult = ReadFile(
-					hFile,							//ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
-					&m_BmpInfo,						//ƒoƒbƒtƒ@ˆÊ’u
-					sizeof(BITMAPINFOHEADER),		//“Ç‚ÝŽæ‚èƒTƒCƒY
-					&numOfBytesRead,				//“Ç‚ÝŽæ‚Á‚½ƒTƒCƒY
-					NULL							//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ìƒoƒbƒtƒ@
+					hFile,							//ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+					&m_BmpInfo,						//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					sizeof(BITMAPINFOHEADER),		//èª­ã¿å–ã‚Šã‚µã‚¤ã‚º
+					&numOfBytesRead,				//èª­ã¿å–ã£ãŸã‚µã‚¤ã‚º
+					NULL							//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“ãƒãƒƒãƒ•ã‚¡
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("File read error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//24bit‰æ‘œˆÈŠO‚Í“Ç‚Ý‚Ü‚¹‚ñ
-	//ƒJƒ‰[ƒe[ƒuƒ‹‚ª‘¶Ý‚µ‚È‚¢‚±‚Æ‚ð‘O’ñ‚Æ‚·‚é
+	//24bitç”»åƒä»¥å¤–ã¯èª­ã¿ã¾ã›ã‚“
+	//ã‚«ãƒ©ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ãŒå­˜åœ¨ã—ãªã„ã“ã¨ã‚’å‰æã¨ã™ã‚‹
 	if ((m_BmpInfo.biBitCount != 24) || (m_BmpInfo.biClrUsed != 0)) {
 		result = YN_SET_ERR("Invalid BMP file.", m_BmpInfo.biBitCount, m_BmpInfo.biClrUsed);
 		goto EXIT;
 	}
 
 	//----------------------------------------------------------------
-	//BMPƒsƒNƒZƒ‹ƒf[ƒ^
+	//BMPãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿
 	//----------------------------------------------------------------
-	//ƒsƒNƒZƒ‹ƒf[ƒ^ŠJŽnˆÊ’u‚Éƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ðÝ’è
+	//ãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿é–‹å§‹ä½ç½®ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ã‚’è¨­å®š
 	fp = SetFilePointer(
-				hFile,					//ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
-				m_BmpHead.bfOffBits,	//ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^ˆÚ“®ƒoƒCƒg”F‰ºˆÊ32bit
-				0,						//ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^ˆÚ“®ƒoƒCƒg”FãˆÊ32bit
-				FILE_BEGIN				//ŠJŽn“_
+				hFile,					//ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+				m_BmpHead.bfOffBits,	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ç§»å‹•ãƒã‚¤ãƒˆæ•°ï¼šä¸‹ä½32bit
+				0,						//ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ç§»å‹•ãƒã‚¤ãƒˆæ•°ï¼šä¸Šä½32bit
+				FILE_BEGIN				//é–‹å§‹ç‚¹
 			);
 	if (fp == INVALID_SET_FILE_POINTER) {
 		result = YN_SET_ERR("File access error.", GetLastError(), m_BmpHead.bfOffBits);
 		goto EXIT;
 	}
 
-	//BMPƒsƒNƒZƒ‹ƒf[ƒ^ƒTƒCƒY
-	//ƒJƒ‰[ƒe[ƒuƒ‹‚ª‘¶Ý‚µ‚È‚¢‚±‚Æ‚ð‘O’ñ‚Æ‚·‚é
+	//BMPãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º
+	//ã‚«ãƒ©ãƒ¼ãƒ†ãƒ¼ãƒ–ãƒ«ãŒå­˜åœ¨ã—ãªã„ã“ã¨ã‚’å‰æã¨ã™ã‚‹
 	bmpPixelDataSize = m_BmpHead.bfSize - sizeof(BITMAPFILEHEADER) - sizeof(BITMAPINFOHEADER);
 
-	//ƒsƒNƒZƒ‹ƒf[ƒ^“Ç‚Ýž‚Ý—pƒƒ‚ƒŠŠm•Û
+	//ãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿ç”¨ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	hMemBmpPixel = GlobalAlloc(GHND, bmpPixelDataSize);
 	if (hMemBmpPixel == NULL) {
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
@@ -296,13 +296,13 @@ int MTHowToViewDlg::_LoadHowToBmp()
 		goto EXIT;
 	}
 
-	//BMPƒsƒNƒZƒ‹ƒf[ƒ^“Ç‚Ýž‚Ý
+	//BMPãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	bresult = ReadFile(
-					hFile,				//ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
-					pBmpPixcel,			//ƒoƒbƒtƒ@ˆÊ’u
-					bmpPixelDataSize,	//“Ç‚ÝŽæ‚èƒTƒCƒY
-					&numOfBytesRead,	//“Ç‚ÝŽæ‚Á‚½ƒTƒCƒY
-					NULL				//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ìƒoƒbƒtƒ@
+					hFile,				//ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+					pBmpPixcel,			//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					bmpPixelDataSize,	//èª­ã¿å–ã‚Šã‚µã‚¤ã‚º
+					&numOfBytesRead,	//èª­ã¿å–ã£ãŸã‚µã‚¤ã‚º
+					NULL				//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“ãƒãƒƒãƒ•ã‚¡
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("File read error.", GetLastError(), 0);
@@ -326,7 +326,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// HowToƒrƒbƒgƒ}ƒbƒv•`‰æ
+// HowToãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—æç”»
 //******************************************************************************
 int MTHowToViewDlg::_DrawHowToBmp()
 {
@@ -338,32 +338,32 @@ int MTHowToViewDlg::_DrawHowToBmp()
 
 	if (m_pBmpPixcel == NULL) goto EXIT;
 
-	//•`‰æ‘ÎÛƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹Žæ“¾
+	//æç”»å¯¾è±¡ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«å–å¾—
 	hWndPicture = GetDlgItem(m_hWnd, IDC_HOWTO_PICTURE);
 
-	//•`‰æ€”õ
+	//æç”»æº–å‚™
 	hdc = BeginPaint(hWndPicture, &ps);
 
 	apiresult = SetDIBitsToDevice(
-					hdc,					//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒgƒnƒ“ƒhƒ‹
-					0,						//“]‘—æ¶ã‹÷‚ÌÀ•WFx
-					0,						//“]‘—æ¶ã‹÷‚ÌÀ•WFy
-					m_BmpInfo.biWidth,		//“]‘—Œ³ƒTƒCƒYF•
-					m_BmpInfo.biHeight,		//“]‘—Œ³ƒTƒCƒYF‚‚³
-					0,						//“]‘—Œ³À•W¶‰º‹÷‚ÌÀ•WFx
-					0,						//“]‘—Œ³À•W¶‰º‹÷‚ÌÀ•WFy
-					0,						//‘–¸ŠJŽns
-					m_BmpInfo.biHeight,		//‘–¸s”
-					m_pBmpPixcel,			//ƒrƒbƒgƒ}ƒbƒvƒf[ƒ^ŠJŽn‚ÌƒAƒhƒŒƒX
-					(BITMAPINFO*)&m_BmpInfo,//BMPî•ñƒwƒbƒ_
-					DIB_RGB_COLORS			//FŽw’è
+					hdc,					//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒãƒ³ãƒ‰ãƒ«
+					0,						//è»¢é€å…ˆå·¦ä¸Šéš…ã®åº§æ¨™ï¼šx
+					0,						//è»¢é€å…ˆå·¦ä¸Šéš…ã®åº§æ¨™ï¼šy
+					m_BmpInfo.biWidth,		//è»¢é€å…ƒã‚µã‚¤ã‚ºï¼šå¹…
+					m_BmpInfo.biHeight,		//è»¢é€å…ƒã‚µã‚¤ã‚ºï¼šé«˜ã•
+					0,						//è»¢é€å…ƒåº§æ¨™å·¦ä¸‹éš…ã®åº§æ¨™ï¼šx
+					0,						//è»¢é€å…ƒåº§æ¨™å·¦ä¸‹éš…ã®åº§æ¨™ï¼šy
+					0,						//èµ°æŸ»é–‹å§‹è¡Œ
+					m_BmpInfo.biHeight,		//èµ°æŸ»è¡Œæ•°
+					m_pBmpPixcel,			//ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿é–‹å§‹ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+					(BITMAPINFO*)&m_BmpInfo,//BMPæƒ…å ±ãƒ˜ãƒƒãƒ€
+					DIB_RGB_COLORS			//è‰²æŒ‡å®š
 				);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//•`‰æI—¹
+	//æç”»çµ‚äº†
 	EndPaint(hWndPicture, &ps);
 
 EXIT:;
@@ -371,7 +371,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTHowToViewDlg::_Clear()
 {
@@ -387,24 +387,24 @@ void MTHowToViewDlg::_Clear()
 }
 
 //******************************************************************************
-// ‘Oƒ{ƒ^ƒ“‰Ÿ‰º
+// å‰ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTHowToViewDlg::_OnPreviousButton()
 {
 	int result = 0;
 
-	//‘O‚Ì‰æ‘œ‚ÖˆÚ“®
+	//å‰ã®ç”»åƒã¸ç§»å‹•
 	m_PageNo--;
 
-	//”O‚Ì‚½‚ßƒK[ƒh‚·‚é
+	//å¿µã®ãŸã‚ã‚¬ãƒ¼ãƒ‰ã™ã‚‹
 	if (m_PageNo < 0) {
 		m_PageNo = 0;
 	}
 
-	//ƒ{ƒ^ƒ“ó‘ÔXV
+	//ãƒœã‚¿ãƒ³çŠ¶æ…‹æ›´æ–°
 	_UpdateButtonStatus();
 
-	//‰æ‘œ•\Ž¦
+	//ç”»åƒè¡¨ç¤º
 	result = _DrawHowToImage();
 	if (result != 0) goto EXIT;
 
@@ -413,24 +413,24 @@ EXIT:;
 }
 
 //******************************************************************************
-// ŽŸƒ{ƒ^ƒ“‰Ÿ‰º
+// æ¬¡ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTHowToViewDlg::_OnNextButton()
 {
 	int result = 0;
 
-	//ŽŸ‚Ì‰æ‘œ‚ÖˆÚ“®
+	//æ¬¡ã®ç”»åƒã¸ç§»å‹•
 	m_PageNo++;
 
-	//”O‚Ì‚½‚ßƒK[ƒh‚·‚é
+	//å¿µã®ãŸã‚ã‚¬ãƒ¼ãƒ‰ã™ã‚‹
 	if (m_PageNo >= MT_HOWTOVIEW_IMAGE_NUM) {
 		m_PageNo = MT_HOWTOVIEW_IMAGE_NUM - 1;
 	}
 
-	//ƒ{ƒ^ƒ“ó‘ÔXV
+	//ãƒœã‚¿ãƒ³çŠ¶æ…‹æ›´æ–°
 	_UpdateButtonStatus();
 
-	//‰æ‘œ•\Ž¦
+	//ç”»åƒè¡¨ç¤º
 	result = _DrawHowToImage();
 	if (result != 0) goto EXIT;
 
@@ -439,21 +439,21 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰æ‘œ•\Ž¦
+// ç”»åƒè¡¨ç¤º
 //******************************************************************************
 int MTHowToViewDlg::_DrawHowToImage()
 {
 	int result = 0;
 
-	//HowToƒrƒbƒgƒ}ƒbƒv“Ç‚Ýž‚Ý
+	//HowToãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—èª­ã¿è¾¼ã¿
 	result = _LoadHowToBmp();
 	if (result != 0) goto EXIT;
 
-	//Ä•`‰æ
+	//å†æç”»
 	InvalidateRect(
-			m_hWnd,	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-			NULL,	//XVƒŠ[ƒWƒ‡ƒ“Žw’èF‘S‘Ì
-			FALSE	//”wŒiÁ‹ŽF‚È‚µ
+			m_hWnd,	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+			NULL,	//æ›´æ–°ãƒªãƒ¼ã‚¸ãƒ§ãƒ³æŒ‡å®šï¼šå…¨ä½“
+			FALSE	//èƒŒæ™¯æ¶ˆåŽ»ï¼šãªã—
 		);
 	UpdateWindow(m_hWnd);
 
@@ -462,7 +462,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ{ƒ^ƒ“ó‘ÔXV
+// ãƒœã‚¿ãƒ³çŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 void MTHowToViewDlg::_UpdateButtonStatus()
 {
@@ -475,11 +475,11 @@ void MTHowToViewDlg::_UpdateButtonStatus()
 	EnableWindow(hPreviousButton, TRUE);
 	EnableWindow(hNextButton, TRUE);
 
-	//æ“ª‰æ‘œ•\Ž¦F‘Oƒ{ƒ^ƒ“•sŠˆ«
+	//å…ˆé ­ç”»åƒè¡¨ç¤ºï¼šå‰ãƒœã‚¿ãƒ³ä¸æ´»æ€§
 	if (m_PageNo == 0) {
 		EnableWindow(hPreviousButton, FALSE);
 	}
-	//ÅI‰æ‘œ•\Ž¦FŽŸƒ{ƒ^ƒ“•sŠˆ«
+	//æœ€çµ‚ç”»åƒè¡¨ç¤ºï¼šæ¬¡ãƒœã‚¿ãƒ³ä¸æ´»æ€§
 	if (m_PageNo == (MT_HOWTOVIEW_IMAGE_NUM - 1)) {
 		EnableWindow(hNextButton, FALSE);
 	}

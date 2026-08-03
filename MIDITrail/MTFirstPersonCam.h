@@ -1,21 +1,21 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFirstPersonCam
 //
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// ä¸€äººç§°ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// FPSƒQ[ƒ€ƒ‰ƒCƒN‚È‹“_ˆÚ“®‚ğÀŒ»‚·‚éB
-// –{ƒNƒ‰ƒX“à‚ÅƒL[ƒ{[ƒh^ƒ}ƒEƒX‚Ìó‘Ô‚ğæ“¾‚·‚éB
+// FPSã‚²ãƒ¼ãƒ ãƒ©ã‚¤ã‚¯ãªè¦–ç‚¹ç§»å‹•ã‚’å®Ÿç¾ã™ã‚‹ã€‚
+// æœ¬ã‚¯ãƒ©ã‚¹å†…ã§ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ï¼ãƒã‚¦ã‚¹ã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹ã€‚
 
 #pragma once
 
 #include <d3d9.h>
-#include <d3dx9.h>
+#include "DXMath9.h"
 #include "DIKeyCtrl.h"
 #include "DIMouseCtrl.h"
 #include "DXCamera.h"
@@ -27,14 +27,14 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒJƒƒ‰ˆÊ’uÅ‘å”ÍˆÍ
+//ã‚«ãƒ¡ãƒ©ä½ç½®æœ€å¤§ç¯„å›²
 #define MTFIRSTPERSONCAM_CAMVECTOR_LIMIT  (1000000.0f)
 
 
 //******************************************************************************
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// ä¸€äººç§°ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTFirstPersonCam
 {
@@ -47,65 +47,96 @@ public:
 	};
 
 public:
+	D3DXVECTOR3 m_CachedPosition;
+	bool m_IsPositionDirty;
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTFirstPersonCam(void);
 	virtual ~MTFirstPersonCam(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	int Clear();
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(HWND hWnd, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	void SetPosition(
 			D3DXVECTOR3 camVector
 		);
 
-	//ƒJƒƒ‰•ûŒüİ’è
-	//  •ûˆÊŠpFXZ•½–Êã‚ÌX²‚Æ‚ÌŠp“x +X²•ûŒü=0“x +Z²•ûŒü=90“x
-	//  “V’¸ŠpFY²‚Æ‚ÌŠp“x           +Y²•ûŒü=0“x XZ•½–Êã=90“x
+	//ã‚«ãƒ¡ãƒ©æ–¹å‘è¨­å®š
+	//  æ–¹ä½è§’ï¼šXZå¹³é¢ä¸Šã®Xè»¸ã¨ã®è§’åº¦ +Xè»¸æ–¹å‘=0åº¦ +Zè»¸æ–¹å‘=90åº¦
+	//  å¤©é ‚è§’ï¼šYè»¸ã¨ã®è§’åº¦           +Yè»¸æ–¹å‘=0åº¦ XZå¹³é¢ä¸Š=90åº¦
 	void SetDirection(
-			float phi,		//•ûˆÊŠp
-			float theta		//“V’¸Šp
+			float phi,		//æ–¹ä½è§’
+			float theta		//å¤©é ‚è§’
 		);
 
-	//ƒJƒƒ‰ˆÊ’uæ“¾
+	//ã‚«ãƒ¡ãƒ©ä½ç½®å–å¾—
 	void GetPosition(D3DXVECTOR3* pCamVector);
 
-	//ƒJƒƒ‰•ûŒüæ“¾
+	//ã‚«ãƒ¡ãƒ©æ–¹å‘å–å¾—
 	void GetDirection(
 			float* pPhi,
 			float* pTheta
 		);
 
-	//ƒ}ƒEƒX‹üˆÚ“®ƒ‚[ƒh“o˜^
+	//ãƒã‚¦ã‚¹è¦–ç·šç§»å‹•ãƒ¢ãƒ¼ãƒ‰ç™»éŒ²
 	void SetMouseCamMode(bool isEnable);
 
-	//©“®‰ñ“]ƒ‚[ƒh“o˜^
+	//ãƒ¦ãƒ¼ã‚¶å…¥åŠ›(ãƒã‚¦ã‚¹/ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰/ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰)ã®æœ‰åŠ¹ãƒ»ç„¡åŠ¹
+	//  ImGui ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦(Config Manager ç­‰)è¡¨ç¤ºä¸­ã¯ false ã«ã—ã¦ã€DirectInput ã«ã‚ˆã‚‹
+	//  ã‚«ãƒ¡ãƒ©æ“ä½œãŒè£ã§åŠ¹ã‹ãªã„ã‚ˆã†ã«ã™ã‚‹ï¼ˆè‡ªå‹•ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«/ãƒ­ãƒ¼ãƒ«ã¯ç¶™ç¶šï¼‰ã€‚
+	void SetInputEnabled(bool isEnable) { m_InputEnabled = isEnable; }
+	bool IsInputEnabled() const { return m_InputEnabled; }
+
+	//è‡ªå‹•å›è»¢ãƒ¢ãƒ¼ãƒ‰ç™»éŒ²
 	void SetAutoRollMode(bool isEnable);
 	void SwitchAutoRllDirecton();
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//DX11: update without a D3D9 device (polls input, updates camera position)
+	int TransformDX11();
+
+	//DX11: fetch view/projection matrices (row-major D3DXMATRIX, convertible to XMMATRIX)
+	int GetMatrices(float aspect, D3DXMATRIX* pView, D3DXMATRIX* pProj);
+
+	//DX11: move to the authentic PianoRoll3D default viewpoint (frames the note field)
+	void SetDefaultViewpoint();
+	void SetDefaultViewpointRing();
+
+	//DX11: apply a saved static viewpoint from the [Viewpoint-N] config section
+	void SetViewpointFromConf(const TCHAR* pSceneName, unsigned long viewpointNo);
+
+	// DX11 viewpoint persistence: get/apply the viewpoint with the scroll offset
+	// removed/added on the progress axis (so the saved value is now-line relative).
+	void GetViewpointParam(float* pX, float* pY, float* pZ, float* pPhi, float* pTheta, float* pManualRoll);
+	void SetViewpointParam(float x, float y, float z, float phi, float theta, float manualRoll, float autoRollVel);
+
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ƒŠƒZƒbƒg
+	// M6 (video export): apply ONLY the tick-based playback scroll (no input
+	// polling) and rebuild the look-at, keeping the current orientation/roll.
+	int UpdateScrollForExport();
+
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//‰ñ“]Šp“xæ“¾
+	//å›è»¢è§’åº¦å–å¾—
 	float GetManualRollAngle();
 	float GetAutoRollVelocity();
 
-	//‰ñ“]Šp“xİ’è
+	//å›è»¢è§’åº¦è¨­å®š
 	void SetManualRollAngle(float rollAngle);
 	void SetAutoRollVelocity(float rollVelocity);
 
-	//is•ûŒüİ’è
+	//é€²è¡Œæ–¹å‘è¨­å®š
 	void SetProgressDirection(MTProgressDirection dir);
+
 
 private:
 
@@ -119,18 +150,19 @@ private:
 	DIMouseCtrl m_DIMouseCtrl;
 	MTGamePadCtrl m_GamePadCtrl;
 	bool m_IsMouseCamMode;
+	bool m_InputEnabled;
 	bool m_IsAutoRollMode;
 	HWND m_hWnd;
 	MTNoteDesign m_NoteDesign;
 
-	//ˆÚ“®‘¬“x
-	float m_VelocityFB;		//‘OŒãˆÚ“®—Ê m/sec.
-	float m_VelocityLR;		//¶‰EˆÚ“®—Ê m/sec.
-	float m_VelocityUD;		//ã‰ºˆÚ“®—Ê m/sec.
-	float m_VelocityPT;		//‹üˆÚ“®—Ê degrees/sec.
-	float m_AcceleRate;		//‰Á‘¬”{—¦
+	//ç§»å‹•é€Ÿåº¦
+	float m_VelocityFB;		//å‰å¾Œç§»å‹•é‡ m/sec.
+	float m_VelocityLR;		//å·¦å³ç§»å‹•é‡ m/sec.
+	float m_VelocityUD;		//ä¸Šä¸‹ç§»å‹•é‡ m/sec.
+	float m_VelocityPT;		//è¦–ç·šç§»å‹•é‡ degrees/sec.
+	float m_AcceleRate;		//åŠ é€Ÿå€ç‡
 
-	//‰ñ“]§ŒäŒn
+	//å›è»¢åˆ¶å¾¡ç³»
 	float m_RollAngle;
 	float m_VelocityAutoRoll;
 	float m_VelocityManualRoll;

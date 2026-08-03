@@ -1,10 +1,10 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMRcpConv
 //
-// RCPƒtƒ@ƒCƒ‹•ÏŠ·ƒNƒ‰ƒX
+// RCPãƒ•ã‚¡ã‚¤ãƒ«å¤‰æ›ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,7 +12,6 @@
 #include "shlwapi.h"
 #include "YNBaseLib.h"
 #include "SMRcpConv.h"
-#include <io.h>
 
 using namespace YNBaseLib;
 
@@ -20,7 +19,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMRcpConv::SMRcpConv(void)
 {
@@ -31,7 +30,7 @@ SMRcpConv::SMRcpConv(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMRcpConv::~SMRcpConv(void)
 {
@@ -39,7 +38,7 @@ SMRcpConv::~SMRcpConv(void)
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int SMRcpConv::Initialize()
 {
@@ -48,66 +47,45 @@ int SMRcpConv::Initialize()
 
 	_Release();
 
-	//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 	result = YNPathUtil::GetModuleDirPath(dllFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//DLLƒtƒ@ƒCƒ‹ƒpƒX
+	//DLLãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 	_tcscat_s(dllFilePath, _MAX_PATH, _T("RCPCV.DLL"));
 
-	//DLL‘¶İŠm”F
+	//DLLå­˜åœ¨ç¢ºèª
 	if (!PathFileExists(dllFilePath)) {
-		//DLL‚ª‘¶İ‚µ‚È‚¢‚Ì‚Å‰½‚à‚¹‚¸³íI—¹
+		//DLLãŒå­˜åœ¨ã—ãªã„ã®ã§ä½•ã‚‚ã›ãšæ­£å¸¸çµ‚äº†
 		goto EXIT;
 	}
 
-	//DLL“Ç‚İ‚İ
-	//  LoadLibrary / FreeLibrary ‚ÍAPI‘¤‚ÅQÆƒJƒEƒ“ƒg‚ğŠÇ—‚·‚é‚½‚ß
-	//  –{ƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª•¡”‘¶İ‚µ‚Ä‚à–â‘è‚È‚¢
+	//DLLèª­ã¿è¾¼ã¿
+	//  LoadLibrary / FreeLibrary ã¯APIå´ã§å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ç®¡ç†ã™ã‚‹ãŸã‚
+	//  æœ¬ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒè¤‡æ•°å­˜åœ¨ã—ã¦ã‚‚å•é¡Œãªã„
 	m_hModule = LoadLibrary(dllFilePath);
 	if (m_hModule == NULL) {
 		result = YN_SET_ERR("LoadLibrary Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ŠÖ”ƒ|ƒCƒ“ƒ^æ“¾FrcpcvConvertFile
+	//é–¢æ•°ãƒã‚¤ãƒ³ã‚¿å–å¾—ï¼šrcpcvConvertFile
 	m_pFuncConvertFile = (RCPCV_ConvertFile)GetProcAddress(m_hModule, "rcpcvConvertFile");
 	if (m_pFuncConvertFile == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ŠÖ”ƒ|ƒCƒ“ƒ^æ“¾FrcpcvSaveSMF
+	//é–¢æ•°ãƒã‚¤ãƒ³ã‚¿å–å¾—ï¼šrcpcvSaveSMF
 	m_pFuncSaveSMF = (RCPCV_SaveSMF)GetProcAddress(m_hModule, "rcpcvSaveSMF");
 	if (m_pFuncSaveSMF == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ŠÖ”ƒ|ƒCƒ“ƒ^æ“¾FrcpcvDeleteObject
+	//é–¢æ•°ãƒã‚¤ãƒ³ã‚¿å–å¾—ï¼šrcpcvDeleteObject
 	m_pFuncDeleteObject = (RCPCV_DeleteObject)GetProcAddress(m_hModule, "rcpcvDeleteObject");
 	if (m_pFuncDeleteObject == NULL) {
-		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
-		goto EXIT;
-	}
-
-	//ŠÖ”ƒ|ƒCƒ“ƒ^æ“¾FrcpcvConvertFileFromBuffer
-	m_pFuncConvertFileFromBuffer = (RCPCV_ConvertFileFromBuffer)GetProcAddress(m_hModule, "rcpcvConvertFileFromBuffer");
-	if (m_pFuncConvertFileFromBuffer == NULL) {
-		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
-		goto EXIT;
-	}
-
-	//ŠÖ”ƒ|ƒCƒ“ƒ^æ“¾FrcpcvGetSMF
-	m_pFuncGetSMF = (RCPCV_GetSMF)GetProcAddress(m_hModule, "rcpcvGetSMF");
-	if (m_pFuncGetSMF == NULL) {
-		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
-		goto EXIT;
-	}
-
-	//ŠÖ”ƒ|ƒCƒ“ƒ^æ“¾FrcpcvGetSMFLength
-	m_pFuncGetSMFLength = (RCPCV_GetSMFLength)GetProcAddress(m_hModule, "rcpcvGetSMFLength");
-	if (m_pFuncGetSMFLength == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
@@ -120,7 +98,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// g—p‰Â”Û”»’è
+// ä½¿ç”¨å¯å¦åˆ¤å®š
 //******************************************************************************
 bool SMRcpConv::IsAvailable()
 {
@@ -134,182 +112,59 @@ bool SMRcpConv::IsAvailable()
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹•ÏŠ·
+// ãƒ•ã‚¡ã‚¤ãƒ«å¤‰æ›
 //******************************************************************************
 int SMRcpConv::Convert(
-		const WCHAR* pRCPPath,
-		const WCHAR* pSMFPath
+		const TCHAR* pRCPPath,
+		const TCHAR* pSMFPath
 	)
 {
 	int result = 0;
+	int apiresult = 0;
 	DWORD hRCPCV = 0;
-	FILE* pRCPFile = NULL;
-	FILE* pSMFFile = NULL;
-	unsigned char* pBuffer = NULL;
-	errno_t eresult = 0;
-	__int64 fileSize = 0;
-	size_t buffSize = 0;
-	size_t readSize = 0;
-	size_t writeSize = 0;
-	LPCSTR pSMFData = NULL;
-	int SMFDataSize = 0;
 
 	if (!IsAvailable()) {
 		result = YN_SET_ERR("Program Error.", 0, 0);
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	eresult = _wfopen_s(&pRCPFile, pRCPPath, L"rb");
-	if (eresult != 0) {
-		result = YN_SET_ERR("File open error.", 0, 0);
-		goto EXIT;
-	}
-
-	//ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğŠm”F
-	fileSize = _filelengthi64(_fileno(pRCPFile));
-	if (fileSize == -1L) {
-		result = YN_SET_ERR("File open error.", 0, 0);
-		goto EXIT;
-	}
-	//ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª100MB‚ğ’´‚¦‚éê‡‚ÍƒTƒ|[ƒg‚µ‚È‚¢
-	if (fileSize > (1024 * 1024 * 100)) {
-		result = YN_SET_ERR("File size is too long.", fileSize, 0);
-		goto EXIT;
-	}
-	buffSize = (size_t)fileSize;
-
-	//ƒƒ‚ƒŠŠm•Û
 	try {
-		pBuffer = new unsigned char[buffSize];
-	}
-	catch (std::bad_alloc) {
-		result = YN_SET_ERR("Could not allocate memory.", buffSize, 0);
-		goto EXIT;
-	}
 
-	//RCPƒtƒ@ƒCƒ‹‚Ì“à—e‚ğƒƒ‚ƒŠ‚É“WŠJ
-	readSize = fread_s(pBuffer, buffSize, 1, buffSize, pRCPFile);
-	if (readSize != buffSize) {
-		result = YN_SET_ERR("File read error.", readSize, buffSize);
-		goto EXIT;
-	}
-
-	try {
-		//RCP->SMFƒRƒ“ƒo[ƒgÀs
-		//  ƒtƒH[ƒ}ƒbƒgŒ`®‚ğ“n‚·•K—v‚ª‚ ‚é‚ª©“®”»•Ê‚Æ‚·‚é
-		//  ƒƒ‚ƒŠã‚Å‚Ì•ÏŠ·‚Íƒtƒ@ƒCƒ‹Šg’£q‚Ìî•ñ‚ª‚È‚¢‚½‚ß‚Æ„’è
-		hRCPCV = (*m_pFuncConvertFileFromBuffer)(
-						(LPCSTR)pBuffer,//“ü—Íƒoƒbƒtƒ@
-						(UINT)buffSize,		//“ü—Íƒoƒbƒtƒ@’·‚³
-						0,				//“ü—Íƒf[ƒ^‚ÌƒtƒH[ƒ}ƒbƒgŒ`®F©“®”»•Ê
-						0,				//ƒR[ƒ‹ƒoƒbƒNí•ÊF‚È‚µ
-						NULL,			//ƒR[ƒ‹ƒoƒbƒNŠÖ”^ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹F‚È‚µ
-						0,				//ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWF‚È‚µ
-						0				//ƒCƒ“ƒXƒ^ƒ“ƒX”»•Ê—pIDF‚È‚µ
+		//RCPãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+		hRCPCV = (*m_pFuncConvertFile)(
+						pRCPPath,	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+						0,			//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç¨®åˆ¥ï¼šãªã—
+						NULL,		//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ï¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ï¼šãªã—
+						0,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼šãªã—
+						0			//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åˆ¤åˆ¥ç”¨IDï¼šãªã—
 					);
 		if (hRCPCV == 0) {
-			result = YN_SET_ERR("File convert error. (rcpcv.dll)", 0, 0);
+			result = YN_SET_ERR("File read error.", 0, 0);
 			goto EXIT;
 		}
 
-		//SMFƒf[ƒ^ˆÊ’u
-		pSMFData = (*m_pFuncGetSMF)(hRCPCV);
+		//SMFå‡ºåŠ›
+		apiresult = (*m_pFuncSaveSMF)(hRCPCV, pSMFPath);
+		if (apiresult != 1) {
+			result = YN_SET_ERR("File save error.", apiresult, 0);
+			goto EXIT;
+		}
 
-		//SMFƒf[ƒ^ƒTƒCƒY
-		SMFDataSize = (*m_pFuncGetSMFLength)(hRCPCV);
 	}
 	catch (...) {
-		result = YN_SET_ERR("File convert error. (rcpcv.dll)", 0, 0);
-		goto EXIT;
-	}
-
-	//o—Íæƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	eresult = _wfopen_s(&pSMFFile, pSMFPath, L"wb");
-	if (eresult != 0) {
-		result = YN_SET_ERR("File open error.", 0, 0);
-		goto EXIT;
-	}
-
-	//o—Íæƒtƒ@ƒCƒ‹‚ÉSMFƒf[ƒ^‚ğ‘‚«‚Ş
-	writeSize = fwrite(pSMFData, 1, SMFDataSize, pSMFFile);
-	if (writeSize != SMFDataSize) {
-		result = YN_SET_ERR("File write error.", writeSize, SMFDataSize);
+		result = YN_SET_ERR("Exception occurred. (rcpcv.dll)", 0, 0);
 		goto EXIT;
 	}
 
 EXIT:;
-	delete [] pBuffer;
 	if (hRCPCV != 0) {
 		(*m_pFuncDeleteObject)(hRCPCV);
-	}
-	if (pRCPFile != NULL) {
-		fclose(pRCPFile);
-	}
-	if (pSMFFile != NULL) {
-		fclose(pSMFFile);
 	}
 	return result;
 }
 
-// ƒƒ‚
-// RCPCV ‚ÍƒƒCƒh•¶š—ñ‚É‚æ‚éƒtƒ@ƒCƒ‹ƒpƒX‚Ìw’è‚É‘Î‰‚µ‚Ä‚¢‚È‚¢‚½‚ß
-// RCPCV ‚Å‚ÌRCPƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÆSMFƒtƒ@ƒCƒ‹o—Í‚ğæ‚è‚â‚ßA
-// ƒƒ‚ƒŠã‚Å‚ÌƒRƒ“ƒo[ƒgˆ—‚É•ÏX‚·‚éB
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹•ÏŠ·
-//******************************************************************************
-//int SMRcpConv::Convert(
-//		const TCHAR* pRCPPath,
-//		const TCHAR* pSMFPath
-//	)
-//{
-//	int result = 0;
-//	int apiresult = 0;
-//	DWORD hRCPCV = 0;
-//
-//	if (!IsAvailable()) {
-//		result = YN_SET_ERR("Program Error.", 0, 0);
-//		goto EXIT;
-//	}
-//
-//	try {
-//
-//		//RCPƒtƒ@ƒCƒ‹“Ç‚İ‚İ
-//		hRCPCV = (*m_pFuncConvertFile)(
-//						pRCPPath,	//ƒtƒ@ƒCƒ‹ƒpƒX
-//						0,			//ƒR[ƒ‹ƒoƒbƒNí•ÊF‚È‚µ
-//						NULL,		//ƒR[ƒ‹ƒoƒbƒNŠÖ”^ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹F‚È‚µ
-//						0,			//ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWF‚È‚µ
-//						0			//ƒCƒ“ƒXƒ^ƒ“ƒX”»•Ê—pIDF‚È‚µ
-//					);
-//		if (hRCPCV == 0) {
-//			result = YN_SET_ERR("File read error.", 0, 0);
-//			goto EXIT;
-//		}
-//
-//		//SMFo—Í
-//		apiresult = (*m_pFuncSaveSMF)(hRCPCV, pSMFPath);
-//		if (apiresult != 1) {
-//			result = YN_SET_ERR("File save error.", apiresult, 0);
-//			goto EXIT;
-//		}
-//
-//	}
-//	catch (...) {
-//		result = YN_SET_ERR("Exception occurred. (rcpcv.dll)", 0, 0);
-//		goto EXIT;
-//	}
-//
-//EXIT:;
-//	if (hRCPCV != 0) {
-//		(*m_pFuncDeleteObject)(hRCPCV);
-//	}
-//	return result;
-//}
-
-//******************************************************************************
-// ƒŠƒŠ[ƒX
+// ãƒªãƒªãƒ¼ã‚¹
 //******************************************************************************
 void SMRcpConv::_Release()
 {
@@ -320,17 +175,17 @@ void SMRcpConv::_Release()
 }
 
 //******************************************************************************
-// Šg’£q‚É‚æ‚éƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹”»’è
+// æ‹¡å¼µå­ã«ã‚ˆã‚‹ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«åˆ¤å®š
 //******************************************************************************
 bool SMRcpConv::IsSupportFileExt(
-		const WCHAR* pFilePath
+		const TCHAR* pFilePath
 	)
 {
 	bool isSupport = false;
 
-	if (YNPathUtil::IsFileExtMatch(pFilePath, L".rcp")
-	 || YNPathUtil::IsFileExtMatch(pFilePath, L".r36")
-	 || YNPathUtil::IsFileExtMatch(pFilePath, L".g36")) {
+	if (YNPathUtil::IsFileExtMatch(pFilePath, ".rcp")
+	 || YNPathUtil::IsFileExtMatch(pFilePath, ".r36")
+	 || YNPathUtil::IsFileExtMatch(pFilePath, ".g36")) {
 		isSupport = true;
 	}
 
@@ -338,15 +193,15 @@ bool SMRcpConv::IsSupportFileExt(
 }
 
 //******************************************************************************
-// GetOpenFileName—pƒtƒ@ƒCƒ‹ƒtƒBƒ‹ƒ^æ“¾
+// GetOpenFileNameç”¨ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚£ãƒ«ã‚¿å–å¾—
 //******************************************************************************
-const WCHAR* SMRcpConv::GetOpenFileNameFilter()
+const TCHAR* SMRcpConv::GetOpenFileNameFilter()
 {
-	WCHAR* pFilter =
-		L"MIDI File (*.mid *.rcp *.r36 *.g36)\0*.mid;*.rcp;*.r36;*.g36\0"
-		L"Standard MIDI File (*.mid)\0*.mid\0"
-		L"Recomposer Data File (*.rcp *.r36 *.g36)\0*.rcp;*.r36;*.g36\0"
-		L"\0";
+	TCHAR* pFilter =
+		_T("MIDI File (*.mid *.rcp *.r36 *.g36)\0*.mid;*.rcp;*.r36;*.g36\0")
+		_T("Standard MIDI File (*.mid)\0*.mid\0")
+		_T("Recomposer Data File (*.rcp *.r36 *.g36)\0*.rcp;*.r36;*.g36\0")
+		_T("\0");
 	return pFilter;
 }
 

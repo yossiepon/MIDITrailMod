@@ -1,6 +1,6 @@
-******************************************************************************
+﻿******************************************************************************
 
-  MIDITrail �\�[�X�R�[�h Ver.1.4.1 for Windows
+  MIDITrail ソースコード Ver.1.4.1 for Windows
 
   Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 
@@ -9,45 +9,45 @@
 
 ******************************************************************************
 
-(1) �T�v
+(1) 概要
 
-  MIDITrail for Windows �̑S�\�[�X�R�[�h�ł��B
+  MIDITrail for Windows の全ソースコードです。
 
-(2) �r���h��
+(2) ビルド環境
 
   Microsoft DirectX SDK (June 2010)
   Microsoft Visual Studio Community 2017
 
-(3) �t�H���_�\��
+(3) フォルダ構成
 
   /bin
-    x86�p�r���h���W���[���̏o�͐�ł��B
-    bin�̉��� Debug / Release �t�H���_���쐬����܂��B
+    x86用ビルドモジュールの出力先です。
+    binの下に Debug / Release フォルダが作成されます。
 
   /x64
-    x64�p�r���h���W���[���̏o�͐�ł��B
-    x64�̉��� Debug / Release �t�H���_���쐬����܂��B
+    x64用ビルドモジュールの出力先です。
+    x64の下に Debug / Release フォルダが作成されます。
 
   /MIDITrail
-    �A�v���P�[�V�����{��(MIDITrail.exe)�̃v���W�F�N�g�ł��B
-    DirectX��p�����`�揈�����������Ă��܂��B
-    SMIDILib.dll �� YNBaseLib.dll �𗘗p���Ă��܂��B
+    アプリケーション本体(MIDITrail.exe)のプロジェクトです。
+    DirectXを用いた描画処理を実装しています。
+    SMIDILib.dll と YNBaseLib.dll を利用しています。
 
   /SMIDILib
-    �V���v��MIDI���C�u����(SMIDILib.dll)�̃v���W�F�N�g�ł��B
-    MIDI�f�[�^�̍Đ��ƃm�[�g���Q�Ƃɓ����������C�u�����ł��B
-    YNBaseLib.dll �𗘗p���Ă��܂��B
+    シンプルMIDIライブラリ(SMIDILib.dll)のプロジェクトです。
+    MIDIデータの再生とノート情報参照に特化したライブラリです。
+    YNBaseLib.dll を利用しています。
 
   /YNBaseLib
-    ��{���C�u����(YNBaseLib.dll)�̃v���W�F�N�g�ł��B
-    �G���[����⃆�[�e�B���e�B�֐����܂�ł��܂��B
+    基本ライブラリ(YNBaseLib.dll)のプロジェクトです。
+    エラー制御やユーティリティ関数を含んでいます。
 
   /Resources
-    �A�v���P�[�V�������Q�Ƃ��郊�\�[�X�t�@�C���ł��B
+    アプリケーションが参照するリソースファイルです。
 
-(4) ���C�Z���X
+(4) ライセンス
 
-  �C��BSD���C�Z���X��K�p���Č��J���Ă��܂��B 
-  �ڍׂ� LICENSE.txt ���Q�Ƃ��Ă��������B
+  修正BSDライセンスを適用して公開しています。 
+  詳細は LICENSE.txt を参照してください。
 
 

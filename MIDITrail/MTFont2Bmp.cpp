@@ -1,10 +1,10 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFont2Bmp
 //
-// ƒtƒHƒ“ƒg„ƒrƒbƒgƒ}ƒbƒv•ÏŠ·ƒNƒ‰ƒX
+// ãƒ•ã‚©ãƒ³ãƒˆï¼ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—å¤‰æ›ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,11 +17,11 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFont2Bmp::MTFont2Bmp(void)
 {
-	m_FontName[0] = L'\0';
+	m_FontName[0] = _T('\0');
 	m_FontSize = 0;
 	m_isForceFixedPitch = false;
 	m_hFont = NULL;
@@ -30,7 +30,7 @@ MTFont2Bmp::MTFont2Bmp(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFont2Bmp::~MTFont2Bmp(void)
 {
@@ -38,7 +38,7 @@ MTFont2Bmp::~MTFont2Bmp(void)
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTFont2Bmp::Clear()
 {
@@ -85,10 +85,10 @@ void MTFont2Bmp::Clear()
 }
 
 //******************************************************************************
-// ƒtƒHƒ“ƒgİ’è
+// ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 //******************************************************************************
 int MTFont2Bmp::SetFont(
-		const WCHAR* pFontName,
+		const TCHAR* pFontName,
 		unsigned long fontSize,
 		bool isForceFixedPitch
 	)
@@ -96,7 +96,7 @@ int MTFont2Bmp::SetFont(
 	int result = 0;
 	errno_t eresult = 0;
 
-	eresult = wcscpy_s(m_FontName, LF_FACESIZE, pFontName);
+	eresult = _tcscpy_s(m_FontName, LF_FACESIZE, pFontName);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
@@ -110,29 +110,29 @@ EXIT:;
 }
 
 //******************************************************************************
-// BMPì¬
+// BMPä½œæˆ
 //******************************************************************************
 int MTFont2Bmp::CreateBmp(
-		const WCHAR* pStr
+		const TCHAR* pStr
 	)
 {
 	int result = 0;
 
 	Clear();
 
-	//˜_—ƒtƒHƒ“ƒgì¬
+	//è«–ç†ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 	result = _CreateLogFont();
 	if (result != 0) goto EXIT;
 
-	//ƒOƒŠƒtBMPƒŠƒXƒg‚ğì¬
+	//ã‚°ãƒªãƒ•BMPãƒªã‚¹ãƒˆã‚’ä½œæˆ
 	result = _CreateGlyphBmpList(pStr);
 	if (result != 0) goto EXIT;
 
-	//•¶š—ñ‘S‘Ì‚Ìƒoƒbƒtƒ@‚ğì¬
+	//æ–‡å­—åˆ—å…¨ä½“ã®ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 	result = _CreateBmpBuf();
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÉƒOƒŠƒtBMP‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«ã‚°ãƒªãƒ•BMPã‚’æ›¸ãè¾¼ã‚€
 	result = _WriteGlyphToBmpBuf();
 	if (result != 0) goto EXIT;
 
@@ -141,7 +141,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// BMPƒTƒCƒYæ“¾
+// BMPã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 void MTFont2Bmp::GetBmpSize(
 		unsigned long* pHeight,
@@ -153,7 +153,7 @@ void MTFont2Bmp::GetBmpSize(
 }
 
 //******************************************************************************
-// BMPƒsƒNƒZƒ‹’læ“¾
+// BMPãƒ”ã‚¯ã‚»ãƒ«å€¤å–å¾—
 //******************************************************************************
 BYTE MTFont2Bmp::GetBmpPixcel(
 		unsigned long x,
@@ -173,37 +173,37 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˜_—ƒtƒHƒ“ƒgì¬
+// è«–ç†ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 //******************************************************************************
 int MTFont2Bmp::_CreateLogFont()
 {
 	int result = 0;
-	LOGFONTW logfont;
+	LOGFONT logfont;
 
-	//˜_—ƒtƒHƒ“ƒgî•ñ‚ğ¶¬
-	ZeroMemory(&logfont, sizeof(LOGFONTW));
-	logfont.lfHeight         = m_FontSize;			//‚‚³
-	logfont.lfWidth          = 0;					//•
-	logfont.lfEscapement     = 0;					//Šp“x
-	logfont.lfOrientation    = 0;					//Šp“x
-	logfont.lfWeight         = 0;					//ƒEƒFƒCƒg
-	logfont.lfItalic         = FALSE;				//ƒCƒ^ƒŠƒbƒN
-	logfont.lfUnderline      = FALSE;				//ƒAƒ“ƒ_[ƒ‰ƒCƒ“
-	logfont.lfStrikeOut      = FALSE;				//ƒXƒgƒ‰ƒCƒNƒAƒEƒg
-	logfont.lfCharSet        = DEFAULT_CHARSET;		//ƒLƒƒƒ‰ƒNƒ^ƒZƒbƒg
-	logfont.lfOutPrecision   = OUT_TT_ONLY_PRECIS;	//o—Í¸“xFTrueTypeƒtƒHƒ“ƒg‚ğg—pi‘¶İ‚µ‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg‚Ì“®ìj
-	logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS;	//ƒNƒŠƒbƒsƒ“ƒO¸“xFƒfƒtƒHƒ‹ƒgw’è
-	logfont.lfQuality        = PROOF_QUALITY;		//•i¿FƒtƒHƒ“ƒg‘®«‚æ‚è•`‰æ•i¿‚ğ—Dæ
-	logfont.lfPitchAndFamily = DEFAULT_PITCH		//ƒsƒbƒ`FƒfƒtƒHƒ‹ƒg
-								| FF_DONTCARE;		//ƒtƒ@ƒ~ƒŠFˆê”Ê“I‚Èƒtƒ@ƒ~ƒŠ
-	wcscpy_s(logfont.lfFaceName, LF_FACESIZE, m_FontName);
+	//è«–ç†ãƒ•ã‚©ãƒ³ãƒˆæƒ…å ±ã‚’ç”Ÿæˆ
+	ZeroMemory(&logfont, sizeof(LOGFONT));
+	logfont.lfHeight         = m_FontSize;			//é«˜ã•
+	logfont.lfWidth          = 0;					//å¹…
+	logfont.lfEscapement     = 0;					//è§’åº¦
+	logfont.lfOrientation    = 0;					//è§’åº¦
+	logfont.lfWeight         = 0;					//ã‚¦ã‚§ã‚¤ãƒˆ
+	logfont.lfItalic         = FALSE;				//ã‚¤ã‚¿ãƒªãƒƒã‚¯
+	logfont.lfUnderline      = FALSE;				//ã‚¢ãƒ³ãƒ€ãƒ¼ãƒ©ã‚¤ãƒ³
+	logfont.lfStrikeOut      = FALSE;				//ã‚¹ãƒˆãƒ©ã‚¤ã‚¯ã‚¢ã‚¦ãƒˆ
+	logfont.lfCharSet        = DEFAULT_CHARSET;		//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ã‚»ãƒƒãƒˆ
+	logfont.lfOutPrecision   = OUT_TT_ONLY_PRECIS;	//å‡ºåŠ›ç²¾åº¦ï¼šTrueTypeãƒ•ã‚©ãƒ³ãƒˆã‚’ä½¿ç”¨ï¼ˆå­˜åœ¨ã—ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å‹•ä½œï¼‰
+	logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS;	//ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°ç²¾åº¦ï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæŒ‡å®š
+	logfont.lfQuality        = PROOF_QUALITY;		//å“è³ªï¼šãƒ•ã‚©ãƒ³ãƒˆå±æ€§ã‚ˆã‚Šæç”»å“è³ªã‚’å„ªå…ˆ
+	logfont.lfPitchAndFamily = DEFAULT_PITCH		//ãƒ”ãƒƒãƒï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+								| FF_DONTCARE;		//ãƒ•ã‚¡ãƒŸãƒªï¼šä¸€èˆ¬çš„ãªãƒ•ã‚¡ãƒŸãƒª
+	_tcscpy_s(logfont.lfFaceName, LF_FACESIZE, m_FontName);
 
 	if (m_isForceFixedPitch) {
 		logfont.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
 	}
 
-	//˜_—ƒtƒHƒ“ƒg¶¬
-	m_hFont = CreateFontIndirectW(&logfont);
+	//è«–ç†ãƒ•ã‚©ãƒ³ãƒˆç”Ÿæˆ
+	m_hFont = CreateFontIndirect(&logfont);
 	if (m_hFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -214,12 +214,10 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒOƒŠƒtBMPì¬
+// ã‚°ãƒªãƒ•BMPä½œæˆ
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmp(
-		WCHAR char1,
-		WCHAR char2,
-		bool isSurrogatePair,
+		unsigned long code,
 		MTGlyphBmp* pGlyphBmp
 	)
 {
@@ -231,90 +229,55 @@ int MTFont2Bmp::_CreateGlyphBmp(
 	unsigned char* pBuf = NULL;
 	GLYPHMETRICS glyphMetric;
 	CONST MAT2 mat = {{0,1},{0,0},{0,0},{0,1}};
-	GCP_RESULTSW gcp;
-	WCHAR str[2];
-	WCHAR buff[2];
-	DWORD dwresult = 0;
-	DWORD flag = 0;
-	char32_t code = 0;
 
-	//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒgæ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆå–å¾—
 	hDC = GetDC(NULL);
 	if (hDC == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚É˜_—ƒtƒHƒ“ƒg‚ğİ’è
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«è«–ç†ãƒ•ã‚©ãƒ³ãƒˆã‚’è¨­å®š
 	hOldFont = (HFONT)SelectObject(hDC, m_hFont);
 	if (hOldFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
-	//ƒeƒLƒXƒgƒƒgƒŠƒNƒXæ“¾
+	//ãƒ†ã‚­ã‚¹ãƒˆãƒ¡ãƒˆãƒªã‚¯ã‚¹å–å¾—
 	bresult = GetTextMetrics(hDC, &m_TextMetric);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
-	//ƒTƒƒQ[ƒgƒyƒA‚Ìê‡‚ÍƒOƒŠƒtƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
-	if (isSurrogatePair) {
-		str[0] = char1;
-		str[1] = char2;
-		memset(&gcp, 0, sizeof(GCP_RESULTSW));
-		gcp.lStructSize = sizeof(GCP_RESULTSW);
-		gcp.lpGlyphs = buff;
-		gcp.nGlyphs = 2;
-		dwresult = GetCharacterPlacementW(
-							hDC,			//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg
-							str,			//ˆ—‘ÎÛ•¶š—ñi0I’[‚Å‚ ‚é•K—v‚Í‚È‚¢j
-							gcp.nGlyphs,	//•¶š—ñ‚Ì’·‚³
-							0,				//•¶š—ñ‚ªˆ—‚³‚ê‚éÅ‘å”ÍˆÍi˜_—’PˆÊj
-							&gcp,			//ˆ—Œ‹‰ÊŠi”[æ
-							GCP_GLYPHSHAPE	//ƒtƒ‰ƒO
-						);
-		if (dwresult == 0) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-			goto EXIT;
-		}
-		code = gcp.lpGlyphs[0];
-		flag = GGO_GLYPH_INDEX;
-
-	}
-	else {
-		code = char1;
-		flag = 0;
-	}
-
-	//ƒrƒbƒgƒ}ƒbƒvì¬‚É•K—v‚Èƒoƒbƒtƒ@ƒTƒCƒY‚ğæ“¾
-	size = GetGlyphOutlineW(
-					hDC,				//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg
-					code,				//•¶š
-					GGO_GRAY4_BITMAP | flag,	//ƒtƒH[ƒ}ƒbƒgFƒrƒbƒgƒ}ƒbƒviƒOƒŒƒCƒŒƒxƒ‹17’ij
-					&glyphMetric,		//ƒOƒ‰ƒtƒƒgƒŠƒNƒXFì¬‚³‚ê‚½•¶šƒZƒ‹‚Ìî•ñ‚ª“ü‚é
-					0,					//ƒoƒbƒtƒ@ƒTƒCƒYFƒ[ƒ‚ğw’è‚µ‚Ä•K—v‚ÈƒTƒCƒY‚ğ“¾‚é
-					NULL,				//ƒoƒbƒtƒ@ˆÊ’u
-					&mat				//•ÏŠ·s—ñ
+	//ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ä½œæˆã«å¿…è¦ãªãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å–å¾—
+	size = GetGlyphOutline(
+					hDC,				//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+					code,				//æ–‡å­—ï¼šTODO:ã‚µãƒ­ã‚²ãƒ¼ãƒˆã¯æ‰±ãˆãªã„ï¼Ÿï¼Ÿ
+					GGO_GRAY4_BITMAP,	//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆï¼šãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ï¼ˆã‚°ãƒ¬ã‚¤ãƒ¬ãƒ™ãƒ«17æ®µï¼‰
+					&glyphMetric,		//ã‚°ãƒ©ãƒ•ãƒ¡ãƒˆãƒªã‚¯ã‚¹ï¼šä½œæˆã•ã‚ŒãŸæ–‡å­—ã‚»ãƒ«ã®æƒ…å ±ãŒå…¥ã‚‹
+					0,					//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼šã‚¼ãƒ­ã‚’æŒ‡å®šã—ã¦å¿…è¦ãªã‚µã‚¤ã‚ºã‚’å¾—ã‚‹
+					NULL,				//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					&mat				//å¤‰æ›è¡Œåˆ—
 				);
-	if (size == GDI_ERROR) {
+	if (size < 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 	
-	//‹ó”’•¶š‚Ìê‡‚Íƒrƒbƒgƒ}ƒbƒv‚ğì¬‚µ‚È‚¢
+	//ç©ºç™½æ–‡å­—ã®å ´åˆã¯ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆã—ãªã„
 	if (size == 0) {
-		//ƒOƒŠƒtBMPî•ñ
+		//ã‚°ãƒªãƒ•BMPæƒ…å ±
 		pGlyphBmp->glyphMetric = glyphMetric;
 		pGlyphBmp->bmpHeight   = 0;
 		pGlyphBmp->bmpWidth    = 0;
 		pGlyphBmp->pBmp        = NULL;
 	}
-	//‹ó”’•¶šˆÈŠO‚Íƒrƒbƒgƒ}ƒbƒv‚ğì¬‚·‚é
+	//ç©ºç™½æ–‡å­—ä»¥å¤–ã¯ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹
 	else {
 
-		//ƒrƒbƒgƒ}ƒbƒvì¬‚É•K—v‚Èƒƒ‚ƒŠ—Ìˆæ‚ğŠm•Û‚·‚é
+		//ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ä½œæˆã«å¿…è¦ãªãƒ¡ãƒ¢ãƒªé ˜åŸŸã‚’ç¢ºä¿ã™ã‚‹
 		try {
 			pBuf = new BYTE[size];
 		}
@@ -323,21 +286,21 @@ int MTFont2Bmp::_CreateGlyphBmp(
 			goto EXIT;
 		}
 
-		//TrueTypeƒtƒHƒ“ƒgƒrƒbƒgƒ}ƒbƒvì¬
-		size = GetGlyphOutlineW(
-						hDC,				//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg
-						code,				//•¶š
-						GGO_GRAY4_BITMAP | flag,	//ƒtƒH[ƒ}ƒbƒgFƒrƒbƒgƒ}ƒbƒviƒOƒŒƒCƒŒƒxƒ‹17’ij
-						&glyphMetric,		//ƒOƒ‰ƒtƒƒgƒŠƒNƒXFì¬‚³‚ê‚½•¶šƒZƒ‹‚Ìî•ñ‚ª“ü‚é
-						size,				//ƒoƒbƒtƒ@ƒTƒCƒY
-						pBuf,				//ƒoƒbƒtƒ@ˆÊ’u
-						&mat				//•ÏŠ·s—ñ
+		//TrueTypeãƒ•ã‚©ãƒ³ãƒˆãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ä½œæˆ
+		size = GetGlyphOutline(
+						hDC,				//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+						code,				//æ–‡å­—ï¼šTODO:ã‚µãƒ­ã‚²ãƒ¼ãƒˆã¯æ‰±ãˆãªã„ï¼Ÿï¼Ÿ
+						GGO_GRAY4_BITMAP,	//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆï¼šãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ï¼ˆã‚°ãƒ¬ã‚¤ãƒ¬ãƒ™ãƒ«17æ®µï¼‰
+						&glyphMetric,		//ã‚°ãƒ©ãƒ•ãƒ¡ãƒˆãƒªã‚¯ã‚¹ï¼šä½œæˆã•ã‚ŒãŸæ–‡å­—ã‚»ãƒ«ã®æƒ…å ±ãŒå…¥ã‚‹
+						size,				//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+						pBuf,				//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+						&mat				//å¤‰æ›è¡Œåˆ—
 					);
-		if (size == GDI_ERROR) {
+		if (size <= 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 			goto EXIT;
 		}
-		//ƒOƒŠƒtBMPî•ñFBMP•‚Í4‚Ì”{”‚Å‚ ‚é‚±‚Æ‚ğˆÓ¯‚·‚é
+		//ã‚°ãƒªãƒ•BMPæƒ…å ±ï¼šBMPå¹…ã¯4ã®å€æ•°ã§ã‚ã‚‹ã“ã¨ã‚’æ„è­˜ã™ã‚‹
 		pGlyphBmp->glyphMetric = glyphMetric;
 		pGlyphBmp->bmpHeight   = glyphMetric.gmBlackBoxY;
 		pGlyphBmp->bmpWidth    = glyphMetric.gmBlackBoxX + (4 - (glyphMetric.gmBlackBoxX % 4)) % 4;
@@ -357,48 +320,64 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒOƒŠƒtBMPƒŠƒXƒgì¬
+// ã‚°ãƒªãƒ•BMPãƒªã‚¹ãƒˆä½œæˆ
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmpList(
-		const WCHAR* pStr
+		const TCHAR* pStr
 	)
 {
 	int result = 0;
-	WCHAR char1 = 0;
-	WCHAR char2 = 0;
-	bool isSurrogatePair = false;
+	unsigned long code = 0;
 	MTGlyphBmp glyphBmp;
 
-	WCHAR* ptr = (WCHAR*)pStr;
+#ifdef _UNICODE
+
+	TCHAR* ptr = pStr;
 	
-	//1•¶š‚²‚Æ‚ÉƒOƒŠƒtBMP‚ğì¬
-	while (ptr[0] != L'\0') {
-		char1 = ptr[0];
-		char2 = ptr[1];
-		if (IS_HIGH_SURROGATE(char1) && IS_LOW_SURROGATE(char2)) {
-			//ƒTƒƒQ[ƒgƒyƒA‚Ìê‡
-			isSurrogatePair = true;
+	//1æ–‡å­—ã”ã¨ã«ã‚°ãƒªãƒ•BMPã‚’ä½œæˆ
+	while (ptr[0] != _T('\0')) {
+		code = ptr[0];
+		ptr += 1;
+
+		//ã‚°ãƒªãƒ•BMPä½œæˆ
+		result = _CreateGlyphBmp(code, &glyphBmp);
+		if (result != 0) goto EXIT;
+
+		//æ–‡å­—åˆ—ãƒªã‚¹ãƒˆã«ç™»éŒ²
+		m_GlyphBmpList.push_back(glyphBmp);
+	}
+
+#else
+
+	unsigned char* ptr = (unsigned char*)pStr;
+	
+	//1æ–‡å­—ã”ã¨ã«ã‚°ãƒªãƒ•BMPã‚’ä½œæˆ
+	while (ptr[0] != '\0') {
+		if (IsDBCSLeadByte(ptr[0]) && (ptr[1] != '\0')) {
+			code = (ptr[0] << 8) | ptr[1];
 			ptr += 2;
 		}
 		else {
-			isSurrogatePair = false;
+			code = ptr[0];
 			ptr += 1;
 		}
 
-		//ƒOƒŠƒtBMPì¬
-		result = _CreateGlyphBmp(char1, char2, isSurrogatePair, &glyphBmp);
+		//ã‚°ãƒªãƒ•BMPä½œæˆ
+		result = _CreateGlyphBmp(code, &glyphBmp);
 		if (result != 0) goto EXIT;
 
-		//•¶š—ñƒŠƒXƒg‚É“o˜^
+		//æ–‡å­—åˆ—ãƒªã‚¹ãƒˆã«ç™»éŒ²
 		m_GlyphBmpList.push_back(glyphBmp);
 	}
+
+#endif
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// •¶š—ñƒoƒbƒtƒ@ì¬
+// æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ä½œæˆ
 //******************************************************************************
 int MTFont2Bmp::_CreateBmpBuf()
 {
@@ -423,10 +402,10 @@ int MTFont2Bmp::_CreateBmpBuf()
 	//            v
 	//            y
 
-	//‚‚³
+	//é«˜ã•
 	m_BmpHeight = m_TextMetric.tmHeight;
 
-	//•
+	//å¹…
 	m_BmpWidth = 0;
 
 // >>> add 20120728 yossiepon begin
@@ -441,15 +420,15 @@ int MTFont2Bmp::_CreateBmpBuf()
 	}
 // <<< add 20120728 yossiepon end
 
-	//•‚ğ4‚Ì”{”‚É‚·‚é
+	//å¹…ã‚’4ã®å€æ•°ã«ã™ã‚‹
 	m_BmpWidth = m_BmpWidth + ((4 - (m_BmpWidth % 4)) % 4);
 
-	//ƒeƒNƒXƒ`ƒƒ‚Æ‚µ‚Ä‹–—e‚³‚ê‚éˆê”Ê“I‚ÈƒTƒCƒY‚ğ’´‚¦‚éê‡‚ÍƒNƒŠƒbƒv‚·‚é
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ã—ã¦è¨±å®¹ã•ã‚Œã‚‹ä¸€èˆ¬çš„ãªã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯ã‚¯ãƒªãƒƒãƒ—ã™ã‚‹
 	if (m_BmpWidth > MTFONT2BMP_MAX_BMP_WIDTH) {
 		m_BmpWidth = MTFONT2BMP_MAX_BMP_WIDTH;
 	}
 
-	//BMPƒoƒbƒtƒ@¶¬
+	//BMPãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	try {
 		m_pBmpBuf = new BYTE[(m_BmpHeight * m_BmpWidth)];
 	}
@@ -464,7 +443,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒOƒŠƒtBMP‚ğBMPƒoƒbƒtƒ@‚É‘‚«‚Ş
+// ã‚°ãƒªãƒ•BMPã‚’BMPãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€
 //******************************************************************************
 int MTFont2Bmp::_WriteGlyphToBmpBuf()
 {
@@ -483,43 +462,43 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 
-			//‹ó•¶š‚ÍƒXƒLƒbƒv
+			//ç©ºæ–‡å­—ã¯ã‚¹ã‚­ãƒƒãƒ—
 			if (itr->pBmp == NULL) {
 				offsetX += (itr->glyphMetric.gmCellIncX);
 				continue;
 			}
 
-			//ƒRƒs[Œ³ƒOƒŠƒtBMP‚ÌÀ•W‚Í4‚Ì”{”§ŒÀ‚ª‚ ‚éBMPƒTƒCƒY‚ğˆÓ¯‚¹‚¸
-			//Àƒf[ƒ^‚Ì”ÍˆÍ‚ÅƒXƒLƒƒƒ“‚·‚é
+			//ã‚³ãƒ”ãƒ¼å…ƒã‚°ãƒªãƒ•BMPã®åº§æ¨™ã¯4ã®å€æ•°åˆ¶é™ãŒã‚ã‚‹BMPã‚µã‚¤ã‚ºã‚’æ„è­˜ã›ãš
+			//å®Ÿãƒ‡ãƒ¼ã‚¿ã®ç¯„å›²ã§ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹
 			for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
-				//Ticket #33695 ‘Îô
-				//ƒRƒs[æ‚Ì—ÌˆæŠO‚É‚È‚éê‡‚ÍƒXƒLƒbƒv‚·‚é
+				//Ticket #33695 å¯¾ç­–
+				//ã‚³ãƒ”ãƒ¼å…ˆã®é ˜åŸŸå¤–ã«ãªã‚‹å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 				if (y >= m_BmpHeight) continue;
 
 				for (x = 0; x < (itr->glyphMetric.gmBlackBoxX); x++) {
 
-					//ƒRƒs[æ‚Ì—ÌˆæŠO‚É‚È‚éê‡‚ÍƒXƒLƒbƒv‚·‚é
+					//ã‚³ãƒ”ãƒ¼å…ˆã®é ˜åŸŸå¤–ã«ãªã‚‹å ´åˆã¯ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 					destX = offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x;
 					if (destX >= (m_BmpWidth-1)) continue;
 
-					//ƒRƒs[Œ³ƒsƒNƒZƒ‹ƒ|ƒCƒ“ƒ^FBMPƒTƒCƒY‚Ì4‚Ì”{”§ŒÀ‚ğˆÓ¯‚µ‚ÄZo‚·‚é
+					//ã‚³ãƒ”ãƒ¼å…ƒãƒ”ã‚¯ã‚»ãƒ«ãƒã‚¤ãƒ³ã‚¿ï¼šBMPã‚µã‚¤ã‚ºã®4ã®å€æ•°åˆ¶é™ã‚’æ„è­˜ã—ã¦ç®—å‡ºã™ã‚‹
 					pSrc = itr->pBmp + (itr->bmpWidth * y) + x;
 
-					//ƒRƒs[æƒsƒNƒZƒ‹ƒ|ƒCƒ“ƒ^
+					//ã‚³ãƒ”ãƒ¼å…ˆãƒ”ã‚¯ã‚»ãƒ«ãƒã‚¤ãƒ³ã‚¿
 					pDest = m_pBmpBuf
 								+ (m_TextMetric.tmAscent - (itr->glyphMetric.gmptGlyphOrigin.y) + y) * m_BmpWidth
 								+ (offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x);
 
-					//Šm•Û‚µ‚½ƒoƒbƒtƒ@‚ğ‰z‚¦‚Ä‘‚«‚à‚¤‚Æ‚µ‚Ä‚¢‚È‚¢‚©ƒ`ƒFƒbƒN‚·‚é
+					//ç¢ºä¿ã—ãŸãƒãƒƒãƒ•ã‚¡ã‚’è¶Šãˆã¦æ›¸ãè¾¼ã‚‚ã†ã¨ã—ã¦ã„ãªã„ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 					if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
 						//result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
 						//goto EXIT;
-						//Ticket #33695 ‘Îô
-						//ƒGƒ‰[‚Æ‚¹‚¸ƒXƒLƒbƒv‚·‚é
+						//Ticket #33695 å¯¾ç­–
+						//ã‚¨ãƒ©ãƒ¼ã¨ã›ãšã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 						continue;
 					}
 
-					//ƒsƒNƒZƒ‹ƒRƒs[
+					//ãƒ”ã‚¯ã‚»ãƒ«ã‚³ãƒ”ãƒ¼
 					*pDest = *pSrc;
 				}
 			}

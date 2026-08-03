@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignMod
 //
-// ƒm[ƒgƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -12,54 +12,56 @@
 
 #include "MTNoteDesign.h"
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteDesignMod : public MTNoteDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteDesignMod(void);
 	virtual ~MTNoteDesignMod(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//”g–ä•\¦ŠÔæ“¾
+	//æ³¢ç´‹è¡¨ç¤ºæ™‚é–“å–å¾—
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();
 
-	//”g–ä•`‰æî•ñæ“¾
+	//æ³¢ç´‹æç”»æƒ…å ±å–å¾—
 	D3DBLEND GetRippleSrcBlend();
 	D3DBLEND GetRippleDestBlend();
 	unsigned long GetRippleOverwriteTimes();
 	float GetRippleSpacing();
+	float GetRippleOffsetY();   // [Ripple] OffsetY: shift the ripple up/down in pitch (Y)
+	float GetRippleOffsetZ();   // [Ripple] OffsetZ: shift the ripple in depth/channel (Z)
 
-	//”g–äƒTƒCƒYæ“¾
+	//æ³¢ç´‹ã‚µã‚¤ã‚ºå–å¾—
 	float GetRippleHeight(float rate);
 	float GetRippleWidth(float rate);
 	float GetRippleAlpha(float rate);
 	float GetDecayCoefficient(
-				float rate,					//ƒTƒCƒY”ä—¦
-				float saturation = 20.0f	//–O˜aƒŒƒxƒ‹
+				float rate,					//ã‚µã‚¤ã‚ºæ¯”ç‡
+				float saturation = 20.0f	//é£½å’Œãƒ¬ãƒ™ãƒ«
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
-	virtual void GetActiveNoteBoxVirtexPos(
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
+	void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-				float rate = 0.0f						//È—ª‰ÂFƒTƒCƒY”ä—¦
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0,	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
+				float rate = 0.0f						//çœç•¥å¯ï¼šã‚µã‚¤ã‚ºæ¯”ç‡
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[æ“¾
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetActiveNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
@@ -74,20 +76,24 @@ protected:
 
 private:
 
-	//”g–äƒfƒBƒPƒCŠÔ
+	//æ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“
 	int m_RippleDecayDuration;
-	//”g–äƒŠƒŠ[ƒXŠÔ
+	//æ³¢ç´‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“
 	int m_RippleReleaseDuration;
 
-	//”g–ä•`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è 
+	//æ³¢ç´‹æç”»å…ƒï¼ˆãƒªãƒƒãƒ—ãƒ«ç”»åƒï¼‰ãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®š 
 	D3DBLEND m_RippleSrcBlend;
-	//”g–ä•`‰ææi”wŒi‰æ‘œjƒuƒŒƒ“ƒhw’è
+	//æ³¢ç´‹æç”»å…ˆï¼ˆèƒŒæ™¯ç”»åƒï¼‰ãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®š
 	D3DBLEND m_RippleDestBlend;
 
-	//”g–äã‘‚«‰ñ”
+	//æ³¢ç´‹ä¸Šæ›¸ãå›æ•°
 	int m_RippleOverwriteTimes;
-	//”g–ä•`‰æŠÔŠu
+	//æ³¢ç´‹æç”»é–“éš”
 	float m_RippleSpacing;
+	//[Ripple] OffsetY/OffsetZ: shift the ripple center along the pitch (Y) and
+	//depth/channel (Z) axes
+	float m_RippleOffsetY;
+	float m_RippleOffsetZ;
 };
 
 

@@ -1,56 +1,56 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTCmdLineParser
 //
-// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍƒNƒ‰ƒX
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒXƒCƒbƒ`ó‘Ô
-#define CMDSW_NONE		(0)	//–¢’è‹`
+//ã‚¹ã‚¤ãƒƒãƒçŠ¶æ…‹
+#define CMDSW_NONE		(0)	//æœªå®šç¾©
 #define CMDSW_ON		(1)	//ON
 
-//ƒXƒCƒbƒ`í•Ê
-#define CMDSW_FILE_PATH	(0)	//ƒtƒ@ƒCƒ‹ƒpƒX
-#define CMDSW_PLAY		(1)	//Ä¶
-#define CMDSW_QUIET		(2)	//I—¹
-#define CMDSW_DEBUG		(3)	//ƒfƒoƒbƒOƒ‚[ƒh
-#define CMDSW_MAX		(4)	//I’[ƒtƒ‰ƒOF•K‚¸––”ö‚É’è‹`‚·‚é
+//ã‚¹ã‚¤ãƒƒãƒç¨®åˆ¥
+#define CMDSW_FILE_PATH	(0)	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+#define CMDSW_PLAY		(1)	//å†ç”Ÿ
+#define CMDSW_QUIET		(2)	//çµ‚äº†
+#define CMDSW_DEBUG		(3)	//ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰
+#define CMDSW_MAX		(4)	//çµ‚ç«¯ãƒ•ãƒ©ã‚°ï¼šå¿…ãšæœ«å°¾ã«å®šç¾©ã™ã‚‹
 
 
 //******************************************************************************
-// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍƒNƒ‰ƒX
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTCmdLineParser
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTCmdLineParser(void);
 	virtual ~MTCmdLineParser(void);
 
-	//‰Šú‰»
-	int Initialize();
+	//åˆæœŸåŒ–
+	int Initialize(LPTSTR pCmdLine);
 
-	//ƒXƒCƒbƒ`ó‘Ôæ“¾
+	//ã‚¹ã‚¤ãƒƒãƒçŠ¶æ…‹å–å¾—
 	int GetSwitch(unsigned long switchType);
 
-	//ƒtƒ@ƒCƒ‹ƒpƒXæ“¾
-	const WCHAR* GetFilePath();
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
+	const TCHAR* GetFilePath();
 
 private:
 
 	unsigned char m_CmdSwitchStatus[CMDSW_MAX];
-	WCHAR* m_pFilePath;
+	TCHAR* m_pFilePath;
 
-	int _AnalyzeCmdLine();
+	int _AnalyzeCmdLine(LPTSTR pCmdLine);
 
 };
 

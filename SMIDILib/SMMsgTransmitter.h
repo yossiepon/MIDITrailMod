@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMMsgTransmitter
 //
-// ƒƒbƒZ[ƒW“]‘—ƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è»¢é€ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
@@ -23,14 +23,15 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒƒbƒZ[ƒWí•Ê
+//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç¨®åˆ¥
 #define SM_MSG_PLAY_STATUS     (0x00)
 #define SM_MSG_TIME            (0x01)
 #define SM_MSG_TEMPO           (0x02)
 #define SM_MSG_BAR             (0x03)
 #define SM_MSG_BEAT            (0x04)
+#define SM_MSG_MARKER          (0x06)
 #define SM_MSG_NOTE_OFF        (0x10)
 #define SM_MSG_NOTE_ON         (0x11)
 #define SM_MSG_PITCHBEND       (0x12)
@@ -38,49 +39,49 @@ namespace SMIDILib {
 #define SM_MSG_SKIP_END        (0x14)
 #define SM_MSG_ALL_NOTE_OFF    (0x15)
 
-//‰‰‘tó‘Ô
+//æ¼”å¥çŠ¶æ…‹
 #define SM_PLAYSTATUS_STOP       (0x00)
 #define SM_PLAYSTATUS_PLAY       (0x01)
 #define SM_PLAYSTATUS_PAUSE      (0x02)
 
-//ƒXƒLƒbƒv•ûŒü
+//ã‚¹ã‚­ãƒƒãƒ—æ–¹å‘
 #define SM_SKIP_BACK           (0x00)
 #define SM_SKIP_FORWARD        (0x01)
 
 
 //******************************************************************************
-// ƒƒbƒZ[ƒW“]‘—ƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è»¢é€ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMMsgTransmitter
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMMsgTransmitter(void);
 	virtual ~SMMsgTransmitter(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(SMMsgQueue* pMsgQueue);
 
-	//‰‰‘tó‘Ô
+	//æ¼”å¥çŠ¶æ…‹
 	int PostPlayStatus(unsigned long playStatus);
 
-	//‰‰‘tŠÔ’Ê’m
-	//  ÀŠÔ(playTimeSec)‚Í3byte(0x00FFFFFF)‚Ü‚Å‚Ì§ŒÀ‚ ‚è
+	//æ¼”å¥æ™‚é–“é€šçŸ¥
+	//  å®Ÿæ™‚é–“(playTimeSec)ã¯3byte(0x00FFFFFF)ã¾ã§ã®åˆ¶é™ã‚ã‚Š
 	int PostPlayTime(unsigned long playTimeMSec, unsigned long tickTime);
 
-	//ƒeƒ“ƒ|’Ê’m
+	//ãƒ†ãƒ³ãƒé€šçŸ¥
 	int PostTempo(unsigned long bpm);
 
-	//¬ß”Ô†’Ê’mF1‚©‚çŠJn
+	//å°ç¯€ç•ªå·é€šçŸ¥ï¼š1ã‹ã‚‰é–‹å§‹
 	int PostBar(unsigned long barNo);
 
-	//”q‹L†’Ê’m
-	//  •ª•ê‚ÍÅ‘å65535‚Ü‚Å“n‚¹‚é‚ª
-	//  MIDI‚Ìd—l‚Å‚Í•ªq255^•ª•ê2‚Ì255æ‚Ü‚Å•\Œ»‚Å‚«‚é
+	//æ‹å­è¨˜å·é€šçŸ¥
+	//  åˆ†æ¯ã¯æœ€å¤§65535ã¾ã§æ¸¡ã›ã‚‹ãŒ
+	//  MIDIã®ä»•æ§˜ã§ã¯åˆ†å­255ï¼åˆ†æ¯2ã®255ä¹—ã¾ã§è¡¨ç¾ã§ãã‚‹
 	int PostBeat(unsigned short numerator, unsigned short denominator);
 
-	//ƒm[ƒgON’Ê’m
+	//ãƒãƒ¼ãƒˆONé€šçŸ¥
 	int PostNoteOn(
 				unsigned char portNo,
 				unsigned char chNo,
@@ -88,14 +89,14 @@ public:
 				unsigned char verocity
 			);
 
-	//ƒm[ƒgOFF’Ê’m
+	//ãƒãƒ¼ãƒˆOFFé€šçŸ¥
 	int PostNoteOff(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo
 			);
 
-	//ƒsƒbƒ`ƒxƒ“ƒh’Ê’m
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰é€šçŸ¥
 	int PostPitchBend(
 				unsigned char portNo,
 				unsigned char chNo,
@@ -103,17 +104,19 @@ public:
 				unsigned char pitchBendSensitivity
 			);
 
-	//ƒXƒLƒbƒvŠJn
+	//ã‚¹ã‚­ãƒƒãƒ—é–‹å§‹
 	int PostSkipStart(unsigned long skipDirection);
 
-	//ƒXƒLƒbƒvI—¹
+	//ã‚¹ã‚­ãƒƒãƒ—çµ‚äº†
 	int PostSkipEnd(unsigned long notesCount);
 
-	//ƒI[ƒ‹ƒm[ƒgOFF
+	//ã‚ªãƒ¼ãƒ«ãƒãƒ¼ãƒˆOFF
 	int PostAllNoteOff(
 				unsigned char portNo,
 				unsigned char chNo
 			);
+
+
 
 private:
 
@@ -121,11 +124,11 @@ private:
 
 	int _Post(
 			unsigned char msg,
-			unsigned long param1, //3byte‚Ü‚Å
-			unsigned long param2  //4byte‚Ü‚Å
+			unsigned long param1, //3byteã¾ã§
+			unsigned long param2  //4byteã¾ã§
 		);
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMMsgTransmitter&);
 	SMMsgTransmitter(const SMMsgTransmitter&);
 

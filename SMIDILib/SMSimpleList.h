@@ -1,17 +1,17 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMSimpleList
 //
-// ’PƒƒŠƒXƒgƒNƒ‰ƒX
+// å˜ç´”ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ŒÅ’èƒTƒCƒY‚ÌƒAƒCƒeƒ€‚ğ’Ç‰Á^QÆ‚·‚é‚¾‚¯‚Ì’PƒƒŠƒXƒgƒNƒ‰ƒXB
-// ƒƒ‚ƒŠ‚ğƒuƒƒbƒN’PˆÊ‚ÅŠm•Û‚·‚é‚±‚Æ‚É‚æ‚èAnew‚ÌÀ{‰ñ”‚ğ—}~‚µ‚ÄA
-// «”\‚ğ—Dæ‚·‚éBƒgƒŒ[ƒhƒIƒt‚Åƒƒ‚ƒŠ‚ğ–³‘ÊŒ­‚¢‚·‚éB
+// å›ºå®šã‚µã‚¤ã‚ºã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ ï¼å‚ç…§ã™ã‚‹ã ã‘ã®å˜ç´”ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹ã€‚
+// ãƒ¡ãƒ¢ãƒªã‚’ãƒ–ãƒ­ãƒƒã‚¯å˜ä½ã§ç¢ºä¿ã™ã‚‹ã“ã¨ã«ã‚ˆã‚Šã€newã®å®Ÿæ–½å›æ•°ã‚’æŠ‘æ­¢ã—ã¦ã€
+// æ€§èƒ½ã‚’å„ªå…ˆã™ã‚‹ã€‚ãƒˆãƒ¬ãƒ¼ãƒ‰ã‚ªãƒ•ã§ãƒ¡ãƒ¢ãƒªã‚’ç„¡é§„é£ã„ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -29,38 +29,49 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ’PƒƒŠƒXƒgƒNƒ‰ƒX
+// å˜ç´”ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMSimpleList
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMSimpleList(unsigned long itemSize, unsigned long unitNum);
 	virtual ~SMSimpleList(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	virtual void Clear();
 
-	//€–Ú’Ç‰Á
+	//é …ç›®è¿½åŠ 
 	virtual int AddItem(void* pItem);
 
-	//€–Úæ“¾
+	//é …ç›®å–å¾—
 	virtual int GetItem(unsigned long index, void* pItem);
 
-	//€–Ú“o˜^iã‘‚«j
+	//é …ç›®ç™»éŒ²ï¼ˆä¸Šæ›¸ãï¼‰
 	virtual int SetItem(unsigned long index, void* pItem);
 
-	//€–Ú”æ“¾
+	//é …ç›®æ•°å–å¾—
 	virtual unsigned long GetSize();
 
-	//ƒRƒs[
+	//ã‚³ãƒ”ãƒ¼
 	virtual int CopyFrom(SMSimpleList* pSrcList);
+
+	// 32-bit item-count cap (one below the wrap point of the unsigned-long index)
+	static const unsigned long SMSIMPLELIST_MAX_ITEMS = 0xFFFFFFFFUL;
+
+	// Global "an AddItem was dropped because a list hit the 32-bit item cap" flag.
+	// The app resets it before loading a file and checks it afterwards to ask whether
+	// to display the truncated portion. (Static: the cap is a process-wide data limit.)
+	static void ResetTruncatedFlag();
+	static bool WasTruncated();
 
 private:
 
 	typedef std::map<unsigned long, unsigned char*> SMMemBlockMap;
 	typedef std::pair<unsigned long, unsigned char*> SMMemBlockMapPair;
+
+	static bool s_Truncated;
 
 private:
 
@@ -70,10 +81,16 @@ private:
 
 	SMMemBlockMap m_MemBlockMap;
 
+	// cache of the most recently used block (blocks are never freed/moved until
+	// Clear, so this is valid for the common sequential-access pattern and avoids
+	// a std::map lookup per item - a big win when iterating millions of notes).
+	unsigned long  m_CacheBlockNo;
+	unsigned char* m_pCacheBlock;
+
 	unsigned long _GetBlockNo(unsigned long index);
 	unsigned long _GetBlockIndex(unsigned long index);
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMSimpleList&);
 	SMSimpleList(const SMSimpleList&);
 

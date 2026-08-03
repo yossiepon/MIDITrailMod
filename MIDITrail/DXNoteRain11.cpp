@@ -1,0 +1,501 @@
+//******************************************************************************
+//
+// MIDITrail / DXNoteRain11
+//
+// Direct3D 11 instanced falling-note renderer (M4.7) - port of MTNoteRain.
+//
+//******************************************************************************
+
+#include "stdafx.h"
+#include "YNBaseLib.h"
+#include "DXNoteRain11.h"
+#include <d3dcompiler.h>
+
+using namespace YNBaseLib;
+using namespace DirectX;
+
+//--- culling: visible half-window distance in world units (matches DXNoteBox11) ---
+#define DXNR11_CULL_DISTANCE  (2200.0f)
+
+ID3D11VertexShader*      DXNoteRain11::s_pVS = NULL;
+ID3D11PixelShader*       DXNoteRain11::s_pPS = NULL;
+ID3D11InputLayout*       DXNoteRain11::s_pLayout = NULL;
+ID3D11Buffer*            DXNoteRain11::s_pConstBuf = NULL;
+ID3D11Buffer*            DXNoteRain11::s_pTemplateVB = NULL;
+ID3D11Buffer*            DXNoteRain11::s_pQuadIB = NULL;
+ID3D11RasterizerState*   DXNoteRain11::s_pRaster = NULL;
+ID3D11BlendState*        DXNoteRain11::s_pBlend = NULL;
+ID3D11DepthStencilState* DXNoteRain11::s_pDepth = NULL;
+
+struct DXNR11_CONSTANTS {
+	XMFLOAT4X4 wvp;
+	XMFLOAT4   active;     // x = now-line Y (GetPlayPosX(curTick)); yzw unused
+	XMFLOAT4   pb[64];     // per-(port&0xF,ch) pitch-bend X shift, indexed by color.a
+	XMFLOAT4   baseY[64];  // per-(port&0xF,ch) keyboard now-line Y offset
+};
+
+// quad expand: corner.x in {0,1} -> +/-halfW around cx; corner.y in {0,1} ->
+// lerp(yStart,yEnd). Alpha fades 1.0 (note-on) -> 0.5 (note-off), matching MTNoteRain.
+// M4.21 pitch bend: the color alpha byte carries a (port&0xF,ch) index; a note
+// whose time span contains the now-line is sounding -> it shifts in pitch (X) by
+// g_PB[idx]. The now-line in the note's own Y space is g_Active.x + g_BaseY[idx]
+// (g_BaseY = the channel's keyboard Y offset), so only sounding notes bend, like DX9.
+static const char* DXNR11_SHADER =
+	"cbuffer Constants : register(b0) {\n"
+	"  row_major float4x4 g_WVP;\n"
+	"  float4 g_Active;\n"
+	"  float4 g_PB[64];\n"
+	"  float4 g_BaseY[64];\n"
+	"};\n"
+	"struct VSIN {\n"
+	"  float2 corner : POSITION;\n"
+	"  float4 box    : TEXCOORD0;\n"   // cx, yStart, yEnd, z
+	"  float  halfW  : TEXCOORD1;\n"
+	"  float4 color  : COLOR0;\n"
+	"};\n"
+	"struct VSOUT { float4 pos : SV_POSITION; float4 col : COLOR0; };\n"
+	"VSOUT VSMain(VSIN i) {\n"
+	"  VSOUT o;\n"
+	"  uint idx = (uint)(i.color.a * 255.0 + 0.5);\n"
+	"  float nowY = g_Active.x + g_BaseY[idx >> 2][idx & 3];\n"
+	"  float active = ((i.box.y <= nowY) && (nowY <= i.box.z)) ? 1.0 : 0.0;\n"
+	"  float bf = (g_Active.y >= 0.5) ? 1.0 : active;\n"   // g_Active.y = bend whole channel
+	"  float x = i.box.x + (i.corner.x * 2.0 - 1.0) * i.halfW + bf * g_PB[idx >> 2][idx & 3];\n"
+	"  float y = i.box.y + (i.box.z - i.box.y) * i.corner.y;\n"
+	"  float3 wp = float3(x, y, i.box.w);\n"
+	"  o.pos = mul(float4(wp, 1.0), g_WVP);\n"
+	"  o.col = float4(i.color.rgb, lerp(1.0, 0.5, i.corner.y));\n"
+	"  return o;\n"
+	"}\n"
+	"float4 PSMain(VSOUT i) : SV_TARGET { return i.col; }\n";
+
+
+DXNoteRain11::DXNoteRain11()
+{
+	m_Ready = false;
+	m_CurTickTime = 0;
+	m_pInstanceVB = NULL;
+	m_AllNoteNum = 0;
+	m_pNoteStartTime = NULL;
+	m_pNoteMaxEndTime = NULL;
+	m_pNoteTrackNo = NULL;
+	m_pPitchBend = NULL;
+	m_BendAllNotes = false;
+	ZeroMemory(m_BaseY, sizeof(m_BaseY));
+}
+
+DXNoteRain11::~DXNoteRain11()
+{
+	Release();
+}
+
+void DXNoteRain11::Release()
+{
+	if (m_pInstanceVB != NULL) { m_pInstanceVB->Release(); m_pInstanceVB = NULL; }
+	if (m_pNoteStartTime != NULL) { delete [] m_pNoteStartTime; m_pNoteStartTime = NULL; }
+	if (m_pNoteMaxEndTime != NULL) { delete [] m_pNoteMaxEndTime; m_pNoteMaxEndTime = NULL; }
+	if (m_pNoteTrackNo != NULL) { delete [] m_pNoteTrackNo; m_pNoteTrackNo = NULL; }
+	m_NoteList.Clear();
+	m_AllNoteNum = 0;
+	m_Ready = false;
+}
+
+//******************************************************************************
+// Shared pipeline
+//******************************************************************************
+int DXNoteRain11::InitPipeline(ID3D11Device* pDevice)
+{
+	int result = 0;
+	HRESULT hr = S_OK;
+	ID3DBlob* pVSBlob = NULL;
+	ID3DBlob* pPSBlob = NULL;
+	ID3DBlob* pErr = NULL;
+
+	if (s_pVS != NULL) return 0;  // already built
+	if (pDevice == NULL) return YN_SET_ERR("Program error.", 0, 0);
+
+	hr = D3DCompile(DXNR11_SHADER, strlen(DXNR11_SHADER), NULL, NULL, NULL, "VSMain", "vs_4_0", 0, 0, &pVSBlob, &pErr);
+	if (FAILED(hr) || (pVSBlob == NULL)) { result = YN_SET_ERR("Shader compile error.", hr, 0); goto EXIT; }
+	hr = D3DCompile(DXNR11_SHADER, strlen(DXNR11_SHADER), NULL, NULL, NULL, "PSMain", "ps_4_0", 0, 0, &pPSBlob, &pErr);
+	if (FAILED(hr) || (pPSBlob == NULL)) { result = YN_SET_ERR("Shader compile error.", hr, 0); goto EXIT; }
+
+	hr = pDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &s_pVS);
+	if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	hr = pDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &s_pPS);
+	if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+
+	{
+		// slot0 = unit-quad corner (per vertex); slot1 = per-note instance data
+		D3D11_INPUT_ELEMENT_DESC il[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT,       0,  0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1,  0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 1, DXGI_FORMAT_R32_FLOAT,          1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "COLOR",    0, DXGI_FORMAT_B8G8R8A8_UNORM,     1, 20, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		};
+		hr = pDevice->CreateInputLayout(il, 4, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), &s_pLayout);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+	{
+		D3D11_BUFFER_DESC cb;
+		ZeroMemory(&cb, sizeof(cb));
+		cb.ByteWidth = sizeof(DXNR11_CONSTANTS);
+		cb.Usage = D3D11_USAGE_DYNAMIC;
+		cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		hr = pDevice->CreateBuffer(&cb, NULL, &s_pConstBuf);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+	{
+		// 4 unit-quad corners: (cornerX, cornerY) -> v0 BL, v1 BR, v2 TR, v3 TL
+		static const float corners[4][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
+		D3D11_BUFFER_DESC bd;
+		D3D11_SUBRESOURCE_DATA sr;
+		ZeroMemory(&bd, sizeof(bd));
+		bd.ByteWidth = sizeof(corners);
+		bd.Usage = D3D11_USAGE_IMMUTABLE;
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		ZeroMemory(&sr, sizeof(sr));
+		sr.pSysMem = corners;
+		hr = pDevice->CreateBuffer(&bd, &sr, &s_pTemplateVB);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+	{
+		// matches MTNoteRain index order (0,2,1, 0,3,2)
+		static const unsigned short idx[6] = { 0,2,1, 0,3,2 };
+		D3D11_BUFFER_DESC bd;
+		D3D11_SUBRESOURCE_DATA sr;
+		ZeroMemory(&bd, sizeof(bd));
+		bd.ByteWidth = sizeof(idx);
+		bd.Usage = D3D11_USAGE_IMMUTABLE;
+		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		ZeroMemory(&sr, sizeof(sr));
+		sr.pSysMem = idx;
+		hr = pDevice->CreateBuffer(&bd, &sr, &s_pQuadIB);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+	{
+		D3D11_RASTERIZER_DESC rd;
+		ZeroMemory(&rd, sizeof(rd));
+		rd.FillMode = D3D11_FILL_SOLID;
+		rd.CullMode = D3D11_CULL_NONE;   // MTNoteRain::Draw uses CULL_NONE (double-sided)
+		rd.DepthClipEnable = TRUE;
+		rd.MultisampleEnable = TRUE;
+		hr = pDevice->CreateRasterizerState(&rd, &s_pRaster);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+	{
+		D3D11_BLEND_DESC bd;
+		ZeroMemory(&bd, sizeof(bd));
+		bd.RenderTarget[0].BlendEnable = TRUE;
+		bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		hr = pDevice->CreateBlendState(&bd, &s_pBlend);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+	{
+		D3D11_DEPTH_STENCIL_DESC dd;
+		ZeroMemory(&dd, sizeof(dd));
+		dd.DepthEnable = TRUE;
+		// Rain notes WRITE depth (unlike the box notes) so the keyboard - drawn
+		// first - correctly occludes notes that have fallen behind it, matching
+		// the DX9 Rain layering (keyboard then notes, both Z-writing).
+		dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		dd.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		hr = pDevice->CreateDepthStencilState(&dd, &s_pDepth);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
+	}
+
+EXIT:;
+	if (pVSBlob != NULL) pVSBlob->Release();
+	if (pPSBlob != NULL) pPSBlob->Release();
+	if (pErr != NULL) pErr->Release();
+	if (result != 0) ReleasePipeline();
+	return result;
+}
+
+void DXNoteRain11::ReleasePipeline()
+{
+	if (s_pDepth != NULL)      { s_pDepth->Release();      s_pDepth = NULL; }
+	if (s_pBlend != NULL)      { s_pBlend->Release();      s_pBlend = NULL; }
+	if (s_pRaster != NULL)     { s_pRaster->Release();     s_pRaster = NULL; }
+	if (s_pQuadIB != NULL)     { s_pQuadIB->Release();     s_pQuadIB = NULL; }
+	if (s_pTemplateVB != NULL) { s_pTemplateVB->Release(); s_pTemplateVB = NULL; }
+	if (s_pConstBuf != NULL)   { s_pConstBuf->Release();   s_pConstBuf = NULL; }
+	if (s_pLayout != NULL)     { s_pLayout->Release();     s_pLayout = NULL; }
+	if (s_pPS != NULL)         { s_pPS->Release();         s_pPS = NULL; }
+	if (s_pVS != NULL)         { s_pVS->Release();         s_pVS = NULL; }
+}
+
+//******************************************************************************
+// Create
+//******************************************************************************
+int DXNoteRain11::Create(
+		ID3D11Device* pDevice,
+		ID3D11DeviceContext* pContext,
+		const TCHAR* pSceneName,
+		SMSeqData* pSeqData
+	)
+{
+	int result = 0;
+	SMTrack track;
+
+	(void)pContext;
+
+	Release();
+
+	result = InitPipeline(pDevice);
+	if (result != 0) goto EXIT;
+
+	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
+	if (result != 0) goto EXIT;
+	result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
+	if (result != 0) goto EXIT;
+
+	// track color mode keeps each note's source track (lost by GetMergedTrack)
+	if (m_NoteDesign.IsTrackColorMode()) {
+		std::vector<unsigned char> trackNoList;
+		result = MTNoteDesign::BuildMergedNoteListWithTrack(pSeqData, &m_NoteList, &trackNoList);
+		if (result != 0) goto EXIT;
+		if (!trackNoList.empty()) {
+			try { m_pNoteTrackNo = new unsigned char[trackNoList.size()]; }
+			catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+			memcpy(m_pNoteTrackNo, &trackNoList[0], trackNoList.size());
+		}
+	}
+	else {
+		result = pSeqData->GetMergedTrack(&track);
+		if (result != 0) goto EXIT;
+		result = track.GetNoteList(&m_NoteList);
+		if (result != 0) goto EXIT;
+	}
+
+	result = _CreateInstanceBuffer(pDevice);
+	if (result != 0) goto EXIT;
+
+	m_NoteList.Clear();   // GPU buffer + tick arrays hold everything the draw needs
+	if (m_pNoteTrackNo != NULL) { delete [] m_pNoteTrackNo; m_pNoteTrackNo = NULL; }
+	m_Ready = (m_AllNoteNum > 0);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// Build the per-note instance buffer (+ culling arrays)
+//   X = pitch (key center), Y = time (start..end), Z = key drop depth.
+//******************************************************************************
+int DXNoteRain11::_CreateInstanceBuffer(ID3D11Device* pDevice)
+{
+	int result = 0;
+	HRESULT hr = S_OK;
+	unsigned long i = 0;
+	unsigned long maxEnd = 0;
+	DXNR11_INSTANCE* pInst = NULL;
+	SMNote note;
+	float halfW = 0.0f;
+
+	m_AllNoteNum = m_NoteList.GetSize();
+	if (m_AllNoteNum == 0) goto EXIT;
+
+	try {
+		m_pNoteStartTime = new unsigned long[m_AllNoteNum];
+		m_pNoteMaxEndTime = new unsigned long[m_AllNoteNum];
+		pInst = new DXNR11_INSTANCE[m_AllNoteNum];
+	}
+	catch (std::bad_alloc) {
+		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+		goto EXIT;
+	}
+
+	halfW = m_KeyboardDesign.GetBlackKeyWidth() / 2.0f;
+
+	for (i = 0; i < m_AllNoteNum; i++) {
+		D3DXVECTOR3 base;
+		float yOffset = 0.0f;
+		result = m_NoteList.GetNote(i, &note);
+		if (result != 0) goto EXIT;
+
+		m_pNoteStartTime[i] = note.startTime;
+		if (i == 0) maxEnd = note.endTime;
+		else if (note.endTime > maxEnd) maxEnd = note.endTime;
+		m_pNoteMaxEndTime[i] = maxEnd;
+
+		base = m_KeyboardDesign.GetKeyboardBasePos(note.portNo, note.chNo);
+		yOffset = base.y + (m_KeyboardDesign.GetWhiteKeyHeight() / 2.0f);
+
+		pInst[i].cx     = base.x + m_KeyboardDesign.GetKeyCenterPosX(note.noteNo);
+		pInst[i].yStart = m_NoteDesign.GetPlayPosX(note.startTime) + yOffset;
+		pInst[i].yEnd   = m_NoteDesign.GetPlayPosX(note.endTime)   + yOffset;
+		pInst[i].z      = base.z + m_KeyboardDesign.GetNoteDropPosZ(note.noteNo);
+		pInst[i].halfW  = halfW;
+		// M4.21: stash a (port&0xF,ch) index in the unused alpha byte (the shader
+		// derives the quad's alpha from corner.y, not from the color) so the VS can
+		// look up this note's pitch-bend shift + keyboard Y offset. Cache the offset.
+		{
+			unsigned int idx = (unsigned int)(((note.portNo & 0x0F) << 4) | (note.chNo & 0x0F));
+			D3DCOLOR col = (m_pNoteTrackNo != NULL)
+				? (D3DCOLOR)m_NoteDesign.GetTrackChannelColor(m_pNoteTrackNo[i], note.chNo)
+				: (D3DCOLOR)m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
+			pInst[i].color = (col & 0x00FFFFFF) | ((unsigned long)idx << 24);
+			m_BaseY[idx] = yOffset;
+		}
+	}
+
+	{
+		D3D11_BUFFER_DESC bd;
+		D3D11_SUBRESOURCE_DATA sr;
+		ZeroMemory(&bd, sizeof(bd));
+		bd.ByteWidth = sizeof(DXNR11_INSTANCE) * m_AllNoteNum;
+		bd.Usage = D3D11_USAGE_IMMUTABLE;
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		ZeroMemory(&sr, sizeof(sr));
+		sr.pSysMem = pInst;
+		hr = pDevice->CreateBuffer(&bd, &sr, &m_pInstanceVB);
+		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, m_AllNoteNum); goto EXIT; }
+	}
+
+EXIT:;
+	if (pInst != NULL) delete [] pInst;
+	return result;
+}
+
+//******************************************************************************
+// Visible note index range for draw culling (binary search on tick arrays)
+//******************************************************************************
+void DXNoteRain11::_GetVisibleNoteRange(unsigned long* pLoNote, unsigned long* pHiNote)
+{
+	unsigned long lo = 0, hi = m_AllNoteNum;
+	unsigned long tickLow = 0, tickHigh = 0, halfTicks = 0;
+	float yPerTick = 0.0f;
+	unsigned long left = 0, right = 0, mid = 0;
+
+	*pLoNote = 0;
+	*pHiNote = m_AllNoteNum;
+	if (m_AllNoteNum == 0) return;
+	if ((m_pNoteStartTime == NULL) || (m_pNoteMaxEndTime == NULL)) return;
+
+	yPerTick = m_NoteDesign.GetPlayPosX(1 << 20) / (float)(1 << 20);
+	if (yPerTick <= 0.0f) return;
+
+	halfTicks = (unsigned long)(DXNR11_CULL_DISTANCE / yPerTick);
+	tickLow = (m_CurTickTime > halfTicks) ? (m_CurTickTime - halfTicks) : 0;
+	if ((0xFFFFFFFF - m_CurTickTime) < halfTicks) tickHigh = 0xFFFFFFFF;
+	else tickHigh = m_CurTickTime + halfTicks;
+
+	left = 0; right = m_AllNoteNum;
+	while (left < right) {
+		mid = left + (right - left) / 2;
+		if (m_pNoteMaxEndTime[mid] < tickLow) left = mid + 1;
+		else right = mid;
+	}
+	lo = left;
+
+	left = 0; right = m_AllNoteNum;
+	while (left < right) {
+		mid = left + (right - left) / 2;
+		if (m_pNoteStartTime[mid] <= tickHigh) left = mid + 1;
+		else right = mid;
+	}
+	hi = left;
+
+	if (hi < lo) hi = lo;
+	*pLoNote = lo;
+	*pHiNote = hi;
+}
+
+unsigned long DXNoteRain11::GetPlayedNoteCount(unsigned long curTick)
+{
+	unsigned long left = 0, right = m_AllNoteNum, mid = 0;
+	if ((m_pNoteStartTime == NULL) || (m_AllNoteNum == 0)) return 0;
+	while (left < right) {
+		mid = left + (right - left) / 2;
+		if (m_pNoteStartTime[mid] <= curTick) left = mid + 1;
+		else right = mid;
+	}
+	return left;
+}
+
+//******************************************************************************
+// Draw the visible note range
+//   world = Trans(0, -playPos, 0) * RotY(roll)   (matches MTNoteRain::Transform)
+//******************************************************************************
+int DXNoteRain11::DrawDX11(
+		ID3D11DeviceContext* pContext,
+		const XMMATRIX& viewProj,
+		float rollAngle
+	)
+{
+	HRESULT hr = S_OK;
+	D3D11_MAPPED_SUBRESOURCE ms;
+	unsigned long loNote = 0, hiNote = 0;
+	ID3D11Buffer* vbs[2];
+	UINT strides[2];
+	UINT offsets[2] = { 0, 0 };
+	float blendFactor[4] = { 0, 0, 0, 0 };
+
+	if (!m_Ready || (m_pInstanceVB == NULL)) return 0;
+	if (s_pVS == NULL) return YN_SET_ERR("Program error.", 0, 0);
+
+	_GetVisibleNoteRange(&loNote, &hiNote);
+	if (hiNote <= loNote) return 0;
+
+	{
+		// Notes are STATIC world geometry; the camera scrolls +Y (DirY) to follow
+		// playback (same pattern as the box scene on X). Only roll (RotY) is applied.
+		XMMATRIX world = XMMatrixRotationY(XMConvertToRadians(rollAngle));
+		XMMATRIX wvp = world * viewProj;
+		DXNR11_CONSTANTS c;
+		XMStoreFloat4x4(&c.wvp, wvp);
+		// M4.21 pitch bend: now-line Y + per-(port&0xF,ch) X shift and Y offset.
+		// A note is sounding when its time span contains (g_Active.x + g_BaseY[idx]).
+		c.active = XMFLOAT4(m_NoteDesign.GetPlayPosX(m_CurTickTime), m_BendAllNotes ? 1.0f : 0.0f, 0, 0);
+		ZeroMemory(c.pb, sizeof(c.pb));
+		ZeroMemory(c.baseY, sizeof(c.baseY));
+		{
+			float* pbf = (float*)c.pb;
+			float* byf = (float*)c.baseY;
+			for (int idx = 0; idx < 256; idx++) {
+				byf[idx] = m_BaseY[idx];
+				if (m_pPitchBend != NULL) {
+					unsigned char port = (unsigned char)(idx >> 4);
+					unsigned char ch   = (unsigned char)(idx & 0x0F);
+					pbf[idx] = m_KeyboardDesign.GetPitchBendShift(
+							m_pPitchBend->GetValue(port, ch),
+							m_pPitchBend->GetSensitivity(port, ch));
+				}
+			}
+		}
+		hr = pContext->Map(s_pConstBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms);
+		if (FAILED(hr)) return YN_SET_ERR("DirectX API error.", hr, 0);
+		memcpy(ms.pData, &c, sizeof(c));
+		pContext->Unmap(s_pConstBuf, 0);
+	}
+
+	vbs[0] = s_pTemplateVB;  strides[0] = sizeof(float) * 2;
+	vbs[1] = m_pInstanceVB;  strides[1] = sizeof(DXNR11_INSTANCE);
+
+	pContext->IASetInputLayout(s_pLayout);
+	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pContext->IASetVertexBuffers(0, 2, vbs, strides, offsets);
+	pContext->IASetIndexBuffer(s_pQuadIB, DXGI_FORMAT_R16_UINT, 0);
+	pContext->VSSetShader(s_pVS, NULL, 0);
+	pContext->VSSetConstantBuffers(0, 1, &s_pConstBuf);
+	pContext->PSSetShader(s_pPS, NULL, 0);
+	pContext->RSSetState(s_pRaster);
+	pContext->OMSetBlendState(s_pBlend, blendFactor, 0xFFFFFFFF);
+	pContext->OMSetDepthStencilState(s_pDepth, 0);
+
+	pContext->DrawIndexedInstanced(6, hiNote - loNote, 0, 0, loNote);
+	return 0;
+}

@@ -35,6 +35,9 @@
     <Filter Include="Sources\XInputUtility">
       <UniqueIdentifier>{d054de01-6c08-4761-ae2f-dacf689ea8ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\imgui">
+      <UniqueIdentifier>{4008fbc5-ed24-42f8-9e33-2a7ba0b5777c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="MIDITrail.ico">
@@ -221,6 +224,9 @@
     <ClCompile Include="MTGamePadCtrl.cpp">
       <Filter>Sources\XInputUtility</Filter>
     </ClCompile>
+    <ClCompile Include="MTGridBoxMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
     <ClCompile Include="MTNoteBoxMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
@@ -237,6 +243,12 @@
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
     <ClCompile Include="MTPianoKeyboardMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
     <ClCompile Include="MTNoteLyrics.cpp">
@@ -278,47 +290,32 @@
     <ClCompile Include="MTNoteRippleRingLive.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
-    <ClCompile Include="MTFileList.cpp">
-      <Filter>Sources\Utility</Filter>
+    <ClCompile Include="imgui_impl_dx9.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTColorCfgDlg.cpp">
-      <Filter>Sources\Dialog</Filter>
+    <ClCompile Include="imgui_impl_win32.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTColorPaletteCfgDlg.cpp">
-      <Filter>Sources\Dialog</Filter>
+    <ClCompile Include="imgui.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTColorParamExportDlg.cpp">
-      <Filter>Sources\Dialog</Filter>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTColorParamImportDlg.cpp">
-      <Filter>Sources\Dialog</Filter>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTColorConf.cpp">
-      <Filter>Sources\Utility</Filter>
+    <ClCompile Include="imgui_tables.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTColorPalette.cpp">
-      <Filter>Sources\Utility</Filter>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>Sources\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="MTScenePianoRoll2DMod.cpp">
-      <Filter>Sources\Scene</Filter>
+    <ClCompile Include="imgui_ja_gryph_ranges.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="MTScenePianoRoll3DMod.cpp">
-      <Filter>Sources\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="MTScenePianoRollRingMod.cpp">
-      <Filter>Sources\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="MTNoteRippleRingMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="MTNoteDesignRingMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="MTPictBoardRingMod.cpp">
-      <Filter>Sources\SceneObject</Filter>
-    </ClCompile>
-    <ClCompile Include="MTNoteLyricsRing.cpp">
-      <Filter>Sources\SceneObject</Filter>
+    <ClCompile Include="ImGuiFileDialog.cpp">
+      <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -505,6 +502,9 @@
     <ClInclude Include="MTGamePadCtrl.h">
       <Filter>Sources\XInputUtility</Filter>
     </ClInclude>
+    <ClInclude Include="MTGridBoxMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
     <ClInclude Include="MTNoteBoxMod.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
@@ -521,6 +521,12 @@
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTPianoKeyboardMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll2DMod.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTScenePianoRoll3DMod.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTNoteLyrics.h">
@@ -562,47 +568,44 @@
     <ClInclude Include="MTNoteRippleRingLive.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
-    <ClInclude Include="MTFileList.h">
-      <Filter>Sources\Utility</Filter>
+    <ClInclude Include="imgui_impl_win32.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTColorCfgDlg.h">
-      <Filter>Sources\Dialog</Filter>
+    <ClInclude Include="imgui.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTColorPaletteCfgDlg.h">
-      <Filter>Sources\Dialog</Filter>
+    <ClInclude Include="imgui_impl_dx9.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTColorParamExportDlg.h">
-      <Filter>Sources\Dialog</Filter>
+    <ClInclude Include="imconfig.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTColorParamImportDlg.h">
-      <Filter>Sources\Dialog</Filter>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTColorConf.h">
-      <Filter>Sources\Utility</Filter>
+    <ClInclude Include="imstb_rectpack.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTColorPalette.h">
-      <Filter>Sources\Utility</Filter>
+    <ClInclude Include="imstb_textedit.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTScenePianoRoll2DMod.h">
-      <Filter>Sources\Scene</Filter>
+    <ClInclude Include="imstb_truetype.h">
+      <Filter>Sources\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MTScenePianoRoll3DMod.h">
-      <Filter>Sources\Scene</Filter>
+    <ClInclude Include="ImGuiFileDialog.h">
+      <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="MTScenePianoRollRingMod.h">
-      <Filter>Sources\Scene</Filter>
+    <ClInclude Include="ImGuiFileDialogConfig.h">
+      <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="MTNoteRippleRingMod.h">
-      <Filter>Sources\SceneObject</Filter>
+    <ClInclude Include="dirent.h">
+      <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="MTNoteDesignRingMod.h">
-      <Filter>Sources\SceneObject</Filter>
+    <ClInclude Include="stb_image.h">
+      <Filter>Sources</Filter>
     </ClInclude>
-    <ClInclude Include="MTPictBoardRingMod.h">
-      <Filter>Sources\SceneObject</Filter>
-    </ClInclude>
-    <ClInclude Include="MTNoteLyricsRing.h">
-      <Filter>Sources\SceneObject</Filter>
+    <ClInclude Include="stb_image_resize.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

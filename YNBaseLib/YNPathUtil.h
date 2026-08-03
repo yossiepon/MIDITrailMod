@@ -1,10 +1,10 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple Base Library / YNPathUtil
 //
-// ƒpƒXƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// ãƒ‘ã‚¹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -20,41 +20,41 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-// ƒpƒXƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// ãƒ‘ã‚¹ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class YNBASELIB_API YNPathUtil
 {
 public:
 
-	//ƒvƒƒZƒXŽÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXŽæ“¾
-	//  ––”ö‚É"\"‚ð•t—^‚·‚é
-	//  Žæ“¾ƒpƒX‚Ì—áF"C:\Program Files\AppName\"
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
+	//  æœ«å°¾ã«"\"ã‚’ä»˜ä¸Žã™ã‚‹
+	//  å–å¾—ãƒ‘ã‚¹ã®ä¾‹ï¼š"C:\Program Files\AppName\"
 	static int GetModuleDirPath(TCHAR* pBuf, unsigned long bufSize);
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒf[ƒ^ƒfƒBƒŒƒNƒgƒŠƒpƒXŽæ“¾
-	//  ––”ö‚É"\"‚ð•t—^‚·‚é
-	//  Žæ“¾ƒpƒX‚Ì—áFWidows7‚Ìê‡ "C:\Users\UserName\AppData\Roaming\"
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
+	//  æœ«å°¾ã«"\"ã‚’ä»˜ä¸Žã™ã‚‹
+	//  å–å¾—ãƒ‘ã‚¹ã®ä¾‹ï¼šWidows7ã®å ´åˆ "C:\Users\UserName\AppData\Roaming\"
 	static int GetAppDataDirPath(TCHAR* pBuf, unsigned long bufSize);
 
-	//Šg’£Žq”»’è
-	//  ƒtƒ@ƒCƒ‹‚ÌŠg’£Žq‚ªŽw’è‚³‚ê‚½‚à‚Ì‚Å‚ ‚é‚©”»’è‚·‚é
-	//  Žw’è‚·‚éŠg’£Žq‚Ì—áF".txt"
-	static bool IsFileExtMatch(const WCHAR* pPath, const WCHAR* pExt);
+	//æ‹¡å¼µå­åˆ¤å®š
+	//  ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­ãŒæŒ‡å®šã•ã‚ŒãŸã‚‚ã®ã§ã‚ã‚‹ã‹åˆ¤å®šã™ã‚‹
+	//  æŒ‡å®šã™ã‚‹æ‹¡å¼µå­ã®ä¾‹ï¼š".txt"
+	static bool IsFileExtMatch(const TCHAR* pPath, const TCHAR* pExt);
 
-	//ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹ƒpƒXŽæ“¾
-	//  ŠÂ‹«•Ï”(TMP or TEMP)‚Å’è‹`‚³‚ê‚½ƒeƒ“ƒ|ƒ‰ƒŠƒfƒBƒŒƒNƒgƒŠ‚É
-	//  ˆêˆÓ‚Ìƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚ðì¬‚µ‚ÄƒpƒX‚ð•Ô‹p‚·‚é
-	//  Žw’è‚Å‚«‚éƒvƒŒƒtƒBƒbƒNƒX‚Í3•¶Žš
-	//  ì¬‚³‚ê‚éƒtƒ@ƒCƒ‹‚Ì–¼Ì‚Í PREuuuu.TMP
-	static int GetTempFilePath(WCHAR* pPathBuf, unsigned long bufSize, const WCHAR* pPrefix);
+	//ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
+	//  ç’°å¢ƒå¤‰æ•°(TMP or TEMP)ã§å®šç¾©ã•ã‚ŒãŸãƒ†ãƒ³ãƒãƒ©ãƒªãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«
+	//  ä¸€æ„ã®ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã—ã¦ãƒ‘ã‚¹ã‚’è¿”å´ã™ã‚‹
+	//  æŒ‡å®šã§ãã‚‹ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã¯3æ–‡å­—
+	//  ä½œæˆã•ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®åç§°ã¯ PREuuuu.TMP
+	static int GetTempFilePath(TCHAR* pPathBuf, unsigned long bufSize, const TCHAR* pPrefix);
 
 private:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	YNPathUtil(void);
 	virtual ~YNPathUtil(void);
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹ÖŽ~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const YNPathUtil&);
 	YNPathUtil(const YNPathUtil&);
 

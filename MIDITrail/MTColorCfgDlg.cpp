@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorCfgDlg
 //
-// ƒJƒ‰[İ’èƒ_ƒCƒAƒƒO
+// ã‚«ãƒ©ãƒ¼è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -14,12 +14,12 @@
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTColorCfgDlg* MTColorCfgDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTColorCfgDlg::MTColorCfgDlg(void)
 {
@@ -33,7 +33,7 @@ MTColorCfgDlg::MTColorCfgDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTColorCfgDlg::~MTColorCfgDlg(void)
 {
@@ -41,7 +41,7 @@ MTColorCfgDlg::~MTColorCfgDlg(void)
 }
 
 //******************************************************************************
-// •\¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTColorCfgDlg::Show(
 		HWND hParentWnd
@@ -51,19 +51,19 @@ int MTColorCfgDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_COLOR_CFG),		//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_COLOR_CFG),		//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -75,7 +75,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^•ÏXŠm”F
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¤‰æ›´ç¢ºèª
 //******************************************************************************
 bool MTColorCfgDlg::IsChanged()
 {
@@ -83,7 +83,7 @@ bool MTColorCfgDlg::IsChanged()
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTColorCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -91,7 +91,7 @@ INT_PTR CALLBACK MTColorCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam,
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTColorCfgDlg::_WndProcImpl(
 		HWND hDlg,
@@ -173,12 +173,12 @@ INT_PTR MTColorCfgDlg::_WndProcImpl(
 			}
 			break;
 		case WM_DRAWITEM:
-			//ƒJƒ‰[ƒ{ƒ^ƒ“•`‰æ
+			//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æç”»
 			result = _DrawColorButton((DRAWITEMSTRUCT*)lParam);
 			if (result != 0) goto EXIT;
 			break;
 		default:
-			//ˆ—‚µ‚È‚¢ƒƒbƒZ[ƒW
+			//å‡¦ç†ã—ãªã„ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			break;
 	}
 
@@ -190,7 +190,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTColorCfgDlg::_OnInitDlg(
 		HWND hDlg
@@ -201,21 +201,21 @@ int MTColorCfgDlg::_OnInitDlg(
 	m_hWnd = hDlg;
 	m_isChanged = false;
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 	_InitRadioButtonList();
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 	_InitColorButtonList();
 
-	//Fİ’è‰Šú‰»FPianoRoll3D.ini ‚ÌFİ’è‚ğƒfƒtƒHƒ‹ƒgİ’è‚Æ‚µ‚Ä•\¦
+	//è‰²è¨­å®šåˆæœŸåŒ–ï¼šPianoRoll3D.ini ã®è‰²è¨­å®šã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¨­å®šã¨ã—ã¦è¡¨ç¤º
 	result = m_ColorConf.Initialize(_T("PianoRoll3D"));
 	if (result != 0) goto EXIT;
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“‰Šú‰»
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³åˆæœŸåŒ–
 	result = _InitRadioButtons();
 	if (result != 0) goto EXIT;
 
-	//ƒJƒ‰[ƒ{ƒ^ƒ“‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³åˆæœŸåŒ–
 	result = _InitColorButtons();
 	if (result != 0) goto EXIT;
 
@@ -224,7 +224,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ‰ƒWƒIƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+// ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 //******************************************************************************
 void MTColorCfgDlg::_InitRadioButtonList()
 {
@@ -240,11 +240,11 @@ void MTColorCfgDlg::_InitRadioButtonList()
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒ{ƒ^ƒ“ƒŠƒXƒg‰Šú‰»
+// ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 //******************************************************************************
 void MTColorCfgDlg::_InitColorButtonList()
 {
-	//ƒJƒ‰[ƒpƒŒƒbƒg ƒfƒtƒHƒ‹ƒg
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 	m_hBtnColorList[0][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_0_1);
 	m_hBtnColorList[0][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_0_2);
 	m_hBtnColorList[0][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_0_3);
@@ -264,7 +264,7 @@ void MTColorCfgDlg::_InitColorButtonList()
 	m_hBtnColorList[0][16] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_0_BG);
 	m_hBtnColorList[0][17] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_0_GL);
 	m_hBtnColorList[0][18] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_0_CT);
-	//ƒJƒ‰[ƒpƒŒƒbƒg 1
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ 1
 	m_hBtnColorList[1][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_1_1);
 	m_hBtnColorList[1][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_1_2);
 	m_hBtnColorList[1][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_1_3);
@@ -284,7 +284,7 @@ void MTColorCfgDlg::_InitColorButtonList()
 	m_hBtnColorList[1][16] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_1_BG);
 	m_hBtnColorList[1][17] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_1_GL);
 	m_hBtnColorList[1][18] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_1_CT);
-	//ƒJƒ‰[ƒpƒŒƒbƒg 2
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ 2
 	m_hBtnColorList[2][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_2_1);
 	m_hBtnColorList[2][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_2_2);
 	m_hBtnColorList[2][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_2_3);
@@ -304,7 +304,7 @@ void MTColorCfgDlg::_InitColorButtonList()
 	m_hBtnColorList[2][16] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_2_BG);
 	m_hBtnColorList[2][17] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_2_GL);
 	m_hBtnColorList[2][18] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_2_CT);
-	//ƒJƒ‰[ƒpƒŒƒbƒg 3
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ 3
 	m_hBtnColorList[3][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_3_1);
 	m_hBtnColorList[3][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_3_2);
 	m_hBtnColorList[3][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_3_3);
@@ -324,7 +324,7 @@ void MTColorCfgDlg::_InitColorButtonList()
 	m_hBtnColorList[3][16] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_3_BG);
 	m_hBtnColorList[3][17] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_3_GL);
 	m_hBtnColorList[3][18] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_3_CT);
-	//ƒJƒ‰[ƒpƒŒƒbƒg 4
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ 4
 	m_hBtnColorList[4][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_4_1);
 	m_hBtnColorList[4][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_4_2);
 	m_hBtnColorList[4][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_4_3);
@@ -344,7 +344,7 @@ void MTColorCfgDlg::_InitColorButtonList()
 	m_hBtnColorList[4][16] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_4_BG);
 	m_hBtnColorList[4][17] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_4_GL);
 	m_hBtnColorList[4][18] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_4_CT);
-	//ƒJƒ‰[ƒpƒŒƒbƒg 5
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ 5
 	m_hBtnColorList[5][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_5_1);
 	m_hBtnColorList[5][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_5_2);
 	m_hBtnColorList[5][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_5_3);
@@ -364,7 +364,7 @@ void MTColorCfgDlg::_InitColorButtonList()
 	m_hBtnColorList[5][16] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_5_BG);
 	m_hBtnColorList[5][17] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_5_GL);
 	m_hBtnColorList[5][18] = GetDlgItem(m_hWnd, IDC_BTN_COLOR_5_CT);
-	//ƒJƒ‰[ƒpƒŒƒbƒg 6
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆ 6
 	m_hBtnColorList[6][0]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_6_1);
 	m_hBtnColorList[6][1]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_6_2);
 	m_hBtnColorList[6][2]  = GetDlgItem(m_hWnd, IDC_BTN_COLOR_6_3);
@@ -389,21 +389,21 @@ void MTColorCfgDlg::_InitColorButtonList()
 }
 
 //******************************************************************************
-// ƒ‰ƒWƒIƒ{ƒ^ƒ“‰Šú‰»
+// ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³åˆæœŸåŒ–
 //******************************************************************************
 int MTColorCfgDlg::_InitRadioButtons()
 {
 	int result = 0;
 	unsigned long colorPaletteNo = 0;
 
-	//‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg”Ô†æ“¾
+	//é¸æŠã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆç•ªå·å–å¾—
 	colorPaletteNo = m_ColorConf.GetSelectedColorPaletteNo();
 	if (colorPaletteNo >= MT_COLOR_PALETTE_NUM_MAX) {
 		result = YN_SET_ERR("Program error.", colorPaletteNo, 0);
 		goto EXIT;
 	}
 
-	//ƒ‰ƒWƒIƒ{ƒ^ƒ“‘I‘ğó‘Ôİ’è
+	//ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³é¸æŠçŠ¶æ…‹è¨­å®š
 	SendMessage(m_hBtnRadioPaletteList[colorPaletteNo], BM_SETCHECK, (WPARAM)BST_CHECKED, 0);
 	m_SelectedColorPaletteNo = colorPaletteNo;
 
@@ -412,19 +412,19 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒ{ƒ^ƒ“‰Šú‰»
+// ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³åˆæœŸåŒ–
 //******************************************************************************
 int MTColorCfgDlg::_InitColorButtons()
 {
 	int result = 0;
 	
-	//WM_DRAWITEMƒƒbƒZ[ƒWóM‚Éƒ{ƒ^ƒ“‚ğ•`‰æ‚·‚é‚½‚ß‚±‚±‚Å‚Í‰½‚à‚µ‚È‚¢
+	//WM_DRAWITEMãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡æ™‚ã«ãƒœã‚¿ãƒ³ã‚’æç”»ã™ã‚‹ãŸã‚ã“ã“ã§ã¯ä½•ã‚‚ã—ãªã„
 	
 	return result;
 }
 
 //******************************************************************************
-// ƒ‰ƒWƒIƒ{ƒ^ƒ“‰Ÿ‰º
+// ãƒ©ã‚¸ã‚ªãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTColorCfgDlg::_OnBtnRadio(unsigned long buttonNo)
 {
@@ -432,7 +432,7 @@ int MTColorCfgDlg::_OnBtnRadio(unsigned long buttonNo)
 
 	m_SelectedColorPaletteNo = buttonNo;
 
-	//ƒJƒ‰[İ’è‚É“o˜^
+	//ã‚«ãƒ©ãƒ¼è¨­å®šã«ç™»éŒ²
 	result = m_ColorConf.SetSelectedColorPaletteNo(m_SelectedColorPaletteNo);
 	if (result != 0) goto EXIT;
 
@@ -441,13 +441,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// •ÒWƒ{ƒ^ƒ“‰Ÿ‰º
+// ç·¨é›†ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTColorCfgDlg::_OnBtnEdit(unsigned long paletteNo)
 {
 	int result = 0;
 	
-	//ƒJƒ‰[ƒpƒŒƒbƒgİ’èƒ_ƒCƒAƒƒO•\¦
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = _ShowColorPaletteCfgDlg(paletteNo);
 	if (result != 0) goto EXIT;
 
@@ -456,7 +456,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒpƒŒƒbƒgİ’èƒ_ƒCƒAƒƒO•\¦
+// ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 //******************************************************************************
 int MTColorCfgDlg::_ShowColorPaletteCfgDlg(unsigned long colorPaletteNo)
 {
@@ -464,27 +464,27 @@ int MTColorCfgDlg::_ShowColorPaletteCfgDlg(unsigned long colorPaletteNo)
 	MTColorPalette colorPalette;
 	MTColorPalette defaultColorPalette;
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgæ“¾
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆå–å¾—
 	result = m_ColorConf.GetColorPalette(colorPaletteNo, &colorPalette);
 	if (result != 0) goto EXIT;
 	result = m_ColorConf.GetColorPalette(0, &defaultColorPalette);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgİ’è
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆè¨­å®š
 	m_ColorPaletteCfgDlg.SetColorPalette(&colorPalette, &defaultColorPalette, colorPaletteNo);
 
-	//ƒ_ƒCƒAƒƒO•\¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = m_ColorPaletteCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;	
 
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ğÄ¶¬
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ãƒ¬ãƒ³ãƒ€ãƒ©ã¨ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å†ç”Ÿæˆ
 	if (m_ColorPaletteCfgDlg.IsChanged()) {
-		//XV‚³‚ê‚½ƒJƒ‰[ƒpƒŒƒbƒg‚ğæ“¾
+		//æ›´æ–°ã•ã‚ŒãŸã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã‚’å–å¾—
 		m_ColorPaletteCfgDlg.GetColorPalette(&colorPalette);
-		//ƒJƒ‰[ƒpƒŒƒbƒg“o˜^
+		//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆç™»éŒ²
 		result = m_ColorConf.SetColorPalette(colorPaletteNo, &colorPalette);
 		if (result != 0) goto EXIT;
-		//ƒJƒ‰[ƒ{ƒ^ƒ“XV
+		//ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æ›´æ–°
 		result = _UpdateColorButtons(colorPaletteNo);
 		if (result != 0) goto EXIT;
 	}
@@ -494,7 +494,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒ{ƒ^ƒ“XV
+// ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æ›´æ–°
 //******************************************************************************
 int MTColorCfgDlg::_UpdateColorButtons(unsigned long colorPaletteNo)
 {
@@ -502,7 +502,7 @@ int MTColorCfgDlg::_UpdateColorButtons(unsigned long colorPaletteNo)
 	BOOL bResult = FALSE;
 	unsigned long i = 0;
 
-	//ƒ{ƒ^ƒ“Ä•`‰æ‚ğw¦FWM_DRAWITEMƒƒbƒZ[ƒW‚ÅXV
+	//ãƒœã‚¿ãƒ³å†æç”»ã‚’æŒ‡ç¤ºï¼šWM_DRAWITEMãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã§æ›´æ–°
 	for (i = 0; i < (SM_MAX_CH_NUM + 3); i++) {
 		bResult = InvalidateRect(m_hBtnColorList[colorPaletteNo][i], NULL, FALSE);
 		if (!bResult) {
@@ -516,7 +516,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒ{ƒ^ƒ“•`‰æ
+// ã‚«ãƒ©ãƒ¼ãƒœã‚¿ãƒ³æç”»
 //******************************************************************************
 int MTColorCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 {
@@ -533,79 +533,79 @@ int MTColorCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 	COLORREF bkColor2;
 	
 	//---------------------------------
-	// ƒ{ƒ^ƒ““Á’è
+	// ãƒœã‚¿ãƒ³ç‰¹å®š
 	//---------------------------------
-	//ƒRƒ“ƒgƒ[ƒ‹ƒ^ƒCƒv‚ªƒ{ƒ^ƒ“‚Å‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—ãŒãƒœã‚¿ãƒ³ã§ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (pDrawItem->CtlType != ODT_BUTTON) goto EXIT;
 	
-	//ƒRƒ“ƒgƒ[ƒ‹ID
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ID
 	for (i = 0; i < MT_COLOR_PALETTE_NUM_MAX; i++) {
 		for (j = 0; j < (SM_MAX_CH_NUM + 3); j++) {
 			if (pDrawItem->CtlID == GetDlgCtrlID(m_hBtnColorList[i][j])) {
-				//‘ÎÛ‚Ìƒ{ƒ^ƒ“‚ğ¯•Ê
+				//å¯¾è±¡ã®ãƒœã‚¿ãƒ³ã‚’è­˜åˆ¥
 				isFound = true;
 				paletteNo = i;
 				chNo = j;
 			}
 		}
 	}
-	//‘ÎÛ‚Ìƒ{ƒ^ƒ“‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚ç‰½‚à‚µ‚È‚¢
+	//å¯¾è±¡ã®ãƒœã‚¿ãƒ³ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if (!isFound) goto EXIT;
 	
 	//---------------------------------
-	// F“Á’è
+	// è‰²ç‰¹å®š
 	//---------------------------------
-	//ƒJƒ‰[ƒpƒŒƒbƒgæ“¾
+	//ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆå–å¾—
 	result = m_ColorConf.GetColorPalette(paletteNo, &colorPalette);
 	if (result != 0) goto EXIT;
 	
-	//Fæ“¾
+	//è‰²å–å¾—
 	if (chNo < SM_MAX_CH_NUM) {
 		//Ch.1 - 16
 		colorPalette.GetChColor(chNo, &color);
 	}
 	else if (chNo == SM_MAX_CH_NUM + 0) {
-		//”wŒi
+		//èƒŒæ™¯
 		colorPalette.GetBackgroundColor(&color);
 	}
 	else if (chNo == SM_MAX_CH_NUM + 1) {
-		//ƒOƒŠƒbƒhƒ‰ƒCƒ“
+		//ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³
 		colorPalette.GetGridLineColor(&color);
 	}
 	else if (chNo == SM_MAX_CH_NUM + 2) {
-		//ƒJƒEƒ“ƒ^[
+		//ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼
 		colorPalette.GetCounterColor(&color);
 	}
 	
 	//---------------------------------
-	// ƒ{ƒ^ƒ“•`‰æ
+	// ãƒœã‚¿ãƒ³æç”»
 	//---------------------------------
-	//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ì”wŒiF‚ğİ’è
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®èƒŒæ™¯è‰²ã‚’è¨­å®š
 	bkColor1 = SetBkColor(pDrawItem->hDC, RGB(color.r * 255.0f, color.g * 255.0f, color.b * 255.0f));
 	if (bkColor1 == CLR_INVALID) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 	
-	//ƒ{ƒ^ƒ“‚ÌlŠpŒ`‚ğ•`‰æ
+	//ãƒœã‚¿ãƒ³ã®å››è§’å½¢ã‚’æç”»
 	bResult = ExtTextOut(
-					pDrawItem->hDC,	//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg
-					0,				//•¶š—ñ”z’uQÆƒ|ƒCƒ“ƒgXÀ•Wi˜_—À•Wj
-					0,				//•¶š—ñ”z’uQÆƒ|ƒCƒ“ƒgYÀ•Wi˜_—À•Wj
-					ETO_OPAQUE,		//lŠpŒ`g—p•û–@FŒ»İ‚Ì”wŒiF‚ğg—p‚µ‚ÄlŠpŒ`‚ğ“h‚è‚Â‚Ô‚·
-					&(pDrawItem->rcItem),	//lŠpŒ`‚Ì˜_—À•W
-					NULL,			//•`‰æ‚·‚éƒeƒLƒXƒg
-					0,				//•¶š—ñ‚Ì’·‚³
-					NULL			//—×Ú‚·‚é•¶šƒZƒ‹‚ÌŒ´“_ŠÔ‚Ì‹——£
+					pDrawItem->hDC,	//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+					0,				//æ–‡å­—åˆ—é…ç½®å‚ç…§ãƒã‚¤ãƒ³ãƒˆXåº§æ¨™ï¼ˆè«–ç†åº§æ¨™ï¼‰
+					0,				//æ–‡å­—åˆ—é…ç½®å‚ç…§ãƒã‚¤ãƒ³ãƒˆYåº§æ¨™ï¼ˆè«–ç†åº§æ¨™ï¼‰
+					ETO_OPAQUE,		//å››è§’å½¢ä½¿ç”¨æ–¹æ³•ï¼šç¾åœ¨ã®èƒŒæ™¯è‰²ã‚’ä½¿ç”¨ã—ã¦å››è§’å½¢ã‚’å¡—ã‚Šã¤ã¶ã™
+					&(pDrawItem->rcItem),	//å››è§’å½¢ã®è«–ç†åº§æ¨™
+					NULL,			//æç”»ã™ã‚‹ãƒ†ã‚­ã‚¹ãƒˆ
+					0,				//æ–‡å­—åˆ—ã®é•·ã•
+					NULL			//éš£æ¥ã™ã‚‹æ–‡å­—ã‚»ãƒ«ã®åŸç‚¹é–“ã®è·é›¢
 				);
 	if (!bResult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 	
-	//ƒ{ƒ^ƒ“‰Ÿ‰ºó‘Ô‚ğ”½‰f‚µ‚½‹«ŠE‚ğ•`‰æ
+	//ãƒœã‚¿ãƒ³æŠ¼ä¸‹çŠ¶æ…‹ã‚’åæ˜ ã—ãŸå¢ƒç•Œã‚’æç”»
 	if (pDrawItem->itemState & ODS_SELECTED) {
-		//’¾‚ñ‚¾ó‘Ô‚ğ•`‰æ
+		//æ²ˆã‚“ã çŠ¶æ…‹ã‚’æç”»
 		bResult = DrawEdge(pDrawItem->hDC, &(pDrawItem->rcItem), EDGE_SUNKEN, BF_TOPLEFT | BF_BOTTOMRIGHT | BF_FLAT);
 		if (!bResult) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -613,7 +613,7 @@ int MTColorCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 		}
 	}
 	else {
-		//•‚‚¢‚½ó‘Ô‚ğ•`‰æ
+		//æµ®ã„ãŸçŠ¶æ…‹ã‚’æç”»
 		bResult = DrawEdge(pDrawItem->hDC, &(pDrawItem->rcItem), EDGE_RAISED, BF_TOPLEFT | BF_BOTTOMRIGHT | BF_FLAT);
 		if (!bResult) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -621,7 +621,7 @@ int MTColorCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 		}
 	}
 	
-	//ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ì”wŒiF‚ğ–ß‚·
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®èƒŒæ™¯è‰²ã‚’æˆ»ã™
 	bkColor2 = SetBkColor(pDrawItem->hDC, bkColor1);
 	if (bkColor2 == CLR_INVALID) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -633,13 +633,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[î•ñ•Û‘¶
+// ã‚«ãƒ©ãƒ¼æƒ…å ±ä¿å­˜
 //******************************************************************************
 int MTColorCfgDlg::_Save()
 {
 	int result = 0;
 	
-	//ƒJƒ‰[İ’è‚ğ•Û‘¶
+	//ã‚«ãƒ©ãƒ¼è¨­å®šã‚’ä¿å­˜
 	result = m_ColorConf.Save();
 	if (result != 0) goto EXIT;
 	

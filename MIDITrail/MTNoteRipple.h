@@ -1,50 +1,52 @@
-//******************************************************************************
+Ôªø//******************************************************************************
 //
 // MIDITrail / MTNoteRipple
 //
-// ÉmÅ[Égîgñ‰ï`âÊÉNÉâÉX
+// „Éé„Éº„ÉàÊ≥¢Á¥ãÊèèÁîª„ÇØ„É©„Çπ
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
 #include <d3d9.h>
-#include <d3dx9.h>
+#include "DXMath9.h"
 #include "SMIDILib.h"
 #include "DXPrimitive.h"
 #include "MTNoteDesign.h"
-#include "MTNoteRipple.h"
 #include "MTNotePitchBend.h"
 
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ÉpÉâÉÅÅ[É^íËã`
+// „Éë„É©„É°„Éº„ÇøÂÆöÁæ©
 //******************************************************************************
-//ç≈ëÂîgñ‰ï`âÊêî
+//ÊúÄÂ§ßÊ≥¢Á¥ãÊèèÁîªÊï∞
 #define MTNOTERIPPLE_MAX_RIPPLE_NUM  (100)
 
-// TODO: ç≈ëÂîgñ‰ï`âÊêîÇâ¬ïœÇ…Ç∑ÇÈ
-//   éñëOÇ…ÉVÅ[ÉPÉìÉXÉfÅ[É^ÇÃç≈ëÂìØéûî≠âπêîÇí≤ç∏ÇµÇƒÇ®ÇØÇŒ
-//   ämï€Ç∑ÇÈÉoÉbÉtÉ@ÉTÉCÉYÇïœçXÇ≈Ç´ÇÈ
-//   åªèÛÇ≈Ç‡ÉoÉbÉtÉ@ÉTÉCÉYÇÕèâä˙âªéûì_Ç≈ìÆìIÇ…ïœçXâ¬î\Ç≈Ç†ÇÈ
+//ÊúÄÂ§ßÊ≠åË©ûÊèèÁîªÊï∞ÔºàÊóß MTNoteLyrics.h Áî±Êù•„ÄÇMod „ÅÆ„É™„ÉÉ„Éó„É´ÈÖçÁΩÆË®àÁÆó„ÅßÂèÇÁÖß„Åô„ÇãÔºâ
+#define MTNOTELYRICS_MAX_LYRICS_NUM  (100)
+
+// TODO: ÊúÄÂ§ßÊ≥¢Á¥ãÊèèÁîªÊï∞„ÇíÂèØÂ§â„Å´„Åô„Çã
+//   ‰∫ãÂâç„Å´„Ç∑„Éº„Ç±„É≥„Çπ„Éá„Éº„Çø„ÅÆÊúÄÂ§ßÂêåÊôÇÁô∫Èü≥Êï∞„ÇíË™øÊüª„Åó„Å¶„Åä„Åë„Å∞
+//   Á¢∫‰øù„Åô„Çã„Éê„ÉÉ„Éï„Ç°„Çµ„Ç§„Ç∫„ÇíÂ§âÊõ¥„Åß„Åç„Çã
+//   ÁèæÁä∂„Åß„ÇÇ„Éê„ÉÉ„Éï„Ç°„Çµ„Ç§„Ç∫„ÅØÂàùÊúüÂåñÊôÇÁÇπ„ÅßÂãïÁöÑ„Å´Â§âÊõ¥ÂèØËÉΩ„Åß„ÅÇ„Çã
 
 
 //******************************************************************************
-// ÉmÅ[Égîgñ‰ï`âÊÉNÉâÉX
+// „Éé„Éº„ÉàÊ≥¢Á¥ãÊèèÁîª„ÇØ„É©„Çπ
 //******************************************************************************
 class MTNoteRipple
 {
 public:
 
-	//ÉRÉìÉXÉgÉâÉNÉ^Å^ÉfÉXÉgÉâÉNÉ^
+	//„Ç≥„É≥„Çπ„Éà„É©„ÇØ„ÇøÔºè„Éá„Çπ„Éà„É©„ÇØ„Çø
 	MTNoteRipple(void);
 	virtual ~MTNoteRipple(void);
 
-	//ê∂ê¨
+	//ÁîüÊàê
 // >>> modify 20120728 yossiepon begin
 	virtual int Create(
 // <<< modify 20120728 yossiepon end
@@ -54,27 +56,27 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//çXêV
+	//Êõ¥Êñ∞
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
-	//ï`âÊ
+	//ÊèèÁîª
 // >>> modify 20120728 yossiepon begin
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify 20120728 yossiepon end
 
-	//âï˙
+	//Ëß£Êîæ
 // >>> modify 20120728 yossiepon begin
 	virtual void Release();
 // <<< modify 20120728 yossiepon end
 
-	//ÉmÅ[ÉgOFFìoò^
+	//„Éé„Éº„ÉàOFFÁôªÈå≤
 	void SetNoteOff(
 			unsigned char portNo,
 			unsigned char chNo,
 			unsigned char noteNo
 		);
 
-	//ÉmÅ[ÉgONìoò^
+	//„Éé„Éº„ÉàONÁôªÈå≤
 	void SetNoteOn(
 			unsigned char portNo,
 			unsigned char chNo,
@@ -82,25 +84,31 @@ public:
 			unsigned char velocity
 		);
 
-	//ââëtÉ`ÉbÉNÉ^ÉCÉÄìoò^
+	//ÊºîÂ•è„ÉÅ„ÉÉ„ÇØ„Çø„Ç§„É†ÁôªÈå≤
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ÉäÉZÉbÉg
+	//„É™„Çª„ÉÉ„Éà
 // >>> modify 20120728 yossiepon begin
 	virtual void Reset();
 // <<< modify 20120728 yossiepon end
 
-	//ï\é¶ê›íË
+	//Ë°®Á§∫Ë®≠ÂÆö
 	void SetEnable(bool isEnable);
 
-	//ÉXÉLÉbÉvèÛë‘
+	//„Çπ„Ç≠„ÉÉ„ÉóÁä∂ÊÖã
 	void SetSkipStatus(bool isSkipping);
+
+	//M3 DX11: device-free helpers (vertex layout XYZ|NORMAL|DIFFUSE|TEX1 == DXP11_VERTEX)
+	int InitForDX11(const TCHAR* pSceneName, SMSeqData* pSeqData, MTNotePitchBend* pNotePitchBend);
+	int UpdateVertexCPU(D3DXVECTOR3 camVector, void* pVertexBuf, unsigned long* pActiveNum);
+	int GetTexturePath(const TCHAR* pSceneName, TCHAR* pOutPath, int maxLen);
+	D3DXVECTOR3 GetWorldMoveVector();
 
 // >>> modify access level to protected 20120728 yossiepon begin
 protected:
-// <<< modify 20120728 yossiepon end
+// >>> modify 20120728 yossiepon end
 
-	//ÉmÅ[Égî≠âπèÛë‘ç\ë¢ëÃ
+	//„Éé„Éº„ÉàÁô∫Èü≥Áä∂ÊÖãÊßãÈÄ†‰Ωì
 	struct NoteStatus {
 		bool isActive;
 		unsigned char portNo;
@@ -110,49 +118,44 @@ protected:
 		unsigned long regTime;
 	};
 
-	//í∏ì_ÉoÉbÉtÉ@ç\ë¢ëÃ
+	//È†ÇÁÇπ„Éê„ÉÉ„Éï„Ç°ÊßãÈÄ†‰Ωì
 	struct MTNOTERIPPLE_VERTEX {
-		D3DXVECTOR3 p;	//í∏ì_ç¿ïW
-// >>> revert 20250616 yossiepon begin PianoRoll3DÇÃîgñ‰Ç™Ç®Ç©ÇµÇ≠Ç»ÇÈÇÃÇ≈ñ@ê¸ÉpÉâÉÅÅ[É^Ç†ÇËÇ…ñﬂÇ∑
-		D3DXVECTOR3 n;	//ñ@ê¸
-// <<< revert 20250616 yossiepon end
-		DWORD		c;	//ÉfÉBÉtÉÖÅ[ÉYêF
-		D3DXVECTOR2 t;	//ÉeÉNÉXÉ`ÉÉâÊëúà íu
+		D3DXVECTOR3 p;	//È†ÇÁÇπÂ∫ßÊ®ô
+		D3DXVECTOR3 n;	//Ê≥ïÁ∑ö
+		DWORD		c;	//„Éá„Ç£„Éï„É•„Éº„Ç∫Ëâ≤
+		D3DXVECTOR2 t;	//„ÉÜ„ÇØ„Çπ„ÉÅ„É£ÁîªÂÉè‰ΩçÁΩÆ
 	};
 
-	//í∏ì_ÉoÉbÉtÉ@FVFÉtÉHÅ[É}ÉbÉg
-// >>> revert 20250616 yossiepon begin
-//	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
+	//È†ÇÁÇπ„Éê„ÉÉ„Éï„Ç°FVF„Éï„Ç©„Éº„Éû„ÉÉ„Éà
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
-// <<< revert 20250616 yossiepon end
 
 protected:
 
-	//ï`âÊån
+	//ÊèèÁîªÁ≥ª
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DMATERIAL9 m_Material;
 
-	//çƒê∂éûçè
+	//ÂÜçÁîüÊôÇÂàª
 	unsigned long m_CurTickTime;
 
-	//ÉJÉÅÉâ
+	//„Ç´„É°„É©
 	D3DXVECTOR3 m_CamVector;
 
-	//ÉmÅ[ÉgÉfÉUÉCÉì
+	//„Éé„Éº„Éà„Éá„Ç∂„Ç§„É≥
 	MTNoteDesign* m_pNoteDesign;
 
-	//ÉsÉbÉ`ÉxÉìÉhèÓïÒ
+	//„Éî„ÉÉ„ÉÅ„Éô„É≥„ÉâÊÉÖÂ†±
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//ÉmÅ[Égî≠âπèÛë‘èÓïÒ
+	//„Éé„Éº„ÉàÁô∫Èü≥Áä∂ÊÖãÊÉÖÂ†±
 	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
-	//ï\é¶â¬î€
+	//Ë°®Á§∫ÂèØÂê¶
 	bool m_isEnable;
 
-	//ÉXÉLÉbÉvèÛë‘
+	//„Çπ„Ç≠„ÉÉ„ÉóÁä∂ÊÖã
 	bool m_isSkipping;
 
 	virtual int _CreateNoteDesign();
@@ -161,7 +164,7 @@ protected:
 // >>> modify 20161224 yossiepon begin
 	virtual int _CreateNoteStatus();
 	virtual int _CreateVertex(LPDIRECT3DDEVICE9 pD3DDevice);
-// <<< modify 20161224 yossiepon end
+// >>> modify 20161224 yossiepon end
 
 	int _SetVertexPosition(
 				MTNOTERIPPLE_VERTEX* pVertex,
@@ -175,7 +178,7 @@ protected:
 	virtual void _MakeMaterial(D3DMATERIAL9* pMaterial);
 	virtual int _TransformRipple(LPDIRECT3DDEVICE9 pD3DDevice);
 	virtual int _UpdateVertexOfRipple(LPDIRECT3DDEVICE9 pD3DDevice);
-// <<< modify 20161224 yossiepon end
+// >>> modify 20161224 yossiepon end
 
 };
 

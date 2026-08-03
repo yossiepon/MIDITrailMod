@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTMIDIINCfgDlg
 //
-// MIDI IN Ý’èƒ_ƒCƒAƒƒO
+// MIDI IN è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2012 WADA Masashi. All Rights Reserved.
 //
@@ -18,56 +18,56 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// MIDI IN Ý’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// MIDI IN è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTMIDIINCfgDlg
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTMIDIINCfgDlg(void);
 	virtual ~MTMIDIINCfgDlg(void);
 
-	//•\Ž¦Fƒ_ƒCƒAƒƒO‚ª•Â‚¶‚ç‚ê‚é‚Ü‚Å§Œä‚ð•Ô‚³‚È‚¢
+	//è¡¨ç¤ºï¼šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¾ã§åˆ¶å¾¡ã‚’è¿”ã•ãªã„
 	int Show(HWND hParentWnd);
 
 private:
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒ|ƒCƒ“ƒ^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒã‚¤ãƒ³ã‚¿
 	static MTMIDIINCfgDlg* m_pThis;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	HINSTANCE m_hInstance;
 
-	//Ý’èƒtƒ@ƒCƒ‹
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	YNConfFile m_ConfFile;
 
-	//MIDI“ü—ÍƒfƒoƒCƒX§ŒäƒIƒuƒWƒFƒNƒg
+	//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	SMInDevCtrl m_MIDIInDevCtrl;
 
-	//ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hComboDevA;
 
-	//MIDITHRUƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//MIDITHRUãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hMIDITHRU;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 	int _OnInitDlg(HWND hDlg);
 
-	//Ý’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	int _InitConfFile();
 
-	//ƒfƒoƒCƒX‘I‘ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//ãƒ‡ãƒã‚¤ã‚¹é¸æŠžã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	int _InitComboDev(HWND hComboDev, TCHAR* pPortName);
 
-	//MIDITHRUƒ`ƒFƒbƒNƒ{ƒ^ƒ“‰Šú‰»
+	//MIDITHRUãƒã‚§ãƒƒã‚¯ãƒœã‚¿ãƒ³åˆæœŸåŒ–
 	int _InitCheckBtnMIDITHRU();
 
-	//•Û‘¶ˆ—
+	//ä¿å­˜å‡¦ç†
 	int _Save();
 	int _SavePortCfg(HWND hComboDev, TCHAR* pPortName);
 	int _SaveMIDITHRU();
