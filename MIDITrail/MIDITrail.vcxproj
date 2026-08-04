@@ -240,6 +240,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="DXTexture11.cpp" />
     <ClCompile Include="DXRenderer11.cpp" />
     <ClCompile Include="MTSceneBase11.cpp" />
+    <ClCompile Include="MIDITrailMain.cpp" />
     <ClCompile Include="MTAboutDlg.cpp" />
     <ClCompile Include="MTCmdLineParser.cpp" />
     <ClCompile Include="MTColorConf.cpp" />
