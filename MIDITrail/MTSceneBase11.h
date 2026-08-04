@@ -80,6 +80,9 @@ public:
 	void SetParam(const char* pKey, const char* pValue) override;
 	const char* GetParam(const char* pKey) override;
 
+	// Camera accessor (for DXRenderer11)
+	MTFirstPersonCam* GetCamera() { return &m_Camera; }
+
 	// Live input: default no-ops (overridden by scenes that support live)
 	void SetNoteOnLive(unsigned char, unsigned char,
 	                   unsigned char, unsigned char) override {}

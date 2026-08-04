@@ -14,6 +14,7 @@
 #include "YNBaseLib.h"
 #include "DXRenderer11.h"
 #include "DXPrimitive11.h"
+#include "MTScenePianoRoll3D11.h"
 
 using namespace YNBaseLib;
 
@@ -21,6 +22,7 @@ using namespace YNBaseLib;
 #define WINDOW_TITLE       _T("MIDITrail (DX11 WIP)")
 
 static DXRenderer11 g_Renderer;
+static MTScenePianoRoll3D11* g_pScene = nullptr;
 static bool g_IsRunning = true;
 
 //******************************************************************************
@@ -103,6 +105,15 @@ int APIENTRY _tWinMain(
 	// 背景色設定（暗い青）
 	g_Renderer.SetBGColor(0xFF1A1A2E);
 
+	// シーン生成
+	g_pScene = new MTScenePianoRoll3D11(false, false);
+	result = g_pScene->Create(hWnd, g_Renderer.GetDevice(),
+	                           g_Renderer.GetContext(), NULL);
+	if (result != 0) {
+		YN_SHOW_ERR(hWnd);
+		goto EXIT;
+	}
+
 	// メッセージループ
 	{
 		MSG msg = {};
@@ -113,13 +124,21 @@ int APIENTRY _tWinMain(
 				DispatchMessage(&msg);
 			}
 			else {
-				// フレーム描画（シーンなし = 背景色クリア + Present のみ）
-				g_Renderer.RenderScene(NULL, NULL);
+				// シーン更新
+				g_pScene->Transform(0, 0);
+
+				// フレーム描画
+				g_Renderer.RenderScene(g_pScene, g_pScene->GetCamera());
 			}
 		}
 	}
 
 EXIT:;
+	if (g_pScene != NULL) {
+		g_pScene->Release();
+		delete g_pScene;
+		g_pScene = NULL;
+	}
 	DXPrimitive11::ReleasePipeline();
 	g_Renderer.Terminate();
 	return 0;
