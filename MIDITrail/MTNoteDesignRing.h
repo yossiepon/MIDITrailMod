@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTNoteDesignRing
 //
-// ノートデザインリングクラス
+// Note design ring class.
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -16,115 +17,98 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ノートデザインクラス
+// Note design ring class
 //******************************************************************************
 class MTNoteDesignRing : public MTNoteDesign
 {
 public:
 
-	//コンストラクタ／デストラクタ
-	MTNoteDesignRing(void);
-	virtual ~MTNoteDesignRing(void);
+	MTNoteDesignRing();
+	virtual ~MTNoteDesignRing();
 
-	//ライブモニタモード設定
-	void SetLiveMode(void);
+	void SetLiveMode();
 
-	//ノートボックス中心座標取得
-	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
+	virtual DirectX::SimpleMath::Vector3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//ノートボックス頂点座標取得
 	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//発音中ノートボックス頂点座標取得
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
-				unsigned long elapsedTime = 0            //省略可：経過時間（ミリ秒）
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0,
+				unsigned long elapsedTime = 0
 			);
 
-	//ライブモニタ用ノートボックス頂点座標取得
 	virtual void GetNoteBoxVirtexPosLive(
-				unsigned long elapsedTime,	//経過時間（ミリ秒）
+				unsigned long elapsedTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//グリッドリング基準座標取得
 	void GetGridRingBasePos(
 			unsigned long tickTime,
-			D3DXVECTOR3* pBasePos
+			DirectX::SimpleMath::Vector3* pBasePos
 		);
 
-	//ライブモニタ用グリッドリング基準座標取得
 	void GetGridRingBasePosLive(
-			D3DXVECTOR3* pBasePosStart,
-			D3DXVECTOR3* pBasePosEnd
+			DirectX::SimpleMath::Vector3* pBasePosStart,
+			DirectX::SimpleMath::Vector3* pBasePosEnd
 		);
 
-	//ポート原点座標取得
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
 
-	//世界座標配置移動ベクトル取得
-	virtual D3DXVECTOR3 GetWorldMoveVector();
+	virtual DirectX::SimpleMath::Vector3 GetWorldMoveVector();
 
-// >>> modify access level to proteced 20191224 yossiepon begin
 protected:
-// <<< modify access level to proteced 20191224 yossiepon end
 
 	bool m_isLiveMode;
 	float m_NoteAngleStep;
 	float m_RingRadius;
 
-	// ノート基準座標取得
-	D3DXVECTOR3 _GetNoteBasePos(
+	DirectX::SimpleMath::Vector3 _GetNoteBasePos(
 			unsigned long curTickTime,
 			unsigned char portNo,
 			unsigned char chNo
 		);
 
-	// ノート角度取得
 	float _GetNoteAngle(
 			unsigned char noteNo,
-			short pitchBendValue,				//省略可：ピッチベンド
-			unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+			short pitchBendValue,
+			unsigned char pitchBendSensitivity
 		);
 
 	virtual int _LoadConfFile(const TCHAR* pSceneName);
-
 };
-
-

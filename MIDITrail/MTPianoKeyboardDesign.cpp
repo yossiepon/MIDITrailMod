@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTPianoKeyboardDesign
 //
-// ピアノキーボードデザインクラス
+// �s�A�m�L�[�{�[�h�f�U�C���N���X
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -16,16 +16,18 @@
 #include "MTPianoKeyboardDesign.h"
 
 using namespace YNBaseLib;
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// パラメータ定義
+// �p�����[�^��`
 //******************************************************************************
-//テクスチャ座標算出：ビットマップサイズ = 562 x 562
-#define TEXTURE_POINT(x, y)  (D3DXVECTOR2((float)x/561.0f, (float)y/561.0f))
+//�e�N�X�`�����W�Z�o�F�r�b�g�}�b�v�T�C�Y = 562 x 562
+#define TEXTURE_POINT(x, y)  (Vector2((float)x/561.0f, (float)y/561.0f))
 
 //******************************************************************************
-// コンストラクタ
+// �R���X�g���N�^
 //******************************************************************************
 MTPianoKeyboardDesign::MTPianoKeyboardDesign(void)
 {
@@ -33,14 +35,14 @@ MTPianoKeyboardDesign::MTPianoKeyboardDesign(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// �f�X�g���N�^
 //******************************************************************************
 MTPianoKeyboardDesign::~MTPianoKeyboardDesign(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// ������
 //******************************************************************************
 int MTPianoKeyboardDesign::Initialize(
 		const TCHAR* pSceneName,
@@ -52,25 +54,25 @@ int MTPianoKeyboardDesign::Initialize(
 	unsigned long portIndex = 0;
 	unsigned char portNo = 0;
 
-	//ライブモニタ向け設定
+	//���C�u���j�^�����ݒ�
 	if (pSeqData == NULL) {
-		//ポートリスト
+		//�|�[�g���X�g
 		m_PortList.Clear();
 		m_PortList.AddPort(0);
 	}
-	//通常設定
+	//�ʏ�ݒ�
 	else {
-		//ポートリスト取得
+		//�|�[�g���X�g�擾
 		result = pSeqData->GetPortList(&m_PortList);
 		if (result != 0) goto EXIT;
 	}
 
-	//設定ファイル読み込み
+	//�ݒ�t�@�C���ǂݍ���
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ポート番号に昇順のインデックスを振る
-	//ポート 0番 3番 5番 に出力する場合のインデックスはそれぞれ 0, 1, 2
+	//�|�[�g�ԍ��ɏ����̃C���f�b�N�X��U��
+	//�|�[�g 0�� 3�� 5�� �ɏo�͂���ꍇ�̃C���f�b�N�X�͂��ꂼ�� 0, 1, 2
 	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
 		m_PortIndex[index] = 0;
 	}
@@ -80,10 +82,10 @@ int MTPianoKeyboardDesign::Initialize(
 		portIndex++;
 	}
 
-	//キー種別初期化
+	//�L�[��ʏ�����
 	_InitKeyType();
 
-	//キー座標設定
+	//�L�[���W�ݒ�
 	_InitKeyPos();
 
 EXIT:;
@@ -91,7 +93,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 初期化
+// ������
 //******************************************************************************
 void MTPianoKeyboardDesign::_Initialize()
 {
@@ -103,8 +105,8 @@ void MTPianoKeyboardDesign::_Initialize()
 		m_PortIndex[i] = 0;
 	}
 
-	//キーのポリゴン座標はベタに作りこんであるため
-	//これに関するパラメータは設定ファイルに記載しない
+	//�L�[�̃|���S�����W�̓x�^�ɍ�肱��ł��邽��
+	//����Ɋւ���p�����[�^�͐ݒ�t�@�C���ɋL�ڂ��Ȃ�
 
 	m_WhiteKeyStep      = 0.236f;
 	m_WhiteKeyWidth     = 0.226f;
@@ -117,21 +119,21 @@ void MTPianoKeyboardDesign::_Initialize()
 	m_KeySpaceSize      = 0.01f;
 	m_KeyRotateAxisXPos = 2.36f;
 	m_KeyRotateAngle    = 3.00f;
-	m_KeyDownDuration   = 40;         //設定ファイル
-	m_KeyUpDuration     = 40;         //設定ファイル
-	m_KeyboardStepY     = 0.34f;      //設定ファイル
-	m_KeyboardStepZ     = 1.50f;      //設定ファイル
+	m_KeyDownDuration   = 40;         //�ݒ�t�@�C��
+	m_KeyUpDuration     = 40;         //�ݒ�t�@�C��
+	m_KeyboardStepY     = 0.34f;      //�ݒ�t�@�C��
+	m_KeyboardStepZ     = 1.50f;      //�ݒ�t�@�C��
 	m_NoteDropPosZ4WhiteKey = 0.25f;
 	m_NoteDropPosZ4BlackKey = 0.75f;
-	m_BlackKeyShiftCDE  = 0.0216f;    //テクスチャ画像 7ドット相当
-	m_BlackKeyShiftFGAB = 0.0340f;    //テクスチャ画像11ドット相当
-	m_KeyboardMaxDispNum = 16;        //設定ファイル
-	m_WhiteKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //設定ファイル
-	m_BlackKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //設定ファイル
-	m_ActiveKeyColorType = DefaultColor;  //設定ファイル
-	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //設定ファイル
-	m_ActiveKeyColorDuration = 400;   //設定ファイル
-	m_ActiveKeyColorTailRate = 0.5f;  //設定ファイル
+	m_BlackKeyShiftCDE  = 0.0216f;    //�e�N�X�`���摜 7�h�b�g����
+	m_BlackKeyShiftFGAB = 0.0340f;    //�e�N�X�`���摜11�h�b�g����
+	m_KeyboardMaxDispNum = 16;        //�ݒ�t�@�C��
+	m_WhiteKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //�ݒ�t�@�C��
+	m_BlackKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //�ݒ�t�@�C��
+	m_ActiveKeyColorType = DefaultColor;  //�ݒ�t�@�C��
+	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //�ݒ�t�@�C��
+	m_ActiveKeyColorDuration = 400;   //�ݒ�t�@�C��
+	m_ActiveKeyColorTailRate = 0.5f;  //�ݒ�t�@�C��
 	m_KeyDispRangeStart = 0;
 	m_KeyDispRangeEnd   = 127;
 
@@ -139,7 +141,7 @@ void MTPianoKeyboardDesign::_Initialize()
 }
 
 //******************************************************************************
-// キー種別初期化
+// �L�[��ʏ�����
 //******************************************************************************
 void MTPianoKeyboardDesign::_InitKeyType()
 {
@@ -147,8 +149,8 @@ void MTPianoKeyboardDesign::_InitKeyType()
 	unsigned char noteNo = 0;
 	KeyType type = KeyWhiteC;
 
-	//実際の鍵盤では黒鍵が微妙にずれて配置されているため
-	//厳密には(C,F)(D,G,A)(E,B)の形はすべて異なる
+	//���ۂ̌��Ղł͍����������ɂ���Ĕz�u����Ă��邽��
+	//�����ɂ�(C,F)(D,G,A)(E,B)�̌`�͂��ׂĈقȂ�
 
 	for (i = 0; i < 10; i++) {
 		noteNo = (unsigned char)i * 12;				//  ________ 
@@ -173,29 +175,29 @@ void MTPianoKeyboardDesign::_InitKeyType()
 	m_KeyInfo[noteNo + 4].keyType = KeyWhiteE;		// |________|E
 	m_KeyInfo[noteNo + 5].keyType = KeyWhiteF;		// |        |F
 	m_KeyInfo[noteNo + 6].keyType = KeyBlack;		// |----####|
-	m_KeyInfo[noteNo + 7].keyType = KeyWhiteB;		// |________|G <= 形状はB
+	m_KeyInfo[noteNo + 7].keyType = KeyWhiteB;		// |________|G <= �`���B
 
-	//キー表示範囲：開始キーの調整
+	//�L�[�\���͈́F�J�n�L�[�̒���
 	type = m_KeyInfo[m_KeyDispRangeStart].keyType;
 	switch (type) {
 		case KeyWhiteC: type = KeyWhiteC; break;
 		case KeyWhiteD: type = KeyWhiteC; break;
-		case KeyWhiteE: type = KeyWhiteE; break; //変更対象なし
+		case KeyWhiteE: type = KeyWhiteE; break; //�ύX�ΏۂȂ�
 		case KeyWhiteF: type = KeyWhiteF; break;
 		case KeyWhiteG: type = KeyWhiteF; break;
 		case KeyWhiteA: type = KeyWhiteF; break;
-		case KeyWhiteB: type = KeyWhiteB; break; //変更対象なし
+		case KeyWhiteB: type = KeyWhiteB; break; //�ύX�ΏۂȂ�
 		default: break;
 	}
 	m_KeyInfo[m_KeyDispRangeStart].keyType = type;
 
-	//キー表示範囲：終了キーの調整
+	//�L�[�\���͈́F�I���L�[�̒���
 	type = m_KeyInfo[m_KeyDispRangeEnd].keyType;
 	switch (type) {
-		case KeyWhiteC: type = KeyWhiteC; break; //変更対象なし
+		case KeyWhiteC: type = KeyWhiteC; break; //�ύX�ΏۂȂ�
 		case KeyWhiteD: type = KeyWhiteE; break;
 		case KeyWhiteE: type = KeyWhiteE; break;
-		case KeyWhiteF: type = KeyWhiteF; break; //変更対象なし
+		case KeyWhiteF: type = KeyWhiteF; break; //�ύX�ΏۂȂ�
 		case KeyWhiteG: type = KeyWhiteB; break;
 		case KeyWhiteA: type = KeyWhiteB; break;
 		case KeyWhiteB: type = KeyWhiteB; break;
@@ -207,7 +209,7 @@ void MTPianoKeyboardDesign::_InitKeyType()
 }
 
 //******************************************************************************
-// キー座標設定
+// �L�[���W�ݒ�
 //******************************************************************************
 void MTPianoKeyboardDesign::_InitKeyPos()
 {
@@ -216,28 +218,28 @@ void MTPianoKeyboardDesign::_InitKeyPos()
 	float posX = 0.0f;
 	float shift = 0.0f;
 
-	//先頭ノートの位置
+	//�擪�m�[�g�̈ʒu
 	//posX = GetWhiteKeyStep() / 2.0f;
 	m_KeyInfo[noteNo].keyCenterPosX = posX;
 	prevKeyType = m_KeyInfo[noteNo].keyType;
 
-	//実際の鍵盤では黒鍵が微妙にずれて配置されている
-	//まず白鍵と白鍵の中点に黒鍵を配置して後から補正する
+	//���ۂ̌��Ղł͍����������ɂ���Ĕz�u����Ă���
+	//�܂������Ɣ����̒��_�ɍ�����z�u���Čォ��␳����
 
-	//2番目以降のノートの位置
+	//2�Ԗڈȍ~�̃m�[�g�̈ʒu
 	for (noteNo = 1; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-		//直前のキーが黒鍵
+		//���O�̃L�[������
 		if (prevKeyType == KeyBlack) {
 			if (m_KeyInfo[noteNo].keyType == KeyBlack) {
-				//黒鍵の後に黒鍵はありえない
+				//�����̌�ɍ����͂��肦�Ȃ�
 			}
 			else {
-				//白鍵と白鍵の中央に黒鍵を配置する
-				//実際の鍵盤と異なるが工数削減のため目をつぶる
+				//�����Ɣ����̒����ɍ�����z�u����
+				//���ۂ̌��ՂƈقȂ邪�H���팸�̂��ߖڂ��Ԃ�
 				posX += (GetWhiteKeyStep() / 2.0f);
 			}
 		}
-		//直前のキーが白鍵
+		//���O�̃L�[������
 		else {
 			if (m_KeyInfo[noteNo].keyType == KeyBlack) {
 				posX += (GetWhiteKeyStep() / 2.0f);
@@ -250,11 +252,11 @@ void MTPianoKeyboardDesign::_InitKeyPos()
 		prevKeyType = m_KeyInfo[noteNo].keyType;
 	}
 
-	//黒鍵の配置を補正する
+	//�����̔z�u��␳����
 	prevKeyType = KeyWhiteC;
 	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		if (m_KeyInfo[noteNo].keyType == KeyBlack) {
-			//黒鍵の位置補正量を取得
+			//�����̈ʒu�␳�ʂ��擾
 			switch (prevKeyType) {
 				case KeyWhiteC: shift = -m_BlackKeyShiftCDE;  break;
 				case KeyWhiteD: shift = +m_BlackKeyShiftCDE;  break;
@@ -263,12 +265,12 @@ void MTPianoKeyboardDesign::_InitKeyPos()
 				case KeyWhiteA: shift = +m_BlackKeyShiftFGAB; break;
 				default:        shift =  0.00f;               break;
 			}
-			//最後の黒鍵は中点に配置
+			//�Ō�̍����͒��_�ɔz�u
 			if (noteNo == 126) {
 				shift = 0.00f;
 			}
 			
-			//表示範囲の先頭末尾でひとつだけ取り残される黒鍵は中央に配置する
+			//�\���͈͂̐擪�����łЂƂ������c����鍕���͒����ɔz�u����
 			if ((noteNo - 1) == m_KeyDispRangeStart) {
 				if ((m_KeyInfo[noteNo + 1].keyType == KeyWhiteE) 
 				 || (m_KeyInfo[noteNo + 1].keyType == KeyWhiteB)) {
@@ -282,7 +284,7 @@ void MTPianoKeyboardDesign::_InitKeyPos()
 				}
 			}
 			
-			//位置補正
+			//�ʒu�␳
 			m_KeyInfo[noteNo].keyCenterPosX += shift;
 		}
 		prevKeyType = m_KeyInfo[noteNo].keyType;
@@ -292,7 +294,7 @@ void MTPianoKeyboardDesign::_InitKeyPos()
 }
 
 //******************************************************************************
-// ポート原点X座標取得
+// �|�[�g���_X���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetPortOriginX(
 		unsigned char portNo
@@ -332,7 +334,7 @@ float MTPianoKeyboardDesign::GetPortOriginX(
 }
 
 //******************************************************************************
-// ポート原点Y座標取得
+// �|�[�g���_Y���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetPortOriginY(
 		unsigned char portNo
@@ -364,7 +366,7 @@ float MTPianoKeyboardDesign::GetPortOriginY(
 	portIndex = (float)(m_PortIndex[portNo]);
 	portHeight =(m_KeyboardStepY * (float)(SM_MAX_CH_NUM -1)) + GetBlackKeyHeight();
 
-	//表示チャンネル数
+	//�\���`�����l����
 	chNum = m_PortList.GetSize() * SM_MAX_CH_NUM;
 	if ((unsigned long)m_KeyboardMaxDispNum < chNum) {
 		chNum = m_KeyboardMaxDispNum;
@@ -377,7 +379,7 @@ float MTPianoKeyboardDesign::GetPortOriginY(
 }
 
 //******************************************************************************
-// ポート原点Z座標取得
+// �|�[�g���_Z���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetPortOriginZ(
 		unsigned char portNo
@@ -416,7 +418,7 @@ float MTPianoKeyboardDesign::GetPortOriginZ(
 	portIndex = (float)(m_PortIndex[portNo]);
 	portLen =(m_KeyboardStepZ * (float)(SM_MAX_CH_NUM -1)) + GetWhiteKeyLen();
 
-	//表示チャンネル数
+	//�\���`�����l����
 	chNum = m_PortList.GetSize() * SM_MAX_CH_NUM;
 	if ((unsigned long)m_KeyboardMaxDispNum < chNum) {
 		chNum = m_KeyboardMaxDispNum;
@@ -429,7 +431,7 @@ float MTPianoKeyboardDesign::GetPortOriginZ(
 }
 
 //******************************************************************************
-// キー種別取得
+// �L�[��ʎ擾
 //******************************************************************************
 MTPianoKeyboardDesign::KeyType MTPianoKeyboardDesign::GetKeyType(
 		unsigned char noteNo
@@ -445,7 +447,7 @@ MTPianoKeyboardDesign::KeyType MTPianoKeyboardDesign::GetKeyType(
 }
 
 //******************************************************************************
-// キー中心X座標取得
+// �L�[���SX���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetKeyCenterPosX(
 		unsigned char noteNo
@@ -461,7 +463,7 @@ float MTPianoKeyboardDesign::GetKeyCenterPosX(
 }
 
 //******************************************************************************
-// 白鍵配置間隔取得
+// �����z�u�Ԋu�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetWhiteKeyStep()
 {
@@ -469,7 +471,7 @@ float MTPianoKeyboardDesign::GetWhiteKeyStep()
 }
 
 //******************************************************************************
-// 白鍵横サイズ取得
+// �������T�C�Y�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetWhiteKeyWidth()
 {
@@ -477,7 +479,7 @@ float MTPianoKeyboardDesign::GetWhiteKeyWidth()
 }
 
 //******************************************************************************
-// 白鍵高さ取得
+// ���������擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetWhiteKeyHeight()
 {
@@ -485,7 +487,7 @@ float MTPianoKeyboardDesign::GetWhiteKeyHeight()
 }
 
 //******************************************************************************
-// 白鍵長さ取得
+// ���������擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetWhiteKeyLen()
 {
@@ -493,7 +495,7 @@ float MTPianoKeyboardDesign::GetWhiteKeyLen()
 }
 
 //******************************************************************************
-// 黒鍵横サイズ取得
+// �������T�C�Y�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetBlackKeyWidth()
 {
@@ -501,7 +503,7 @@ float MTPianoKeyboardDesign::GetBlackKeyWidth()
 }
 
 //******************************************************************************
-// 黒鍵高さ取得
+// ���������擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetBlackKeyHeight()
 {
@@ -509,7 +511,7 @@ float MTPianoKeyboardDesign::GetBlackKeyHeight()
 }
 
 //******************************************************************************
-// 黒鍵傾斜長さ取得
+// �����X�Β����擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetBlackKeySlopeLen()
 {
@@ -517,7 +519,7 @@ float MTPianoKeyboardDesign::GetBlackKeySlopeLen()
 }
 
 //******************************************************************************
-// 黒鍵長さ取得
+// ���������擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetBlackKeyLen()
 {
@@ -525,7 +527,7 @@ float MTPianoKeyboardDesign::GetBlackKeyLen()
 }
 
 //******************************************************************************
-// キー間隔サイズ取得
+// �L�[�Ԋu�T�C�Y�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetKeySpaceSize()
 {
@@ -533,7 +535,7 @@ float MTPianoKeyboardDesign::GetKeySpaceSize()
 }
 
 //******************************************************************************
-// キー押下回転中心Y軸座標取得
+// �L�[������]���SY�����W�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetKeyRotateAxisXPos()
 {
@@ -541,7 +543,7 @@ float MTPianoKeyboardDesign::GetKeyRotateAxisXPos()
 }
 
 //******************************************************************************
-// キー押下回転角度
+// �L�[������]�p�x
 //******************************************************************************
 float MTPianoKeyboardDesign::GetKeyRotateAngle()
 {
@@ -549,7 +551,7 @@ float MTPianoKeyboardDesign::GetKeyRotateAngle()
 }
 
 //******************************************************************************
-// キー下降時間取得(msec)
+// �L�[���~���Ԏ擾(msec)
 //******************************************************************************
 unsigned long MTPianoKeyboardDesign::GetKeyDownDuration()
 {
@@ -557,7 +559,7 @@ unsigned long MTPianoKeyboardDesign::GetKeyDownDuration()
 }
 
 //******************************************************************************
-// キー上昇時間取得(msec)
+// �L�[�㏸���Ԏ擾(msec)
 //******************************************************************************
 unsigned long MTPianoKeyboardDesign::GetKeyUpDuration()
 {
@@ -565,7 +567,7 @@ unsigned long MTPianoKeyboardDesign::GetKeyUpDuration()
 }
 
 //******************************************************************************
-// ノートドロップ座標取得
+// �m�[�g�h���b�v���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetNoteDropPosZ(
 		unsigned char noteNo
@@ -584,22 +586,22 @@ float MTPianoKeyboardDesign::GetNoteDropPosZ(
 }
 
 //******************************************************************************
-// ピッチベンドキーボードシフト量取得
+// �s�b�`�x���h�L�[�{�[�h�V�t�g�ʎ擾
 //******************************************************************************
 float MTPianoKeyboardDesign::GetPitchBendShift(
-		short pitchBendValue,				//ピッチベンド
-		unsigned char pitchBendSensitivity	//ピッチベンド感度
+		short pitchBendValue,				//�s�b�`�x���h
+		unsigned char pitchBendSensitivity	//�s�b�`�x���h���x
 	)
 {
 	float shift = 0.0f;
 	float noteStep = 0.0f;
 
-	//半音の移動量
-	//  キーの配置間隔は B->C, E->F の間に黒鍵が存在しないため均一ではない
-	//  1オクターブでつじつまが合うように半音のシフト量を決める
+	//�����̈ړ���
+	//  �L�[�̔z�u�Ԋu�� B->C, E->F �̊Ԃɍ��������݂��Ȃ����ߋψ�ł͂Ȃ�
+	//  1�I�N�^�[�u�ł��܂������悤�ɔ����̃V�t�g�ʂ����߂�
 	noteStep = GetWhiteKeyStep() * 7.0f / 12.0f;
 
-	//ピッチベンドによるキーボード移動量
+	//�s�b�`�x���h�ɂ��L�[�{�[�h�ړ���
 	if (pitchBendValue < 0) {
 		shift = noteStep * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
 	}
@@ -611,31 +613,31 @@ float MTPianoKeyboardDesign::GetPitchBendShift(
 }
 
 //******************************************************************************
-// 白鍵カラー取得
+// �����J���[�擾
 //******************************************************************************
-D3DXCOLOR MTPianoKeyboardDesign::GetWhiteKeyColor()
+Color MTPianoKeyboardDesign::GetWhiteKeyColor()
 {
 	return m_WhiteKeyColor;
 }
 
 //******************************************************************************
-// 黒鍵カラー取得
+// �����J���[�擾
 //******************************************************************************
-D3DXCOLOR MTPianoKeyboardDesign::GetBlackKeyColor()
+Color MTPianoKeyboardDesign::GetBlackKeyColor()
 {
 	return m_BlackKeyColor;
 }
 
 //******************************************************************************
-// 発音中キーカラー取得
+// �������L�[�J���[�擾
 //******************************************************************************
-D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
+Color MTPianoKeyboardDesign::GetActiveKeyColor(
 		unsigned char noteNo,
 		unsigned long elapsedTime,
-		D3DXCOLOR* pNoteColor
+		Color* pNoteColor
 	)
 {
-	D3DXCOLOR color;
+	Color color;
 	float r = 0.0f;
 	float g = 0.0f;
 	float b = 0.0f;
@@ -644,27 +646,27 @@ D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 	unsigned long duration = 0;
 
 	//          on     off
-	//   白 |---+......+---- ←offになったら白鍵の色に戻す
+	//   �� |---+......+---- ��off�ɂȂ����甒���̐F�ɖ߂�
 	//      |   :      :
-	//      |   :  +---+     ←offになるまで中間色のまま
+	//      |   :  +---+     ��off�ɂȂ�܂Œ��ԐF�̂܂�
 	//      |   : /:   :
 	//      |   :/ :   :
-	//   赤 |   +  :   :     ←キー押下直後の色（赤）
+	//   �� |   +  :   :     ���L�[��������̐F�i�ԁj
 	//      |   :\ :   :
 	//      |   : \:   :
-	//      |   :  +---+     ←offになるまで中間色のまま
+	//      |   :  +---+     ��off�ɂȂ�܂Œ��ԐF�̂܂�
 	//      |   :  :   :
-	//   黒 |---+  :   +---- ←offになったら黒鍵の色に戻す
+	//   �� |---+  :   +---- ��off�ɂȂ����獕���̐F�ɖ߂�
 	//   ---+---*------*-------> +t
 	//      |   on :   off
 	//          <-->duration
 
 	if ((pNoteColor != NULL) && (m_ActiveKeyColorType == NoteColor)) {
-		//ノート色が指定されている場合
+		//�m�[�g�F���w�肳��Ă���ꍇ
 		color = *pNoteColor;
 	}
 	else {
-		//それ以外はデフォルト色とする
+		//����ȊO�̓f�t�H���g�F�Ƃ���
 		color = m_ActiveKeyColor;
 	}
 
@@ -676,35 +678,35 @@ D3DXCOLOR MTPianoKeyboardDesign::GetActiveKeyColor(
 	}
 
 	if (GetKeyType(noteNo) == KeyBlack) {
-		r = color.r - ((color.r) * rate);
-		g = color.g - ((color.g) * rate);
-		b = color.b - ((color.b) * rate);
-		a = color.a;
+		r = color.R() - ((color.R()) * rate);
+		g = color.G() - ((color.G()) * rate);
+		b = color.B() - ((color.B()) * rate);
+		a = color.A();
 	}
 	else {
-		r = color.r + ((1.0f - color.r) * rate);
-		g = color.g + ((1.0f - color.g) * rate);
-		b = color.b + ((1.0f - color.b) * rate);
-		a = color.a;
+		r = color.R() + ((1.0f - color.R()) * rate);
+		g = color.G() + ((1.0f - color.G()) * rate);
+		b = color.B() + ((1.0f - color.B()) * rate);
+		a = color.A();
 	}
-	color = D3DXCOLOR(r, g, b, a);
+	color = Color(r, g, b, a);
 
 	return color;
 }
 
 //******************************************************************************
-// 白鍵テクスチャ座標取得：上面
+// �����e�N�X�`�����W�擾�F���
 //******************************************************************************
 void MTPianoKeyboardDesign::GetWhiteKeyTexturePosTop(
 		unsigned char noteNo,
-		D3DXVECTOR2* pTexPos0,
-		D3DXVECTOR2* pTexPos1,
-		D3DXVECTOR2* pTexPos2,
-		D3DXVECTOR2* pTexPos3,
-		D3DXVECTOR2* pTexPos4,
-		D3DXVECTOR2* pTexPos5,
-		D3DXVECTOR2* pTexPos6,
-		D3DXVECTOR2* pTexPos7
+		Vector2* pTexPos0,
+		Vector2* pTexPos1,
+		Vector2* pTexPos2,
+		Vector2* pTexPos3,
+		Vector2* pTexPos4,
+		Vector2* pTexPos5,
+		Vector2* pTexPos6,
+		Vector2* pTexPos7
 	)
 {
 	unsigned long index = 0;
@@ -755,14 +757,14 @@ void MTPianoKeyboardDesign::GetWhiteKeyTexturePosTop(
 }
 
 //******************************************************************************
-// 白鍵テクスチャ座標取得：前面
+// �����e�N�X�`�����W�擾�F�O��
 //******************************************************************************
 void MTPianoKeyboardDesign::GetWhiteKeyTexturePosFront(
 		unsigned char noteNo,
-		D3DXVECTOR2* pTexPos0,
-		D3DXVECTOR2* pTexPos1,
-		D3DXVECTOR2* pTexPos2,
-		D3DXVECTOR2* pTexPos3
+		Vector2* pTexPos0,
+		Vector2* pTexPos1,
+		Vector2* pTexPos2,
+		Vector2* pTexPos3
 	)
 {
 	unsigned long index = 0;
@@ -803,31 +805,31 @@ void MTPianoKeyboardDesign::GetWhiteKeyTexturePosFront(
 }
 
 //******************************************************************************
-// 白鍵テクスチャ座標取得：単一色
+// �����e�N�X�`�����W�擾�F�P��F
 //******************************************************************************
 void MTPianoKeyboardDesign::GetWhiteKeyTexturePosSingleColor(
 		unsigned char noteNo,
-		D3DXVECTOR2* pTexPos
+		Vector2* pTexPos
 	)
 {
 	*pTexPos = TEXTURE_POINT(550, 5);
 }
 
 //******************************************************************************
-// 黒鍵テクスチャ座標取得：上面＋側面
+// �����e�N�X�`�����W�擾�F��ʁ{����
 //******************************************************************************
 void MTPianoKeyboardDesign::GetBlackKeyTexturePos(
 		unsigned char noteNo,
-		D3DXVECTOR2* pTexPos0,
-		D3DXVECTOR2* pTexPos1,
-		D3DXVECTOR2* pTexPos2,
-		D3DXVECTOR2* pTexPos3,
-		D3DXVECTOR2* pTexPos4,
-		D3DXVECTOR2* pTexPos5,
-		D3DXVECTOR2* pTexPos6,
-		D3DXVECTOR2* pTexPos7,
-		D3DXVECTOR2* pTexPos8,
-		D3DXVECTOR2* pTexPos9,
+		Vector2* pTexPos0,
+		Vector2* pTexPos1,
+		Vector2* pTexPos2,
+		Vector2* pTexPos3,
+		Vector2* pTexPos4,
+		Vector2* pTexPos5,
+		Vector2* pTexPos6,
+		Vector2* pTexPos7,
+		Vector2* pTexPos8,
+		Vector2* pTexPos9,
 		bool isColored
 	)
 {
@@ -844,12 +846,12 @@ void MTPianoKeyboardDesign::GetBlackKeyTexturePos(
 
 	unsigned long pos[2][10][2] = {
 		// 0              1              2              3              4              5              6              7              8              9
-		{ { 63- 7, 324}, { 92- 7, 324}, { 92- 7, 305}, { 63- 7, 305}, { 92- 7,   3}, { 63- 7,   3}, { 97- 7, 324}, { 97- 7,   3}, { 58- 7, 324}, { 58- 7,   3} }, // 通常
-		{ {447+11, 324}, {476+11, 324}, {476+11, 305}, {447+11, 305}, {476+11,   3}, {447+11,   3}, {481+11, 324}, {481+11,   3}, {442+11, 324}, {442+11,   3} }  // 白色化
+		{ { 63- 7, 324}, { 92- 7, 324}, { 92- 7, 305}, { 63- 7, 305}, { 92- 7,   3}, { 63- 7,   3}, { 97- 7, 324}, { 97- 7,   3}, { 58- 7, 324}, { 58- 7,   3} }, // �ʏ�
+		{ {447+11, 324}, {476+11, 324}, {476+11, 305}, {447+11, 305}, {476+11,   3}, {447+11,   3}, {481+11, 324}, {481+11,   3}, {442+11, 324}, {442+11,   3} }  // ���F��
 	};
 
-	//黒鍵ポリゴンに色を付ける場合は
-	//白色化したテクスチャを貼り付ける
+	//�����|���S���ɐF��t����ꍇ��
+	//���F�������e�N�X�`����\��t����
 	if (isColored) {
 		index = 1;
 	}
@@ -869,11 +871,11 @@ void MTPianoKeyboardDesign::GetBlackKeyTexturePos(
 }
 
 //******************************************************************************
-// 黒鍵テクスチャ座標取得：単一色
+// �����e�N�X�`�����W�擾�F�P��F
 //******************************************************************************
 void MTPianoKeyboardDesign::GetBlackKeyTexturePosSingleColor(
 		unsigned char noteNo,
-		D3DXVECTOR2* pTexPos,
+		Vector2* pTexPos,
 		bool isColored
 	)
 {
@@ -888,9 +890,9 @@ void MTPianoKeyboardDesign::GetBlackKeyTexturePosSingleColor(
 }
 
 //******************************************************************************
-// キーボード基準座標取得
+// �L�[�{�[�h����W�擾
 //******************************************************************************
-D3DXVECTOR3 MTPianoKeyboardDesign::GetKeyboardBasePos(
+Vector3 MTPianoKeyboardDesign::GetKeyboardBasePos(
 		unsigned char portNo,
 		unsigned char chNo
 	)
@@ -898,14 +900,14 @@ D3DXVECTOR3 MTPianoKeyboardDesign::GetKeyboardBasePos(
 	float ox = 0.0f;
 	float oy = 0.0f;
 	float oz = 0.0f;
-	D3DXVECTOR3 moveVector;
+	Vector3 moveVector;
 
-	//ポート単位の原点座標
+	//�|�[�g�P�ʂ̌��_���W
 	ox = GetPortOriginX(portNo);
 	oy = GetPortOriginY(portNo);
 	oz = GetPortOriginZ(portNo);
 
-	//チャンネルを考慮した配置座標
+	//�`�����l�����l�������z�u���W
 	moveVector.x = ox + 0.0f;
 	moveVector.y = oy + ((float)chNo * m_KeyboardStepY);
 	moveVector.z = oz + ((float)chNo * m_KeyboardStepZ);
@@ -914,7 +916,7 @@ D3DXVECTOR3 MTPianoKeyboardDesign::GetKeyboardBasePos(
 }
 
 //******************************************************************************
-// キーボード表示数取得
+// �L�[�{�[�h�\�����擾
 //******************************************************************************
 unsigned long MTPianoKeyboardDesign::GetKeyboardMaxDispNum()
 {
@@ -923,7 +925,7 @@ unsigned long MTPianoKeyboardDesign::GetKeyboardMaxDispNum()
 
 // >>> add 20180404 yossiepon begin
 //******************************************************************************
-// キーボード表示数設定
+// �L�[�{�[�h�\�����ݒ�
 //******************************************************************************
 void MTPianoKeyboardDesign::SetKeyboardSingle()
 {
@@ -932,7 +934,7 @@ void MTPianoKeyboardDesign::SetKeyboardSingle()
 // <<< add 20180404 yossiepon end
 
 //******************************************************************************
-// キー表示範囲：開始
+// �L�[�\���͈́F�J�n
 //******************************************************************************
 unsigned char MTPianoKeyboardDesign::GetKeyDispRangeStart()
 {
@@ -940,7 +942,7 @@ unsigned char MTPianoKeyboardDesign::GetKeyDispRangeStart()
 }
 
 //******************************************************************************
-// キー表示範囲：終了
+// �L�[�\���͈́F�I��
 //******************************************************************************
 unsigned char MTPianoKeyboardDesign::GetKeyDispRangeEnd()
 {
@@ -948,7 +950,7 @@ unsigned char MTPianoKeyboardDesign::GetKeyDispRangeEnd()
 }
 
 //******************************************************************************
-// キー表示判定
+// �L�[�\������
 //******************************************************************************
 bool MTPianoKeyboardDesign::IsKeyDisp(
 		unsigned char noteNo
@@ -964,7 +966,7 @@ bool MTPianoKeyboardDesign::IsKeyDisp(
 }
 
 //******************************************************************************
-// 設定ファイル読み込み
+// �ݒ�t�@�C���ǂݍ���
 //******************************************************************************
 int MTPianoKeyboardDesign::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -979,7 +981,7 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//ピアノキーボード情報
+	//�s�A�m�L�[�{�[�h���
 	//----------------------------------
 	result = confFile.SetCurSection(_T("PianoKeyboard"));
 	if (result != 0) goto EXIT;
@@ -1023,7 +1025,7 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 	result = confFile.GetInt(_T("KeyDispRangeEnd"), &m_KeyDispRangeEnd, 127);
 	if (result != 0) goto EXIT;
 
-	//キーボード最大表示数は1ポート分（16ch）に制限する
+	//�L�[�{�[�h�ő�\������1�|�[�g���i16ch�j�ɐ�������
 	if (m_KeyboardMaxDispNum > SM_MAX_CH_NUM) {
 		m_KeyboardMaxDispNum = SM_MAX_CH_NUM;
 	}
@@ -1031,7 +1033,7 @@ int MTPianoKeyboardDesign::_LoadConfFile(
 		m_KeyboardMaxDispNum = 0;
 	}
 
-	//キー表示範囲のクリッピング
+	//�L�[�\���͈͂̃N���b�s���O
 	if (m_KeyDispRangeStart < 0) {
 		m_KeyDispRangeStart = 0;
 	}

@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTNoteDesignRingMod
 //
-// ノートデザインリングModクラス
+// �m�[�g�f�U�C�������OMod�N���X
 //
 // Copyright (C) 2019 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -12,23 +12,26 @@
 #include "MTNoteDesignRingMod.h"
 #include "DXH.h"
 
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
 
 //******************************************************************************
-// コンストラクタ
+// �R���X�g���N�^
 //******************************************************************************
 MTNoteDesignRingMod::MTNoteDesignRingMod(void)
 {
 }
 
 //******************************************************************************
-// デストラクタ
+// �f�X�g���N�^
 //******************************************************************************
 MTNoteDesignRingMod::~MTNoteDesignRingMod(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// ������
 //******************************************************************************
 int MTNoteDesignRingMod::Initialize(
 	const TCHAR* pSceneName,
@@ -48,34 +51,34 @@ EXIT:;
 }
 
 //******************************************************************************
-// ノートボックス中心座標取得
+// �m�[�g�{�b�N�X���S���W�擾
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRingMod::GetNoteBoxCenterPosX(
+Vector3 MTNoteDesignRingMod::GetNoteBoxCenterPosX(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	short pitchBendValue,				//省略可：ピッチベンド
-	unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+	short pitchBendValue,				//�ȗ��F�s�b�`�x���h
+	unsigned char pitchBendSensitivity	//�ȗ��F�s�b�`�x���h���x
 )
 {
 	return MTNoteDesignRing::GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
 }
 
 //******************************************************************************
-// ノートボックス頂点座標取得
+// �m�[�g�{�b�N�X���_���W�擾
 //******************************************************************************
 void MTNoteDesignRingMod::GetNoteBoxVirtexPos(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-	D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-	D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-	D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-	short pitchBendValue,				//省略可：ピッチベンド
-	unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+	Vector3* pVector0,	//YZ����+X�����������č���
+	Vector3* pVector1,	//YZ����+X�����������ĉE��
+	Vector3* pVector2,	//YZ����+X�����������č���
+	Vector3* pVector3,	//YZ����+X�����������ĉE��
+	short pitchBendValue,				//�ȗ��F�s�b�`�x���h
+	unsigned char pitchBendSensitivity	//�ȗ��F�s�b�`�x���h���x
 
 )
 {
@@ -84,20 +87,20 @@ void MTNoteDesignRingMod::GetNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// 発音中ノートボックス頂点座標取得
+// �������m�[�g�{�b�N�X���_���W�擾
 //******************************************************************************
 void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-	D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-	D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-	D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-	short pitchBendValue,				//省略可：ピッチベンド
-	unsigned char pitchBendSensitivity,	//省略可：ピッチベンド感度
-	unsigned long elapsedTime			//省略可：経過時間（ミリ秒）
+	Vector3* pVector0,	//YZ����+X�����������č���
+	Vector3* pVector1,	//YZ����+X�����������ĉE��
+	Vector3* pVector2,	//YZ����+X�����������č���
+	Vector3* pVector3,	//YZ����+X�����������ĉE��
+	short pitchBendValue,				//�ȗ��F�s�b�`�x���h
+	unsigned char pitchBendSensitivity,	//�ȗ��F�s�b�`�x���h���x
+	unsigned long elapsedTime			//�ȗ��F�o�ߎ��ԁi�~���b�j
 )
 {
 	MTNoteDesignRing::GetActiveNoteBoxVirtexPos(
@@ -105,25 +108,25 @@ void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// 発音中ノートボックス頂点座標取得
+// �������m�[�g�{�b�N�X���_���W�擾
 //******************************************************************************
 void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-	D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-	D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-	D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-	short pitchBendValue,				//省略可：ピッチベンド
-	unsigned char pitchBendSensitivity,	//省略可：ピッチベンド感度
-	float rate							//省略可：サイズ比率
+	Vector3* pVector0,	//YZ����+X�����������č���
+	Vector3* pVector1,	//YZ����+X�����������ĉE��
+	Vector3* pVector2,	//YZ����+X�����������č���
+	Vector3* pVector3,	//YZ����+X�����������ĉE��
+	short pitchBendValue,				//�ȗ��F�s�b�`�x���h
+	unsigned char pitchBendSensitivity,	//�ȗ��F�s�b�`�x���h���x
+	float rate							//�ȗ��F�T�C�Y�䗦
 )
 {
-	D3DXVECTOR3 basePos0;
-	D3DXVECTOR3 basePos1;
-	D3DXVECTOR3 basePos2;
+	Vector3 basePos0;
+	Vector3 basePos1;
+	Vector3 basePos2;
 	float angle0 = 0.0f;
 	float angle1 = 0.0f;
 	float angle2 = 0.0f;
@@ -133,14 +136,14 @@ void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 		curSizeRatio = 1.0f + (MTNoteDesignMod::m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
 	}
 
-	//ノート基準座標
+	//�m�[�g����W
 	basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
 	basePos1 = basePos0;
 	basePos1.y -= MTNoteDesignMod::GetNoteBoxWidth() * curSizeRatio / 2.0f;
 	basePos2 = basePos0;
 	basePos2.y += MTNoteDesignMod::GetNoteBoxWidth() * curSizeRatio / 2.0f;
 
-	//ノート番号で角度を決定
+	//�m�[�g�ԍ��Ŋp�x������
 	angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
 	angle1 = angle0 - (m_NoteAngleStep * curSizeRatio / 2.0f);
 	angle2 = angle0 + (m_NoteAngleStep * curSizeRatio / 2.0f);
@@ -152,19 +155,19 @@ void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ライブモニタ用ノートボックス頂点座標取得
+// ���C�u���j�^�p�m�[�g�{�b�N�X���_���W�擾
 //******************************************************************************
 void MTNoteDesignRingMod::GetNoteBoxVirtexPosLive(
 	unsigned long elapsedTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-	D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-	D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-	D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-	short pitchBendValue,				//省略可：ピッチベンド
-	unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+	Vector3* pVector0,	//YZ����+X�����������č���
+	Vector3* pVector1,	//YZ����+X�����������ĉE��
+	Vector3* pVector2,	//YZ����+X�����������č���
+	Vector3* pVector3,	//YZ����+X�����������ĉE��
+	short pitchBendValue,				//�ȗ��F�s�b�`�x���h
+	unsigned char pitchBendSensitivity	//�ȗ��F�s�b�`�x���h���x
 )
 {
 	MTNoteDesignRing::GetNoteBoxVirtexPosLive(
@@ -172,7 +175,7 @@ void MTNoteDesignRingMod::GetNoteBoxVirtexPosLive(
 }
 
 //******************************************************************************
-// ポート原点Y座標取得
+// �|�[�g���_Y���W�擾
 //******************************************************************************
 float MTNoteDesignRingMod::GetPortOriginY(
 	unsigned char portNo
@@ -182,7 +185,7 @@ float MTNoteDesignRingMod::GetPortOriginY(
 }
 
 //******************************************************************************
-// ポート原点Z座標取得
+// �|�[�g���_Z���W�擾
 //******************************************************************************
 float MTNoteDesignRingMod::GetPortOriginZ(
 	unsigned char portNo
@@ -192,15 +195,15 @@ float MTNoteDesignRingMod::GetPortOriginZ(
 }
 
 //******************************************************************************
-// 世界座標配置移動ベクトル取得
+// ���E���W�z�u�ړ��x�N�g���擾
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRingMod::GetWorldMoveVector()
+Vector3 MTNoteDesignRingMod::GetWorldMoveVector()
 {
 	return MTNoteDesignRing::GetWorldMoveVector();
 }
 
 //******************************************************************************
-// 設定ファイル読み込み
+// �ݒ�t�@�C���ǂݍ���
 //******************************************************************************
 int MTNoteDesignRingMod::_LoadConfFile(
 	const TCHAR* pSceneName

@@ -2,73 +2,54 @@
 //
 // MIDITrail / MTColorPalette
 //
-// カラーパレットクラス
+// Color palette class.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
 #include "SMIDILib.h"
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 
 
 //******************************************************************************
-// カラーパレットクラス
+// Color palette class
 //******************************************************************************
 class MTColorPalette
 {
 public:
-	
-	//コンストラクタ／デストラクタ
-	MTColorPalette(void);
-	virtual ~MTColorPalette(void);
-	
-	//初期化
+
+	MTColorPalette();
+	virtual ~MTColorPalette();
+
 	int Initialize();
-	
-	//チャンネル色取得
-	int GetChColor(unsigned int chNo, D3DXCOLOR* pColor);
-	
-	//チャンネル色登録
-	int SetChColor(unsigned int chNo, D3DXCOLOR color);
-	
-	//背景色取得
-	void GetBackgroundColor(D3DXCOLOR* pColor);
 
-	//背景色登録
-	void SetBackgroundColor(D3DXCOLOR color);
-	
-	//グリッドライン色取得
-	void GetGridLineColor(D3DXCOLOR* pColor);
+	int  GetChColor(unsigned int chNo, DirectX::SimpleMath::Color* pColor);
+	int  SetChColor(unsigned int chNo, DirectX::SimpleMath::Color color);
 
-	//グリッドライン色登録
-	void SetGridLineColor(D3DXCOLOR color);
-	
-	//カウンター色取得
-	void GetCounterColor(D3DXCOLOR* pColor);
+	void GetBackgroundColor(DirectX::SimpleMath::Color* pColor);
+	void SetBackgroundColor(DirectX::SimpleMath::Color color);
 
-	//カウンター色登録
-	void SetCounterColor(D3DXCOLOR color);
+	void GetGridLineColor(DirectX::SimpleMath::Color* pColor);
+	void SetGridLineColor(DirectX::SimpleMath::Color color);
 
-	//コピー
+	void GetCounterColor(DirectX::SimpleMath::Color* pColor);
+	void SetCounterColor(DirectX::SimpleMath::Color color);
+
 	int CopyFrom(MTColorPalette* pColorSrc);
-	
+
 private:
-	
-	//代入とコピーコンストラクタの禁止
+
 	void operator=(const MTColorPalette&);
 	MTColorPalette(const MTColorPalette&);
-	
-	D3DXCOLOR m_ChColor[SM_MAX_CH_NUM];
-	D3DXCOLOR m_BgColor;
-	D3DXCOLOR m_GridLineColor;
-	D3DXCOLOR m_CounterColor;
-	
+
+	DirectX::SimpleMath::Color m_ChColor[SM_MAX_CH_NUM];
+	DirectX::SimpleMath::Color m_BgColor;
+	DirectX::SimpleMath::Color m_GridLineColor;
+	DirectX::SimpleMath::Color m_CounterColor;
+
 	void _Clear();
-	
 };
-
-

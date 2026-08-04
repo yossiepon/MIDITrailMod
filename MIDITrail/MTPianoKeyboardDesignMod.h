@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTPianoKeyboardDesignMod
 //
-// ピアノキーボードデザインModクラス
+// �s�A�m�L�[�{�[�h�f�U�C��Mod�N���X
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -14,71 +14,71 @@
 
 
 //******************************************************************************
-// ピアノキーボードデザインModクラス
+// �s�A�m�L�[�{�[�h�f�U�C��Mod�N���X
 //******************************************************************************
 class MTPianoKeyboardDesignMod : public MTPianoKeyboardDesign
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//�R���X�g���N�^�^�f�X�g���N�^
 	MTPianoKeyboardDesignMod(void);
 	virtual ~MTPianoKeyboardDesignMod(void);
 
-	//初期化
+	//������
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//キーボード基準座標取得
-	D3DXVECTOR3 GetKeyboardBasePos(
+	//�L�[�{�[�h����W�擾
+	DirectX::SimpleMath::Vector3 GetKeyboardBasePos(
 			int keyboardIndex,
 			float angle
 		);
 
-	//ポート原点座標取得
+	//�|�[�g���_���W�擾
 	float GetPortOriginX();
 	float GetPortOriginY(int keyboardIndex, bool flip);
 	float GetPortOriginZ(int keyboardIndex, bool flip);
 
-	//ノートボックス高さ・幅取得
+	//�m�[�g�{�b�N�X�����E���擾
 	float GetNoteBoxHeight();
 	float GetNoteBoxWidth();
 
-	//ノート間隔取得
+	//�m�[�g�Ԋu�擾
 	float GetNoteStep();
 
-	//チャンネル間隔取得
+	//�`�����l���Ԋu�擾
 	float GetChStep();
 
-	//キーボード高さ・幅取得
+	//�L�[�{�[�h�����E���擾
 	float GetKeyboardHeight();
 	float GetKeyboardWidth();
 
-	//グリッド高さ・幅取得
+	//�O���b�h�����E���擾
 	float GetGridHeight();
 	float GetGridWidth();
 
-	//ポート高さ・幅取得
+	//�|�[�g�����E���擾
 	float GetPortHeight();
 	float GetPortWidth();
 
-	//再生面高さ・幅取得
+	//�Đ��ʍ����E���擾
 	float GetPlaybackSectionHeight();
 	float GetPlaybackSectionWidth();
 
-	//波紋描画間隔取得
+	//�g��`��Ԋu�擾
 	float GetRippleSpacing();
 
-	//波紋描画マージン取得
+	//�g��`��}�[�W���擾
 	float GetRippleMargin();
 
-	//キーボードリサイズ比取得
+	//�L�[�{�[�h���T�C�Y��擾
 	float GetKeyboardResizeRatio();
 
-	//発音中キーカラー取得
-	D3DXCOLOR GetActiveKeyColor(
+	//�������L�[�J���[�擾
+	DirectX::SimpleMath::Color GetActiveKeyColor(
 			unsigned char chNo,
 			unsigned char noteNo,
 			unsigned long elapsedTime,
-			D3DXCOLOR* pNoteColor = NULL
+			DirectX::SimpleMath::Color* pNoteColor = NULL
 		);
 
 protected:
@@ -88,20 +88,20 @@ protected:
 
 private:
 
-	//ノートボックス高さ
+	//�m�[�g�{�b�N�X����
 	float m_NoteBoxHeight;
-	//ノートボックス幅
+	//�m�[�g�{�b�N�X��
 	float m_NoteBoxWidth;
-	//ノート間隔
+	//�m�[�g�Ԋu
 	float m_NoteStep;
-	//チャンネル間隔
+	//�`�����l���Ԋu
 	float m_ChStep;
 
-	//波紋描画間隔
+	//�g��`��Ԋu
 	float m_RippleSpacing;
 
-	//発音中キー色情報
-	D3DXCOLOR m_ActiveKeyColorList[16];
+	//�������L�[�F���
+	DirectX::SimpleMath::Color m_ActiveKeyColorList[16];
 
 };
 

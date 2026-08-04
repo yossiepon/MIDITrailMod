@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTPianoKeyboardDesignMod
 //
-// ピアノキーボードデザインModクラス
+// �s�A�m�L�[�{�[�h�f�U�C��Mod�N���X
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -12,34 +12,36 @@
 #include "DXColorUtil.h"
 #include "MTConfFile.h"
 #include "MTPianoKeyboardDesignMod.h"
-#include "MTNoteRippleMod.h"
-#include "MTNoteLyrics.h"
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+#include "MTSceneConst.h"
 
 
 //******************************************************************************
-// パラメータ定義
+// �p�����[�^��`
 //******************************************************************************
-//テクスチャ座標算出：ビットマップサイズ = 562 x 562
-#define TEXTURE_POINT(x, y)  (D3DXVECTOR2((float)x/561.0f, (float)y/561.0f))
+//�e�N�X�`�����W�Z�o�F�r�b�g�}�b�v�T�C�Y = 562 x 562
+#define TEXTURE_POINT(x, y)  (Vector2((float)x/561.0f, (float)y/561.0f))
 
 //******************************************************************************
-// コンストラクタ
+// �R���X�g���N�^
 //******************************************************************************
 MTPianoKeyboardDesignMod::MTPianoKeyboardDesignMod(void)
 {
-	//_Initialize()内で基底クラスの初期化処理も呼ばれるため、基底クラスのコンストラクタは呼び出さない
+	//_Initialize()���Ŋ��N���X�̏������������Ă΂�邽�߁A���N���X�̃R���X�g���N�^�͌Ăяo���Ȃ�
 	_Initialize();
 }
 
 //******************************************************************************
-// デストラクタ
+// �f�X�g���N�^
 //******************************************************************************
 MTPianoKeyboardDesignMod::~MTPianoKeyboardDesignMod(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// ������
 //******************************************************************************
 int MTPianoKeyboardDesignMod::Initialize(
 		const TCHAR* pSceneName,
@@ -48,10 +50,10 @@ int MTPianoKeyboardDesignMod::Initialize(
 {
 	int result = 0;
 
-	//基底クラスの初期化処理を呼び出す
+	//���N���X�̏������������Ăяo��
 	MTPianoKeyboardDesign::Initialize(pSceneName, pSeqData);
 
-	//設定ファイル読み込み
+	//�ݒ�t�@�C���ǂݍ���
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
@@ -60,50 +62,50 @@ EXIT:;
 }
 
 //******************************************************************************
-// 初期化
+// ������
 //******************************************************************************
 void MTPianoKeyboardDesignMod::_Initialize()
 {
 	unsigned long i = 0;
 
-	//基底クラスの初期化処理を呼び出す
+	//���N���X�̏������������Ăяo��
 	MTPianoKeyboardDesign::_Initialize();
 
 	for (i = 0; i < 16; i++) {
-		m_ActiveKeyColorList[i] = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //設定ファイル
+		m_ActiveKeyColorList[i] = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //�ݒ�t�@�C��
 	}
 
 	return;
 }
 
 //******************************************************************************
-// キーボード基準座標取得
+// �L�[�{�[�h����W�擾
 //******************************************************************************
-D3DXVECTOR3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
+Vector3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
 		int keyboardIndex,
 		float angle
 	)
 {
 	float ox, oy, oz = 0.0f;
 
-	//ロール角度によって描画方法を切り替える
+	//���[���p�x�ɂ���ĕ`����@��؂�ւ���
 	angle += angle < 0.0f ? 360.0f : 0.0f;
 	bool flip = !((angle > 120.0f) && (angle < 300.0f));
 
-	//ポート単位の原点座標
+	//�|�[�g�P�ʂ̌��_���W
 	ox = GetPortOriginX();
 	oy = GetPortOriginY(keyboardIndex, flip);
 	oz = GetPortOriginZ(keyboardIndex, flip);
 
-	return D3DXVECTOR3(ox, oy, oz);
+	return Vector3(ox, oy, oz);
 }
 
 //******************************************************************************
-// ポート原点X座標取得
+// �|�[�g���_X���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginX()
 {
-	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
+	// angle: 120���`300��(rotateX: 90��, rotateZ: 90��)
 	//             +z
 	//              |
 	// -x<----------0---------->+x
@@ -117,7 +119,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginX()
 	//    Note #0   |  #127
 	//             -z
 
-	// angle: 0°～120°or 300°～360°(rotateX: -90°, rotateZ: 90°)
+	// angle: 0���`120��or 300���`360��(rotateX: -90��, rotateZ: 90��)
 	//             +z
 	//              |
 	//    Note #0   |  #127
@@ -134,21 +136,21 @@ float MTPianoKeyboardDesignMod::GetPortOriginX()
 
 	float originX = -GetPlaybackSectionHeight() / 2.0f;
 
-	//鍵盤の1/2の幅だけ高音側に移動
+	//���Ղ�1/2�̕������������Ɉړ�
 	originX += GetWhiteKeyStep() * GetKeyboardResizeRatio() / 2.0f;
 
 	return originX;
 }
 
 //******************************************************************************
-// ポート原点Y座標取得
+// �|�[�g���_Y���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginY(
 		int keyboardIndex,
 		bool flip
 	)
 {
-	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
+	// angle: 120���`300��(rotateX: 90��, rotateZ: 90��)
 	//      +y                                    
 	//       |                                    
 	//       |                             Ch.15  
@@ -167,7 +169,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 	//       |                                    
 	//      -y                                    
 
-	// angle: 0°～120°or 300°～360°(rotateX: -90°, rotateZ: 90°)
+	// angle: 0���`120��or 300���`360��(rotateX: -90��, rotateZ: 90��)
 	//                                           +y
 	//                                     Ch.15  |
 	//                                            |
@@ -188,7 +190,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 
 	float portWidth = GetPortWidth();
 
-	// TODO シングルキーボードの判定方法を再検討
+	// TODO �V���O���L�[�{�[�h�̔�����@���Č���
 	int keyboardDispNum = GetKeyboardMaxDispNum() > 1 ? m_PortList.GetSize() : 1;
 
 	float originY;
@@ -196,13 +198,13 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 	if (!flip) {
 		originY = -portWidth * (float)(keyboardDispNum - keyboardIndex * 2) / 2.0f;
 
-		//チャネル間隔の62.5%の高さだけ下に
+		//�`���l���Ԋu��62.5%�̍�����������
 		originY -= GetChStep() * 0.625f;
 	}
 	else {
 		originY = portWidth * (float)(keyboardDispNum - (keyboardIndex + 1) * 2) / 2.0f;
 
-		//チャネル間隔の37.5%の高さだけ上に
+		//�`���l���Ԋu��37.5%�̍����������
 		originY += GetChStep() * 0.375f;
 	}
 
@@ -210,14 +212,14 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 }
 
 //******************************************************************************
-// ポート原点Z座標取得
+// �|�[�g���_Z���W�擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginZ(
 		int keyboardIndex,
 		bool flip
 	)
 {
-	// angle: 120°～300°(rotateX: 90°, rotateZ: 90°)
+	// angle: 120���`300��(rotateX: 90��, rotateZ: 90��)
 	//             +z
 	//              |
 	// -x<----------0---------->+x
@@ -231,7 +233,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginZ(
 	//    Note #0   |  #127
 	//             -z
 
-	// angle: 0°～120°or 300°～360°(rotateX: -90°, rotateZ: 90°)
+	// angle: 0���`120��or 300���`360��(rotateX: -90��, rotateZ: 90��)
 	//             +z
 	//              |
 	//    Note #0   |  #127
@@ -259,7 +261,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginZ(
 }
 
 //******************************************************************************
-// ノートボックス高さ取得
+// �m�[�g�{�b�N�X�����擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetNoteBoxHeight()
 {
@@ -267,7 +269,7 @@ float MTPianoKeyboardDesignMod::GetNoteBoxHeight()
 }
 
 //******************************************************************************
-// ノートボックス幅取得
+// �m�[�g�{�b�N�X���擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetNoteBoxWidth()
 {
@@ -275,7 +277,7 @@ float MTPianoKeyboardDesignMod::GetNoteBoxWidth()
 }
 
 //******************************************************************************
-// ノート間隔取得
+// �m�[�g�Ԋu�擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetNoteStep()
 {
@@ -283,7 +285,7 @@ float MTPianoKeyboardDesignMod::GetNoteStep()
 }
 
 //******************************************************************************
-// チャンネル間隔取得
+// �`�����l���Ԋu�擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetChStep()
 {
@@ -291,7 +293,7 @@ float MTPianoKeyboardDesignMod::GetChStep()
 }
 
 //******************************************************************************
-// キーボード高さ取得
+// �L�[�{�[�h�����擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetKeyboardHeight()
 {
@@ -299,7 +301,7 @@ float MTPianoKeyboardDesignMod::GetKeyboardHeight()
 }
 
 //******************************************************************************
-// キーボード幅取得
+// �L�[�{�[�h���擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetKeyboardWidth()
 {
@@ -307,7 +309,7 @@ float MTPianoKeyboardDesignMod::GetKeyboardWidth()
 }
 
 //******************************************************************************
-// グリッド高さ取得
+// �O���b�h�����擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetGridHeight()
 {
@@ -315,7 +317,7 @@ float MTPianoKeyboardDesignMod::GetGridHeight()
 }
 
 //******************************************************************************
-// グリッド幅取得
+// �O���b�h���擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetGridWidth()
 {
@@ -323,7 +325,7 @@ float MTPianoKeyboardDesignMod::GetGridWidth()
 }
 
 //******************************************************************************
-// ポート高さ取得
+// �|�[�g�����擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortHeight()
 {
@@ -331,7 +333,7 @@ float MTPianoKeyboardDesignMod::GetPortHeight()
 }
 
 //******************************************************************************
-// ポート幅取得
+// �|�[�g���擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortWidth()
 {
@@ -339,7 +341,7 @@ float MTPianoKeyboardDesignMod::GetPortWidth()
 }
 
 //******************************************************************************
-// 再生面高さ取得
+// �Đ��ʍ����擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPlaybackSectionHeight()
 {
@@ -347,7 +349,7 @@ float MTPianoKeyboardDesignMod::GetPlaybackSectionHeight()
 }
 
 //******************************************************************************
-// 再生面幅取得
+// �Đ��ʕ��擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPlaybackSectionWidth()
 {
@@ -355,7 +357,7 @@ float MTPianoKeyboardDesignMod::GetPlaybackSectionWidth()
 }
 
 //******************************************************************************
-// 波紋描画間隔取得
+// �g��`��Ԋu�擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetRippleSpacing()
 {
@@ -363,7 +365,7 @@ float MTPianoKeyboardDesignMod::GetRippleSpacing()
 }
 
 //******************************************************************************
-// 波紋描画マージン取得
+// �g��`��}�[�W���擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetRippleMargin()
 {
@@ -371,51 +373,51 @@ float MTPianoKeyboardDesignMod::GetRippleMargin()
 }
 
 //******************************************************************************
-// キーボードリサイズ比取得
+// �L�[�{�[�h���T�C�Y��擾
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetKeyboardResizeRatio()
 {
-	//キーボード基準の相対座標に適用するリサイズ比
+	//�L�[�{�[�h��̑��΍��W�ɓK�p���郊�T�C�Y��
 	return GetPlaybackSectionHeight() / GetKeyboardWidth();
 }
 
 //******************************************************************************
-// 発音中キーカラー取得
+// �������L�[�J���[�擾
 //******************************************************************************
-D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
+Color MTPianoKeyboardDesignMod::GetActiveKeyColor(
 		unsigned char chNo,
 		unsigned char noteNo,
 		unsigned long elapsedTime,
-		D3DXCOLOR* pNoteColor
+		Color* pNoteColor
 	)
 {
-	D3DXCOLOR color;
+	Color color;
 	float r,g,b,a = 0.0f;
 	float rate = 0.0f;
 	unsigned long duration = 0;
 
 	//          on     off
-	//   白 |---+......+---- ←offになったら白鍵の色に戻す
+	//   �� |---+......+---- ��off�ɂȂ����甒���̐F�ɖ߂�
 	//      |   :      :
-	//      |   :  +---+     ←offになるまで中間色のまま
+	//      |   :  +---+     ��off�ɂȂ�܂Œ��ԐF�̂܂�
 	//      |   : /:   :
 	//      |   :/ :   :
-	//   赤 |   +  :   :     ←キー押下直後の色（赤）
+	//   �� |   +  :   :     ���L�[��������̐F�i�ԁj
 	//      |   :\ :   :
 	//      |   : \:   :
-	//      |   :  +---+     ←offになるまで中間色のまま
+	//      |   :  +---+     ��off�ɂȂ�܂Œ��ԐF�̂܂�
 	//      |   :  :   :
-	//   黒 |---+  :   +---- ←offになったら黒鍵の色に戻す
+	//   �� |---+  :   +---- ��off�ɂȂ����獕���̐F�ɖ߂�
 	//   ---+---*------*-------> +t
 	//      |   on :   off
 	//          <-->duration
 
 	if ((pNoteColor != NULL) && (m_ActiveKeyColorType == NoteColor)) {
-		//ノート色が指定されている場合
+		//�m�[�g�F���w�肳��Ă���ꍇ
 		color = *pNoteColor;
 	}
 	else {
-		//それ以外はデフォルト色とする
+		//����ȊO�̓f�t�H���g�F�Ƃ���
 		color = m_ActiveKeyColorList[chNo];
 	}
 
@@ -427,24 +429,24 @@ D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 	}
 
 	if (GetKeyType(noteNo) == KeyBlack) {
-		r = color.r - ((color.r) * rate);
-		g = color.g - ((color.g) * rate);
-		b = color.b - ((color.b) * rate);
-		a = color.a;
+		r = color.R() - ((color.R()) * rate);
+		g = color.G() - ((color.G()) * rate);
+		b = color.B() - ((color.B()) * rate);
+		a = color.A();
 	}
 	else {
-		r = color.r + ((1.0f - color.r) * rate);
-		g = color.g + ((1.0f - color.g) * rate);
-		b = color.b + ((1.0f - color.b) * rate);
-		a = color.a;
+		r = color.R() + ((1.0f - color.R()) * rate);
+		g = color.G() + ((1.0f - color.G()) * rate);
+		b = color.B() + ((1.0f - color.B()) * rate);
+		a = color.A();
 	}
-	color = D3DXCOLOR(r, g, b, a);
+	color = Color(r, g, b, a);
 
 	return color;
 }
 
 //******************************************************************************
-// 設定ファイル読み込み
+// �ݒ�t�@�C���ǂݍ���
 //******************************************************************************
 int MTPianoKeyboardDesignMod::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -456,16 +458,16 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	unsigned long i = 0;
 	MTConfFile confFile;
 
-	//基底クラスの読み込み処理を呼び出す
+	//���N���X�̓ǂݍ��ݏ������Ăяo��
 	result = MTPianoKeyboardDesign::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//設定ファイルを開く
+	//�ݒ�t�@�C�����J��
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//スケール情報
+	//�X�P�[�����
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Scale"));
 	if (result != 0) goto EXIT;
@@ -480,12 +482,12 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//色情報
+	//�F���
 	//----------------------------------
 	result = confFile.SetCurSection(_T("PianoKeyboard"));
 	if (result != 0) goto EXIT;
 
-	//発音中のキー色情報を取得
+	//�������̃L�[�F�����擾
 	for (i = 0; i < 16; i++) {
 		_stprintf_s(key, 21, _T("Ch-%02d-ActiveKeyColor"), i+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FF0000FF"));
@@ -495,12 +497,12 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	}
 
 	//----------------------------------
-	//波紋情報
+	//�g����
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Ripple"));
 	if (result != 0) goto EXIT;
 
-	//波紋描画間隔
+	//�g��`��Ԋu
 	result = confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
 	if (result != 0) goto EXIT;
 

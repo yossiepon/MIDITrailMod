@@ -2,14 +2,14 @@
 //
 // MIDITrail / MTPianoKeyboardDesign
 //
-// ピアノキーボードデザインクラス
+// �s�A�m�L�[�{�[�h�f�U�C���N���X
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// キーボードの基本配置座標
+// �L�[�{�[�h�̊�{�z�u���W
 //
 //  +y   +z
 //  |    /
@@ -21,38 +21,37 @@
 
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ピアノキーボードデザインクラス
+// �s�A�m�L�[�{�[�h�f�U�C���N���X
 //******************************************************************************
 class MTPianoKeyboardDesign
 {
 public:
 
-	//キー種別
-	//  黒鍵は白鍵と白鍵の中心から微妙にずれて配置されている
-	//  このため白鍵の形はCからBまですべて異なる
+	//�L�[���
+	//  �����͔����Ɣ����̒��S��������ɂ���Ĕz�u����Ă���
+	//  ���̂��ߔ����̌`��C����B�܂ł��ׂĈقȂ�
 	enum KeyType {
-		KeyWhiteC,	//白鍵C
-		KeyWhiteD,	//白鍵D
-		KeyWhiteE,	//白鍵E
-		KeyWhiteF,	//白鍵F
-		KeyWhiteG,	//白鍵G
-		KeyWhiteA,	//白鍵A
-		KeyWhiteB,	//白鍵B
-		KeyBlack	//黒鍵
+		KeyWhiteC,	//����C
+		KeyWhiteD,	//����D
+		KeyWhiteE,	//����E
+		KeyWhiteF,	//����F
+		KeyWhiteG,	//����G
+		KeyWhiteA,	//����A
+		KeyWhiteB,	//����B
+		KeyBlack	//����
 	};
 
-	//発音中キー色種別
+	//�������L�[�F���
 	enum ActiveKeyColorType {
-		DefaultColor,	//デフォルト色
-		NoteColor		//ノート色
+		DefaultColor,	//�f�t�H���g�F
+		NoteColor		//�m�[�g�F
 	};
 
 public:
@@ -60,143 +59,143 @@ public:
 	MTPianoKeyboardDesign(void);
 	virtual ~MTPianoKeyboardDesign(void);
 
-	//初期化
+	//������
 // >>> modify 20120728 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 // <<< modify 20120728 yossiepon end
 
-	//ポート原点座標取得
+	//�|�[�g���_���W�擾
 	float GetPortOriginX(unsigned char portNo);
 	float GetPortOriginY(unsigned char portNo);
 	float GetPortOriginZ(unsigned char portNo);
 
-	//キー種別取得
+	//�L�[��ʎ擾
 	KeyType GetKeyType(unsigned char noteNo);
 
-	//キー中心X座標取得
+	//�L�[���SX���W�擾
 	float GetKeyCenterPosX(unsigned char noteNo);
 
-	//白鍵配置間隔取得
+	//�����z�u�Ԋu�擾
 	float GetWhiteKeyStep();
 
-	//白鍵横サイズ取得
+	//�������T�C�Y�擾
 	float GetWhiteKeyWidth();
 
-	//白鍵高さ取得
+	//���������擾
 	float GetWhiteKeyHeight();
 
-	//白鍵長さ取得
+	//���������擾
 	float GetWhiteKeyLen();
 
-	//黒鍵横サイズ取得
+	//�������T�C�Y�擾
 	float GetBlackKeyWidth();
 
-	//黒鍵高さ取得
+	//���������擾
 	float GetBlackKeyHeight();
 
-	//黒鍵傾斜長さ取得
+	//�����X�Β����擾
 	float GetBlackKeySlopeLen();
 
-	//黒鍵長さ取得
+	//���������擾
 	float GetBlackKeyLen();
 
-	//キー間隔サイズ取得
+	//�L�[�Ԋu�T�C�Y�擾
 	float GetKeySpaceSize();
 
-	//キー押下回転中心Y軸座標取得
+	//�L�[������]���SY�����W�擾
 	float GetKeyRotateAxisXPos();
 
-	//キー押下回転角度
+	//�L�[������]�p�x
 	float GetKeyRotateAngle();
 
-	//キー下降時間取得(msec)
+	//�L�[���~���Ԏ擾(msec)
 	unsigned long GetKeyDownDuration();
 
-	//キー上昇時間取得(msec)
+	//�L�[�㏸���Ԏ擾(msec)
 	unsigned long GetKeyUpDuration();
 
-	//ピッチベンドキーボードシフト量取得
+	//�s�b�`�x���h�L�[�{�[�h�V�t�g�ʎ擾
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
 
-	//ノートドロップ座標取得
+	//�m�[�g�h���b�v���W�擾
 	float GetNoteDropPosZ(unsigned char noteNo);
 
-	//白鍵カラー取得
-	D3DXCOLOR GetWhiteKeyColor();
+	//�����J���[�擾
+	DirectX::SimpleMath::Color GetWhiteKeyColor();
 
-	//黒鍵カラー取得
-	D3DXCOLOR GetBlackKeyColor();
+	//�����J���[�擾
+	DirectX::SimpleMath::Color GetBlackKeyColor();
 
-	//発音中キーカラー取得
-	D3DXCOLOR GetActiveKeyColor(
+	//�������L�[�J���[�擾
+	DirectX::SimpleMath::Color GetActiveKeyColor(
 			unsigned char noteNo,
 			unsigned long elapsedTime,
-			D3DXCOLOR* pNoteColor = NULL
+			DirectX::SimpleMath::Color* pNoteColor = NULL
 		);
 
-	//白鍵テクスチャ座標取得
+	//�����e�N�X�`�����W�擾
 	void GetWhiteKeyTexturePosTop(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos0,
-			D3DXVECTOR2* pTexPos1,
-			D3DXVECTOR2* pTexPos2,
-			D3DXVECTOR2* pTexPos3,
-			D3DXVECTOR2* pTexPos4,
-			D3DXVECTOR2* pTexPos5,
-			D3DXVECTOR2* pTexPos6,
-			D3DXVECTOR2* pTexPos7
+			DirectX::SimpleMath::Vector2* pTexPos0,
+			DirectX::SimpleMath::Vector2* pTexPos1,
+			DirectX::SimpleMath::Vector2* pTexPos2,
+			DirectX::SimpleMath::Vector2* pTexPos3,
+			DirectX::SimpleMath::Vector2* pTexPos4,
+			DirectX::SimpleMath::Vector2* pTexPos5,
+			DirectX::SimpleMath::Vector2* pTexPos6,
+			DirectX::SimpleMath::Vector2* pTexPos7
 		);
 	void GetWhiteKeyTexturePosFront(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos0,
-			D3DXVECTOR2* pTexPos1,
-			D3DXVECTOR2* pTexPos2,
-			D3DXVECTOR2* pTexPos3
+			DirectX::SimpleMath::Vector2* pTexPos0,
+			DirectX::SimpleMath::Vector2* pTexPos1,
+			DirectX::SimpleMath::Vector2* pTexPos2,
+			DirectX::SimpleMath::Vector2* pTexPos3
 		);
 	void GetWhiteKeyTexturePosSingleColor(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos
+			DirectX::SimpleMath::Vector2* pTexPos
 		);
 
-	//黒鍵テクスチャ座標取得
+	//�����e�N�X�`�����W�擾
 	void GetBlackKeyTexturePos(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos0,
-			D3DXVECTOR2* pTexPos1,
-			D3DXVECTOR2* pTexPos2,
-			D3DXVECTOR2* pTexPos3,
-			D3DXVECTOR2* pTexPos4,
-			D3DXVECTOR2* pTexPos5,
-			D3DXVECTOR2* pTexPos6,
-			D3DXVECTOR2* pTexPos7,
-			D3DXVECTOR2* pTexPos8,
-			D3DXVECTOR2* pTexPos9,
+			DirectX::SimpleMath::Vector2* pTexPos0,
+			DirectX::SimpleMath::Vector2* pTexPos1,
+			DirectX::SimpleMath::Vector2* pTexPos2,
+			DirectX::SimpleMath::Vector2* pTexPos3,
+			DirectX::SimpleMath::Vector2* pTexPos4,
+			DirectX::SimpleMath::Vector2* pTexPos5,
+			DirectX::SimpleMath::Vector2* pTexPos6,
+			DirectX::SimpleMath::Vector2* pTexPos7,
+			DirectX::SimpleMath::Vector2* pTexPos8,
+			DirectX::SimpleMath::Vector2* pTexPos9,
 			bool isColored = false
 		);
 	void GetBlackKeyTexturePosSingleColor(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos,
+			DirectX::SimpleMath::Vector2* pTexPos,
 			bool isColored = false
 		);
 
-	//キーボード基準座標取得
-	D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
+	//�L�[�{�[�h����W�擾
+	DirectX::SimpleMath::Vector3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
 
-	//キーボード最大表示数取得
+	//�L�[�{�[�h�ő�\�����擾
 	unsigned long GetKeyboardMaxDispNum();
 
 // >>> add 20180404 yossiepon begin
 	void SetKeyboardSingle();
 // <<< add 20180404 yossiepon end
 
-	//キー表示範囲取得
+	//�L�[�\���͈͎擾
 	unsigned char GetKeyDispRangeStart();
 	unsigned char GetKeyDispRangeEnd();
 	bool IsKeyDisp(unsigned char noteNo);
 
 private:
 
-	//キー情報
+	//�L�[���
 	typedef struct {
 		KeyType keyType;
 		float keyCenterPosX;
@@ -204,14 +203,14 @@ private:
 
 private:
 
-	//キー情報配列
+	//�L�[���z��
 	MTKeyInfo m_KeyInfo[SM_MAX_NOTE_NUM];
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ポート情報
+	//�|�[�g���
 	SMPortList m_PortList;
 	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
 
@@ -219,7 +218,7 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//スケール情報
+	//�X�P�[�����
 	float m_WhiteKeyStep;
 	float m_WhiteKeyWidth;
 	float m_WhiteKeyHeight;
@@ -234,13 +233,13 @@ private:
 	float m_BlackKeyShiftCDE;
 	float m_BlackKeyShiftFGAB;
 
-	//キー回転情報
+	//�L�[��]���
 	float m_KeyRotateAxisXPos;
 	float m_KeyRotateAngle;
 	int m_KeyDownDuration;
 	int m_KeyUpDuration;
 
-	//キーボード配置情報
+	//�L�[�{�[�h�z�u���
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
@@ -255,12 +254,12 @@ private:
 	float m_KeyboardStepZ;
 	int m_KeyboardMaxDispNum;
 
-	//キー色情報
-	D3DXCOLOR m_WhiteKeyColor;
-	D3DXCOLOR m_BlackKeyColor;
+	//�L�[�F���
+	DirectX::SimpleMath::Color m_WhiteKeyColor;
+	DirectX::SimpleMath::Color m_BlackKeyColor;
 
-	//発音中キー色情報
-	D3DXCOLOR m_ActiveKeyColor;
+	//�������L�[�F���
+	DirectX::SimpleMath::Color m_ActiveKeyColor;
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
@@ -274,7 +273,7 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//キー表示範囲
+	//�L�[�\���͈�
 	int m_KeyDispRangeStart;
 	int m_KeyDispRangeEnd;
 

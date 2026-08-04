@@ -2,33 +2,30 @@
 //
 // MIDITrail / DXH
 //
-// ヘルパ関数クラス
+// Helper function class.
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 
 
 //******************************************************************************
-// ヘルパ関数クラス
+// Helper function class
 //******************************************************************************
 class DXH
 {
 public:
 
-	//座標回転：YZ平面
-	static D3DXVECTOR3 RotateYZ(
+	// Rotate a point around the YZ plane
+	static DirectX::SimpleMath::Vector3 RotateYZ(
 			float centerY,
 			float centerZ,
-			D3DXVECTOR3 p1,
+			DirectX::SimpleMath::Vector3 p1,
 			float angle
 		);
-
 };
-
-

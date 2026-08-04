@@ -2,20 +2,19 @@
 //
 // MIDITrail / MTFirstPersonCam
 //
-// 一人称カメラクラス
+// First-person camera class.
+// Handles keyboard/mouse/gamepad input and updates the camera position.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
-// MEMO:
-// FPSゲームライクな視点移動を実現する。
-// 本クラス内でキーボード／マウスの状態を取得する。
-
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <d3d11.h>
+#include <directxtk/SimpleMath.h>
+#include "MTViewParamMap.h"
 #include "DIKeyCtrl.h"
 #include "DIMouseCtrl.h"
 #include "DXCamera.h"
@@ -27,14 +26,13 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//カメラ位置最大範囲
 #define MTFIRSTPERSONCAM_CAMVECTOR_LIMIT  (1000000.0f)
 
 
 //******************************************************************************
-// 一人称カメラクラス
+// First-person camera class
 //******************************************************************************
 class MTFirstPersonCam
 {
@@ -48,69 +46,64 @@ public:
 
 public:
 
-	//コンストラクタ／デストラクタ
-	MTFirstPersonCam(void);
-	virtual ~MTFirstPersonCam(void);
+	MTFirstPersonCam();
+	virtual ~MTFirstPersonCam();
 
-	//クリア
 	int Clear();
 
-	//初期化
 	int Initialize(HWND hWnd, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//カメラ位置設定
-	void SetPosition(
-			D3DXVECTOR3 camVector
-		);
+	// Position
+	void SetPosition(DirectX::SimpleMath::Vector3 camVector);
+	void GetPosition(DirectX::SimpleMath::Vector3* pCamVector);
 
-	//カメラ方向設定
-	//  方位角：XZ平面上のX軸との角度 +X軸方向=0度 +Z軸方向=90度
-	//  天頂角：Y軸との角度           +Y軸方向=0度 XZ平面上=90度
-	void SetDirection(
-			float phi,		//方位角
-			float theta		//天頂角
-		);
+	// Direction (spherical coordinates)
+	//   phi:   azimuthal angle on XZ plane (+X=0, +Z=90)
+	//   theta: polar angle from +Y axis (+Y=0, XZ plane=90)
+	void SetDirection(float phi, float theta);
+	void GetDirection(float* pPhi, float* pTheta);
 
-	//カメラ位置取得
-	void GetPosition(D3DXVECTOR3* pCamVector);
-
-	//カメラ方向取得
-	void GetDirection(
-			float* pPhi,
-			float* pTheta
-		);
-
-	//マウス視線移動モード登録
+	// Mouse camera mode
 	void SetMouseCamMode(bool isEnable);
 
-	//自動回転モード登録
+	// Auto-roll mode
 	void SetAutoRollMode(bool isEnable);
-	void SwitchAutoRllDirecton();
+	void SwitchAutoRollDir();
 
-	//更新
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+	// Per-frame input processing and position update (no DX device needed)
+	int TransformInput();
 
-	//演奏チックタイム登録
+	// Get view/projection matrices for rendering
+	void GetViewProjection(float aspect,
+	                       DirectX::SimpleMath::Matrix* pView,
+	                       DirectX::SimpleMath::Matrix* pProj);
+
+	// Get current roll angle (manual roll + auto roll combined)
+	float GetRollAngle();
+
+	// Playback tick time (for camera tracking)
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//リセット
+	// Reset
 	void Reset();
 
-	//回転角度取得
+	// Roll angle get/set
 	float GetManualRollAngle();
 	float GetAutoRollVelocity();
-
-	//回転角度設定
 	void SetManualRollAngle(float rollAngle);
 	void SetAutoRollVelocity(float rollVelocity);
 
-	//進行方向設定
+	// Progress direction
 	void SetProgressDirection(MTProgressDirection dir);
+
+	// ViewParam support (used by MTSceneBase11)
+	void GetViewParam(MTViewParamMap* pParamMap);
+	void SetViewParam(MTViewParamMap* pParamMap);
 
 private:
 
 	DXCamera m_Camera;
-	D3DXVECTOR3 m_CamVector;
+	DirectX::SimpleMath::Vector3 m_CamVector;
 	float m_CamDirPhi;
 	float m_CamDirTheta;
 	MTProgressDirection m_ProgressDirection;
@@ -123,14 +116,12 @@ private:
 	HWND m_hWnd;
 	MTNoteDesign m_NoteDesign;
 
-	//移動速度
-	float m_VelocityFB;		//前後移動量 m/sec.
-	float m_VelocityLR;		//左右移動量 m/sec.
-	float m_VelocityUD;		//上下移動量 m/sec.
-	float m_VelocityPT;		//視線移動量 degrees/sec.
-	float m_AcceleRate;		//加速倍率
+	float m_VelocityFB;
+	float m_VelocityLR;
+	float m_VelocityUD;
+	float m_VelocityPT;
+	float m_AcceleRate;
 
-	//回転制御系
 	float m_RollAngle;
 	float m_VelocityAutoRoll;
 	float m_VelocityManualRoll;
@@ -148,8 +139,5 @@ private:
 	int _ClipCursor(bool isClip);
 	void _CalcDeltaTime();
 	int _LoadConfFile(const TCHAR* pSceneName);
-	void _ClipCamVector(D3DXVECTOR3* pVector);
-
+	void _ClipCamVector(DirectX::SimpleMath::Vector3* pVector);
 };
-
-

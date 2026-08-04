@@ -2,193 +2,166 @@
 //
 // MIDITrail / MTNoteDesign
 //
-// ノートデザインクラス
+// Note design class.
+// Computes note box positions, sizes, colors, and layout parameters
+// from configuration files and sequence data.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
-// MEMO:
-// ノートボックスの正面を0-1-2-3の四角とする。
-// この四角の中心座標が基準点であり、ポート／チャンネル／ノートの番号
-// によって決定される。
-//
-//           +--+
-//          /  /|
-//         /  / +
-//        /  / /      +x
-//       /  / /      /
-//     0+--+1/ +y   /
-//      |  |/   |  /
-//     2+--+3   | /
-//              |/
-//   +z---------+0
-//
-
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ノートデザインクラス
+// Note design class
 //******************************************************************************
 class MTNoteDesign
 {
 public:
 
-	//コンストラクタ／デストラクタ
-	MTNoteDesign(void);
-	virtual ~MTNoteDesign(void);
+	MTNoteDesign();
+	virtual ~MTNoteDesign();
 
-	//初期化
-// >>> modify 20161225 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
-// <<< modify 20161225 yossiepon end
 
-	//演奏位置取得
+	// Playback position
 	float GetPlayPosX(unsigned long curTickTime);
 
-	//ライブモニタ用ノート位置取得
+	// Live monitor note position
 	float GetLivePosX(unsigned long elapsedTime);
 
-	//ノートボックス中心座標取得
-	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
+	// Note box center position
+	virtual DirectX::SimpleMath::Vector3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//ノートボックス縦横サイズ取得
+	// Note box dimensions
 	float GetNoteBoxHeight();
 	float GetNoteBoxWidth();
 
-	//ノート間隔取得
+	// Spacing
 	float GetNoteStep();
-
-	//チャンネル間隔取得
 	float GetChStep();
 
-	//ライブモニタ表示期限
+	// Live monitor display duration
 	unsigned long GetLiveMonitorDisplayDuration();
 
-	//ノートボックス頂点座標取得
+	// Note box vertex positions (4 corners of the front face)
 	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//発音中ノートボックス頂点座標取得
+	// Active note box vertex positions
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
-				unsigned long elapsedTime = 0            //省略可：経過時間（ミリ秒）
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0,
+				unsigned long elapsedTime = 0
 			);
 
-	//ライブモニタ用ノートボックス頂点座標取得
+	// Live monitor note box vertex positions
 	virtual void GetNoteBoxVirtexPosLive(
-				unsigned long elapsedTime,	//経過時間（ミリ秒）
+				unsigned long elapsedTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0	//省略可：ピッチベンド感度
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//グリッドボックス頂点座標取得
+	// Grid box vertex positions
 	void GetGridBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
 			);
 
-	//ライブモニタ用グリッドボックス頂点座標取得
+	// Live grid box vertex positions
 	void GetGridBoxVirtexPosLive(
-				unsigned long elapsedTime,	//経過時間（ミリ秒）
-				unsigned char portNo,	//ポート番号
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
+				unsigned long elapsedTime,
+				unsigned char portNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
 			);
 
-	//再生面頂点座標取得
+	// Playback section vertex positions
 	void GetPlaybackSectionVirtexPos(
 				unsigned long curTickTime,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
 			);
 
-	//波紋サイズ取得：経過時間（ミリ秒）は省略可
+	// Ripple parameters
 	float GetRippleHeight(unsigned long elapsedTime = 0);
 	float GetRippleWidth(unsigned long elapsedTime = 0);
 	float GetRippleAlpha(unsigned long elapsedTime = 0);
 
-	//ピクチャボード相対位置取得
+	// Picture board relative position
 	float GetPictBoardRelativePos();
 
-	//ポート原点座標取得
+	// Port origin coordinates
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
 
-	//世界座標配置移動ベクトル取得
-	virtual D3DXVECTOR3 GetWorldMoveVector();
+	// World move vector
+	virtual DirectX::SimpleMath::Vector3 GetWorldMoveVector();
 
-	//ノートボックスカラー取得
-	D3DXCOLOR GetNoteBoxColor(
+	// Colors
+	DirectX::SimpleMath::Color GetNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo
 			);
 
-	//発音中ノートボックスカラー取得
-	D3DXCOLOR GetActiveNoteBoxColor(
+	DirectX::SimpleMath::Color GetActiveNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
 				unsigned long elapsedTime
 			);
 
-	//発音中ノートボックスエミッシブ取得（マテリアル用）
-	D3DXCOLOR GetActiveNoteEmissive();
-
-	//グリッドラインカラー取得
-	D3DXCOLOR GetGridLineColor();
-
-	//再生面カラー取得
-	D3DXCOLOR GetPlaybackSectionColor();
+	DirectX::SimpleMath::Color GetActiveNoteEmissive();
+	DirectX::SimpleMath::Color GetGridLineColor();
+	DirectX::SimpleMath::Color GetPlaybackSectionColor();
 
 protected:
 
@@ -210,11 +183,11 @@ protected:
 	unsigned char m_PortIndex[256];
 
 	NoteColorType m_NoteColorType;
-	D3DXCOLOR m_NoteColor[16];
-	D3DXCOLOR m_NoteColorOfScale[12];
-	D3DXCOLOR m_ActiveNoteEmissive;
-	D3DXCOLOR m_GridLineColor;
-	D3DXCOLOR m_PlaybackSectionColor;
+	DirectX::SimpleMath::Color m_NoteColor[16];
+	DirectX::SimpleMath::Color m_NoteColorOfScale[12];
+	DirectX::SimpleMath::Color m_ActiveNoteEmissive;
+	DirectX::SimpleMath::Color m_GridLineColor;
+	DirectX::SimpleMath::Color m_PlaybackSectionColor;
 
 	int m_ActiveNoteDuration;
 	float m_ActiveNoteWhiteRate;
@@ -225,13 +198,7 @@ protected:
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
 
-// >>> modify 20120728 yossiepon begin
 	virtual void _Clear();
-// <<< modify 20120728 yossiepon end
-
 	virtual int _LoadConfFile(const TCHAR* pSceneName);
 	int _LoadUserConf();
-
 };
-
-

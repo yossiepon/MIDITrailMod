@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTNoteDesignRing
 //
-// ノートデザインリングクラス
+// Note design ring class.
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,96 +18,74 @@
 #include "DXH.h"
 
 using namespace YNBaseLib;
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor / Destructor
 //******************************************************************************
-MTNoteDesignRing::MTNoteDesignRing(void)
+MTNoteDesignRing::MTNoteDesignRing()
 {
 	m_isLiveMode = false;
 	m_NoteAngleStep = 360.0f / (float)SM_MAX_NOTE_NUM;
 	m_RingRadius = 0.0f;
 }
 
-//******************************************************************************
-// デストラクタ
-//******************************************************************************
-MTNoteDesignRing::~MTNoteDesignRing(void)
+MTNoteDesignRing::~MTNoteDesignRing()
 {
 }
 
 //******************************************************************************
-// ライブモニタモード設定
+// Live mode
 //******************************************************************************
-void MTNoteDesignRing::SetLiveMode(void)
+void MTNoteDesignRing::SetLiveMode()
 {
 	m_isLiveMode = true;
 }
 
 //******************************************************************************
-// ノートボックス中心座標取得
+// Note box center position
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRing::GetNoteBoxCenterPosX(
+Vector3 MTNoteDesignRing::GetNoteBoxCenterPosX(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	D3DXVECTOR3 basePos;
-	D3DXVECTOR3 notePos;
-	float angle = 0.0f;
-
-	//ノート基準座標
-	basePos = _GetNoteBasePos(curTickTime, portNo, chNo);
-
-	//ノート番号で角度を決定
-	angle = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
-
-	//X軸回転
-	notePos = DXH::RotateYZ(0.0f, 0.0f, basePos, angle);
-
-	return notePos;
+	Vector3 basePos = _GetNoteBasePos(curTickTime, portNo, chNo);
+	float angle = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
+	return DXH::RotateYZ(0.0f, 0.0f, basePos, angle);
 }
 
 //******************************************************************************
-// ノートボックス頂点座標取得
+// Note box vertex positions
 //******************************************************************************
 void MTNoteDesignRing::GetNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
-
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	D3DXVECTOR3 basePos0;
-	D3DXVECTOR3 basePos1;
-	D3DXVECTOR3 basePos2;
-	float angle0 = 0.0f;
-	float angle1 = 0.0f;
-	float angle2 = 0.0f;
-
-	//ノート基準座標
-	basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
-	basePos1 = basePos0;
+	Vector3 basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
+	Vector3 basePos1 = basePos0;
 	basePos1.y -= GetNoteBoxWidth() / 2.0f;
-	basePos2 = basePos0;
+	Vector3 basePos2 = basePos0;
 	basePos2.y += GetNoteBoxWidth() / 2.0f;
 
-	//ノート番号で角度を決定
-	angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
-	angle1 = angle0 - (m_NoteAngleStep / 2.0f);
-	angle2 = angle0 + (m_NoteAngleStep / 2.0f);
+	float angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
+	float angle1 = angle0 - (m_NoteAngleStep / 2.0f);
+	float angle2 = angle0 + (m_NoteAngleStep / 2.0f);
 
 	*pVector0 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle1);
 	*pVector1 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle2);
@@ -115,45 +94,37 @@ void MTNoteDesignRing::GetNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// 発音中ノートボックス頂点座標取得
+// Active note box vertex positions
 //******************************************************************************
 void MTNoteDesignRing::GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity,	//省略可：ピッチベンド感度
-		unsigned long elapsedTime			//省略可：経過時間（ミリ秒）
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity,
+		unsigned long elapsedTime
 	)
 {
-	D3DXVECTOR3 basePos0;
-	D3DXVECTOR3 basePos1;
-	D3DXVECTOR3 basePos2;
-	float angle0 = 0.0f;
-	float angle1 = 0.0f;
-	float angle2 = 0.0f;
 	float curSizeRatio = 1.0f;
-
 	if (elapsedTime < (unsigned long)m_ActiveNoteDuration) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f)
+		             * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
 	}
 
-	//ノート基準座標
-	basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
-	basePos1 = basePos0;
+	Vector3 basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
+	Vector3 basePos1 = basePos0;
 	basePos1.y -= GetNoteBoxWidth() * curSizeRatio / 2.0f;
-	basePos2 = basePos0;
+	Vector3 basePos2 = basePos0;
 	basePos2.y += GetNoteBoxWidth() * curSizeRatio / 2.0f;
 
-	//ノート番号で角度を決定
-	angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
-	angle1 = angle0 - (m_NoteAngleStep * curSizeRatio / 2.0f);
-	angle2 = angle0 + (m_NoteAngleStep * curSizeRatio / 2.0f);
+	float angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
+	float angle1 = angle0 - (m_NoteAngleStep * curSizeRatio / 2.0f);
+	float angle2 = angle0 + (m_NoteAngleStep * curSizeRatio / 2.0f);
 
 	*pVector0 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle1);
 	*pVector1 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle2);
@@ -162,44 +133,34 @@ void MTNoteDesignRing::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ライブモニタ用ノートボックス頂点座標取得
+// Live monitor note box vertex positions
 //******************************************************************************
 void MTNoteDesignRing::GetNoteBoxVirtexPosLive(
 		unsigned long elapsedTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	D3DXVECTOR3 basePos0;
-	D3DXVECTOR3 basePos1;
-	D3DXVECTOR3 basePos2;
-	float angle0 = 0.0f;
-	float angle1 = 0.0f;
-	float angle2 = 0.0f;
-	float x = 0.0f;
 	unsigned long tickTimeDummy = 0;
+	float x = -(GetLivePosX(elapsedTime));
 
-	x = -(GetLivePosX(elapsedTime));
-
-	//ノート基準座標
-	basePos0 = _GetNoteBasePos(tickTimeDummy, portNo, chNo);
+	Vector3 basePos0 = _GetNoteBasePos(tickTimeDummy, portNo, chNo);
 	basePos0.x = x;
-	basePos1 = basePos0;
+	Vector3 basePos1 = basePos0;
 	basePos1.y -= GetNoteBoxWidth() / 2.0f;
-	basePos2 = basePos0;
+	Vector3 basePos2 = basePos0;
 	basePos2.y += GetNoteBoxWidth() / 2.0f;
 
-	//ノート番号で角度を決定
-	angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
-	angle1 = angle0 - (m_NoteAngleStep / 2.0f);
-	angle2 = angle0 + (m_NoteAngleStep / 2.0f);
+	float angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
+	float angle1 = angle0 - (m_NoteAngleStep / 2.0f);
+	float angle2 = angle0 + (m_NoteAngleStep / 2.0f);
 
 	*pVector0 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle1);
 	*pVector1 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle2);
@@ -208,155 +169,90 @@ void MTNoteDesignRing::GetNoteBoxVirtexPosLive(
 }
 
 //******************************************************************************
-// グリッドリング基準座標取得
+// Grid ring base position
 //******************************************************************************
 void MTNoteDesignRing::GetGridRingBasePos(
 		unsigned long tickTime,
-		D3DXVECTOR3* pBasePos
+		Vector3* pBasePos
 	)
 {
-	float chStep = 0.0f;
-	
-	chStep = GetChStep();
-	*pBasePos = D3DXVECTOR3(
+	float chStep = GetChStep();
+	*pBasePos = Vector3(
 					GetPlayPosX(tickTime),
 					GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
 					GetPortOriginZ(0));
 }
 
 //******************************************************************************
-// ライブモニタ用グリッドリング基準座標取得
+// Live grid ring base position
 //******************************************************************************
 void MTNoteDesignRing::GetGridRingBasePosLive(
-		D3DXVECTOR3* pBasePosStart,
-		D3DXVECTOR3* pBasePosEnd
+		Vector3* pBasePosStart,
+		Vector3* pBasePosEnd
 	)
 {
-	unsigned int elapsedTime = 0;
-	float chStep = 0.0f;
-	
-	elapsedTime = GetLiveMonitorDisplayDuration();
-	chStep = GetChStep();
-	*pBasePosStart = D3DXVECTOR3(
-							GetPlayPosX(0),
-							GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
-							GetPortOriginZ(0));
-	*pBasePosEnd   = D3DXVECTOR3(
-							-(GetLivePosX(elapsedTime)),
-							GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
-							GetPortOriginZ(0));
+	unsigned int elapsedTime = GetLiveMonitorDisplayDuration();
+	float chStep = GetChStep();
+
+	*pBasePosStart = Vector3(
+						GetPlayPosX(0),
+						GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
+						GetPortOriginZ(0));
+	*pBasePosEnd = Vector3(
+						-(GetLivePosX(elapsedTime)),
+						GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
+						GetPortOriginZ(0));
 }
 
 //******************************************************************************
-// ポート原点Y座標取得
+// Port origin coordinates
 //******************************************************************************
-float MTNoteDesignRing::GetPortOriginY(
-		unsigned char portNo
-	)
+float MTNoteDesignRing::GetPortOriginY(unsigned char portNo)
 {
-	float portIndex = 0.0f;
-	float portWidth = 0.0f;
-
-	portIndex = (float)(m_PortIndex[portNo]);
-	portWidth = GetChStep() * (float)SM_MAX_CH_NUM;
-
-	//   +y
-	//    |
-	//    @-- Note#0,127 @:Origin(for portB)
-	//    |
-	//    @-- Note#0,127 @:Origin(for portA)
-	//    | |
-	//    | | Radius
-	//    | |
-	// ---0----->+x(time)
-	//    |
-	//    |
-	//    |
-	//    *-- PortA
-	//    |
-	//    *-- PortB
-	//    |
-	//   -y
-
+	float portIndex = (float)(m_PortIndex[portNo]);
+	float portWidth = GetChStep() * (float)SM_MAX_CH_NUM;
 	return (m_RingRadius + (portWidth * portIndex));
 }
 
-//******************************************************************************
-// ポート原点Z座標取得
-//******************************************************************************
-float MTNoteDesignRing::GetPortOriginZ(
-		unsigned char portNo
-	)
+float MTNoteDesignRing::GetPortOriginZ(unsigned char portNo)
 {
-	//               +y
-	//                |
-	//           *****@*****      @:Origin(for portB)
-	//         **     |     **
-	//        *    ***@***    *   @:Origin(for portA)
-	//       *   **   |   **   *
-	//      *   *     |     *   *
-	//      *  *      |      *  *
-	// +z<--*--*------0------*--*-->-z
-	//      *  *      |      *  *
-	//      *   *     |     *   *
-	//       *   **   |   **   *
-	//        *    *******    *
-	//         **     |     **
-	//           ***********
-	//                |
-	//               -y
-
-	return (0.0f);
+	return 0.0f;
 }
 
 //******************************************************************************
-// 世界座標配置移動ベクトル取得
+// World move vector
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRing::GetWorldMoveVector()
+Vector3 MTNoteDesignRing::GetWorldMoveVector()
 {
-	D3DXVECTOR3 vector;
-
-	vector.x = 0.0f;
-	vector.y = 0.0f;
-	vector.z = 0.0f;
-
-	return vector;
+	return Vector3(0.0f, 0.0f, 0.0f);
 }
 
 //******************************************************************************
-// ノート基準座標取得
+// Note base position
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRing::_GetNoteBasePos(
+Vector3 MTNoteDesignRing::_GetNoteBasePos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo
 	)
 {
-	D3DXVECTOR3 vector;
-
-	//演奏位置
-	vector.x = GetPlayPosX(curTickTime);
-
-	//ポート番号・チャンネル番号で原点を決定
-	vector.y = GetPortOriginY(portNo) + (GetChStep() * chNo);
-	vector.z = GetPortOriginZ(portNo);
-
-	return vector;
+	Vector3 v;
+	v.x = GetPlayPosX(curTickTime);
+	v.y = GetPortOriginY(portNo) + (GetChStep() * chNo);
+	v.z = GetPortOriginZ(portNo);
+	return v;
 }
 
 //******************************************************************************
-// ノート角度取得
+// Note angle
 //******************************************************************************
 float MTNoteDesignRing::_GetNoteAngle(
 		unsigned char noteNo,
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	float angle = 0.0f;
 	float pb = 0.0f;
-
-	//ピッチベンドによる角度の増減
 	if (pitchBendValue < 0) {
 		pb = m_NoteAngleStep * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
 	}
@@ -364,10 +260,8 @@ float MTNoteDesignRing::_GetNoteAngle(
 		pb = m_NoteAngleStep * pitchBendSensitivity * ((float)pitchBendValue / 8191.0f);
 	}
 
-	//ノート番号で角度を決定
-	angle = ((m_NoteAngleStep * noteNo) + (m_NoteAngleStep / 2.0f) + pb) * (-1.0f);
+	float angle = ((m_NoteAngleStep * noteNo) + (m_NoteAngleStep / 2.0f) + pb) * (-1.0f);
 
-	//ライブモニタの場合は反転する
 	if (m_isLiveMode) {
 		angle = angle * (-1.0f);
 	}
@@ -376,32 +270,23 @@ float MTNoteDesignRing::_GetNoteAngle(
 }
 
 //******************************************************************************
-// 設定ファイル読み込み
+// Load configuration
 //******************************************************************************
-int MTNoteDesignRing::_LoadConfFile(
-		const TCHAR* pSceneName
-	)
+int MTNoteDesignRing::_LoadConfFile(const TCHAR* pSceneName)
 {
 	int result = 0;
 	MTConfFile confFile;
 
-	//設定ファイル読み込み
 	result = MTNoteDesign::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//----------------------------------
-	//スケール情報
-	//----------------------------------
 	result = confFile.SetCurSection(_T("Scale"));
 	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("RingRadius"), &m_RingRadius, 5.0f);
-	if (result != 0) goto EXIT;
+	confFile.GetFloat(_T("RingRadius"), &m_RingRadius, 5.0f);
 
 EXIT:;
 	return result;
 }
-
-

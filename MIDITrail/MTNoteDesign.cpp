@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTNoteDesign
 //
-// ノートデザインクラス
+// Note design class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,25 +18,27 @@
 #include "MTNoteDesign.h"
 
 using namespace YNBaseLib;
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
-MTNoteDesign::MTNoteDesign(void)
+MTNoteDesign::MTNoteDesign()
 {
 	_Clear();
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
-MTNoteDesign::~MTNoteDesign(void)
+MTNoteDesign::~MTNoteDesign()
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int MTNoteDesign::Initialize(
 		const TCHAR* pSceneName,
@@ -47,29 +50,21 @@ int MTNoteDesign::Initialize(
 	unsigned long portIndex = 0;
 	unsigned char portNo = 0;
 
-	//ライブモニタ向け設定
 	if (pSeqData == NULL) {
-		//分解能
 		m_TimeDivision = 48;
-		//ポートリスト
 		m_PortList.Clear();
 		m_PortList.AddPort(0);
 	}
-	//通常設定
 	else {
-		//分解能取得
 		m_TimeDivision = pSeqData->GetTimeDivision();
 		if (m_TimeDivision == 0) {
 			result = YN_SET_ERR("Invalid data found.", 0, 0);
 			goto EXIT;
 		}
-		//ポートリスト取得
 		result = pSeqData->GetPortList(&m_PortList);
 		if (result != 0) goto EXIT;
 	}
 
-	//ポート番号に昇順のインデックスを振る
-	//ポート 0番 3番 5番 に出力する場合のインデックスはそれぞれ 0, 1, 2
 	for (index = 0; index < 256; index++) {
 		m_PortIndex[index] = 0;
 	}
@@ -79,11 +74,9 @@ int MTNoteDesign::Initialize(
 		portIndex++;
 	}
 
-	//パラメータ設定ファイル読み込み
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
-	
-	//ユーザ設定読み込み
+
 	result = _LoadUserConf();
 	if (result != 0) goto EXIT;
 
@@ -92,41 +85,35 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏位置取得
+// Playback position
 //******************************************************************************
-float MTNoteDesign::GetPlayPosX(
-		unsigned long curTickTime
-	)
+float MTNoteDesign::GetPlayPosX(unsigned long curTickTime)
 {
 	return ((float)curTickTime * m_QuarterNoteLength / (float)m_TimeDivision);
 }
 
 //******************************************************************************
-// ライブモニタ用ノート位置取得
+// Live monitor note position
 //******************************************************************************
-float MTNoteDesign::GetLivePosX(
-		unsigned long elapsedTime
-	)
+float MTNoteDesign::GetLivePosX(unsigned long elapsedTime)
 {
 	return (((float)elapsedTime / 1000.0f) * m_LiveNoteLengthPerSecond);
 }
 
 //******************************************************************************
-// ノートボックス中心座標取得
+// Note box center position
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesign::GetNoteBoxCenterPosX(
+Vector3 MTNoteDesign::GetNoteBoxCenterPosX(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	D3DXVECTOR3 vector;
 	float pb = 0.0f;
 
-	//ピッチベンドによるY座標の移動量
 	if (pitchBendValue < 0) {
 		pb = GetNoteStep() * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
 	}
@@ -134,326 +121,226 @@ D3DXVECTOR3 MTNoteDesign::GetNoteBoxCenterPosX(
 		pb = GetNoteStep() * pitchBendSensitivity * ((float)pitchBendValue / 8191.0f);
 	}
 
-	//演奏位置
-	vector.x = GetPlayPosX(curTickTime);
+	Vector3 v;
+	v.x = GetPlayPosX(curTickTime);
+	v.y = GetPortOriginY(portNo) + (m_NoteStep * noteNo + pb);
+	v.z = GetPortOriginZ(portNo) + (GetChStep() * chNo);
 
-	//ノート番号
-	vector.y = GetPortOriginY(portNo) + (m_NoteStep * noteNo + pb);
-
-	//ポート番号とチャンネル番号
-	vector.z = GetPortOriginZ(portNo) + (GetChStep() * chNo);
-
-	return vector;
+	return v;
 }
 
 //******************************************************************************
-// ノートボックス縦サイズ取得
+// Note box dimensions
 //******************************************************************************
-float MTNoteDesign::GetNoteBoxHeight()
-{
-	return m_NoteBoxHeight;
-}
+float MTNoteDesign::GetNoteBoxHeight() { return m_NoteBoxHeight; }
+float MTNoteDesign::GetNoteBoxWidth()  { return m_NoteBoxWidth; }
+float MTNoteDesign::GetNoteStep()      { return m_NoteStep; }
+float MTNoteDesign::GetChStep()        { return m_ChStep; }
 
-//******************************************************************************
-// ノートボックス横サイズ取得
-//******************************************************************************
-float MTNoteDesign::GetNoteBoxWidth()
-{
-	return m_NoteBoxWidth;
-}
-
-//******************************************************************************
-// ノート間隔取得
-//******************************************************************************
-float MTNoteDesign::GetNoteStep()
-{
-	return m_NoteStep;
-}
-
-//******************************************************************************
-// チャンネル間隔取得
-//******************************************************************************
-float MTNoteDesign::GetChStep()
-{
-	return m_ChStep;
-}
-
-//******************************************************************************
-//ライブモニタ表示期間（ミリ秒）
-//******************************************************************************
 unsigned long MTNoteDesign::GetLiveMonitorDisplayDuration()
 {
 	return (unsigned long)m_LiveMonitorDisplayDuration;
 }
 
 //******************************************************************************
-// ノートボックス頂点座標取得
+// Note box vertex positions
 //******************************************************************************
 void MTNoteDesign::GetNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
-
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	D3DXVECTOR3 center;
-	float bh = 0.0f;
-	float bw = 0.0f;
+	Vector3 center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo,
+	                                        pitchBendValue, pitchBendSensitivity);
+	float bh = GetNoteBoxHeight();
+	float bw = GetNoteBoxWidth();
 
-	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
-
-	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidth();
-
-	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
-	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
-	*pVector2 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z+(bw/2.0f));
-	*pVector3 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z-(bw/2.0f));
+	*pVector0 = Vector3(center.x, center.y + bh / 2.0f, center.z + bw / 2.0f);
+	*pVector1 = Vector3(center.x, center.y + bh / 2.0f, center.z - bw / 2.0f);
+	*pVector2 = Vector3(center.x, center.y - bh / 2.0f, center.z + bw / 2.0f);
+	*pVector3 = Vector3(center.x, center.y - bh / 2.0f, center.z - bw / 2.0f);
 }
 
 //******************************************************************************
-// 発音中ノートボックス頂点座標取得
+// Active note box vertex positions
 //******************************************************************************
 void MTNoteDesign::GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity,	//省略可：ピッチベンド感度
-		unsigned long elapsedTime			//省略可：経過時間（ミリ秒）
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity,
+		unsigned long elapsedTime
 	)
 {
-	D3DXVECTOR3 center;
-	float bh = 0.0f;
-	float bw = 0.0f;
+	Vector3 center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo,
+	                                        pitchBendValue, pitchBendSensitivity);
 	float curSizeRatio = 1.0f;
-	
-	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
-	
 	if (elapsedTime < (unsigned long)m_ActiveNoteDuration) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f)
+		             * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
 	}
-	
-	bh = GetNoteBoxHeight() * curSizeRatio;
-	bw = GetNoteBoxWidth() * curSizeRatio;
-	
-	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
-	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
-	*pVector2 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z+(bw/2.0f));
-	*pVector3 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z-(bw/2.0f));
+
+	float bh = GetNoteBoxHeight() * curSizeRatio;
+	float bw = GetNoteBoxWidth() * curSizeRatio;
+
+	*pVector0 = Vector3(center.x, center.y + bh / 2.0f, center.z + bw / 2.0f);
+	*pVector1 = Vector3(center.x, center.y + bh / 2.0f, center.z - bw / 2.0f);
+	*pVector2 = Vector3(center.x, center.y - bh / 2.0f, center.z + bw / 2.0f);
+	*pVector3 = Vector3(center.x, center.y - bh / 2.0f, center.z - bw / 2.0f);
 }
 
 //******************************************************************************
-// ライブモニタ用ノートボックス頂点座標取得
+// Live monitor note box vertex positions
 //******************************************************************************
 void MTNoteDesign::GetNoteBoxVirtexPosLive(
 		unsigned long elapsedTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-		short pitchBendValue,				//省略可：ピッチベンド
-		unsigned char pitchBendSensitivity	//省略可：ピッチベンド感度
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
 	)
 {
-	D3DXVECTOR3 center;
-	float bh = 0.0f;
-	float bw = 0.0f;
-	float x = 0.0f;
 	unsigned long tickTimeDummy = 0;
-	
-	center = GetNoteBoxCenterPosX(tickTimeDummy, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
-	
-	x = -(GetLivePosX(elapsedTime));
-	
-	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidth();
-	
-	*pVector0 = D3DXVECTOR3(x, center.y+(bh/2.0f), center.z+(bw/2.0f));
-	*pVector1 = D3DXVECTOR3(x, center.y+(bh/2.0f), center.z-(bw/2.0f));
-	*pVector2 = D3DXVECTOR3(x, center.y-(bh/2.0f), center.z+(bw/2.0f));
-	*pVector3 = D3DXVECTOR3(x, center.y-(bh/2.0f), center.z-(bw/2.0f));
+	Vector3 center = GetNoteBoxCenterPosX(tickTimeDummy, portNo, chNo, noteNo,
+	                                        pitchBendValue, pitchBendSensitivity);
+	float x = -(GetLivePosX(elapsedTime));
+	float bh = GetNoteBoxHeight();
+	float bw = GetNoteBoxWidth();
+
+	*pVector0 = Vector3(x, center.y + bh / 2.0f, center.z + bw / 2.0f);
+	*pVector1 = Vector3(x, center.y + bh / 2.0f, center.z - bw / 2.0f);
+	*pVector2 = Vector3(x, center.y - bh / 2.0f, center.z + bw / 2.0f);
+	*pVector3 = Vector3(x, center.y - bh / 2.0f, center.z - bw / 2.0f);
 }
 
 //******************************************************************************
-// グリッドボックス頂点座標取得
+// Grid box vertex positions
 //******************************************************************************
 void MTNoteDesign::GetGridBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3
 	)
 {
-	float x = 0.0f;
-	float bh = 0.0f;
-	float bw = 0.0f;
-	float gridHeight = 0.0f;
-	float gridWidth = 0.0f;
-	float oy = 0.0f;
-	float oz = 0.0f;
+	float x = GetPlayPosX(curTickTime);
+	float bh = GetNoteBoxHeight();
+	float bw = GetNoteBoxWidth();
+	float gridHeight = GetNoteStep() * 127;
+	float gridWidth  = GetChStep() * 15;
+	float oy = GetPortOriginY(portNo);
+	float oz = GetPortOriginZ(portNo);
 
-	x = GetPlayPosX(curTickTime);
-
-	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidth();
-
-	gridHeight = GetNoteStep() * 127;
-	gridWidth  = GetChStep() * 15;
-
-	oy = GetPortOriginY(portNo);
-	oz = GetPortOriginZ(portNo);
-
-	*pVector0 = D3DXVECTOR3(x, oy+gridHeight+(bh/2.0f), oz+gridWidth+(bw/2.0f));
-	*pVector1 = D3DXVECTOR3(x, oy+gridHeight+(bh/2.0f), oz          -(bw/2.0f));
-	*pVector2 = D3DXVECTOR3(x, oy           -(bh/2.0f), oz+gridWidth+(bw/2.0f));
-	*pVector3 = D3DXVECTOR3(x, oy           -(bh/2.0f), oz          -(bw/2.0f));
+	*pVector0 = Vector3(x, oy + gridHeight + bh / 2.0f, oz + gridWidth + bw / 2.0f);
+	*pVector1 = Vector3(x, oy + gridHeight + bh / 2.0f, oz             - bw / 2.0f);
+	*pVector2 = Vector3(x, oy              - bh / 2.0f, oz + gridWidth + bw / 2.0f);
+	*pVector3 = Vector3(x, oy              - bh / 2.0f, oz             - bw / 2.0f);
 }
 
 //******************************************************************************
-// グリッドボックス頂点座標取得
+// Live grid box vertex positions
 //******************************************************************************
 void MTNoteDesign::GetGridBoxVirtexPosLive(
 		unsigned long elapsedTime,
 		unsigned char portNo,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3
 	)
 {
-	float x = 0.0f;
-	float bh = 0.0f;
-	float bw = 0.0f;
-	float gridHeight = 0.0f;
-	float gridWidth = 0.0f;
-	float oy = 0.0f;
-	float oz = 0.0f;
-	
-	x = -(GetLivePosX(elapsedTime));
-	
-	bh = GetNoteBoxHeight();
-	bw = GetNoteBoxWidth();
-	
-	gridHeight = GetNoteStep() * 127;
-	gridWidth  = GetChStep() * 15;
-	
-	oy = GetPortOriginY(portNo);
-	oz = GetPortOriginZ(portNo);
-	
-	*pVector0 = D3DXVECTOR3(x, oy+gridHeight+(bh/2.0f), oz+gridWidth+(bw/2.0f));
-	*pVector1 = D3DXVECTOR3(x, oy+gridHeight+(bh/2.0f), oz          -(bw/2.0f));
-	*pVector2 = D3DXVECTOR3(x, oy           -(bh/2.0f), oz+gridWidth+(bw/2.0f));
-	*pVector3 = D3DXVECTOR3(x, oy           -(bh/2.0f), oz          -(bw/2.0f));
+	float x = -(GetLivePosX(elapsedTime));
+	float bh = GetNoteBoxHeight();
+	float bw = GetNoteBoxWidth();
+	float gridHeight = GetNoteStep() * 127;
+	float gridWidth  = GetChStep() * 15;
+	float oy = GetPortOriginY(portNo);
+	float oz = GetPortOriginZ(portNo);
+
+	*pVector0 = Vector3(x, oy + gridHeight + bh / 2.0f, oz + gridWidth + bw / 2.0f);
+	*pVector1 = Vector3(x, oy + gridHeight + bh / 2.0f, oz             - bw / 2.0f);
+	*pVector2 = Vector3(x, oy              - bh / 2.0f, oz + gridWidth + bw / 2.0f);
+	*pVector3 = Vector3(x, oy              - bh / 2.0f, oz             - bw / 2.0f);
 }
 
 //******************************************************************************
-// 再生面頂点座標取得
+// Playback section vertex positions
 //******************************************************************************
 void MTNoteDesign::GetPlaybackSectionVirtexPos(
 		unsigned long curTickTime,
-		D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-		D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-		D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-		D3DXVECTOR3* pVector3 	//YZ平面+X軸方向を見て右下
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3
 	)
 {
-	D3DXVECTOR3 firstPortVecotr[4];
-	D3DXVECTOR3 finaltPortVecotr[4];
+	Vector3 firstPort[4];
+	Vector3 lastPort[4];
 	unsigned char lastPortNo = 0;
 
-	m_PortList.GetPort(m_PortList.GetSize()-1, &lastPortNo);
+	m_PortList.GetPort(m_PortList.GetSize() - 1, &lastPortNo);
 
-	GetGridBoxVirtexPos(
-			curTickTime,
-			0,
-			&(firstPortVecotr[0]),
-			&(firstPortVecotr[1]),
-			&(firstPortVecotr[2]),
-			&(firstPortVecotr[3])
-		);
-	GetGridBoxVirtexPos(
-			curTickTime,
-			lastPortNo,
-			&(finaltPortVecotr[0]),
-			&(finaltPortVecotr[1]),
-			&(finaltPortVecotr[2]),
-			&(finaltPortVecotr[3])
-		);
+	GetGridBoxVirtexPos(curTickTime, 0, &firstPort[0], &firstPort[1],
+	                    &firstPort[2], &firstPort[3]);
+	GetGridBoxVirtexPos(curTickTime, lastPortNo, &lastPort[0], &lastPort[1],
+	                    &lastPort[2], &lastPort[3]);
 
-	*pVector0 = finaltPortVecotr[0];
-	*pVector1 = firstPortVecotr[1];
-	*pVector2 = finaltPortVecotr[2];
-	*pVector3 = firstPortVecotr[3];
+	*pVector0 = lastPort[0];
+	*pVector1 = firstPort[1];
+	*pVector2 = lastPort[2];
+	*pVector3 = firstPort[3];
 }
 
 //******************************************************************************
-// 波紋縦サイズ取得
+// Ripple parameters
 //******************************************************************************
-float MTNoteDesign::GetRippleHeight(
-		unsigned long elapsedTime	//省略可：経過時間（ミリ秒）
-	)
+float MTNoteDesign::GetRippleHeight(unsigned long elapsedTime)
 {
-	float height = 0.0f;
-
 	if ((int)elapsedTime <= m_RippleDuration) {
-		height = m_RippleHeight * (1.0f - ((float)elapsedTime / m_RippleDuration));
+		return m_RippleHeight * (1.0f - ((float)elapsedTime / m_RippleDuration));
 	}
-
-	return height;
+	return 0.0f;
 }
 
-//******************************************************************************
-// 波紋横サイズ取得
-//******************************************************************************
-float MTNoteDesign::GetRippleWidth(
-		unsigned long elapsedTime	//省略可：経過時間（ミリ秒）
-	)
+float MTNoteDesign::GetRippleWidth(unsigned long elapsedTime)
 {
-	float width = 0.0f;
-
 	if ((int)elapsedTime <= m_RippleDuration) {
-		width = m_RippleWidth * (1.0f - ((float)elapsedTime / m_RippleDuration));
+		return m_RippleWidth * (1.0f - ((float)elapsedTime / m_RippleDuration));
 	}
-
-	return width;
+	return 0.0f;
 }
 
-//******************************************************************************
-// 波紋透明度取得
-//******************************************************************************
-float MTNoteDesign::GetRippleAlpha(
-		unsigned long elapsedTime	//経過時間（ミリ秒）
-	)
+float MTNoteDesign::GetRippleAlpha(unsigned long elapsedTime)
 {
-	float alpha = 1.0f;
-
 	if ((int)elapsedTime <= m_RippleDuration) {
-		alpha = 1.0f - ((float)elapsedTime / m_RippleDuration);
+		return 1.0f - ((float)elapsedTime / m_RippleDuration);
 	}
-
-	return alpha;
+	return 1.0f;
 }
 
 //******************************************************************************
-// ピクチャボード相対位置取得
+// Picture board relative position
 //******************************************************************************
 float MTNoteDesign::GetPictBoardRelativePos()
 {
@@ -461,176 +348,83 @@ float MTNoteDesign::GetPictBoardRelativePos()
 }
 
 //******************************************************************************
-// ポート原点Y座標取得
+// Port origin coordinates
 //******************************************************************************
-float MTNoteDesign::GetPortOriginY(
-		unsigned char portNo
-	)
+float MTNoteDesign::GetPortOriginY(unsigned char portNo)
 {
-	//   +y
-	//    |
-	//    +-- Note#127
-	//    |   Note#126
-	//    |
-	//    |
-	// ---0----->+x(time)
-	//    |
-	//    |
-	//    |   Note#1
-	//    @-- Note#0  @:OriginY
-	//    |
-	//   -y
-
 	return (0.0f - (GetNoteStep() * 127.0f / 2.0f));
 }
 
-//******************************************************************************
-// ポート原点Z座標取得
-//******************************************************************************
-float MTNoteDesign::GetPortOriginZ(
-		unsigned char portNo
-	)
+float MTNoteDesign::GetPortOriginZ(unsigned char portNo)
 {
-	float portIndex = 0.0f;
-	float portWidth = 0.0f;
-
-	//                  +y
-	//                   |
-	//         portC   portB   portA
-	//       +-------+-------+-------+Note#127
-	//       |       |   |   |       |
-	//       |       |   |   |       |
-	//       |       |   |   |       |
-	// +z<---|-------@---0---@-------@--------->-z
-	//       |       |   |   |       |
-	//       |       |   |   |       |  @:OriginZ(for portA,B,C)
-	//       |       |   |   |       |
-	//       +-------+-------+-------+Note#0
-	//    Ch. 16    0 16 |  0 16    0
-	//                   |
-	//                  -y
-
-	portIndex = (float)(m_PortIndex[portNo]);
-	portWidth = GetChStep() * 16.0f;
-
-	return ((portWidth * portIndex) - (portWidth * m_PortList.GetSize() / 2.0f));
+	float pIdx = (float)(m_PortIndex[portNo]);
+	float portWidth = GetChStep() * 16.0f;
+	return (portWidth * pIdx - portWidth * m_PortList.GetSize() / 2.0f);
 }
 
 //******************************************************************************
-// 世界座標配置移動ベクトル取得
+// World move vector
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesign::GetWorldMoveVector()
+Vector3 MTNoteDesign::GetWorldMoveVector()
 {
-	D3DXVECTOR3 vector;
-
-	vector.x = 0.0f;
-	vector.y = - GetPortOriginY(0);
-	vector.z = - GetPortOriginZ(0);
-
-	return vector;
+	return Vector3(0.0f, -GetPortOriginY(0), -GetPortOriginZ(0));
 }
 
 //******************************************************************************
-// ノートボックスカラー取得
+// Note box color
 //******************************************************************************
-D3DXCOLOR MTNoteDesign::GetNoteBoxColor(
+Color MTNoteDesign::GetNoteBoxColor(
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo
 	)
 {
-	D3DXCOLOR color;
-
 	if (m_NoteColorType == Channel) {
-		//チャンネル番号によって色を変える
 		if (chNo >= 16) {
-			//データ異常だが無視する
-			color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+			return Color(1.0f, 1.0f, 1.0f, 1.0f);
 		}
-		else {
-			color = m_NoteColor[chNo];
-		}
+		return m_NoteColor[chNo];
 	}
 	else if (m_NoteColorType == Scale) {
-		//音階によって色を変える
-		color = m_NoteColorOfScale[(noteNo % 12)];
+		return m_NoteColorOfScale[(noteNo % 12)];
 	}
-
-	return color;
+	return Color(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 //******************************************************************************
-// 発音中ノートボックスカラー取得
+// Active note box color
 //******************************************************************************
-D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
+Color MTNoteDesign::GetActiveNoteBoxColor(
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
 		unsigned long elapsedTime
 	)
 {
-	D3DXCOLOR color;
-	float r = 0.0f;
-	float g = 0.0f;
-	float b = 0.0f;
-	float a = 0.0f;
+	Color color = GetNoteBoxColor(portNo, chNo, noteNo);
+
 	float rate = 0.0f;
-
-	color = GetNoteBoxColor(portNo, chNo, noteNo);
-
-	//m_ActiveNoteDuration リリースタイム
-	//  発音開始時点からノート色を元に戻すまでの時間
-	//  ただし m_ActiveNoteEmissive によってリリース後もノートOFFまで発光する
-
-	//m_ActiveNoteWhiteRate 最大白色率
-	//  0.0 → ノート色変化なし
-	//  0.5 → ノート色と白の中間色
-	//  1.0 → 白
-
-	rate = 0.0f;
 	if ((int)elapsedTime < m_ActiveNoteDuration) {
 		rate = 1.0f - ((float)elapsedTime / (float)m_ActiveNoteDuration);
 	}
-	r = color.r + ((1.0f - color.r) * rate * m_ActiveNoteWhiteRate);
-	g = color.g + ((1.0f - color.g) * rate * m_ActiveNoteWhiteRate);
-	b = color.b + ((1.0f - color.b) * rate * m_ActiveNoteWhiteRate);
-	a = color.a;
-	color = D3DXCOLOR(r, g, b, a);
 
-	return color;
+	float r = color.R() + ((1.0f - color.R()) * rate * m_ActiveNoteWhiteRate);
+	float g = color.G() + ((1.0f - color.G()) * rate * m_ActiveNoteWhiteRate);
+	float b = color.B() + ((1.0f - color.B()) * rate * m_ActiveNoteWhiteRate);
+	float a = color.A();
+
+	return Color(r, g, b, a);
 }
 
-//******************************************************************************
-// 発音中ノートボックスエミッシブ取得（マテリアル用）
-//******************************************************************************
-D3DXCOLOR MTNoteDesign::GetActiveNoteEmissive()
-{
-	return m_ActiveNoteEmissive;
-}
+Color MTNoteDesign::GetActiveNoteEmissive()   { return m_ActiveNoteEmissive; }
+Color MTNoteDesign::GetGridLineColor()        { return m_GridLineColor; }
+Color MTNoteDesign::GetPlaybackSectionColor() { return m_PlaybackSectionColor; }
 
 //******************************************************************************
-// グリッドラインカラー取得
+// Clear
 //******************************************************************************
-D3DXCOLOR MTNoteDesign::GetGridLineColor()
+void MTNoteDesign::_Clear()
 {
-	return m_GridLineColor;
-}
-
-//******************************************************************************
-// 再生面カラー取得
-//******************************************************************************
-D3DXCOLOR MTNoteDesign::GetPlaybackSectionColor()
-{
-	return m_PlaybackSectionColor;
-}
-
-//******************************************************************************
-// クリア
-//******************************************************************************
-void MTNoteDesign::_Clear(void)
-{
-	unsigned long i = 0;
-	
 	m_TimeDivision = 0;
 	m_QuarterNoteLength = 0.0f;
 	m_NoteBoxHeight = 0.0f;
@@ -642,159 +436,122 @@ void MTNoteDesign::_Clear(void)
 	m_PictBoardRelativePos = 0.0f;
 	m_PortList.Clear();
 
-	for (i = 0; i < 256; i++) {
+	for (unsigned long i = 0; i < 256; i++) {
 		m_PortIndex[i] = 0;
 	}
 
 	m_NoteColorType = Channel;
-	for (i = 0; i < 16; i++) {
-		m_NoteColor[i] = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	for (unsigned long i = 0; i < 16; i++) {
+		m_NoteColor[i] = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-	for (i = 0; i < 12; i++) {
-		m_NoteColorOfScale[i] = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	for (unsigned long i = 0; i < 12; i++) {
+		m_NoteColorOfScale[i] = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-	m_ActiveNoteEmissive   = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
-	m_GridLineColor        = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
-	m_PlaybackSectionColor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	m_ActiveNoteEmissive   = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	m_GridLineColor        = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	m_PlaybackSectionColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 	m_ActiveNoteDuration = 400;
 	m_ActiveNoteWhiteRate = 1.0f;
 	m_ActiveNoteBoxSizeRatio = 1.0f;
 	m_RippleDuration = 1600;
+
+	m_LiveMonitorDisplayDuration = 30000;
+	m_LiveNoteLengthPerSecond = 2.0f;
 }
 
 //******************************************************************************
-// 設定ファイル読み込み
+// Load configuration
 //******************************************************************************
-int MTNoteDesign::_LoadConfFile(
-		const TCHAR* pSceneName
-	)
+int MTNoteDesign::_LoadConfFile(const TCHAR* pSceneName)
 {
 	int result = 0;
 	TCHAR key[32] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
 	TCHAR noteColorType[16] = {_T('\0')};
-	unsigned long i = 0;
 	MTConfFile confFile;
 	MTColorConf colorConf;
 	MTColorPalette colorPalette;
-	D3DXCOLOR color;
+	Color color;
 
-	//設定ファイル初期化
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//カラー設定初期化
 	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//----------------------------------
-	//スケール情報
-	//----------------------------------
+	// Scale parameters
 	result = confFile.SetCurSection(_T("Scale"));
 	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("QuarterNoteLength"), &m_QuarterNoteLength, 1.0f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("NoteBoxHeight"), &m_NoteBoxHeight, 0.1f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("NoteBoxWidth"), &m_NoteBoxWidth, 0.1f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("NoteStep"), &m_NoteStep, 0.1f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("ChStep"), &m_ChStep, 0.5f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("RippleHeight"), &m_RippleHeight, 1.0f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("RippleWidth"), &m_RippleWidth, 1.0f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("PictBoardRelativePos"), &m_PictBoardRelativePos, 1.0f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetFloat(_T("LiveNoteLengthPerSecond"), &m_LiveNoteLengthPerSecond, 2.0f);
-	if (result != 0) goto EXIT;
-	result = confFile.GetInt(_T("LiveMonitorDisplayDuration"), &m_LiveMonitorDisplayDuration, 30000);
-	if (result != 0) goto EXIT;
+	confFile.GetFloat(_T("QuarterNoteLength"), &m_QuarterNoteLength, 1.0f);
+	confFile.GetFloat(_T("NoteBoxHeight"), &m_NoteBoxHeight, 0.1f);
+	confFile.GetFloat(_T("NoteBoxWidth"), &m_NoteBoxWidth, 0.1f);
+	confFile.GetFloat(_T("NoteStep"), &m_NoteStep, 0.1f);
+	confFile.GetFloat(_T("ChStep"), &m_ChStep, 0.5f);
+	confFile.GetFloat(_T("RippleHeight"), &m_RippleHeight, 1.0f);
+	confFile.GetFloat(_T("RippleWidth"), &m_RippleWidth, 1.0f);
+	confFile.GetFloat(_T("PictBoardRelativePos"), &m_PictBoardRelativePos, 1.0f);
+	confFile.GetFloat(_T("LiveNoteLengthPerSecond"), &m_LiveNoteLengthPerSecond, 2.0f);
+	confFile.GetInt(_T("LiveMonitorDisplayDuration"), &m_LiveMonitorDisplayDuration, 30000);
 
-	//----------------------------------
-	//色情報
-	//----------------------------------
+	// Color parameters
 	result = confFile.SetCurSection(_T("Color"));
 	if (result != 0) goto EXIT;
 
-	//ノートカラー種別を取得
-	result = confFile.GetStr(_T("NoteColorType"), noteColorType, 16, _T("CHANNEL"));
-	if (result != 0) goto EXIT;
+	confFile.GetStr(_T("NoteColorType"), noteColorType, 16, _T("CHANNEL"));
 
-	//ノートカラー種別を決定
 	m_NoteColorType = Channel;
 	if (_tcscmp(noteColorType, _T("SCALE")) == 0) {
 		m_NoteColorType = Scale;
 	}
 
-	//選択カラーパレットからノート色情報を取得
+	// Note colors from palette
 	colorConf.GetSelectedColorPalette(&colorPalette);
-	for (i = 0; i < 16; i++) {
+	for (unsigned long i = 0; i < 16; i++) {
 		result = colorPalette.GetChColor(i, &color);
 		if (result != 0) goto EXIT;
 		m_NoteColor[i] = color;
 	}
 
-	//音階用ノート色情報を取得
-	for (i = 0; i < 12; i++) {
-		_stprintf_s(key, 32, _T("Scale-%02d-NoteRGBA"), i+1);
-		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
-		if (result != 0) goto EXIT;
-
+	// Scale note colors
+	for (unsigned long i = 0; i < 12; i++) {
+		_stprintf_s(key, 32, _T("Scale-%02d-NoteRGBA"), i + 1);
+		confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
 		m_NoteColorOfScale[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 	}
 
-	//グリッドライン色情報を取得
+	// Grid line color from palette
 	colorPalette.GetGridLineColor(&color);
 	m_GridLineColor = color;
 
-	//再生面色情報を取得
-	result = confFile.GetStr(_T("PlaybackSectionRGBA"), hexColor, 16, _T("AAAAFFFF"));
-	if (result != 0) goto EXIT;
+	// Playback section color
+	confFile.GetStr(_T("PlaybackSectionRGBA"), hexColor, 16, _T("AAAAFFFF"));
 	m_PlaybackSectionColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 
-	//----------------------------------
-	//発音ノート情報
-	//----------------------------------
+	// Active note parameters
 	result = confFile.SetCurSection(_T("ActiveNote"));
 	if (result != 0) goto EXIT;
 
-	//発音中ノート色情報：継続時間(msec)
-	result = confFile.GetInt(_T("Duration"), &m_ActiveNoteDuration, 400);
-	if (result != 0) goto EXIT;
+	confFile.GetInt(_T("Duration"), &m_ActiveNoteDuration, 400);
+	confFile.GetFloat(_T("WhiteRate"), &m_ActiveNoteWhiteRate, 0.9f);
 
-	//発音中ノート色情報：白色率
-	result = confFile.GetFloat(_T("WhiteRate"), &m_ActiveNoteWhiteRate, 0.9f);
-	if (result != 0) goto EXIT;
-
-	//発音中ノート色情報：マテリアル発光色
-	result = confFile.GetStr(_T("EmissiveRGBA"), hexColor, 16, _T("1A1A1A1A"));
-	if (result != 0) goto EXIT;
+	confFile.GetStr(_T("EmissiveRGBA"), hexColor, 16, _T("1A1A1A1A"));
 	m_ActiveNoteEmissive = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 
-	//発音中ノート情報：ボックスサイズ比率
-	result = confFile.GetFloat(_T("SizeRatio"), &m_ActiveNoteBoxSizeRatio, 1.4f);
-	if (result != 0) goto EXIT;
+	confFile.GetFloat(_T("SizeRatio"), &m_ActiveNoteBoxSizeRatio, 1.4f);
 
-	//----------------------------------
-	//波紋情報
-	//----------------------------------
+	// Ripple parameters
 	result = confFile.SetCurSection(_T("Ripple"));
 	if (result != 0) goto EXIT;
 
-	//波紋継続時間(msec)
-	result = confFile.GetInt(_T("Duration"), &m_RippleDuration, 1600);
-	if (result != 0) goto EXIT;
+	confFile.GetInt(_T("Duration"), &m_RippleDuration, 1600);
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ユーザ設定読み込み
+// Load user config
 //******************************************************************************
 int MTNoteDesign::_LoadUserConf()
 {
@@ -802,32 +559,24 @@ int MTNoteDesign::_LoadUserConf()
 	YNConfFile confFile;
 	TCHAR userConfFilePath[_MAX_PATH] = { _T('\0') };
 	int lengthMagnification = 0;
-	
+
 	result = YNPathUtil::GetAppDataDirPath(userConfFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
-	
+
 	_tcscat_s(userConfFilePath, _MAX_PATH, MT_USER_CONFFILE_DIR);
 	_tcscat_s(userConfFilePath, _MAX_PATH, MT_USER_CONFFILE_GRAPHIC);
-	
+
 	result = confFile.Initialize(userConfFilePath);
 	if (result != 0) goto EXIT;
-	
-	//四分音符長拡大率(0-1000)
+
 	result = confFile.SetCurSection(_T("QuarterNote"));
 	result = confFile.GetInt(_T("LengthMagnification"), &lengthMagnification, 100);
-	
-	//クリッピング
-	if (lengthMagnification < 0) {
-		lengthMagnification = 0;
-	}
-	if (lengthMagnification > 1000) {
-		lengthMagnification = 1000;
-	}
 
-	//四分音符の長さを更新
+	if (lengthMagnification < 0) lengthMagnification = 0;
+	if (lengthMagnification > 1000) lengthMagnification = 1000;
+
 	m_QuarterNoteLength = m_QuarterNoteLength * ((float)lengthMagnification / 100.0f);
 
 EXIT:;
 	return result;
 }
-

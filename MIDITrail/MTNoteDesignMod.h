@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTNoteDesignMod
 //
-// ノートデザインModクラス
+// Note design Mod class.
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -10,57 +10,54 @@
 
 #pragma once
 
+#include <d3d11.h>
 #include "MTNoteDesign.h"
+
 //******************************************************************************
-// ノートデザインModクラス
+// Note design Mod class
 //******************************************************************************
 class MTNoteDesignMod : public MTNoteDesign
 {
 public:
 
-	//コンストラクタ／デストラクタ
-	MTNoteDesignMod(void);
-	virtual ~MTNoteDesignMod(void);
+	MTNoteDesignMod();
+	virtual ~MTNoteDesignMod();
 
-	//初期化
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//波紋表示時間取得
+	// Ripple timing
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();
 
-	//波紋描画情報取得
-	D3DBLEND GetRippleSrcBlend();
-	D3DBLEND GetRippleDestBlend();
+	// Ripple blend settings (ini values match D3D11_BLEND numeric values)
+	D3D11_BLEND GetRippleSrcBlend();
+	D3D11_BLEND GetRippleDestBlend();
 	unsigned long GetRippleOverwriteTimes();
 	float GetRippleSpacing();
 
-	//波紋サイズ取得
+	// Ripple size (rate-based decay)
 	float GetRippleHeight(float rate);
 	float GetRippleWidth(float rate);
 	float GetRippleAlpha(float rate);
-	float GetDecayCoefficient(
-				float rate,					//サイズ比率
-				float saturation = 20.0f	//飽和レベル
-			);
+	float GetDecayCoefficient(float rate, float saturation = 20.0f);
 
-	//発音中ノートボックス頂点座標取得
+	// Active note box vertex positions (with decay rate)
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ平面+X軸方向を見て左上
-				D3DXVECTOR3* pVector1,	//YZ平面+X軸方向を見て右上
-				D3DXVECTOR3* pVector2,	//YZ平面+X軸方向を見て左下
-				D3DXVECTOR3* pVector3,	//YZ平面+X軸方向を見て右下
-				short pitchBendValue = 0,				//省略可：ピッチベンド
-				unsigned char pitchBendSensitivity = 0,	//省略可：ピッチベンド感度
-				float rate = 0.0f						//省略可：サイズ比率
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0,
+				float rate = 0.0f
 			);
 
-	//発音中ノートボックスカラー取得
-	D3DXCOLOR GetActiveNoteBoxColor(
+	// Active note box color (with decay rate)
+	DirectX::SimpleMath::Color GetActiveNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
@@ -74,20 +71,12 @@ protected:
 
 private:
 
-	//波紋ディケイ時間
 	int m_RippleDecayDuration;
-	//波紋リリース時間
 	int m_RippleReleaseDuration;
 
-	//波紋描画元（リップル画像）ブレンド指定 
-	D3DBLEND m_RippleSrcBlend;
-	//波紋描画先（背景画像）ブレンド指定
-	D3DBLEND m_RippleDestBlend;
+	D3D11_BLEND m_RippleSrcBlend;
+	D3D11_BLEND m_RippleDestBlend;
 
-	//波紋上書き回数
 	int m_RippleOverwriteTimes;
-	//波紋描画間隔
 	float m_RippleSpacing;
 };
-
-

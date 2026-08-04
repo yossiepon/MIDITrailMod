@@ -1,0 +1,50 @@
+﻿//******************************************************************************
+//
+// MIDITrail / DXTexture11
+//
+// Direct3D 11 texture loader.
+// Replaces the scattered D3DXCreateTextureFromFile calls in each DX9
+// component with a single WIC-based utility class. No DXSDK dependency.
+//
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+// Based on the DX11 migration design by ced (Zel9278)
+// https://github.com/Zel9278/MIDITrailModMod
+//
+//******************************************************************************
+
+#pragma once
+
+#include <d3d11.h>
+#include <tchar.h>
+
+
+//******************************************************************************
+// DX11 texture loader
+//******************************************************************************
+class DXTexture11
+{
+public:
+
+	// Load an image file (PNG/BMP/JPG/...) into a shader resource view.
+	// Returns 0 on success. *ppSRV is caller-owned (call Release on it).
+	static int LoadFromFile(
+				ID3D11Device* pDevice,
+				const TCHAR* pImgFilePath,
+				ID3D11ShaderResourceView** ppSRV,
+				unsigned int* pWidth = nullptr,
+				unsigned int* pHeight = nullptr
+			);
+
+	// Build a shader resource view from a CPU-side RGBA8 pixel buffer
+	// (row-major, pitch = width * 4). Used for dynamically rasterized
+	// text such as note lyrics and dashboard captions.
+	// Returns 0 on success. *ppSRV is caller-owned (call Release on it).
+	static int CreateFromRGBA(
+				ID3D11Device* pDevice,
+				const unsigned char* pPixels,
+				unsigned int width,
+				unsigned int height,
+				ID3D11ShaderResourceView** ppSRV
+			);
+};

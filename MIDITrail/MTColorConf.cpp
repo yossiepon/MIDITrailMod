@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTColorConf
 //
-// カラー設定クラス
+// �J���[�ݒ�N���X
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,10 +16,11 @@
 #include "DXColorUtil.h"
 
 using namespace YNBaseLib;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// �R���X�g���N�^
 //******************************************************************************
 MTColorConf::MTColorConf(void)
 {
@@ -35,7 +36,7 @@ MTColorConf::MTColorConf(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// �f�X�g���N�^
 //******************************************************************************
 MTColorConf::~MTColorConf(void)
 {
@@ -52,14 +53,14 @@ MTColorConf::~MTColorConf(void)
 }
 
 //******************************************************************************
-// 初期化
+// ������
 //******************************************************************************
 int MTColorConf::Initialize(const TCHAR* pDefaultSceneName)
 {
 	int result = 0;
 	int i = 0;
 		
-	//色パレット生成と初期化
+	//�F�p���b�g�����Ə�����
 	for (i = 0; i < MT_COLOR_PALETTE_NUM_MAX; i++) {
 		try {
 			m_pColorPalette[i] = new MTColorPalette();
@@ -72,11 +73,11 @@ int MTColorConf::Initialize(const TCHAR* pDefaultSceneName)
 		if (result != 0) goto EXIT;
 	}
 	
-	//設定ファイル初期化
+	//�ݒ�t�@�C��������
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 	
-	//ユーザ設定読み込み
+	//���[�U�ݒ�ǂݍ���
 	result = _LoadColorConf(pDefaultSceneName);
 	if (result != 0) goto EXIT;
 	
@@ -85,7 +86,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 選択カラーパレット番号取得：0 デフォルト、1-6 パレット番号
+// �I���J���[�p���b�g�ԍ��擾�F0 �f�t�H���g�A1-6 �p���b�g�ԍ�
 //******************************************************************************
 unsigned long MTColorConf::GetSelectedColorPaletteNo()
 {
@@ -93,7 +94,7 @@ unsigned long MTColorConf::GetSelectedColorPaletteNo()
 }
 
 //******************************************************************************
-// 選択カラーパレット番号登録：0 デフォルト、1-6 パレット番号
+// �I���J���[�p���b�g�ԍ��o�^�F0 �f�t�H���g�A1-6 �p���b�g�ԍ�
 //******************************************************************************
 int MTColorConf::SetSelectedColorPaletteNo(unsigned long paletteNo)
 {
@@ -111,7 +112,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// カラーパレット取得：0 デフォルト、1-6 パレット番号
+// �J���[�p���b�g�擾�F0 �f�t�H���g�A1-6 �p���b�g�ԍ�
 //******************************************************************************
 int MTColorConf::GetColorPalette(
 		unsigned long paletteNo,
@@ -132,7 +133,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 選択カラーパレット取得
+// �I���J���[�p���b�g�擾
 //******************************************************************************
 void MTColorConf::GetSelectedColorPalette(MTColorPalette* pColorPalette)
 {
@@ -140,7 +141,7 @@ void MTColorConf::GetSelectedColorPalette(MTColorPalette* pColorPalette)
 }
 
 //******************************************************************************
-// カラーパレット登録：1-6 パレット番号、0 デフォルトは登録不可
+// �J���[�p���b�g�o�^�F1-6 �p���b�g�ԍ��A0 �f�t�H���g�͓o�^�s��
 //******************************************************************************
 int MTColorConf::SetColorPalette(
 		unsigned long paletteNo,
@@ -149,7 +150,7 @@ int MTColorConf::SetColorPalette(
 {
 	int result = 0;
 	
-	//デフォルト0のパレットは書き換え不可
+	//�f�t�H���g0�̃p���b�g�͏��������s��
 	if ((paletteNo == 0) || (paletteNo >= MT_COLOR_PALETTE_NUM_MAX)) {
 		result = YN_SET_ERR("Program error.", paletteNo, 0);
 		goto EXIT;
@@ -162,7 +163,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定ファイル初期化
+// �ݒ�t�@�C��������
 //******************************************************************************
 int MTColorConf::_InitConfFile()
 {
@@ -183,29 +184,29 @@ EXIT:;
 }
 
 //******************************************************************************
-// ユーザ設定読み込み
+// ���[�U�ݒ�ǂݍ���
 //******************************************************************************
 int MTColorConf::_LoadColorConf(const TCHAR* pDefaultSceneName)
 {
 	int result = 0;
 	unsigned long paletteNo = 0;
 	
-	//セクション設定
+	//�Z�N�V�����ݒ�
 	result = m_ConfFile.SetCurSection(_T("ColorSelect"));
 	if (result != 0) goto EXIT;
 	
-	//ユーザ設定値取得：選択カラーパレット番号
+	//���[�U�ݒ�l�擾�F�I���J���[�p���b�g�ԍ�
 	result = m_ConfFile.GetInt(_T("SelectedColorPaletteNo"), &m_SelectedColorPaletteNo, 0);
 	if (result != 0) goto EXIT;
 	if ((m_SelectedColorPaletteNo < 0) || (m_SelectedColorPaletteNo >= MT_COLOR_PALETTE_NUM_MAX)) {
 		m_SelectedColorPaletteNo = 0;
 	}
 	
-	//デフォルトカラーパレット読み込み
+	//�f�t�H���g�J���[�p���b�g�ǂݍ���
 	result = _LoadColorPaletteDefault(pDefaultSceneName, m_pColorPalette[0]);
 	if (result != 0) goto EXIT;
 
-	//カラーパレット設定読み込み
+	//�J���[�p���b�g�ݒ�ǂݍ���
 	for (paletteNo = 1; paletteNo < MT_COLOR_PALETTE_NUM_MAX; paletteNo++) {
 		result = _LoadColorPalettes(paletteNo, m_pColorPalette[paletteNo]);
 		if (result != 0) goto EXIT;
@@ -216,7 +217,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デフォルトカラーパレット読み込み
+// �f�t�H���g�J���[�p���b�g�ǂݍ���
 //******************************************************************************
 int MTColorConf::_LoadColorPaletteDefault(
 		const TCHAR* pDefaultSceneName,
@@ -229,32 +230,36 @@ int MTColorConf::_LoadColorPaletteDefault(
 	TCHAR hexColor[16] = {_T('\0')};
 	MTConfFile confFile;
 	
-	//設定ファイル読み込み
+	//�ݒ�t�@�C���ǂݍ���
 	result = confFile.Initialize(pDefaultSceneName);
 	if (result != 0) goto EXIT;
 	
-	//セクション指定
+	//�Z�N�V�����w��
 	result = confFile.SetCurSection(_T("Color"));
 	if (result != 0) goto EXIT;
 	
-	//チャンネル色取得
+	//�`�����l���F�擾
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		_stprintf_s(key, 32, _T("Ch-%02d-NoteRGBA"), chNo+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
 		if (result != 0) goto EXIT;
 		pColorPalette->SetChColor(chNo, DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	}
-	//背景色取得
-	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000FF"));
+	//�w�i�F�擾（RGB 6桁 → RGBA 8桁に変換して読み込み）
+	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000"));
 	if (result != 0) goto EXIT;
-	pColorPalette->SetBackgroundColor(DXColorUtil::MakeColorFromHexRGB(hexColor));
+	{
+		TCHAR hexRGBA[16] = {0};
+		_stprintf_s(hexRGBA, 16, _T("%sFF"), hexColor);
+		pColorPalette->SetBackgroundColor(DXColorUtil::MakeColorFromHexRGBA(hexRGBA));
+	}
 	
-	//グリッドライン色取得
+	//�O���b�h���C���F�擾
 	result = confFile.GetStr(_T("GridLineRGBA"), hexColor, 16, "444444FF");
 	if (result != 0) goto EXIT;
 	pColorPalette->SetGridLineColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	
-	//カウンター色取得
+	//�J�E���^�[�F�擾
 	result = confFile.GetStr(_T("CaptionRGBA"), hexColor, 16, "FFFFFFFF");
 	if (result != 0) goto EXIT;
 	pColorPalette->SetCounterColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
@@ -264,7 +269,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// カラーパレット読み込み
+// �J���[�p���b�g�ǂݍ���
 //******************************************************************************
 int MTColorConf::_LoadColorPalettes(
 		unsigned long paletteNo,
@@ -277,12 +282,12 @@ int MTColorConf::_LoadColorPalettes(
 	TCHAR key[32] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
 	
-	//セクション設定
+	//�Z�N�V�����ݒ�
 	_stprintf_s(section, 32, _T("ColorPalette-%u"), paletteNo);
 	result = m_ConfFile.SetCurSection(section);
 	if (result != 0) goto EXIT;
 	
-	//チャンネル色取得
+	//�`�����l���F�擾
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		_stprintf_s(key, 32, _T("Ch-%02u-NoteRGBA"), chNo+1);
 		result = m_ConfFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
@@ -290,17 +295,17 @@ int MTColorConf::_LoadColorPalettes(
 		pColorPalette->SetChColor(chNo, DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	}
 	
-	//背景色取得
+	//�w�i�F�擾
 	result = m_ConfFile.GetStr(_T("BackGroundRGBA"), hexColor, 16, _T("000000FF"));
 	if (result != 0) goto EXIT;
 	pColorPalette->SetBackgroundColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	
-	//グリッドライン色取得
+	//�O���b�h���C���F�擾
 	result = m_ConfFile.GetStr(_T("GridLineRGBA"), hexColor, 16, _T("444444FF"));
 	if (result != 0) goto EXIT;
 	pColorPalette->SetGridLineColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	
-	//カウンター色取得
+	//�J�E���^�[�F�擾
 	result = m_ConfFile.GetStr(_T("CaptionRGBA"), hexColor, 16, _T("FFFFFFFF"));
 	if (result != 0) goto EXIT;
 	pColorPalette->SetCounterColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
@@ -310,20 +315,20 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定保存
+// �ݒ�ۑ�
 //******************************************************************************
 int MTColorConf::Save()
 {
 	int result = 0;
 	unsigned long paletteNo = 0;
 	
-	//選択カラーパレット番号保存
+	//�I���J���[�p���b�g�ԍ��ۑ�
 	result = m_ConfFile.SetCurSection(_T("ColorSelect"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("SelectedColorPaletteNo"), m_SelectedColorPaletteNo);
 	if (result != 0) goto EXIT;
 	
-	//カラーパレット 1-6 保存
+	//�J���[�p���b�g 1-6 �ۑ�
 	for (paletteNo = 1; paletteNo < MT_COLOR_PALETTE_NUM_MAX; paletteNo++) {
 		result = _SaveColorPalette(paletteNo, m_pColorPalette[paletteNo]);
 		if (result != 0) goto EXIT;
@@ -334,7 +339,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// カラーパレット保存
+// �J���[�p���b�g�ۑ�
 //******************************************************************************
 int MTColorConf::_SaveColorPalette(
 		unsigned long paletteNo,
@@ -346,14 +351,14 @@ int MTColorConf::_SaveColorPalette(
 	TCHAR section[32] = {_T('\0')};
 	TCHAR key[32] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
-	D3DXCOLOR color;
+	Color color;
 	
-	//セクション設定
+	//�Z�N�V�����ݒ�
 	_stprintf_s(section, 32, _T("ColorPalette-%u"), paletteNo);
 	result = m_ConfFile.SetCurSection(section);
 	if (result != 0) goto EXIT;
 	
-	//チャンネル色登録
+	//�`�����l���F�o�^
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		_stprintf_s(key, 32, _T("Ch-%02u-NoteRGBA"), chNo+1);
 		result = pColorPalette->GetChColor(chNo, &color);
@@ -363,19 +368,19 @@ int MTColorConf::_SaveColorPalette(
 		if (result != 0) goto EXIT;
 	}
 	
-	//背景色登録
+	//�w�i�F�o�^
 	pColorPalette->GetBackgroundColor(&color);
 	DXColorUtil::MakeHexRGBAFromColor(color, hexColor, 16);
 	result = m_ConfFile.SetStr(_T("BackGroundRGBA"), hexColor);
 	if (result != 0) goto EXIT;
 	
-	//グリッドライン色登録
+	//�O���b�h���C���F�o�^
 	pColorPalette->GetGridLineColor(&color);
 	DXColorUtil::MakeHexRGBAFromColor(color, hexColor, 16);
 	result = m_ConfFile.SetStr(_T("GridLineRGBA"), hexColor);
 	if (result != 0) goto EXIT;
 	
-	//カウンター色登録
+	//�J�E���^�[�F�o�^
 	pColorPalette->GetCounterColor(&color);
 	DXColorUtil::MakeHexRGBAFromColor(color, hexColor, 16);
 	result = m_ConfFile.SetStr(_T("CaptionRGBA"), hexColor);

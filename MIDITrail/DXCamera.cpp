@@ -2,9 +2,10 @@
 //
 // MIDITrail / DXCamera
 //
-// カメラクラス
+// Camera class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,25 +14,27 @@
 #include "YNBaseLib.h"
 
 using namespace YNBaseLib;
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
-DXCamera::DXCamera(void)
+DXCamera::DXCamera()
 {
 	_Clear();
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
-DXCamera::~DXCamera(void)
+DXCamera::~DXCamera()
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int DXCamera::Initialize()
 {
@@ -40,7 +43,7 @@ int DXCamera::Initialize()
 }
 
 //******************************************************************************
-// 基本パラメータ設定
+// Set base parameters
 //******************************************************************************
 void DXCamera::SetBaseParam(
 		float viewAngle,
@@ -50,130 +53,58 @@ void DXCamera::SetBaseParam(
 {
 	m_ViewAngle = viewAngle;
 	m_NearPlane = nearPlane;
-	m_FarPlane = farPlane;
+	m_FarPlane  = farPlane;
 }
 
 //******************************************************************************
-// カメラ位置設定
+// Set camera position
 //******************************************************************************
 void DXCamera::SetPosition(
-		D3DXVECTOR3 camVector,
-		D3DXVECTOR3 camLookAtVector,
-		D3DXVECTOR3 camUpVector
+		Vector3 camVector,
+		Vector3 camLookAtVector,
+		Vector3 camUpVector
 	)
 {
-	m_CamVector = camVector;
+	m_CamVector       = camVector;
 	m_CamLookAtVector = camLookAtVector;
-	m_CamUpVector = camUpVector;
+	m_CamUpVector     = camUpVector;
 }
 
 //******************************************************************************
-// 変換
+// Get view and projection matrices
 //******************************************************************************
-int DXCamera::Transform(
-		LPDIRECT3DDEVICE9 pD3DDevice
+int DXCamera::GetMatrices(
+		float aspect,
+		Matrix* pView,
+		Matrix* pProj
 	)
 {
-	int result = 0;
-	HRESULT hresult = D3D_OK;
-	D3DXMATRIX viewMatrix;
-	D3DXMATRIX projMatrix;
-
-	//射影行列を取得
-	result = _GetProjMatrix(pD3DDevice, &projMatrix);
-	if (result != 0) goto EXIT;
-
-	//射影行列をレンダリングパイプラインに設定
-	hresult = pD3DDevice->SetTransform(D3DTS_PROJECTION, &projMatrix);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
+	if (pView == nullptr || pProj == nullptr) {
+		return YN_SET_ERR("Program error.", 0, 0);
 	}
 
-	//ビューイング行列を取得
-	result = _GetViewMatrix(&viewMatrix);
-	if (result != 0) goto EXIT;
+	// Projection matrix (left-handed perspective)
+	float fovRad = XMConvertToRadians(m_ViewAngle);
+	*pProj = XMMatrixPerspectiveFovLH(fovRad, aspect, m_NearPlane, m_FarPlane);
 
-	//ビューイング行列をレンダリングパイプラインに設定
-	hresult = pD3DDevice->SetTransform(D3DTS_VIEW, &viewMatrix);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
-	}
+	// View matrix (left-handed look-at)
+	XMVECTOR eye    = XMLoadFloat3(&m_CamVector);
+	XMVECTOR lookAt = XMLoadFloat3(&m_CamLookAtVector);
+	XMVECTOR up     = XMLoadFloat3(&m_CamUpVector);
+	*pView = XMMatrixLookAtLH(eye, lookAt, up);
 
-EXIT:;
-	return result;
+	return 0;
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void DXCamera::_Clear()
 {
 	m_ViewAngle = 45.0f;
 	m_NearPlane = 1.0f;
-	m_FarPlane = 1000.0f;
-	m_CamVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_CamLookAtVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	m_CamUpVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	m_FarPlane  = 1000.0f;
+	m_CamVector       = Vector3(0.0f, 0.0f, 0.0f);
+	m_CamLookAtVector = Vector3(0.0f, 0.0f, 1.0f);
+	m_CamUpVector     = Vector3(0.0f, 1.0f, 0.0f);
 }
-
-//******************************************************************************
-// 射影列取得
-//******************************************************************************
-int DXCamera::_GetProjMatrix(
-		LPDIRECT3DDEVICE9 pD3DDevice,
-		D3DXMATRIX* pViewMatrix
-	)
-{
-	int result = 0;
-	HRESULT hresult = D3D_OK;
-	D3DVIEWPORT9 viewPort;
-	float aspect = 0.0f;
-
-	//行列初期化
-	D3DXMatrixIdentity(pViewMatrix);
-
-	//ビューポート取得
-	hresult = pD3DDevice->GetViewport(&viewPort);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
-	}
-
-	//アスペクト比
-	aspect = (float)viewPort.Width / (float)viewPort.Height;
-	
-	//左手系射影マトリックス作成
-	D3DXMatrixPerspectiveFovLH(
-			pViewMatrix,				//生成された行列
-			D3DXToRadian(m_ViewAngle),	//カメラの画角
-			aspect,						//アスペクト比
-			m_NearPlane,				//nearプレーン
-			m_FarPlane					//farプレーン
-		);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ビュー変換行列取得
-//******************************************************************************
-int DXCamera::_GetViewMatrix(
-		D3DXMATRIX* pViewMatrix
-	)
-{
-	int result = 0;
-
-	//ビュー変換行列生成
-	D3DXMatrixLookAtLH(
-			pViewMatrix,		//作成された行列
-			&m_CamVector,		//カメラ位置
-			&m_CamLookAtVector,	//注目点
-			&m_CamUpVector		//カメラの上方向
-		);
-
-	return result;
-}
-
