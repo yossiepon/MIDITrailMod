@@ -83,7 +83,15 @@ int MTScenePianoRoll3D11::Create(
 		m_Camera.SetViewParam(&defaultView);
 	}
 
-	// Phase 2: コンポーネント生成（段階的に追加）
+	// 星
+	result = m_Stars.Create(pDevice, pContext, GetName());
+	if (result != 0) goto EXIT;
+
+	// グリッド
+	result = m_Grid.Create(pDevice, pContext, GetName(), pSeqData);
+	if (result != 0) goto EXIT;
+
+	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
 	return result;
@@ -94,7 +102,8 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRoll3D11::Release()
 {
-	// Phase 2: コンポーネント解放
+	m_Stars.Release();
+	m_Grid.Release();
 
 	MTSceneBase11::Release();
 }
@@ -110,7 +119,15 @@ void MTScenePianoRoll3D11::Transform(
 	// カメラ入力処理
 	m_Camera.TransformInput();
 
-	// Phase 2: コンポーネント更新
+	// カメラ位置取得
+	Vector3 camPos;
+	m_Camera.GetPosition(&camPos);
+
+	// 星：カメラに追従
+	m_Stars.Transform(camPos);
+
+	// グリッド
+	m_Grid.Transform(0.0f);  // rollAngle は後で引数化
 }
 
 //******************************************************************************
@@ -143,7 +160,15 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 		const Vector3& camPos
 	)
 {
-	// Phase 2: グリッド → ノート → 鍵盤 → 星 → タイムインジケータ → 波紋 の順で描画
+	Vector4 lightDir(1.0f, -1.0f, 2.0f, 0.0f);
+
+	// グリッド
+	m_Grid.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+
+	// Phase 2: ノート → 鍵盤 → タイムインジケータ → 波紋
+
+	// 星
+	m_Stars.DrawDX11(pContext, viewProj, rollAngle);
 }
 
 //******************************************************************************

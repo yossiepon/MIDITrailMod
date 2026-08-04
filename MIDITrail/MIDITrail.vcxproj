@@ -241,6 +241,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="DXRenderer11.cpp" />
     <ClCompile Include="MTSceneBase11.cpp" />
     <ClCompile Include="MTScenePianoRoll3D11.cpp" />
+    <ClCompile Include="MTStars11.cpp" />
+    <ClCompile Include="MTGridBox11.cpp" />
     <ClCompile Include="MIDITrailMain.cpp" />
     <ClCompile Include="MTAboutDlg.cpp" />
     <ClCompile Include="MTCmdLineParser.cpp" />
@@ -288,6 +290,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="IMTScene11.h" />
     <ClInclude Include="MTSceneBase11.h" />
     <ClInclude Include="MTScenePianoRoll3D11.h" />
+    <ClInclude Include="MTStars11.h" />
+    <ClInclude Include="MTGridBox11.h" />
     <ClInclude Include="MTSceneConst.h" />
     <ClInclude Include="MTViewParamMap.h" />
     <ClInclude Include="DXRenderer.h" />

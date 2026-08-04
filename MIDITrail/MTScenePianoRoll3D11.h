@@ -16,6 +16,8 @@
 #pragma once
 
 #include "MTSceneBase11.h"
+#include "MTStars11.h"
+#include "MTGridBox11.h"
 
 
 //******************************************************************************
@@ -61,7 +63,9 @@ private:
 
 	bool m_Is2D;
 
-	// Phase 2: コンポーネントメンバ（段階的に追加）
+	MTStars11          m_Stars;
+	MTGridBox11        m_Grid;
+	// Phase 2: 残りのコンポーネント（段階的に追加）
 	// DXNoteBox11       m_NoteBox;
 	// MTKeyboard11      m_Keyboard;
 	// MTNoteRipple11    m_Ripple;
