@@ -81,7 +81,7 @@ target("MIDITrail")
     add_packages("imgui")
     add_defines("_BIND_TO_CURRENT_VCLIBS_VERSION")
     add_includedirs("YNBaseLib", "SMIDILib", "MIDITrail")
-    add_syslinks("dxguid", "d3d9", "d3d11", "dxgi", "d3dcompiler", "windowscodecs",
+    add_syslinks("dxguid", "d3d11", "dxgi", "d3dcompiler", "windowscodecs",
                  "dinput8", "winmm", "XInput", "imagehlp", "shlwapi")
     add_ldflags("/SUBSYSTEM:WINDOWS", {force = true})
     add_files("MIDITrail/DIKeyCtrl.cpp")
