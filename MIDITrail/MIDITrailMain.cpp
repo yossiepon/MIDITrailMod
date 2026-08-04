@@ -12,9 +12,12 @@
 
 #include "stdafx.h"
 #include "YNBaseLib.h"
+#include "SMIDILib.h"
 #include "DXRenderer11.h"
 #include "DXPrimitive11.h"
 #include "MTScenePianoRoll3D11.h"
+
+using namespace SMIDILib;
 
 using namespace YNBaseLib;
 
@@ -59,6 +62,7 @@ int APIENTRY _tWinMain(
 	)
 {
 	int result = 0;
+	SMSeqData seqData;
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -105,10 +109,21 @@ int APIENTRY _tWinMain(
 	// 背景色設定（暗い青）
 	g_Renderer.SetBGColor(0xFF1A1A2E);
 
+	// テスト用 MIDI ファイル読み込み
+	{
+		SMFileReader reader;
+		result = reader.Load(L"C:\\Users\\yoshy\\Source\\Claude\\20260804_MIDITrailModMod\\temp\\test.mid", &seqData);
+		if (result != 0) {
+			YN_SHOW_ERR(hWnd);
+			// MIDI 読み込み失敗でもシーンは表示する（データなし）
+			result = 0;
+		}
+	}
+
 	// シーン生成
 	g_pScene = new MTScenePianoRoll3D11(false, false);
 	result = g_pScene->Create(hWnd, g_Renderer.GetDevice(),
-	                           g_Renderer.GetContext(), NULL);
+	                           g_Renderer.GetContext(), &seqData);
 	if (result != 0) {
 		YN_SHOW_ERR(hWnd);
 		goto EXIT;
