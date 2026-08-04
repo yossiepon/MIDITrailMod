@@ -1,6 +1,6 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ �Ő������ꂽ�C���N���[�h �t�@�C���B
-// MIDITrail.rc �Ŏg�p
+﻿//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ で生成されたインクルード ファイル。
+// MIDITrail.rc で使用
 //
 #define IDC_MYICON                      2
 #define IDD_MENUWINDOW_DIALOG           102

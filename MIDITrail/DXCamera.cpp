@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXCamera
 //
-// ƒJƒƒ‰ƒNƒ‰ƒX
+// ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXCamera::DXCamera(void)
 {
@@ -24,14 +24,14 @@ DXCamera::DXCamera(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXCamera::~DXCamera(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int DXCamera::Initialize()
 {
@@ -40,7 +40,7 @@ int DXCamera::Initialize()
 }
 
 //******************************************************************************
-// Šî–{ƒpƒ‰ƒ[ƒ^İ’è
+// åŸºæœ¬ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 void DXCamera::SetBaseParam(
 		float viewAngle,
@@ -54,7 +54,7 @@ void DXCamera::SetBaseParam(
 }
 
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uİ’è
+// ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 //******************************************************************************
 void DXCamera::SetPosition(
 		D3DXVECTOR3 camVector,
@@ -68,7 +68,7 @@ void DXCamera::SetPosition(
 }
 
 //******************************************************************************
-// •ÏŠ·
+// å¤‰æ›
 //******************************************************************************
 int DXCamera::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -79,22 +79,22 @@ int DXCamera::Transform(
 	D3DXMATRIX viewMatrix;
 	D3DXMATRIX projMatrix;
 
-	//Ë‰es—ñ‚ğæ“¾
+	//å°„å½±è¡Œåˆ—ã‚’å–å¾—
 	result = _GetProjMatrix(pD3DDevice, &projMatrix);
 	if (result != 0) goto EXIT;
 
-	//Ë‰es—ñ‚ğƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+	//å°„å½±è¡Œåˆ—ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 	hresult = pD3DDevice->SetTransform(D3DTS_PROJECTION, &projMatrix);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒrƒ…[ƒCƒ“ƒOs—ñ‚ğæ“¾
+	//ãƒ“ãƒ¥ãƒ¼ã‚¤ãƒ³ã‚°è¡Œåˆ—ã‚’å–å¾—
 	result = _GetViewMatrix(&viewMatrix);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒ…[ƒCƒ“ƒOs—ñ‚ğƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
+	//ãƒ“ãƒ¥ãƒ¼ã‚¤ãƒ³ã‚°è¡Œåˆ—ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 	hresult = pD3DDevice->SetTransform(D3DTS_VIEW, &viewMatrix);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
@@ -106,7 +106,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void DXCamera::_Clear()
 {
@@ -119,7 +119,7 @@ void DXCamera::_Clear()
 }
 
 //******************************************************************************
-// Ë‰e—ñæ“¾
+// å°„å½±åˆ—å–å¾—
 //******************************************************************************
 int DXCamera::_GetProjMatrix(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -131,26 +131,26 @@ int DXCamera::_GetProjMatrix(
 	D3DVIEWPORT9 viewPort;
 	float aspect = 0.0f;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(pViewMatrix);
 
-	//ƒrƒ…[ƒ|[ƒgæ“¾
+	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆå–å¾—
 	hresult = pD3DDevice->GetViewport(&viewPort);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒAƒXƒyƒNƒg”ä
+	//ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”
 	aspect = (float)viewPort.Width / (float)viewPort.Height;
 	
-	//¶èŒnË‰eƒ}ƒgƒŠƒbƒNƒXì¬
+	//å·¦æ‰‹ç³»å°„å½±ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ä½œæˆ
 	D3DXMatrixPerspectiveFovLH(
-			pViewMatrix,				//¶¬‚³‚ê‚½s—ñ
-			D3DXToRadian(m_ViewAngle),	//ƒJƒƒ‰‚Ì‰æŠp
-			aspect,						//ƒAƒXƒyƒNƒg”ä
-			m_NearPlane,				//nearƒvƒŒ[ƒ“
-			m_FarPlane					//farƒvƒŒ[ƒ“
+			pViewMatrix,				//ç”Ÿæˆã•ã‚ŒãŸè¡Œåˆ—
+			D3DXToRadian(m_ViewAngle),	//ã‚«ãƒ¡ãƒ©ã®ç”»è§’
+			aspect,						//ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”
+			m_NearPlane,				//nearãƒ—ãƒ¬ãƒ¼ãƒ³
+			m_FarPlane					//farãƒ—ãƒ¬ãƒ¼ãƒ³
 		);
 
 EXIT:;
@@ -158,7 +158,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒrƒ…[•ÏŠ·s—ñæ“¾
+// ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—å–å¾—
 //******************************************************************************
 int DXCamera::_GetViewMatrix(
 		D3DXMATRIX* pViewMatrix
@@ -166,12 +166,12 @@ int DXCamera::_GetViewMatrix(
 {
 	int result = 0;
 
-	//ƒrƒ…[•ÏŠ·s—ñ¶¬
+	//ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—ç”Ÿæˆ
 	D3DXMatrixLookAtLH(
-			pViewMatrix,		//ì¬‚³‚ê‚½s—ñ
-			&m_CamVector,		//ƒJƒƒ‰ˆÊ’u
-			&m_CamLookAtVector,	//’–Ú“_
-			&m_CamUpVector		//ƒJƒƒ‰‚Ìã•ûŒü
+			pViewMatrix,		//ä½œæˆã•ã‚ŒãŸè¡Œåˆ—
+			&m_CamVector,		//ã‚«ãƒ¡ãƒ©ä½ç½®
+			&m_CamLookAtVector,	//æ³¨ç›®ç‚¹
+			&m_CamUpVector		//ã‚«ãƒ¡ãƒ©ã®ä¸Šæ–¹å‘
 		);
 
 	return result;

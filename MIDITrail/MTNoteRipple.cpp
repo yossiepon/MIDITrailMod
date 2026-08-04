@@ -1,22 +1,22 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteRipple
 //
-// ƒm[ƒg”g–ä•`‰æƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ”g–ä‚ÍAˆÊ’u‚ÆƒTƒCƒY‚ªŒÂ•Ê‚É•Ï‰»‚·‚éB
-// ‚±‚Ì‚½‚ß‰‰ñƒŠƒŠ[ƒX‘O‚ÍADrawPrimitiveUP‚Å•`‰æ‚µ‚Ä‚¢‚½B
-// ‚Â‚Ü‚è•`‰æ‚Ì‚½‚Ñ‚É”g–ä‚Ì’¸“_‚ğGPU‘¤‚É—¬‚µ‚ñ‚Å‚¢‚½B
-// ‚µ‚©‚µ‰‰‘tŠJnŒã‚Ì‰‰ñ‚Ì”g–ä•`‰æ‚ÉŒÀ‚èAˆ—‚ªˆø‚Á‚©‚©‚éiFPS‚ª
-// —‚¿‚éjŒ»Û‚ª”­¶‚µ‚½‚½‚ßA‚±‚Ì•û®‚ğæ‚è‚â‚ß‚½B
-// ‘ã‚í‚è‚É’¸“_ƒoƒbƒtƒ@‚ğg—p‚µA•`‰æ‚Ì‚½‚Ñ‚Éƒoƒbƒtƒ@‚ğƒƒbƒN‚µ‚Ä’¸“_
-// ‚ğ‘‚«Š·‚¦‚é•û®‚ÉØ‚è‘Ö‚¦‚½B
-// ‚à‚Á‚ÆƒGƒŒƒKƒ“ƒg‚È•û–@‚ª‚ ‚é‚©‚à‚µ‚ê‚È‚¢EEEB
+// æ³¢ç´‹ã¯ã€ä½ç½®ã¨ã‚µã‚¤ã‚ºãŒå€‹åˆ¥ã«å¤‰åŒ–ã™ã‚‹ã€‚
+// ã“ã®ãŸã‚åˆå›ãƒªãƒªãƒ¼ã‚¹å‰ã¯ã€DrawPrimitiveUPã§æç”»ã—ã¦ã„ãŸã€‚
+// ã¤ã¾ã‚Šæç”»ã®ãŸã³ã«æ³¢ç´‹ã®é ‚ç‚¹ã‚’GPUå´ã«æµã—è¾¼ã‚“ã§ã„ãŸã€‚
+// ã—ã‹ã—æ¼”å¥é–‹å§‹å¾Œã®åˆå›ã®æ³¢ç´‹æç”»æ™‚ã«é™ã‚Šã€å‡¦ç†ãŒå¼•ã£ã‹ã‹ã‚‹ï¼ˆFPSãŒ
+// è½ã¡ã‚‹ï¼‰ç¾è±¡ãŒç™ºç”Ÿã—ãŸãŸã‚ã€ã“ã®æ–¹å¼ã‚’å–ã‚Šã‚„ã‚ãŸã€‚
+// ä»£ã‚ã‚Šã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½¿ç”¨ã—ã€æç”»ã®ãŸã³ã«ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯ã—ã¦é ‚ç‚¹
+// ã‚’æ›¸ãæ›ãˆã‚‹æ–¹å¼ã«åˆ‡ã‚Šæ›¿ãˆãŸã€‚
+// ã‚‚ã£ã¨ã‚¨ãƒ¬ã‚¬ãƒ³ãƒˆãªæ–¹æ³•ãŒã‚ã‚‹ã‹ã‚‚ã—ã‚Œãªã„ãƒ»ãƒ»ãƒ»ã€‚
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
@@ -29,7 +29,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteRipple::MTNoteRipple(void)
 {
@@ -45,7 +45,7 @@ MTNoteRipple::MTNoteRipple(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteRipple::~MTNoteRipple(void)
 {
@@ -53,7 +53,7 @@ MTNoteRipple::~MTNoteRipple(void)
 }
 
 //******************************************************************************
-// ƒm[ƒg”g–ä¶¬
+// ãƒãƒ¼ãƒˆæ³¢ç´‹ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRipple::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -66,32 +66,32 @@ int MTNoteRipple::Create(
 
 	Release();
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^‚Ìê‡ pSeqData ‚É‚Í NULL ‚ªw’è‚³‚ê‚é
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã®å ´åˆ pSeqData ã«ã¯ NULL ãŒæŒ‡å®šã•ã‚Œã‚‹
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	result = _CreateNoteDesign();
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_pNoteDesign->Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒ¶¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 	result = _CreateTexture(pD3DDevice, pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	result = _CreateNoteStatus();
 	if (result != 0) goto EXIT;
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	result = _CreateVertex(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒeƒŠƒAƒ‹ì¬
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 	_MakeMaterial(&m_Material);
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	m_pNotePitchBend = pNotePitchBend;
 
 EXIT:;
@@ -99,7 +99,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“¶¬
+// ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRipple::_CreateNoteDesign()
 {
@@ -118,7 +118,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTNoteRipple::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -134,26 +134,26 @@ int MTNoteRipple::Transform(
 
 	m_CamVector = camVector;
 
-	//”g–ä‚Ì’¸“_XV
+	//æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 	result = _TransformRipple(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
-	//s—ñ‚Ì‡¬
+	//è¡Œåˆ—ã®åˆæˆ
 	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_Primitive.Transform(worldMatrix);
 
 EXIT:;
@@ -161,7 +161,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”g–ä‚Ì’¸“_XV
+// æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteRipple::_TransformRipple(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -169,10 +169,10 @@ int MTNoteRipple::_TransformRipple(
 {
 	int result = 0;
 
-	//ƒXƒLƒbƒv’†‚È‚ç‰½‚à‚µ‚È‚¢
+	//ã‚¹ã‚­ãƒƒãƒ—ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (m_isSkipping) goto EXIT;
 
-	//”g–ä‚Ì’¸“_XV
+	//æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 	result = _UpdateVertexOfRipple(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -181,7 +181,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”g–ä‚Ì’¸“_XV
+// æ³¢ç´‹ã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteRipple::_UpdateVertexOfRipple(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -202,14 +202,14 @@ int MTNoteRipple::_UpdateVertexOfRipple(
 
 	curTime = timeGetTime();
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
-	//”­‰¹’†ƒm[ƒg‚Ì”g–ä‚É‚Â‚¢‚Ä’¸“_‚ğXV
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã®æ³¢ç´‹ã«ã¤ã„ã¦é ‚ç‚¹ã‚’æ›´æ–°
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
-			//’¸“_XVF”g–ä‚Ì•`‰æˆÊ’u‚ÆƒTƒCƒY‚ğ•Ï‚¦‚é
+			//é ‚ç‚¹æ›´æ–°ï¼šæ³¢ç´‹ã®æç”»ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’å¤‰ãˆã‚‹
 			_SetVertexPosition(
 					&(pVertex[activeNoteNum*6]),
 					&(m_pNoteStatus[i]),
@@ -218,7 +218,7 @@ int MTNoteRipple::_UpdateVertexOfRipple(
 					&isTimeout
 				);
 			if (isTimeout) {
-				//ŠÔØ‚êÁ–Å
+				//æ™‚é–“åˆ‡ã‚Œæ¶ˆæ»…
 				m_pNoteStatus[i].isActive = false;
 			}
 			else {
@@ -228,7 +228,7 @@ int MTNoteRipple::_UpdateVertexOfRipple(
 	}
 	m_ActiveNoteNum = activeNoteNum;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -237,7 +237,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTNoteRipple::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -252,26 +252,26 @@ int MTNoteRipple::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFæZ  ˆø”1FƒeƒNƒXƒ`ƒƒ  ˆø”2Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šä¹—ç®—  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£  å¼•æ•°2ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1Fƒ|ƒŠƒSƒ“
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒvƒŠƒ~ƒeƒBƒu•`‰æ
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 	if (m_ActiveNoteNum > 0) {
-		//ƒoƒbƒtƒ@‘S‘Ì‚Å‚È‚­”g–ä‚Ì”‚É‡‚í‚¹‚Ä•`‰æ‚·‚éƒvƒŠƒ~ƒeƒBƒu‚ğŒ¸‚ç‚·
+		//ãƒãƒƒãƒ•ã‚¡å…¨ä½“ã§ãªãæ³¢ç´‹ã®æ•°ã«åˆã‚ã›ã¦æç”»ã™ã‚‹ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æ¸›ã‚‰ã™
 		result = m_Primitive.Draw(pD3DDevice, m_pTexture, 2 * m_ActiveNoteNum);
 		if (result != 0) goto EXIT;
 	}
@@ -281,7 +281,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTNoteRipple::Release()
 {
@@ -305,7 +305,7 @@ void MTNoteRipple::Release()
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ¶¬
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRipple::_CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -321,34 +321,34 @@ int MTNoteRipple::_CreateTexture(
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒbƒgƒ}ƒbƒvƒtƒ@ƒCƒ‹–¼
+	//ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«å
 	result = confFile.SetCurSection(_T("Bitmap"));
 	if (result != 0) goto EXIT;
 	result = confFile.GetStr(_T("Ripple"), bmpFileName, _MAX_PATH, MT_IMGFILE_RIPPLE);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 	result = YNPathUtil::GetModuleDirPath(imgFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX
+	//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 	_tcscat_s(imgFilePath, _MAX_PATH, bmpFileName);
 
 	hresult = D3DXCreateTextureFromFileEx(
-					pD3DDevice,			//ƒfƒoƒCƒX
-					imgFilePath,		//ƒtƒ@ƒCƒ‹ƒpƒX
-					0,					//•Fƒtƒ@ƒCƒ‹‚©‚çæ“¾
-					0,					//‚‚³Fƒtƒ@ƒCƒ‹‚©‚çæ“¾
-					0,					//ƒ~ƒbƒvƒŒƒxƒ‹
-					0,					//g—p•û–@
-					D3DFMT_A8R8G8B8,	//ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg
-					D3DPOOL_MANAGED,	//ƒeƒNƒXƒ`ƒƒ”z’uæƒƒ‚ƒŠƒNƒ‰ƒX
-					D3DX_FILTER_LINEAR,	//ƒtƒBƒ‹ƒ^ƒŠƒ“ƒOw’è
-					D3DX_FILTER_LINEAR,	//ƒtƒBƒ‹ƒ^ƒŠƒ“ƒOw’èiƒ~ƒbƒvj
-					0xFF000000,			//“§–¾F‚Ìw’èF•s“§–¾•
-					NULL,				//ƒ\[ƒXƒCƒ[ƒWî•ñ
-					NULL,				//256ƒpƒŒƒbƒgî•ñ
-					&m_pTexture			//ì¬‚µ‚½ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					pD3DDevice,			//ãƒ‡ãƒã‚¤ã‚¹
+					imgFilePath,		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+					0,					//å¹…ï¼šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å–å¾—
+					0,					//é«˜ã•ï¼šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å–å¾—
+					0,					//ãƒŸãƒƒãƒ—ãƒ¬ãƒ™ãƒ«
+					0,					//ä½¿ç”¨æ–¹æ³•
+					D3DFMT_A8R8G8B8,	//ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPOOL_MANAGED,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£é…ç½®å…ˆãƒ¡ãƒ¢ãƒªã‚¯ãƒ©ã‚¹
+					D3DX_FILTER_LINEAR,	//ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°æŒ‡å®š
+					D3DX_FILTER_LINEAR,	//ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°æŒ‡å®šï¼ˆãƒŸãƒƒãƒ—ï¼‰
+					0xFF000000,			//é€æ˜è‰²ã®æŒ‡å®šï¼šä¸é€æ˜é»’
+					NULL,				//ã‚½ãƒ¼ã‚¹ã‚¤ãƒ¡ãƒ¼ã‚¸æƒ…å ±
+					NULL,				//256ãƒ‘ãƒ¬ãƒƒãƒˆæƒ…å ±
+					&m_pTexture			//ä½œæˆã—ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
@@ -360,14 +360,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒgî•ñ”z—ñ¶¬
+// ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRipple::_CreateNoteStatus()
 {
 	int result = 0;
 	unsigned long i = 0;
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	try {
 		m_pNoteStatus = new NoteStatus[MTNOTERIPPLE_MAX_RIPPLE_NUM];
 	}
@@ -387,7 +387,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_¶¬
+// é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTNoteRipple::_CreateVertex(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -397,26 +397,26 @@ int MTNoteRipple::_CreateVertex(
 	unsigned long vertexNum = 0;
 	MTNOTERIPPLE_VERTEX* pVertex = NULL;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTNOTERIPPLE_VERTEX),//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLELIST			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTNOTERIPPLE_VERTEX),//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLELIST			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
 	ZeroMemory(pVertex, sizeof(MTNOTERIPPLE_VERTEX) * 6 * MTNOTERIPPLE_MAX_RIPPLE_NUM);
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -425,7 +425,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_‚ÌÀ•Wİ’è
+// é ‚ç‚¹ã®åº§æ¨™è¨­å®š
 //******************************************************************************
 int MTNoteRipple::_SetVertexPosition(
 		MTNOTERIPPLE_VERTEX* pVertex,
@@ -451,7 +451,7 @@ int MTNoteRipple::_SetVertexPosition(
 	pbValue =       m_pNotePitchBend->GetValue(pNoteStatus->portNo, pNoteStatus->chNo);
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(pNoteStatus->portNo, pNoteStatus->chNo);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•Wæ“¾
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒåº§æ¨™å–å¾—
 	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					pNoteStatus->portNo,
@@ -461,22 +461,22 @@ int MTNoteRipple::_SetVertexPosition(
 					pbSensitivity
 				);
 
-	//”­‰¹ŠJn‚©‚ç‚ÌŒo‰ßŠÔ
+	//ç™ºéŸ³é–‹å§‹ã‹ã‚‰ã®çµŒéæ™‚é–“
 	elapsedTime = curTime - pNoteStatus->regTime;
 
-	//”g–äƒTƒCƒY
+	//æ³¢ç´‹ã‚µã‚¤ã‚º
 	rh = m_pNoteDesign->GetRippleHeight(elapsedTime);
 	rw = m_pNoteDesign->GetRippleWidth(elapsedTime);
 
-	//•`‰æI—¹Šm”F
+	//æç”»çµ‚äº†ç¢ºèª
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
 		*pIsTimeout = true;
 	}
 
-	//”g–ä‚ğÄ¶•½–Êã‚©‚çƒJƒƒ‰‘¤‚É­‚µ‚¾‚¯•‚‚©‚¹‚Ä•`‰æ‚·‚é
-	//‚Ü‚½”g–ä“¯m‚ª“¯ˆê•½–Êã‚Åd‚È‚ç‚È‚¢‚æ‚¤‚É•`‰æ‚·‚é
-	//  Zƒtƒ@ƒCƒeƒBƒ“ƒO‚É‚æ‚Á‚Ä”­¶‚·‚é‚¿‚ç‚Â‚«‚â‚©‚·‚ê‚ğ‰ñ”ğ‚·‚é
-	//  ƒOƒ‰ƒtƒBƒbƒNƒJ[ƒh‚É‚æ‚Á‚ÄŒ»Û‚ªˆÙ‚È‚é
+	//æ³¢ç´‹ã‚’å†ç”Ÿå¹³é¢ä¸Šã‹ã‚‰ã‚«ãƒ¡ãƒ©å´ã«å°‘ã—ã ã‘æµ®ã‹ã›ã¦æç”»ã™ã‚‹
+	//ã¾ãŸæ³¢ç´‹åŒå£«ãŒåŒä¸€å¹³é¢ä¸Šã§é‡ãªã‚‰ãªã„ã‚ˆã†ã«æç”»ã™ã‚‹
+	//  Zãƒ•ã‚¡ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã«ã‚ˆã£ã¦ç™ºç”Ÿã™ã‚‹ã¡ã‚‰ã¤ãã‚„ã‹ã™ã‚Œã‚’å›é¿ã™ã‚‹
+	//  ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚«ãƒ¼ãƒ‰ã«ã‚ˆã£ã¦ç¾è±¡ãŒç•°ãªã‚‹
 	if (center.x < m_CamVector.x) {
 		center.x += (+(float)(rippleNo + 1) * 0.002f);
 	}
@@ -484,7 +484,7 @@ int MTNoteRipple::_SetVertexPosition(
 		center.x += (-(float)(rippleNo + 1) * 0.002f);
 	}
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	pVertex[0].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z+(rw/2.0f));
 	pVertex[1].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z-(rw/2.0f));
 	pVertex[2].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z+(rw/2.0f));
@@ -492,17 +492,17 @@ int MTNoteRipple::_SetVertexPosition(
 	pVertex[4].p = pVertex[1].p;
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
 
-	//–@ü
+	//æ³•ç·š
 // >>> revert 20250616 yossiepon begin
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
 // <<< revert 20250616 yossiepon end
 
-	//“§–¾“x‚ğ™X‚É—‚Æ‚·
+	//é€æ˜åº¦ã‚’å¾ã€…ã«è½ã¨ã™
 	alpha = m_pNoteDesign->GetRippleAlpha(elapsedTime);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	for (i = 0; i < 6; i++) {
 		color = m_pNoteDesign->GetNoteBoxColor(
 								pNoteStatus->portNo,
@@ -512,7 +512,7 @@ int MTNoteRipple::_SetVertexPosition(
 		pVertex[i].c = D3DXCOLOR(color.r, color.g, color.b, alpha);
 	}
 
-	//ƒeƒNƒXƒ`ƒƒÀ•W
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
 	pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
 	pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
@@ -524,7 +524,7 @@ int MTNoteRipple::_SetVertexPosition(
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTNoteRipple::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -532,24 +532,24 @@ void MTNoteRipple::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 	
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 10.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.0f;
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
@@ -557,7 +557,7 @@ void MTNoteRipple::_MakeMaterial(
 }
 
 //******************************************************************************
-// ƒm[ƒgOFF“o˜^
+// ãƒãƒ¼ãƒˆOFFç™»éŒ²
 //******************************************************************************
 void MTNoteRipple::SetNoteOff(
 		unsigned char portNo,
@@ -567,7 +567,7 @@ void MTNoteRipple::SetNoteOff(
 {
 	unsigned long i = 0;
 
-	//ŠY“–‚Ìƒm[ƒgî•ñ‚ğ–³Œø‰»
+	//è©²å½“ã®ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç„¡åŠ¹åŒ–
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 		if ((m_pNoteStatus[i].isActive)
 		 && (m_pNoteStatus[i].portNo == portNo)
@@ -582,7 +582,7 @@ void MTNoteRipple::SetNoteOff(
 }
 
 //******************************************************************************
-// ƒm[ƒgON“o˜^
+// ãƒãƒ¼ãƒˆONç™»éŒ²
 //******************************************************************************
 void MTNoteRipple::SetNoteOn(
 		unsigned char portNo,
@@ -593,8 +593,8 @@ void MTNoteRipple::SetNoteOn(
 {
 	unsigned long i = 0;
 
-	//‹ó‚«ƒXƒy[ƒX‚Éƒm[ƒgî•ñ‚ğ“o˜^
-	//‹ó‚«‚ªŒ©‚Â‚©‚ç‚È‚¯‚ê‚Î”g–ä‚Ì•\¦‚Í‚ ‚«‚ç‚ß‚é
+	//ç©ºãã‚¹ãƒšãƒ¼ã‚¹ã«ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç™»éŒ²
+	//ç©ºããŒè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°æ³¢ç´‹ã®è¡¨ç¤ºã¯ã‚ãã‚‰ã‚ã‚‹
 	for (i = 0; i < MTNOTERIPPLE_MAX_RIPPLE_NUM; i++) {
 		if (!(m_pNoteStatus[i].isActive)) {
 			m_pNoteStatus[i].isActive = true;
@@ -611,7 +611,7 @@ void MTNoteRipple::SetNoteOn(
 }
 
 //******************************************************************************
-// ƒJƒŒƒ“ƒgƒ`ƒbƒNƒ^ƒCƒ€İ’è
+// ã‚«ãƒ¬ãƒ³ãƒˆãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ è¨­å®š
 //******************************************************************************
 void MTNoteRipple::SetCurTickTime(
 		unsigned long curTickTime
@@ -621,7 +621,7 @@ void MTNoteRipple::SetCurTickTime(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTNoteRipple::Reset()
 {
@@ -638,7 +638,7 @@ void MTNoteRipple::Reset()
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTNoteRipple::SetEnable(
 		bool isEnable
@@ -648,7 +648,7 @@ void MTNoteRipple::SetEnable(
 }
 
 //******************************************************************************
-// ƒXƒLƒbƒvó‘Ôİ’è
+// ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹è¨­å®š
 //******************************************************************************
 void MTNoteRipple::SetSkipStatus(
 		bool isSkipping

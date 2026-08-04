@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXCamera
 //
-// ƒJƒƒ‰ƒNƒ‰ƒX
+// ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -15,54 +15,54 @@
 
 
 //******************************************************************************
-// ƒJƒƒ‰ƒNƒ‰ƒX
+// ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class DXCamera
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	DXCamera(void);
 	virtual ~DXCamera(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize();
 
-	//Šî–{ƒpƒ‰ƒ[ƒ^İ’è
+	//åŸºæœ¬ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	void SetBaseParam(
 			float viewAngle,
 			float nearPlane,
 			float farPlane
 		);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	void SetPosition(
 			D3DXVECTOR3 camVector,
 			D3DXVECTOR3 camLookAtVector,
 			D3DXVECTOR3 camUpVector
 		);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
 private:
 
-	//ƒJƒƒ‰‚Ì‰æŠp
+	//ã‚«ãƒ¡ãƒ©ã®ç”»è§’
 	float m_ViewAngle;
 
-	//NearƒvƒŒ[ƒ“F0‚¾‚ÆZ²‡§Œä‚ª‚¨‚©‚µ‚­‚È‚é
+	//Nearãƒ—ãƒ¬ãƒ¼ãƒ³ï¼š0ã ã¨Zè»¸é †åˆ¶å¾¡ãŒãŠã‹ã—ããªã‚‹
 	float m_NearPlane;
 
-	//FarƒvƒŒ[ƒ“
+	//Farãƒ—ãƒ¬ãƒ¼ãƒ³
 	float m_FarPlane;
 
-	//ƒJƒƒ‰ˆÊ’u
+	//ã‚«ãƒ¡ãƒ©ä½ç½®
 	D3DXVECTOR3 m_CamVector;
 
-	//’–Ú“_
+	//æ³¨ç›®ç‚¹
 	D3DXVECTOR3 m_CamLookAtVector;
 
-	//ƒJƒƒ‰‚Ìã•ûŒü
+	//ã‚«ãƒ¡ãƒ©ã®ä¸Šæ–¹å‘
 	D3DXVECTOR3 m_CamUpVector;
 
 	void _Clear();

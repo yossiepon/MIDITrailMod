@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTLogo
 //
-// MIDITrail ƒƒS•`‰æƒNƒ‰ƒX
+// MIDITrail ãƒ­ã‚´æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,62 +16,62 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒ^ƒCƒgƒ‹•¶Žš—ñ
+//ã‚¿ã‚¤ãƒˆãƒ«æ–‡å­—åˆ—
 #define MTLOGO_TITLE  L"MIDITrail"
 
-//ƒƒS•`‰æˆÊ’uî•ñ
-#define MTLOGO_POS_X  (20.0f)   //•`‰æˆÊ’ux
-#define MTLOGO_POS_Y  (-15.0f)  //•`‰æˆÊ’uy
-#define MTLOGO_MAG    (0.1f)    //Šg‘å—¦
+//ãƒ­ã‚´æç”»ä½ç½®æƒ…å ±
+#define MTLOGO_POS_X  (20.0f)   //æç”»ä½ç½®x
+#define MTLOGO_POS_Y  (-15.0f)  //æç”»ä½ç½®y
+#define MTLOGO_MAG    (0.1f)    //æ‹¡å¤§çŽ‡
 
-//ƒ^ƒCƒ‹•ªŠ„”
+//ã‚¿ã‚¤ãƒ«åˆ†å‰²æ•°
 #define MTLOGO_TILE_NUM  (40)
 
-//ƒOƒ‰ƒf[ƒVƒ‡ƒ“ŽžŠÔŠÔŠu(msec)
+//ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³æ™‚é–“é–“éš”(msec)
 #define MTLOGO_GRADATION_TIME  (1000)
 
 
 //******************************************************************************
-// MIDITrail ƒƒS•`‰æƒNƒ‰ƒX
+// MIDITrail ãƒ­ã‚´æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTLogo
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^l
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿l
 	MTLogo(void);
 	virtual ~MTLogo(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//•ÏŠ·
+	//å¤‰æ›
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//”jŠü
+	//ç ´æ£„
 	void Release();
 
 private:
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTLOGO_VERTEX {
-		D3DXVECTOR3 p;		//’¸“_À•W
-		D3DXVECTOR3 n;		//–@ü
-		DWORD		c;		//ƒfƒBƒtƒ…[ƒYF
-		D3DXVECTOR2	t;		//ƒeƒNƒXƒ`ƒƒ‰æ‘œˆÊ’u
+		D3DXVECTOR3 p;		//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;		//æ³•ç·š
+		DWORD		c;		//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+		D3DXVECTOR2	t;		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒä½ç½®
 	};
 
-	//’¸“_ƒoƒbƒtƒ@[‚ÌƒtƒH[ƒ}ƒbƒg‚Ì’è‹`FÀ•W•ÏŠ·Ï‚Ý‚ðŽw’è
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ¼ã®ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆã®å®šç¾©ï¼šåº§æ¨™å¤‰æ›æ¸ˆã¿ã‚’æŒ‡å®š
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
 private:
 
-	//ƒtƒHƒ“ƒgƒeƒNƒXƒ`ƒƒ
+	//ãƒ•ã‚©ãƒ³ãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£
 	MTFontTexture m_FontTexture;
 	MTLOGO_VERTEX* m_pVertex;
 

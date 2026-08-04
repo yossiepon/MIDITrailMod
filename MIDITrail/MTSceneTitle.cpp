@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTSceneTitle
 //
-// ƒ^ƒCƒgƒ‹ƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTSceneTitle::MTSceneTitle(void)
 {
@@ -25,14 +25,14 @@ MTSceneTitle::MTSceneTitle(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTSceneTitle::~MTSceneTitle(void)
 {
 }
 
 //******************************************************************************
-// –¼Ìæ“¾
+// åç§°å–å¾—
 //******************************************************************************
 const TCHAR* MTSceneTitle::GetName()
 {
@@ -40,7 +40,7 @@ const TCHAR* MTSceneTitle::GetName()
 }
 
 //******************************************************************************
-// ƒV[ƒ“¶¬
+// ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTSceneTitle::Create(
 		HWND hWnd,
@@ -58,64 +58,64 @@ int MTSceneTitle::Create(
 	}
 
 	//----------------------------------
-	// ƒJƒƒ‰
+	// ã‚«ãƒ¡ãƒ©
 	//----------------------------------
-	//ƒJƒƒ‰‰Šú‰»
+	//ã‚«ãƒ¡ãƒ©åˆæœŸåŒ–
 	result = m_Camera.Initialize();
 	if (result != 0) goto EXIT;
 
-	//Šî–{ƒpƒ‰ƒ[ƒ^İ’è
+	//åŸºæœ¬ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 	m_Camera.SetBaseParam(
-			45.0f,		//‰æŠp
-			1.0f,		//NearƒvƒŒ[ƒ“
-			1000.0f		//FarƒvƒŒ[ƒ“
+			45.0f,		//ç”»è§’
+			1.0f,		//Nearãƒ—ãƒ¬ãƒ¼ãƒ³
+			1000.0f		//Farãƒ—ãƒ¬ãƒ¼ãƒ³
 		);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	m_Camera.SetPosition(
-			D3DXVECTOR3(0.0f, 0.0f, m_CamPosZ),	//ƒJƒƒ‰ˆÊ’u
-			D3DXVECTOR3(0.0f, 0.0f, 0.0f), 		//’–Ú“_
-			D3DXVECTOR3(0.0f, 1.0f, 0.0f)		//ƒJƒƒ‰ã•ûŒü
+			D3DXVECTOR3(0.0f, 0.0f, m_CamPosZ),	//ã‚«ãƒ¡ãƒ©ä½ç½®
+			D3DXVECTOR3(0.0f, 0.0f, 0.0f), 		//æ³¨ç›®ç‚¹
+			D3DXVECTOR3(0.0f, 1.0f, 0.0f)		//ã‚«ãƒ¡ãƒ©ä¸Šæ–¹å‘
 		);
 	
 	//----------------------------------
-	// ƒ‰ƒCƒg
+	// ãƒ©ã‚¤ãƒˆ
 	//----------------------------------
-	//ƒ‰ƒCƒg‰Šú‰»
+	//ãƒ©ã‚¤ãƒˆåˆæœŸåŒ–
 	result = m_DirLight.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ƒ‰ƒCƒg•ûŒü
+	//ãƒ©ã‚¤ãƒˆæ–¹å‘
 	m_DirLight.SetDirection(D3DXVECTOR3(1.0f, -1.0f, 2.0f));
 
-	//ƒ‰ƒCƒg‚ÌƒfƒoƒCƒX“o˜^
-//	result = m_DirLight.SetDevice(pD3DDevice, TRUE);  //ƒ‰ƒCƒg‚ ‚è
-	result = m_DirLight.SetDevice(pD3DDevice, FALSE); //ƒ‰ƒCƒg‚È‚µ
+	//ãƒ©ã‚¤ãƒˆã®ãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²
+//	result = m_DirLight.SetDevice(pD3DDevice, TRUE);  //ãƒ©ã‚¤ãƒˆã‚ã‚Š
+	result = m_DirLight.SetDevice(pD3DDevice, FALSE); //ãƒ©ã‚¤ãƒˆãªã—
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	// •`‰æƒIƒuƒWƒFƒNƒg
+	// æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	//----------------------------------
-	//ƒƒS¶¬
+	//ãƒ­ã‚´ç”Ÿæˆ
 	result = m_Logo.Create(pD3DDevice);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒg
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆ
 	//----------------------------------
-	//‰æ–Ê•`‰æƒ‚[ƒh
+	//ç”»é¢æç”»ãƒ¢ãƒ¼ãƒ‰
 	pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	//Z[“x”äŠrFON
+	//Zæ·±åº¦æ¯”è¼ƒï¼šON
 	 pD3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 
-	//ƒfƒBƒUƒŠƒ“ƒO:ON ‚•i¿•`‰æ
+	//ãƒ‡ã‚£ã‚¶ãƒªãƒ³ã‚°:ON é«˜å“è³ªæç”»
 	pD3DDevice->SetRenderState(D3DRS_DITHERENABLE, TRUE);
 
-	//ƒ}ƒ‹ƒ`ƒTƒ“ƒvƒŠƒ“ƒOƒAƒ“ƒ`ƒGƒCƒŠƒAƒXF—LŒø
+	//ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ï¼šæœ‰åŠ¹
 	pD3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èF’Êí‚ÌƒAƒ‹ƒtƒ@‡¬
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šé€šå¸¸ã®ã‚¢ãƒ«ãƒ•ã‚¡åˆæˆ
 	pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -125,7 +125,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •ÏŠ·ˆ—
+// å¤‰æ›å‡¦ç†
 //******************************************************************************
 int MTSceneTitle::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -138,19 +138,19 @@ int MTSceneTitle::Transform(
 		goto EXIT;
 	}
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	m_CamPosZ += MTSCENETITLE_CAMERA_POSZ_DELTA;
 	m_Camera.SetPosition(
-			D3DXVECTOR3(0.0f, 0.0f, m_CamPosZ),	//ƒJƒƒ‰ˆÊ’u
-			D3DXVECTOR3(0.0f, 0.0f, 0.0f), 		//’–Ú“_
-			D3DXVECTOR3(0.0f, 1.0f, 0.0f)		//ƒJƒƒ‰ã•ûŒü
+			D3DXVECTOR3(0.0f, 0.0f, m_CamPosZ),	//ã‚«ãƒ¡ãƒ©ä½ç½®
+			D3DXVECTOR3(0.0f, 0.0f, 0.0f), 		//æ³¨ç›®ç‚¹
+			D3DXVECTOR3(0.0f, 1.0f, 0.0f)		//ã‚«ãƒ¡ãƒ©ä¸Šæ–¹å‘
 		);
 
-	//ƒJƒƒ‰XV
+	//ã‚«ãƒ¡ãƒ©æ›´æ–°
 	result = m_Camera.Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒƒSXV
+	//ãƒ­ã‚´æ›´æ–°
 	result = m_Logo.Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -159,7 +159,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTSceneTitle::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -172,11 +172,11 @@ int MTSceneTitle::Draw(
 		goto EXIT;
 	}
 
-	//XV
+	//æ›´æ–°
 	result = Transform(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒƒS•`‰æ
+	//ãƒ­ã‚´æç”»
 	result = m_Logo.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -185,7 +185,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”jŠü
+// ç ´æ£„
 //******************************************************************************
 void MTSceneTitle::Release()
 {

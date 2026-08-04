@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardCtrlMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh§ŒäModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -16,17 +16,17 @@
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒh§ŒäModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboardCtrlMod : public MTPianoKeyboardCtrl
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPianoKeyboardCtrlMod(void);
 	virtual ~MTPianoKeyboardCtrlMod(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
@@ -35,13 +35,13 @@ public:
 			bool isSingleKeyboard
 		);
 
-	//XV
+	//æ›´æ–°
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	virtual void Reset();
 
 protected:
@@ -50,23 +50,23 @@ protected:
 
 private:
 
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesignMod m_NoteDesignMod;
 
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;
 
-	//ƒ|[ƒgƒŠƒXƒg
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 	SMPortList m_PortList;
 
-	//ƒAƒNƒeƒBƒuƒ|[ƒgƒtƒ‰ƒO
+	//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒãƒ¼ãƒˆãƒ•ãƒ©ã‚°
 	bool m_isActivePort[SM_MAX_PORT_NUM];
 
-	//ƒL[ƒ{[ƒhƒCƒ“ƒfƒbƒNƒX
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	int m_KeyboardIndex[SM_MAX_PORT_NUM];
 	unsigned char m_MaxKeyboardIndex;
 
-	//ƒL[‰Ÿ‰º—¦”z—ñ
+	//ã‚­ãƒ¼æŠ¼ä¸‹ç‡é…åˆ—
 	float m_KeyDownRateMod[SM_MAX_CH_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
 	virtual int _UpdateNoteStatus(

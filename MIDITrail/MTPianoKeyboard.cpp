@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboard
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
@@ -20,16 +20,16 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ŠeƒL[‚Ì’¸“_”
+//å„ã‚­ãƒ¼ã®é ‚ç‚¹æ•°
 #define MTPIANOKEYBOARD_KEY_WHITE_1_VERTEX_NUM  (38)
 #define MTPIANOKEYBOARD_KEY_WHITE_2_VERTEX_NUM  (44)
 #define MTPIANOKEYBOARD_KEY_WHITE_3_VERTEX_NUM  (38)
 #define MTPIANOKEYBOARD_KEY_BLACK_VERTEX_NUM    (30)
 #define MTPIANOKEYBOARD_KEY_VERTEX_NUM_MAX      MTPIANOKEYBOARD_KEY_WHITE_2_VERTEX_NUM
 
-//ŠeƒL[‚ÌƒCƒ“ƒfƒbƒNƒX”
+//å„ã‚­ãƒ¼ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°
 #define MTPIANOKEYBOARD_KEY_WHITE_1_INDEX_NUM   (60)
 #define MTPIANOKEYBOARD_KEY_WHITE_2_INDEX_NUM   (66)
 #define MTPIANOKEYBOARD_KEY_WHITE_3_INDEX_NUM   (60)
@@ -38,7 +38,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboard::MTPianoKeyboard(void)
 {
@@ -47,7 +47,7 @@ MTPianoKeyboard::MTPianoKeyboard(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboard::~MTPianoKeyboard(void)
 {
@@ -55,7 +55,7 @@ MTPianoKeyboard::~MTPianoKeyboard(void)
 }
 
 //******************************************************************************
-// ¶¬ˆ—
+// ç”Ÿæˆå‡¦ç†
 //******************************************************************************
 int MTPianoKeyboard::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -74,11 +74,11 @@ int MTPianoKeyboard::Create(
 		goto EXIT;
 	}
 
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“‰Šú‰»
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³åˆæœŸåŒ–
 	result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	if (pTexture == NULL) {
 		result = _LoadTexture(pD3DDevice, pSceneName);
 		if (result != 0) goto EXIT;
@@ -87,7 +87,7 @@ int MTPianoKeyboard::Create(
 		m_pTexture = pTexture;
 	}
 
-	//ƒL[ƒ{[ƒh¶¬
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 	result = _CreateKeyboard(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -96,7 +96,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh¶¬
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 //******************************************************************************
 int MTPianoKeyboard::_CreateKeyboard(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -104,10 +104,10 @@ int MTPianoKeyboard::_CreateKeyboard(
 {
 	int result = 0;
 
-	//ƒoƒbƒtƒ@î•ñ¶¬
+	//ãƒãƒƒãƒ•ã‚¡æƒ…å ±ç”Ÿæˆ
 	_CreateBufInfo();
 
-	//ƒL[ƒ{[ƒh’¸“_¶¬
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆ
 	result = _CreateVertexOfKeyboard(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -116,7 +116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒoƒbƒtƒ@î•ñ¶¬
+// ãƒãƒƒãƒ•ã‚¡æƒ…å ±ç”Ÿæˆ
 //******************************************************************************
 void MTPianoKeyboard::_CreateBufInfo()
 {
@@ -131,7 +131,7 @@ void MTPianoKeyboard::_CreateBufInfo()
 	vertexPos = 0;
 	indexPos = 0;
 
-	//ŠeƒL[‚Ì’¸“_”^ƒCƒ“ƒfƒbƒNƒX”^“o˜^ˆÊ’u‚ğ¶¬‚·‚é
+	//å„ã‚­ãƒ¼ã®é ‚ç‚¹æ•°ï¼ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°ï¼ç™»éŒ²ä½ç½®ã‚’ç”Ÿæˆã™ã‚‹
 	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		switch (m_KeyboardDesign.GetKeyType(noteNo)) {
 			case (MTPianoKeyboardDesign::KeyWhiteC):
@@ -167,7 +167,7 @@ void MTPianoKeyboard::_CreateBufInfo()
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh’¸“_¶¬
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTPianoKeyboard::_CreateVertexOfKeyboard(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -179,15 +179,15 @@ int MTPianoKeyboard::_CreateVertexOfKeyboard(
 	unsigned char noteNo = 0;
 	D3DMATERIAL9 material;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_PrimitiveKeyboard.Initialize(
-					sizeof(MTPIANOKEYBOARD_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),				//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLELIST				//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTPIANOKEYBOARD_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),				//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLELIST				//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚Ì‘”
+	//é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ç·æ•°
 	vertexNum = 0;
 	indexNum = 0;
 	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
@@ -195,21 +195,21 @@ int MTPianoKeyboard::_CreateVertexOfKeyboard(
 		indexNum  += m_BufInfo[noteNo].indexNum;
 	}
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	result = m_PrimitiveKeyboard.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	result = m_PrimitiveKeyboard.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		result = _CreateVertexOfKey(noteNo);
 		if (result != 0) goto EXIT;
 	}
 
-	//•\¦”ÍˆÍŠO‚ÌƒL[‚ğ‰B‚·
+	//è¡¨ç¤ºç¯„å›²å¤–ã®ã‚­ãƒ¼ã‚’éš ã™
 	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		if (!(m_KeyboardDesign.IsKeyDisp(noteNo))) {
 			result = _HideKey(noteNo);
@@ -217,7 +217,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyboard(
 		}
 	}
 
-	//ƒ}ƒeƒŠƒAƒ‹ì¬
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 	_MakeMaterial(&material);
 	m_PrimitiveKeyboard.SetMaterial(material);
 
@@ -226,7 +226,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh’¸“_¶¬
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTPianoKeyboard::_CreateVertexOfKey(
 		unsigned char noteNo
@@ -243,7 +243,7 @@ int MTPianoKeyboard::_CreateVertexOfKey(
 		goto EXIT;
 	}
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	offset = m_BufInfo[noteNo].vertexPos * sizeof(MTPIANOKEYBOARD_VERTEX);
 	size   = m_BufInfo[noteNo].vertexNum * sizeof(MTPIANOKEYBOARD_VERTEX);
 	result = m_PrimitiveKeyboard.LockVertex((void**)&pVertex, offset, size);
@@ -251,7 +251,7 @@ int MTPianoKeyboard::_CreateVertexOfKey(
 
 	ZeroMemory(pVertex, size);
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	offset = m_BufInfo[noteNo].indexPos * sizeof(unsigned long);
 	size   = m_BufInfo[noteNo].indexNum * sizeof(unsigned long);
 	result = m_PrimitiveKeyboard.LockIndex(&pIndex, offset, size);
@@ -259,7 +259,7 @@ int MTPianoKeyboard::_CreateVertexOfKey(
 
 	ZeroMemory(pIndex, size);
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	switch (m_KeyboardDesign.GetKeyType(noteNo)) {
 		case (MTPianoKeyboardDesign::KeyWhiteC):
 		case (MTPianoKeyboardDesign::KeyWhiteF):
@@ -283,11 +283,11 @@ int MTPianoKeyboard::_CreateVertexOfKey(
 			break;
 	}
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveKeyboard.UnlockVertex();
 	if (result != 0) goto EXIT;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveKeyboard.UnlockIndex();
 	if (result != 0) goto EXIT;
 
@@ -296,7 +296,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh’¸“_¶¬F”’Œ®A
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆï¼šç™½éµA
 //******************************************************************************
 int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 		unsigned char noteNo,
@@ -319,7 +319,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	D3DXCOLOR keyColor;
 	D3DXVECTOR2 t0, t1, t2, t3, t4, t5, t6, t7, tsc;
 
-	//”’Œ®ƒJƒ‰[
+	//ç™½éµã‚«ãƒ©ãƒ¼
 	if (pColor == NULL) {
 		keyColor = m_KeyboardDesign.GetWhiteKeyColor();
 	}
@@ -328,7 +328,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	}
 
 	//----------------------------------------------------------------
-	//ã‚Ì–Ê
+	//ä¸Šã®é¢
 	//----------------------------------------------------------------
 	// 6+--+5
 	//  |  |
@@ -342,7 +342,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	//     |
 	//    posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[0].p = D3DXVECTOR3(centerX - (whiteKeyWidth/2.0f),           heightY, 0.0f);
 	pVertex[1].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, 0.0f);
 	pVertex[2].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, deltaKeyLen - spc);
@@ -356,19 +356,19 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 		pVertex[5].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
 	}
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 0; i < 7; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexUP[] = { 0, 2, 1, 0, 3, 2, 3, 5, 4, 3, 6, 5 };
 	for (i = 0; i < 12; i++) {
 		pIndex[i] = m_BufInfo[noteNo].vertexPos + indexUP[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
 	pVertex[0].t = t0;
 	pVertex[1].t = t1;
@@ -379,32 +379,32 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	pVertex[6].t = t6;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 0-1
+	//å´é¢ 0-1
 	//----------------------------------------------------------------
 	// 0      1
 	// 7+----+8
 	//  |    |
 	// 9+----+10
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[7].p  = pVertex[0].p;
 	pVertex[8].p  = pVertex[1].p;
 	pVertex[9].p  = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z); // 0'
 	pVertex[10].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z); // 1'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 7; i < 11; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index01[] = { 7, 8, 9, 8, 10, 9 };
 	for (i = 0; i < 6; i++) {
 		pIndex[12 + i] = m_BufInfo[noteNo].vertexPos + index01[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
 	pVertex[7].t  = t0;
 	pVertex[8].t  = t1;
@@ -412,135 +412,135 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	pVertex[10].t = t3;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 1-2
+	//å´é¢ 1-2
 	//----------------------------------------------------------------
 	// 2 12+--+14
 	//     |  |
 	//     |  |
 	// 1 11+--+13
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[11].p = pVertex[1].p;
 	pVertex[12].p = pVertex[2].p;
 	pVertex[13].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z);  // 1'
 	pVertex[14].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 11; i < 15; i++) {
 		pVertex[i].n = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index12[] = { 11, 12, 13, 12, 14, 13 };
 	for (i = 0; i < 6; i++) {
 		pIndex[18 + i] = m_BufInfo[noteNo].vertexPos + index12[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 2-4
+	//å´é¢ 2-4
 	//----------------------------------------------------------------
 	//   18+--+17
 	//     |  |
 	// 4 16+--+15 2
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[15].p = pVertex[2].p;
 	pVertex[16].p = pVertex[4].p;
 	pVertex[17].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
 	pVertex[18].p = D3DXVECTOR3(pVertex[4].p.x, 0.0f, pVertex[4].p.z);  // 4'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 15; i < 19; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index24[] = { 15, 16, 17, 16, 18, 17 };
 	for (i = 0; i < 6; i++) {
 		pIndex[24 + i] = m_BufInfo[noteNo].vertexPos + index24[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 4-5
+	//å´é¢ 4-5
 	//----------------------------------------------------------------
 	// 5 20+--+22
 	//     |  |
 	//     |  |
 	// 4 19+--+21
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[19].p = pVertex[4].p;
 	pVertex[20].p = pVertex[5].p;
 	pVertex[21].p = D3DXVECTOR3(pVertex[4].p.x, 0.0f, pVertex[4].p.z);  // 4'
 	pVertex[22].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 19; i < 23; i++) {
 		pVertex[i].n = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index45[] = { 19, 20, 21, 20, 22, 21 };
 	for (i = 0; i < 6; i++) {
 		pIndex[30 + i] = m_BufInfo[noteNo].vertexPos + index45[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 5-6
+	//å´é¢ 5-6
 	//----------------------------------------------------------------
 	//   26+--+25
 	//     |  |
 	// 6 24+--+23 5
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[23].p = pVertex[5].p;
 	pVertex[24].p = pVertex[6].p;
 	pVertex[25].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 	pVertex[26].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 23; i < 27; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index56[] = { 23, 24, 25, 24, 26, 25 };
 	for (i = 0; i < 6; i++) {
 		pIndex[36 + i] = m_BufInfo[noteNo].vertexPos + index56[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 6-0
+	//å´é¢ 6-0
 	//----------------------------------------------------------------
 	// 29+--+27 6
 	//   |  |
 	//   |  |
 	// 30+--+28 0
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[27].p = pVertex[6].p;
 	pVertex[28].p = pVertex[0].p;
 	pVertex[29].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 	pVertex[30].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z);  // 0'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 27; i < 31; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index60[] = { 27, 28, 29, 28, 30, 29 };
 	for (i = 0; i < 6; i++) {
 		pIndex[42 + i] = m_BufInfo[noteNo].vertexPos + index60[i];
 	}
 
 	//----------------------------------------------------------------
-	//‰º‚Ì–Ê
+	//ä¸‹ã®é¢
 	//----------------------------------------------------------------
 	//  37 6+--+5 36
 	//      |  |
@@ -554,7 +554,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	//         |
 	//        posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[31].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z);  // 0'
 	pVertex[32].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z);  // 1'
 	pVertex[33].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
@@ -563,20 +563,20 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 	pVertex[36].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 	pVertex[37].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 31; i < 38; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexDW[] = { 31, 32, 33, 31, 33, 34, 34, 35, 36, 34, 36, 37 };
 	for (i = 0; i < 12; i++) {
 		pIndex[48 + i] = m_BufInfo[noteNo].vertexPos + indexDW[i];
 	}
 
 	//----------------------------------------------------------------
-	//’PˆêF‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å˜ä¸€è‰²ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	//----------------------------------------------------------------
 	m_KeyboardDesign.GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
 	for (i = 11; i < 38; i++) {
@@ -587,7 +587,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite1(
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh’¸“_¶¬F”’Œ®B
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆï¼šç™½éµB
 //******************************************************************************
 int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 		unsigned char noteNo,
@@ -611,7 +611,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	D3DXCOLOR keyColor;
 	D3DXVECTOR2 t0, t1, t2, t3, t4, t5, t6, t7, tsc;
 
-	//”’Œ®ƒJƒ‰[
+	//ç™½éµã‚«ãƒ©ãƒ¼
 	if (pColor == NULL) {
 		keyColor = m_KeyboardDesign.GetWhiteKeyColor();
 	}
@@ -620,7 +620,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	}
 
 	//----------------------------------------------------------------
-	//ã‚Ì–Ê
+	//ä¸Šã®é¢
 	//----------------------------------------------------------------
 	//   6+-+5
 	//    | |
@@ -634,7 +634,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	//     |
 	//    posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[0].p = D3DXVECTOR3(centerX - (whiteKeyWidth/2.0f),           heightY, 0.0f);
 	pVertex[1].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, 0.0f);
 	pVertex[2].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, deltaKeyLen - spc);
@@ -653,19 +653,19 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 		pVertex[5].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
 	}
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 0; i < 8; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexUP[] = { 0, 2, 1, 0, 3, 2, 7, 5, 4, 7, 6, 5 };
 	for (i = 0; i < 12; i++) {
 		pIndex[i] = m_BufInfo[noteNo].vertexPos + indexUP[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
 	pVertex[0].t = t0;
 	pVertex[1].t = t1;
@@ -677,32 +677,32 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	pVertex[7].t = t7;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 0-1
+	//å´é¢ 0-1
 	//----------------------------------------------------------------
 	//  0      1
 	//  8+----+9
 	//   |    |
 	// 10+----+11
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[8].p  = pVertex[0].p;
 	pVertex[9].p  = pVertex[1].p;
 	pVertex[10].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z); // 0'
 	pVertex[11].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z); // 1'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 8; i < 12; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index01[] = { 8, 9, 10, 9, 11, 10 };
 	for (i = 0; i < 6; i++) {
 		pIndex[12 + i] = m_BufInfo[noteNo].vertexPos + index01[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
 	pVertex[8].t  = t0;
 	pVertex[9].t  = t1;
@@ -710,161 +710,161 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	pVertex[11].t = t3;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 1-2
+	//å´é¢ 1-2
 	//----------------------------------------------------------------
 	// 2 13+--+15
 	//     |  |
 	//     |  |
 	// 1 12+--+14
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[12].p = pVertex[1].p;
 	pVertex[13].p = pVertex[2].p;
 	pVertex[14].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z);  // 1'
 	pVertex[15].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 12; i < 16; i++) {
 		pVertex[i].n = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index12[] = { 12, 13, 14, 13, 15, 14 };
 	for (i = 0; i < 6; i++) {
 		pIndex[18 + i] = m_BufInfo[noteNo].vertexPos + index12[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 2-3
+	//å´é¢ 2-3
 	//----------------------------------------------------------------
 	//   19+--+18
 	//     |  |
 	// 3 17+--+16 2
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[16].p = pVertex[2].p;
 	pVertex[17].p = pVertex[3].p;
 	pVertex[18].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
 	pVertex[19].p = D3DXVECTOR3(pVertex[3].p.x, 0.0f, pVertex[3].p.z);  // 3'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 16; i < 20; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index24[] = { 16, 17, 18, 17, 19, 18 };
 	for (i = 0; i < 6; i++) {
 		pIndex[24 + i] = m_BufInfo[noteNo].vertexPos + index24[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 4-5
+	//å´é¢ 4-5
 	//----------------------------------------------------------------
 	// 5 21+--+23
 	//     |  |
 	//     |  |
 	// 4 20+--+22
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[20].p = pVertex[4].p;
 	pVertex[21].p = pVertex[5].p;
 	pVertex[22].p = D3DXVECTOR3(pVertex[4].p.x, 0.0f, pVertex[4].p.z);  // 4'
 	pVertex[23].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 20; i < 24; i++) {
 		pVertex[i].n = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index45[] = { 20, 21, 22, 21, 23, 22 };
 	for (i = 0; i < 6; i++) {
 		pIndex[30 + i] = m_BufInfo[noteNo].vertexPos + index45[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 5-6
+	//å´é¢ 5-6
 	//----------------------------------------------------------------
 	//   27+--+26
 	//     |  |
 	// 6 25+--+24 5
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[24].p = pVertex[5].p;
 	pVertex[25].p = pVertex[6].p;
 	pVertex[26].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 	pVertex[27].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 24; i < 28; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index56[] = { 24, 25, 26, 25, 27, 26 };
 	for (i = 0; i < 6; i++) {
 		pIndex[36 + i] = m_BufInfo[noteNo].vertexPos + index56[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 6-7
+	//å´é¢ 6-7
 	//----------------------------------------------------------------
 	// 30+--+28 6
 	//   |  |
 	//   |  |
 	// 31+--+29 7
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[28].p = pVertex[6].p;
 	pVertex[29].p = pVertex[7].p;
 	pVertex[30].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 	pVertex[31].p = D3DXVECTOR3(pVertex[7].p.x, 0.0f, pVertex[7].p.z);  // 7'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 28; i < 32; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index67[] = { 28, 29, 30, 29, 31, 30 };
 	for (i = 0; i < 6; i++) {
 		pIndex[42 + i] = m_BufInfo[noteNo].vertexPos + index67[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 3-0
+	//å´é¢ 3-0
 	//----------------------------------------------------------------
 	// 34+--+32 3
 	//   |  |
 	//   |  |
 	// 35+--+33 0
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[32].p = pVertex[3].p;
 	pVertex[33].p = pVertex[0].p;
 	pVertex[34].p = D3DXVECTOR3(pVertex[3].p.x, 0.0f, pVertex[3].p.z);  // 3'
 	pVertex[35].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z);  // 0'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 32; i < 36; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index30[] = { 32, 33, 34, 33, 35, 34 };
 	for (i = 0; i < 6; i++) {
 		pIndex[48 + i] = m_BufInfo[noteNo].vertexPos + index30[i];
 	}
 
 	//----------------------------------------------------------------
-	//‰º‚Ì–Ê
+	//ä¸‹ã®é¢
 	//----------------------------------------------------------------
 	//   42 6+-+5 41
 	//       | |
@@ -878,7 +878,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	//        |
 	//       posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[36].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z);  // 0'
 	pVertex[37].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z);  // 1'
 	pVertex[38].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
@@ -888,20 +888,20 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 	pVertex[42].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 	pVertex[43].p = D3DXVECTOR3(pVertex[7].p.x, 0.0f, pVertex[7].p.z);  // 7'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 36; i < 44; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexDW[] = { 36, 37, 38, 36, 38, 39, 43, 40, 41, 43, 41, 42 };
 	for (i = 0; i < 12; i++) {
 		pIndex[54 + i] = m_BufInfo[noteNo].vertexPos + indexDW[i];
 	}
 
 	//----------------------------------------------------------------
-	//’PˆêF‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å˜ä¸€è‰²ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	//----------------------------------------------------------------
 	m_KeyboardDesign.GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
 	for (i = 12; i < 44; i++) {
@@ -912,7 +912,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite2(
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh’¸“_¶¬F”’Œ®C
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆï¼šç™½éµC
 //******************************************************************************
 int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 		unsigned char noteNo,
@@ -935,7 +935,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	D3DXCOLOR keyColor;
 	D3DXVECTOR2 t0, t1, t2, t3, t4, t5, t6, t7, tsc;
 
-	//”’Œ®ƒJƒ‰[
+	//ç™½éµã‚«ãƒ©ãƒ¼
 	if (pColor == NULL) {
 		keyColor = m_KeyboardDesign.GetWhiteKeyColor();
 	}
@@ -944,7 +944,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	}
 
 	//----------------------------------------------------------------
-	//ã‚Ì–Ê
+	//ä¸Šã®é¢
 	//----------------------------------------------------------------
 	//    5+--+4
 	//     |  |
@@ -958,7 +958,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	//     |
 	//    posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[0].p = D3DXVECTOR3(centerX - (whiteKeyWidth/2.0f),           heightY, 0.0f);
 	pVertex[1].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, 0.0f);
 	pVertex[2].p = D3DXVECTOR3(centerX + (whiteKeyWidth/2.0f),           heightY, deltaKeyLen - spc);
@@ -972,19 +972,19 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 		pVertex[6].p = pVertex[3].p;
 	}
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 0; i < 7; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexUP[] = { 0, 2, 1, 0, 3, 2, 2, 6, 4, 6, 5, 4 };
 	for (i = 0; i < 12; i++) {
 		pIndex[i] = m_BufInfo[noteNo].vertexPos + indexUP[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
 	pVertex[0].t = t0;
 	pVertex[1].t = t1;
@@ -995,32 +995,32 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	pVertex[6].t = t7;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 0-1
+	//å´é¢ 0-1
 	//----------------------------------------------------------------
 	// 0      1
 	// 7+----+8
 	//  |    |
 	// 9+----+10
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[7].p  = pVertex[0].p;
 	pVertex[8].p  = pVertex[1].p;
 	pVertex[9].p  = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z); // 0'
 	pVertex[10].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z); // 1'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 7; i < 11; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index01[] = { 7, 8, 9, 8, 10, 9 };
 	for (i = 0; i < 6; i++) {
 		pIndex[12 + i] = m_BufInfo[noteNo].vertexPos + index01[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
 	pVertex[7].t  = t0;
 	pVertex[8].t  = t1;
@@ -1028,135 +1028,135 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	pVertex[10].t = t3;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 1-4
+	//å´é¢ 1-4
 	//----------------------------------------------------------------
 	// 4 12+--+14
 	//     |  |
 	//     |  |
 	// 1 11+--+13
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[11].p = pVertex[1].p;
 	pVertex[12].p = pVertex[4].p;
 	pVertex[13].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z);  // 1'
 	pVertex[14].p = D3DXVECTOR3(pVertex[4].p.x, 0.0f, pVertex[4].p.z);  // 4'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 11; i < 15; i++) {
 		pVertex[i].n = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index14[] = { 11, 12, 13, 12, 14, 13 };
 	for (i = 0; i < 6; i++) {
 		pIndex[18 + i] = m_BufInfo[noteNo].vertexPos + index14[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 4-5
+	//å´é¢ 4-5
 	//----------------------------------------------------------------
 	//   18+--+17
 	//     |  |
 	// 5 16+--+15 4
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[15].p = pVertex[4].p;
 	pVertex[16].p = pVertex[5].p;
 	pVertex[17].p = D3DXVECTOR3(pVertex[4].p.x, 0.0f, pVertex[4].p.z);  // 4'
 	pVertex[18].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 15; i < 19; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index45[] = { 15, 16, 17, 16, 18, 17 };
 	for (i = 0; i < 6; i++) {
 		pIndex[24 + i] = m_BufInfo[noteNo].vertexPos + index45[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 5-6
+	//å´é¢ 5-6
 	//----------------------------------------------------------------
 	// 21+--+19 5
 	//   |  |
 	//   |  |
 	// 22+--+20 6
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[19].p = pVertex[5].p;
 	pVertex[20].p = pVertex[6].p;
 	pVertex[21].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 	pVertex[22].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 19; i < 23; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index56[] = { 19, 20, 21, 20, 22, 21 };
 	for (i = 0; i < 6; i++) {
 		pIndex[30 + i] = m_BufInfo[noteNo].vertexPos + index56[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 6-3
+	//å´é¢ 6-3
 	//----------------------------------------------------------------
 	//   26+--+25
 	//     |  |
 	// 3 24+--+23 6
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[23].p = pVertex[6].p;
 	pVertex[24].p = pVertex[3].p;
 	pVertex[25].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 	pVertex[26].p = D3DXVECTOR3(pVertex[3].p.x, 0.0f, pVertex[3].p.z);  // 3'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 23; i < 27; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index63[] = { 23, 24, 25, 24, 26, 25 };
 	for (i = 0; i < 6; i++) {
 		pIndex[36 + i] = m_BufInfo[noteNo].vertexPos + index63[i];
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 3-0
+	//å´é¢ 3-0
 	//----------------------------------------------------------------
 	// 29+--+27 3
 	//   |  |
 	//   |  |
 	// 30+--+28 0
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[27].p = pVertex[3].p;
 	pVertex[28].p = pVertex[0].p;
 	pVertex[29].p = D3DXVECTOR3(pVertex[3].p.x, 0.0f, pVertex[3].p.z);  // 3'
 	pVertex[30].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z);  // 0'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 27; i < 31; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index30[] = { 27, 28, 29, 28, 30, 29 };
 	for (i = 0; i < 6; i++) {
 		pIndex[42 + i] = m_BufInfo[noteNo].vertexPos + index30[i];
 	}
 
 	//----------------------------------------------------------------
-	//‰º‚Ì–Ê
+	//ä¸‹ã®é¢
 	//----------------------------------------------------------------
 	//    36 5+--+4 35
 	//        |  |
@@ -1170,7 +1170,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	//        |
 	//       posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[31].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z);  // 0'
 	pVertex[32].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z);  // 1'
 	pVertex[33].p = D3DXVECTOR3(pVertex[2].p.x, 0.0f, pVertex[2].p.z);  // 2'
@@ -1179,20 +1179,20 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 	pVertex[36].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 	pVertex[37].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 31; i < 38; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexDW[] = { 31, 32, 33, 31, 33, 34, 33, 35, 37, 37, 35, 36 };
 	for (i = 0; i < 12; i++) {
 		pIndex[48 + i] = m_BufInfo[noteNo].vertexPos + indexDW[i];
 	}
 
 	//----------------------------------------------------------------
-	//’PˆêF‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å˜ä¸€è‰²ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	//----------------------------------------------------------------
 	m_KeyboardDesign.GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
 	for (i = 11; i < 38; i++) {
@@ -1203,7 +1203,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyWhite3(
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh’¸“_¶¬F•Œ®
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆï¼šé»’éµ
 //******************************************************************************
 int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 		unsigned char noteNo,
@@ -1228,7 +1228,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	D3DXVECTOR2 t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, tsc;
 	bool isColored = false;
 
-	//•Œ®ƒJƒ‰[æ“¾
+	//é»’éµã‚«ãƒ©ãƒ¼å–å¾—
 	if (pColor == NULL) {
 		keyColor = m_KeyboardDesign.GetBlackKeyColor();
 	}
@@ -1238,7 +1238,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	}
 
 	//----------------------------------------------------------------
-	//ã‚Ì–Ê
+	//ä¸Šã®é¢
 	//----------------------------------------------------------------
 	//   6+-+5
 	//    | |
@@ -1252,7 +1252,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	//     |
 	//    posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[0].p = D3DXVECTOR3(centerX - (blackKeyWidth/2.0f), heightY,        deltaKeyLen);
 	pVertex[1].p = D3DXVECTOR3(centerX + (blackKeyWidth/2.0f), heightY,        deltaKeyLen);
 	pVertex[2].p = D3DXVECTOR3(centerX + (blackKeyWidth/2.0f), blackKeyHeight, deltaKeyLen + blackKeySlope);
@@ -1262,26 +1262,26 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	pVertex[6].p = D3DXVECTOR3(centerX - (blackKeyWidth/2.0f), blackKeyHeight, whiteKeyLen);
 	pVertex[7].p = pVertex[3].p;
 
-	//–@ü^FF0-1-2-3–Ê
+	//æ³•ç·šï¼è‰²ï¼š0-1-2-3é¢
 	nVector = D3DXVECTOR3(0.0f, 0.12f, -0.08f);
 	D3DXVec3Normalize(&normalizedVector, &nVector);
 	for (i = 0; i < 4; i++) {
 		pVertex[i].n = normalizedVector;
 		pVertex[i].c = keyColor;
 	}
-	//–@ü^FF4-5-6-7–Ê
+	//æ³•ç·šï¼è‰²ï¼š4-5-6-7é¢
 	for (i = 4; i < 8; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexUP[] = { 0, 2, 1, 0, 3, 2, 4, 7, 5, 7, 6, 5 };
 	for (i = 0; i < 12; i++) {
 		pIndex[i] = m_BufInfo[noteNo].vertexPos + indexUP[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetBlackKeyTexturePos(
 			noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7, &t8, &t9, isColored
 		);
@@ -1295,39 +1295,39 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	pVertex[7].t = t3;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 0-1
+	//å´é¢ 0-1
 	//----------------------------------------------------------------
 	//  0      1
 	//  8+----+9
 	//   |    |
 	// 10+----+11
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[8].p  = pVertex[0].p;
 	pVertex[9].p  = pVertex[1].p;
 	pVertex[10].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z); // 0'
 	pVertex[11].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z); // 1'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 8; i < 12; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index01[] = { 8, 9, 10, 9, 11, 10 };
 	for (i = 0; i < 6; i++) {
 		pIndex[12 + i] = m_BufInfo[noteNo].vertexPos + index01[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	m_KeyboardDesign.GetBlackKeyTexturePosSingleColor(noteNo, &tsc, isColored);
 	for (i = 8; i < 12; i++) {
 		pVertex[i].t = tsc;
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 1-2-5
+	//å´é¢ 1-2-5
 	//----------------------------------------------------------------
 	// 5 14+--+16
 	//     |  |
@@ -1336,26 +1336,26 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	//      \ |
 	// 1 12 +-+15
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[12].p  = pVertex[1].p;
 	pVertex[13].p  = pVertex[2].p;
 	pVertex[14].p  = pVertex[5].p;
 	pVertex[15].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z); // 1'
 	pVertex[16].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z); // 5'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 12; i < 17; i++) {
 		pVertex[i].n = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index125[] = { 12, 13, 15, 13, 16, 15, 13, 14, 16 };
 	for (i = 0; i < 9; i++) {
 		pIndex[18 + i] = m_BufInfo[noteNo].vertexPos + index125[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[12].t = t1;
 	pVertex[13].t = t2;
 	pVertex[14].t = t4;
@@ -1363,37 +1363,37 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	pVertex[16].t = t7;
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 5-6
+	//å´é¢ 5-6
 	//----------------------------------------------------------------
 	//   20+--+19
 	//     |  |
 	// 6 18+--+17 5
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[17].p = pVertex[5].p;
 	pVertex[18].p = pVertex[6].p;
 	pVertex[19].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z);  // 5'
 	pVertex[20].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z);  // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 17; i < 21; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index56[] = { 17, 18, 19, 18, 20, 19 };
 	for (i = 0; i < 6; i++) {
 		pIndex[27 + i] = m_BufInfo[noteNo].vertexPos + index56[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	for (i = 17; i < 21; i++) {
 		pVertex[i].t = tsc;
 	}
 
 	//----------------------------------------------------------------
-	//‘¤–Ê 6-3-0
+	//å´é¢ 6-3-0
 	//----------------------------------------------------------------
 	// 24+--+21 6
 	//   |  |
@@ -1402,26 +1402,26 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	//   | /
 	// 25+-+23  0
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[21].p  = pVertex[6].p;
 	pVertex[22].p  = pVertex[3].p;
 	pVertex[23].p  = pVertex[0].p;
 	pVertex[24].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z); // 6'
 	pVertex[25].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z); // 0'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 21; i < 26; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long index630[] = { 21, 22, 24, 22, 25, 24, 22, 23, 25 };
 	for (i = 0; i < 9; i++) {
 		pIndex[33 + i] = m_BufInfo[noteNo].vertexPos + index630[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[21].t = t5;
 	pVertex[22].t = t3;
 	pVertex[23].t = t0;
@@ -1429,7 +1429,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	pVertex[25].t = t8;
 
 	//----------------------------------------------------------------
-	//‰º‚Ì–Ê
+	//ä¸‹ã®é¢
 	//----------------------------------------------------------------
 	//   29 6+-+5 28
 	//       | |
@@ -1443,25 +1443,25 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 	//        |
 	//       posX
 
-	//’¸“_
+	//é ‚ç‚¹
 	pVertex[26].p = D3DXVECTOR3(pVertex[0].p.x, 0.0f, pVertex[0].p.z); // 0'
 	pVertex[27].p = D3DXVECTOR3(pVertex[1].p.x, 0.0f, pVertex[1].p.z); // 1'
 	pVertex[28].p = D3DXVECTOR3(pVertex[5].p.x, 0.0f, pVertex[5].p.z); // 5'
 	pVertex[29].p = D3DXVECTOR3(pVertex[6].p.x, 0.0f, pVertex[6].p.z); // 6'
 
-	//–@ü^F
+	//æ³•ç·šï¼è‰²
 	for (i = 26; i < 30; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	unsigned long indexDW[] = { 26, 27, 28, 26, 28, 29 };
 	for (i = 0; i < 6; i++) {
 		pIndex[42 + i] = m_BufInfo[noteNo].vertexPos + indexDW[i];
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	for (i = 26; i < 30; i++) {
 		pVertex[i].t = tsc;
 	}
@@ -1470,7 +1470,7 @@ int MTPianoKeyboard::_CreateVertexOfKeyBlack(
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ‰æ‘œ“Ç‚İ‚İ
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTPianoKeyboard::_LoadTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -1486,37 +1486,37 @@ int MTPianoKeyboard::_LoadTexture(
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒbƒgƒ}ƒbƒvƒtƒ@ƒCƒ‹–¼
+	//ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«å
 	result = confFile.SetCurSection(_T("Bitmap"));
 	if (result != 0) goto EXIT;
 	result = confFile.GetStr(_T("Keyboard"), bmpFileName, _MAX_PATH, MT_IMGFILE_KEYBOARD);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 	result = YNPathUtil::GetModuleDirPath(imgFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//‰æ‘œƒtƒ@ƒCƒ‹ƒpƒXì¬
+	//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
 	_tcscat_s(imgFilePath, _MAX_PATH, bmpFileName);
 
-	//‰æ‘œƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡‚Í“Ç‚İ‚İ‚ğ’†~‚·‚é
+	//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯èª­ã¿è¾¼ã¿ã‚’ä¸­æ­¢ã™ã‚‹
 	if (!PathFileExists(imgFilePath)) {
 		m_pTexture = NULL;
 		goto EXIT;
 	}
 
-	//“Ç‚İ‚Ş‰æ‘œ‚Ìc‰¡ƒTƒCƒY‚ğæ“¾‚µ‚Ä‚¨‚­
+	//èª­ã¿è¾¼ã‚€ç”»åƒã®ç¸¦æ¨ªã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¦ãŠã
 	hresult = D3DXGetImageInfoFromFile(imgFilePath, &m_ImgInfo);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒ‰æ‘œ‚Æ‚µ‚Ä“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒã¨ã—ã¦èª­ã¿è¾¼ã¿
 	hresult = D3DXCreateTextureFromFile(
-					pD3DDevice,		//ƒeƒNƒXƒ`ƒƒ‚ÉŠÖ˜A•t‚¯‚éƒfƒoƒCƒX
-					imgFilePath,	//ƒtƒ@ƒCƒ‹–¼
-					&m_pTexture		//ì¬‚³‚ê‚½ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					pD3DDevice,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«é–¢é€£ä»˜ã‘ã‚‹ãƒ‡ãƒã‚¤ã‚¹
+					imgFilePath,	//ãƒ•ã‚¡ã‚¤ãƒ«å
+					&m_pTexture		//ä½œæˆã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
@@ -1531,7 +1531,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTPianoKeyboard::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -1539,24 +1539,24 @@ void MTPianoKeyboard::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 	
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 40.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.0f;
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
@@ -1564,7 +1564,7 @@ void MTPianoKeyboard::_MakeMaterial(
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTPianoKeyboard::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -1577,22 +1577,22 @@ int MTPianoKeyboard::Transform(
 	D3DXMATRIX moveMatrix;
 	D3DXMATRIX worldMatrix;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationY(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
-	//s—ñ‚Ì‡¬FˆÚ“®¨‰ñ“]
-	//ƒsƒbƒ`ƒxƒ“ƒh‚É‚æ‚éƒVƒtƒg‚ğæ‚É“K—p‚µ‚Ä‚©‚ç‰ñ“]‚·‚é
+	//è¡Œåˆ—ã®åˆæˆï¼šç§»å‹•â†’å›è»¢
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã«ã‚ˆã‚‹ã‚·ãƒ•ãƒˆã‚’å…ˆã«é©ç”¨ã—ã¦ã‹ã‚‰å›è»¢ã™ã‚‹
 	D3DXMatrixMultiply(&worldMatrix, &moveMatrix, &rotateMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_PrimitiveKeyboard.Transform(worldMatrix);
 
 //EXIT:;
@@ -1602,7 +1602,7 @@ int MTPianoKeyboard::Transform(
 // >>> add 20120729 yossiepon begin
 // >>> modify 20180411 yossiepon begin
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTPianoKeyboard::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -1617,7 +1617,7 @@ int MTPianoKeyboard::Transform(
 // <<< add 20120729 yossiepon end
 
 //******************************************************************************
-// ƒL[‚ÌƒŠƒZƒbƒg
+// ã‚­ãƒ¼ã®ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 int MTPianoKeyboard::ResetKey(
 		unsigned char noteNo
@@ -1638,7 +1638,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[‚Ì‰Ÿ‚µ‚İ
+// ã‚­ãƒ¼ã®æŠ¼ã—è¾¼ã¿
 //******************************************************************************
 int MTPianoKeyboard::PushKey(
 		unsigned char noteNo,
@@ -1659,11 +1659,11 @@ int MTPianoKeyboard::PushKey(
 	angle = m_KeyboardDesign.GetKeyRotateAngle() * keyDownRate;
 
 	if (keyDownRate < 1.0f) {
-		//ƒL[‚ª‰º~’†^ã¸’†‚Ìê‡‚ÍF‚ğ•ÏX‚¹‚¸‰ñ“]‚³‚¹‚é
+		//ã‚­ãƒ¼ãŒä¸‹é™ä¸­ï¼ä¸Šæ˜‡ä¸­ã®å ´åˆã¯è‰²ã‚’å¤‰æ›´ã›ãšå›è»¢ã•ã›ã‚‹
 		_RotateKey(noteNo, angle);
 	}
 	else {
-		//ƒL[‚ª‰Ÿ‰ºó‘Ô‚Ìê‡‚ÍF‚ğ•ÏX‚µ‚Ä‰ñ“]‚³‚¹‚é
+		//ã‚­ãƒ¼ãŒæŠ¼ä¸‹çŠ¶æ…‹ã®å ´åˆã¯è‰²ã‚’å¤‰æ›´ã—ã¦å›è»¢ã•ã›ã‚‹
 		color = m_KeyboardDesign.GetActiveKeyColor(noteNo, elapsedTime, pNoteColor);
 		_RotateKey(noteNo, angle, &color);
 	}
@@ -1675,7 +1675,7 @@ EXIT:;
 // >>> add 20120728 yossiepon begin
 // >>> modify 20140920 yossiepon begin
 //******************************************************************************
-// ƒL[‚Ì‰Ÿ‚µ‚İ
+// ã‚­ãƒ¼ã®æŠ¼ã—è¾¼ã¿
 //******************************************************************************
 int MTPianoKeyboard::PushKey(
 		unsigned char chNo,
@@ -1691,7 +1691,7 @@ int MTPianoKeyboard::PushKey(
 // <<< add 20120728 yossiepon end
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTPianoKeyboard::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -1699,26 +1699,26 @@ int MTPianoKeyboard::Draw(
 {
 	int result = 0;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFæZ  ˆø”1FƒeƒNƒXƒ`ƒƒ  ˆø”2Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šä¹—ç®—  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£  å¼•æ•°2ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 // >>> modify 20120728 yossiepon begin
-	// ƒAƒ‹ƒtƒ@‰‰ZFæZ  ˆø”1FƒeƒNƒXƒ`ƒƒ  ˆø”2Fƒ|ƒŠƒSƒ“
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šä¹—ç®—  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£  å¼•æ•°2ï¼šãƒãƒªã‚´ãƒ³
 // <<< modify 20120728 yossiepon end
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒL[ƒ{[ƒh‚Ì•`‰æ
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®æç”»
 	result = m_PrimitiveKeyboard.Draw(pD3DDevice, m_pTexture);
 	if (result != 0) goto EXIT;
 
@@ -1727,7 +1727,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTPianoKeyboard::Release()
 {
@@ -1741,7 +1741,7 @@ void MTPianoKeyboard::Release()
 }
 
 //******************************************************************************
-// ƒL[‰ñ“]
+// ã‚­ãƒ¼å›è»¢
 //******************************************************************************
 int MTPianoKeyboard::_RotateKey(
 		unsigned char noteNo,
@@ -1765,12 +1765,12 @@ int MTPianoKeyboard::_RotateKey(
 		goto EXIT;
 	}
 
-	//•\¦”ÍˆÍŠO‚ÌƒL[‚È‚ç‰½‚à‚µ‚È‚¢
+	//è¡¨ç¤ºç¯„å›²å¤–ã®ã‚­ãƒ¼ãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (!(m_KeyboardDesign.IsKeyDisp(noteNo))) {
 		goto EXIT;
 	}
 
-	//‰ñ“]‚È‚µ‚Ì’¸“_‚ğæ“¾
+	//å›è»¢ãªã—ã®é ‚ç‚¹ã‚’å–å¾—
 	switch (m_KeyboardDesign.GetKeyType(noteNo)) {
 		case (MTPianoKeyboardDesign::KeyWhiteC):
 		case (MTPianoKeyboardDesign::KeyWhiteF):
@@ -1794,15 +1794,15 @@ int MTPianoKeyboard::_RotateKey(
 			break;
 	}
 
-	//’¸“_‚Æ–@ü‚ÌÀ•W‰ñ“]
+	//é ‚ç‚¹ã¨æ³•ç·šã®åº§æ¨™å›è»¢
 	//
-	//    |<=ƒLƒƒƒvƒXƒ^ƒ“ƒ{ƒ^ƒ“   +---------+ •Œ®”Õ
+	//    |<=ã‚­ãƒ£ãƒ—ã‚¹ã‚¿ãƒ³ãƒœã‚¿ãƒ³   +---------+ é»’éµç›¤
 	//  +-+--------------+--------+---------+-----+
-	//  |                |        |               | ”’Œ®”Õ
+	//  |                |        |               | ç™½éµç›¤
 	//  +----------------@--------+-------------+-+
-	//       @:x“_      |<=ƒoƒ‰ƒ“ƒXƒsƒ“        |<=ƒtƒƒ“ƒgƒsƒ“
+	//       @:æ”¯ç‚¹      |<=ãƒãƒ©ãƒ³ã‚¹ãƒ”ãƒ³        |<=ãƒ•ãƒ­ãƒ³ãƒˆãƒ”ãƒ³
 	//                   :        :               :
-	//            +z<----|--------+---------------* Œ´“_
+	//            +z<----|--------+---------------* åŸç‚¹
 	//                  2.36     1.50            0.00
 	//
 	centerY = 0.00f;
@@ -1812,16 +1812,16 @@ int MTPianoKeyboard::_RotateKey(
 		tempVertex[i].n = DXH::RotateYZ(   0.0f,   0.00f, tempVertex[i].n, angle);
 	}
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	offset = m_BufInfo[noteNo].vertexPos * sizeof(MTPIANOKEYBOARD_VERTEX);
 	size   = m_BufInfo[noteNo].vertexNum * sizeof(MTPIANOKEYBOARD_VERTEX);
 	result = m_PrimitiveKeyboard.LockVertex((void**)&pVertex, offset, size);
 	if (result != 0) goto EXIT;
 
-	//‰ñ“]Œã‚Ì’¸“_‚ğƒRƒs[
+	//å›è»¢å¾Œã®é ‚ç‚¹ã‚’ã‚³ãƒ”ãƒ¼
 	memcpy(pVertex, tempVertex, size);
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveKeyboard.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -1830,7 +1830,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹¤—L—pƒeƒNƒXƒ`ƒƒæ“¾
+// å…±æœ‰ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£å–å¾—
 //******************************************************************************
 LPDIRECT3DTEXTURE9 MTPianoKeyboard::GetTexture()
 {
@@ -1838,7 +1838,7 @@ LPDIRECT3DTEXTURE9 MTPianoKeyboard::GetTexture()
 }
 
 //******************************************************************************
-// ƒL[‰B•Á
+// ã‚­ãƒ¼éš è”½
 //******************************************************************************
 int MTPianoKeyboard::_HideKey(
 		unsigned char noteNo
@@ -1850,7 +1850,7 @@ int MTPianoKeyboard::_HideKey(
 	unsigned long offset = 0;
 	unsigned long size = 0;
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	offset = m_BufInfo[noteNo].vertexPos * sizeof(MTPIANOKEYBOARD_VERTEX);
 	size   = m_BufInfo[noteNo].vertexNum * sizeof(MTPIANOKEYBOARD_VERTEX);
 	result = m_PrimitiveKeyboard.LockVertex((void**)&pVertex, offset, size);
@@ -1863,7 +1863,7 @@ int MTPianoKeyboard::_HideKey(
 		pVertex[i].t = D3DXVECTOR2(0.0f, 0.0f);
 	}
 
-	//’¸“_ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveKeyboard.UnlockVertex();
 	if (result != 0) goto EXIT;
 

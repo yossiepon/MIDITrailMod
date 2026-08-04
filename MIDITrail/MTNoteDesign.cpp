@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesign
 //
-// ƒm[ƒgƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -20,7 +20,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteDesign::MTNoteDesign(void)
 {
@@ -28,14 +28,14 @@ MTNoteDesign::MTNoteDesign(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteDesign::~MTNoteDesign(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int MTNoteDesign::Initialize(
 		const TCHAR* pSceneName,
@@ -47,29 +47,29 @@ int MTNoteDesign::Initialize(
 	unsigned long portIndex = 0;
 	unsigned char portNo = 0;
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^Œü‚¯Ý’è
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿å‘ã‘è¨­å®š
 	if (pSeqData == NULL) {
-		//•ª‰ð”\
+		//åˆ†è§£èƒ½
 		m_TimeDivision = 48;
-		//ƒ|[ƒgƒŠƒXƒg
+		//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 		m_PortList.Clear();
 		m_PortList.AddPort(0);
 	}
-	//’ÊíÝ’è
+	//é€šå¸¸è¨­å®š
 	else {
-		//•ª‰ð”\Žæ“¾
+		//åˆ†è§£èƒ½å–å¾—
 		m_TimeDivision = pSeqData->GetTimeDivision();
 		if (m_TimeDivision == 0) {
 			result = YN_SET_ERR("Invalid data found.", 0, 0);
 			goto EXIT;
 		}
-		//ƒ|[ƒgƒŠƒXƒgŽæ“¾
+		//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—
 		result = pSeqData->GetPortList(&m_PortList);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒ|[ƒg”Ô†‚É¸‡‚ÌƒCƒ“ƒfƒbƒNƒX‚ðU‚é
-	//ƒ|[ƒg 0”Ô 3”Ô 5”Ô ‚Éo—Í‚·‚éê‡‚ÌƒCƒ“ƒfƒbƒNƒX‚Í‚»‚ê‚¼‚ê 0, 1, 2
+	//ãƒãƒ¼ãƒˆç•ªå·ã«æ˜‡é †ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒ¯ã‚‹
+	//ãƒãƒ¼ãƒˆ 0ç•ª 3ç•ª 5ç•ª ã«å‡ºåŠ›ã™ã‚‹å ´åˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯ãã‚Œãžã‚Œ 0, 1, 2
 	for (index = 0; index < 256; index++) {
 		m_PortIndex[index] = 0;
 	}
@@ -79,11 +79,11 @@ int MTNoteDesign::Initialize(
 		portIndex++;
 	}
 
-	//ƒpƒ‰ƒ[ƒ^Ý’èƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 	
-	//ƒ†[ƒUÝ’è“Ç‚Ýž‚Ý
+	//ãƒ¦ãƒ¼ã‚¶è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadUserConf();
 	if (result != 0) goto EXIT;
 
@@ -92,7 +92,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘tˆÊ’uŽæ“¾
+// æ¼”å¥ä½ç½®å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetPlayPosX(
 		unsigned long curTickTime
@@ -102,7 +102,7 @@ float MTNoteDesign::GetPlayPosX(
 }
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgˆÊ’uŽæ“¾
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒŽãƒ¼ãƒˆä½ç½®å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetLivePosX(
 		unsigned long elapsedTime
@@ -112,21 +112,21 @@ float MTNoteDesign::GetLivePosX(
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•WŽæ“¾
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒåº§æ¨™å–å¾—
 //******************************************************************************
 D3DXVECTOR3 MTNoteDesign::GetNoteBoxCenterPosX(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+		short pitchBendValue,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+		unsigned char pitchBendSensitivity	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 	)
 {
 	D3DXVECTOR3 vector;
 	float pb = 0.0f;
 
-	//ƒsƒbƒ`ƒxƒ“ƒh‚É‚æ‚éYÀ•W‚ÌˆÚ“®—Ê
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã«ã‚ˆã‚‹Yåº§æ¨™ã®ç§»å‹•é‡
 	if (pitchBendValue < 0) {
 		pb = GetNoteStep() * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
 	}
@@ -134,20 +134,20 @@ D3DXVECTOR3 MTNoteDesign::GetNoteBoxCenterPosX(
 		pb = GetNoteStep() * pitchBendSensitivity * ((float)pitchBendValue / 8191.0f);
 	}
 
-	//‰‰‘tˆÊ’u
+	//æ¼”å¥ä½ç½®
 	vector.x = GetPlayPosX(curTickTime);
 
-	//ƒm[ƒg”Ô†
+	//ãƒŽãƒ¼ãƒˆç•ªå·
 	vector.y = GetPortOriginY(portNo) + (m_NoteStep * noteNo + pb);
 
-	//ƒ|[ƒg”Ô†‚Æƒ`ƒƒƒ“ƒlƒ‹”Ô†
+	//ãƒãƒ¼ãƒˆç•ªå·ã¨ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·
 	vector.z = GetPortOriginZ(portNo) + (GetChStep() * chNo);
 
 	return vector;
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒXcƒTƒCƒYŽæ“¾
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ç¸¦ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 float MTNoteDesign::GetNoteBoxHeight()
 {
@@ -155,7 +155,7 @@ float MTNoteDesign::GetNoteBoxHeight()
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX‰¡ƒTƒCƒYŽæ“¾
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æ¨ªã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 float MTNoteDesign::GetNoteBoxWidth()
 {
@@ -163,7 +163,7 @@ float MTNoteDesign::GetNoteBoxWidth()
 }
 
 //******************************************************************************
-// ƒm[ƒgŠÔŠuŽæ“¾
+// ãƒŽãƒ¼ãƒˆé–“éš”å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetNoteStep()
 {
@@ -171,7 +171,7 @@ float MTNoteDesign::GetNoteStep()
 }
 
 //******************************************************************************
-// ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠuŽæ“¾
+// ãƒãƒ£ãƒ³ãƒãƒ«é–“éš”å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetChStep()
 {
@@ -179,7 +179,7 @@ float MTNoteDesign::GetChStep()
 }
 
 //******************************************************************************
-//ƒ‰ƒCƒuƒ‚ƒjƒ^•\Ž¦ŠúŠÔiƒ~ƒŠ•bj
+//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿è¡¨ç¤ºæœŸé–“ï¼ˆãƒŸãƒªç§’ï¼‰
 //******************************************************************************
 unsigned long MTNoteDesign::GetLiveMonitorDisplayDuration()
 {
@@ -187,19 +187,19 @@ unsigned long MTNoteDesign::GetLiveMonitorDisplayDuration()
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesign::GetNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-		short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+		short pitchBendValue,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+		unsigned char pitchBendSensitivity	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 
 	)
 {
@@ -219,20 +219,20 @@ void MTNoteDesign::GetNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+// ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesign::GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-		short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-		unsigned long elapsedTime			//È—ª‰ÂFŒo‰ßŽžŠÔiƒ~ƒŠ•bj
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+		short pitchBendValue,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+		unsigned char pitchBendSensitivity,	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
+		unsigned long elapsedTime			//çœç•¥å¯ï¼šçµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 	)
 {
 	D3DXVECTOR3 center;
@@ -256,19 +256,19 @@ void MTNoteDesign::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesign::GetNoteBoxVirtexPosLive(
 		unsigned long elapsedTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-		short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+		short pitchBendValue,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+		unsigned char pitchBendSensitivity	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 	)
 {
 	D3DXVECTOR3 center;
@@ -291,15 +291,15 @@ void MTNoteDesign::GetNoteBoxVirtexPosLive(
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒhƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+// ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesign::GetGridBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3 	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3 	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
 	)
 {
 	float x = 0.0f;
@@ -328,15 +328,15 @@ void MTNoteDesign::GetGridBoxVirtexPos(
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒhƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+// ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesign::GetGridBoxVirtexPosLive(
 		unsigned long elapsedTime,
 		unsigned char portNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3 	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3 	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
 	)
 {
 	float x = 0.0f;
@@ -365,14 +365,14 @@ void MTNoteDesign::GetGridBoxVirtexPosLive(
 }
 
 //******************************************************************************
-// Ä¶–Ê’¸“_À•WŽæ“¾
+// å†ç”Ÿé¢é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesign::GetPlaybackSectionVirtexPos(
 		unsigned long curTickTime,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3 	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3 	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
 	)
 {
 	D3DXVECTOR3 firstPortVecotr[4];
@@ -405,10 +405,10 @@ void MTNoteDesign::GetPlaybackSectionVirtexPos(
 }
 
 //******************************************************************************
-// ”g–äcƒTƒCƒYŽæ“¾
+// æ³¢ç´‹ç¸¦ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 float MTNoteDesign::GetRippleHeight(
-		unsigned long elapsedTime	//È—ª‰ÂFŒo‰ßŽžŠÔiƒ~ƒŠ•bj
+		unsigned long elapsedTime	//çœç•¥å¯ï¼šçµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 	)
 {
 	float height = 0.0f;
@@ -421,10 +421,10 @@ float MTNoteDesign::GetRippleHeight(
 }
 
 //******************************************************************************
-// ”g–ä‰¡ƒTƒCƒYŽæ“¾
+// æ³¢ç´‹æ¨ªã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 float MTNoteDesign::GetRippleWidth(
-		unsigned long elapsedTime	//È—ª‰ÂFŒo‰ßŽžŠÔiƒ~ƒŠ•bj
+		unsigned long elapsedTime	//çœç•¥å¯ï¼šçµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 	)
 {
 	float width = 0.0f;
@@ -437,10 +437,10 @@ float MTNoteDesign::GetRippleWidth(
 }
 
 //******************************************************************************
-// ”g–ä“§–¾“xŽæ“¾
+// æ³¢ç´‹é€æ˜Žåº¦å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetRippleAlpha(
-		unsigned long elapsedTime	//Œo‰ßŽžŠÔiƒ~ƒŠ•bj
+		unsigned long elapsedTime	//çµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 	)
 {
 	float alpha = 1.0f;
@@ -453,7 +453,7 @@ float MTNoteDesign::GetRippleAlpha(
 }
 
 //******************************************************************************
-// ƒsƒNƒ`ƒƒƒ{[ƒh‘Š‘ÎˆÊ’uŽæ“¾
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ç›¸å¯¾ä½ç½®å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetPictBoardRelativePos()
 {
@@ -461,7 +461,7 @@ float MTNoteDesign::GetPictBoardRelativePos()
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_YÀ•WŽæ“¾
+// ãƒãƒ¼ãƒˆåŽŸç‚¹Yåº§æ¨™å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetPortOriginY(
 		unsigned char portNo
@@ -485,7 +485,7 @@ float MTNoteDesign::GetPortOriginY(
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_ZÀ•WŽæ“¾
+// ãƒãƒ¼ãƒˆåŽŸç‚¹Zåº§æ¨™å–å¾—
 //******************************************************************************
 float MTNoteDesign::GetPortOriginZ(
 		unsigned char portNo
@@ -517,7 +517,7 @@ float MTNoteDesign::GetPortOriginZ(
 }
 
 //******************************************************************************
-// ¢ŠEÀ•W”z’uˆÚ“®ƒxƒNƒgƒ‹Žæ“¾
+// ä¸–ç•Œåº§æ¨™é…ç½®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 //******************************************************************************
 D3DXVECTOR3 MTNoteDesign::GetWorldMoveVector()
 {
@@ -531,7 +531,7 @@ D3DXVECTOR3 MTNoteDesign::GetWorldMoveVector()
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[Žæ“¾
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚«ãƒ©ãƒ¼å–å¾—
 //******************************************************************************
 D3DXCOLOR MTNoteDesign::GetNoteBoxColor(
 		unsigned char portNo,
@@ -542,9 +542,9 @@ D3DXCOLOR MTNoteDesign::GetNoteBoxColor(
 	D3DXCOLOR color;
 
 	if (m_NoteColorType == Channel) {
-		//ƒ`ƒƒƒ“ƒlƒ‹”Ô†‚É‚æ‚Á‚ÄF‚ð•Ï‚¦‚é
+		//ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ã«ã‚ˆã£ã¦è‰²ã‚’å¤‰ãˆã‚‹
 		if (chNo >= 16) {
-			//ƒf[ƒ^ˆÙí‚¾‚ª–³Ž‹‚·‚é
+			//ãƒ‡ãƒ¼ã‚¿ç•°å¸¸ã ãŒç„¡è¦–ã™ã‚‹
 			color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
 		}
 		else {
@@ -552,7 +552,7 @@ D3DXCOLOR MTNoteDesign::GetNoteBoxColor(
 		}
 	}
 	else if (m_NoteColorType == Scale) {
-		//‰¹ŠK‚É‚æ‚Á‚ÄF‚ð•Ï‚¦‚é
+		//éŸ³éšŽã«ã‚ˆã£ã¦è‰²ã‚’å¤‰ãˆã‚‹
 		color = m_NoteColorOfScale[(noteNo % 12)];
 	}
 
@@ -560,7 +560,7 @@ D3DXCOLOR MTNoteDesign::GetNoteBoxColor(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[Žæ“¾
+// ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚«ãƒ©ãƒ¼å–å¾—
 //******************************************************************************
 D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
 		unsigned char portNo,
@@ -578,14 +578,14 @@ D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
 
 	color = GetNoteBoxColor(portNo, chNo, noteNo);
 
-	//m_ActiveNoteDuration ƒŠƒŠ[ƒXƒ^ƒCƒ€
-	//  ”­‰¹ŠJŽnŽž“_‚©‚çƒm[ƒgF‚ðŒ³‚É–ß‚·‚Ü‚Å‚ÌŽžŠÔ
-	//  ‚½‚¾‚µ m_ActiveNoteEmissive ‚É‚æ‚Á‚ÄƒŠƒŠ[ƒXŒã‚àƒm[ƒgOFF‚Ü‚Å”­Œõ‚·‚é
+	//m_ActiveNoteDuration ãƒªãƒªãƒ¼ã‚¹ã‚¿ã‚¤ãƒ 
+	//  ç™ºéŸ³é–‹å§‹æ™‚ç‚¹ã‹ã‚‰ãƒŽãƒ¼ãƒˆè‰²ã‚’å…ƒã«æˆ»ã™ã¾ã§ã®æ™‚é–“
+	//  ãŸã ã— m_ActiveNoteEmissive ã«ã‚ˆã£ã¦ãƒªãƒªãƒ¼ã‚¹å¾Œã‚‚ãƒŽãƒ¼ãƒˆOFFã¾ã§ç™ºå…‰ã™ã‚‹
 
-	//m_ActiveNoteWhiteRate Å‘å”’F—¦
-	//  0.0 ¨ ƒm[ƒgF•Ï‰»‚È‚µ
-	//  0.5 ¨ ƒm[ƒgF‚Æ”’‚Ì’†ŠÔF
-	//  1.0 ¨ ”’
+	//m_ActiveNoteWhiteRate æœ€å¤§ç™½è‰²çŽ‡
+	//  0.0 â†’ ãƒŽãƒ¼ãƒˆè‰²å¤‰åŒ–ãªã—
+	//  0.5 â†’ ãƒŽãƒ¼ãƒˆè‰²ã¨ç™½ã®ä¸­é–“è‰²
+	//  1.0 â†’ ç™½
 
 	rate = 0.0f;
 	if ((int)elapsedTime < m_ActiveNoteDuration) {
@@ -601,7 +601,7 @@ D3DXCOLOR MTNoteDesign::GetActiveNoteBoxColor(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒGƒ~ƒbƒVƒuŽæ“¾iƒ}ƒeƒŠƒAƒ‹—pj
+// ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚¨ãƒŸãƒƒã‚·ãƒ–å–å¾—ï¼ˆãƒžãƒ†ãƒªã‚¢ãƒ«ç”¨ï¼‰
 //******************************************************************************
 D3DXCOLOR MTNoteDesign::GetActiveNoteEmissive()
 {
@@ -609,7 +609,7 @@ D3DXCOLOR MTNoteDesign::GetActiveNoteEmissive()
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒhƒ‰ƒCƒ“ƒJƒ‰[Žæ“¾
+// ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³ã‚«ãƒ©ãƒ¼å–å¾—
 //******************************************************************************
 D3DXCOLOR MTNoteDesign::GetGridLineColor()
 {
@@ -617,7 +617,7 @@ D3DXCOLOR MTNoteDesign::GetGridLineColor()
 }
 
 //******************************************************************************
-// Ä¶–ÊƒJƒ‰[Žæ“¾
+// å†ç”Ÿé¢ã‚«ãƒ©ãƒ¼å–å¾—
 //******************************************************************************
 D3DXCOLOR MTNoteDesign::GetPlaybackSectionColor()
 {
@@ -625,7 +625,7 @@ D3DXCOLOR MTNoteDesign::GetPlaybackSectionColor()
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTNoteDesign::_Clear(void)
 {
@@ -664,7 +664,7 @@ void MTNoteDesign::_Clear(void)
 }
 
 //******************************************************************************
-// Ý’èƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTNoteDesign::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -680,16 +680,16 @@ int MTNoteDesign::_LoadConfFile(
 	MTColorPalette colorPalette;
 	D3DXCOLOR color;
 
-	//Ý’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒ‰[Ý’è‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼è¨­å®šåˆæœŸåŒ–
 	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//ƒXƒP[ƒ‹î•ñ
+	//ã‚¹ã‚±ãƒ¼ãƒ«æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Scale"));
 	if (result != 0) goto EXIT;
@@ -715,22 +715,22 @@ int MTNoteDesign::_LoadConfFile(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//Fî•ñ
+	//è‰²æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Color"));
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒJƒ‰[Ží•Ê‚ðŽæ“¾
+	//ãƒŽãƒ¼ãƒˆã‚«ãƒ©ãƒ¼ç¨®åˆ¥ã‚’å–å¾—
 	result = confFile.GetStr(_T("NoteColorType"), noteColorType, 16, _T("CHANNEL"));
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒJƒ‰[Ží•Ê‚ðŒˆ’è
+	//ãƒŽãƒ¼ãƒˆã‚«ãƒ©ãƒ¼ç¨®åˆ¥ã‚’æ±ºå®š
 	m_NoteColorType = Channel;
 	if (_tcscmp(noteColorType, _T("SCALE")) == 0) {
 		m_NoteColorType = Scale;
 	}
 
-	//‘I‘ðƒJƒ‰[ƒpƒŒƒbƒg‚©‚çƒm[ƒgFî•ñ‚ðŽæ“¾
+	//é¸æŠžã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã‹ã‚‰ãƒŽãƒ¼ãƒˆè‰²æƒ…å ±ã‚’å–å¾—
 	colorConf.GetSelectedColorPalette(&colorPalette);
 	for (i = 0; i < 16; i++) {
 		result = colorPalette.GetChColor(i, &color);
@@ -738,7 +738,7 @@ int MTNoteDesign::_LoadConfFile(
 		m_NoteColor[i] = color;
 	}
 
-	//‰¹ŠK—pƒm[ƒgFî•ñ‚ðŽæ“¾
+	//éŸ³éšŽç”¨ãƒŽãƒ¼ãƒˆè‰²æƒ…å ±ã‚’å–å¾—
 	for (i = 0; i < 12; i++) {
 		_stprintf_s(key, 32, _T("Scale-%02d-NoteRGBA"), i+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
@@ -747,45 +747,45 @@ int MTNoteDesign::_LoadConfFile(
 		m_NoteColorOfScale[i] = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 	}
 
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“Fî•ñ‚ðŽæ“¾
+	//ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³è‰²æƒ…å ±ã‚’å–å¾—
 	colorPalette.GetGridLineColor(&color);
 	m_GridLineColor = color;
 
-	//Ä¶–ÊFî•ñ‚ðŽæ“¾
+	//å†ç”Ÿé¢è‰²æƒ…å ±ã‚’å–å¾—
 	result = confFile.GetStr(_T("PlaybackSectionRGBA"), hexColor, 16, _T("AAAAFFFF"));
 	if (result != 0) goto EXIT;
 	m_PlaybackSectionColor = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 
 	//----------------------------------
-	//”­‰¹ƒm[ƒgî•ñ
+	//ç™ºéŸ³ãƒŽãƒ¼ãƒˆæƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("ActiveNote"));
 	if (result != 0) goto EXIT;
 
-	//”­‰¹’†ƒm[ƒgFî•ñFŒp‘±ŽžŠÔ(msec)
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆè‰²æƒ…å ±ï¼šç¶™ç¶šæ™‚é–“(msec)
 	result = confFile.GetInt(_T("Duration"), &m_ActiveNoteDuration, 400);
 	if (result != 0) goto EXIT;
 
-	//”­‰¹’†ƒm[ƒgFî•ñF”’F—¦
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆè‰²æƒ…å ±ï¼šç™½è‰²çŽ‡
 	result = confFile.GetFloat(_T("WhiteRate"), &m_ActiveNoteWhiteRate, 0.9f);
 	if (result != 0) goto EXIT;
 
-	//”­‰¹’†ƒm[ƒgFî•ñFƒ}ƒeƒŠƒAƒ‹”­ŒõF
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆè‰²æƒ…å ±ï¼šãƒžãƒ†ãƒªã‚¢ãƒ«ç™ºå…‰è‰²
 	result = confFile.GetStr(_T("EmissiveRGBA"), hexColor, 16, _T("1A1A1A1A"));
 	if (result != 0) goto EXIT;
 	m_ActiveNoteEmissive = DXColorUtil::MakeColorFromHexRGBA(hexColor);
 
-	//”­‰¹’†ƒm[ƒgî•ñFƒ{ƒbƒNƒXƒTƒCƒY”ä—¦
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆæƒ…å ±ï¼šãƒœãƒƒã‚¯ã‚¹ã‚µã‚¤ã‚ºæ¯”çŽ‡
 	result = confFile.GetFloat(_T("SizeRatio"), &m_ActiveNoteBoxSizeRatio, 1.4f);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//”g–äî•ñ
+	//æ³¢ç´‹æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Ripple"));
 	if (result != 0) goto EXIT;
 
-	//”g–äŒp‘±ŽžŠÔ(msec)
+	//æ³¢ç´‹ç¶™ç¶šæ™‚é–“(msec)
 	result = confFile.GetInt(_T("Duration"), &m_RippleDuration, 1600);
 	if (result != 0) goto EXIT;
 
@@ -794,7 +794,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ†[ƒUÝ’è“Ç‚Ýž‚Ý
+// ãƒ¦ãƒ¼ã‚¶è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTNoteDesign::_LoadUserConf()
 {
@@ -812,11 +812,11 @@ int MTNoteDesign::_LoadUserConf()
 	result = confFile.Initialize(userConfFilePath);
 	if (result != 0) goto EXIT;
 	
-	//Žl•ª‰¹•„’·Šg‘å—¦(0-1000)
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§çŽ‡(0-1000)
 	result = confFile.SetCurSection(_T("QuarterNote"));
 	result = confFile.GetInt(_T("LengthMagnification"), &lengthMagnification, 100);
 	
-	//ƒNƒŠƒbƒsƒ“ƒO
+	//ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°
 	if (lengthMagnification < 0) {
 		lengthMagnification = 0;
 	}
@@ -824,7 +824,7 @@ int MTNoteDesign::_LoadUserConf()
 		lengthMagnification = 1000;
 	}
 
-	//Žl•ª‰¹•„‚Ì’·‚³‚ðXV
+	//å››åˆ†éŸ³ç¬¦ã®é•·ã•ã‚’æ›´æ–°
 	m_QuarterNoteLength = m_QuarterNoteLength * ((float)lengthMagnification / 100.0f);
 
 EXIT:;

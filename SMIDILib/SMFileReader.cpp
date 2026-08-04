@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMFileReader
 //
-// •W€MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İƒNƒ‰ƒX
+// æ¨™æº–MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMFileReader::SMFileReader(void)
 {
@@ -31,14 +31,14 @@ SMFileReader::SMFileReader(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMFileReader::~SMFileReader(void)
 {
 }
 
 //******************************************************************************
-// ƒƒOo—ÍƒpƒXİ’è
+// ãƒ­ã‚°å‡ºåŠ›ãƒ‘ã‚¹è¨­å®š
 //******************************************************************************
 int SMFileReader::SetLogPath(
 		const WCHAR* pLogPath
@@ -69,7 +69,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Standard MIDI File ‚Ìƒ[ƒh
+// Standard MIDI File ã®ãƒ­ãƒ¼ãƒ‰
 //******************************************************************************
 int SMFileReader::Load(
 		const WCHAR *pSMFPath,
@@ -91,43 +91,43 @@ int SMFileReader::Load(
 
 	pSeqData->Clear();
 
-	//ƒƒOƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	result = _OpenLogFile();
 	if (result != 0 ) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hFile = mmioOpenW((LPWSTR)pSMFPath, NULL, MMIO_READ);
 	if (hFile == NULL) {
 		result = YN_SET_ERR("File open error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//RIFFƒwƒbƒ_“Ç‚İ”ò‚Î‚µ
+	//RIFFãƒ˜ãƒƒãƒ€èª­ã¿é£›ã°ã—
 	result = _SkipRIFFHeader(hFile);
 	if (result != 0 ) goto EXIT;
 
-	//ƒwƒbƒ_“Ç‚İ‚İ
+	//ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 	result = _ReadChunkHeader(hFile, &chunkTypeSection, &chunkDataSection);
 	if (result != 0 ) goto EXIT;
 
 	if ((chunkDataSection.format != 0) && (chunkDataSection.format != 1)) {
-		//ƒtƒH[ƒ}ƒbƒg0,1ˆÈŠO‚Í–¢‘Î‰
+		//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ0,1ä»¥å¤–ã¯æœªå¯¾å¿œ
 		result = YN_SET_ERR("Unsupported SMF format.", chunkDataSection.format, 0);
 		goto EXIT;
 	}
 	if ( chunkDataSection.ntracks == 0) {
-		//ƒf[ƒ^ˆÙí
+		//ãƒ‡ãƒ¼ã‚¿ç•°å¸¸
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 	if ( chunkDataSection.timeDivision == 0) {
-		//ƒf[ƒ^ˆÙí
+		//ãƒ‡ãƒ¼ã‚¿ç•°å¸¸
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 	if ((chunkDataSection.timeDivision & 0x80000000) != 0) {
-		//•ª‰ğ”\‚ª•‰‚Ìê‡‚Íƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğÀŠÔ‚Æ‚İ‚È‚·d—l‚ª‚ ‚é
-		//ˆê”Ê“I‚Å‚È‚¢‚Ì‚Å¡‚Ì‚Æ‚±‚ëƒTƒ|[ƒg‚µ‚È‚¢
+		//åˆ†è§£èƒ½ãŒè² ã®å ´åˆã¯ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’å®Ÿæ™‚é–“ã¨ã¿ãªã™ä»•æ§˜ãŒã‚ã‚‹
+		//ä¸€èˆ¬çš„ã§ãªã„ã®ã§ä»Šã®ã¨ã“ã‚ã‚µãƒãƒ¼ãƒˆã—ãªã„
 		result = YN_SET_ERR("Unsupported SMF format.", chunkDataSection.timeDivision, 0);
 		goto EXIT;
 	}
@@ -136,11 +136,11 @@ int SMFileReader::Load(
 	pSeqData->SetTimeDivision(chunkDataSection.timeDivision);
 
 	for (i = 0; i < chunkDataSection.ntracks; i++) {
-		//ƒgƒ‰ƒbƒNƒwƒbƒ_“Ç‚İ‚İ
+		//ãƒˆãƒ©ãƒƒã‚¯ãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 		result = _ReadTrackHeader(hFile, i, &chunkTypeSectionOfTrack);
 		if (result != 0 ) goto EXIT;
 
-		//ƒgƒ‰ƒbƒNƒCƒxƒ“ƒg“Ç‚İ‚İ
+		//ãƒˆãƒ©ãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆèª­ã¿è¾¼ã¿
 		result = _ReadTrackEvents(hFile, chunkTypeSectionOfTrack.chunkSize, &pTrack);
 		if (result != 0 ) goto EXIT;
 
@@ -149,11 +149,11 @@ int SMFileReader::Load(
 		pTrack = NULL;
 	}
 
-	//ƒgƒ‰ƒbƒN‚ğ•Â‚¶‚é
+	//ãƒˆãƒ©ãƒƒã‚¯ã‚’é–‰ã˜ã‚‹
 	result = pSeqData->CloseTrack();
 	if (result != 0 ) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹–¼“o˜^
+	//ãƒ•ã‚¡ã‚¤ãƒ«åç™»éŒ²
 	pSeqData->SetFileName(PathFindFileNameW(pSMFPath));
 
 EXIT:;
@@ -166,7 +166,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// RIFFƒwƒbƒ_“Ç‚İ”ò‚Î‚µ
+// RIFFãƒ˜ãƒƒãƒ€èª­ã¿é£›ã°ã—
 //******************************************************************************
 int SMFileReader::_SkipRIFFHeader(
 		HMMIO hFile
@@ -177,16 +177,16 @@ int SMFileReader::_SkipRIFFHeader(
 	SMFRIFFChunkHeader chunkHeader;
 	SMFRIFFSubChunkHeader subChunkHeader;
 
-	//RIFFƒ`ƒƒƒ“ƒN‚Ì“Ç‚İ‚İ
+	//RIFFãƒãƒ£ãƒ³ã‚¯ã®èª­ã¿è¾¼ã¿
 	apiresult = mmioRead(hFile, (HPSTR)&chunkHeader, sizeof(SMFRIFFChunkHeader));
 	if (apiresult != sizeof(SMFRIFFChunkHeader)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//¯•Êqƒ`ƒFƒbƒN
+	//è­˜åˆ¥å­ãƒã‚§ãƒƒã‚¯
 	if (memcmp(chunkHeader.chunkID, "RIFF", 4) != 0) {
-		//RIFF‚Å‚Í‚È‚¢‚½‚ß“Ç‚İæ‚èˆÊ’u‚ğæ“ª‚É–ß‚µ‚Ä³íI—¹
+		//RIFFã§ã¯ãªã„ãŸã‚èª­ã¿å–ã‚Šä½ç½®ã‚’å…ˆé ­ã«æˆ»ã—ã¦æ­£å¸¸çµ‚äº†
 		apiresult = mmioSeek(hFile, 0, SEEK_SET);
 		if (apiresult == -1) {
 			result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -195,22 +195,22 @@ int SMFileReader::_SkipRIFFHeader(
 		goto EXIT;
 	}
 
-	//ƒtƒH[ƒ}ƒbƒgƒ`ƒFƒbƒN
+	//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒã‚§ãƒƒã‚¯
 	if (memcmp(chunkHeader.format, "RMID", 4) != 0) {
-		//RIFF‚Å‚ ‚é‚ªMIDIƒf[ƒ^‚Å‚Í‚È‚¢‚½‚ßƒtƒ@ƒCƒ‹ˆÙí‚Æ‚İ‚È‚·
+		//RIFFã§ã‚ã‚‹ãŒMIDIãƒ‡ãƒ¼ã‚¿ã§ã¯ãªã„ãŸã‚ãƒ•ã‚¡ã‚¤ãƒ«ç•°å¸¸ã¨ã¿ãªã™
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 
-	//RIFFƒTƒuƒ`ƒƒƒ“ƒN‚Ì“Ç‚İ‚İ
+	//RIFFã‚µãƒ–ãƒãƒ£ãƒ³ã‚¯ã®èª­ã¿è¾¼ã¿
 	apiresult = mmioRead(hFile, (HPSTR)&subChunkHeader, sizeof(SMFRIFFSubChunkHeader));
 	if (apiresult != sizeof(SMFRIFFSubChunkHeader)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//ƒtƒH[ƒ}ƒbƒgƒ`ƒFƒbƒN
-	//  LISTƒ`ƒƒƒ“ƒN‚É‚Í‘Î‰‚µ‚È‚¢
+	//ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒã‚§ãƒƒã‚¯
+	//  LISTãƒãƒ£ãƒ³ã‚¯ã«ã¯å¯¾å¿œã—ãªã„
 	if (memcmp(subChunkHeader.chunkID, "data", 4) != 0) {
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
@@ -221,7 +221,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFƒwƒbƒ_“Ç‚İ‚İ
+// SMFãƒ˜ãƒƒãƒ€èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadChunkHeader(
 		HMMIO hFile,
@@ -233,17 +233,17 @@ int SMFileReader::_ReadChunkHeader(
 	long apiresult = 0;
 	long offset = 0;
 
-	//¯•Êq‚Æƒwƒbƒ_ƒf[ƒ^ƒTƒCƒY‚Ì“Ç‚İ‚İ
+	//è­˜åˆ¥å­ã¨ãƒ˜ãƒƒãƒ€ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã®èª­ã¿è¾¼ã¿
 	apiresult = mmioRead(hFile, (HPSTR)pChunkTypeSection, sizeof(SMFChunkTypeSection));
 	if (apiresult != sizeof(SMFChunkTypeSection)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//ƒGƒ“ƒfƒBƒAƒ“•ÏŠ·
+	//ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ›
 	_ReverseEndian(&(pChunkTypeSection->chunkSize), sizeof(unsigned long));
 
-	//®‡«ƒ`ƒFƒbƒN
+	//æ•´åˆæ€§ãƒã‚§ãƒƒã‚¯
 	if (memcmp(pChunkTypeSection->chunkType, "MThd", 4) != 0) {
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
@@ -253,19 +253,19 @@ int SMFileReader::_ReadChunkHeader(
 		goto EXIT;
 	}
 
-	//ƒwƒbƒ_ƒf[ƒ^‚Ì“Ç‚İ‚İ
+	//ãƒ˜ãƒƒãƒ€ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿
 	apiresult = mmioRead(hFile, (HPSTR)pChunkDataSection, sizeof(SMFChunkDataSection));
 	if (apiresult != sizeof(SMFChunkDataSection)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//ƒGƒ“ƒfƒBƒAƒ“•ÏŠ·
+	//ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ›
 	_ReverseEndian(&(pChunkDataSection->format), sizeof(unsigned short));
 	_ReverseEndian(&(pChunkDataSection->ntracks), sizeof(unsigned short));
 	_ReverseEndian(&(pChunkDataSection->timeDivision), sizeof(unsigned short));
 
-	//w’è‚³‚ê‚½ƒf[ƒ^ƒTƒCƒY‚Ü‚ÅƒXƒLƒbƒv‚·‚éi”O‚Ì‚½‚ßj
+	//æŒ‡å®šã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã¾ã§ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ï¼ˆå¿µã®ãŸã‚ï¼‰
 	if (pChunkTypeSection->chunkSize > sizeof(SMFChunkDataSection)) {
 		offset = pChunkTypeSection->chunkSize - sizeof(SMFChunkDataSection);
 		apiresult = mmioSeek(hFile, offset, SEEK_CUR);
@@ -283,7 +283,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFƒgƒ‰ƒbƒNƒwƒbƒ_‚Ì“Ç‚İ‚İ
+// SMFãƒˆãƒ©ãƒƒã‚¯ãƒ˜ãƒƒãƒ€ã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadTrackHeader(
 		HMMIO hFile,
@@ -294,17 +294,17 @@ int SMFileReader::_ReadTrackHeader(
 	int result = 0;
 	long apiresult = 0;
 
-	//¯•Êq‚Æƒwƒbƒ_ƒf[ƒ^ƒTƒCƒY‚Ì“Ç‚İ‚İ
+	//è­˜åˆ¥å­ã¨ãƒ˜ãƒƒãƒ€ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã®èª­ã¿è¾¼ã¿
 	apiresult = mmioRead(hFile, (HPSTR)pChunkTypeSection, sizeof(SMFChunkTypeSection));
 	if (apiresult != sizeof(SMFChunkTypeSection)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//ƒGƒ“ƒfƒBƒAƒ“•ÏŠ·
+	//ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ›
 	_ReverseEndian(&(pChunkTypeSection->chunkSize), sizeof(unsigned long));
 
-	//®‡«ƒ`ƒFƒbƒN
+	//æ•´åˆæ€§ãƒã‚§ãƒƒã‚¯
 	if (memcmp(pChunkTypeSection->chunkType, "MTrk", 4) != 0) {
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
@@ -318,7 +318,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFƒgƒ‰ƒbƒNƒCƒxƒ“ƒg‚Ì“Ç‚İ‚İ
+// SMFãƒˆãƒ©ãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadTrackEvents(
 		HMMIO hFile,
@@ -344,23 +344,23 @@ int SMFileReader::_ReadTrackEvents(
 		goto EXIT;
 	}
 
-	//o—Íæƒ|[ƒg‚Ì‰Šú’l‚Íƒgƒ‰ƒbƒN’PˆÊ‚Å0”Ô‚Æ‚·‚é
+	//å‡ºåŠ›å…ˆãƒãƒ¼ãƒˆã®åˆæœŸå€¤ã¯ãƒˆãƒ©ãƒƒã‚¯å˜ä½ã§0ç•ªã¨ã™ã‚‹
 	portNo = 0;
 
 	m_PrevStatus = 0;
 	while (readSize < chunkSize) {
 
-		//ƒfƒ‹ƒ^ƒ^ƒCƒ€“Ç‚İ‚İ
+		//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ èª­ã¿è¾¼ã¿
 		result = _ReadDeltaTime(hFile, &deltaTime, &offset);
 		if (result != 0) goto EXIT;
 		readSize += offset;
 
-		//ƒCƒxƒ“ƒg“Ç‚İ‚İ
+		//ã‚¤ãƒ™ãƒ³ãƒˆèª­ã¿è¾¼ã¿
 		result = _ReadEvent(hFile, &event, &isEndOfTrack, &offset);
 		if (result != 0) goto EXIT;
 		readSize += offset;
 
-		//o—Íƒ|[ƒg‚ÌØ‚è‘Ö‚¦‚ğŠm”F
+		//å‡ºåŠ›ãƒãƒ¼ãƒˆã®åˆ‡ã‚Šæ›¿ãˆã‚’ç¢ºèª
 		if (event.GetType() == SMEvent::EventMeta) {
 			if (event.GetMetaType() == 0x21) {
 				SMEventMeta meta;
@@ -369,13 +369,13 @@ int SMFileReader::_ReadTrackEvents(
 			}
 		}
 
-		//ƒCƒxƒ“ƒgƒŠƒXƒg‚É’Ç‰Á
+		//ã‚¤ãƒ™ãƒ³ãƒˆãƒªã‚¹ãƒˆã«è¿½åŠ 
 		result = pTrack->AddDataSet(deltaTime, &event, portNo);
 		if (result != 0) goto EXIT;
 
-		//ƒgƒ‰ƒbƒNI’[
+		//ãƒˆãƒ©ãƒƒã‚¯çµ‚ç«¯
 		if (isEndOfTrack) {
-			//w’è‚³‚ê‚½ƒ`ƒƒƒ“ƒNƒTƒCƒY‚Ü‚ÅƒXƒLƒbƒv‚·‚éi”O‚Ì‚½‚ßj
+			//æŒ‡å®šã•ã‚ŒãŸãƒãƒ£ãƒ³ã‚¯ã‚µã‚¤ã‚ºã¾ã§ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ï¼ˆå¿µã®ãŸã‚ï¼‰
 			if (readSize < chunkSize) {
 				offset = chunkSize - readSize;
 				apiresult = mmioSeek(hFile, offset, SEEK_CUR);
@@ -398,7 +398,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFƒfƒ‹ƒ^ƒ^ƒCƒ€‚Ì“Ç‚İ‚İ
+// SMFãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadDeltaTime(
 		HMMIO hFile,
@@ -419,7 +419,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMF‰Â•Ï’·ƒf[ƒ^ƒTƒCƒY‚Ì“Ç‚İ‚İ
+// SMFå¯å¤‰é•·ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadVariableDataSize(
 		HMMIO hFile,
@@ -453,7 +453,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒCƒxƒ“ƒg‚Ì“Ç‚İ‚İ
+// ã‚¤ãƒ™ãƒ³ãƒˆã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadEvent(
 		HMMIO hFile,
@@ -470,7 +470,7 @@ int SMFileReader::_ReadEvent(
 	*pIsEndOfTrack = false;
 	*pOffset = 0;
 
-	//ƒXƒe[ƒ^ƒX‚ğ“Ç‚İ‚Ş
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’èª­ã¿è¾¼ã‚€
 	apiresult = mmioRead(hFile, (HPSTR)&tmp, sizeof(unsigned char));
 	if (apiresult != sizeof(unsigned char)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -478,13 +478,13 @@ int SMFileReader::_ReadEvent(
 	}
 	*pOffset += sizeof(unsigned char);
 
-	//ƒ‰ƒ“ƒjƒ“ƒOƒXƒe[ƒ^ƒX‚ÌÈ—ªƒ`ƒFƒbƒN
-	//‘O‰ñ‚ÌMIDIƒCƒxƒ“ƒg‚ª‘¶İ‚µ‚Ä‚©‚Â¡‰ñ‚Ì1byteÅãˆÊƒrƒbƒg‚ª0‚È‚çÈ—ª
+	//ãƒ©ãƒ³ãƒ‹ãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®çœç•¥ãƒã‚§ãƒƒã‚¯
+	//å‰å›ã®MIDIã‚¤ãƒ™ãƒ³ãƒˆãŒå­˜åœ¨ã—ã¦ã‹ã¤ä»Šå›ã®1byteæœ€ä¸Šä½ãƒ“ãƒƒãƒˆãŒ0ãªã‚‰çœç•¥
 	if ((m_PrevStatus != 0) && ((tmp & 0x80) == 0)) { 
-		//È—ª‚³‚ê‚½‚Ì‚Å‘O‰ñ‚ÌMIDIƒCƒxƒ“ƒg‚ÌƒXƒe[ƒ^ƒX‚ğˆø‚«Œp‚®
+		//çœç•¥ã•ã‚ŒãŸã®ã§å‰å›ã®MIDIã‚¤ãƒ™ãƒ³ãƒˆã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å¼•ãç¶™ã
 		status = m_PrevStatus;
 
-		//“Ç‚İ‚İˆÊ’u‚ğ–ß‚·
+		//èª­ã¿è¾¼ã¿ä½ç½®ã‚’æˆ»ã™
 		apiresult = mmioSeek(hFile, -1, SEEK_CUR);
 		if (apiresult == -1) {
 			result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -497,38 +497,38 @@ int SMFileReader::_ReadEvent(
 	}
 
 	switch (status & 0xF0) {
-		case 0x80:  //ƒm[ƒgƒIƒt
-		case 0x90:  //ƒm[ƒgƒIƒ“
-		case 0xA0:  //ƒ|ƒŠƒtƒHƒjƒbƒNƒL[ƒvƒŒƒbƒVƒƒ[
-		case 0xB0:  //ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒW
-		case 0xC0:  //ƒvƒƒOƒ‰ƒ€ƒ`ƒFƒ“ƒW
-		case 0xD0:  //ƒ`ƒƒƒ“ƒlƒ‹ƒvƒŒƒbƒVƒƒ[
-		case 0xE0:  //ƒsƒbƒ`ƒxƒ“ƒh
-			//MIDIƒCƒxƒ“ƒg
+		case 0x80:  //ãƒãƒ¼ãƒˆã‚ªãƒ•
+		case 0x90:  //ãƒãƒ¼ãƒˆã‚ªãƒ³
+		case 0xA0:  //ãƒãƒªãƒ•ã‚©ãƒ‹ãƒƒã‚¯ã‚­ãƒ¼ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼
+		case 0xB0:  //ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸
+		case 0xC0:  //ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒã‚§ãƒ³ã‚¸
+		case 0xD0:  //ãƒãƒ£ãƒ³ãƒãƒ«ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼
+		case 0xE0:  //ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+			//MIDIã‚¤ãƒ™ãƒ³ãƒˆ
 			result = _ReadEventMIDI(hFile, status, pEvent, &offsetTmp);
 			if (result != 0) goto EXIT;
-			//ƒ‰ƒ“ƒjƒ“ƒOƒXƒe[ƒ^ƒXÈ—ª”»’è‚Ì‚½‚ß‘O‰ñƒXƒe[ƒ^ƒX‚Æ‚µ‚Ä‹L‰¯‚·‚é
+			//ãƒ©ãƒ³ãƒ‹ãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹çœç•¥åˆ¤å®šã®ãŸã‚å‰å›ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã¨ã—ã¦è¨˜æ†¶ã™ã‚‹
 			m_PrevStatus = status;
 			break;
 		case 0xF0:
 			if ((status == 0xF0) || (status == 0xF7)) {
-				//SysExƒCƒxƒ“ƒg
+				//SysExã‚¤ãƒ™ãƒ³ãƒˆ
 				result = _ReadEventSysEx(hFile, status, pEvent, &offsetTmp);
 				if (result != 0) goto EXIT;
 			}
 			else if (status == 0xFF) {
-				//ƒƒ^ƒCƒxƒ“ƒg
+				//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆ
 				result = _ReadEventMeta(hFile, status, pEvent, pIsEndOfTrack, &offsetTmp);
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//ƒf[ƒ^•s³
+				//ãƒ‡ãƒ¼ã‚¿ä¸æ­£
 				result = YN_SET_ERR("Invalid data found.", status, 0);
 				goto EXIT;
 			}
 			break;
 		default:
-			//ƒf[ƒ^•s³
+			//ãƒ‡ãƒ¼ã‚¿ä¸æ­£
 			result = YN_SET_ERR("Invalid data found.", status, 0);
 			goto EXIT;
 	}
@@ -539,7 +539,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒCƒxƒ“ƒg‚Ì“Ç‚İ‚İ
+// MIDIã‚¤ãƒ™ãƒ³ãƒˆã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadEventMIDI(
 		HMMIO hFile,
@@ -555,7 +555,7 @@ int SMFileReader::_ReadEventMIDI(
 
 	*pOffset = 0;
 
-	//DATA1‚ğ“Ç‚İ‚Ş
+	//DATA1ã‚’èª­ã¿è¾¼ã‚€
 	apiresult = mmioRead(hFile, (HPSTR)&(data[0]), sizeof(unsigned char));
 	if (apiresult != sizeof(unsigned char)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -564,12 +564,12 @@ int SMFileReader::_ReadEventMIDI(
 	*pOffset += sizeof(unsigned char);
 
 	switch (status & 0xF0) {
-		case 0x80:  //ƒm[ƒgƒIƒt
-		case 0x90:  //ƒm[ƒgƒIƒ“
-		case 0xA0:  //ƒ|ƒŠƒtƒHƒjƒbƒNƒL[ƒvƒŒƒbƒVƒƒ[
-		case 0xB0:  //ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒW
-		case 0xE0:  //ƒsƒbƒ`ƒxƒ“ƒh
-			//DATA2‚ğ“Ç‚İ‚Ş
+		case 0x80:  //ãƒãƒ¼ãƒˆã‚ªãƒ•
+		case 0x90:  //ãƒãƒ¼ãƒˆã‚ªãƒ³
+		case 0xA0:  //ãƒãƒªãƒ•ã‚©ãƒ‹ãƒƒã‚¯ã‚­ãƒ¼ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼
+		case 0xB0:  //ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸
+		case 0xE0:  //ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+			//DATA2ã‚’èª­ã¿è¾¼ã‚€
 			apiresult = mmioRead(hFile, (HPSTR)&(data[1]), sizeof(unsigned char));
 			if (apiresult != sizeof(unsigned char)) {
 				result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -578,13 +578,13 @@ int SMFileReader::_ReadEventMIDI(
 			*pOffset += sizeof(unsigned char);
 			size = 2;
 			break;
-		case 0xC0:  //ƒvƒƒOƒ‰ƒ€ƒ`ƒFƒ“ƒW
-		case 0xD0:  //ƒ`ƒƒƒ“ƒlƒ‹ƒvƒŒƒbƒVƒƒ[
-			//DATA2‚È‚µ
+		case 0xC0:  //ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒã‚§ãƒ³ã‚¸
+		case 0xD0:  //ãƒãƒ£ãƒ³ãƒãƒ«ãƒ—ãƒ¬ãƒƒã‚·ãƒ£ãƒ¼
+			//DATA2ãªã—
 			size = 1;
 			break;
 		default:
-			//ƒf[ƒ^•s³
+			//ãƒ‡ãƒ¼ã‚¿ä¸æ­£
 			result = YN_SET_ERR("Invalid data found.", status, 0);
 			goto EXIT;
 	}
@@ -600,7 +600,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysExƒCƒxƒ“ƒg‚Ì“Ç‚İ‚İ
+// SysExã‚¤ãƒ™ãƒ³ãƒˆã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadEventSysEx(
 		HMMIO hFile,
@@ -616,7 +616,7 @@ int SMFileReader::_ReadEventSysEx(
 	unsigned long offsetTmp = 0;
 	*pOffset = 0;
 
-	//‰Â•Ï’·ƒf[ƒ^ƒTƒCƒY‚ğ“Ç‚İ‚Ş
+	//å¯å¤‰é•·ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã‚’èª­ã¿è¾¼ã‚€
 	result = _ReadVariableDataSize(hFile, &size, &offsetTmp);
 	if (result != 0) goto EXIT;
 	*pOffset += offsetTmp;
@@ -629,7 +629,7 @@ int SMFileReader::_ReadEventSysEx(
 		goto EXIT;
 	}
 
-	//‰Â•Ï’·ƒf[ƒ^‚ğ“Ç‚İ‚Ş
+	//å¯å¤‰é•·ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 	apiresult = mmioRead(hFile, (HPSTR)(pData), size);
 	if (apiresult != size) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -649,7 +649,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒ^ƒCƒxƒ“ƒg‚Ì“Ç‚İ‚İ
+// ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆã®èª­ã¿è¾¼ã¿
 //******************************************************************************
 int SMFileReader::_ReadEventMeta(
 		HMMIO hFile,
@@ -668,7 +668,7 @@ int SMFileReader::_ReadEventMeta(
 	*pIsEndOfTrack = false;
 	*pOffset = 0;
 
-	//í•Ê‚ğ“Ç‚İ‚Ş
+	//ç¨®åˆ¥ã‚’èª­ã¿è¾¼ã‚€
 	apiresult = mmioRead(hFile, (HPSTR)&type, sizeof(unsigned char));
 	if (apiresult != sizeof(unsigned char)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -676,30 +676,30 @@ int SMFileReader::_ReadEventMeta(
 	}
 	*pOffset += sizeof(unsigned char);
 
-	//ƒƒ^ƒCƒxƒ“ƒgí•Ê
+	//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆç¨®åˆ¥
 	switch (type) {
-		            //  sizeiv:‰Â•Ï’·ƒf[ƒ^ƒTƒCƒYj
-		case 0x00:  //  2  ƒV[ƒPƒ“ƒX”Ô†
-		case 0x01:  //  v  ƒeƒLƒXƒg
-		case 0x02:  //  v  ’˜ìŒ •\¦
-		case 0x03:  //  v  ƒV[ƒPƒ“ƒX–¼^ƒgƒ‰ƒbƒN–¼
-		case 0x04:  //  v  ŠyŠí–¼
-		case 0x05:  //  v  ‰ÌŒ
-		case 0x06:  //  v  ƒ}[ƒJ[
-		case 0x07:  //  v  ƒLƒ…[ƒ|ƒCƒ“ƒg
-		case 0x08:  //  v  ƒvƒƒOƒ‰ƒ€–¼^‰¹F–¼
-		case 0x09:  //  v  ƒfƒoƒCƒX–¼ ^‰¹Œ¹–¼
-		case 0x20:  //  1  MIDIƒ`ƒƒƒ“ƒlƒ‹ƒvƒŠƒtƒBƒbƒNƒX
-		case 0x21:  //  1  ƒ| [ƒgw’è
-		case 0x2F:  //  0  ƒgƒ‰ƒbƒNI’[
-		case 0x51:  //  3  ƒeƒ“ƒ|İ’è
-		case 0x54:  //  5  SMPTE ƒIƒtƒZƒbƒg
-		case 0x58:  //  4  ”q‚Ìİ’è
-		case 0x59:  //  2  ’²‚Ìİ’è
-		case 0x7F:  //  v  ƒV[ƒPƒ“ƒT“Á’èƒƒ^ƒCƒxƒ“ƒg
+		            //  sizeï¼ˆv:å¯å¤‰é•·ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºï¼‰
+		case 0x00:  //  2  ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ç•ªå·
+		case 0x01:  //  v  ãƒ†ã‚­ã‚¹ãƒˆ
+		case 0x02:  //  v  è‘—ä½œæ¨©è¡¨ç¤º
+		case 0x03:  //  v  ã‚·ãƒ¼ã‚±ãƒ³ã‚¹åï¼ãƒˆãƒ©ãƒƒã‚¯å
+		case 0x04:  //  v  æ¥½å™¨å
+		case 0x05:  //  v  æ­Œè©
+		case 0x06:  //  v  ãƒãƒ¼ã‚«ãƒ¼
+		case 0x07:  //  v  ã‚­ãƒ¥ãƒ¼ãƒã‚¤ãƒ³ãƒˆ
+		case 0x08:  //  v  ãƒ—ãƒ­ã‚°ãƒ©ãƒ åï¼éŸ³è‰²å
+		case 0x09:  //  v  ãƒ‡ãƒã‚¤ã‚¹å ï¼éŸ³æºå
+		case 0x20:  //  1  MIDIãƒãƒ£ãƒ³ãƒãƒ«ãƒ—ãƒªãƒ•ã‚£ãƒƒã‚¯ã‚¹
+		case 0x21:  //  1  ãƒ ãƒ¼ãƒˆæŒ‡å®š
+		case 0x2F:  //  0  ãƒˆãƒ©ãƒƒã‚¯çµ‚ç«¯
+		case 0x51:  //  3  ãƒ†ãƒ³ãƒè¨­å®š
+		case 0x54:  //  5  SMPTE ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+		case 0x58:  //  4  æ‹å­ã®è¨­å®š
+		case 0x59:  //  2  èª¿ã®è¨­å®š
+		case 0x7F:  //  v  ã‚·ãƒ¼ã‚±ãƒ³ã‚µç‰¹å®šãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆ
 			break;
 		default:
-			//–¢’m‚Ìí•Ê‚Å‚àƒGƒ‰[‚É‚Í‚µ‚È‚¢
+			//æœªçŸ¥ã®ç¨®åˆ¥ã§ã‚‚ã‚¨ãƒ©ãƒ¼ã«ã¯ã—ãªã„
 			// result = YN_SET_ERR("Invalid data found.", type, 0);
 			// goto EXIT;
 			break;
@@ -709,12 +709,12 @@ int SMFileReader::_ReadEventMeta(
 		*pIsEndOfTrack = true;
 	}
 
-	//‰Â•Ï’·ƒf[ƒ^ƒTƒCƒY‚ğ“Ç‚İ‚Ş
+	//å¯å¤‰é•·ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã‚’èª­ã¿è¾¼ã‚€
 	result = _ReadVariableDataSize(hFile, &size, &offsetTmp);
 	if (result != 0) goto EXIT;
 	*pOffset += offsetTmp;
 
-	//‰Â•Ï’·ƒf[ƒ^‚ğ“Ç‚İ‚Ş
+	//å¯å¤‰é•·ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 	if (size > 0) {
 		try {
 			pData = new unsigned char[size];
@@ -743,7 +743,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒGƒ“ƒfƒBƒAƒ“•ÏŠ·
+// ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ›
 //******************************************************************************
 void SMFileReader::_ReverseEndian(
 		void* pData,
@@ -766,7 +766,7 @@ void SMFileReader::_ReverseEndian(
 }
 
 //******************************************************************************
-// ƒƒOƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+// ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 //******************************************************************************
 int SMFileReader::_OpenLogFile()
 {
@@ -786,7 +786,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOƒtƒ@ƒCƒ‹ƒNƒ[ƒY
+// ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ­ãƒ¼ã‚º
 //******************************************************************************
 int SMFileReader::_CloseLogFile()
 {
@@ -808,7 +808,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—Í
+// ãƒ­ã‚°å‡ºåŠ›
 //******************************************************************************
 int SMFileReader::_WriteLog(char* pText)
 {
@@ -831,7 +831,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—ÍFƒtƒ@ƒCƒ‹ƒwƒbƒ_
+// ãƒ­ã‚°å‡ºåŠ›ï¼šãƒ•ã‚¡ã‚¤ãƒ«ãƒ˜ãƒƒãƒ€
 //******************************************************************************
 int SMFileReader::_WriteLogChunkHeader(
 		SMFChunkTypeSection* pChunkTypeSection,
@@ -861,7 +861,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—ÍFƒgƒ‰ƒbƒNƒwƒbƒ_
+// ãƒ­ã‚°å‡ºåŠ›ï¼šãƒˆãƒ©ãƒƒã‚¯ãƒ˜ãƒƒãƒ€
 //******************************************************************************
 int SMFileReader::_WriteLogTrackHeader(
 		unsigned long trackNo,
@@ -887,7 +887,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—ÍFƒfƒ‹ƒ^ƒ^ƒCƒ€
+// ãƒ­ã‚°å‡ºåŠ›ï¼šãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ 
 //******************************************************************************
 int SMFileReader::_WriteLogDeltaTime(
 		unsigned long deltaTime
@@ -906,7 +906,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—ÍFMIDIƒCƒxƒ“ƒg
+// ãƒ­ã‚°å‡ºåŠ›ï¼šMIDIã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int SMFileReader::_WriteLogEventMIDI(
 		unsigned char status,
@@ -947,7 +947,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—ÍFSysExƒCƒxƒ“ƒg
+// ãƒ­ã‚°å‡ºåŠ›ï¼šSysExã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int SMFileReader::_WriteLogEventSysEx(
 		unsigned char status,
@@ -975,7 +975,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒOo—ÍFƒƒ^ƒCƒxƒ“ƒg
+// ãƒ­ã‚°å‡ºåŠ›ï¼šãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int SMFileReader::_WriteLogEventMeta(
 		unsigned char status,

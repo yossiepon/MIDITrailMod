@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesignMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -17,29 +17,29 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒeƒNƒXƒ`ƒƒÀ•WZoFƒrƒbƒgƒ}ƒbƒvƒTƒCƒY = 562 x 562
+//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ç®—å‡ºï¼šãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚µã‚¤ã‚º = 562 x 562
 #define TEXTURE_POINT(x, y)  (D3DXVECTOR2((float)x/561.0f, (float)y/561.0f))
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboardDesignMod::MTPianoKeyboardDesignMod(void)
 {
-	//_Initialize()“à‚ÅŠî’êƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—‚àŒÄ‚Î‚ê‚é‚½‚ßAŠî’êƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍŒÄ‚Ño‚³‚È‚¢
+	//_Initialize()å†…ã§åŸºåº•ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–å‡¦ç†ã‚‚å‘¼ã°ã‚Œã‚‹ãŸã‚ã€åŸºåº•ã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯å‘¼ã³å‡ºã•ãªã„
 	_Initialize();
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboardDesignMod::~MTPianoKeyboardDesignMod(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int MTPianoKeyboardDesignMod::Initialize(
 		const TCHAR* pSceneName,
@@ -48,10 +48,10 @@ int MTPianoKeyboardDesignMod::Initialize(
 {
 	int result = 0;
 
-	//Šî’êƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	MTPianoKeyboardDesign::Initialize(pSceneName, pSeqData);
 
-	//İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
@@ -60,24 +60,24 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 void MTPianoKeyboardDesignMod::_Initialize()
 {
 	unsigned long i = 0;
 
-	//Šî’êƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	MTPianoKeyboardDesign::_Initialize();
 
 	for (i = 0; i < 16; i++) {
-		m_ActiveKeyColorList[i] = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //İ’èƒtƒ@ƒCƒ‹
+		m_ActiveKeyColorList[i] = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	}
 
 	return;
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒhŠî€À•Wæ“¾
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åŸºæº–åº§æ¨™å–å¾—
 //******************************************************************************
 D3DXVECTOR3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
 		int keyboardIndex,
@@ -86,11 +86,11 @@ D3DXVECTOR3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
 {
 	float ox, oy, oz = 0.0f;
 
-	//ƒ[ƒ‹Šp“x‚É‚æ‚Á‚Ä•`‰æ•û–@‚ğØ‚è‘Ö‚¦‚é
+	//ãƒ­ãƒ¼ãƒ«è§’åº¦ã«ã‚ˆã£ã¦æç”»æ–¹æ³•ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 	angle += angle < 0.0f ? 360.0f : 0.0f;
 	bool flip = !((angle > 120.0f) && (angle < 300.0f));
 
-	//ƒ|[ƒg’PˆÊ‚ÌŒ´“_À•W
+	//ãƒãƒ¼ãƒˆå˜ä½ã®åŸç‚¹åº§æ¨™
 	ox = GetPortOriginX();
 	oy = GetPortOriginY(keyboardIndex, flip);
 	oz = GetPortOriginZ(keyboardIndex, flip);
@@ -99,11 +99,11 @@ D3DXVECTOR3 MTPianoKeyboardDesignMod::GetKeyboardBasePos(
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_XÀ•Wæ“¾
+// ãƒãƒ¼ãƒˆåŸç‚¹Xåº§æ¨™å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginX()
 {
-	// angle: 120‹`300‹(rotateX: 90‹, rotateZ: 90‹)
+	// angle: 120Â°ï½300Â°(rotateX: 90Â°, rotateZ: 90Â°)
 	//             +z
 	//              |
 	// -x<----------0---------->+x
@@ -117,7 +117,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginX()
 	//    Note #0   |  #127
 	//             -z
 
-	// angle: 0‹`120‹or 300‹`360‹(rotateX: -90‹, rotateZ: 90‹)
+	// angle: 0Â°ï½120Â°or 300Â°ï½360Â°(rotateX: -90Â°, rotateZ: 90Â°)
 	//             +z
 	//              |
 	//    Note #0   |  #127
@@ -134,21 +134,21 @@ float MTPianoKeyboardDesignMod::GetPortOriginX()
 
 	float originX = -GetPlaybackSectionHeight() / 2.0f;
 
-	//Œ®”Õ‚Ì1/2‚Ì•‚¾‚¯‚‰¹‘¤‚ÉˆÚ“®
+	//éµç›¤ã®1/2ã®å¹…ã ã‘é«˜éŸ³å´ã«ç§»å‹•
 	originX += GetWhiteKeyStep() * GetKeyboardResizeRatio() / 2.0f;
 
 	return originX;
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_YÀ•Wæ“¾
+// ãƒãƒ¼ãƒˆåŸç‚¹Yåº§æ¨™å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginY(
 		int keyboardIndex,
 		bool flip
 	)
 {
-	// angle: 120‹`300‹(rotateX: 90‹, rotateZ: 90‹)
+	// angle: 120Â°ï½300Â°(rotateX: 90Â°, rotateZ: 90Â°)
 	//      +y                                    
 	//       |                                    
 	//       |                             Ch.15  
@@ -167,7 +167,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 	//       |                                    
 	//      -y                                    
 
-	// angle: 0‹`120‹or 300‹`360‹(rotateX: -90‹, rotateZ: 90‹)
+	// angle: 0Â°ï½120Â°or 300Â°ï½360Â°(rotateX: -90Â°, rotateZ: 90Â°)
 	//                                           +y
 	//                                     Ch.15  |
 	//                                            |
@@ -188,7 +188,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 
 	float portWidth = GetPortWidth();
 
-	// TODO ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ì”»’è•û–@‚ğÄŒŸ“¢
+	// TODO ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®åˆ¤å®šæ–¹æ³•ã‚’å†æ¤œè¨
 	int keyboardDispNum = GetKeyboardMaxDispNum() > 1 ? m_PortList.GetSize() : 1;
 
 	float originY;
@@ -196,13 +196,13 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 	if (!flip) {
 		originY = -portWidth * (float)(keyboardDispNum - keyboardIndex * 2) / 2.0f;
 
-		//ƒ`ƒƒƒlƒ‹ŠÔŠu‚Ì62.5%‚Ì‚‚³‚¾‚¯‰º‚É
+		//ãƒãƒ£ãƒãƒ«é–“éš”ã®62.5%ã®é«˜ã•ã ã‘ä¸‹ã«
 		originY -= GetChStep() * 0.625f;
 	}
 	else {
 		originY = portWidth * (float)(keyboardDispNum - (keyboardIndex + 1) * 2) / 2.0f;
 
-		//ƒ`ƒƒƒlƒ‹ŠÔŠu‚Ì37.5%‚Ì‚‚³‚¾‚¯ã‚É
+		//ãƒãƒ£ãƒãƒ«é–“éš”ã®37.5%ã®é«˜ã•ã ã‘ä¸Šã«
 		originY += GetChStep() * 0.375f;
 	}
 
@@ -210,14 +210,14 @@ float MTPianoKeyboardDesignMod::GetPortOriginY(
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_ZÀ•Wæ“¾
+// ãƒãƒ¼ãƒˆåŸç‚¹Zåº§æ¨™å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortOriginZ(
 		int keyboardIndex,
 		bool flip
 	)
 {
-	// angle: 120‹`300‹(rotateX: 90‹, rotateZ: 90‹)
+	// angle: 120Â°ï½300Â°(rotateX: 90Â°, rotateZ: 90Â°)
 	//             +z
 	//              |
 	// -x<----------0---------->+x
@@ -231,7 +231,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginZ(
 	//    Note #0   |  #127
 	//             -z
 
-	// angle: 0‹`120‹or 300‹`360‹(rotateX: -90‹, rotateZ: 90‹)
+	// angle: 0Â°ï½120Â°or 300Â°ï½360Â°(rotateX: -90Â°, rotateZ: 90Â°)
 	//             +z
 	//              |
 	//    Note #0   |  #127
@@ -259,7 +259,7 @@ float MTPianoKeyboardDesignMod::GetPortOriginZ(
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX‚‚³æ“¾
+// ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é«˜ã•å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetNoteBoxHeight()
 {
@@ -267,7 +267,7 @@ float MTPianoKeyboardDesignMod::GetNoteBoxHeight()
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX•æ“¾
+// ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹å¹…å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetNoteBoxWidth()
 {
@@ -275,7 +275,7 @@ float MTPianoKeyboardDesignMod::GetNoteBoxWidth()
 }
 
 //******************************************************************************
-// ƒm[ƒgŠÔŠuæ“¾
+// ãƒãƒ¼ãƒˆé–“éš”å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetNoteStep()
 {
@@ -283,7 +283,7 @@ float MTPianoKeyboardDesignMod::GetNoteStep()
 }
 
 //******************************************************************************
-// ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠuæ“¾
+// ãƒãƒ£ãƒ³ãƒãƒ«é–“éš”å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetChStep()
 {
@@ -291,7 +291,7 @@ float MTPianoKeyboardDesignMod::GetChStep()
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh‚‚³æ“¾
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰é«˜ã•å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetKeyboardHeight()
 {
@@ -299,7 +299,7 @@ float MTPianoKeyboardDesignMod::GetKeyboardHeight()
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh•æ“¾
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å¹…å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetKeyboardWidth()
 {
@@ -307,7 +307,7 @@ float MTPianoKeyboardDesignMod::GetKeyboardWidth()
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒh‚‚³æ“¾
+// ã‚°ãƒªãƒƒãƒ‰é«˜ã•å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetGridHeight()
 {
@@ -315,7 +315,7 @@ float MTPianoKeyboardDesignMod::GetGridHeight()
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒh•æ“¾
+// ã‚°ãƒªãƒƒãƒ‰å¹…å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetGridWidth()
 {
@@ -323,7 +323,7 @@ float MTPianoKeyboardDesignMod::GetGridWidth()
 }
 
 //******************************************************************************
-// ƒ|[ƒg‚‚³æ“¾
+// ãƒãƒ¼ãƒˆé«˜ã•å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortHeight()
 {
@@ -331,7 +331,7 @@ float MTPianoKeyboardDesignMod::GetPortHeight()
 }
 
 //******************************************************************************
-// ƒ|[ƒg•æ“¾
+// ãƒãƒ¼ãƒˆå¹…å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPortWidth()
 {
@@ -339,7 +339,7 @@ float MTPianoKeyboardDesignMod::GetPortWidth()
 }
 
 //******************************************************************************
-// Ä¶–Ê‚‚³æ“¾
+// å†ç”Ÿé¢é«˜ã•å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPlaybackSectionHeight()
 {
@@ -347,7 +347,7 @@ float MTPianoKeyboardDesignMod::GetPlaybackSectionHeight()
 }
 
 //******************************************************************************
-// Ä¶–Ê•æ“¾
+// å†ç”Ÿé¢å¹…å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetPlaybackSectionWidth()
 {
@@ -355,7 +355,7 @@ float MTPianoKeyboardDesignMod::GetPlaybackSectionWidth()
 }
 
 //******************************************************************************
-// ”g–ä•`‰æŠÔŠuæ“¾
+// æ³¢ç´‹æç”»é–“éš”å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetRippleSpacing()
 {
@@ -363,7 +363,7 @@ float MTPianoKeyboardDesignMod::GetRippleSpacing()
 }
 
 //******************************************************************************
-// ”g–ä•`‰æƒ}[ƒWƒ“æ“¾
+// æ³¢ç´‹æç”»ãƒãƒ¼ã‚¸ãƒ³å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetRippleMargin()
 {
@@ -371,16 +371,16 @@ float MTPianoKeyboardDesignMod::GetRippleMargin()
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒhƒŠƒTƒCƒY”äæ“¾
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒªã‚µã‚¤ã‚ºæ¯”å–å¾—
 //******************************************************************************
 float MTPianoKeyboardDesignMod::GetKeyboardResizeRatio()
 {
-	//ƒL[ƒ{[ƒhŠî€‚Ì‘Š‘ÎÀ•W‚É“K—p‚·‚éƒŠƒTƒCƒY”ä
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åŸºæº–ã®ç›¸å¯¾åº§æ¨™ã«é©ç”¨ã™ã‚‹ãƒªã‚µã‚¤ã‚ºæ¯”
 	return GetPlaybackSectionHeight() / GetKeyboardWidth();
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒL[ƒJƒ‰[æ“¾
+// ç™ºéŸ³ä¸­ã‚­ãƒ¼ã‚«ãƒ©ãƒ¼å–å¾—
 //******************************************************************************
 D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 		unsigned char chNo,
@@ -395,27 +395,27 @@ D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 	unsigned long duration = 0;
 
 	//          on     off
-	//   ”’ |---+......+---- ©off‚É‚È‚Á‚½‚ç”’Œ®‚ÌF‚É–ß‚·
+	//   ç™½ |---+......+---- â†offã«ãªã£ãŸã‚‰ç™½éµã®è‰²ã«æˆ»ã™
 	//      |   :      :
-	//      |   :  +---+     ©off‚É‚È‚é‚Ü‚Å’†ŠÔF‚Ì‚Ü‚Ü
+	//      |   :  +---+     â†offã«ãªã‚‹ã¾ã§ä¸­é–“è‰²ã®ã¾ã¾
 	//      |   : /:   :
 	//      |   :/ :   :
-	//   Ô |   +  :   :     ©ƒL[‰Ÿ‰º’¼Œã‚ÌFiÔj
+	//   èµ¤ |   +  :   :     â†ã‚­ãƒ¼æŠ¼ä¸‹ç›´å¾Œã®è‰²ï¼ˆèµ¤ï¼‰
 	//      |   :\ :   :
 	//      |   : \:   :
-	//      |   :  +---+     ©off‚É‚È‚é‚Ü‚Å’†ŠÔF‚Ì‚Ü‚Ü
+	//      |   :  +---+     â†offã«ãªã‚‹ã¾ã§ä¸­é–“è‰²ã®ã¾ã¾
 	//      |   :  :   :
-	//   • |---+  :   +---- ©off‚É‚È‚Á‚½‚ç•Œ®‚ÌF‚É–ß‚·
+	//   é»’ |---+  :   +---- â†offã«ãªã£ãŸã‚‰é»’éµã®è‰²ã«æˆ»ã™
 	//   ---+---*------*-------> +t
 	//      |   on :   off
 	//          <-->duration
 
 	if ((pNoteColor != NULL) && (m_ActiveKeyColorType == NoteColor)) {
-		//ƒm[ƒgF‚ªw’è‚³‚ê‚Ä‚¢‚éê‡
+		//ãƒãƒ¼ãƒˆè‰²ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 		color = *pNoteColor;
 	}
 	else {
-		//‚»‚êˆÈŠO‚ÍƒfƒtƒHƒ‹ƒgF‚Æ‚·‚é
+		//ãã‚Œä»¥å¤–ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè‰²ã¨ã™ã‚‹
 		color = m_ActiveKeyColorList[chNo];
 	}
 
@@ -444,7 +444,7 @@ D3DXCOLOR MTPianoKeyboardDesignMod::GetActiveKeyColor(
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTPianoKeyboardDesignMod::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -456,16 +456,16 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	unsigned long i = 0;
 	MTConfFile confFile;
 
-	//Šî’êƒNƒ‰ƒX‚Ì“Ç‚İ‚İˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®èª­ã¿è¾¼ã¿å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	result = MTPianoKeyboardDesign::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//ƒXƒP[ƒ‹î•ñ
+	//ã‚¹ã‚±ãƒ¼ãƒ«æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Scale"));
 	if (result != 0) goto EXIT;
@@ -480,12 +480,12 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//Fî•ñ
+	//è‰²æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("PianoKeyboard"));
 	if (result != 0) goto EXIT;
 
-	//”­‰¹’†‚ÌƒL[Fî•ñ‚ğæ“¾
+	//ç™ºéŸ³ä¸­ã®ã‚­ãƒ¼è‰²æƒ…å ±ã‚’å–å¾—
 	for (i = 0; i < 16; i++) {
 		_stprintf_s(key, 21, _T("Ch-%02d-ActiveKeyColor"), i+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FF0000FF"));
@@ -495,12 +495,12 @@ int MTPianoKeyboardDesignMod::_LoadConfFile(
 	}
 
 	//----------------------------------
-	//”g–äî•ñ
+	//æ³¢ç´‹æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Ripple"));
 	if (result != 0) goto EXIT;
 
-	//”g–ä•`‰æŠÔŠu
+	//æ³¢ç´‹æç”»é–“éš”
 	result = confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
 	if (result != 0) goto EXIT;
 

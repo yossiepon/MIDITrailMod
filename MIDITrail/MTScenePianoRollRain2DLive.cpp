@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRollRain2DLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“2DƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ”ã‚¢ãƒŽãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³2Dã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2013-2019 WADA Masashi. All Rights Reserved.
 //
@@ -13,21 +13,21 @@
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTScenePianoRollRain2DLive::MTScenePianoRollRain2DLive(void)
 {
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTScenePianoRollRain2DLive::~MTScenePianoRollRain2DLive(void)
 {
 }
 
 //******************************************************************************
-// –¼ÌŽæ“¾
+// åç§°å–å¾—
 //******************************************************************************
 const TCHAR* MTScenePianoRollRain2DLive::GetName()
 {
@@ -35,7 +35,7 @@ const TCHAR* MTScenePianoRollRain2DLive::GetName()
 }
 
 //******************************************************************************
-// ƒV[ƒ“¶¬
+// ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTScenePianoRollRain2DLive::Create(
 		HWND hWnd,
@@ -45,7 +45,7 @@ int MTScenePianoRollRain2DLive::Create(
 {
 	int result = 0;
 
-	//ƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“2D‚ÍƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh
+	//ãƒ”ã‚¢ãƒŽãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³2Dã¯ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
 	m_IsSingleKeyboard = true;
 
 	result = MTScenePianoRollRainLive::Create(hWnd, pD3DDevice, pSeqData);
@@ -56,7 +56,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒtƒHƒ‹ƒgŽ‹“_Žæ“¾
+// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¦–ç‚¹å–å¾—
 //******************************************************************************
 void MTScenePianoRollRain2DLive::GetDefaultViewParam(
 		MTViewParamMap* pParamMap
@@ -66,12 +66,12 @@ void MTScenePianoRollRain2DLive::GetDefaultViewParam(
 	float phi = 0.0f;
 	float theta = 0.0f;
 	
-	//Ž‹“_î•ñì¬
+	//è¦–ç‚¹æƒ…å ±ä½œæˆ
 	viewPointVector.x = 0.0f;
 	viewPointVector.y = 0.34f * 16.0f / 2.0f;
 	viewPointVector.z = - 10.0f;
-	phi   = 90.0f;	//+ZŽ²•ûŒü
-	theta = 90.0f;	//+ZŽ²•ûŒü
+	phi   = 90.0f;	//+Zè»¸æ–¹å‘
+	theta = 90.0f;	//+Zè»¸æ–¹å‘
 	
 	pParamMap->clear();
 	pParamMap->insert(MTViewParamMapPair("X", viewPointVector.x));

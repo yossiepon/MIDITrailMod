@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorPalette
 //
-// ƒJƒ‰[ƒpƒŒƒbƒgƒNƒ‰ƒX
+// ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,49 +16,49 @@
 
 
 //******************************************************************************
-// ƒJƒ‰[ƒpƒŒƒbƒgƒNƒ‰ƒX
+// ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTColorPalette
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTColorPalette(void);
 	virtual ~MTColorPalette(void);
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize();
 	
-	//ƒ`ƒƒƒ“ƒlƒ‹Fæ“¾
+	//ãƒãƒ£ãƒ³ãƒãƒ«è‰²å–å¾—
 	int GetChColor(unsigned int chNo, D3DXCOLOR* pColor);
 	
-	//ƒ`ƒƒƒ“ƒlƒ‹F“o˜^
+	//ãƒãƒ£ãƒ³ãƒãƒ«è‰²ç™»éŒ²
 	int SetChColor(unsigned int chNo, D3DXCOLOR color);
 	
-	//”wŒiFæ“¾
+	//èƒŒæ™¯è‰²å–å¾—
 	void GetBackgroundColor(D3DXCOLOR* pColor);
 
-	//”wŒiF“o˜^
+	//èƒŒæ™¯è‰²ç™»éŒ²
 	void SetBackgroundColor(D3DXCOLOR color);
 	
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“Fæ“¾
+	//ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³è‰²å–å¾—
 	void GetGridLineColor(D3DXCOLOR* pColor);
 
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“F“o˜^
+	//ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³è‰²ç™»éŒ²
 	void SetGridLineColor(D3DXCOLOR color);
 	
-	//ƒJƒEƒ“ƒ^[Fæ“¾
+	//ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼è‰²å–å¾—
 	void GetCounterColor(D3DXCOLOR* pColor);
 
-	//ƒJƒEƒ“ƒ^[F“o˜^
+	//ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼è‰²ç™»éŒ²
 	void SetCounterColor(D3DXCOLOR color);
 
-	//ƒRƒs[
+	//ã‚³ãƒ”ãƒ¼
 	int CopyFrom(MTColorPalette* pColorSrc);
 	
 private:
 	
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const MTColorPalette&);
 	MTColorPalette(const MTColorPalette&);
 	

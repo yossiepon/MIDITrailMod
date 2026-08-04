@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple Base Library / SMSeqData
 //
-// ƒV[ƒPƒ“ƒXƒf[ƒ^ƒNƒ‰ƒX
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMSeqData::SMSeqData()
 {
@@ -30,7 +30,7 @@ SMSeqData::SMSeqData()
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMSeqData::~SMSeqData(void)
 {
@@ -38,7 +38,7 @@ SMSeqData::~SMSeqData(void)
 }
 
 //******************************************************************************
-// SMFƒtƒH[ƒ}ƒbƒg“o˜^
+// SMFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆç™»éŒ²
 //******************************************************************************
 void SMSeqData::SetSMFFormat(
 		unsigned long smfFormat
@@ -48,7 +48,7 @@ void SMSeqData::SetSMFFormat(
 }
 
 //******************************************************************************
-// •ª‰ğ”\“o˜^
+// åˆ†è§£èƒ½ç™»éŒ²
 //******************************************************************************
 void SMSeqData::SetTimeDivision(
 		unsigned long timeDivision
@@ -58,7 +58,7 @@ void SMSeqData::SetTimeDivision(
 }
 
 //******************************************************************************
-// ƒgƒ‰ƒbƒN“o˜^
+// ãƒˆãƒ©ãƒƒã‚¯ç™»éŒ²
 //******************************************************************************
 int SMSeqData::AddTrack(
 		SMTrack* pTrack
@@ -69,33 +69,33 @@ int SMSeqData::AddTrack(
 }
 
 //******************************************************************************
-// ƒgƒ‰ƒbƒN“o˜^Š®—¹
+// ãƒˆãƒ©ãƒƒã‚¯ç™»éŒ²å®Œäº†
 //******************************************************************************
 int SMSeqData::CloseTrack()
 {
 	int result = 0;
 
-	//ƒgƒ‰ƒbƒNƒ}[ƒWˆ—
+	//ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ã‚¸å‡¦ç†
 	result = _MergeTracks();
 	if (result != 0) goto EXIT;
 
-	//‡Œv‰‰‘tŠÔZo
+	//åˆè¨ˆæ¼”å¥æ™‚é–“ç®—å‡º
 	result = _CalcTotalTime();
 	if (result != 0) goto EXIT;
 
-	//ƒeƒ“ƒ|æ“¾
+	//ãƒ†ãƒ³ãƒå–å¾—
 	result = _GetTempo(&m_Tempo);
 	if (result != 0) goto EXIT;
 
-	//”q‹L†æ“¾
+	//æ‹å­è¨˜å·å–å¾—
 	result = _GetBeat(&m_BeatNumerator, &m_BeatDenominator);
 	if (result != 0) goto EXIT;
 
-	//¬ß”æ“¾
+	//å°ç¯€æ•°å–å¾—
 	result = _GetBarNum(&m_BarNum);
 	if (result != 0) goto EXIT;
 
-	//ƒeƒLƒXƒgî•ñæ“¾
+	//ãƒ†ã‚­ã‚¹ãƒˆæƒ…å ±å–å¾—
 	result = _SearchText();
 	if (result != 0) goto EXIT;
 
@@ -104,7 +104,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒgƒ‰ƒbƒNƒ}[ƒWˆ—
+// ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ã‚¸å‡¦ç†
 //******************************************************************************
 int SMSeqData::_MergeTracks()
 {
@@ -130,7 +130,7 @@ int SMSeqData::_MergeTracks()
 		goto EXIT;
 	}
 
-	//ƒfƒ‹ƒ^ƒ^ƒCƒ€ƒoƒbƒtƒ@ƒŠƒXƒg‚Ìì¬
+	//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ãƒãƒƒãƒ•ã‚¡ãƒªã‚¹ãƒˆã®ä½œæˆ
 	for (trackListItr = m_TrackList.begin(); trackListItr != m_TrackList.end(); trackListItr++) {
 		pTrack = *trackListItr;
 		if (pTrack->GetSize() == 0) continue;
@@ -142,10 +142,10 @@ int SMSeqData::_MergeTracks()
 		deltaTimeBufList.push_back(deltaTimeBuf);
 	}
 
-	//ƒ}[ƒWˆ—
+	//ãƒãƒ¼ã‚¸å‡¦ç†
 	while (true) {
 
-		//Šeƒgƒ‰ƒbƒN‚ğQÆ‚µ‚ÄÅ‚àƒfƒ‹ƒ^ƒ^ƒCƒ€‚ª’Z‚¢ƒCƒxƒ“ƒg‚ğæ“¾‚·‚é
+		//å„ãƒˆãƒ©ãƒƒã‚¯ã‚’å‚ç…§ã—ã¦æœ€ã‚‚ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ãŒçŸ­ã„ã‚¤ãƒ™ãƒ³ãƒˆã‚’å–å¾—ã™ã‚‹
 		unsigned long deltaTimeMin = 0xFFFFFFFF;
 		unsigned long targetTrackIndex = 0;
 		bool isDataExist = false;
@@ -154,35 +154,35 @@ int SMSeqData::_MergeTracks()
 		deltaTimeBufListItr = deltaTimeBufList.begin();
 		for (i = 0; i < m_TrackList.size(); i++) {
 
-			pTrack = *trackListItr;                //ƒJƒŒƒ“ƒgƒgƒ‰ƒbƒN
-			deltaTimeBuf = *deltaTimeBufListItr;   //ƒJƒŒƒ“ƒgƒgƒ‰ƒbƒN‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€î•ñ
+			pTrack = *trackListItr;                //ã‚«ãƒ¬ãƒ³ãƒˆãƒˆãƒ©ãƒƒã‚¯
+			deltaTimeBuf = *deltaTimeBufListItr;   //ã‚«ãƒ¬ãƒ³ãƒˆãƒˆãƒ©ãƒƒã‚¯ã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ æƒ…å ±
 
-			//ƒgƒ‰ƒbƒN‚ğ“Ç‚İI‚í‚Á‚Ä‚¢‚È‚¯‚ê‚Îƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğQÆ‚·‚é
+			//ãƒˆãƒ©ãƒƒã‚¯ã‚’èª­ã¿çµ‚ã‚ã£ã¦ã„ãªã‘ã‚Œã°ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’å‚ç…§ã™ã‚‹
 			if (deltaTimeBuf.index < pTrack->GetSize()) {
-				//Å¬ƒfƒ‹ƒ^ƒ^ƒCƒ€‚Ìƒgƒ‰ƒbƒN‚ğƒ}[ƒN‚·‚é
+				//æœ€å°ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã®ãƒˆãƒ©ãƒƒã‚¯ã‚’ãƒãƒ¼ã‚¯ã™ã‚‹
 				if (deltaTimeBuf.deltaTime < deltaTimeMin) {
 					targetTrackIndex = i;
 					deltaTimeMin = deltaTimeBuf.deltaTime ;
 				}
 				isDataExist = true;
 			}
-			//Ÿ‚Ìƒgƒ‰ƒbƒN
+			//æ¬¡ã®ãƒˆãƒ©ãƒƒã‚¯
 			trackListItr++;
 			deltaTimeBufListItr++;
 		}
 
-		//ƒCƒxƒ“ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚Îƒ}[ƒWŠ®—¹
+		//ã‚¤ãƒ™ãƒ³ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ãƒãƒ¼ã‚¸å®Œäº†
 		if (!isDataExist) break;
 
-		//Šeƒgƒ‰ƒbƒN‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğXV‚·‚é
+		//å„ãƒˆãƒ©ãƒƒã‚¯ã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’æ›´æ–°ã™ã‚‹
 		trackListItr = m_TrackList.begin();
 		deltaTimeBufListItr = deltaTimeBufList.begin();
 		for (i = 0; i < m_TrackList.size(); i++) {
 
-			pTrack = *trackListItr;               //ƒJƒŒƒ“ƒgƒgƒ‰ƒbƒN
-			deltaTimeBuf = *deltaTimeBufListItr;  //ƒJƒŒƒ“ƒgƒgƒ‰ƒbƒN‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€î•ñ
+			pTrack = *trackListItr;               //ã‚«ãƒ¬ãƒ³ãƒˆãƒˆãƒ©ãƒƒã‚¯
+			deltaTimeBuf = *deltaTimeBufListItr;  //ã‚«ãƒ¬ãƒ³ãƒˆãƒˆãƒ©ãƒƒã‚¯ã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ æƒ…å ±
 
-			//ƒ}[ƒN‚µ‚½ƒgƒ‰ƒbƒN‚ÍƒCƒxƒ“ƒg‚ğƒRƒs[‚µ‚Äƒ}[ƒWƒgƒ‰ƒbƒN‚É“o˜^
+			//ãƒãƒ¼ã‚¯ã—ãŸãƒˆãƒ©ãƒƒã‚¯ã¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãƒãƒ¼ã‚¸ãƒˆãƒ©ãƒƒã‚¯ã«ç™»éŒ²
 			if (i == targetTrackIndex) {
 				result = pTrack->GetDataSet(deltaTimeBuf.index, NULL, &event, &portNo);
 				if (result != 0) goto EXIT;
@@ -190,7 +190,7 @@ int SMSeqData::_MergeTracks()
 				result = pMergedTrack->AddDataSet(deltaTimeMin, &event, portNo);
 				if (result != 0) goto EXIT;
 
-				//ƒ}[ƒN‚µ‚½ƒgƒ‰ƒbƒN‚ÌŸ‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğæ“¾‚·‚é
+				//ãƒãƒ¼ã‚¯ã—ãŸãƒˆãƒ©ãƒƒã‚¯ã®æ¬¡ã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’å–å¾—ã™ã‚‹
 				deltaTimeBuf.index += 1;
 				deltaTimeBuf.deltaTime = 0xFFFFFFFF;
 				if (deltaTimeBuf.index < pTrack->GetSize()) {
@@ -198,13 +198,13 @@ int SMSeqData::_MergeTracks()
 					if (result != 0) goto EXIT;
 				}
 			}
-			//‚»‚êˆÈŠO‚Ìƒgƒ‰ƒbƒN‚Íƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğŒ¸Z‚·‚é
+			//ãã‚Œä»¥å¤–ã®ãƒˆãƒ©ãƒƒã‚¯ã¯ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’æ¸›ç®—ã™ã‚‹
 			else if (deltaTimeBuf.index < pTrack->GetSize()) {
 				deltaTimeBuf.deltaTime -= deltaTimeMin;
 			}
 			*deltaTimeBufListItr = deltaTimeBuf;
 
-			//Ÿ‚Ìƒgƒ‰ƒbƒN
+			//æ¬¡ã®ãƒˆãƒ©ãƒƒã‚¯
 			trackListItr++;
 			deltaTimeBufListItr++;
 		}
@@ -221,7 +221,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒf[ƒ^ƒNƒŠƒA
+// ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒªã‚¢
 //******************************************************************************
 void SMSeqData::Clear()
 {
@@ -254,7 +254,7 @@ void SMSeqData::Clear()
 // >>> add 20120728 yossiepon begin
 
 //******************************************************************************
-// ƒV[ƒPƒ“ƒX’Ç‰Á
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚¹è¿½åŠ 
 //******************************************************************************
 void SMSeqData::AddSequence(SMSeqData &other, short portNo, short chNo)
 {
@@ -279,7 +279,7 @@ void SMSeqData::AddSequence(SMSeqData &other, short portNo, short chNo)
 // <<< add 20120728 yossiepon end
 
 //******************************************************************************
-// SMFƒtƒH[ƒ}ƒbƒgæ“¾
+// SMFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå–å¾—
 //******************************************************************************
 unsigned long SMSeqData::GetSMFFormat()
 {
@@ -287,7 +287,7 @@ unsigned long SMSeqData::GetSMFFormat()
 }
 
 //******************************************************************************
-// •ª‰ğ”\æ“¾
+// åˆ†è§£èƒ½å–å¾—
 //******************************************************************************
 unsigned long SMSeqData::GetTimeDivision()
 {
@@ -295,7 +295,7 @@ unsigned long SMSeqData::GetTimeDivision()
 }
 
 //******************************************************************************
-// ƒgƒ‰ƒbƒN”æ“¾
+// ãƒˆãƒ©ãƒƒã‚¯æ•°å–å¾—
 //******************************************************************************
 unsigned long SMSeqData::GetTrackNum()
 {
@@ -303,7 +303,7 @@ unsigned long SMSeqData::GetTrackNum()
 }
 
 //******************************************************************************
-// ƒgƒ‰ƒbƒNæ“¾
+// ãƒˆãƒ©ãƒƒã‚¯å–å¾—
 //******************************************************************************
 int SMSeqData::GetTrack(
 		unsigned long index,
@@ -335,7 +335,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ}[ƒWƒgƒ‰ƒbƒNæ“¾
+// ãƒãƒ¼ã‚¸ãƒˆãƒ©ãƒƒã‚¯å–å¾—
 //******************************************************************************
 int SMSeqData::GetMergedTrack(
 		SMTrack* pMergedTrack
@@ -360,7 +360,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‡Œvƒ`ƒbƒNƒ^ƒCƒ€æ“¾
+// åˆè¨ˆãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ å–å¾—
 //******************************************************************************
 unsigned long SMSeqData::GetTotalTickTime()
 {
@@ -368,7 +368,7 @@ unsigned long SMSeqData::GetTotalTickTime()
 }
 
 //******************************************************************************
-// ‡Œv‰‰‘tŠÔæ“¾imsec.j
+// åˆè¨ˆæ¼”å¥æ™‚é–“å–å¾—ï¼ˆmsec.ï¼‰
 //******************************************************************************
 unsigned long SMSeqData::GetTotalPlayTime()
 {
@@ -376,7 +376,7 @@ unsigned long SMSeqData::GetTotalPlayTime()
 }
 
 //******************************************************************************
-// ƒeƒ“ƒ|æ“¾(ƒÊsec.)
+// ãƒ†ãƒ³ãƒå–å¾—(Î¼sec.)
 //******************************************************************************
 unsigned long SMSeqData::GetTempo()
 {
@@ -384,7 +384,7 @@ unsigned long SMSeqData::GetTempo()
 }
 
 //******************************************************************************
-// ƒeƒ“ƒ|æ“¾(BPM)
+// ãƒ†ãƒ³ãƒå–å¾—(BPM)
 //******************************************************************************
 unsigned long SMSeqData::GetTempoBPM()
 {
@@ -392,7 +392,7 @@ unsigned long SMSeqData::GetTempoBPM()
 }
 
 //******************************************************************************
-// ”q‹L†æ“¾F•ªq
+// æ‹å­è¨˜å·å–å¾—ï¼šåˆ†å­
 //******************************************************************************
 unsigned long SMSeqData::GetBeatNumerator()
 {
@@ -400,7 +400,7 @@ unsigned long SMSeqData::GetBeatNumerator()
 }
 
 //******************************************************************************
-// ”q‹L†æ“¾F•ª•ê
+// æ‹å­è¨˜å·å–å¾—ï¼šåˆ†æ¯
 //******************************************************************************
 unsigned long SMSeqData::GetBeatDenominator()
 {
@@ -408,7 +408,7 @@ unsigned long SMSeqData::GetBeatDenominator()
 }
 
 //******************************************************************************
-// ¬ß”æ“¾
+// å°ç¯€æ•°å–å¾—
 //******************************************************************************
 unsigned long SMSeqData::GetBarNum()
 {
@@ -416,7 +416,7 @@ unsigned long SMSeqData::GetBarNum()
 }
 
 //******************************************************************************
-// ’˜ìŒ ƒeƒLƒXƒgæ“¾
+// è‘—ä½œæ¨©ãƒ†ã‚­ã‚¹ãƒˆå–å¾—
 //******************************************************************************
 const WCHAR* SMSeqData::GetCopyRight()
 {
@@ -424,7 +424,7 @@ const WCHAR* SMSeqData::GetCopyRight()
 }
 
 //******************************************************************************
-// ƒ^ƒCƒgƒ‹ƒeƒLƒXƒgæ“¾
+// ã‚¿ã‚¤ãƒˆãƒ«ãƒ†ã‚­ã‚¹ãƒˆå–å¾—
 //******************************************************************************
 const WCHAR* SMSeqData::GetTitle()
 {
@@ -438,7 +438,7 @@ const WCHAR* SMSeqData::GetTitle()
 }
 
 //******************************************************************************
-// ‡Œv‰‰‘tŠÔZo
+// åˆè¨ˆæ¼”å¥æ™‚é–“ç®—å‡º
 //******************************************************************************
 int SMSeqData::_CalcTotalTime()
 {
@@ -456,7 +456,7 @@ int SMSeqData::_CalcTotalTime()
 		goto EXIT;
 	}
 
-	//•‚“®¬”“_‰‰Z¸“x‚ğ”{¸“x‚Éİ’è
+	//æµ®å‹•å°æ•°ç‚¹æ¼”ç®—ç²¾åº¦ã‚’å€ç²¾åº¦ã«è¨­å®š
 	result = fpuCtrl.Start(SMFPUCtrl::FPUDouble);
 	if (result != 0) goto EXIT;
 
@@ -466,16 +466,16 @@ int SMSeqData::_CalcTotalTime()
 
 	for (index = 0; index < m_pMergedTrack->GetSize(); index++) {
 
-		//ƒgƒ‰ƒbƒN‚©‚çƒf[ƒ^ƒZƒbƒgæ“¾
+		//ãƒˆãƒ©ãƒƒã‚¯ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆå–å¾—
 		result = m_pMergedTrack->GetDataSet(index, &deltaTime, &event, NULL);
 		if (result != 0) goto EXIT;
 
-		//ƒfƒ‹ƒ^ƒ^ƒCƒ€‚ğÀŠÔ‚É•ÏŠ·‚µ‚Ä‰‰‘tŠÔ‚É‰ÁZ
-		//  1msec–¢–‚ğØ‚èÌ‚Ä‚é‚ÆŒë·‚ª’~Ï‚·‚é‚½‚ßdouble‚ÅÏZ‚·‚é
+		//ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚’å®Ÿæ™‚é–“ã«å¤‰æ›ã—ã¦æ¼”å¥æ™‚é–“ã«åŠ ç®—
+		//  1msecæœªæº€ã‚’åˆ‡ã‚Šæ¨ã¦ã‚‹ã¨èª¤å·®ãŒè“„ç©ã™ã‚‹ãŸã‚doubleã§ç©ç®—ã™ã‚‹
 		m_TotalTickTime += deltaTime;
 		totalPlayTime += _GetDeltaTimeMsec(tempo, deltaTime);
 
-		//ƒƒ^ƒCƒxƒ“ƒg‚ªŒ»‚ê‚½‚çƒeƒ“ƒ|‚ÌXV‚ğŠm”F‚·‚é
+		//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆãŒç¾ã‚ŒãŸã‚‰ãƒ†ãƒ³ãƒã®æ›´æ–°ã‚’ç¢ºèªã™ã‚‹
 		if (event.GetType() == SMEvent::EventMeta) {
 			metaEvent.Attach(&event);
 			if (metaEvent.GetType() == 0x51) {
@@ -494,7 +494,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒ‹ƒ^ƒ^ƒCƒ€æ“¾iƒ~ƒŠ•bj
+// ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ å–å¾—ï¼ˆãƒŸãƒªç§’ï¼‰
 //******************************************************************************
 double SMSeqData::_GetDeltaTimeMsec(
 		unsigned long tempo,
@@ -503,15 +503,15 @@ double SMSeqData::_GetDeltaTimeMsec(
 {
 	double deltaTimeMsec = 0;
 
-	//(1) l•ª‰¹•„‚ ‚½‚è‚Ì•ª‰ğ”\ division
-	//    —áF48
-	//(2) ƒgƒ‰ƒbƒNƒf[ƒ^‚Ìƒfƒ‹ƒ^ƒ^ƒCƒ€ delta
-	//    •ª‰ğ”\‚Ì’l‚ğ—p‚¢‚Ä•\Œ»‚·‚éŠÔ·
-	//    •ª‰ğ”\‚ª48‚Åƒfƒ‹ƒ^ƒ^ƒCƒ€‚ª24‚È‚ç”ª•ª‰¹•„•ª‚ÌŠÔ·
-	//(3) ƒeƒ“ƒ|İ’èiƒ}ƒCƒNƒ•bj tempo
-	//    l•ª‰¹•„‚ÌÀŠÔŠÔŠu
+	//(1) å››åˆ†éŸ³ç¬¦ã‚ãŸã‚Šã®åˆ†è§£èƒ½ division
+	//    ä¾‹ï¼š48
+	//(2) ãƒˆãƒ©ãƒƒã‚¯ãƒ‡ãƒ¼ã‚¿ã®ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ  delta
+	//    åˆ†è§£èƒ½ã®å€¤ã‚’ç”¨ã„ã¦è¡¨ç¾ã™ã‚‹æ™‚é–“å·®
+	//    åˆ†è§£èƒ½ãŒ48ã§ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ãŒ24ãªã‚‰å…«åˆ†éŸ³ç¬¦åˆ†ã®æ™‚é–“å·®
+	//(3) ãƒ†ãƒ³ãƒè¨­å®šï¼ˆãƒã‚¤ã‚¯ãƒ­ç§’ï¼‰ tempo
+	//    å››åˆ†éŸ³ç¬¦ã®å®Ÿæ™‚é–“é–“éš”
 	//
-	// ƒfƒ‹ƒ^ƒ^ƒCƒ€‚É‘Î‰‚·‚éÀŠÔŠÔŠuiƒ~ƒŠ•bj
+	// ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã«å¯¾å¿œã™ã‚‹å®Ÿæ™‚é–“é–“éš”ï¼ˆãƒŸãƒªç§’ï¼‰
 	//  = (delta / division) * tempo / 1000
 	//  = (delta * tempo) / (division * 1000)
 
@@ -521,7 +521,7 @@ double SMSeqData::_GetDeltaTimeMsec(
 }
 
 //******************************************************************************
-// ƒeƒ“ƒ|æ“¾
+// ãƒ†ãƒ³ãƒå–å¾—
 //******************************************************************************
 int SMSeqData::_GetTempo(
 		unsigned long* pTempo
@@ -538,11 +538,11 @@ int SMSeqData::_GetTempo(
 		goto EXIT;
 	}
 
-	//MIDId—l‚É‚¨‚¢‚Äƒeƒ“ƒ|‚ÌƒfƒtƒHƒ‹ƒg‚ÍBPM120 = 500msec = 500,000ƒÊsec
+	//MIDIä»•æ§˜ã«ãŠã„ã¦ãƒ†ãƒ³ãƒã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯BPM120 = 500msec = 500,000Î¼sec
 	*pTempo = SM_DEFAULT_TEMPO;
 
-	//ƒV[ƒPƒ“ƒX‚Ìæ“ªiƒfƒ‹ƒ^ƒ^ƒCƒ€ƒ[ƒj‚©‚çƒeƒ“ƒ|‚ğŒŸõ
-	//Œ©‚Â‚©‚ç‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg’l‚ªÌ—p‚³‚ê‚é
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®å…ˆé ­ï¼ˆãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚¼ãƒ­ï¼‰ã‹ã‚‰ãƒ†ãƒ³ãƒã‚’æ¤œç´¢
+	//è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ãŒæ¡ç”¨ã•ã‚Œã‚‹
 	for (index = 0; index < m_pMergedTrack->GetSize(); index++) {
 
 		result = m_pMergedTrack->GetDataSet(index, &deltaTime, &event, NULL);
@@ -550,10 +550,10 @@ int SMSeqData::_GetTempo(
 
 		if (deltaTime != 0) break;
 
-		//ƒƒ^ƒCƒxƒ“ƒgˆÈŠO‚Í–³‹
+		//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆä»¥å¤–ã¯ç„¡è¦–
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//ƒeƒ“ƒ|‚ğæ“¾
+		//ãƒ†ãƒ³ãƒã‚’å–å¾—
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() == 0x51) {
 			*pTempo = metaEvent.GetTempo();
@@ -566,7 +566,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”q‹L†æ“¾
+// æ‹å­è¨˜å·å–å¾—
 //******************************************************************************
 int SMSeqData::_GetBeat(
 		unsigned long* pNumerator,
@@ -584,12 +584,12 @@ int SMSeqData::_GetBeat(
 		goto EXIT;
 	}
 
-	//MIDId—l‚É‚¨‚¢‚Ä”q‹L†‚ÌƒfƒtƒHƒ‹ƒg‚Í4/4
+	//MIDIä»•æ§˜ã«ãŠã„ã¦æ‹å­è¨˜å·ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯4/4
 	*pNumerator   = SM_DEFAULT_TIME_SIGNATURE_NUMERATOR;
 	*pDenominator = SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR;
 
-	//ƒV[ƒPƒ“ƒX‚Ìæ“ªiƒfƒ‹ƒ^ƒ^ƒCƒ€ƒ[ƒj‚©‚ç”q‹L†‚ğŒŸõ
-	//Œ©‚Â‚©‚ç‚È‚¯‚ê‚ÎƒfƒtƒHƒ‹ƒg’l‚ªÌ—p‚³‚ê‚é
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®å…ˆé ­ï¼ˆãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚¼ãƒ­ï¼‰ã‹ã‚‰æ‹å­è¨˜å·ã‚’æ¤œç´¢
+	//è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ãŒæ¡ç”¨ã•ã‚Œã‚‹
 	for (index = 0; index < m_pMergedTrack->GetSize(); index++) {
 
 		result = m_pMergedTrack->GetDataSet(index, &deltaTime, &event, NULL);
@@ -597,10 +597,10 @@ int SMSeqData::_GetBeat(
 
 		if (deltaTime != 0) break;
 
-		//ƒƒ^ƒCƒxƒ“ƒgˆÈŠO‚Í–³‹
+		//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆä»¥å¤–ã¯ç„¡è¦–
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//”q‹L†‚ğæ“¾
+		//æ‹å­è¨˜å·ã‚’å–å¾—
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() == 0x58) {
 			metaEvent.GetTimeSignature(pNumerator, pDenominator);
@@ -613,7 +613,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ¬ß”æ“¾
+// å°ç¯€æ•°å–å¾—
 //******************************************************************************
 int SMSeqData::_GetBarNum(
 		unsigned long* pBarNum
@@ -632,7 +632,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒLƒXƒgî•ñŒŸõ
+// ãƒ†ã‚­ã‚¹ãƒˆæƒ…å ±æ¤œç´¢
 //******************************************************************************
 int SMSeqData::_SearchText()
 {
@@ -647,20 +647,20 @@ int SMSeqData::_SearchText()
 	std::string copyRight;
 	std::string title;
 
-	//ƒgƒ‰ƒbƒN‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒˆãƒ©ãƒƒã‚¯ãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_TrackList.size() == 0) goto EXIT;
 
-	//‘æ1ƒgƒ‰ƒbƒN(Conductor Track)‚ğQÆ‚·‚é
+	//ç¬¬1ãƒˆãƒ©ãƒƒã‚¯(Conductor Track)ã‚’å‚ç…§ã™ã‚‹
 	itr = m_TrackList.begin();
 	pTrack = *itr;
 
-	//’˜ìŒ •\¦‚ğŒŸõ
+	//è‘—ä½œæ¨©è¡¨ç¤ºã‚’æ¤œç´¢
 	for (index = 0; index < pTrack->GetSize(); index++) {
 
 		result = pTrack->GetDataSet(index, &deltaTime, &event, NULL);
 		if (result != 0) goto EXIT;
 
-		//’˜ìŒ •\¦‚Íƒfƒ‹ƒ^ƒ^ƒCƒ€ƒ[ƒ‚É‹L˜^‚³‚ê‚é
+		//è‘—ä½œæ¨©è¡¨ç¤ºã¯ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã‚¼ãƒ­ã«è¨˜éŒ²ã•ã‚Œã‚‹
 		if (deltaTime != 0) break;
 
 		if (event.GetType() == SMEvent::EventMeta) {
@@ -672,13 +672,13 @@ int SMSeqData::_SearchText()
 			}
 		}
 	}
-	//ƒƒCƒh•¶š—ñ•ÏŠ·
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—å¤‰æ›
 	if (copyRight.length() > 0) {
 		result = _StringToWstring(&copyRight, &m_CopyRight);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒV[ƒPƒ“ƒX–¼‚ğŒŸõ
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹åã‚’æ¤œç´¢
 	for (index = 0; index < pTrack->GetSize(); index++) {
 
 		result = pTrack->GetDataSet(index, &deltaTime, &event, NULL);
@@ -686,15 +686,15 @@ int SMSeqData::_SearchText()
 
 		if (event.GetType() == SMEvent::EventMeta) {
 			metaEvent.Attach(&event);
-			//”CˆÓƒeƒLƒXƒg
+			//ä»»æ„ãƒ†ã‚­ã‚¹ãƒˆ
 			if ((metaEvent.GetType() == 0x01) && (!isFoundText)) {
 				result = metaEvent.GetText(&title);
 				if (result != 0) goto EXIT;
 
-				//ƒV[ƒPƒ“ƒX–¼‚ğ—Dæ‚·‚é‚Ì‚ÅŒŸõ‚ÍŒp‘±‚·‚é
+				//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹åã‚’å„ªå…ˆã™ã‚‹ã®ã§æ¤œç´¢ã¯ç¶™ç¶šã™ã‚‹
 				isFoundText = true;
 			}
-			//ƒV[ƒPƒ“ƒX–¼
+			//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹å
 			if (metaEvent.GetType() == 0x03) {
 				result = metaEvent.GetText(&title);
 				if (result != 0) goto EXIT;
@@ -702,7 +702,7 @@ int SMSeqData::_SearchText()
 			}
 		}
 	}
-	//ƒƒCƒh•¶š—ñ•ÏŠ·
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—å¤‰æ›
 	if (title.length() > 0) {
 		result = _StringToWstring(&title, &m_Title);
 		if (result != 0) goto EXIT;
@@ -713,7 +713,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ¬ßƒŠƒXƒgæ“¾
+// å°ç¯€ãƒªã‚¹ãƒˆå–å¾—
 //******************************************************************************
 int SMSeqData::GetBarList(
 		SMBarList* pBarList
@@ -741,10 +741,10 @@ int SMSeqData::GetBarList(
 
 	pBarList->Clear();
 
-	//1¬ß‚ ‚½‚è‚Ìƒ`ƒbƒNƒ^ƒCƒ€
+	//1å°ç¯€ã‚ãŸã‚Šã®ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ 
 	tickTimeOfBar = (SM_DEFAULT_TIME_SIGNATURE_NUMERATOR * m_TimeDivision * 4) / SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR;
 
-	//1¬ß–ÚŠJn’n“_‚Æ‚µ‚Ä“o˜^
+	//1å°ç¯€ç›®é–‹å§‹åœ°ç‚¹ã¨ã—ã¦ç™»éŒ²
 	totalTickTime = 0;
 	prevBarTime = totalTickTime;
 	result = pBarList->AddBar(totalTickTime);
@@ -758,7 +758,7 @@ int SMSeqData::GetBarList(
 
 		totalTickTime += deltaTime;
 
-		//Œo‰ßŠÔ“à‚Å¬ß‚Ì‹æØ‚è‚ğŒ©‚Â‚¯‚Ä“o˜^‚·‚é
+		//çµŒéæ™‚é–“å†…ã§å°ç¯€ã®åŒºåˆ‡ã‚Šã‚’è¦‹ã¤ã‘ã¦ç™»éŒ²ã™ã‚‹
 		while(true) {
 			nextBarTime = prevBarTime + tickTimeOfBar;
 			if (nextBarTime <= totalTickTime) {
@@ -770,27 +770,27 @@ int SMSeqData::GetBarList(
 			}
 		}
 
-		//ˆÈ~‚Í”q‹L†‚ªŒ»‚ê‚½ê‡‚Ì‘Î‰
+		//ä»¥é™ã¯æ‹å­è¨˜å·ãŒç¾ã‚ŒãŸå ´åˆã®å¯¾å¿œ
 
-		//ƒƒ^ƒCƒxƒ“ƒgˆÈŠO‚Í–³‹
+		//ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆä»¥å¤–ã¯ç„¡è¦–
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//”q‹L†ˆÈŠO‚Í–³‹
+		//æ‹å­è¨˜å·ä»¥å¤–ã¯ç„¡è¦–
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() != 0x58) continue;
 
-		//”q‹L†‚ğæ“¾
+		//æ‹å­è¨˜å·ã‚’å–å¾—
 		metaEvent.GetTimeSignature(&numerator, &denominator);
 		if (denominator == 0) {
-			//ƒf[ƒ^ˆÙí
+			//ãƒ‡ãƒ¼ã‚¿ç•°å¸¸
 			result = YN_SET_ERR("Invalid data found.", index, numerator);
 			goto EXIT;
 		}
 
-		//1¬ß‚ ‚½‚è‚Ìƒ`ƒbƒNƒ^ƒCƒ€‚ğXV
+		//1å°ç¯€ã‚ãŸã‚Šã®ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ã‚’æ›´æ–°
 		tickTimeOfBar = (numerator * m_TimeDivision * 4) / denominator;
 
-		//”q‹L†XV‚Ì‚½‚ß1¬ß–ÚŠJn’n“_‚Æ‚µ‚Ä“o˜^
+		//æ‹å­è¨˜å·æ›´æ–°ã®ãŸã‚1å°ç¯€ç›®é–‹å§‹åœ°ç‚¹ã¨ã—ã¦ç™»éŒ²
 		if (prevBarTime != totalTickTime) {
 			prevBarTime = totalTickTime;
 			result = pBarList->AddBar(totalTickTime);
@@ -803,7 +803,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒgƒŠƒXƒgæ“¾
+// ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—
 //******************************************************************************
 int SMSeqData::GetPortList(
 		SMPortList* pPortList
@@ -848,7 +848,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹–¼“o˜^
+// ãƒ•ã‚¡ã‚¤ãƒ«åç™»éŒ²
 //******************************************************************************
 void SMSeqData::SetFileName(
 		const WCHAR* pFileName
@@ -859,7 +859,7 @@ void SMSeqData::SetFileName(
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹–¼æ“¾
+// ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—
 //******************************************************************************
 const WCHAR* SMSeqData::GetFileName()
 {
@@ -867,7 +867,7 @@ const WCHAR* SMSeqData::GetFileName()
 }
 
 //******************************************************************************
-// ƒƒCƒh•¶š—ñ•ÏŠ·
+// ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—å¤‰æ›
 //******************************************************************************
 int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 {
@@ -876,13 +876,13 @@ int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 	int buffSize = 0;
 	WCHAR* wstrBuff = NULL;
 
-	//‹ó•¶š‚Ìê‡‚Í•ÏŠ·‚È‚µ
+	//ç©ºæ–‡å­—ã®å ´åˆã¯å¤‰æ›ãªã—
 	if (pStr->length() == 0) {
 		*pWstr = L"";
 		goto EXIT;
 	}
 
-	//ƒTƒƒQ[ƒgƒyƒA‚Æ0I’[‚ğl—¶‚µ‚½ƒoƒbƒtƒ@ƒTƒCƒY
+	//ã‚µãƒ­ã‚²ãƒ¼ãƒˆãƒšã‚¢ã¨0çµ‚ç«¯ã‚’è€ƒæ…®ã—ãŸãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 	buffSize = (int)(pStr->length()) * 2 + 1;
 
 	try {
@@ -896,12 +896,12 @@ int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 	memset(wstrBuff, 0, sizeof(WCHAR) * buffSize);
 
 	apiresult = MultiByteToWideChar(
-						_getmbcp(),			//ƒR[ƒhƒy[ƒW
-						MB_PRECOMPOSED,		//ƒtƒ‰ƒOF
-						pStr->c_str(),		//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñ
-						(int)(pStr->length()),	//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñƒoƒCƒg”
-						wstrBuff,			//•ÏŠ·æƒƒCƒh•¶š—ñƒoƒbƒtƒ@
-						buffSize - 1		//ƒoƒbƒtƒ@ƒTƒCƒYiƒƒCƒh•¶š”’PˆÊj
+						_getmbcp(),			//ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸
+						MB_PRECOMPOSED,		//ãƒ•ãƒ©ã‚°ï¼š
+						pStr->c_str(),		//å¤‰æ›å…ƒãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—
+						(int)(pStr->length()),	//å¤‰æ›å…ƒãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—ãƒã‚¤ãƒˆæ•°
+						wstrBuff,			//å¤‰æ›å…ˆãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+						buffSize - 1		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼ˆãƒ¯ã‚¤ãƒ‰æ–‡å­—æ•°å˜ä½ï¼‰
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

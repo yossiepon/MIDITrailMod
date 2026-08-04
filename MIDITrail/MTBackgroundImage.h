@@ -1,17 +1,17 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTBackgroundImage
 //
-// ”wŒi‰æ‘œ•`‰æƒNƒ‰ƒX
+// èƒŒæ™¯ç”»åƒæç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2016 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ”wŒi‰æ‘œ‚ğ•`‰æ‚·‚éB
-// ‰æ‘œƒtƒ@ƒCƒ‹‚Í .bmp .dds .dib .jpg .png .tga ‚ğw’è‰Â”\B
-// iD3DXCreateTextureFromFile ‚ªƒTƒ|[ƒg‚µ‚Ä‚¢‚é‰æ‘œj
+// èƒŒæ™¯ç”»åƒã‚’æç”»ã™ã‚‹ã€‚
+// ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¯ .bmp .dds .dib .jpg .png .tga ã‚’æŒ‡å®šå¯èƒ½ã€‚
+// ï¼ˆD3DXCreateTextureFromFile ãŒã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã‚‹ç”»åƒï¼‰
 
 #pragma once
 
@@ -24,29 +24,29 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-//  ”wŒi‰æ‘œ•`‰æƒNƒ‰ƒX
+//  èƒŒæ™¯ç”»åƒæç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTBackgroundImage
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTBackgroundImage(void);
 	virtual ~MTBackgroundImage(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, HWND hWnd);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
 private:
@@ -58,30 +58,30 @@ private:
 	bool m_isEnable;
 	bool m_isFilterLinear;
 
-	//İ’èƒtƒ@ƒCƒ‹
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	YNConfFile m_ConfFile;
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTBACKGROUNDIMAGE_VERTEX {
-		D3DXVECTOR3 p;		//’¸“_À•W
-		float		rhw;	//œZ”
-		DWORD		c;		//ƒfƒBƒtƒ…[ƒYF
-		D3DXVECTOR2 t;		//ƒeƒNƒXƒ`ƒƒ‰æ‘œˆÊ’u
+		D3DXVECTOR3 p;		//é ‚ç‚¹åº§æ¨™
+		float		rhw;	//é™¤ç®—æ•°
+		DWORD		c;		//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+		D3DXVECTOR2 t;		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒä½ç½®
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	int _CreateVertexOfBackground(
 			MTBACKGROUNDIMAGE_VERTEX* pVertex,
 			unsigned long* pIbIndex
 		);
 
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	int _InitConfFile();
 
-	//ƒeƒNƒXƒ`ƒƒ‰æ‘œ“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒèª­ã¿è¾¼ã¿
 	int _LoadTexture(LPDIRECT3DDEVICE9 pD3DDevice);
 
 };

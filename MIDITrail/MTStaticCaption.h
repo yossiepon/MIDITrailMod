@@ -1,18 +1,18 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MTStaticCaption
 //
-// �ÓI�L���v�V�����`��N���X
+// 静的キャプション描画クラス
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// �ÓI�ȕ�����̍����`�����������B
-// ID3DXFont��GDI�𗘗p���Ă��邽�ߎg�p���Ȃ��B
-// �\�����镶���̃e�N�X�`�����쐬���Ă����A�l�p�`�|���S���ɂ��̂܂ܓ\��t����B
-// �ォ�當�����ύX���邱�Ƃ͂ł��Ȃ��B
+// 静的な文字列の高速描画を実現する。
+// ID3DXFontはGDIを利用しているため使用しない。
+// 表示する文字のテクスチャを作成しておき、四角形ポリゴンにそのまま貼り付ける。
+// 後から文字列を変更することはできない。
 
 #pragma once
 
@@ -22,20 +22,20 @@
 
 
 //******************************************************************************
-// �ÓI�L���v�V�����`��N���X
+// 静的キャプション描画クラス
 //******************************************************************************
 class MTStaticCaption
 {
 public:
 
-	//�R���X�g���N�^�^�f�X�g���N�^
+	//コンストラクタ／デストラクタ
 	MTStaticCaption(void);
 	virtual ~MTStaticCaption(void);
 
-	//����
-	//  pFontName   �t�H���g����
-	//  fontSize    �t�H���g�T�C�Y�i�|�C���g�j
-	//  pCaption    �L���v�V����������
+	//生成
+	//  pFontName   フォント名称
+	//  fontSize    フォントサイズ（ポイント）
+	//  pCaption    キャプション文字列
 	int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			WCHAR* pFontName,
@@ -43,32 +43,32 @@ public:
 			WCHAR* pCaptin
 		);
 	
-	//�e�N�X�`���T�C�Y�擾
+	//テクスチャサイズ取得
 	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
 
-	//�F�ݒ�
+	//色設定
 	void SetColor(D3DXCOLOR color);
 
-	//�`��
-	//  �`��ʒu�͍��W�ϊ��ςݒ��_�Ƃ��Ĉ����B�E�B���h�E���オ(0,0)�B
-	//  �e�N�X�`���T�C�Y���Q�Ƃ�����ŉ�ʕ\���{�����w�肷��B
-	//  magRate=1.0 �Ȃ�e�N�X�`���T�C�Y�̂܂ܕ`�悳���B
+	//描画
+	//  描画位置は座標変換済み頂点として扱う。ウィンドウ左上が(0,0)。
+	//  テクスチャサイズを参照した上で画面表示倍率を指定する。
+	//  magRate=1.0 ならテクスチャサイズのまま描画される。
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice, float x, float y, float magRate);
 
-	//���\�[�X�j��
+	//リソース破棄
 	void Release();
 
 private:
 
-	//���_�o�b�t�@�\����
+	//頂点バッファ構造体
 	struct MTSTATICCAPTION_VERTEX {
-		D3DXVECTOR3 p;		//���_���W
-		float		rhw;	//���Z��
-		DWORD		c;		//�f�B�t���[�Y�F
-		D3DXVECTOR2 t;		//�e�N�X�`���摜�ʒu
+		D3DXVECTOR3 p;		//頂点座標
+		float		rhw;	//除算数
+		DWORD		c;		//ディフューズ色
+		D3DXVECTOR2 t;		//テクスチャ画像位置
 	};
 
-	//���_�o�b�t�@�[�̃t�H�[�}�b�g�̒�`�F���W�ϊ��ς݂��w��
+	//頂点バッファーのフォーマットの定義：座標変換済みを指定
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
 	MTFontTexture m_FontTexture;

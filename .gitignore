@@ -438,3 +438,4 @@ FodyWeavers.xsd
 
 ### Others ###
 LICENSE.*
+/vcpkg_installed/

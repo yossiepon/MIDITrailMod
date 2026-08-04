@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTSceneTitle
 //
-// ƒ^ƒCƒgƒ‹ƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -22,57 +22,57 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒJƒƒ‰ZÀ•W
+//ã‚«ãƒ¡ãƒ©Zåº§æ¨™
 #define MTSCENETITLE_CAMERA_POSZ  (-80.0f)
 
-//ƒJƒƒ‰ZÀ•W•Ï‰»—Ê
+//ã‚«ãƒ¡ãƒ©Zåº§æ¨™å¤‰åŒ–é‡
 #define MTSCENETITLE_CAMERA_POSZ_DELTA  (0.05f)
 
 
 //******************************************************************************
-// ƒ^ƒCƒgƒ‹ƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ã‚¿ã‚¤ãƒˆãƒ«ã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTSceneTitle : public MTScene
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^l
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿l
 	MTSceneTitle(void);
 	virtual ~MTSceneTitle(void);
 
-	//–¼Ìæ“¾
+	//åç§°å–å¾—
 	const TCHAR* GetName();
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			SMSeqData* pSeqData
 		);
 
-	//•ÏŠ·
+	//å¤‰æ›
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//”jŠü
+	//ç ´æ£„
 	void Release();
 
 private:
 
-	//ƒJƒƒ‰ˆÊ’uZ
+	//ã‚«ãƒ¡ãƒ©ä½ç½®Z
 	float m_CamPosZ;
 
-	//ƒJƒƒ‰
+	//ã‚«ãƒ¡ãƒ©
 	DXCamera m_Camera;
 
-	//ƒ‰ƒCƒg
+	//ãƒ©ã‚¤ãƒˆ
 	DXDirLight m_DirLight;
 
-	//ƒƒS•`‰æƒIƒuƒWƒFƒNƒg
+	//ãƒ­ã‚´æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	MTLogo m_Logo;
 
 };

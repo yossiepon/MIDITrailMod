@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRoll3DMod
 //
-// ƒsƒAƒmƒ[ƒ‹3DƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«3Dã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -17,51 +17,51 @@
 #include "MTPianoKeyboardCtrlMod.h"
 
 //******************************************************************************
-// ƒsƒAƒmƒ[ƒ‹3DƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«3Dã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScenePianoRoll3DMod : public MTScenePianoRoll3D
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^l
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿l
 	MTScenePianoRoll3DMod();
 	virtual ~MTScenePianoRoll3DMod();
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			SMSeqData* pSeqData
 		);
 
-	//•ÏŠ·
+	//å¤‰æ›
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//•`‰æ
+	//æç”»
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//”jŠü
+	//ç ´æ£„
 	virtual void Release();
 
-	//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 	virtual int OnRecvSequencerMsg(
 			unsigned long param1,
 			unsigned long param2
 		);
 
-	//ƒGƒtƒFƒNƒgİ’è
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¨­å®š
 	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
 
 protected:
 
 	virtual void _Reset();
 
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒhƒtƒ‰ƒO
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ãƒ©ã‚°
 	bool m_IsSingleKeyboard;
 
 private:
 
-	//•`‰æƒIƒuƒWƒFƒNƒg
+	//æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	MTNoteBoxMod m_NoteBoxMod;
 	MTNoteRippleMod m_NoteRippleMod;
 	MTNoteLyrics m_NoteLyrics;

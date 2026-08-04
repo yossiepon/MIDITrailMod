@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboard
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒŽã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒsƒAƒmƒL[ƒ{[ƒh(1ch•ª)‚Ì•`‰æ‚ð§Œä‚·‚éƒNƒ‰ƒXB
+// ãƒ”ã‚¢ãƒŽã‚­ãƒ¼ãƒœãƒ¼ãƒ‰(1chåˆ†)ã®æç”»ã‚’åˆ¶å¾¡ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
 
 #pragma once
 
@@ -24,17 +24,17 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒŽã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboard
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPianoKeyboard(void);
 	virtual ~MTPianoKeyboard(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 // >>> modify 20120728 yossiepon begin
 	virtual int Create(
 // <<< modify 20120728 yossiepon end
@@ -44,7 +44,7 @@ public:
 			LPDIRECT3DTEXTURE9 pTexture = NULL
 		);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector, float rollAngle);
 // >>> add 20120729 yossiepon begin
 // >>> modify 20180411 yossiepon begin
@@ -58,13 +58,13 @@ public:
 // <<< add 20120729 yossiepon end
 
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ð•ú
+	//è§£æ”¾
 	void Release();
 
-	//ƒL[ó‘Ô•ÏX
+	//ã‚­ãƒ¼çŠ¶æ…‹å¤‰æ›´
 	int ResetKey(unsigned char noteNo);
 	int PushKey(
 			unsigned char noteNo,
@@ -84,20 +84,20 @@ public:
 // <<< modify 20140920 yossiepon end
 // <<< add 20120728 yossiepon end
 
-	//‹¤—L—pƒeƒNƒXƒ`ƒƒŽæ“¾
+	//å…±æœ‰ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£å–å¾—
 	LPDIRECT3DTEXTURE9 GetTexture();
 
 private:
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTPIANOKEYBOARD_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
-		D3DXVECTOR2 t;	//ƒeƒNƒXƒ`ƒƒ‰æ‘œˆÊ’u
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+		D3DXVECTOR2 t;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒä½ç½®
 	};
 
-	//ƒoƒbƒtƒ@î•ñ
+	//ãƒãƒƒãƒ•ã‚¡æƒ…å ±
 	typedef struct {
 		unsigned long vertexPos;
 		unsigned long vertexNum;
@@ -109,14 +109,14 @@ private:
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ƒL[ƒ{[ƒhƒvƒŠƒ~ƒeƒBƒu
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–
 	DXPrimitive m_PrimitiveKeyboard;
 
 // >>> modify access level 20161224 yossiepon begin
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒeƒNƒXƒ`ƒƒ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DXIMAGE_INFO m_ImgInfo;
 
@@ -124,17 +124,17 @@ private:
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³
 	MTPianoKeyboardDesign m_KeyboardDesign;
 
 // >>> modify access level 20161224 yossiepon begin
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒoƒbƒtƒ@î•ñ
+	//ãƒãƒƒãƒ•ã‚¡æƒ…å ±
 	MTBufInfo m_BufInfo[SM_MAX_NOTE_NUM];
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
 	int _CreateKeyboard(LPDIRECT3DDEVICE9 pD3DDevice);

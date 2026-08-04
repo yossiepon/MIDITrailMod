@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -16,16 +16,16 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ŠeƒL[‚Ì’¸“_”
+//å„ã‚­ãƒ¼ã®é ‚ç‚¹æ•°
 #define MTPIANOKEYBOARD_KEY_WHITE_1_VERTEX_NUM  (38)
 #define MTPIANOKEYBOARD_KEY_WHITE_2_VERTEX_NUM  (44)
 #define MTPIANOKEYBOARD_KEY_WHITE_3_VERTEX_NUM  (38)
 #define MTPIANOKEYBOARD_KEY_BLACK_VERTEX_NUM    (30)
 #define MTPIANOKEYBOARD_KEY_VERTEX_NUM_MAX      MTPIANOKEYBOARD_KEY_WHITE_2_VERTEX_NUM
 
-//ŠeƒL[‚ÌƒCƒ“ƒfƒbƒNƒX”
+//å„ã‚­ãƒ¼ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•°
 #define MTPIANOKEYBOARD_KEY_WHITE_1_INDEX_NUM   (60)
 #define MTPIANOKEYBOARD_KEY_WHITE_2_INDEX_NUM   (66)
 #define MTPIANOKEYBOARD_KEY_WHITE_3_INDEX_NUM   (60)
@@ -34,21 +34,21 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboardMod::MTPianoKeyboardMod(void)
 {
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboardMod::~MTPianoKeyboardMod(void)
 {
 }
 
 //******************************************************************************
-// ¶¬ˆ—
+// ç”Ÿæˆå‡¦ç†
 //******************************************************************************
 int MTPianoKeyboardMod::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -60,11 +60,11 @@ int MTPianoKeyboardMod::Create(
 	int result = 0;
 	SMTrack track;
 
-	//Šî’êƒNƒ‰ƒX‚Ì¶¬ˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®ç”Ÿæˆå‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	result = MTPianoKeyboard::Create(pD3DDevice, pSceneName, pSeqData,  pTexture);
 	if (result != 0) goto EXIT;
 	
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“‰Šú‰»
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³åˆæœŸåŒ–
 	result = m_KeyboardDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
@@ -73,7 +73,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTPianoKeyboardMod::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -91,7 +91,7 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMATRIX playbackPosMatrix;
 	D3DXMATRIX worldMatrix;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&scaleMatrix);
 	D3DXMatrixIdentity(&rotateMatrix1);
 	D3DXMatrixIdentity(&rotateMatrix2);
@@ -99,7 +99,7 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMatrixIdentity(&playbackPosMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 
 	if(rollAngle < 0.0f) {
 		rollAngle += 360.0f;
@@ -115,15 +115,15 @@ int MTPianoKeyboardMod::Transform(
 
 	D3DXMatrixRotationX(&rotateMatrix3, D3DXToRadian(rollAngle));
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	D3DXMatrixTranslation(&basePosMatrix, basePosVector.x, basePosVector.y, basePosVector.z);
 	D3DXMatrixTranslation(&playbackPosMatrix, playbackPosVector.x, playbackPosVector.y, playbackPosVector.z);
 
-	//ƒXƒP[ƒ‹s—ñ
+	//ã‚¹ã‚±ãƒ¼ãƒ«è¡Œåˆ—
 	float scale = m_KeyboardDesignMod.GetKeyboardResizeRatio();
 	D3DXMatrixScaling(&scaleMatrix, scale, scale, scale);
 
-	//s—ñ‚Ì‡¬FƒXƒP[ƒ‹¨Œ´“_ˆÚ“®¨‰ñ“]‚PE‚QiŒ®”ÕŒü‚«•â³j¨‰ñ“]‚RiƒzƒC[ƒ‹Šp“xj¨Ä¶ˆÊ’u’Ç]ˆÚ“®
+	//è¡Œåˆ—ã®åˆæˆï¼šã‚¹ã‚±ãƒ¼ãƒ«â†’åŸç‚¹ç§»å‹•â†’å›è»¢ï¼‘ãƒ»ï¼’ï¼ˆéµç›¤å‘ãè£œæ­£ï¼‰â†’å›è»¢ï¼“ï¼ˆãƒ›ã‚¤ãƒ¼ãƒ«è§’åº¦ï¼‰â†’å†ç”Ÿä½ç½®è¿½å¾“ç§»å‹•
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &scaleMatrix);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &basePosMatrix);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix1);
@@ -131,7 +131,7 @@ int MTPianoKeyboardMod::Transform(
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &rotateMatrix3);
 	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &playbackPosMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_PrimitiveKeyboard.Transform(worldMatrix);
 
 //EXIT:;
@@ -139,7 +139,7 @@ int MTPianoKeyboardMod::Transform(
 }
 
 //******************************************************************************
-// ƒL[‚Ì‰Ÿ‚µ‚İ
+// ã‚­ãƒ¼ã®æŠ¼ã—è¾¼ã¿
 //******************************************************************************
 int MTPianoKeyboardMod::PushKey(
 		unsigned char chNo,
@@ -161,11 +161,11 @@ int MTPianoKeyboardMod::PushKey(
 	angle = m_KeyboardDesignMod.GetKeyRotateAngle() * keyDownRate;
 
 	if (keyDownRate < 1.0f) {
-		//ƒL[‚ª‰º~’†^ã¸’†‚Ìê‡‚ÍF‚ğ•ÏX‚¹‚¸‰ñ“]‚³‚¹‚é
+		//ã‚­ãƒ¼ãŒä¸‹é™ä¸­ï¼ä¸Šæ˜‡ä¸­ã®å ´åˆã¯è‰²ã‚’å¤‰æ›´ã›ãšå›è»¢ã•ã›ã‚‹
 		_RotateKey(noteNo, angle);
 	}
 	else {
-		//ƒL[‚ª‰Ÿ‰ºó‘Ô‚Ìê‡‚ÍF‚ğ•ÏX‚µ‚Ä‰ñ“]‚³‚¹‚é
+		//ã‚­ãƒ¼ãŒæŠ¼ä¸‹çŠ¶æ…‹ã®å ´åˆã¯è‰²ã‚’å¤‰æ›´ã—ã¦å›è»¢ã•ã›ã‚‹
 		color = m_KeyboardDesignMod.GetActiveKeyColor(chNo, noteNo, elapsedTime, pNoteColor);
 		_RotateKey(noteNo, angle, &color);
 	}

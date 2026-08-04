@@ -1,8 +1,8 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MTFont2Bmp
 //
-// �t�H���g���r�b�g�}�b�v�ϊ��N���X
+// フォント＞ビットマップ変換クラス
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// �R���X�g���N�^
+// コンストラクタ
 //******************************************************************************
 MTFont2Bmp::MTFont2Bmp(void)
 {
@@ -30,7 +30,7 @@ MTFont2Bmp::MTFont2Bmp(void)
 }
 
 //******************************************************************************
-// �f�X�g���N�^
+// デストラクタ
 //******************************************************************************
 MTFont2Bmp::~MTFont2Bmp(void)
 {
@@ -38,7 +38,7 @@ MTFont2Bmp::~MTFont2Bmp(void)
 }
 
 //******************************************************************************
-// �N���A
+// クリア
 //******************************************************************************
 void MTFont2Bmp::Clear()
 {
@@ -85,7 +85,7 @@ void MTFont2Bmp::Clear()
 }
 
 //******************************************************************************
-// �t�H���g�ݒ�
+// フォント設定
 //******************************************************************************
 int MTFont2Bmp::SetFont(
 		const WCHAR* pFontName,
@@ -110,7 +110,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// BMP�쐬
+// BMP作成
 //******************************************************************************
 int MTFont2Bmp::CreateBmp(
 		const WCHAR* pStr
@@ -120,19 +120,19 @@ int MTFont2Bmp::CreateBmp(
 
 	Clear();
 
-	//�_���t�H���g�쐬
+	//論理フォント作成
 	result = _CreateLogFont();
 	if (result != 0) goto EXIT;
 
-	//�O���tBMP���X�g���쐬
+	//グリフBMPリストを作成
 	result = _CreateGlyphBmpList(pStr);
 	if (result != 0) goto EXIT;
 
-	//������S�̂̃o�b�t�@���쐬
+	//文字列全体のバッファを作成
 	result = _CreateBmpBuf();
 	if (result != 0) goto EXIT;
 
-	//�o�b�t�@�ɃO���tBMP����������
+	//バッファにグリフBMPを書き込む
 	result = _WriteGlyphToBmpBuf();
 	if (result != 0) goto EXIT;
 
@@ -141,7 +141,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// BMP�T�C�Y�擾
+// BMPサイズ取得
 //******************************************************************************
 void MTFont2Bmp::GetBmpSize(
 		unsigned long* pHeight,
@@ -153,7 +153,7 @@ void MTFont2Bmp::GetBmpSize(
 }
 
 //******************************************************************************
-// BMP�s�N�Z���l�擾
+// BMPピクセル値取得
 //******************************************************************************
 BYTE MTFont2Bmp::GetBmpPixcel(
 		unsigned long x,
@@ -173,36 +173,36 @@ EXIT:;
 }
 
 //******************************************************************************
-// �_���t�H���g�쐬
+// 論理フォント作成
 //******************************************************************************
 int MTFont2Bmp::_CreateLogFont()
 {
 	int result = 0;
 	LOGFONTW logfont;
 
-	//�_���t�H���g���𐶐�
+	//論理フォント情報を生成
 	ZeroMemory(&logfont, sizeof(LOGFONTW));
-	logfont.lfHeight         = m_FontSize;			//����
-	logfont.lfWidth          = 0;					//��
-	logfont.lfEscapement     = 0;					//�p�x
-	logfont.lfOrientation    = 0;					//�p�x
-	logfont.lfWeight         = 0;					//�E�F�C�g
-	logfont.lfItalic         = FALSE;				//�C�^���b�N
-	logfont.lfUnderline      = FALSE;				//�A���_�[���C��
-	logfont.lfStrikeOut      = FALSE;				//�X�g���C�N�A�E�g
-	logfont.lfCharSet        = DEFAULT_CHARSET;		//�L�����N�^�Z�b�g
-	logfont.lfOutPrecision   = OUT_TT_ONLY_PRECIS;	//�o�͐��x�FTrueType�t�H���g���g�p�i���݂��Ȃ���΃f�t�H���g�̓���j
-	logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS;	//�N���b�s���O���x�F�f�t�H���g�w��
-	logfont.lfQuality        = PROOF_QUALITY;		//�i���F�t�H���g�������`��i����D��
-	logfont.lfPitchAndFamily = DEFAULT_PITCH		//�s�b�`�F�f�t�H���g
-								| FF_DONTCARE;		//�t�@�~���F��ʓI�ȃt�@�~��
+	logfont.lfHeight         = m_FontSize;			//高さ
+	logfont.lfWidth          = 0;					//幅
+	logfont.lfEscapement     = 0;					//角度
+	logfont.lfOrientation    = 0;					//角度
+	logfont.lfWeight         = 0;					//ウェイト
+	logfont.lfItalic         = FALSE;				//イタリック
+	logfont.lfUnderline      = FALSE;				//アンダーライン
+	logfont.lfStrikeOut      = FALSE;				//ストライクアウト
+	logfont.lfCharSet        = DEFAULT_CHARSET;		//キャラクタセット
+	logfont.lfOutPrecision   = OUT_TT_ONLY_PRECIS;	//出力精度：TrueTypeフォントを使用（存在しなければデフォルトの動作）
+	logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS;	//クリッピング精度：デフォルト指定
+	logfont.lfQuality        = PROOF_QUALITY;		//品質：フォント属性より描画品質を優先
+	logfont.lfPitchAndFamily = DEFAULT_PITCH		//ピッチ：デフォルト
+								| FF_DONTCARE;		//ファミリ：一般的なファミリ
 	wcscpy_s(logfont.lfFaceName, LF_FACESIZE, m_FontName);
 
 	if (m_isForceFixedPitch) {
 		logfont.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
 	}
 
-	//�_���t�H���g����
+	//論理フォント生成
 	m_hFont = CreateFontIndirectW(&logfont);
 	if (m_hFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -214,7 +214,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �O���tBMP�쐬
+// グリフBMP作成
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmp(
 		WCHAR char1,
@@ -238,28 +238,28 @@ int MTFont2Bmp::_CreateGlyphBmp(
 	DWORD flag = 0;
 	char32_t code = 0;
 
-	//�f�o�C�X�R���e�L�X�g�擾
+	//デバイスコンテキスト取得
 	hDC = GetDC(NULL);
 	if (hDC == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�f�o�C�X�R���e�L�X�g�ɘ_���t�H���g��ݒ�
+	//デバイスコンテキストに論理フォントを設定
 	hOldFont = (HFONT)SelectObject(hDC, m_hFont);
 	if (hOldFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
-	//�e�L�X�g���g���N�X�擾
+	//テキストメトリクス取得
 	bresult = GetTextMetrics(hDC, &m_TextMetric);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
-	//�T���Q�[�g�y�A�̏ꍇ�̓O���t�C���f�b�N�X���擾
+	//サロゲートペアの場合はグリフインデックスを取得
 	if (isSurrogatePair) {
 		str[0] = char1;
 		str[1] = char2;
@@ -268,12 +268,12 @@ int MTFont2Bmp::_CreateGlyphBmp(
 		gcp.lpGlyphs = buff;
 		gcp.nGlyphs = 2;
 		dwresult = GetCharacterPlacementW(
-							hDC,			//�f�o�C�X�R���e�L�X�g
-							str,			//�����Ώە�����i0�I�[�ł���K�v�͂Ȃ��j
-							gcp.nGlyphs,	//������̒���
-							0,				//�����񂪏��������ő�͈́i�_���P�ʁj
-							&gcp,			//�������ʊi�[��
-							GCP_GLYPHSHAPE	//�t���O
+							hDC,			//デバイスコンテキスト
+							str,			//処理対象文字列（0終端である必要はない）
+							gcp.nGlyphs,	//文字列の長さ
+							0,				//文字列が処理される最大範囲（論理単位）
+							&gcp,			//処理結果格納先
+							GCP_GLYPHSHAPE	//フラグ
 						);
 		if (dwresult == 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -288,33 +288,33 @@ int MTFont2Bmp::_CreateGlyphBmp(
 		flag = 0;
 	}
 
-	//�r�b�g�}�b�v�쐬�ɕK�v�ȃo�b�t�@�T�C�Y���擾
+	//ビットマップ作成に必要なバッファサイズを取得
 	size = GetGlyphOutlineW(
-					hDC,				//�f�o�C�X�R���e�L�X�g
-					code,				//����
-					GGO_GRAY4_BITMAP | flag,	//�t�H�[�}�b�g�F�r�b�g�}�b�v�i�O���C���x��17�i�j
-					&glyphMetric,		//�O���t���g���N�X�F�쐬���ꂽ�����Z���̏�񂪓���
-					0,					//�o�b�t�@�T�C�Y�F�[�����w�肵�ĕK�v�ȃT�C�Y�𓾂�
-					NULL,				//�o�b�t�@�ʒu
-					&mat				//�ϊ��s��
+					hDC,				//デバイスコンテキスト
+					code,				//文字
+					GGO_GRAY4_BITMAP | flag,	//フォーマット：ビットマップ（グレイレベル17段）
+					&glyphMetric,		//グラフメトリクス：作成された文字セルの情報が入る
+					0,					//バッファサイズ：ゼロを指定して必要なサイズを得る
+					NULL,				//バッファ位置
+					&mat				//変換行列
 				);
 	if (size == GDI_ERROR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 	
-	//�󔒕����̏ꍇ�̓r�b�g�}�b�v���쐬���Ȃ�
+	//空白文字の場合はビットマップを作成しない
 	if (size == 0) {
-		//�O���tBMP���
+		//グリフBMP情報
 		pGlyphBmp->glyphMetric = glyphMetric;
 		pGlyphBmp->bmpHeight   = 0;
 		pGlyphBmp->bmpWidth    = 0;
 		pGlyphBmp->pBmp        = NULL;
 	}
-	//�󔒕����ȊO�̓r�b�g�}�b�v���쐬����
+	//空白文字以外はビットマップを作成する
 	else {
 
-		//�r�b�g�}�b�v�쐬�ɕK�v�ȃ������̈���m�ۂ���
+		//ビットマップ作成に必要なメモリ領域を確保する
 		try {
 			pBuf = new BYTE[size];
 		}
@@ -323,21 +323,21 @@ int MTFont2Bmp::_CreateGlyphBmp(
 			goto EXIT;
 		}
 
-		//TrueType�t�H���g�r�b�g�}�b�v�쐬
+		//TrueTypeフォントビットマップ作成
 		size = GetGlyphOutlineW(
-						hDC,				//�f�o�C�X�R���e�L�X�g
-						code,				//����
-						GGO_GRAY4_BITMAP | flag,	//�t�H�[�}�b�g�F�r�b�g�}�b�v�i�O���C���x��17�i�j
-						&glyphMetric,		//�O���t���g���N�X�F�쐬���ꂽ�����Z���̏�񂪓���
-						size,				//�o�b�t�@�T�C�Y
-						pBuf,				//�o�b�t�@�ʒu
-						&mat				//�ϊ��s��
+						hDC,				//デバイスコンテキスト
+						code,				//文字
+						GGO_GRAY4_BITMAP | flag,	//フォーマット：ビットマップ（グレイレベル17段）
+						&glyphMetric,		//グラフメトリクス：作成された文字セルの情報が入る
+						size,				//バッファサイズ
+						pBuf,				//バッファ位置
+						&mat				//変換行列
 					);
 		if (size == GDI_ERROR) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 			goto EXIT;
 		}
-		//�O���tBMP���FBMP����4�̔{���ł��邱�Ƃ��ӎ�����
+		//グリフBMP情報：BMP幅は4の倍数であることを意識する
 		pGlyphBmp->glyphMetric = glyphMetric;
 		pGlyphBmp->bmpHeight   = glyphMetric.gmBlackBoxY;
 		pGlyphBmp->bmpWidth    = glyphMetric.gmBlackBoxX + (4 - (glyphMetric.gmBlackBoxX % 4)) % 4;
@@ -357,7 +357,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �O���tBMP���X�g�쐬
+// グリフBMPリスト作成
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmpList(
 		const WCHAR* pStr
@@ -371,12 +371,12 @@ int MTFont2Bmp::_CreateGlyphBmpList(
 
 	WCHAR* ptr = (WCHAR*)pStr;
 	
-	//1�������ƂɃO���tBMP���쐬
+	//1文字ごとにグリフBMPを作成
 	while (ptr[0] != L'\0') {
 		char1 = ptr[0];
 		char2 = ptr[1];
 		if (IS_HIGH_SURROGATE(char1) && IS_LOW_SURROGATE(char2)) {
-			//�T���Q�[�g�y�A�̏ꍇ
+			//サロゲートペアの場合
 			isSurrogatePair = true;
 			ptr += 2;
 		}
@@ -385,11 +385,11 @@ int MTFont2Bmp::_CreateGlyphBmpList(
 			ptr += 1;
 		}
 
-		//�O���tBMP�쐬
+		//グリフBMP作成
 		result = _CreateGlyphBmp(char1, char2, isSurrogatePair, &glyphBmp);
 		if (result != 0) goto EXIT;
 
-		//�����񃊃X�g�ɓo�^
+		//文字列リストに登録
 		m_GlyphBmpList.push_back(glyphBmp);
 	}
 
@@ -398,7 +398,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ������o�b�t�@�쐬
+// 文字列バッファ作成
 //******************************************************************************
 int MTFont2Bmp::_CreateBmpBuf()
 {
@@ -423,10 +423,10 @@ int MTFont2Bmp::_CreateBmpBuf()
 	//            v
 	//            y
 
-	//����
+	//高さ
 	m_BmpHeight = m_TextMetric.tmHeight;
 
-	//��
+	//幅
 	m_BmpWidth = 0;
 
 // >>> add 20120728 yossiepon begin
@@ -441,15 +441,15 @@ int MTFont2Bmp::_CreateBmpBuf()
 	}
 // <<< add 20120728 yossiepon end
 
-	//����4�̔{���ɂ���
+	//幅を4の倍数にする
 	m_BmpWidth = m_BmpWidth + ((4 - (m_BmpWidth % 4)) % 4);
 
-	//�e�N�X�`���Ƃ��ċ��e������ʓI�ȃT�C�Y�𒴂���ꍇ�̓N���b�v����
+	//テクスチャとして許容される一般的なサイズを超える場合はクリップする
 	if (m_BmpWidth > MTFONT2BMP_MAX_BMP_WIDTH) {
 		m_BmpWidth = MTFONT2BMP_MAX_BMP_WIDTH;
 	}
 
-	//BMP�o�b�t�@����
+	//BMPバッファ生成
 	try {
 		m_pBmpBuf = new BYTE[(m_BmpHeight * m_BmpWidth)];
 	}
@@ -464,7 +464,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �O���tBMP��BMP�o�b�t�@�ɏ�������
+// グリフBMPをBMPバッファに書き込む
 //******************************************************************************
 int MTFont2Bmp::_WriteGlyphToBmpBuf()
 {
@@ -483,43 +483,43 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 
-			//�󕶎��̓X�L�b�v
+			//空文字はスキップ
 			if (itr->pBmp == NULL) {
 				offsetX += (itr->glyphMetric.gmCellIncX);
 				continue;
 			}
 
-			//�R�s�[���O���tBMP�̍��W��4�̔{������������BMP�T�C�Y���ӎ�����
-			//���f�[�^�͈̔͂ŃX�L��������
+			//コピー元グリフBMPの座標は4の倍数制限があるBMPサイズを意識せず
+			//実データの範囲でスキャンする
 			for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
-				//Ticket #33695 �΍�
-				//�R�s�[��̗̈�O�ɂȂ�ꍇ�̓X�L�b�v����
+				//Ticket #33695 対策
+				//コピー先の領域外になる場合はスキップする
 				if (y >= m_BmpHeight) continue;
 
 				for (x = 0; x < (itr->glyphMetric.gmBlackBoxX); x++) {
 
-					//�R�s�[��̗̈�O�ɂȂ�ꍇ�̓X�L�b�v����
+					//コピー先の領域外になる場合はスキップする
 					destX = offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x;
 					if (destX >= (m_BmpWidth-1)) continue;
 
-					//�R�s�[���s�N�Z���|�C���^�FBMP�T�C�Y��4�̔{���������ӎ����ĎZ�o����
+					//コピー元ピクセルポインタ：BMPサイズの4の倍数制限を意識して算出する
 					pSrc = itr->pBmp + (itr->bmpWidth * y) + x;
 
-					//�R�s�[��s�N�Z���|�C���^
+					//コピー先ピクセルポインタ
 					pDest = m_pBmpBuf
 								+ (m_TextMetric.tmAscent - (itr->glyphMetric.gmptGlyphOrigin.y) + y) * m_BmpWidth
 								+ (offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x);
 
-					//�m�ۂ����o�b�t�@���z���ď����������Ƃ��Ă��Ȃ����`�F�b�N����
+					//確保したバッファを越えて書き込もうとしていないかチェックする
 					if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
 						//result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
 						//goto EXIT;
-						//Ticket #33695 �΍�
-						//�G���[�Ƃ����X�L�b�v����
+						//Ticket #33695 対策
+						//エラーとせずスキップする
 						continue;
 					}
 
-					//�s�N�Z���R�s�[
+					//ピクセルコピー
 					*pDest = *pSrc;
 				}
 			}

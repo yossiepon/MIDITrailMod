@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTStaticCaption
 //
-// Ã“IƒLƒƒƒvƒVƒ‡ƒ“•`‰æƒNƒ‰ƒX
+// é™çš„ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTStaticCaption::MTStaticCaption(void)
 {
@@ -25,7 +25,7 @@ MTStaticCaption::MTStaticCaption(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTStaticCaption::~MTStaticCaption(void)
 {
@@ -33,7 +33,7 @@ MTStaticCaption::~MTStaticCaption(void)
 }
 
 //******************************************************************************
-// Ã“IƒLƒƒƒvƒVƒ‡ƒ“¶¬
+// é™çš„ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTStaticCaption::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -55,11 +55,11 @@ int MTStaticCaption::Create(
 
 	Release();
 
-	//ƒeƒNƒXƒ`ƒƒ¶¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 	result = _CreateTexture(pD3DDevice, pFontName, fontSize, pCaption);
 	if (result != 0) goto EXIT;
 
-	//’¸“_‚ğ¶¬‚·‚é
+	//é ‚ç‚¹ã‚’ç”Ÿæˆã™ã‚‹
 	result = _CreateVertex();
 	if (result != 0) goto EXIT;
 
@@ -68,7 +68,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒƒTƒCƒYæ“¾
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 void MTStaticCaption::GetTextureSize(
 		unsigned long* pHeight,
@@ -79,7 +79,7 @@ void MTStaticCaption::GetTextureSize(
 }
 
 //******************************************************************************
-// •¶š—ñİ’è
+// æ–‡å­—åˆ—è¨­å®š
 //******************************************************************************
 void MTStaticCaption::SetColor(
 		D3DXCOLOR color
@@ -89,7 +89,7 @@ void MTStaticCaption::SetColor(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTStaticCaption::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -107,58 +107,58 @@ int MTStaticCaption::Draw(
 		goto EXIT;
 	}
 
-	//’¸“_À•Wİ’è
+	//é ‚ç‚¹åº§æ¨™è¨­å®š
 	_SetVertexPosition(
-			m_pVertex,	//’¸“_À•W”z—ñ
-			x,			//•`‰æˆÊ’ux
-			y,			//•`‰æˆÊ’uy
-			magRate		//Šg‘å—¦
+			m_pVertex,	//é ‚ç‚¹åº§æ¨™é…åˆ—
+			x,			//æç”»ä½ç½®x
+			y,			//æç”»ä½ç½®y
+			magRate		//æ‹¡å¤§ç‡
 		);
 
-	//’¸“_Fİ’è
+	//é ‚ç‚¹è‰²è¨­å®š
 	_SetVertexColor(m_pVertex, m_Color);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉƒeƒNƒXƒ`ƒƒ‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®š
 	hresult = pD3DDevice->SetTexture(
-					0,							//ƒXƒe[ƒW¯•Êq
-					m_FontTexture.GetTexture()	//ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					0,							//ã‚¹ãƒ†ãƒ¼ã‚¸è­˜åˆ¥å­
+					m_FontTexture.GetTexture()	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®š
 	hresult = pD3DDevice->SetFVF(_GetFVFFormat());
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éƒ}ƒeƒŠƒAƒ‹‚ğİ’è
-	//‚È‚µ
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’è¨­å®š
+	//ãªã—
 
-	//‘Sƒ{[ƒh•`‰æ
+	//å…¨ãƒœãƒ¼ãƒ‰æç”»
 	hresult = pD3DDevice->DrawPrimitiveUP(
-					D3DPT_TRIANGLESTRIP,			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
-					2,								//ƒvƒŠƒ~ƒeƒBƒu”
-					m_pVertex,						//’¸“_ƒf[ƒ^
-					sizeof(MTSTATICCAPTION_VERTEX)	//’¸“_ƒf[ƒ^‚ÌƒTƒCƒY
+					D3DPT_TRIANGLESTRIP,			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
+					2,								//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°
+					m_pVertex,						//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
+					sizeof(MTSTATICCAPTION_VERTEX)	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
@@ -170,7 +170,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTStaticCaption::Release()
 {
@@ -181,7 +181,7 @@ void MTStaticCaption::Release()
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ¶¬
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 //******************************************************************************
 int MTStaticCaption::_CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -194,11 +194,11 @@ int MTStaticCaption::_CreateTexture(
 	bool isForceFixedPitch = false;
 	unsigned long color = 0x00FFFFFF;
 
-	//ƒtƒHƒ“ƒgİ’èFŒÅ’èƒsƒbƒ`‹­§
+	//ãƒ•ã‚©ãƒ³ãƒˆè¨­å®šï¼šå›ºå®šãƒ”ãƒƒãƒå¼·åˆ¶
 	result = m_FontTexture.SetFont(pFontName, fontSize, color, isForceFixedPitch);
 	if (result != 0) goto EXIT;
 
-	//ƒ^ƒCƒ‹•¶šˆê——ƒeƒNƒXƒ`ƒƒì¬
+	//ã‚¿ã‚¤ãƒ«æ–‡å­—ä¸€è¦§ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ
 	result = m_FontTexture.CreateTexture(pD3DDevice, pCaption);
 	if (result != 0) goto EXIT;
 
@@ -207,7 +207,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_¶¬
+// é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTStaticCaption::_CreateVertex()
 {
@@ -215,7 +215,7 @@ int MTStaticCaption::_CreateVertex()
 	unsigned long i = 0;
 	MTSTATICCAPTION_VERTEX* pVertex = NULL;
 	
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	try {
 		pVertex = new MTSTATICCAPTION_VERTEX[4];
 	}
@@ -224,22 +224,22 @@ int MTStaticCaption::_CreateVertex()
 		goto EXIT;
 	}
 
-	//’¸“_À•Wİ’è
+	//é ‚ç‚¹åº§æ¨™è¨­å®š
 	_SetVertexPosition(
-			pVertex,	//’¸“_À•W”z—ñ
-			0.0f,		//•`‰æˆÊ’ux
-			0.0f,		//•`‰æˆÊ’uy
-			1.0f		//Šg‘å—¦
+			pVertex,	//é ‚ç‚¹åº§æ¨™é…åˆ—
+			0.0f,		//æç”»ä½ç½®x
+			0.0f,		//æç”»ä½ç½®y
+			1.0f		//æ‹¡å¤§ç‡
 		);
 
 	for (i = 0; i < 4; i++) {
-		//Še’¸“_‚ÌœZ”
+		//å„é ‚ç‚¹ã®é™¤ç®—æ•°
 		pVertex[i].rhw = 1.0f;
-		//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+		//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 		pVertex[i].c = m_Color;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒÀ•W
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
 	pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
 	pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
@@ -254,7 +254,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_ˆÊ’uİ’è
+// é ‚ç‚¹ä½ç½®è¨­å®š
 //******************************************************************************
 void MTStaticCaption::_SetVertexPosition(
 		MTSTATICCAPTION_VERTEX* pVertex,
@@ -269,18 +269,18 @@ void MTStaticCaption::_SetVertexPosition(
 	float height = 0.0f;
 	float width = 0.0f;
 
-	//•`‰æƒTƒCƒY
+	//æç”»ã‚µã‚¤ã‚º
 	m_FontTexture.GetTextureSize(&texHeight, &texWidth);
 	height = (float)texHeight * magRate;
 	width  = (float)texWidth  * magRate;
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	pVertex[0].p = D3DXVECTOR3(0.0f , 0.0f,   0.0f);
 	pVertex[1].p = D3DXVECTOR3(width, 0.0f,   0.0f);
 	pVertex[2].p = D3DXVECTOR3(0.0f , height, 0.0f);
 	pVertex[3].p = D3DXVECTOR3(width, height, 0.0f);
 
-	//•`‰æˆÊ’u‚ÉˆÚ“®
+	//æç”»ä½ç½®ã«ç§»å‹•
 	for (i = 0; i < 4; i++) {
 		pVertex[i].p.x += x;
 		pVertex[i].p.y += y;
@@ -290,7 +290,7 @@ void MTStaticCaption::_SetVertexPosition(
 }
 
 //******************************************************************************
-// ’¸“_Fİ’è
+// é ‚ç‚¹è‰²è¨­å®š
 //******************************************************************************
 void MTStaticCaption::_SetVertexColor(
 		MTSTATICCAPTION_VERTEX* pVertex,

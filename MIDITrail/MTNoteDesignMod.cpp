@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignMod
 //
-// ƒm[ƒgƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -14,23 +14,23 @@
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteDesignMod::MTNoteDesignMod(void)
 {
-	// Šî’êƒNƒ‰ƒX‚Ì_Clear()‚àŒÄ‚Î‚ê‚é‚½‚ßAŠî’êƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍŒÄ‚Î‚È‚¢
+	// åŸºåº•ã‚¯ãƒ©ã‚¹ã®_Clear()ã‚‚å‘¼ã°ã‚Œã‚‹ãŸã‚ã€åŸºåº•ã‚¯ãƒ©ã‚¹ã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯å‘¼ã°ãªã„
 	_Clear();
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteDesignMod::~MTNoteDesignMod(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int MTNoteDesignMod::Initialize(
 		const TCHAR* pSceneName,
@@ -39,10 +39,10 @@ int MTNoteDesignMod::Initialize(
 {
 	int result = 0;
 
-	//Šî’êƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	MTNoteDesign::Initialize(pSceneName, pSeqData);
 
-	//ƒpƒ‰ƒ[ƒ^İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
@@ -51,7 +51,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”g–äƒfƒBƒPƒCŠÔæ“¾(msec)
+// æ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“å–å¾—(msec)
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleDecayDuration()
 {
@@ -59,7 +59,7 @@ unsigned long MTNoteDesignMod::GetRippleDecayDuration()
 }
 
 //******************************************************************************
-// ”g–äƒŠƒŠ[ƒXŠÔæ“¾(msec)
+// æ³¢ç´‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“å–å¾—(msec)
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleReleaseDuration()
 {
@@ -67,7 +67,7 @@ unsigned long MTNoteDesignMod::GetRippleReleaseDuration()
 }
 
 //******************************************************************************
-// •`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è
+// æç”»å…ƒï¼ˆãƒªãƒƒãƒ—ãƒ«ç”»åƒï¼‰ãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®š
 //******************************************************************************
 D3DBLEND MTNoteDesignMod::GetRippleSrcBlend()
 {
@@ -75,7 +75,7 @@ D3DBLEND MTNoteDesignMod::GetRippleSrcBlend()
 }
 
 //******************************************************************************
-// •`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è
+// æç”»å…ƒï¼ˆãƒªãƒƒãƒ—ãƒ«ç”»åƒï¼‰ãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®š
 //******************************************************************************
 D3DBLEND MTNoteDesignMod::GetRippleDestBlend()
 {
@@ -83,7 +83,7 @@ D3DBLEND MTNoteDesignMod::GetRippleDestBlend()
 }
 
 //******************************************************************************
-// ”g–äã‘‚«‰ñ”
+// æ³¢ç´‹ä¸Šæ›¸ãå›æ•°
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleOverwriteTimes()
 {
@@ -91,7 +91,7 @@ unsigned long MTNoteDesignMod::GetRippleOverwriteTimes()
 }
 
 //******************************************************************************
-// ”g–ä•`‰æŠÔŠu
+// æ³¢ç´‹æç”»é–“éš”
 //******************************************************************************
 float MTNoteDesignMod::GetRippleSpacing()
 {
@@ -99,41 +99,41 @@ float MTNoteDesignMod::GetRippleSpacing()
 }
 
 //******************************************************************************
-// ”g–äcƒTƒCƒYæ“¾
+// æ³¢ç´‹ç¸¦ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 float MTNoteDesignMod::GetRippleHeight(
-		float rate	//ƒTƒCƒY”ä—¦
+		float rate	//ã‚µã‚¤ã‚ºæ¯”ç‡
 	)
 {
 	return m_RippleHeight * GetDecayCoefficient(rate);
 }
 
 //******************************************************************************
-// ”g–ä‰¡ƒTƒCƒYæ“¾
+// æ³¢ç´‹æ¨ªã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 float MTNoteDesignMod::GetRippleWidth(
-		float rate	//ƒTƒCƒY”ä—¦
+		float rate	//ã‚µã‚¤ã‚ºæ¯”ç‡
 	)
 {
 	return m_RippleWidth * GetDecayCoefficient(rate);
 }
 
 //******************************************************************************
-// ”g–ä“§–¾“xæ“¾
+// æ³¢ç´‹é€æ˜åº¦å–å¾—
 //******************************************************************************
 float MTNoteDesignMod::GetRippleAlpha(
-		float rate	//ƒTƒCƒY”ä—¦
+		float rate	//ã‚µã‚¤ã‚ºæ¯”ç‡
 	)
 {
 	return GetDecayCoefficient(rate);
 }
 
 //******************************************************************************
-// Œ¸ŠŒW”æ“¾
+// æ¸›è¡°ä¿‚æ•°å–å¾—
 //******************************************************************************
 float MTNoteDesignMod::GetDecayCoefficient(
-		float rate,			//ƒTƒCƒY”ä—¦
-		float saturation	//–O˜aƒŒƒxƒ‹
+		float rate,			//ã‚µã‚¤ã‚ºæ¯”ç‡
+		float saturation	//é£½å’Œãƒ¬ãƒ™ãƒ«
 	)
 {
 	float coeff = 1.0f;
@@ -150,20 +150,20 @@ float MTNoteDesignMod::GetDecayCoefficient(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 //******************************************************************************
 void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-		short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-		float rate							//È—ª‰ÂFƒTƒCƒY”ä—¦
+		D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+		D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+		D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+		D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+		short pitchBendValue,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+		unsigned char pitchBendSensitivity,	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
+		float rate							//çœç•¥å¯ï¼šã‚µã‚¤ã‚ºæ¯”ç‡
 	)
 {
 	D3DXVECTOR3 center;
@@ -186,7 +186,7 @@ void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[æ“¾
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚«ãƒ©ãƒ¼å–å¾—
 //******************************************************************************
 D3DXCOLOR MTNoteDesignMod::GetActiveNoteBoxColor(
 		unsigned char portNo,
@@ -202,14 +202,14 @@ D3DXCOLOR MTNoteDesignMod::GetActiveNoteBoxColor(
 
 	color = GetNoteBoxColor(portNo, chNo, noteNo);
 
-	//m_ActiveNoteDuration ƒŠƒŠ[ƒXƒ^ƒCƒ€
-	//  ”­‰¹ŠJn“_‚©‚çƒm[ƒgF‚ğŒ³‚É–ß‚·‚Ü‚Å‚ÌŠÔ
-	//  ‚½‚¾‚µ m_ActiveNoteEmissive ‚É‚æ‚Á‚ÄƒŠƒŠ[ƒXŒã‚àƒm[ƒgOFF‚Ü‚Å”­Œõ‚·‚é
+	//m_ActiveNoteDuration ãƒªãƒªãƒ¼ã‚¹ã‚¿ã‚¤ãƒ 
+	//  ç™ºéŸ³é–‹å§‹æ™‚ç‚¹ã‹ã‚‰ãƒãƒ¼ãƒˆè‰²ã‚’å…ƒã«æˆ»ã™ã¾ã§ã®æ™‚é–“
+	//  ãŸã ã— m_ActiveNoteEmissive ã«ã‚ˆã£ã¦ãƒªãƒªãƒ¼ã‚¹å¾Œã‚‚ãƒãƒ¼ãƒˆOFFã¾ã§ç™ºå…‰ã™ã‚‹
 
-	//m_ActiveNoteWhiteRate Å‘å”’F—¦
-	//  0.0 ¨ ƒm[ƒgF•Ï‰»‚È‚µ
-	//  0.5 ¨ ƒm[ƒgF‚Æ”’‚Ì’†ŠÔF
-	//  1.0 ¨ ”’
+	//m_ActiveNoteWhiteRate æœ€å¤§ç™½è‰²ç‡
+	//  0.0 â†’ ãƒãƒ¼ãƒˆè‰²å¤‰åŒ–ãªã—
+	//  0.5 â†’ ãƒãƒ¼ãƒˆè‰²ã¨ç™½ã®ä¸­é–“è‰²
+	//  1.0 â†’ ç™½
 
 	r = color.r + ((1.0f - color.r) * alpha * m_ActiveNoteWhiteRate);
 	g = color.g + ((1.0f - color.g) * alpha * m_ActiveNoteWhiteRate);
@@ -221,7 +221,7 @@ D3DXCOLOR MTNoteDesignMod::GetActiveNoteBoxColor(
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTNoteDesignMod::_Clear(void)
 {
@@ -232,7 +232,7 @@ void MTNoteDesignMod::_Clear(void)
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTNoteDesignMod::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -241,41 +241,41 @@ int MTNoteDesignMod::_LoadConfFile(
 	int result = 0;
 	MTConfFile confFile;
 
-	//Šî’êƒNƒ‰ƒX‚Ì“Ç‚İ‚İˆ—‚ğŒÄ‚Ño‚·
+	//åŸºåº•ã‚¯ãƒ©ã‚¹ã®èª­ã¿è¾¼ã¿å‡¦ç†ã‚’å‘¼ã³å‡ºã™
 	result = MTNoteDesign::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//”g–äî•ñ
+	//æ³¢ç´‹æƒ…å ±
 	//----------------------------------
 	result = confFile.SetCurSection(_T("Ripple"));
 	if (result != 0) goto EXIT;
 
-	//”g–äƒfƒBƒPƒCŠÔ(msec)
+	//æ³¢ç´‹ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“(msec)
 	result = confFile.GetInt(_T("DecayDuration"), &m_RippleDecayDuration, 100);
 	if (result != 0) goto EXIT;
 
-	//”g–äƒŠƒŠ[ƒXŠÔ(msec)
+	//æ³¢ç´‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“(msec)
 	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
 	if (result != 0) goto EXIT;
 
-	//•`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è Default: D3DBLEND_SRCALPHA(5)
+	//æç”»å…ƒï¼ˆãƒªãƒƒãƒ—ãƒ«ç”»åƒï¼‰ãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®š Default: D3DBLEND_SRCALPHA(5)
 	result = confFile.GetInt(_T("SrcBlend"), (int *)&m_RippleSrcBlend, 5);
 	if (result != 0) goto EXIT;
 
-	//•`‰ææi”wŒi‰æ‘œjƒuƒŒƒ“ƒhw’è Default: D3DBLEND_ONE(2)
+	//æç”»å…ˆï¼ˆèƒŒæ™¯ç”»åƒï¼‰ãƒ–ãƒ¬ãƒ³ãƒ‰æŒ‡å®š Default: D3DBLEND_ONE(2)
 	result = confFile.GetInt(_T("DestBlend"), (int *)&m_RippleDestBlend, 2);
 	if (result != 0) goto EXIT;
 
-	//”g–äã‘‚«‰ñ”
+	//æ³¢ç´‹ä¸Šæ›¸ãå›æ•°
 	result = confFile.GetInt(_T("OverwriteTimes"), &m_RippleOverwriteTimes, 3);
 	if (result != 0) goto EXIT;
 
-	//”g–ä•`‰æŠÔŠu
+	//æ³¢ç´‹æç”»é–“éš”
 	result = confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
 	if (result != 0) goto EXIT;
 

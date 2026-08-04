@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DIKeyCtrl
 //
-// DirectInput ƒL[“ü—Í§ŒäƒNƒ‰ƒX
+// DirectInput ã‚­ãƒ¼å…¥åŠ›åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DIKeyCtrl::DIKeyCtrl(void)
 {
@@ -26,7 +26,7 @@ DIKeyCtrl::DIKeyCtrl(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DIKeyCtrl::~DIKeyCtrl(void)
 {
@@ -34,7 +34,7 @@ DIKeyCtrl::~DIKeyCtrl(void)
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int DIKeyCtrl::Initialize(
 		HWND hWnd
@@ -46,66 +46,66 @@ int DIKeyCtrl::Initialize(
 
 	Terminate();
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hWnd);
 		goto EXIT;
 	}
 
-	//DirectInputƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	//DirectInputã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 	hresult = DirectInput8Create(
-				hInstance,				//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-				DIRECTINPUT_VERSION,	//DirectInputƒo[ƒWƒ‡ƒ“”Ô†
-				IID_IDirectInput8,		//ƒCƒ“ƒ^[ƒtƒF[ƒX¯•Êq
-				(void**)&m_pDI,			//ì¬‚³‚ê‚½ƒCƒ“ƒ^[ƒtƒF[ƒXƒ|ƒCƒ“ƒ^
-				NULL					//IUnknownƒCƒ“ƒ^[ƒtƒFƒCƒXƒ|ƒCƒ“ƒ^
+				hInstance,				//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+				DIRECTINPUT_VERSION,	//DirectInputãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·
+				IID_IDirectInput8,		//ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹è­˜åˆ¥å­
+				(void**)&m_pDI,			//ä½œæˆã•ã‚ŒãŸã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿
+				NULL					//IUnknownã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ãƒã‚¤ãƒ³ã‚¿
 			);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hInstance);
 		goto EXIT;
 	}
 
-	//ƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg‚Ì¶¬
+	//ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 	hresult = m_pDI->CreateDevice(
-					GUID_SysKeyboard,	//“ü—ÍƒfƒoƒCƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒXGUID
-					&m_pDIDevice,		//ì¬‚³‚ê‚½ƒCƒ“ƒ^[ƒtƒF[ƒXƒ|ƒCƒ“ƒ^
-					NULL				//IUnknownƒCƒ“ƒ^[ƒtƒFƒCƒXƒ|ƒCƒ“ƒ^
+					GUID_SysKeyboard,	//å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹GUID
+					&m_pDIDevice,		//ä½œæˆã•ã‚ŒãŸã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ãƒã‚¤ãƒ³ã‚¿
+					NULL				//IUnknownã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ãƒã‚¤ãƒ³ã‚¿
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒfƒoƒCƒX‚Ìƒf[ƒ^ƒtƒH[ƒ}ƒbƒg‚ğİ’èF’è‹`Ï‚İƒOƒ[ƒoƒ‹•Ï”‚ğw’è
+	//ãƒ‡ãƒã‚¤ã‚¹ã®ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®šï¼šå®šç¾©æ¸ˆã¿ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã‚’æŒ‡å®š
 	hresult = m_pDIDevice->SetDataFormat(&c_dfDIKeyboard);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒfƒoƒCƒX‚Ì‹¦’²ƒŒƒxƒ‹‚ğİ’è
+	//ãƒ‡ãƒã‚¤ã‚¹ã®å”èª¿ãƒ¬ãƒ™ãƒ«ã‚’è¨­å®š
 	hresult = m_pDIDevice->SetCooperativeLevel(
-					hWnd,					//ƒfƒoƒCƒX‚ÉŠÖ˜A•t‚¯‚ç‚ê‚Ä‚¢‚éƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					DISCL_FOREGROUND		//‹¦’²ƒŒƒxƒ‹FƒtƒHƒAƒOƒ‰ƒ“ƒhƒAƒNƒZƒXŒ 
-					| DISCL_NONEXCLUSIVE	//‹¦’²ƒŒƒxƒ‹F”ñ”r‘¼“IƒAƒNƒZƒXŒ 
+					hWnd,					//ãƒ‡ãƒã‚¤ã‚¹ã«é–¢é€£ä»˜ã‘ã‚‰ã‚Œã¦ã„ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					DISCL_FOREGROUND		//å”èª¿ãƒ¬ãƒ™ãƒ«ï¼šãƒ•ã‚©ã‚¢ã‚°ãƒ©ãƒ³ãƒ‰ã‚¢ã‚¯ã‚»ã‚¹æ¨©
+					| DISCL_NONEXCLUSIVE	//å”èª¿ãƒ¬ãƒ™ãƒ«ï¼šéæ’ä»–çš„ã‚¢ã‚¯ã‚»ã‚¹æ¨©
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hWnd);
 		goto EXIT;
 	}
 
-	//ƒfƒoƒCƒX‚ÌƒvƒƒpƒeƒB‚ğİ’è
+	//ãƒ‡ãƒã‚¤ã‚¹ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’è¨­å®š
 	DIPROPDWORD diprop;
 	diprop.diph.dwSize       = sizeof(DIPROPDWORD);
 	diprop.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-	diprop.diph.dwObj        = 0;			//DIPH_DEVICE‚Ìê‡‚Íƒ[ƒ
-	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObj‚Ì‰ğß•û–@FƒfƒoƒCƒX‘S‘Ì
-	diprop.dwData            = 8;			//İ’è‚·‚éƒvƒƒpƒeƒBFƒoƒbƒtƒ@ƒTƒCƒY
+	diprop.diph.dwObj        = 0;			//DIPH_DEVICEã®å ´åˆã¯ã‚¼ãƒ­
+	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObjã®è§£é‡ˆæ–¹æ³•ï¼šãƒ‡ãƒã‚¤ã‚¹å…¨ä½“
+	diprop.dwData            = 8;			//è¨­å®šã™ã‚‹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ï¼šãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 
 	hresult = m_pDIDevice->SetProperty(
-					DIPROP_BUFFERSIZE,	//İ’è‘ÎÛƒvƒƒpƒeƒB‚ÌGUID
-					&diprop.diph		//İ’è‚·‚éDIPROPHEADER\‘¢‘Ì
+					DIPROP_BUFFERSIZE,	//è¨­å®šå¯¾è±¡ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®GUID
+					&diprop.diph		//è¨­å®šã™ã‚‹DIPROPHEADERæ§‹é€ ä½“
 				);
 	if (FAILED(hresult) && (hresult != DI_PROPNOEFFECT)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -117,7 +117,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //******************************************************************************
 void DIKeyCtrl::Terminate()
 {
@@ -136,7 +136,7 @@ void DIKeyCtrl::Terminate()
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒXƒAƒNƒZƒXŒ æ“¾
+// ãƒ‡ãƒã‚¤ã‚¹ã‚¢ã‚¯ã‚»ã‚¹æ¨©å–å¾—
 //******************************************************************************
 int DIKeyCtrl::Acquire()
 {
@@ -145,7 +145,7 @@ int DIKeyCtrl::Acquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//ƒAƒNƒZƒXŒ æ“¾F//ƒfƒoƒCƒXæ“¾Ï‚İ(S_FALSE)‚Í³í‚Æ‚İ‚È‚·
+	//ã‚¢ã‚¯ã‚»ã‚¹æ¨©å–å¾—ï¼š//ãƒ‡ãƒã‚¤ã‚¹å–å¾—æ¸ˆã¿(S_FALSE)ã¯æ­£å¸¸ã¨ã¿ãªã™
 	hresult = m_pDIDevice->Acquire();
 	if (FAILED(hresult) && (hresult != S_FALSE)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -157,7 +157,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒXƒAƒNƒZƒXŒ ‰ğ•ú
+// ãƒ‡ãƒã‚¤ã‚¹ã‚¢ã‚¯ã‚»ã‚¹æ¨©è§£æ”¾
 //******************************************************************************
 int DIKeyCtrl::Unacquire()
 {
@@ -166,7 +166,7 @@ int DIKeyCtrl::Unacquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//ƒAƒNƒZƒXŒ ‰ğ•ú
+	//ã‚¢ã‚¯ã‚»ã‚¹æ¨©è§£æ”¾
 	hresult = m_pDIDevice->Unacquire();
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -178,7 +178,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[ó‘Ôæ“¾
+// ã‚­ãƒ¼çŠ¶æ…‹å–å¾—
 //******************************************************************************
 int DIKeyCtrl::GetKeyStatus()
 {
@@ -191,15 +191,15 @@ int DIKeyCtrl::GetKeyStatus()
 		goto EXIT;
 	}
 
-	//ƒEƒBƒ“ƒhƒE‚ª”ñƒAƒNƒeƒBƒuó‘Ô‚Å‚ ‚é‚ÆGetDeviceState()‚ÍƒGƒ‰[‚É‚È‚é(0x8007000c)
-	//‚Ç‚¤‚µ‚æ‚¤EEE
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒéã‚¢ã‚¯ãƒ†ã‚£ãƒ–çŠ¶æ…‹ã§ã‚ã‚‹ã¨GetDeviceState()ã¯ã‚¨ãƒ©ãƒ¼ã«ãªã‚‹(0x8007000c)
+	//ã©ã†ã—ã‚ˆã†ãƒ»ãƒ»ãƒ»
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒL[ó‘ÔŠm”F
+// ã‚­ãƒ¼çŠ¶æ…‹ç¢ºèª
 //******************************************************************************
 bool DIKeyCtrl::IsKeyDown(
 		unsigned char key

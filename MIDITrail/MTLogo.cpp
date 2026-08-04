@@ -1,16 +1,16 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTLogo
 //
-// MIDITrail ƒƒS•`‰æƒNƒ‰ƒX
+// MIDITrail ãƒ­ã‚´æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒ|ƒŠƒSƒ“‚ğƒ^ƒCƒ‹ó‚É•À‚×‚ÄƒƒS‚ÌƒeƒNƒXƒ`ƒƒ‚ğ“\‚è•t‚¯‚éB
-// ƒ|ƒŠƒSƒ“‚ÌF‚ğƒ^ƒCƒ‹‚²‚Æ‚ÉXV‚·‚é‚±‚Æ‚ÅƒƒS‚ğƒOƒ‰ƒf[ƒVƒ‡ƒ“‚³‚¹‚éB
+// ãƒãƒªã‚´ãƒ³ã‚’ã‚¿ã‚¤ãƒ«çŠ¶ã«ä¸¦ã¹ã¦ãƒ­ã‚´ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è²¼ã‚Šä»˜ã‘ã‚‹ã€‚
+// ãƒãƒªã‚´ãƒ³ã®è‰²ã‚’ã‚¿ã‚¤ãƒ«ã”ã¨ã«æ›´æ–°ã™ã‚‹ã“ã¨ã§ãƒ­ã‚´ã‚’ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³ã•ã›ã‚‹ã€‚
 //
 //   +-++-++-++-+
 //   |/||/||/||/|...
@@ -25,7 +25,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTLogo::MTLogo(void)
 {
@@ -34,7 +34,7 @@ MTLogo::MTLogo(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTLogo::~MTLogo(void)
 {
@@ -42,7 +42,7 @@ MTLogo::~MTLogo(void)
 }
 
 //******************************************************************************
-// ƒV[ƒ“¶¬
+// ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTLogo::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -52,11 +52,11 @@ int MTLogo::Create(
 
 	Release();
 
-	//ƒeƒNƒXƒ`ƒƒ¶¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 	result = _CreateTexture(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	result = _CreateVertex();
 	if (result != 0) goto EXIT;
 
@@ -65,7 +65,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •ÏŠ·ˆ—
+// å¤‰æ›å‡¦ç†
 //******************************************************************************
 int MTLogo::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -73,14 +73,14 @@ int MTLogo::Transform(
 {
 	int result = 0;
 
-	//ƒ^ƒCƒgƒ‹ƒOƒ‰ƒf[ƒVƒ‡ƒ“İ’è
+	//ã‚¿ã‚¤ãƒˆãƒ«ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š
 	_SetGradationColor();
 
 	return result;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTLogo::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -89,47 +89,47 @@ int MTLogo::Draw(
 	int result = 0;
 	HRESULT hresult = D3D_OK;
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉƒeƒNƒXƒ`ƒƒ‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®š
 	hresult = pD3DDevice->SetTexture(
-					0,							//ƒXƒe[ƒW¯•Êq
-					m_FontTexture.GetTexture()	//ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					0,							//ã‚¹ãƒ†ãƒ¼ã‚¸è­˜åˆ¥å­
+					m_FontTexture.GetTexture()	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®š
 	hresult = pD3DDevice->SetFVF(_GetFVFFormat());
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éƒ}ƒeƒŠƒAƒ‹‚ğİ’è
-	//‚È‚µ
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’è¨­å®š
+	//ãªã—
 
-	//ƒ^ƒCƒgƒ‹•¶š•`‰æ
+	//ã‚¿ã‚¤ãƒˆãƒ«æ–‡å­—æç”»
 	hresult = pD3DDevice->DrawPrimitiveUP(
-					D3DPT_TRIANGLELIST,		//ƒvƒŠƒ~ƒeƒBƒuí•Ê
-					2 * MTLOGO_TILE_NUM,		//ƒvƒŠƒ~ƒeƒBƒu”
-					m_pVertex,				//’¸“_ƒf[ƒ^
-					sizeof(MTLOGO_VERTEX)	//’¸“_ƒf[ƒ^‚ÌƒTƒCƒY
+					D3DPT_TRIANGLELIST,		//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
+					2 * MTLOGO_TILE_NUM,		//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°
+					m_pVertex,				//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
+					sizeof(MTLOGO_VERTEX)	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, MTLOGO_TILE_NUM);
@@ -141,7 +141,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”jŠü
+// ç ´æ£„
 //******************************************************************************
 void MTLogo::Release()
 {
@@ -152,7 +152,7 @@ void MTLogo::Release()
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ¶¬
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 //******************************************************************************
 int MTLogo::_CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -162,16 +162,16 @@ int MTLogo::_CreateTexture(
 	unsigned long color = 0x00FFFFFF;
 	bool isForceFixedPitch = false;
 
-	//ƒtƒHƒ“ƒgİ’è
+	//ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 	result = m_FontTexture.SetFont(
-					L"Arial",			//ƒtƒHƒ“ƒg–¼Ì
-					40,					//ƒtƒHƒ“ƒgƒTƒCƒY
-					color,				//F
-					isForceFixedPitch	//ŒÅ’èƒsƒbƒ`‹­§
+					L"Arial",			//ãƒ•ã‚©ãƒ³ãƒˆåç§°
+					40,					//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+					color,				//è‰²
+					isForceFixedPitch	//å›ºå®šãƒ”ãƒƒãƒå¼·åˆ¶
 				);
 	if (result != 0) goto EXIT;
 
-	//ƒ^ƒCƒ‹•¶šˆê——ƒeƒNƒXƒ`ƒƒì¬
+	//ã‚¿ã‚¤ãƒ«æ–‡å­—ä¸€è¦§ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ
 	result = m_FontTexture.CreateTexture(pD3DDevice, MTLOGO_TITLE);
 	if (result != 0) goto EXIT;
 
@@ -180,7 +180,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒHƒ“ƒgƒ^ƒCƒ‹’¸“_¶¬
+// ãƒ•ã‚©ãƒ³ãƒˆã‚¿ã‚¤ãƒ«é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTLogo::_CreateVertex()
 {
@@ -188,7 +188,7 @@ int MTLogo::_CreateVertex()
 	unsigned long i = 0;
 	MTLOGO_VERTEX* pVertex = NULL;
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	try {
 		pVertex = new MTLOGO_VERTEX[6*MTLOGO_TILE_NUM];
 	}
@@ -197,16 +197,16 @@ int MTLogo::_CreateVertex()
 		goto EXIT;
 	}
 
-	//’¸“_À•Wİ’è
+	//é ‚ç‚¹åº§æ¨™è¨­å®š
 	_SetVertexPosition(
-			pVertex,		//’¸“_À•W”z—ñ
-			MTLOGO_POS_X,	//•`‰æˆÊ’ux
-			MTLOGO_POS_Y,	//•`‰æˆÊ’uy
-			MTLOGO_MAG		//Šg‘å—¦
+			pVertex,		//é ‚ç‚¹åº§æ¨™é…åˆ—
+			MTLOGO_POS_X,	//æç”»ä½ç½®x
+			MTLOGO_POS_Y,	//æç”»ä½ç½®y
+			MTLOGO_MAG		//æ‹¡å¤§ç‡
 		);
 
 	for (i = 0; i < 6*MTLOGO_TILE_NUM; i++) {
-		//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+		//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 		pVertex[i].c = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f); //R,G,B,A
 	}
 
@@ -219,7 +219,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_ˆÊ’uİ’è
+// é ‚ç‚¹ä½ç½®è¨­å®š
 //******************************************************************************
 void MTLogo::_SetVertexPosition(
 		MTLOGO_VERTEX* pVertex,
@@ -235,14 +235,14 @@ void MTLogo::_SetVertexPosition(
 	float width = 0.0f;
 	float tileNo = 0.0f;
 
-	//ƒ^ƒCƒ‹ƒTƒCƒY
+	//ã‚¿ã‚¤ãƒ«ã‚µã‚¤ã‚º
 	m_FontTexture.GetTextureSize(&texHeight, &texWidth);
 	height = texHeight * magRate;
 	width  = ((float)texWidth / (float)MTLOGO_TILE_NUM) * magRate;
 
-	//’¸“_À•WFXY•½–Ê‚Ì(0, 0)‚ğ¶ã‚Æ‚·‚é
+	//é ‚ç‚¹åº§æ¨™ï¼šXYå¹³é¢ã®(0, 0)ã‚’å·¦ä¸Šã¨ã™ã‚‹
 	for (i = 0; i < MTLOGO_TILE_NUM; i++) {
-		//’¸“_À•W
+		//é ‚ç‚¹åº§æ¨™
 		pVertex[i*6+0].p = D3DXVECTOR3(width * (i     ),  0.0f,   0.0f);
 		pVertex[i*6+1].p = D3DXVECTOR3(width * (i+1.0f),  0.0f,   0.0f);
 		pVertex[i*6+2].p = D3DXVECTOR3(width * (i     ), -height, 0.0f);
@@ -250,33 +250,33 @@ void MTLogo::_SetVertexPosition(
 		pVertex[i*6+4].p = pVertex[i*6+1].p;
 		pVertex[i*6+5].p = D3DXVECTOR3(width * (i+1.0f), -height, 0.0f);
 
-		//ƒeƒNƒXƒ`ƒƒÀ•W
-		//¶ã
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+		//å·¦ä¸Š
 		pVertex[i*6+0].t.x = 1.0f * tileNo / (float)MTLOGO_TILE_NUM;
 		pVertex[i*6+0].t.y = 0.0f;
-		//‰Eã
+		//å³ä¸Š
 		pVertex[i*6+1].t.x = 1.0f * (tileNo + 1.0f) / (float)MTLOGO_TILE_NUM;
 		pVertex[i*6+1].t.y = 0.0f;
-		//¶‰º
+		//å·¦ä¸‹
 		pVertex[i*6+2].t.x = 1.0f * tileNo / (float)MTLOGO_TILE_NUM;
 		pVertex[i*6+2].t.y = 1.0f;
-		//¶‰º
+		//å·¦ä¸‹
 		pVertex[i*6+3].t = pVertex[i*6+2].t;
-		//‰Eã
+		//å³ä¸Š
 		pVertex[i*6+4].t = pVertex[i*6+1].t;
-		//‰E‰º
+		//å³ä¸‹
 		pVertex[i*6+5].t.x = 1.0f * (tileNo + 1.0f) / (float)MTLOGO_TILE_NUM;
 		pVertex[i*6+5].t.y = 1.0f;
 
 		tileNo += 1.0f;
 	}
 
-	//–@ü
+	//æ³•ç·š
 	for (i = 0; i < 6*MTLOGO_TILE_NUM; i++) {
 		pVertex[i].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	}
 
-	//w’èˆÊ’u‚ÉˆÚ“®
+	//æŒ‡å®šä½ç½®ã«ç§»å‹•
 	for (i = 0; i < 6*MTLOGO_TILE_NUM; i++) {
 		pVertex[i].p.x += x;
 		pVertex[i].p.y += y;
@@ -286,7 +286,7 @@ void MTLogo::_SetVertexPosition(
 }
 
 //******************************************************************************
-// ƒOƒ‰ƒf[ƒVƒ‡ƒ“İ’è
+// ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³è¨­å®š
 //******************************************************************************
 void MTLogo::_SetGradationColor()
 {
@@ -297,19 +297,19 @@ void MTLogo::_SetGradationColor()
 	float color = 0.0f;
 	MTLOGO_VERTEX* pVertex = NULL;
 
-	//ƒV[ƒ“Œo‰ßŠÔ
+	//ã‚·ãƒ¼ãƒ³çµŒéæ™‚é–“
 	if (m_StartTime == 0) {
 		m_StartTime = timeGetTime();
 	}
 	sceneTime = timeGetTime() - m_StartTime;
 
-	//ƒOƒ‰ƒf[ƒVƒ‡ƒ“ˆ—
+	//ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
 	for (i = 0; i < MTLOGO_TILE_NUM; i++) {
 
-		//ƒ^ƒCƒ‹‚²‚Æ‚Ì’x‰„ŠÔ
+		//ã‚¿ã‚¤ãƒ«ã”ã¨ã®é…å»¶æ™‚é–“
 		delay = i * (MTLOGO_GRADATION_TIME / MTLOGO_TILE_NUM);
 
-		//ƒ^ƒCƒ‹‚É‚Æ‚Á‚Ä‚ÌŒo‰ßŠÔ
+		//ã‚¿ã‚¤ãƒ«ã«ã¨ã£ã¦ã®çµŒéæ™‚é–“
 		if (sceneTime < delay) {
 			tileTime = 0;
 		}
@@ -317,21 +317,21 @@ void MTLogo::_SetGradationColor()
 			tileTime = sceneTime - delay;
 		}
 
-		//ƒ^ƒCƒ‹‚ÌF
+		//ã‚¿ã‚¤ãƒ«ã®è‰²
 		if (tileTime < MTLOGO_GRADATION_TIME) {
-			//•¨”’
+			//é»’â†’ç™½
 			color = (float)tileTime / (float)MTLOGO_GRADATION_TIME;
 		}
 		else if (tileTime < (MTLOGO_GRADATION_TIME*2)) {
-			//”’¨•
+			//ç™½â†’é»’
 			color = 1.0f - ((float)(tileTime - MTLOGO_GRADATION_TIME) / (float)MTLOGO_GRADATION_TIME);
 		}
 		else {
-			//•
+			//é»’
 			color = 0.0f;
 		}
 
-		//ƒ^ƒCƒ‹‚ÌF‚ğ’¸“_‚Éİ’è
+		//ã‚¿ã‚¤ãƒ«ã®è‰²ã‚’é ‚ç‚¹ã«è¨­å®š
 		pVertex = m_pVertex + (6*i);
 		_SetTileColor(pVertex, color);
 	}
@@ -340,7 +340,7 @@ void MTLogo::_SetGradationColor()
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ‹Fİ’è
+// ã‚¿ã‚¤ãƒ«è‰²è¨­å®š
 //******************************************************************************
 void MTLogo::_SetTileColor(
 		MTLOGO_VERTEX* pVertex,

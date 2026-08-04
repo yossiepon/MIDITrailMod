@@ -1,18 +1,18 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXPrimitive
 //
-// ƒvƒŠƒ~ƒeƒBƒu•`‰æƒNƒ‰ƒX
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// DrawPrimitive, DrawIndexedPrimitive ‚Ì‘€ì‚ğƒ‰ƒbƒv‚·‚éƒNƒ‰ƒXB
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğì¬‚µ‚È‚¯‚ê‚ÎDrawPrimitive
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğì¬‚·‚é‚ÆDrawIndexedPrimitive
-// ‚ªg—p‚³‚ê‚éB
+// DrawPrimitive, DrawIndexedPrimitive ã®æ“ä½œã‚’ãƒ©ãƒƒãƒ—ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã—ãªã‘ã‚Œã°DrawPrimitive
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã™ã‚‹ã¨DrawIndexedPrimitive
+// ãŒä½¿ç”¨ã•ã‚Œã‚‹ã€‚
 
 #pragma once
 
@@ -21,43 +21,43 @@
 
 
 //******************************************************************************
-// ƒvƒŠƒ~ƒeƒBƒu•`‰æƒNƒ‰ƒX
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class DXPrimitive
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	DXPrimitive(void);
 	virtual ~DXPrimitive(void);
 
-	//ƒŠƒ\[ƒX‰ğ•ú
+	//ãƒªã‚½ãƒ¼ã‚¹è§£æ”¾
 	void Release();
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(
 			unsigned long vertexSize,
 			unsigned long fvfFormat,
 			D3DPRIMITIVETYPE type
 		);
 
-	//’¸“_ƒoƒbƒtƒ@^ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Ì¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ï¼ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
 	int CreateVertexBuffer(LPDIRECT3DDEVICE9 pD3DDevice, unsigned long vertexNum);
 	int CreateIndexBuffer(LPDIRECT3DDEVICE9 pD3DDevice, unsigned long indexNum);
 
-	//’¸“_ƒf[ƒ^^ƒCƒ“ƒfƒbƒNƒXƒf[ƒ^“o˜^
-	//  ƒoƒbƒtƒ@‚ÌƒƒbƒN^ƒAƒ“ƒƒbƒN§Œä‚Í©“®“I‚És‚í‚ê‚é
-	//  –{ƒƒ\ƒbƒh‚Éw’è‚µ‚½ƒf[ƒ^‚Í—˜—pÒ‘¤‚ª”jŠü‚·‚é
+	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ï¼ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ç™»éŒ²
+	//  ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯ï¼ã‚¢ãƒ³ãƒ­ãƒƒã‚¯åˆ¶å¾¡ã¯è‡ªå‹•çš„ã«è¡Œã‚ã‚Œã‚‹
+	//  æœ¬ãƒ¡ã‚½ãƒƒãƒ‰ã«æŒ‡å®šã—ãŸãƒ‡ãƒ¼ã‚¿ã¯åˆ©ç”¨è€…å´ãŒç ´æ£„ã™ã‚‹
 	int SetAllVertex(LPDIRECT3DDEVICE9 pD3DDevice, void* pVertex);
 	int SetAllIndex(LPDIRECT3DDEVICE9 pD3DDevice, unsigned long* pIndex);
 
-	//ƒ}ƒeƒŠƒAƒ‹“o˜^iÈ—ª‰Âj
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ç™»éŒ²ï¼ˆçœç•¥å¯ï¼‰
 	void SetMaterial(D3DMATERIAL9 material);
 
-	//ˆÚ“®§Œä
+	//ç§»å‹•åˆ¶å¾¡
 	void Transform(D3DXMATRIX worldMatrix);
 
-	//•`‰æ
+	//æç”»
 	int Draw(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			LPDIRECT3DTEXTURE9 pTexture = NULL,
@@ -74,9 +74,9 @@ public:
 
 // <<< add 20120728 yossiepon end
 
-	//’¸“_ƒoƒbƒtƒ@^ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÌƒƒbƒN§Œä
-	//  ƒoƒbƒtƒ@‚Ì“à—e‚ğ‘‚«Š·‚¦‚é‚É‚ÍƒƒbƒN‚µ‚Äƒoƒbƒtƒ@‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
-	//  ƒoƒbƒtƒ@‚Ì“à—e‚ğ‘‚«I‚¦‚½‚çƒAƒ“ƒƒbƒN‚·‚é
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ï¼ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯åˆ¶å¾¡
+	//  ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’æ›¸ãæ›ãˆã‚‹ã«ã¯ãƒ­ãƒƒã‚¯ã—ã¦ãƒãƒƒãƒ•ã‚¡ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
+	//  ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’æ›¸ãçµ‚ãˆãŸã‚‰ã‚¢ãƒ³ãƒ­ãƒƒã‚¯ã™ã‚‹
 	int LockVertex(void** pPtrVertex, unsigned long offset = 0, unsigned long size = 0);
 	int UnlockVertex();
 	int LockIndex(unsigned long** pPtrIndex, unsigned long offset = 0, unsigned long size = 0);
@@ -84,7 +84,7 @@ public:
 
 private:
 
-	//’¸“_î•ñ
+	//é ‚ç‚¹æƒ…å ±
 	unsigned long m_VertexSize;
 	unsigned long m_FVFFormat;
 	D3DPRIMITIVETYPE m_PrimitiveType;
@@ -92,12 +92,12 @@ private:
 	unsigned long m_VertexNum;
 	bool m_IsVertexLocked;
 	
-	//ƒCƒ“ƒfƒbƒNƒXî•ñ
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æƒ…å ±
 	LPDIRECT3DINDEXBUFFER9 m_pIndexBuffer;
 	unsigned long m_IndexNum;
 	bool m_IsIndexLocked;
 	
-	//•`‰æî•ñ
+	//æç”»æƒ…å ±
 	D3DMATERIAL9 m_Material;
 	D3DXMATRIX m_WorldMatrix;
 

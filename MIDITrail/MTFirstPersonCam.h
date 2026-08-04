@@ -1,16 +1,16 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFirstPersonCam
 //
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// ä¸€äººç§°ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// FPSƒQ[ƒ€ƒ‰ƒCƒN‚È‹“_ˆÚ“®‚ğÀŒ»‚·‚éB
-// –{ƒNƒ‰ƒX“à‚ÅƒL[ƒ{[ƒh^ƒ}ƒEƒX‚Ìó‘Ô‚ğæ“¾‚·‚éB
+// FPSã‚²ãƒ¼ãƒ ãƒ©ã‚¤ã‚¯ãªè¦–ç‚¹ç§»å‹•ã‚’å®Ÿç¾ã™ã‚‹ã€‚
+// æœ¬ã‚¯ãƒ©ã‚¹å†…ã§ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ï¼ãƒã‚¦ã‚¹ã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -27,14 +27,14 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒJƒƒ‰ˆÊ’uÅ‘å”ÍˆÍ
+//ã‚«ãƒ¡ãƒ©ä½ç½®æœ€å¤§ç¯„å›²
 #define MTFIRSTPERSONCAM_CAMVECTOR_LIMIT  (1000000.0f)
 
 
 //******************************************************************************
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// ä¸€äººç§°ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTFirstPersonCam
 {
@@ -48,63 +48,63 @@ public:
 
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTFirstPersonCam(void);
 	virtual ~MTFirstPersonCam(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	int Clear();
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(HWND hWnd, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
+	//ã‚«ãƒ¡ãƒ©ä½ç½®è¨­å®š
 	void SetPosition(
 			D3DXVECTOR3 camVector
 		);
 
-	//ƒJƒƒ‰•ûŒüİ’è
-	//  •ûˆÊŠpFXZ•½–Êã‚ÌX²‚Æ‚ÌŠp“x +X²•ûŒü=0“x +Z²•ûŒü=90“x
-	//  “V’¸ŠpFY²‚Æ‚ÌŠp“x           +Y²•ûŒü=0“x XZ•½–Êã=90“x
+	//ã‚«ãƒ¡ãƒ©æ–¹å‘è¨­å®š
+	//  æ–¹ä½è§’ï¼šXZå¹³é¢ä¸Šã®Xè»¸ã¨ã®è§’åº¦ +Xè»¸æ–¹å‘=0åº¦ +Zè»¸æ–¹å‘=90åº¦
+	//  å¤©é ‚è§’ï¼šYè»¸ã¨ã®è§’åº¦           +Yè»¸æ–¹å‘=0åº¦ XZå¹³é¢ä¸Š=90åº¦
 	void SetDirection(
-			float phi,		//•ûˆÊŠp
-			float theta		//“V’¸Šp
+			float phi,		//æ–¹ä½è§’
+			float theta		//å¤©é ‚è§’
 		);
 
-	//ƒJƒƒ‰ˆÊ’uæ“¾
+	//ã‚«ãƒ¡ãƒ©ä½ç½®å–å¾—
 	void GetPosition(D3DXVECTOR3* pCamVector);
 
-	//ƒJƒƒ‰•ûŒüæ“¾
+	//ã‚«ãƒ¡ãƒ©æ–¹å‘å–å¾—
 	void GetDirection(
 			float* pPhi,
 			float* pTheta
 		);
 
-	//ƒ}ƒEƒX‹üˆÚ“®ƒ‚[ƒh“o˜^
+	//ãƒã‚¦ã‚¹è¦–ç·šç§»å‹•ãƒ¢ãƒ¼ãƒ‰ç™»éŒ²
 	void SetMouseCamMode(bool isEnable);
 
-	//©“®‰ñ“]ƒ‚[ƒh“o˜^
+	//è‡ªå‹•å›è»¢ãƒ¢ãƒ¼ãƒ‰ç™»éŒ²
 	void SetAutoRollMode(bool isEnable);
 	void SwitchAutoRllDirecton();
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//‰ñ“]Šp“xæ“¾
+	//å›è»¢è§’åº¦å–å¾—
 	float GetManualRollAngle();
 	float GetAutoRollVelocity();
 
-	//‰ñ“]Šp“xİ’è
+	//å›è»¢è§’åº¦è¨­å®š
 	void SetManualRollAngle(float rollAngle);
 	void SetAutoRollVelocity(float rollVelocity);
 
-	//is•ûŒüİ’è
+	//é€²è¡Œæ–¹å‘è¨­å®š
 	void SetProgressDirection(MTProgressDirection dir);
 
 private:
@@ -123,14 +123,14 @@ private:
 	HWND m_hWnd;
 	MTNoteDesign m_NoteDesign;
 
-	//ˆÚ“®‘¬“x
-	float m_VelocityFB;		//‘OŒãˆÚ“®—Ê m/sec.
-	float m_VelocityLR;		//¶‰EˆÚ“®—Ê m/sec.
-	float m_VelocityUD;		//ã‰ºˆÚ“®—Ê m/sec.
-	float m_VelocityPT;		//‹üˆÚ“®—Ê degrees/sec.
-	float m_AcceleRate;		//‰Á‘¬”{—¦
+	//ç§»å‹•é€Ÿåº¦
+	float m_VelocityFB;		//å‰å¾Œç§»å‹•é‡ m/sec.
+	float m_VelocityLR;		//å·¦å³ç§»å‹•é‡ m/sec.
+	float m_VelocityUD;		//ä¸Šä¸‹ç§»å‹•é‡ m/sec.
+	float m_VelocityPT;		//è¦–ç·šç§»å‹•é‡ degrees/sec.
+	float m_AcceleRate;		//åŠ é€Ÿå€ç‡
 
-	//‰ñ“]§ŒäŒn
+	//å›è»¢åˆ¶å¾¡ç³»
 	float m_RollAngle;
 	float m_VelocityAutoRoll;
 	float m_VelocityManualRoll;

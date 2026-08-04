@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMBarList
 //
-// ¬ßƒŠƒXƒgƒNƒ‰ƒX
+// å°ç¯€ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -21,36 +21,36 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// ¬ßƒŠƒXƒgƒNƒ‰ƒX
+// å°ç¯€ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMBarList
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMBarList(void);
 	virtual ~SMBarList(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void Clear();
 
-	//¬ß’Ç‰Á
+	//å°ç¯€è¿½åŠ 
 	int AddBar(unsigned long tickTime);
 
-	//¬ßæ“¾
+	//å°ç¯€å–å¾—
 	int GetBar(unsigned long index, unsigned long* pTickTime);
 
-	//¬ß”æ“¾
+	//å°ç¯€æ•°å–å¾—
 	unsigned long GetSize();
 
-	//ƒRƒs[
+	//ã‚³ãƒ”ãƒ¼
 	int CopyFrom(SMBarList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMBarList&);
 	SMBarList(const SMBarList&);
 

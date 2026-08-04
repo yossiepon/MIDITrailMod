@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTDashboardLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// MIDI IN ƒfƒCƒoƒCƒX–¼, ƒm[ƒg” ‚ð•\Ž¦‚·‚éB
+// MIDI IN ãƒ‡ã‚¤ãƒã‚¤ã‚¹å, ãƒŽãƒ¼ãƒˆæ•° ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 
 #pragma once
 
@@ -22,65 +22,65 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒtƒHƒ“ƒgÝ’è
-//  Windows FƒtƒHƒ“ƒgƒTƒCƒY40 -> ƒrƒbƒgƒ}ƒbƒvƒTƒCƒYc40ƒsƒNƒZƒ‹ (MS Gothic)
-//  Mac OS XFƒtƒHƒ“ƒgƒTƒCƒY40 -> ƒrƒbƒgƒ}ƒbƒvƒTƒCƒYc50ƒsƒNƒZƒ‹ (Monaco)
+//ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
+//  Windows ï¼šãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º40 -> ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚µã‚¤ã‚ºç¸¦40ãƒ”ã‚¯ã‚»ãƒ« (MS Gothic)
+//  Mac OS Xï¼šãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º40 -> ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚µã‚¤ã‚ºç¸¦50ãƒ”ã‚¯ã‚»ãƒ« (Monaco)
 #define MTDASHBOARDLIVE_FONTNAME  L"MS Gothic"
 #define MTDASHBOARDLIVE_FONTSIZE  (40)
 
-//ƒJƒEƒ“ƒ^ƒLƒƒƒvƒVƒ‡ƒ“•¶Žš—ñ
+//ã‚«ã‚¦ãƒ³ã‚¿ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—åˆ—
 #define MTDASHBOARDLIVE_COUNTER_CHARS  L"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:/%[] "
 
-//ƒJƒEƒ“ƒ^ƒLƒƒƒvƒVƒ‡ƒ“ƒTƒCƒY
+//ã‚«ã‚¦ãƒ³ã‚¿ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã‚µã‚¤ã‚º
 //   1234567890123456789012345678901  (31)
 //  "NOTES:00000000 [MONITERING OFF]"
-//  —]—T‚ð‚Ý‚Ä40‚É‚µ‚Ä‚¨‚­
+//  ä½™è£•ã‚’ã¿ã¦40ã«ã—ã¦ãŠã
 #define MTDASHBOARDLIVE_COUNTER_SIZE  (40)
 
-//˜gƒTƒCƒYiƒsƒNƒZƒ‹j
+//æž ã‚µã‚¤ã‚ºï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰
 #define MTDASHBOARDLIVE_FRAMESIZE  (5.0f)
 
-//ƒfƒtƒHƒ‹ƒg•\Ž¦Šg‘å—¦
-#define MTDASHBOARDLIVE_DEFAULT_MAGRATE  (0.45f)  //Windows”Å‚Å‚Í0.5
+//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¡¨ç¤ºæ‹¡å¤§çŽ‡
+#define MTDASHBOARDLIVE_DEFAULT_MAGRATE  (0.45f)  //Windowsç‰ˆã§ã¯0.5
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTDashboardLive
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTDashboardLive(void);
 	virtual ~MTDashboardLive(void);
 	
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, HWND hWnd);
 	
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector);
 	
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//‰ð•ú
+	//è§£æ”¾
 	void Release();
 	
-	//ƒ‚ƒjƒ^ó‘Ô“o˜^
+	//ãƒ¢ãƒ‹ã‚¿çŠ¶æ…‹ç™»éŒ²
 	void SetMonitoringStatus(bool isMonitoring);
 	
-	//ƒm[ƒgON“o˜^
+	//ãƒŽãƒ¼ãƒˆONç™»éŒ²
 	void SetNoteOn();
 	
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 	
-	//•\Ž¦Ý’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 	
-	//MIDI IN ƒfƒoƒCƒX–¼“o˜^
+	//MIDI IN ãƒ‡ãƒã‚¤ã‚¹åç™»éŒ²
 	int SetMIDIINDeviceName(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pName);
 	
 private:
@@ -99,7 +99,7 @@ private:
 	
 	D3DXCOLOR m_CaptionColor;
 	
-	//•\Ž¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 	
 	int _GetCounterPos(float* pX, float* pY);

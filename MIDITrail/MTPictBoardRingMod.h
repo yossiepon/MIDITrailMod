@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPictBoardRingMod
 //
-// ƒsƒNƒ`ƒƒƒ{[ƒhƒŠƒ“ƒO•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ãƒªãƒ³ã‚°æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2025 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -13,17 +13,17 @@
 
 
 //******************************************************************************
-//  ƒsƒNƒ`ƒƒƒ{[ƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+//  ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPictBoardRingMod : public MTPictBoardRing
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPictBoardRingMod(void);
 	virtual ~MTPictBoardRingMod(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, bool isReverseMode);
 
 protected:

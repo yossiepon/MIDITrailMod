@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFontTexture
 //
-// ƒtƒHƒ“ƒgƒeƒNƒXƒ`ƒƒƒNƒ‰ƒX
+// ãƒ•ã‚©ãƒ³ãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFontTexture::MTFontTexture(void)
 {
@@ -27,7 +27,7 @@ MTFontTexture::MTFontTexture(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTFontTexture::~MTFontTexture(void)
 {
@@ -35,7 +35,7 @@ MTFontTexture::~MTFontTexture(void)
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTFontTexture::Clear()
 {
@@ -47,7 +47,7 @@ void MTFontTexture::Clear()
 }
 
 //******************************************************************************
-// ƒtƒHƒ“ƒgÝ’è
+// ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 //******************************************************************************
 int MTFontTexture::SetFont(
 		const WCHAR* pFontName,
@@ -68,7 +68,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ¶¬
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 //******************************************************************************
 int MTFontTexture::CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -93,54 +93,54 @@ int MTFontTexture::CreateTexture(
 		m_pTexture = NULL;
 	}
 
-	//ƒtƒHƒ“ƒgBMPì¬
+	//ãƒ•ã‚©ãƒ³ãƒˆBMPä½œæˆ
 	result = m_Font2Bmp.CreateBmp(pStr);
 	if (result != 0) goto EXIT;
 
 	m_Font2Bmp.GetBmpSize(&bmpHeight, &bmpWidth);
 
-	//ƒeƒNƒXƒ`ƒƒì¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ
 	hresult = pD3DDevice->CreateTexture(
-							bmpWidth,			//ƒeƒNƒXƒ`ƒƒ‚Ì•iƒsƒNƒZƒ‹’PˆÊj
-							bmpHeight,			//ƒeƒNƒXƒ`ƒƒ‚Ì‚‚³iƒsƒNƒZƒ‹’PˆÊj
-							1,					//ƒeƒNƒXƒ`ƒƒƒŒƒxƒ‹
-							D3DUSAGE_DYNAMIC,	//Žg—p•û–@F’¸“_ƒoƒbƒtƒ@‚ª“®“Iƒƒ‚ƒŠ‚ðŽg—p‚·‚é
-							D3DFMT_A8R8G8B8,	//ƒtƒH[ƒ}ƒbƒgF32bitƒAƒ‹ƒtƒ@•tARGBƒtƒH[ƒ}ƒbƒg
-							D3DPOOL_DEFAULT,	//ƒeƒNƒXƒ`ƒƒ”z’uæƒƒ‚ƒŠƒNƒ‰ƒXFƒfƒtƒHƒ‹ƒg
-							&m_pTexture,		//ì¬‚³‚ê‚½ƒeƒNƒXƒ`ƒƒ
-							NULL				//—\–ñ
+							bmpWidth,			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…ï¼ˆãƒ”ã‚¯ã‚»ãƒ«å˜ä½ï¼‰
+							bmpHeight,			//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®é«˜ã•ï¼ˆãƒ”ã‚¯ã‚»ãƒ«å˜ä½ï¼‰
+							1,					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¬ãƒ™ãƒ«
+							D3DUSAGE_DYNAMIC,	//ä½¿ç”¨æ–¹æ³•ï¼šé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãŒå‹•çš„ãƒ¡ãƒ¢ãƒªã‚’ä½¿ç”¨ã™ã‚‹
+							D3DFMT_A8R8G8B8,	//ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆï¼š32bitã‚¢ãƒ«ãƒ•ã‚¡ä»˜ARGBãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
+							D3DPOOL_DEFAULT,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£é…ç½®å…ˆãƒ¡ãƒ¢ãƒªã‚¯ãƒ©ã‚¹ï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+							&m_pTexture,		//ä½œæˆã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£
+							NULL				//äºˆç´„
 						);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒ‚ðƒƒbƒN‚µ‚Äƒ|ƒCƒ“ƒ^‚ðŽæ“¾‚·‚é
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ãƒ­ãƒƒã‚¯ã—ã¦ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
 	hresult = m_pTexture->LockRect(
-						0,					//ƒŠƒ\[ƒXƒŒƒxƒ‹
-						&lockedRect,		//ƒƒbƒNÏ‚Ý—Ìˆæ
-						NULL,				//ƒƒbƒN‚·‚é‹éŒ`FƒeƒNƒXƒ`ƒƒ‘S‘Ì
-						D3DLOCK_DISCARD		//ƒƒbƒN‚ÌŽí—ÞF‘‚«ž‚Ýê—p
+						0,					//ãƒªã‚½ãƒ¼ã‚¹ãƒ¬ãƒ™ãƒ«
+						&lockedRect,		//ãƒ­ãƒƒã‚¯æ¸ˆã¿é ˜åŸŸ
+						NULL,				//ãƒ­ãƒƒã‚¯ã™ã‚‹çŸ©å½¢ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£å…¨ä½“
+						D3DLOCK_DISCARD		//ãƒ­ãƒƒã‚¯ã®ç¨®é¡žï¼šæ›¸ãè¾¼ã¿å°‚ç”¨
 					);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒƒbƒN‚³‚ê‚½—Ìˆæ‚ðƒ[ƒƒNƒŠƒA
+	//ãƒ­ãƒƒã‚¯ã•ã‚ŒãŸé ˜åŸŸã‚’ã‚¼ãƒ­ã‚¯ãƒªã‚¢
 	ZeroMemory(lockedRect.pBits, lockedRect.Pitch * bmpHeight);
 
-	//ƒOƒŒƒCƒŒƒxƒ‹”FGGO_GRAY4_BITMAP‚È‚Ì‚Å17’iŠK
+	//ã‚°ãƒ¬ã‚¤ãƒ¬ãƒ™ãƒ«æ•°ï¼šGGO_GRAY4_BITMAPãªã®ã§17æ®µéšŽ
 	grayLevelNum = 17;
 
-	//ƒeƒNƒXƒ`ƒƒã‚Éƒrƒbƒgƒ}ƒbƒv‚ð‘‚«ž‚Þ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¸Šã«ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ã‚’æ›¸ãè¾¼ã‚€
 	for (y = 0; y < bmpHeight; y++) {
 		for (x = 0; x < bmpWidth; x++) {
 
-			//ƒrƒbƒgƒ}ƒbƒv‘¤‰æ‘fF8bit ¨ 0x00`0x10(=16)‚ª•Ô‚é ¨ ƒAƒ‹ƒtƒ@’l‚Éƒ}ƒbƒsƒ“ƒO
+			//ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—å´ç”»ç´ ï¼š8bit â†’ 0x00ï½ž0x10(=16)ãŒè¿”ã‚‹ â†’ ã‚¢ãƒ«ãƒ•ã‚¡å€¤ã«ãƒžãƒƒãƒ”ãƒ³ã‚°
 			bmpPixcel = m_Font2Bmp.GetBmpPixcel(x, y);
 
-			//ƒeƒNƒXƒ`ƒƒ‘¤‰æ‘fF32bit ARGB
+			//ãƒ†ã‚¯ã‚¹ãƒãƒ£å´ç”»ç´ ï¼š32bit ARGB
 			alpha = (0xFF * bmpPixcel) / (grayLevelNum - 1);
 			if (bmpPixcel == 0) {
 				argb = (alpha << 24) | 0x00000000;
@@ -149,14 +149,14 @@ int MTFontTexture::CreateTexture(
 				argb = (alpha << 24) | m_RGB;
 			}
 
-			//‘‚«ž‚Ý
+			//æ›¸ãè¾¼ã¿
 			pDestPixcel = (DWORD*)((BYTE*)lockedRect.pBits + (lockedRect.Pitch * y) + (4 * x));
 			*pDestPixcel = argb;
 		}
 	}
 	
-	//ƒAƒ“ƒƒbƒN
-	hresult = m_pTexture->UnlockRect(0);  //ƒŠƒ\[ƒXƒŒƒxƒ‹0
+	//ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
+	hresult = m_pTexture->UnlockRect(0);  //ãƒªã‚½ãƒ¼ã‚¹ãƒ¬ãƒ™ãƒ«0
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
@@ -171,7 +171,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒƒ|ƒCƒ“ƒ^Žæ“¾
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒã‚¤ãƒ³ã‚¿å–å¾—
 //******************************************************************************
 LPDIRECT3DTEXTURE9 MTFontTexture::GetTexture()
 {
@@ -179,7 +179,7 @@ LPDIRECT3DTEXTURE9 MTFontTexture::GetTexture()
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒƒTƒCƒYŽæ“¾
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 void MTFontTexture::GetTextureSize(
 		unsigned long* pHeight,

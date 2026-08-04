@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorParamImportDlg
 //
-// ƒJƒ‰[ƒpƒ‰ƒ[ƒ^“ü—Íƒ_ƒCƒAƒƒO
+// ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å…¥åŠ›ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -17,12 +17,12 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTColorParamImportDlg* MTColorParamImportDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTColorParamImportDlg::MTColorParamImportDlg(void)
 {
@@ -37,7 +37,7 @@ MTColorParamImportDlg::MTColorParamImportDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTColorParamImportDlg::~MTColorParamImportDlg(void)
 {
@@ -45,7 +45,7 @@ MTColorParamImportDlg::~MTColorParamImportDlg(void)
 }
 
 //******************************************************************************
-// •\¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTColorParamImportDlg::Show(
 		HWND hParentWnd
@@ -55,19 +55,19 @@ int MTColorParamImportDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_COLOR_PARAM_IMPORT),	//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_COLOR_PARAM_IMPORT),	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -79,7 +79,7 @@ EXIT:;
 }
 
 //******************************************************************************
-//ƒCƒ“ƒ|[ƒgÀsƒtƒ‰ƒOæ“¾
+//ã‚¤ãƒ³ãƒãƒ¼ãƒˆå®Ÿè¡Œãƒ•ãƒ©ã‚°å–å¾—
 //******************************************************************************
 bool MTColorParamImportDlg::IsExecImport()
 {
@@ -87,7 +87,7 @@ bool MTColorParamImportDlg::IsExecImport()
 }
 
 //******************************************************************************
-//ƒpƒ‰ƒ[ƒ^•¶š—ñæ“¾
+//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—å–å¾—
 //******************************************************************************
 TCHAR* MTColorParamImportDlg::GetParamString()
 {
@@ -95,7 +95,7 @@ TCHAR* MTColorParamImportDlg::GetParamString()
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTColorParamImportDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -103,7 +103,7 @@ INT_PTR CALLBACK MTColorParamImportDlg::_WndProc(HWND hWnd, UINT message, WPARAM
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTColorParamImportDlg::_WndProcImpl(
 		HWND hDlg,
@@ -138,7 +138,7 @@ INT_PTR MTColorParamImportDlg::_WndProcImpl(
 			}
 			break;
 		default:
-			//ˆ—‚µ‚È‚¢ƒƒbƒZ[ƒW
+			//å‡¦ç†ã—ãªã„ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			break;
 	}
 
@@ -150,7 +150,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTColorParamImportDlg::_OnInitDlg(HWND hDlg)
 {
@@ -160,7 +160,7 @@ int MTColorParamImportDlg::_OnInitDlg(HWND hDlg)
 	m_isExecImport = false;
 	m_hEditBox = GetDlgItem(m_hWnd, IDC_EDIT_TEXT_IMPORT);
 
-	//ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚ÌÅ‘å“ü—Í•¶š”‚ğ§ŒÀ‚·‚é
+	//ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã®æœ€å¤§å…¥åŠ›æ–‡å­—æ•°ã‚’åˆ¶é™ã™ã‚‹
 	SendMessage(m_hEditBox, EM_SETLIMITTEXT, (WPARAM)(MT_COLOR_PARAM_IMPORT_STRING_LENGTH_MAX - 1), 0);
 
 //EXIT:;
@@ -168,7 +168,7 @@ int MTColorParamImportDlg::_OnInitDlg(HWND hDlg)
 }
 
 //******************************************************************************
-// ƒy[ƒXƒgƒ{ƒ^ƒ“‰Ÿ‰º
+// ãƒšãƒ¼ã‚¹ãƒˆãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTColorParamImportDlg::_OnBtnPaste()
 {
@@ -178,21 +178,21 @@ int MTColorParamImportDlg::_OnBtnPaste()
 	TCHAR* pGlobalMemory = NULL;
 	size_t length = 0;
 
-	///ƒNƒŠƒbƒvƒ{[ƒh‚Ìƒf[ƒ^‘¶İŠm”F
+	///ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿å­˜åœ¨ç¢ºèª
 	bresult = IsClipboardFormatAvailable(CF_TEXT);
 	if (!bresult) {
-		//ƒeƒLƒXƒgƒf[ƒ^‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+		//ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ãŒãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ã
 	bresult = OpenClipboard(m_hWnd);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚Ìƒf[ƒ^‚ğæ“¾
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 	hGlobalMemory = (HGLOBAL)GetClipboardData(CF_TEXT);
 	if (hGlobalMemory == NULL) {
 		CloseClipboard();
@@ -200,7 +200,7 @@ int MTColorParamImportDlg::_OnBtnPaste()
 		goto EXIT;
 	}
 
-	//ƒƒ‚ƒŠƒƒbƒN
+	//ãƒ¡ãƒ¢ãƒªãƒ­ãƒƒã‚¯
 	pGlobalMemory = (LPSTR)GlobalLock(hGlobalMemory);
 	if (pGlobalMemory == NULL) {
 		CloseClipboard();
@@ -208,19 +208,19 @@ int MTColorParamImportDlg::_OnBtnPaste()
 		goto EXIT;
 	}
 
-	//•¶š—ñƒTƒCƒY‚ğŠm”F
+	//æ–‡å­—åˆ—ã‚µã‚¤ã‚ºã‚’ç¢ºèª
 	length = _tcslen(pGlobalMemory);
 	if (length >= MT_COLOR_PARAM_IMPORT_STRING_LENGTH_MAX) {
-		//ƒNƒŠƒbƒvƒ{[ƒh‚Ìƒf[ƒ^‚ª‘å‚«‚·‚¬‚é‚½‚ß
+		//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ãŒå¤§ãã™ãã‚‹ãŸã‚
 		CloseClipboard();
 		result = YN_SET_ERR("The clipboad data is too long.", length, 0);
 		goto EXIT;
 	}
 
-	//ƒƒ‚ƒŠ‚Éƒpƒ‰ƒ[ƒ^•¶š—ñ‚ğ‘‚«‚Ş
+	//ãƒ¡ãƒ¢ãƒªã«ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—ã‚’æ›¸ãè¾¼ã‚€
 	_tcscpy_s(m_ParamString, MT_COLOR_PARAM_IMPORT_STRING_LENGTH_MAX, pGlobalMemory);
 
-	//ƒƒ‚ƒŠƒƒbƒN‰ğœ
+	//ãƒ¡ãƒ¢ãƒªãƒ­ãƒƒã‚¯è§£é™¤
 	bresult = GlobalUnlock(hGlobalMemory);
 	if ((!bresult) && (GetLastError() != NO_ERROR)) {
 		CloseClipboard();
@@ -228,14 +228,14 @@ int MTColorParamImportDlg::_OnBtnPaste()
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚é
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹
 	bresult = CloseClipboard();
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒpƒ‰ƒ[ƒ^•¶š—ñ•\¦
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—è¡¨ç¤º
 	bresult = SetWindowText(m_hEditBox, m_ParamString);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

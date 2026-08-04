@@ -1,17 +1,17 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesign
 //
-// ƒm[ƒgƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒm[ƒgƒ{ƒbƒNƒX‚Ì³–Ê‚ð0-1-2-3‚ÌŽlŠp‚Æ‚·‚éB
-// ‚±‚ÌŽlŠp‚Ì’†SÀ•W‚ªŠî€“_‚Å‚ ‚èAƒ|[ƒg^ƒ`ƒƒƒ“ƒlƒ‹^ƒm[ƒg‚Ì”Ô†
-// ‚É‚æ‚Á‚ÄŒˆ’è‚³‚ê‚éB
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã®æ­£é¢ã‚’0-1-2-3ã®å››è§’ã¨ã™ã‚‹ã€‚
+// ã“ã®å››è§’ã®ä¸­å¿ƒåº§æ¨™ãŒåŸºæº–ç‚¹ã§ã‚ã‚Šã€ãƒãƒ¼ãƒˆï¼ãƒãƒ£ãƒ³ãƒãƒ«ï¼ãƒŽãƒ¼ãƒˆã®ç•ªå·
+// ã«ã‚ˆã£ã¦æ±ºå®šã•ã‚Œã‚‹ã€‚
 //
 //           +--+
 //          /  /|
@@ -35,145 +35,145 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteDesign(void);
 	virtual ~MTNoteDesign(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 // >>> modify 20161225 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 // <<< modify 20161225 yossiepon end
 
-	//‰‰‘tˆÊ’uŽæ“¾
+	//æ¼”å¥ä½ç½®å–å¾—
 	float GetPlayPosX(unsigned long curTickTime);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgˆÊ’uŽæ“¾
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒŽãƒ¼ãƒˆä½ç½®å–å¾—
 	float GetLivePosX(unsigned long elapsedTime);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•WŽæ“¾
+	//ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒåº§æ¨™å–å¾—
 	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			);
 
-	//ƒm[ƒgƒ{ƒbƒNƒXc‰¡ƒTƒCƒYŽæ“¾
+	//ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ç¸¦æ¨ªã‚µã‚¤ã‚ºå–å¾—
 	float GetNoteBoxHeight();
 	float GetNoteBoxWidth();
 
-	//ƒm[ƒgŠÔŠuŽæ“¾
+	//ãƒŽãƒ¼ãƒˆé–“éš”å–å¾—
 	float GetNoteStep();
 
-	//ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠuŽæ“¾
+	//ãƒãƒ£ãƒ³ãƒãƒ«é–“éš”å–å¾—
 	float GetChStep();
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^•\Ž¦ŠúŒÀ
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿è¡¨ç¤ºæœŸé™
 	unsigned long GetLiveMonitorDisplayDuration();
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-				unsigned long elapsedTime = 0            //È—ª‰ÂFŒo‰ßŽžŠÔiƒ~ƒŠ•bj
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0,	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
+				unsigned long elapsedTime = 0            //çœç•¥å¯ï¼šçµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 			);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	virtual void GetNoteBoxVirtexPosLive(
-				unsigned long elapsedTime,	//Œo‰ßŽžŠÔiƒ~ƒŠ•bj
+				unsigned long elapsedTime,	//çµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
+				short pitchBendValue = 0,				//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+				unsigned char pitchBendSensitivity = 0	//çœç•¥å¯ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æ„Ÿåº¦
 			);
 
-	//ƒOƒŠƒbƒhƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	void GetGridBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3 	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3 	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
 			);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒOƒŠƒbƒhƒ{ƒbƒNƒX’¸“_À•WŽæ“¾
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	void GetGridBoxVirtexPosLive(
-				unsigned long elapsedTime,	//Œo‰ßŽžŠÔiƒ~ƒŠ•bj
-				unsigned char portNo,	//ƒ|[ƒg”Ô†
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3 	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
+				unsigned long elapsedTime,	//çµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰
+				unsigned char portNo,	//ãƒãƒ¼ãƒˆç•ªå·
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3 	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
 			);
 
-	//Ä¶–Ê’¸“_À•WŽæ“¾
+	//å†ç”Ÿé¢é ‚ç‚¹åº§æ¨™å–å¾—
 	void GetPlaybackSectionVirtexPos(
 				unsigned long curTickTime,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3 	//YZ•½–Ê+XŽ²•ûŒü‚ðŒ©‚Ä‰E‰º
+				D3DXVECTOR3* pVector0,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸Š
+				D3DXVECTOR3* pVector1,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸Š
+				D3DXVECTOR3* pVector2,	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å·¦ä¸‹
+				D3DXVECTOR3* pVector3 	//YZå¹³é¢+Xè»¸æ–¹å‘ã‚’è¦‹ã¦å³ä¸‹
 			);
 
-	//”g–äƒTƒCƒYŽæ“¾FŒo‰ßŽžŠÔiƒ~ƒŠ•bj‚ÍÈ—ª‰Â
+	//æ³¢ç´‹ã‚µã‚¤ã‚ºå–å¾—ï¼šçµŒéŽæ™‚é–“ï¼ˆãƒŸãƒªç§’ï¼‰ã¯çœç•¥å¯
 	float GetRippleHeight(unsigned long elapsedTime = 0);
 	float GetRippleWidth(unsigned long elapsedTime = 0);
 	float GetRippleAlpha(unsigned long elapsedTime = 0);
 
-	//ƒsƒNƒ`ƒƒƒ{[ƒh‘Š‘ÎˆÊ’uŽæ“¾
+	//ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ç›¸å¯¾ä½ç½®å–å¾—
 	float GetPictBoardRelativePos();
 
-	//ƒ|[ƒgŒ´“_À•WŽæ“¾
+	//ãƒãƒ¼ãƒˆåŽŸç‚¹åº§æ¨™å–å¾—
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
 
-	//¢ŠEÀ•W”z’uˆÚ“®ƒxƒNƒgƒ‹Žæ“¾
+	//ä¸–ç•Œåº§æ¨™é…ç½®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 	virtual D3DXVECTOR3 GetWorldMoveVector();
 
-	//ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[Žæ“¾
+	//ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[Žæ“¾
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetActiveNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
@@ -181,13 +181,13 @@ public:
 				unsigned long elapsedTime
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒGƒ~ƒbƒVƒuŽæ“¾iƒ}ƒeƒŠƒAƒ‹—pj
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚¨ãƒŸãƒƒã‚·ãƒ–å–å¾—ï¼ˆãƒžãƒ†ãƒªã‚¢ãƒ«ç”¨ï¼‰
 	D3DXCOLOR GetActiveNoteEmissive();
 
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“ƒJƒ‰[Žæ“¾
+	//ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetGridLineColor();
 
-	//Ä¶–ÊƒJƒ‰[Žæ“¾
+	//å†ç”Ÿé¢ã‚«ãƒ©ãƒ¼å–å¾—
 	D3DXCOLOR GetPlaybackSectionColor();
 
 protected:

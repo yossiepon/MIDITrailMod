@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteRainLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒŒƒCƒ“•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒãƒ¼ãƒˆãƒ¬ã‚¤ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒŒƒCƒ“‚ğ•`‰æ‚·‚éB
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒãƒ¼ãƒˆãƒ¬ã‚¤ãƒ³ã‚’æç”»ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -23,44 +23,44 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘å”­‰¹ƒm[ƒg•`‰æ”
+//æœ€å¤§ç™ºéŸ³ãƒãƒ¼ãƒˆæç”»æ•°
 #define MTNOTERAIN_MAX_LIVENOTE_NUM  (2048)
 
-// TODO: Å‘åƒm[ƒg•`‰æ”‚ğ‰Â•Ï‚É‚·‚é
+// TODO: æœ€å¤§ãƒãƒ¼ãƒˆæç”»æ•°ã‚’å¯å¤‰ã«ã™ã‚‹
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒŒƒCƒ“•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒãƒ¼ãƒˆãƒ¬ã‚¤ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteRainLive
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteRainLive(void);
 	virtual ~MTNoteRainLive(void);
 	
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
 			MTNotePitchBend* pNotePitchBend
 		);
 	
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 	
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 	
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 	
-	//ƒm[ƒgON“o˜^
+	//ãƒãƒ¼ãƒˆONç™»éŒ²
 	void SetNoteOn(
 			unsigned char portNo,
 			unsigned char chNo,
@@ -68,20 +68,20 @@ public:
 			unsigned char velocity
 		);
 	
-	//ƒm[ƒgOFF“o˜^
+	//ãƒãƒ¼ãƒˆOFFç™»éŒ²
 	void SetNoteOff(
 			unsigned char portNo,
 			unsigned char chNo,
 			unsigned char noteNo
 		);
 	
-	//‘Sƒm[ƒgOFF
+	//å…¨ãƒãƒ¼ãƒˆOFF
 	void AllNoteOff();
 	void AllNoteOffOnCh(unsigned char portNo, unsigned char chNo);
 	
 private:
 	
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatus {
 		bool isActive;
 		unsigned char portNo;
@@ -91,33 +91,33 @@ private:
 		unsigned long endTime;
 	};
 	
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTNOTERAIN_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 	
 private:
 	
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesign m_NoteDesign;
 	
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³
 	MTPianoKeyboardDesign m_KeyboardDesign;
 	
-	//ƒm[ƒgƒŒƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ¬ã‚¤ãƒ³
 	DXPrimitive m_PrimitiveNotes;
 	unsigned long m_NoteNum;
 	NoteStatus* m_pNoteStatus;
 	
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNotePitchBend* m_pNotePitchBend;
 	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^•\¦ŠúŠÔiƒ~ƒŠ•bj
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿è¡¨ç¤ºæœŸé–“ï¼ˆãƒŸãƒªç§’ï¼‰
 	unsigned long m_LiveMonitorDisplayDuration;
 	
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	unsigned long _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 	
 	int _CreateNoteRain(LPDIRECT3DDEVICE9 pD3DDevice);

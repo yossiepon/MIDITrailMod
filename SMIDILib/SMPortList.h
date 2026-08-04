@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMPortList
 //
-// ƒ|[ƒgƒŠƒXƒgƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -22,36 +22,36 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒ|[ƒgƒŠƒXƒgƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMPortList
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMPortList(void);
 	virtual ~SMPortList(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void Clear();
 
-	//ƒ|[ƒg“o˜^
+	//ãƒãƒ¼ãƒˆç™»éŒ²
 	int AddPort(unsigned char portNo);
 
-	//ƒ|[ƒgæ“¾
+	//ãƒãƒ¼ãƒˆå–å¾—
 	int GetPort(unsigned long index, unsigned char* pPortNo);
 
-	//ƒ|[ƒg”æ“¾
+	//ãƒãƒ¼ãƒˆæ•°å–å¾—
 	unsigned long GetSize();
 
-	//ƒRƒs[
+	//ã‚³ãƒ”ãƒ¼
 	int CopyFrom(SMPortList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMPortList&);
 	SMPortList(const SMPortList&);
 

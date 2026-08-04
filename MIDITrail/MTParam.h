@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTParam.h
 //
-// ƒpƒ‰ƒ[ƒ^’è‹`ƒtƒ@ƒCƒ‹
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©ãƒ•ã‚¡ã‚¤ãƒ«
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -11,17 +11,17 @@
 #pragma once
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒpƒX’è‹`
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å®šç¾©
 //******************************************************************************
 
-//ƒ†[ƒUÝ’è•Û‘¶ƒtƒ@ƒCƒ‹FAPPDATAƒtƒHƒ‹ƒ_‚©‚ç‚Ì‘Š‘ÎƒpƒX
+//ãƒ¦ãƒ¼ã‚¶è¨­å®šä¿å­˜ãƒ•ã‚¡ã‚¤ãƒ«ï¼šAPPDATAãƒ•ã‚©ãƒ«ãƒ€ã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹
 #define MT_USER_CONFFILE_DIR     _T("yknk\\MIDITrail\\")
 #define MT_USER_CONFFILE_VIEW    _T("View.ini")
 #define MT_USER_CONFFILE_MIDI    _T("MIDI.ini")
 #define MT_USER_CONFFILE_GRAPHIC _T("Graphic.ini")
 #define MT_USER_CONFFILE_COLOR   _T("Color.ini")
 
-//‰æ‘œƒtƒ@ƒCƒ‹FŽÀsƒtƒ@ƒCƒ‹‚©‚ç‚Ì‘Š‘ÎƒpƒX
+//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ï¼šå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹
 #define MT_IMGFILE_RIPPLE      _T("data\\Ripple.png")
 #define MT_IMGFILE_BOARD       _T("data\\Board.png")
 #define MT_IMGFILE_KEYBOARD    _T("data\\Keyboard.png")
@@ -29,10 +29,10 @@
 #define MT_IMGFILE_HOWTOVIEW2  _T("data\\HowToView2.bmp")
 #define MT_IMGFILE_HOWTOVIEW3  _T("data\\HowToView3.bmp")
 
-//ƒm[ƒgƒfƒUƒCƒ“ƒtƒ@ƒCƒ‹FŽÀsƒtƒ@ƒCƒ‹‚©‚ç‚Ì‘Š‘ÎƒpƒX
+//ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ãƒ•ã‚¡ã‚¤ãƒ«ï¼šå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹
 #define MT_CONFFILE_DIR  _T("conf\\")
 
-//ƒ}ƒjƒ…ƒAƒ‹ƒtƒ@ƒCƒ‹FŽÀsƒtƒ@ƒCƒ‹‚©‚ç‚Ì‘Š‘ÎƒpƒX
+//ãƒžãƒ‹ãƒ¥ã‚¢ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ï¼šå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ç›¸å¯¾ãƒ‘ã‚¹
 #define MT_MANUALFILE  _T("doc\\index.html")
 
 

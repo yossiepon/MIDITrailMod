@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MIDITrailMain
 //
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -17,25 +17,25 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg
+// ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
 //******************************************************************************
 int APIENTRY _tWinMain(
-		HINSTANCE hInstance,		//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-		HINSTANCE hPrevInstance,	//ˆÈ‘O‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹Fí‚ÉNULL
-		LPTSTR lpCmdLine,			//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“
-		int nCmdShow				//ƒEƒBƒ“ƒhƒE•\Ž¦ó‘ÔŽw’è
+		HINSTANCE hInstance,		//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+		HINSTANCE hPrevInstance,	//ä»¥å‰ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ï¼šå¸¸ã«NULL
+		LPTSTR lpCmdLine,			//ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³
+		int nCmdShow				//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºçŠ¶æ…‹æŒ‡å®š
 	)
 {
 	int result = 0;
 	int winMainResult = 0;
 	MIDITrailApp app;
 
-	//–¢ŽQÆŒx‰ñ”ð
+	//æœªå‚ç…§è­¦å‘Šå›žé¿
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‰Šú‰»
-	//ƒƒbƒZ[ƒWƒ‹[ƒv‚É“ü‚é‘O‚ÉI—¹‚·‚éê‡‚Í–ß‚è’l‚ð0‚Æ‚·‚é
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³åˆæœŸåŒ–
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚‹å‰ã«çµ‚äº†ã™ã‚‹å ´åˆã¯æˆ»ã‚Šå€¤ã‚’0ã¨ã™ã‚‹
 	result = app.Initialize(hInstance, lpCmdLine, nCmdShow);
 	if (result != 0) {
 		YN_SHOW_ERR(NULL);
@@ -43,8 +43,8 @@ int APIENTRY _tWinMain(
 		goto EXIT;
 	}
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ŽÀs
-	//Run‚ÍWinMain‚Ì–ß‚è’l‚Æ‚È‚é’l‚ð•Ô‚·
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å®Ÿè¡Œ
+	//Runã¯WinMainã®æˆ»ã‚Šå€¤ã¨ãªã‚‹å€¤ã‚’è¿”ã™
 	winMainResult = app.Run();
 
 EXIT:;

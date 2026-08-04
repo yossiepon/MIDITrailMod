@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTMIDIINCfgDlg
 //
-// MIDI IN Ý’èƒ_ƒCƒAƒƒO
+// MIDI IN è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
@@ -16,12 +16,12 @@
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^Ý’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTMIDIINCfgDlg* MTMIDIINCfgDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTMIDIINCfgDlg::MTMIDIINCfgDlg(void)
 {
@@ -29,7 +29,7 @@ MTMIDIINCfgDlg::MTMIDIINCfgDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTMIDIINCfgDlg::~MTMIDIINCfgDlg(void)
 {
@@ -38,7 +38,7 @@ MTMIDIINCfgDlg::~MTMIDIINCfgDlg(void)
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTMIDIINCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -46,7 +46,7 @@ INT_PTR CALLBACK MTMIDIINCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFŽÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTMIDIINCfgDlg::_WndProcImpl(
 		HWND hDlg,
@@ -88,7 +88,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\Ž¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTMIDIINCfgDlg::Show(
 		HWND hParentWnd
@@ -98,19 +98,19 @@ int MTMIDIINCfgDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ðŽæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_MIDIIN_CFG),	//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_MIDIIN_CFG),	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -122,7 +122,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTMIDIINCfgDlg::_OnInitDlg(
 		HWND hDlg
@@ -130,19 +130,19 @@ int MTMIDIINCfgDlg::_OnInitDlg(
 {
 	int result = 0;
 
-	//Ý’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = _InitConfFile();
 
-	//MIDI“ü—ÍƒfƒoƒCƒX§Œä‰Šú‰»
+	//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡åˆæœŸåŒ–
 	result = m_MIDIInDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
 
-	//MIDIo—ÍƒfƒoƒCƒX‘I‘ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹é¸æŠžã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	m_hComboDevA = GetDlgItem(hDlg, IDC_COMBO_PORT_A);
 	result = _InitComboDev(m_hComboDevA, _T("PortA"));
 	if (result != 0) goto EXIT;
 
-	//MIDITHRUÝ’èƒ`ƒFƒbƒNƒ{ƒbƒNƒX‰Šú‰»
+	//MIDITHRUè¨­å®šãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	m_hMIDITHRU = GetDlgItem(hDlg, IDC_CHECK_MIDITHRU);
 	result = _InitCheckBtnMIDITHRU();
 	if (result != 0) goto EXIT;
@@ -152,7 +152,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Ý’èƒtƒ@ƒCƒ‹‰Šú‰»
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 //******************************************************************************
 int MTMIDIINCfgDlg::_InitConfFile()
 {
@@ -176,7 +176,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX‘I‘ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+// ãƒ‡ãƒã‚¤ã‚¹é¸æŠžã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 //******************************************************************************
 int MTMIDIINCfgDlg::_InitComboDev(
 		HWND hComboDev,
@@ -193,17 +193,17 @@ int MTMIDIINCfgDlg::_InitComboDev(
 	std::string selectedProductName;
 	std::string productName;
 
-	//ƒ†[ƒU‘I‘ðƒfƒoƒCƒX–¼Žæ“¾
+	//ãƒ¦ãƒ¼ã‚¶é¸æŠžãƒ‡ãƒã‚¤ã‚¹åå–å¾—
 	result = m_ConfFile.GetStr(pPortName, devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 	selectedProductName = devName;
 
-	//ƒ†[ƒU‘I‘ðƒfƒoƒCƒX‚ª‚È‚¢ê‡‚Íu‘I‘ð‚È‚µv‚ð‘I‘ðó‘Ô‚É‚·‚é
+	//ãƒ¦ãƒ¼ã‚¶é¸æŠžãƒ‡ãƒã‚¤ã‚¹ãŒãªã„å ´åˆã¯ã€Œé¸æŠžãªã—ã€ã‚’é¸æŠžçŠ¶æ…‹ã«ã™ã‚‹
 	if (selectedProductName == _T("")) {
 		selectedIndex = 0;
 	}
 
-	//u‘I‘ð‚È‚µv‚ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‚É’Ç‰Á
+	//ã€Œé¸æŠžãªã—ã€ã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¿½åŠ 
 	lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)_T("(none)"));
 	if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -211,15 +211,15 @@ int MTMIDIINCfgDlg::_InitComboDev(
 	}
 	comboIndex++;
 
-	//MIDIƒfƒoƒCƒX‚Ì”
+	//MIDIãƒ‡ãƒã‚¤ã‚¹ã®æ•°
 	devNum = m_MIDIInDevCtrl.GetDevNum();
 
 	for (index = 0; index < devNum; index++) {
-		//MIDI INƒfƒoƒCƒX–¼Žæ“¾
+		//MIDI INãƒ‡ãƒã‚¤ã‚¹åå–å¾—
 		result = m_MIDIInDevCtrl.GetDevProductName(index, productName);
 		if (result != 0) goto EXIT;
 
-		//ƒfƒoƒCƒX–¼‚ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‚É’Ç‰Á
+		//ãƒ‡ãƒã‚¤ã‚¹åã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¿½åŠ 
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)productName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -232,10 +232,10 @@ int MTMIDIINCfgDlg::_InitComboDev(
 		comboIndex++;
 	}
 
-	//USBƒfƒoƒCƒX‚ðl—¶‚·‚é
-	//ƒ†[ƒU‘I‘ðƒfƒoƒCƒX‚ªŒ»ÝÚ‘±‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒRƒ“ƒ{ƒ{ƒbƒNƒX‚Ì––”ö‚É’Ç‰Á‚·‚é
+	//USBãƒ‡ãƒã‚¤ã‚¹ã‚’è€ƒæ…®ã™ã‚‹
+	//ãƒ¦ãƒ¼ã‚¶é¸æŠžãƒ‡ãƒã‚¤ã‚¹ãŒç¾åœ¨æŽ¥ç¶šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®æœ«å°¾ã«è¿½åŠ ã™ã‚‹
 	if (selectedIndex < 0) {
-		//ƒfƒoƒCƒX–¼‚ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‚É’Ç‰Á
+		//ãƒ‡ãƒã‚¤ã‚¹åã‚’ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã«è¿½åŠ 
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)selectedProductName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -245,7 +245,7 @@ int MTMIDIINCfgDlg::_InitComboDev(
 		comboIndex++;
 	}
 
-	//‘I‘ðó‘ÔÝ’è
+	//é¸æŠžçŠ¶æ…‹è¨­å®š
 	lresult = SendMessage(hComboDev, CB_SETCURSEL, selectedIndex, 0);
 	if (lresult == CB_ERR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
@@ -257,7 +257,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDITHRUƒ`ƒFƒbƒNƒ{ƒ^ƒ“‰Šú‰»
+// MIDITHRUãƒã‚§ãƒƒã‚¯ãƒœã‚¿ãƒ³åˆæœŸåŒ–
 //******************************************************************************
 int MTMIDIINCfgDlg::_InitCheckBtnMIDITHRU()
 {
@@ -265,11 +265,11 @@ int MTMIDIINCfgDlg::_InitCheckBtnMIDITHRU()
 	LRESULT lresult = 0;
 	int checkMIDITHRU = 0;
 
-	//MIDITHRUÝ’èŽæ“¾
+	//MIDITHRUè¨­å®šå–å¾—
 	result = m_ConfFile.GetInt(_T("MIDITHRU"), &checkMIDITHRU, 1);
 	if (result != 0) goto EXIT;
 
-	//ƒ`ƒFƒbƒNƒ{ƒbƒNƒX‚É”½‰f
+	//ãƒã‚§ãƒƒã‚¯ãƒœãƒƒã‚¯ã‚¹ã«åæ˜ 
 	if (checkMIDITHRU == 0) {
 		SendMessage(m_hMIDITHRU, BM_SETCHECK, BST_UNCHECKED, 0);
 	}
@@ -282,7 +282,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX‘I‘ðî•ñ•Û‘¶
+// ãƒ‡ãƒã‚¤ã‚¹é¸æŠžæƒ…å ±ä¿å­˜
 //******************************************************************************
 int MTMIDIINCfgDlg::_Save()
 {
@@ -299,7 +299,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒgÝ’è•Û‘¶
+// ãƒãƒ¼ãƒˆè¨­å®šä¿å­˜
 //******************************************************************************
 int MTMIDIINCfgDlg::_SavePortCfg(
 		HWND hComboDev,
@@ -314,10 +314,10 @@ int MTMIDIINCfgDlg::_SavePortCfg(
 	unsigned long devNum = 0;
 	bool isUpdate = true;
 
-	//MIDIƒfƒoƒCƒX‚Ì”
+	//MIDIãƒ‡ãƒã‚¤ã‚¹ã®æ•°
 	devNum = m_MIDIInDevCtrl.GetDevNum();
 
-	//‘I‘ð€–Ú‚ÌƒCƒ“ƒfƒbƒNƒX‚ðŽæ“¾
+	//é¸æŠžé …ç›®ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
 	lresult = SendMessage(hComboDev, CB_GETCURSEL, 0, 0);
 	if ((lresult == CB_ERR) || (lresult < 0)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -325,7 +325,7 @@ int MTMIDIINCfgDlg::_SavePortCfg(
 	}
 	selectedIndex = (unsigned long)lresult;
 
-	//‘I‘ð€–Ú‚ÌƒfƒoƒCƒX–¼‚ðŽæ“¾
+	//é¸æŠžé …ç›®ã®ãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—
 	if (selectedIndex == 0) {
 		selectedProductName = _T("");
 	}
@@ -334,11 +334,11 @@ int MTMIDIINCfgDlg::_SavePortCfg(
 		if (result != 0) goto EXIT;
 	}
 	else {
-		//––”ö‚É’Ç‰Á‚µ‚½Œ»ÝÚ‘±‚³‚ê‚Ä‚¢‚È‚¢ƒ†[ƒU‘I‘ðƒfƒoƒCƒX‚ª‘I‘ð‚³‚ê‚½‚Ü‚Ü
+		//æœ«å°¾ã«è¿½åŠ ã—ãŸç¾åœ¨æŽ¥ç¶šã•ã‚Œã¦ã„ãªã„ãƒ¦ãƒ¼ã‚¶é¸æŠžãƒ‡ãƒã‚¤ã‚¹ãŒé¸æŠžã•ã‚ŒãŸã¾ã¾
 		isUpdate = false;
 	}
 
-	//Ý’è•Û‘¶
+	//è¨­å®šä¿å­˜
 	if (isUpdate) {
 		result = m_ConfFile.SetStr(pPortName, selectedProductName.c_str());
 		if (result != 0) goto EXIT;
@@ -349,7 +349,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDITHRU Ý’è•Û‘¶
+// MIDITHRU è¨­å®šä¿å­˜
 //******************************************************************************
 int MTMIDIINCfgDlg::_SaveMIDITHRU()
 {

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTCmdLineParser
 //
-// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍƒNƒ‰ƒX
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTCmdLineParser::MTCmdLineParser(void)
 {
@@ -30,20 +30,20 @@ MTCmdLineParser::MTCmdLineParser(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTCmdLineParser::~MTCmdLineParser(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int MTCmdLineParser::Initialize()
 {
 	int result = 0;
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
 	result = _AnalyzeCmdLine();
 	if (result != 0) goto EXIT;
 
@@ -52,7 +52,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
 //******************************************************************************
 int MTCmdLineParser::_AnalyzeCmdLine()
 {
@@ -63,56 +63,56 @@ int MTCmdLineParser::_AnalyzeCmdLine()
 	WCHAR* pArg = NULL;
 	SMRcpConv rcpConv;
 
-	//RCP“Ç‚İ‚İ‰Â”ÛŠm”F‚Ì‚½‚ßRCPƒtƒ@ƒCƒ‹•ÏŠ·ƒIƒuƒWƒFƒNƒg‚ğ—pˆÓ‚·‚é
+	//RCPèª­ã¿è¾¼ã¿å¯å¦ç¢ºèªã®ãŸã‚RCPãƒ•ã‚¡ã‚¤ãƒ«å¤‰æ›ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”¨æ„ã™ã‚‹
 	result = rcpConv.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ˆø”ƒŠƒXƒgæ“¾
+	//å¼•æ•°ãƒªã‚¹ãƒˆå–å¾—
 	pArgList = CommandLineToArgvW(GetCommandLineW(), &argc);
 	if (pArgList == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ˆø”‚Ì‰ğÍ
+	//å¼•æ•°ã®è§£æ
 	for (i = 1; i < argc; i++) {
 		pArg = pArgList[i];
 
-		//ƒtƒ@ƒCƒ‹ƒpƒX
-		//  ƒtƒ@ƒCƒ‹ƒpƒX‚ª•¡”w’è‚³‚ê‚½ê‡‚Íæ“ª‚Ì‚İ‚ğÌ—p‚·‚é
+		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+		//  ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãŒè¤‡æ•°æŒ‡å®šã•ã‚ŒãŸå ´åˆã¯å…ˆé ­ã®ã¿ã‚’æ¡ç”¨ã™ã‚‹
 		if ((wcslen(m_pFilePath) == 0) && (wcslen(pArg) > 4)) {
 			if (YNPathUtil::IsFileExtMatch(pArg, L".mid")) {
 				m_pFilePath = pArg;
 				m_CmdSwitchStatus[CMDSW_FILE_PATH] = CMDSW_ON;
 			}
-			//rcpcv.dll‚ª—LŒø‚È‚çƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚é‚©’Ç‰ÁŠm”F‚·‚é
+			//rcpcv.dllãŒæœ‰åŠ¹ãªã‚‰ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚ã‚‹ã‹è¿½åŠ ç¢ºèªã™ã‚‹
 			else if (rcpConv.IsAvailable() && rcpConv.IsSupportFileExt(pArg)) {
 				m_pFilePath = pArg;
 				m_CmdSwitchStatus[CMDSW_FILE_PATH] = CMDSW_ON;
 			}
 		}
-		//‹N“®Œã‚ÉÄ¶ŠJn
+		//èµ·å‹•å¾Œã«å†ç”Ÿé–‹å§‹
 		if (wcscmp(pArg, L"-p") == 0) {
 			m_CmdSwitchStatus[CMDSW_PLAY] = CMDSW_ON;
 		}
-		//Ä¶I—¹‚ÉƒAƒvƒŠI—¹
+		//å†ç”Ÿçµ‚äº†æ™‚ã«ã‚¢ãƒ—ãƒªçµ‚äº†
 		if (wcscmp(pArg, L"-q") == 0) {
 			m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_ON;
 		}
-		//ƒfƒoƒbƒOƒ‚[ƒh
+		//ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰
 		if (wcscmp(pArg, L"-d") == 0) {
 			m_CmdSwitchStatus[CMDSW_DEBUG] = CMDSW_ON;
 		}
 	}
 
-	//ƒtƒ@ƒCƒ‹ƒpƒX‚ª–¢w’è‚Ìê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãŒæœªæŒ‡å®šã®å ´åˆ
 	if (m_CmdSwitchStatus[CMDSW_FILE_PATH] != CMDSW_ON) {
-		//Ä¶^I—¹ƒtƒ‰ƒO‚Í‹¤‚É–³Œø
+		//å†ç”Ÿï¼çµ‚äº†ãƒ•ãƒ©ã‚°ã¯å…±ã«ç„¡åŠ¹
 		m_CmdSwitchStatus[CMDSW_PLAY] = CMDSW_NONE;
 		m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_NONE;
 	}
 
-	//Ä¶ƒtƒ‰ƒOON‚Å‚È‚¯‚ê‚ÎI—¹ƒtƒ‰ƒO‚Í–³Œø
+	//å†ç”Ÿãƒ•ãƒ©ã‚°ONã§ãªã‘ã‚Œã°çµ‚äº†ãƒ•ãƒ©ã‚°ã¯ç„¡åŠ¹
 	if (m_CmdSwitchStatus[CMDSW_PLAY] != CMDSW_ON) {
 		m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_NONE;
 	}
@@ -125,7 +125,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒXƒCƒbƒ`ó‘Ôæ“¾
+// ã‚¹ã‚¤ãƒƒãƒçŠ¶æ…‹å–å¾—
 //******************************************************************************
 int MTCmdLineParser::GetSwitch(
 		unsigned long switchType
@@ -141,7 +141,7 @@ int MTCmdLineParser::GetSwitch(
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒpƒXæ“¾
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 //******************************************************************************
 const WCHAR* MTCmdLineParser::GetFilePath()
 {

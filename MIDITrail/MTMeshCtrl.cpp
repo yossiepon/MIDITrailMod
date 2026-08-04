@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTMeshCtrl
 //
-// ƒƒbƒVƒ…§ŒäƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚·ãƒ¥åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTMeshCtrl::MTMeshCtrl(void)
 {
@@ -28,7 +28,7 @@ MTMeshCtrl::MTMeshCtrl(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTMeshCtrl::~MTMeshCtrl(void)
 {
@@ -36,7 +36,7 @@ MTMeshCtrl::~MTMeshCtrl(void)
 }
 
 //******************************************************************************
-// ¶¬ˆ—
+// ç”Ÿæˆå‡¦ç†
 //******************************************************************************
 int MTMeshCtrl::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -45,7 +45,7 @@ int MTMeshCtrl::Create(
 {
 	int result = 0;
 
-	//ƒpƒ‰ƒ[ƒ^İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
@@ -57,7 +57,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTMeshCtrl::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -70,15 +70,15 @@ int MTMeshCtrl::Transform(
 	D3DXMATRIX worldMatrix;
 	float rollAngle = 0.0f;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationY(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	D3DXMatrixTranslation(
 			&moveMatrix,
 			m_PositionX + moveVector.x,
@@ -86,10 +86,10 @@ int MTMeshCtrl::Transform(
 			m_PositionZ + moveVector.z
 		);
 
-	//s—ñ‚Ì‡¬FˆÚ“®¨‰ñ“]
+	//è¡Œåˆ—ã®åˆæˆï¼šç§»å‹•â†’å›è»¢
 	D3DXMatrixMultiply(&worldMatrix, &moveMatrix, &rotateMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_Mesh.Transform(worldMatrix);
 
 //EXIT:;
@@ -97,7 +97,7 @@ int MTMeshCtrl::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTMeshCtrl::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -105,7 +105,7 @@ int MTMeshCtrl::Draw(
 {
 	int result = 0;
 
-	//ƒƒbƒVƒ…‚Ì•`‰æ
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã®æç”»
 	result = m_Mesh.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -114,7 +114,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTMeshCtrl::Release()
 {
@@ -122,7 +122,7 @@ void MTMeshCtrl::Release()
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTMeshCtrl::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -141,20 +141,20 @@ int MTMeshCtrl::_LoadConfFile(
 	result = confFile.SetCurSection(_T("Mesh"));
 	if (result != 0) goto EXIT;
 
-	//Xƒtƒ@ƒCƒ‹–¼
+	//Xãƒ•ã‚¡ã‚¤ãƒ«å
 	result = confFile.GetStr(_T("XFile"), xFileName, _MAX_PATH, _T(""));
 	if (result != 0) goto EXIT;
 
-	//Xƒtƒ@ƒCƒ‹ƒpƒXì¬
+	//Xãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
 	if (_tcslen(xFileName) > 0) {
-		//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
+		//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 		result = YNPathUtil::GetModuleDirPath(m_MeshFilePath, _MAX_PATH);
 		if (result != 0) goto EXIT;
-		//ƒƒbƒVƒ…ƒtƒ@ƒCƒ‹ƒpƒX
+		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 		_tcscat_s(m_MeshFilePath, _MAX_PATH, xFileName);
 	}
 
-	//•`‰æˆÊ’u
+	//æç”»ä½ç½®
 	result = confFile.GetFloat(_T("PositionX"), &m_PositionX, 0.0f);
 	if (result != 0) goto EXIT;
 	result = confFile.GetFloat(_T("PositionY"), &m_PositionY, 0.0f);

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPictBoard
 //
-// ƒsƒNƒ`ƒƒƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
@@ -18,7 +18,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPictBoard::MTPictBoard(void)
 {
@@ -30,7 +30,7 @@ MTPictBoard::MTPictBoard(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPictBoard::~MTPictBoard(void)
 {
@@ -38,7 +38,7 @@ MTPictBoard::~MTPictBoard(void)
 }
 
 //******************************************************************************
-// ƒsƒNƒ`ƒƒƒ{[ƒh¶¬
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 //******************************************************************************
 int MTPictBoard::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -55,46 +55,46 @@ int MTPictBoard::Create(
 
 	Release();
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	result = _LoadTexture(pD3DDevice, pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTPICTBOARD_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLESTRIP			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTPICTBOARD_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLESTRIP			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 4;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	indexNum = 4;
 	result = m_Primitive.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.LockIndex(&pIndex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	result = _CreateVertexOfBoard(
-					pVertex,		//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-					pIndex			//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‘‚«‚İˆÊ’u
+					pVertex,		//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+					pIndex			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
 				);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 	result = m_Primitive.UnlockIndex();
@@ -105,7 +105,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTPictBoard::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -120,32 +120,32 @@ int MTPictBoard::Transform(
 	D3DXMATRIX moveMatrix;
 	D3DXMATRIX worldMatrix;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//‰‰‘tˆÊ’u
+	//æ¼”å¥ä½ç½®
 	curPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	moveVector = m_NoteDesign.GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x + curPos, moveVector.y, moveVector.z);
 
-	//s—ñ‚Ì‡¬
+	//è¡Œåˆ—ã®åˆæˆ
 	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_Primitive.Transform(worldMatrix);
 
 	return result;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTPictBoard::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -155,22 +155,22 @@ int MTPictBoard::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//•`‰æ
+	//æç”»
 	result = m_Primitive.Draw(pD3DDevice, m_pTexture);
 	if (result != 0) goto EXIT;
 
@@ -179,7 +179,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTPictBoard::Release()
 {
@@ -192,7 +192,7 @@ void MTPictBoard::Release()
 }
 
 //******************************************************************************
-// ƒsƒNƒ`ƒƒƒ{[ƒh’¸“_¶¬
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTPictBoard::_CreateVertexOfBoard(
 		MTPICTBOARD_VERTEX* pVertex,
@@ -210,14 +210,14 @@ int MTPictBoard::_CreateVertexOfBoard(
 	float chStep = 0.0f;
 
 	//     +   1+----+3   +
-	//    /|   / ã /    /|gridH    y x
-	//   + | 0+----+2   + |‰E       |/
-	// ¶| +   7+----+5 | +      z--+0
-	//   |/    / ‰º /   |/
-	//   +   6+----+4   + © 4 ‚ªŒ´“_(0,0,0)
+	//    /|   / ä¸Š /    /|gridH    y x
+	//   + | 0+----+2   + |å³       |/
+	// å·¦| +   7+----+5 | +      z--+0
+	//   |/    / ä¸‹ /   |/
+	//   +   6+----+4   + â† 4 ãŒåŸç‚¹(0,0,0)
 	//        gridW
 
-	//Ä¶–Ê’¸“_À•Wæ“¾
+	//å†ç”Ÿé¢é ‚ç‚¹åº§æ¨™å–å¾—
 	m_NoteDesign.GetPlaybackSectionVirtexPos(
 			0,
 			&vectorLU,
@@ -230,38 +230,38 @@ int MTPictBoard::_CreateVertexOfBoard(
 	boardWidth = boardHeight * ((float)m_ImgInfo.Width / (float)m_ImgInfo.Height);
 	chStep = m_NoteDesign.GetChStep();
 
-	//’¸“_À•WF¶‚Ì–Ê
+	//é ‚ç‚¹åº§æ¨™ï¼šå·¦ã®é¢
 	pVertex[0].p = D3DXVECTOR3(vectorLU.x,            vectorLU.y, vectorLU.z+chStep+0.01f); //0
 	pVertex[1].p = D3DXVECTOR3(vectorLU.x+boardWidth, vectorLU.y, vectorLU.z+chStep+0.01f); //1
 	pVertex[2].p = D3DXVECTOR3(vectorLD.x,            vectorLD.y, vectorLD.z+chStep+0.01f); //6
 	pVertex[3].p = D3DXVECTOR3(vectorLD.x+boardWidth, vectorLD.y, vectorLD.z+chStep+0.01f); //7
 
-	//Ä¶–Ê‚Æ‚Ì‘Š‘ÎˆÊ’u‚É‚¸‚ç‚·
-	//  ‘Š‘ÎˆÊ’u 0.0f ¨ ‰æ‘œ‚Ì¶’[‚ªÄ¶–Ê‚Æ’¼Œğ‚·‚é
-	//  ‘Š‘ÎˆÊ’u 0.5f ¨ ‰æ‘œ‚Ì’†‰›‚ªÄ¶–Ê‚Æ’¼Œğ‚·‚é
-	//  ‘Š‘ÎˆÊ’u 1.0f ¨ ‰æ‘œ‚Ì‰E’[‚ªÄ¶–Ê‚Æ’¼Œğ‚·‚é
+	//å†ç”Ÿé¢ã¨ã®ç›¸å¯¾ä½ç½®ã«ãšã‚‰ã™
+	//  ç›¸å¯¾ä½ç½® 0.0f â†’ ç”»åƒã®å·¦ç«¯ãŒå†ç”Ÿé¢ã¨ç›´äº¤ã™ã‚‹
+	//  ç›¸å¯¾ä½ç½® 0.5f â†’ ç”»åƒã®ä¸­å¤®ãŒå†ç”Ÿé¢ã¨ç›´äº¤ã™ã‚‹
+	//  ç›¸å¯¾ä½ç½® 1.0f â†’ ç”»åƒã®å³ç«¯ãŒå†ç”Ÿé¢ã¨ç›´äº¤ã™ã‚‹
 	for (i = 0; i < 4; i++) {
 		pVertex[i].p.x += -(boardWidth * m_NoteDesign.GetPictBoardRelativePos());
 	}
 
-	//–@ü
+	//æ³•ç·š
 	pVertex[0].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVertex[1].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVertex[2].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVertex[3].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	for (i = 0; i < 4; i++) {
 		pVertex[i].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
 	pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
 	pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
 	pVertex[3].t = D3DXVECTOR2(1.0f, 1.0f);
 
-	//ƒCƒ“ƒfƒbƒNƒXFTRIANGLESTRIP
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼šTRIANGLESTRIP
 	pIndex[0] = 0;
 	pIndex[1] = 1;
 	pIndex[2] = 2;
@@ -271,7 +271,7 @@ int MTPictBoard::_CreateVertexOfBoard(
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ‰æ‘œ“Ç‚İ‚İ
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTPictBoard::_LoadTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -287,31 +287,31 @@ int MTPictBoard::_LoadTexture(
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒrƒbƒgƒ}ƒbƒvƒtƒ@ƒCƒ‹–¼
+	//ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«å
 	result = confFile.SetCurSection(_T("Bitmap"));
 	if (result != 0) goto EXIT;
 	result = confFile.GetStr(_T("Board"), bmpFileName, _MAX_PATH, MT_IMGFILE_BOARD);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 	result = YNPathUtil::GetModuleDirPath(imgFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//‰æ‘œƒtƒ@ƒCƒ‹ƒpƒXì¬
+	//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
 	_tcscat_s(imgFilePath, _MAX_PATH, bmpFileName);
 
-	//“Ç‚İ‚Ş‰æ‘œ‚Ìc‰¡ƒTƒCƒY‚ğæ“¾‚µ‚Ä‚¨‚­
+	//èª­ã¿è¾¼ã‚€ç”»åƒã®ç¸¦æ¨ªã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¦ãŠã
 	hresult = D3DXGetImageInfoFromFile(imgFilePath, &m_ImgInfo);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒ‰æ‘œ‚Æ‚µ‚Ä“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒã¨ã—ã¦èª­ã¿è¾¼ã¿
 	hresult = D3DXCreateTextureFromFile(
-					pD3DDevice,		//ƒeƒNƒXƒ`ƒƒ‚ÉŠÖ˜A•t‚¯‚éƒfƒoƒCƒX
-					imgFilePath,	//ƒtƒ@ƒCƒ‹–¼
-					&m_pTexture		//ì¬‚³‚ê‚½ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					pD3DDevice,		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«é–¢é€£ä»˜ã‘ã‚‹ãƒ‡ãƒã‚¤ã‚¹
+					imgFilePath,	//ãƒ•ã‚¡ã‚¤ãƒ«å
+					&m_pTexture		//ä½œæˆã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
@@ -323,7 +323,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ`ƒbƒNƒ^ƒCƒ€İ’è
+// ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ è¨­å®š
 //******************************************************************************
 void MTPictBoard::SetCurTickTime(
 		unsigned long curTickTime
@@ -333,7 +333,7 @@ void MTPictBoard::SetCurTickTime(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTPictBoard::Reset()
 {
@@ -341,7 +341,7 @@ void MTPictBoard::Reset()
 }
 
 //******************************************************************************
-// ‰‰‘tŠJn
+// æ¼”å¥é–‹å§‹
 //******************************************************************************
 void MTPictBoard::OnPlayStart()
 {
@@ -349,7 +349,7 @@ void MTPictBoard::OnPlayStart()
 }
 
 //******************************************************************************
-// ‰‰‘tI—¹
+// æ¼”å¥çµ‚äº†
 //******************************************************************************
 void MTPictBoard::OnPlayEnd()
 {
@@ -357,7 +357,7 @@ void MTPictBoard::OnPlayEnd()
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTPictBoard::SetEnable(
 		bool isEnable

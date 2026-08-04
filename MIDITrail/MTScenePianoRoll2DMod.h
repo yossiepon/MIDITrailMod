@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRoll2DMod
 //
-// ƒsƒAƒmƒ[ƒ‹2DƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«2Dã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -13,20 +13,20 @@
 
 
 //******************************************************************************
-// ƒsƒAƒmƒ[ƒ‹2DƒV[ƒ“•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«2Dã‚·ãƒ¼ãƒ³æç”»Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScenePianoRoll2DMod : public MTScenePianoRoll3DMod
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTScenePianoRoll2DMod(void);
 	virtual ~MTScenePianoRoll2DMod(void);
 
-	//–¼Ìæ“¾
+	//åç§°å–å¾—
 	const TCHAR* GetName();
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,

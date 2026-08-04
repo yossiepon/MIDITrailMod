@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTMeshCtrl
 //
-// ƒƒbƒVƒ…§ŒäƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚·ãƒ¥åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
@@ -16,29 +16,29 @@
 
 
 //******************************************************************************
-// ƒƒbƒVƒ…§ŒäƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚·ãƒ¥åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTMeshCtrl
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTMeshCtrl(void);
 	virtual ~MTMeshCtrl(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName
 		);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 moveVector);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
 private:

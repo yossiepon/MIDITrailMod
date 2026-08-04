@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardCtrlMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh§ŒäModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -17,13 +17,13 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
 #define MTPIANOKEYBOARD_MAX_ACTIVENOTE_NUM (256)
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboardCtrlMod::MTPianoKeyboardCtrlMod(void)
 {
@@ -32,7 +32,7 @@ MTPianoKeyboardCtrlMod::MTPianoKeyboardCtrlMod(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTPianoKeyboardCtrlMod::~MTPianoKeyboardCtrlMod(void)
 {
@@ -40,7 +40,7 @@ MTPianoKeyboardCtrlMod::~MTPianoKeyboardCtrlMod(void)
 }
 
 //******************************************************************************
-// ¶¬ˆ—
+// ç”Ÿæˆå‡¦ç†
 //******************************************************************************
 int MTPianoKeyboardCtrlMod::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -63,15 +63,15 @@ int MTPianoKeyboardCtrlMod::Create(
 		goto EXIT;
 	}
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“‰Šú‰»
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³åˆæœŸåŒ–
 	result = m_KeyboardDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒPƒ“ƒXƒf[ƒ^Fƒ|[ƒgƒŠƒXƒgæ“¾
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ï¼šãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—
 	result = pSeqData->GetPortList(&m_PortList);
 	if (result != 0) goto EXIT;
 
@@ -79,10 +79,10 @@ int MTPianoKeyboardCtrlMod::Create(
 		m_KeyboardIndex[index] = -1;
 	}
 
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Å‚È‚¢ê‡
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ãªã„å ´åˆ
 	if (!isSingleKeyboard) {
-		//ƒ|[ƒg”Ô†‚É¸‡‚ÌƒL[ƒ{[ƒhƒCƒ“ƒfƒbƒNƒX‚ğU‚é
-		//ƒ|[ƒg 0”Ô 3”Ô 5”Ô ‚Éo—Í‚·‚éê‡‚ÌƒCƒ“ƒfƒbƒNƒX‚Í‚»‚ê‚¼‚ê 0, 1, 2
+		//ãƒãƒ¼ãƒˆç•ªå·ã«æ˜‡é †ã®ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æŒ¯ã‚‹
+		//ãƒãƒ¼ãƒˆ 0ç•ª 3ç•ª 5ç•ª ã«å‡ºåŠ›ã™ã‚‹å ´åˆã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯ãã‚Œãã‚Œ 0, 1, 2
 		for (index = 0; index < m_PortList.GetSize(); index++) {
 			m_PortList.GetPort(index, &portNo);
 			m_KeyboardIndex[portNo] = keyboardIndex;
@@ -93,35 +93,35 @@ int MTPianoKeyboardCtrlMod::Create(
 		}
 		m_MaxKeyboardIndex = (unsigned char)keyboardIndex;
 	}
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ìê‡
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å ´åˆ
 	else {
-		//ƒL[ƒ{[ƒhƒfƒUƒCƒ“‚ğƒVƒ“ƒOƒ‹ƒ‚[ƒh‚Éİ’è
+		//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³ã‚’ã‚·ãƒ³ã‚°ãƒ«ãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š
 		m_KeyboardDesignMod.SetKeyboardSingle();
-		//ƒ|[ƒg‚ÆƒL[ƒ{[ƒh‚Ì‘Î‰‚ğ1:1‚ÉŒÅ’è
+		//ãƒãƒ¼ãƒˆã¨ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å¯¾å¿œã‚’1:1ã«å›ºå®š
 		m_KeyboardIndex[0] = 0;
 		m_MaxKeyboardIndex = 1;
 	}
 
-	//ƒgƒ‰ƒbƒNæ“¾
+	//ãƒˆãƒ©ãƒƒã‚¯å–å¾—
 	result = pSeqData->GetMergedTrack(&track);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒŠƒXƒgæ“¾FstartTime, endTime ‚ÍƒŠƒAƒ‹ƒ^ƒCƒ€(msec)
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—ï¼šstartTime, endTime ã¯ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ (msec)
 	result = track.GetNoteListWithRealTime(&m_NoteListRT, pSeqData->GetTimeDivision());
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	result = _CreateNoteStatus();
 	if (result != 0) goto EXIT;
 
-	//ƒL[ƒ{[ƒh¶¬
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 	result = _CreateKeyboards(pD3DDevice, pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	m_pNotePitchBend = pNotePitchBend;
 
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒhƒtƒ‰ƒO
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ãƒ©ã‚°
 	m_isSingleKeyboard = isSingleKeyboard;
 
 EXIT:;
@@ -129,7 +129,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[ƒ{[ƒh•`‰æƒIƒuƒWƒFƒNƒg¶¬
+// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 //******************************************************************************
 int MTPianoKeyboardCtrlMod::_CreateKeyboards(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -153,7 +153,7 @@ int MTPianoKeyboardCtrlMod::_CreateKeyboards(
 		result = m_pPianoKeyboard[index]->Create(pD3DDevice, pSceneName, pSeqData, pTexture);
 		if (result != 0) goto EXIT;
 
-		//æ“ªƒIƒuƒWƒFƒNƒg‚Åì¬‚µ‚½ƒeƒNƒXƒ`ƒƒ‚ğÄ—˜—p‚·‚é
+		//å…ˆé ­ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ä½œæˆã—ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å†åˆ©ç”¨ã™ã‚‹
 		pTexture = m_pPianoKeyboard[index]->GetTexture();
 	}
 
@@ -162,7 +162,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTPianoKeyboardCtrlMod::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -176,47 +176,47 @@ int MTPianoKeyboardCtrlMod::Transform(
 	D3DXVECTOR3 basePosVector;
 	D3DXVECTOR3 playbackPosVector;
 
-	//ƒAƒNƒeƒBƒuƒ|[ƒgƒtƒ‰ƒOƒNƒŠƒA
+	//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒãƒ¼ãƒˆãƒ•ãƒ©ã‚°ã‚¯ãƒªã‚¢
 	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
 		m_isActivePort[index] = false;
 	}
 
-	//Œ»İ”­‰¹’†ƒm[ƒg‚Ì’¸“_XV
+	//ç¾åœ¨ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã®é ‚ç‚¹æ›´æ–°
 	result = _TransformActiveNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ˆÚ“®ƒxƒNƒgƒ‹FÄ¶–Ê‚É’Ç]‚·‚é
+	//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ï¼šå†ç”Ÿé¢ã«è¿½å¾“ã™ã‚‹
 	playbackPosVector = m_NoteDesignMod.GetWorldMoveVector();
 	playbackPosVector.x += m_NoteDesignMod.GetPlayPosX(m_CurTickTime);
 
 	unsigned char lastPortNo = 0;
 
 	if (!m_isSingleKeyboard) {
-		//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Å‚È‚¢ê‡AÅIƒ|[ƒg”Ô†‚ğæ“¾
+		//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ãªã„å ´åˆã€æœ€çµ‚ãƒãƒ¼ãƒˆç•ªå·ã‚’å–å¾—
 		m_PortList.GetPort(m_PortList.GetSize()-1, &lastPortNo);
 	}
 	else {
-		//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ìê‡AÅIƒ|[ƒg”Ô†‚Í0ŒÅ’è
+		//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å ´åˆã€æœ€çµ‚ãƒãƒ¼ãƒˆç•ªå·ã¯0å›ºå®š
 		lastPortNo = 0;
 	}
 
 	for(portNo = 0; portNo <= lastPortNo; portNo ++) {
 
-		//ƒ|[ƒg”Ô†‚©‚çƒL[ƒ{[ƒhƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
-		//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ìê‡AƒCƒ“ƒfƒbƒNƒX‚Í0ŒÅ’è
+		//ãƒãƒ¼ãƒˆç•ªå·ã‹ã‚‰ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
+		//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å ´åˆã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯0å›ºå®š
 		int keyboardIndex = !m_isSingleKeyboard ? m_KeyboardIndex[portNo] : 0;
 
 		if(keyboardIndex == -1) {
 			continue;
 		}
 
-		//ˆÚ“®ƒxƒNƒgƒ‹FƒL[ƒ{[ƒhŠî€À•W
+		//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ï¼šã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åŸºæº–åº§æ¨™
 		basePosVector = m_KeyboardDesignMod.GetKeyboardBasePos(keyboardIndex, rollAngle);
 
-		//ˆÚ“®ƒxƒNƒgƒ‹Fƒsƒbƒ`ƒxƒ“ƒhƒVƒtƒg‚ğ”½‰f
+		//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã‚·ãƒ•ãƒˆã‚’åæ˜ 
 		basePosVector.x += GetMaxPitchBendShift(portNo);
 
-		//ƒL[ƒ{[ƒhˆÚ“®
+		//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ç§»å‹•
 		result = m_pPianoKeyboard[keyboardIndex]->Transform(pD3DDevice, basePosVector, playbackPosVector, rollAngle);
 		if (result != 0) goto EXIT;
 	}
@@ -226,7 +226,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgó‘ÔXV
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 		unsigned long playTimeMSec,
@@ -238,7 +238,7 @@ int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 {
 	int result= 0;
 
-	//ƒm[ƒgON‘OiƒL[‰º~’†j
+	//ãƒãƒ¼ãƒˆONå‰ï¼ˆã‚­ãƒ¼ä¸‹é™ä¸­ï¼‰
 	if (playTimeMSec < note.startTime) {
 		pNoteStatus->keyStatus = BeforeNoteON;
 		if (keyDownDuration == 0) {
@@ -248,12 +248,12 @@ int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 			pNoteStatus->keyDownRate = 1.0f - ((float)(note.startTime - playTimeMSec) / (float)keyDownDuration);
 		}
 	}
-	//ƒm[ƒgON‚©‚çOFF‚Ü‚Å
+	//ãƒãƒ¼ãƒˆONã‹ã‚‰OFFã¾ã§
 	else if ((note.startTime <= playTimeMSec) && (playTimeMSec <= note.endTime)) {
 		pNoteStatus->keyStatus = NoteON;
 		pNoteStatus->keyDownRate = 1.0f;
 	}
-	//ƒm[ƒgOFFŒãiƒL[ã¸’†j
+	//ãƒãƒ¼ãƒˆOFFå¾Œï¼ˆã‚­ãƒ¼ä¸Šæ˜‡ä¸­ï¼‰
 	else if ((note.endTime < playTimeMSec) && (playTimeMSec <= (note.endTime + keyUpDuration))) {
 		pNoteStatus->keyStatus = AfterNoteOFF;
 		if (keyUpDuration == 0) {
@@ -263,10 +263,10 @@ int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 			pNoteStatus->keyDownRate = 1.0f - ((float)(playTimeMSec - note.endTime) / (float)keyUpDuration);
 		}
 	}
-	//ƒm[ƒgOFFŒãiƒL[•œ‹AÏ‚İj
+	//ãƒãƒ¼ãƒˆOFFå¾Œï¼ˆã‚­ãƒ¼å¾©å¸°æ¸ˆã¿ï¼‰
 	else {
-		//ƒm[ƒgî•ñ‚ğ”jŠü
-		//”­‰¹’†‚ÌƒL[‚ğƒŠƒZƒbƒg‚·‚é
+		//ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç ´æ£„
+		//ç™ºéŸ³ä¸­ã®ã‚­ãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 		result = m_pPianoKeyboard[_GetKeyboardIndexFromNote(note)]->ResetKey(note.noteNo);
 		if (result != 0) goto EXIT;
 
@@ -276,9 +276,9 @@ int MTPianoKeyboardCtrlMod::_UpdateNoteStatus(
 		pNoteStatus->keyDownRate = 0.0f;
 	}
 
-	//ó‘ÔXVŒãA”­‰¹’†‚Å‚ ‚ê‚Î
+	//çŠ¶æ…‹æ›´æ–°å¾Œã€ç™ºéŸ³ä¸­ã§ã‚ã‚Œã°
 	if (pNoteStatus->isActive) {
-		//ƒAƒNƒeƒBƒuƒ|[ƒgƒtƒ‰ƒO‚ğ—§‚Ä‚é
+		//ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãƒãƒ¼ãƒˆãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		m_isActivePort[note.portNo] = true;
 	}
 
@@ -287,7 +287,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒg‚Ì’¸“_XV
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTPianoKeyboardCtrlMod::_UpdateVertexOfActiveNotes(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -302,40 +302,40 @@ int MTPianoKeyboardCtrlMod::_UpdateVertexOfActiveNotes(
 
 	ZeroMemory(m_KeyDownRateMod, sizeof(float) * SM_MAX_CH_NUM* SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
-	//”­‰¹’†ƒm[ƒg‚É‚Â‚¢‚Ä’¸“_‚ğXV
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã«ã¤ã„ã¦é ‚ç‚¹ã‚’æ›´æ–°
 	for (i = 0; i < MTPIANOKEYBOARD_MAX_ACTIVENOTE_NUM; i++) {
-		//”­‰¹’†‚Å‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//ç™ºéŸ³ä¸­ã§ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (!(m_pNoteStatus[i].isActive)) continue;
 
-		//ƒm[ƒgî•ñæ“¾
+		//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 		result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
 		if (result != 0) goto EXIT;
 
-		//”­‰¹ŠJn‚©‚ç‚ÌŒo‰ßŠÔ
+		//ç™ºéŸ³é–‹å§‹ã‹ã‚‰ã®çµŒéæ™‚é–“
 		elapsedTime = 0;
 		if (m_pNoteStatus[i].keyStatus == NoteON) {
 			elapsedTime = m_PlayTimeMSec - note.startTime;
 		}
 
-		//ƒm[ƒg‚ÌF
+		//ãƒãƒ¼ãƒˆã®è‰²
 		noteColor = m_NoteDesignMod.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 
-		//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Å‚È‚¢ê‡
+		//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ãªã„å ´åˆ
 		if (!m_isSingleKeyboard) {
-			//ƒm[ƒg‚Ìƒ|[ƒg”Ô†‚ğæ“¾
+			//ãƒãƒ¼ãƒˆã®ãƒãƒ¼ãƒˆç•ªå·ã‚’å–å¾—
 			notePortNo = note.portNo;
 		}
-		//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ìê‡
+		//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å ´åˆ
 		else {
-			//ƒm[ƒg‚Ìƒ|[ƒg”Ô†‚ğ0ŒÅ’è‚É
+			//ãƒãƒ¼ãƒˆã®ãƒãƒ¼ãƒˆç•ªå·ã‚’0å›ºå®šã«
 			notePortNo = 0;
 		}
 
-		//”­‰¹‘ÎÛƒL[‚ğ‰ñ“]
-		//  ‚·‚Å‚É“¯ˆêƒm[ƒg‚É‘Î‚µ‚Ä’¸“_‚ğXV‚µ‚Ä‚¢‚éê‡
-		//  ‰Ÿ‰º—¦‚ª‘O‰ñ‚æ‚è‚àã‰ñ‚éê‡‚ÉŒÀ‚è’¸“_‚ğXV‚·‚é
+		//ç™ºéŸ³å¯¾è±¡ã‚­ãƒ¼ã‚’å›è»¢
+		//  ã™ã§ã«åŒä¸€ãƒãƒ¼ãƒˆã«å¯¾ã—ã¦é ‚ç‚¹ã‚’æ›´æ–°ã—ã¦ã„ã‚‹å ´åˆ
+		//  æŠ¼ä¸‹ç‡ãŒå‰å›ã‚ˆã‚Šã‚‚ä¸Šå›ã‚‹å ´åˆã«é™ã‚Šé ‚ç‚¹ã‚’æ›´æ–°ã™ã‚‹
 		if (m_KeyDownRateMod[notePortNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate) {
-			//•¡”ƒ`ƒƒƒ“ƒlƒ‹‚ÌƒL[ó‘Ô‚ğƒ|[ƒg•Ê‚ÉW–ñ‚·‚é
+			//è¤‡æ•°ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚­ãƒ¼çŠ¶æ…‹ã‚’ãƒãƒ¼ãƒˆåˆ¥ã«é›†ç´„ã™ã‚‹
 			result = m_pPianoKeyboard[_GetKeyboardIndexFromNote(note)]->PushKey(
 																		note.chNo,
 																		note.noteNo,
@@ -353,7 +353,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTPianoKeyboardCtrlMod::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -366,17 +366,17 @@ int MTPianoKeyboardCtrlMod::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èFZƒoƒbƒtƒ@‚Ö‚Ì‘‚«‚İƒIƒt
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šZãƒãƒƒãƒ•ã‚¡ã¸ã®æ›¸ãè¾¼ã¿ã‚ªãƒ•
 //	pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-	//ƒL[ƒ{[ƒh‚Ì•`‰æ
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®æç”»
 	for (index = 0; index < m_MaxKeyboardIndex; index++) {
 
 		result = m_pPianoKeyboard[index]->Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èFZƒoƒbƒtƒ@‚Ö‚Ì‘‚«‚İƒIƒ“
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šZãƒãƒƒãƒ•ã‚¡ã¸ã®æ›¸ãè¾¼ã¿ã‚ªãƒ³
 //	pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
 EXIT:;
@@ -384,7 +384,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTPianoKeyboardCtrlMod::Reset()
 {
@@ -401,7 +401,7 @@ void MTPianoKeyboardCtrlMod::Reset()
 			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
 			//if (result != 0) goto EXIT;
 
-			//”­‰¹’†‚ÌƒL[‚ğƒŠƒZƒbƒg‚·‚é
+			//ç™ºéŸ³ä¸­ã®ã‚­ãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 			result = m_pPianoKeyboard[_GetKeyboardIndexFromNote(note)]->ResetKey(note.noteNo);
 			//if (result != 0) goto EXIT;
 		}
@@ -416,28 +416,28 @@ void MTPianoKeyboardCtrlMod::Reset()
 
 int MTPianoKeyboardCtrlMod::_GetKeyboardIndexFromNote(const SMNote &note)
 {
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Å‚È‚¢ê‡
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ãªã„å ´åˆ
 	if (!m_isSingleKeyboard) {
-		//ƒm[ƒg‚ÌƒsƒAƒm”Ô†‚ğæ“¾
+		//ãƒãƒ¼ãƒˆã®ãƒ”ã‚¢ãƒç•ªå·ã‚’å–å¾—
 		return m_KeyboardIndex[note.portNo];
 	}
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ìê‡
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å ´åˆ
 	else {
-		//ƒm[ƒg‚ÌƒsƒAƒm”Ô†‚ğ0ŒÅ’è‚É
+		//ãƒãƒ¼ãƒˆã®ãƒ”ã‚¢ãƒç•ªå·ã‚’0å›ºå®šã«
 		return 0;
 	}
 }
 
 //******************************************************************************
-// ƒsƒbƒ`ƒxƒ“ƒhƒVƒtƒg‚ÌÅ‘å—Ê‚ğ‹‚ß‚é
+// ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ã‚·ãƒ•ãƒˆã®æœ€å¤§é‡ã‚’æ±‚ã‚ã‚‹
 //******************************************************************************
 float MTPianoKeyboardCtrlMod::GetMaxPitchBendShift(unsigned char portNo) {
 
 	float max = 0.0f;
 	float cur = 0.0f;
 
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Å‚È‚¢ê‡Aw’è‚Ìƒ|[ƒg”Ô†‚©‚ç‹‚ß‚é
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒh‚Ìê‡AƒV[ƒPƒ“ƒX‚ÉŠÜ‚Ü‚ê‚éƒ|[ƒg”Ô†‚·‚×‚Ä‚©‚ç‹‚ß‚é
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã§ãªã„å ´åˆã€æŒ‡å®šã®ãƒãƒ¼ãƒˆç•ªå·ã‹ã‚‰æ±‚ã‚ã‚‹
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®å ´åˆã€ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«å«ã¾ã‚Œã‚‹ãƒãƒ¼ãƒˆç•ªå·ã™ã¹ã¦ã‹ã‚‰æ±‚ã‚ã‚‹
 	int portListSize = !m_isSingleKeyboard ? 1 : m_PortList.GetSize();
 
 	for (int i = 0; i < portListSize; i++) {
