@@ -29,6 +29,7 @@ struct KbdVertex;  // cpp で定義（DXPRIMITIVE11_VERTEX と同一メモリレ
 struct MTKeyboardKeyState {
 	float rate;            // 0.0 (up) .. 1.0 (fully pressed)
 	unsigned long color;   // D3DCOLOR 0xAARRGGBB (valid when rate > 0)
+	unsigned char chNo;    // MIDI channel that contributed the max rate
 };
 
 //******************************************************************************

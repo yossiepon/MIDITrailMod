@@ -28,8 +28,8 @@
 // Per-key note record (compact)
 //******************************************************************************
 struct MTKbdNote {
-	unsigned long startTimeTick;
-	unsigned long endTimeTick;
+	unsigned long startTimeMs;
+	unsigned long endTimeMs;
 	unsigned long color;
 	unsigned char chNo;
 };
@@ -91,7 +91,7 @@ protected:
 				SMSeqData* pSeqData
 			);
 	int _BuildPerKeyIndex(MTKbdSub* pSub, int portFilter);
-	void _EvaluateKeyStates(MTKbdSub* pSub, unsigned long curTickTime);
+	void _EvaluateKeyStates(MTKbdSub* pSub, unsigned long playTimeMSec);
 
 	MTKbdSub m_Subs[SM_MAX_CH_NUM];
 	unsigned long m_NumKbd;

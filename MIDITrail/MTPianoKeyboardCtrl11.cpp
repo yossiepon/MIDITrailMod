@@ -192,8 +192,8 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 			if (nd.noteNo >= SM_MAX_NOTE_NUM) continue;
 
 			unsigned long idx = tempOffset[nd.noteNo]++;
-			pSub->pNotes[idx].startTimeTick = nd.startTimeTick;
-			pSub->pNotes[idx].endTimeTick = nd.endTimeTick;
+			pSub->pNotes[idx].startTimeMs = nd.startTimeMs;
+			pSub->pNotes[idx].endTimeMs = nd.endTimeMs;
 			pSub->pNotes[idx].color = m_NoteDesign.GetNoteBoxColor(
 				nd.portNo, nd.chNo, nd.noteNo).BGRA();
 			pSub->pNotes[idx].chNo = nd.chNo;
@@ -211,18 +211,13 @@ EXIT:;
 //******************************************************************************
 void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 		MTKbdSub* pSub,
-		unsigned long curTickTime
+		unsigned long playTimeMSec
 	)
 {
 	if (pSub->pNotes == NULL) return;
 
-	// Convert ms durations to approximate ticks
-	// (simplified: assumes constant tempo. Phase 3 will use per-tempo conversion)
-	float tickPerMs = (m_NoteDesign.GetPlayPosX(480) > 0.0f) ? 1.0f : 1.0f;
-	// For now use a simple heuristic: 1 tick ≈ 1 ms at 120 BPM / 480 TPQN
-	// This will be refined when tempo tracking is added
-	unsigned long downTicks = m_KeyDownDurMs;
-	unsigned long upTicks = m_KeyUpDurMs;
+	unsigned long downMs = m_KeyDownDurMs;
+	unsigned long upMs = m_KeyUpDurMs;
 
 	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		unsigned long lo = pSub->keyOffset[noteNo];
@@ -231,41 +226,44 @@ void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 		if (c < lo) c = lo;
 
 		// Advance cursor past fully released notes
-		while (c < hi && pSub->pNotes[c].endTimeTick + upTicks < curTickTime) c++;
+		while (c < hi && pSub->pNotes[c].endTimeMs + upMs < playTimeMSec) c++;
 		pSub->keyCursor[noteNo] = c;
 
 		float rate = 0.0f;
 		unsigned long useColor = 0xFFFFFFFF;
+		unsigned char useCh = 0;
 
 		for (unsigned long j = c; j < hi; j++) {
-			unsigned long s = pSub->pNotes[j].startTimeTick;
-			unsigned long e = pSub->pNotes[j].endTimeTick;
+			unsigned long s = pSub->pNotes[j].startTimeMs;
+			unsigned long e = pSub->pNotes[j].endTimeMs;
 
-			if (s > curTickTime + downTicks) break;
+			if (s > playTimeMSec + downMs) break;
 
 			float r;
-			if (curTickTime < s) {
+			if (playTimeMSec < s) {
 				// Anticipatory press-down
-				float d = (float)(s - curTickTime);
-				r = (d >= (float)downTicks) ? 0.0f : (1.0f - d / (float)downTicks);
+				float d = (float)(s - playTimeMSec);
+				r = (d >= (float)downMs) ? 0.0f : (1.0f - d / (float)downMs);
 			}
-			else if (curTickTime <= e) {
+			else if (playTimeMSec <= e) {
 				r = 1.0f;
 			}
 			else {
 				// Release ramp
-				float d = (float)(curTickTime - e);
-				r = (d >= (float)upTicks) ? 0.0f : (1.0f - d / (float)upTicks);
+				float d = (float)(playTimeMSec - e);
+				r = (d >= (float)upMs) ? 0.0f : (1.0f - d / (float)upMs);
 			}
 
 			if (r >= rate) {
 				rate = r;
 				useColor = pSub->pNotes[j].color;
+				useCh = pSub->pNotes[j].chNo;
 			}
 		}
 
 		pSub->keyStates[noteNo].rate = rate;
 		pSub->keyStates[noteNo].color = useColor;
+		pSub->keyStates[noteNo].chNo = useCh;
 	}
 }
 
@@ -284,7 +282,7 @@ int MTPianoKeyboardCtrl11::Update(
 		if (m_Subs[k].pKeyboard == NULL) continue;
 
 		// Evaluate key states from per-key index
-		_EvaluateKeyStates(&m_Subs[k], ctx.curTickTime);
+		_EvaluateKeyStates(&m_Subs[k], ctx.playTimeMSec);
 
 		// Apply active key color for fully pressed keys
 		for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
