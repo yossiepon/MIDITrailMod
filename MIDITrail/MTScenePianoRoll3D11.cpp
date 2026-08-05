@@ -109,6 +109,24 @@ int MTScenePianoRoll3D11::Create(
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
 	if (result != 0) goto EXIT;
 
+	// ピッチベンド
+	result = m_NotePitchBend.Initialize();
+	if (result != 0) goto EXIT;
+
+	// ノートトラッカー
+	result = m_NoteTracker.Create(pSeqData);
+	if (result != 0) goto EXIT;
+
+	// 波紋
+	result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+	m_NoteTracker.AddListener(&m_Ripple, NoteEventType::Note);
+
+	// 歌詞
+	result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
+
 	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
@@ -120,6 +138,11 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRoll3D11::Release()
 {
+	m_NoteTracker.RemoveListener(&m_Ripple);
+	m_NoteTracker.RemoveListener(&m_Lyrics);
+	m_Ripple.Release();
+	m_Lyrics.Release();
+	m_NoteTracker.Release();
 	m_Stars.Release();
 	m_Grid.Release();
 	m_TimeIndicator.Release();
@@ -160,6 +183,15 @@ void MTScenePianoRoll3D11::Transform(
 	// ピクチャボード
 	m_PictBoard.Update(curTickTime, playTimeMSec);
 	m_PictBoard.Transform(camPos, rollAngle);
+
+	// ノートトラッカー → リスナー（Ripple, Lyrics）に通知
+	m_NoteTracker.Update(playTimeMSec);
+
+	// 波紋
+	m_Ripple.Update(curTickTime, playTimeMSec);
+
+	// 歌詞
+	m_Lyrics.Update(curTickTime, playTimeMSec);
 
 	// ダッシュボード
 	m_Dashboard.SetPlayTimeMSec(playTimeMSec);
@@ -208,13 +240,24 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 	// グリッド
 	m_Grid.DrawDX11(pContext, viewProj, lightDir, rollAngle);
 
-	// Phase 2: ノート → 波紋
+	// Phase 2: NoteBox 描画（未実装）
 
-	// ピクチャボード
-	m_PictBoard.DrawDX11(pContext, viewProj, lightDir, rollAngle);
-
-	// タイムインジケータ
-	m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+	// カメラ位置と再生位置の前後関係で描画順を切り替え（奥から手前へ）
+	// PictBoard は Keyboard 実装後に置き換え（現状は無効化）
+	if (m_TimeIndicator.GetPos() > camPos.x) {
+		// カメラが再生位置より手前: Indicator → Lyrics → Ripple → Keyboard
+		m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+		m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
+		m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
+		//m_PictBoard.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+	}
+	else {
+		// カメラが再生位置より奥: Keyboard → Ripple → Lyrics → Indicator
+		//m_PictBoard.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+		m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
+		m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
+		m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+	}
 
 	// 星
 	m_Stars.DrawDX11(pContext, viewProj, rollAngle);
@@ -252,7 +295,34 @@ int MTScenePianoRoll3D11::OnRecvSequencerMsg(
 //******************************************************************************
 void MTScenePianoRoll3D11::SetEffect(MTEffectType type, bool isEnable)
 {
-	// Phase 2: EffectType → コンポーネント enable/disable マッピング
+	switch (type) {
+	case MTEffectRipple:
+		m_Ripple.SetEnable(isEnable);
+		break;
+	case MTEffectLyrics:
+		m_Lyrics.SetEnable(isEnable);
+		break;
+	case MTEffectStars:
+		m_Stars.SetEnable(isEnable);
+		break;
+	case MTEffectGridBox:
+		m_Grid.SetEnable(isEnable);
+		break;
+	case MTEffectTimeIndicator:
+		m_TimeIndicator.SetEnable(isEnable);
+		break;
+	case MTEffectBackgroundImage:
+		m_BackgroundImage.SetEnable(isEnable);
+		break;
+	case MTEffectCounter:
+		m_Dashboard.SetEnable(isEnable);
+		break;
+	case MTEffectFileName:
+		m_Dashboard.SetEnableFileName(isEnable);
+		break;
+	default:
+		break;
+	}
 }
 
 //******************************************************************************
@@ -268,8 +338,7 @@ void MTScenePianoRoll3D11::SetPlaySpeedRatio(unsigned long ratio)
 //******************************************************************************
 unsigned long MTScenePianoRoll3D11::GetNoteCount() const
 {
-	// Phase 2: NoteBox から取得
-	return 0;
+	return m_NoteTracker.GetNoteCount();
 }
 
 //******************************************************************************
@@ -277,9 +346,9 @@ unsigned long MTScenePianoRoll3D11::GetNoteCount() const
 //******************************************************************************
 void MTScenePianoRoll3D11::_ComputeDefaultViewParam(MTViewParamMap* pParamMap)
 {
-	// DX9 MTScenePianoRoll3D::GetDefaultViewParam と同じ
 	// E4 (noteNo=64) の中心、Z=-18 後方
-	float noteStep = 0.1f;  // Phase 2: m_NoteDesign から取得
+	// WorldMoveVector 適用後の座標系に合わせる
+	float noteStep = 0.1f;
 	float defaultY = noteStep * 64.0f;
 	float defaultZ = -18.0f;
 
@@ -306,5 +375,6 @@ float MTScenePianoRoll3D11::_GetViewpointCompensation() const
 void MTScenePianoRoll3D11::_Reset()
 {
 	MTSceneBase11::_Reset();
-	// Phase 2: シーン固有コンポーネントのリセット
+	m_NotePitchBend.Reset();
+	m_NoteTracker.Seek(0);
 }

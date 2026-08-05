@@ -147,7 +147,7 @@ void MTNoteLyrics11::BuildVertices(
 				pbSensitivity = m_pNotePitchBend->GetSensitivity(s.portNo, s.chNo);
 			}
 
-			// Note center position
+			// Note center position (raw coords — WorldMoveVector applied via world matrix)
 			Vector3 center = m_NoteDesign.GetNoteBoxCenterPosX(
 				m_CurTickTime, s.portNo, s.chNo, s.noteNo,
 				pbValue, pbSensitivity);
@@ -222,6 +222,10 @@ int MTNoteLyrics11::Draw(
 	if (m_DrawSRVCount == 0) goto EXIT;
 
 	m_CamPos = camPos;
+
+	// WorldMoveVector via world matrix (same as DX9 SetTransform)
+	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
+	m_Prim.SetWorldMatrix(Matrix::CreateTranslation(moveVec));
 
 	m_Prim.SetAdditiveBlend(true);
 	m_Prim.SetDepthWrite(false);
