@@ -60,7 +60,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 0; i < 7; i++) {
 		pVertex[i].n = Vector3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -97,7 +96,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 7; i < 11; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -131,7 +129,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 11; i < 15; i++) {
 		pVertex[i].n = Vector3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -157,7 +154,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 15; i < 19; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -184,7 +180,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 19; i < 23; i++) {
 		pVertex[i].n = Vector3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -210,7 +205,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 23; i < 27; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -237,7 +231,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 27; i < 31; i++) {
 		pVertex[i].n = Vector3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -274,7 +267,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	for (i = 31; i < 38; i++) {
 		pVertex[i].n = Vector3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -367,7 +359,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 0; i < 8; i++) {
 		pVertex[i].n = Vector3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -405,7 +396,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 8; i < 12; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -439,7 +429,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 12; i < 16; i++) {
 		pVertex[i].n = Vector3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -465,7 +454,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 16; i < 20; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -492,7 +480,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 20; i < 24; i++) {
 		pVertex[i].n = Vector3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -518,7 +505,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 24; i < 28; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -545,7 +531,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 28; i < 32; i++) {
 		pVertex[i].n = Vector3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -572,7 +557,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 32; i < 36; i++) {
 		pVertex[i].n = Vector3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -610,7 +594,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	for (i = 36; i < 44; i++) {
 		pVertex[i].n = Vector3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -697,7 +680,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 0; i < 7; i++) {
 		pVertex[i].n = Vector3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -734,7 +716,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 7; i < 11; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -768,7 +749,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 11; i < 15; i++) {
 		pVertex[i].n = Vector3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -794,7 +774,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 15; i < 19; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -821,7 +800,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 19; i < 23; i++) {
 		pVertex[i].n = Vector3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -847,7 +825,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 23; i < 27; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -874,7 +851,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 27; i < 31; i++) {
 		pVertex[i].n = Vector3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -911,7 +887,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	for (i = 31; i < 38; i++) {
 		pVertex[i].n = Vector3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -999,13 +974,11 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	for (i = 0; i < 4; i++) {
 		pVertex[i].n = normalizedVector;
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 	//法線／色：4-5-6-7面
 	for (i = 4; i < 8; i++) {
 		pVertex[i].n = Vector3(0.0f, 1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -1045,7 +1018,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	for (i = 8; i < 12; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, -1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -1081,7 +1053,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	for (i = 12; i < 17; i++) {
 		pVertex[i].n = Vector3(1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -1114,7 +1085,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	for (i = 17; i < 21; i++) {
 		pVertex[i].n = Vector3(0.0f, 0.0f, 1.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -1149,7 +1119,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	for (i = 21; i < 26; i++) {
 		pVertex[i].n = Vector3(-1.0f, 0.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -1190,7 +1159,6 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	for (i = 26; i < 30; i++) {
 		pVertex[i].n = Vector3(0.0f, -1.0f, 0.0f);
 		pVertex[i].c = keyColor.BGRA();
-
 	}
 
 	//インデックス
@@ -1206,7 +1174,3 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 
 	return result;
 }
-
-//******************************************************************************
-// テクスチャ画像読み込み
-//******************************************************************************
