@@ -1,0 +1,69 @@
+﻿//******************************************************************************
+//
+// MIDITrail / MTNoteRipple11
+//
+// DX11 note ripple renderer.
+// Draws textured quads at active note positions with additive blending.
+// Derives from MTNoteEffect for slot management and envelope.
+//
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
+#pragma once
+
+#include "DXPrimitive11.h"
+#include "MTNoteEffect.h"
+#include "MTNotePitchBend.h"
+
+
+//******************************************************************************
+// DX11 note ripple renderer
+//******************************************************************************
+class MTNoteRipple11 : public MTNoteEffect
+{
+public:
+
+	MTNoteRipple11();
+	virtual ~MTNoteRipple11();
+
+	int Create(
+				ID3D11Device* pDevice,
+				ID3D11DeviceContext* pContext,
+				const TCHAR* pSceneName,
+				SMSeqData* pSeqData,
+				MTNotePitchBend* pNotePitchBend
+			);
+
+	void Release();
+
+	int Draw(
+				ID3D11DeviceContext* pContext,
+				const DirectX::SimpleMath::Matrix& viewProj,
+				const DirectX::SimpleMath::Vector4& lightDir,
+				const DirectX::SimpleMath::Vector3& camPos
+			);
+
+	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
+
+protected:
+
+	// MTNoteEffect Template Method
+	void OnActivate(NoteEffectStatus& status) override;
+	void OnDeactivate(NoteEffectStatus& status) override;
+	void BuildVertices(unsigned long playTimeMSec) override;
+
+private:
+
+	DXPrimitive11 m_Prim;
+	ID3D11DeviceContext* m_pContext;
+	ID3D11ShaderResourceView* m_pTextureSRV;
+	MTNotePitchBend* m_pNotePitchBend;
+
+	unsigned long m_ActiveNoteNum;
+	bool m_isSkipping;
+
+	DirectX::SimpleMath::Vector3 m_CamPos;
+
+	int _LoadTexture(ID3D11Device* pDevice, const TCHAR* pSceneName);
+};
