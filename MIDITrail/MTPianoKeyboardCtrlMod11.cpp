@@ -167,6 +167,26 @@ int MTPianoKeyboardCtrlMod11::Update(
 			// Evaluate key states
 			_EvaluateKeyStates(&m_Subs[keyboardIndex], ctx.curTickTime);
 
+			// Apply active key color (DesignMod palette) for fully pressed keys
+			for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+				MTKeyboardKeyState& ks = m_Subs[keyboardIndex].keyStates[noteNo];
+				if (ks.rate >= 1.0f) {
+					// Find chNo from the note that contributed the max rate
+					unsigned char chNo = 0;
+					unsigned long lo = m_Subs[keyboardIndex].keyOffset[noteNo];
+					unsigned long hi = m_Subs[keyboardIndex].keyOffset[noteNo + 1];
+					for (unsigned long j = lo; j < hi; j++) {
+						if (m_Subs[keyboardIndex].pNotes[j].color == ks.color) {
+							chNo = m_Subs[keyboardIndex].pNotes[j].chNo;
+							break;
+						}
+					}
+					Color noteColor((unsigned int)ks.color);
+					Color activeColor = m_DesignMod.GetActiveKeyColor(chNo, noteNo, 0, &noteColor);
+					ks.color = activeColor.BGRA();
+				}
+			}
+
 			// Mod world matrix: scale → base position → orientation → rollAngle → playback
 			Vector3 basePos = m_DesignMod.GetKeyboardBasePos(keyboardIndex, ctx.rollAngle);
 			basePos.x += _GetMaxPitchBendShift(portNo);

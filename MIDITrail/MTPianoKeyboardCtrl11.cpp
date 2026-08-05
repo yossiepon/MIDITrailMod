@@ -286,6 +286,16 @@ int MTPianoKeyboardCtrl11::Update(
 		// Evaluate key states from per-key index
 		_EvaluateKeyStates(&m_Subs[k], ctx.curTickTime);
 
+		// Apply active key color for fully pressed keys
+		for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+			MTKeyboardKeyState& ks = m_Subs[k].keyStates[noteNo];
+			if (ks.rate >= 1.0f) {
+				Color noteColor((unsigned int)ks.color);
+				Color activeColor = m_KeyboardDesign.GetActiveKeyColor(noteNo, 0, &noteColor);
+				ks.color = activeColor.BGRA();
+			}
+		}
+
 		// World matrix: base position + playback tracking + roll
 		unsigned char chNo = (unsigned char)k;
 		unsigned char portNo = 0;
