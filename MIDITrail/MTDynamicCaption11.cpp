@@ -77,9 +77,35 @@ int MTDynamicCaption11::Create(
 	result = m_FontTexture.CreateTexture(pDevice, pCharacters);
 	if (result != 0) goto EXIT;
 
-	// 頂点バッファ生成（1 文字 = 6 頂点）
-	result = m_Primitive.CreateVertexBuffer(pDevice, 6 * m_CaptionSize);
+	// 頂点バッファ生成（1 文字 = 4 頂点）
+	result = m_Primitive.CreateVertexBuffer(pDevice, 4 * m_CaptionSize);
 	if (result != 0) goto EXIT;
+
+	// インデックスバッファ生成（1 文字 = 6 インデックス）
+	result = m_Primitive.CreateIndexBuffer(pDevice, 6 * m_CaptionSize);
+	if (result != 0) goto EXIT;
+
+	// インデックスは固定なので Create 時に書き込む
+	{
+		unsigned long* pIndex = NULL;
+		ID3D11DeviceContext* pCtx = NULL;
+		pDevice->GetImmediateContext(&pCtx);
+		result = m_Primitive.LockIndex(pCtx, &pIndex);
+		if (result == 0) {
+			for (unsigned long i = 0; i < m_CaptionSize; i++) {
+				unsigned long base = i * 4;
+				unsigned long idx = i * 6;
+				pIndex[idx + 0] = base + 0;
+				pIndex[idx + 1] = base + 1;
+				pIndex[idx + 2] = base + 2;
+				pIndex[idx + 3] = base + 2;
+				pIndex[idx + 4] = base + 1;
+				pIndex[idx + 5] = base + 3;
+			}
+			m_Primitive.UnlockIndex(pCtx);
+		}
+		pCtx->Release();
+	}
 
 	m_Primitive.SetLightEnable(false);
 	m_Primitive.SetDepthWrite(false);
@@ -188,8 +214,19 @@ int MTDynamicCaption11::Draw(
 		unsigned char ca = (unsigned char)(m_Color.A() * 255.0f);
 		DWORD color = (ca << 24) | (cr << 16) | (cg << 8) | cb;
 
+		auto setVtx = [&](unsigned long vi, float px, float py, float u, float v) {
+			pVertex[vi].pos[0] = px;
+			pVertex[vi].pos[1] = py;
+			pVertex[vi].pos[2] = 0.0f;
+			pVertex[vi].normal[0] = 0.0f;
+			pVertex[vi].normal[1] = 0.0f;
+			pVertex[vi].normal[2] = -1.0f;
+			pVertex[vi].color = color;
+			pVertex[vi].uv[0] = u;
+			pVertex[vi].uv[1] = v;
+		};
+
 		for (unsigned long i = 0; i < m_CaptionSize; i++) {
-			// ピクセル座標 → NDC
 			float px0 = x + charPixelW * (float)i;
 			float px1 = px0 + charPixelW;
 			float py0 = y;
@@ -200,35 +237,17 @@ int MTDynamicCaption11::Draw(
 			float ny0 = 1.0f - (py0 / sh) * 2.0f;
 			float ny1 = 1.0f - (py1 / sh) * 2.0f;
 
-			// UV 座標
 			float u0 = 0.0f, u1 = 0.0f;
 			if (i < (unsigned long)wcslen(m_CurrentStr)) {
 				_FindCharUV(m_CurrentStr[i], m_Chars, m_CharCount, &u0, &u1);
 			}
 
-			auto setVtx = [&](unsigned long vi, float px, float py, float u, float v) {
-				pVertex[vi].pos[0] = px;
-				pVertex[vi].pos[1] = py;
-				pVertex[vi].pos[2] = 0.0f;
-				pVertex[vi].normal[0] = 0.0f;
-				pVertex[vi].normal[1] = 0.0f;
-				pVertex[vi].normal[2] = -1.0f;
-				pVertex[vi].color = color;
-				pVertex[vi].uv[0] = u;
-				pVertex[vi].uv[1] = v;
-			};
-
-			// 2 三角形 (TRIANGLELIST)
-			//  0+--+1
-			//   |/|
-			//  2+--+3
-			unsigned long base = i * 6;
-			setVtx(base + 0, nx0, ny0, u0, 0.0f);  // 左上
-			setVtx(base + 1, nx1, ny0, u1, 0.0f);  // 右上
-			setVtx(base + 2, nx0, ny1, u0, 1.0f);  // 左下
-			setVtx(base + 3, nx0, ny1, u0, 1.0f);  // 左下
-			setVtx(base + 4, nx1, ny0, u1, 0.0f);  // 右上
-			setVtx(base + 5, nx1, ny1, u1, 1.0f);  // 右下
+			// 4 頂点（インデックスバッファで 2 三角形に展開）
+			unsigned long base = i * 4;
+			setVtx(base + 0, nx0, ny0, u0, 0.0f);
+			setVtx(base + 1, nx1, ny0, u1, 0.0f);
+			setVtx(base + 2, nx0, ny1, u0, 1.0f);
+			setVtx(base + 3, nx1, ny1, u1, 1.0f);
 		}
 
 		m_Primitive.UnlockVertex(pContext);

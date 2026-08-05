@@ -25,6 +25,7 @@ MTScenePianoRoll3D11::MTScenePianoRoll3D11(bool isLive, bool is2D)
 {
 	m_IsLive = isLive;
 	m_Is2D = is2D;
+	m_hWnd = NULL;
 
 	// シーン固有のプロパティ
 	m_Traits.cameraDir = MTCameraDirX;
@@ -66,6 +67,7 @@ int MTScenePianoRoll3D11::Create(
 
 	m_pDevice = pDevice;
 	m_pContext = pContext;
+	m_hWnd = hWnd;
 
 	// 設定読み込み
 	_LoadConf();
@@ -103,6 +105,10 @@ int MTScenePianoRoll3D11::Create(
 	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
 	if (result != 0) goto EXIT;
 
+	// ダッシュボード
+	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
+	if (result != 0) goto EXIT;
+
 	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
@@ -119,6 +125,7 @@ void MTScenePianoRoll3D11::Release()
 	m_TimeIndicator.Release();
 	m_PictBoard.Release();
 	m_BackgroundImage.Release();
+	m_Dashboard.Release();
 
 	MTSceneBase11::Release();
 }
@@ -168,7 +175,14 @@ int MTScenePianoRoll3D11::Draw(
 	// シーン固有コンポーネント描画
 	_DrawSceneComponents(pContext, viewProj, rollAngle, camPos);
 
-	// Phase 2: Dashboard を最後に描画
+	// ダッシュボード（最後に描画）
+	{
+		RECT rect;
+		GetClientRect(m_hWnd, &rect);
+		m_Dashboard.Draw(pContext,
+		                 rect.right - rect.left,
+		                 rect.bottom - rect.top);
+	}
 
 	return 0;
 }

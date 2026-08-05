@@ -54,6 +54,27 @@ int MTStaticCaption11::Create(
 	result = m_FontTexture.CreateTexture(pDevice, pText);
 	if (result != 0) goto EXIT;
 
+	// 4 頂点 + 6 インデックスのクワッド
+	result = m_Primitive.CreateVertexBuffer(pDevice, 4);
+	if (result != 0) goto EXIT;
+	result = m_Primitive.CreateIndexBuffer(pDevice, 6);
+	if (result != 0) goto EXIT;
+
+	// インデックスは固定
+	{
+		unsigned long* pIndex = NULL;
+		result = m_Primitive.LockIndex(pContext, &pIndex);
+		if (result != 0) goto EXIT;
+
+		pIndex[0] = 0; pIndex[1] = 1; pIndex[2] = 2;
+		pIndex[3] = 2; pIndex[4] = 1; pIndex[5] = 3;
+
+		m_Primitive.UnlockIndex(pContext);
+	}
+
+	m_Primitive.SetLightEnable(false);
+	m_Primitive.SetDepthWrite(false);
+
 	m_isReady = true;
 
 EXIT:;
@@ -100,8 +121,6 @@ int MTStaticCaption11::Draw(
 	if (!m_isReady) return 0;
 	if (screenWidth == 0 || screenHeight == 0) return 0;
 
-	// DX9 版は DrawPrimitiveUP で毎回頂点を送信していた。
-	// DX11 版は DXPrimitive11 を毎回再構築（DYNAMIC + DISCARD）。
 	int result = 0;
 
 	unsigned long texH = 0, texW = 0;
@@ -110,9 +129,9 @@ int MTStaticCaption11::Draw(
 
 	float drawW = (float)texW * magRate;
 	float drawH = (float)texH * magRate;
-
 	float sw = (float)screenWidth;
 	float sh = (float)screenHeight;
+
 	float ndcX0 = (x / sw) * 2.0f - 1.0f;
 	float ndcX1 = ((x + drawW) / sw) * 2.0f - 1.0f;
 	float ndcY0 = 1.0f - (y / sh) * 2.0f;
@@ -124,33 +143,10 @@ int MTStaticCaption11::Draw(
 	unsigned char ca = (unsigned char)(m_Color.A() * 255.0f);
 	DWORD color = (ca << 24) | (cr << 16) | (cg << 8) | cb;
 
-	m_Primitive.Release();
-	result = m_Primitive.CreateVertexBuffer(NULL, 4);
-	// CreateVertexBuffer needs device - get from context
-	// DXPrimitive11 の CreateVertexBuffer は ID3D11Device* を取る。
-	// Context から Device を取得する。
-	{
-		ID3D11Device* pDevice = NULL;
-		pContext->GetDevice(&pDevice);
-
-		m_Primitive.Release();
-		result = m_Primitive.CreateVertexBuffer(pDevice, 4);
-		if (result != 0) { pDevice->Release(); return result; }
-		result = m_Primitive.CreateIndexBuffer(pDevice, 6);
-		if (result != 0) { pDevice->Release(); return result; }
-		pDevice->Release();
-	}
-
-	m_Primitive.SetLightEnable(false);
-	m_Primitive.SetDepthWrite(false);
-
+	// 頂点更新（Map/Unmap のみ、バッファ再生成しない）
 	{
 		DXPRIMITIVE11_VERTEX* pVertex = NULL;
-		unsigned long* pIndex = NULL;
-
 		result = m_Primitive.LockVertex(pContext, &pVertex);
-		if (result != 0) return result;
-		result = m_Primitive.LockIndex(pContext, &pIndex);
 		if (result != 0) return result;
 
 		auto setVtx = [&](unsigned long i, float px, float py, float u, float v) {
@@ -170,11 +166,7 @@ int MTStaticCaption11::Draw(
 		setVtx(2, ndcX0, ndcY1, 0.0f, 1.0f);
 		setVtx(3, ndcX1, ndcY1, 1.0f, 1.0f);
 
-		pIndex[0] = 0; pIndex[1] = 1; pIndex[2] = 2;
-		pIndex[3] = 2; pIndex[4] = 1; pIndex[5] = 3;
-
 		m_Primitive.UnlockVertex(pContext);
-		m_Primitive.UnlockIndex(pContext);
 	}
 
 	m_Primitive.SetTexture(m_FontTexture.GetTexture());

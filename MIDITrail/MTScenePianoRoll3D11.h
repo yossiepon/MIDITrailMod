@@ -21,6 +21,7 @@
 #include "MTTimeIndicator11.h"
 #include "MTPictBoard11.h"
 #include "MTBackgroundImage11.h"
+#include "MTDashboard11.h"
 
 
 //******************************************************************************
@@ -65,12 +66,14 @@ protected:
 private:
 
 	bool m_Is2D;
+	HWND m_hWnd;
 
 	MTStars11          m_Stars;
 	MTGridBox11        m_Grid;
 	MTTimeIndicator11  m_TimeIndicator;
 	MTPictBoard11      m_PictBoard;
 	MTBackgroundImage11 m_BackgroundImage;
+	MTDashboard11      m_Dashboard;
 	// Phase 2: 残りのコンポーネント（段階的に追加）
 	// DXNoteBox11       m_NoteBox;
 	// MTKeyboard11      m_Keyboard;
