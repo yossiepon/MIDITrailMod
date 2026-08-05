@@ -19,6 +19,7 @@
 #include "MTViewParamMap.h"
 
 namespace SMIDILib { class SMSeqData; }
+class MTFirstPersonCam;
 
 //******************************************************************************
 // Effect type enum (scene-level visibility toggles)
@@ -155,6 +156,11 @@ public:
 	// Information
 	//----------------------------------------------------------------------
 	virtual unsigned long GetNoteCount() const = 0;
+
+	//----------------------------------------------------------------------
+	// Camera access (used by DXRenderer11 for view/projection)
+	//----------------------------------------------------------------------
+	virtual MTFirstPersonCam* GetCamera() = 0;
 
 	//----------------------------------------------------------------------
 	// Background color (RGBA float[4], used by DXRenderer11 for Clear)

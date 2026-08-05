@@ -16,21 +16,8 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
-#include "MTSceneTitle.h"
-// >>> modify 20120729 yossiepon begin
-#include "MTScenePianoRoll3DMod.h"
-#include "MTScenePianoRoll2DMod.h"
-// <<< modify 20120729 yossiepon end
-#include "MTScenePianoRollRain.h"
-#include "MTScenePianoRollRain2D.h"
-// >>> modify 20191222 yossiepon begin
-#include "MTScenePianoRollRingMod.h"
-// <<< modify 20191222 yossiepon end
-#include "MTScenePianoRoll3DLive.h"
-#include "MTScenePianoRoll2DLive.h"
-#include "MTScenePianoRollRainLive.h"
-#include "MTScenePianoRollRain2DLive.h"
-#include "MTScenePianoRollRingLive.h"
+#include "MTScenePianoRoll3D11.h"
+#include "DXPrimitive11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
 // <<< add 20190828 yossiepon end
@@ -221,6 +208,10 @@ int MIDITrailApp::Initialize(
 	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
 	if (result != 0) goto EXIT;
 
+	//共有パイプライン初期化
+	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
+	if (result != 0) goto EXIT;
+
 	//シーンオブジェクト生成
 	m_SceneType = Title;
 	result = _CreateScene(m_SceneType, &m_SeqData);
@@ -356,10 +347,17 @@ int MIDITrailApp::Run()
 				(wndpl.showCmd != SW_MINIMIZE) &&
 				(wndpl.showCmd != SW_SHOWMINIMIZED) &&
 				(wndpl.showCmd != SW_SHOWMINNOACTIVE)) {
-				//描画
-				result = m_Renderer.RenderScene(m_pScene);
+				//シーン更新（カメラ入力・演奏位置・コンポーネント状態）
+				result = m_pScene->Update();
 				if (result != 0) {
-					if (result == DXRENDERER_ERR_DEVICE_LOST) {
+					YN_SHOW_ERR(m_hWnd);
+					PostMessage(m_hWnd, WM_DESTROY, 0, 0);
+				}
+
+				//描画
+				result = m_Renderer.RenderScene(m_pScene, m_pScene->GetCamera());
+				if (result != 0) {
+					if (result == DXRENDERER11_ERR_DEVICE_LOST) {
 						//デバイスロスト
 						//暫定的対策としてシーンを再生成する
 						result = _RebuildScene();
@@ -843,42 +841,42 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				//TAG: シーン追加
 				case IDM_ENABLE_PIANOKEYBOARD:
 					//表示効果：ピアノキーボード
-					result = _OnMenuEnableEffect(MTScene::EffectPianoKeyboard);
+					result = _OnMenuEnableEffect(MTEffectPianoKeyboard);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_RIPPLE:
 					//表示効果：波紋
-					result = _OnMenuEnableEffect(MTScene::EffectRipple);
+					result = _OnMenuEnableEffect(MTEffectRipple);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_PITCHBEND:
 					//表示効果：ピッチベンド
-					result = _OnMenuEnableEffect(MTScene::EffectPitchBend);
+					result = _OnMenuEnableEffect(MTEffectPitchBend);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_STARS:
 					//表示効果：星
-					result = _OnMenuEnableEffect(MTScene::EffectStars);
+					result = _OnMenuEnableEffect(MTEffectStars);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_COUNTER:
 					//表示効果：カウンタ
-					result = _OnMenuEnableEffect(MTScene::EffectCounter);
+					result = _OnMenuEnableEffect(MTEffectCounter);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_BACKGROUNDIMAGE:
 					//表示効果：背景画像
-					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
+					result = _OnMenuEnableEffect(MTEffectBackgroundImage);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_GRIDLINE:
 					//表示効果：グリッドライン
-					result = _OnMenuEnableEffect(MTScene::EffectGridLine);
+					result = _OnMenuEnableEffect(MTEffectGridBox);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_TIMEINDICATOR:
 					//表示効果：タイムインジケータ
-					result = _OnMenuEnableEffect(MTScene::EffectTimeIndicator);
+					result = _OnMenuEnableEffect(MTEffectTimeIndicator);
 					if (result != 0) goto EXIT;
 					break;
 				//自動視点保存と視点保存は廃止
@@ -1255,13 +1253,11 @@ int MIDITrailApp::_OnMenuPlay()
 		//巻き戻し
 		if (m_isRewind) {
 			m_isRewind = false;
-			result = m_pScene->Rewind();
-			if (result != 0) goto EXIT;
+			m_pScene->Rewind();
 		}
 
 		//シーンに演奏開始を通知
-		result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-		if (result != 0) goto EXIT;
+		m_pScene->OnPlayStart();
 
 		//最新シーケンサメッセージクリア
 		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
@@ -1501,9 +1497,8 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 	if (result != 0) goto EXIT;
 	
 	//シーンに演奏開始（ライブモニタ開始）を通知
-	result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-	if (result != 0) goto EXIT;
-	
+	m_pScene->OnPlayStart();
+
 	//ライブモニタ開始
 	result = m_LiveMonitor.Start();
 	if (result != 0) goto EXIT;
@@ -1545,8 +1540,7 @@ int MIDITrailApp::_OnMenuStopMonitoring()
 	
 	//シーンに演奏終了を通知
 	if (m_pScene != NULL) {
-		result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-		if (result != 0) goto EXIT;
+		m_pScene->OnPlayEnd();
 	}
 	
 EXIT:;
@@ -1600,12 +1594,10 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 			if (result != 0) goto EXIT;
 
 			//MIDI IN デバイス名を設定
-			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-			if (result != 0) goto EXIT;
+			m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 
 			//デバイス名を画面に反映するためシーンに演奏終了（ライブモニタ停止）を通知
-			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
+			m_pScene->OnPlayEnd();
 		}
 	}
 
@@ -1731,34 +1723,34 @@ EXIT:;
 // メニュー選択：表示効果設定
 //******************************************************************************
 int MIDITrailApp::_OnMenuEnableEffect(
-		MTScene::EffectType type
+		MTEffectType type
 	)
 {
 	int result = 0;
 
 	switch (type) {
-		case MTScene::EffectPianoKeyboard:
+		case MTEffectPianoKeyboard:
 			m_isEnablePianoKeyboard = m_isEnablePianoKeyboard ? false : true;
 			break;
-		case MTScene::EffectRipple:
+		case MTEffectRipple:
 			m_isEnableRipple = m_isEnableRipple ? false : true;
 			break;
-		case MTScene::EffectPitchBend:
+		case MTEffectPitchBend:
 			m_isEnablePitchBend = m_isEnablePitchBend ? false : true;
 			break;
-		case MTScene::EffectStars:
+		case MTEffectStars:
 			m_isEnableStars = m_isEnableStars ? false : true;
 			break;
-		case MTScene::EffectCounter:
+		case MTEffectCounter:
 			m_isEnableCounter = m_isEnableCounter ? false : true;
 			break;
-		case MTScene::EffectBackgroundImage:
+		case MTEffectBackgroundImage:
 			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
 			break;
-		case MTScene::EffectGridLine:
+		case MTEffectGridBox:
 			m_isEnableGridLine = m_isEnableGridLine ? false : true;
 			break;
-		case MTScene::EffectTimeIndicator:
+		case MTEffectTimeIndicator:
 			m_isEnableTimeIndicator = m_isEnableTimeIndicator ? false : true;
 			break;
 		default:
@@ -2009,8 +2001,7 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 
 			//シーンに演奏終了を通知
 			if (m_pScene != NULL) {
-				result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-				if (result != 0) goto EXIT;
+				m_pScene->OnPlayEnd();
 			}
 
 			//視点保存
@@ -2022,8 +2013,7 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 			//ユーザーの要求によって停止した場合は巻き戻す
 			if ((m_isRewind) && (m_pScene != NULL)) {
 				m_isRewind = false;
-				result = m_pScene->Rewind();
-				if (result != 0) goto EXIT;
+				m_pScene->Rewind();
 			}
 			//停止後のファイルオープンが指定されている場合
 			else if ((m_isOpenFileAfterStop) && (m_pScene != NULL)) {
@@ -2871,7 +2861,7 @@ EXIT:;
 //******************************************************************************
 int MIDITrailApp::_SetMonitorPortDev(
 		SMLiveMonitor* pLiveMonitor,
-		MTScene* pScene
+		IMTScene11* pScene
 	)
 {
 	int result = 0;
@@ -2901,8 +2891,7 @@ int MIDITrailApp::_SetMonitorPortDev(
 	}
 
 	//シーンに MIDI IN デバイス名を登録
-	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-	if (result != 0) goto EXIT;
+	pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 
 	//--------------------------------------
 	// MIDI OUT (MIDITHRU)
@@ -2931,7 +2920,7 @@ int MIDITrailApp::_ChangeWindowSize()
 {
 	int result = 0;
 	bool isMonitor = false;
-	MTScene::MTViewParamMap viewParamMap;
+	MTViewParamMap viewParamMap;
 
 	//モニタ状態の確認
 	if ((m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON)) {
@@ -2961,6 +2950,10 @@ int MIDITrailApp::_ChangeWindowSize()
 	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
 	if (result != 0) goto EXIT;
 
+	//共有パイプライン初期化
+	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
+	if (result != 0) goto EXIT;
+
 	//シーンオブジェクト生成
 	if (!isMonitor) {
 		//プレイヤのシーン生成
@@ -2973,19 +2966,16 @@ int MIDITrailApp::_ChangeWindowSize()
 		if (result != 0) goto EXIT;
 
 		//MIDI IN デバイス名を設定
-		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-		if (result != 0) goto EXIT;
+		m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 
 		//MIDI IN デバイス名を画面に反映
 		if (m_PlayStatus == MonitorON) {
 			//シーンに演奏開始（ライブモニタ開始）を通知
-			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
+			m_pScene->OnPlayStart();
 		}
 		else {
 			//シーンに演奏終了（ライブモニタ停止）を通知
-			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
+			m_pScene->OnPlayEnd();
 		}
 	}
 
@@ -3193,51 +3183,52 @@ int MIDITrailApp::_CreateScene(
 
 	//シーンオブジェクト生成
 	//TAG:シーン追加
+	// TODO: Title/2D/Rain/Ring/Live シーンの DX11 版を実装後に追加
 	try {
 		if (type == Title) {
-			m_pScene = new MTSceneTitle();
+			// MTSceneTitle11 未実装: 暫定的に PianoRoll3D11 を使用
+			m_pScene = new MTScenePianoRoll3D11();
 		}
 		else {
 			//プレイヤ用シーン生成
 			if (pSeqData != NULL) {
 				if (type == PianoRoll3D) {
-// >>> modify 20120729 yossiepon begin
-					m_pScene = new MTScenePianoRoll3DMod();
-// <<< modify 20120729 yossiepon end
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-// >>> modify 20120729 yossiepon begin
-					m_pScene = new MTScenePianoRoll2DMod();
-// <<< modify 20120729 yossiepon end
+					// MTScenePianoRoll2D11 未実装: 暫定的に 3D を使用
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRain();
+					// MTScenePianoRollRain11 未実装: 暫定的に 3D を使用
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain2D();
+					// MTScenePianoRollRain2D11 未実装: 暫定的に 3D を使用
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRing) {
-					// >>> modify 20191222 yossiepon begin
-					m_pScene = new MTScenePianoRollRingMod();
-					// <<< modify 20191222 yossiepon end
+					// MTScenePianoRollRing11 未実装: 暫定的に 3D を使用
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 			}
-			//ライブモニタ用シーン生成
+			//ライブモニタ用シーン生成 (DX11: isLive=true)
 			else {
 				if (type == PianoRoll3D) {
-					m_pScene = new MTScenePianoRoll3DLive();
+					// Live シーン未実装: 暫定的に Playback 用を使用
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll2DLive();
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRainLive();
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain2DLive();
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRing) {
-					m_pScene = new MTScenePianoRollRingLive();
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 			}
 		}
@@ -3253,8 +3244,12 @@ int MIDITrailApp::_CreateScene(
 	}
 
 	//シーンの生成
-	result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), pSeqData);
-	if (result != 0) goto EXIT;
+	// Title シーンはデータなし: pSeqData を NULL として渡す
+	{
+		SMSeqData* pCreateSeqData = (type == Title) ? NULL : pSeqData;
+		result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), m_Renderer.GetContext(), pCreateSeqData);
+		if (result != 0) goto EXIT;
+	}
 
 	//保存されている視点をシーンに反映する
 	if (type != Title) {
@@ -3498,9 +3493,9 @@ EXIT:;
 int MIDITrailApp::_LoadViewpoint()
 {
 	int result = 0;
-	MTScene::MTViewParamMap defParamMap;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap defParamMap;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 	float param = 0.0f;
 
@@ -3517,7 +3512,7 @@ int MIDITrailApp::_LoadViewpoint()
 	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
 		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
 		if (result != 0) goto EXIT;
-		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
+		viewParamMap.insert(MTViewParamMapPair((itr->first).c_str(), param));
 	}
 
 	//シーンに視点を登録
@@ -3533,8 +3528,8 @@ EXIT:;
 int MIDITrailApp::_SaveViewpoint()
 {
 	int result = 0;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 
 	//シーンから現在の視点を取得
@@ -3567,9 +3562,9 @@ int MIDITrailApp::_MoveToMyViewpoint(
 	)
 {
 	int result = 0;
-	MTScene::MTViewParamMap defParamMap;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap defParamMap;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 	float param = 0.0f;
 
@@ -3586,7 +3581,7 @@ int MIDITrailApp::_MoveToMyViewpoint(
 	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
 		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
 		if (result != 0) goto EXIT;
-		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
+		viewParamMap.insert(MTViewParamMapPair((itr->first).c_str(), param));
 	}
 
 	//視点が切り替えられたことをシーンに伝達
@@ -3604,8 +3599,8 @@ int MIDITrailApp::_SaveMyViewpoint(
 	)
 {
 	int result = 0;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 
 	//シーンから現在の視点を取得
@@ -3777,7 +3772,7 @@ int MIDITrailApp::_RebuildScene()
 	int apiresult = 0;
 	bool m_isResume = false;
 	bool m_isResumeMonitoring = false;
-	MTScene::MTViewParamMap viewParamMap;
+	MTViewParamMap viewParamMap;
 
 	//暫定対策
 	//  メッセージボックスを表示することにより
@@ -3826,8 +3821,7 @@ int MIDITrailApp::_RebuildScene()
 
 		//演奏中の場合はシーンに演奏開始を通知
 		if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
-			if (result != 0) goto EXIT;
+			m_pScene->OnPlayStart();
 		}
 		//演奏チックタイム通知
 		if (m_SequencerLastMsg.isRecvPlayTime) {
@@ -4014,15 +4008,15 @@ void MIDITrailApp::_CheckMenuItem(
 void MIDITrailApp::_UpdateEffect()
 {
 	if (m_pScene != NULL) {
-		m_pScene->SetEffect(MTScene::EffectPianoKeyboard, m_isEnablePianoKeyboard);
-		m_pScene->SetEffect(MTScene::EffectRipple, m_isEnableRipple);
-		m_pScene->SetEffect(MTScene::EffectPitchBend, m_isEnablePitchBend);
-		m_pScene->SetEffect(MTScene::EffectStars, m_isEnableStars);
-		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
-		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
-		m_pScene->SetEffect(MTScene::EffectGridLine, m_isEnableGridLine);
-		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
-		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
+		m_pScene->SetEffect(MTEffectPianoKeyboard, m_isEnablePianoKeyboard);
+		m_pScene->SetEffect(MTEffectRipple, m_isEnableRipple);
+		m_pScene->SetEffect(MTEffectPitchBend, m_isEnablePitchBend);
+		m_pScene->SetEffect(MTEffectStars, m_isEnableStars);
+		m_pScene->SetEffect(MTEffectCounter, m_isEnableCounter);
+		m_pScene->SetEffect(MTEffectBackgroundImage, m_isEnableBackgroundImage);
+		m_pScene->SetEffect(MTEffectGridBox, m_isEnableGridLine);
+		m_pScene->SetEffect(MTEffectTimeIndicator, m_isEnableTimeIndicator);
+		m_pScene->SetEffect(MTEffectFileName, m_isEnableFileName);
 	}
 	return;
 }
@@ -4204,24 +4198,8 @@ EXIT:;
 //******************************************************************************
 int MIDITrailApp::_CheckRenderer()
 {
-	int result = 0;
-	bool isSupport = true;
-	unsigned long maxVertexIndex = 0;
-
-	result = m_Renderer.IsSupportIndexBuffer(&isSupport, &maxVertexIndex);
-	if (result != 0) goto EXIT;
-
-	//インデックスバッファをサポートしていない場合は警告メッセージを表示
-	if (!isSupport) {
-		YN_SET_WARN("This PC does not have sufficient graphics capabilities.\n"
-					"Therefore, MIDITrail will not work correctly.",
-					maxVertexIndex, 0);
-		YN_SHOW_ERR(NULL);
-		//戻り値には反映せず処理を続行させる
-	}
-
-EXIT:;
-	return result;
+	// DX11: index buffer is always supported.
+	return 0;
 }
 
 //******************************************************************************

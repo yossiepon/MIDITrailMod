@@ -11,7 +11,7 @@
 #pragma once
 
 #include "YNBaseLib.h"
-#include "DXRenderer.h"
+#include "DXRenderer11.h"
 
 using namespace YNBaseLib;
 

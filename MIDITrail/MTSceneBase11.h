@@ -88,7 +88,7 @@ public:
 	const char* GetParam(const char* pKey) override;
 
 	// Camera accessor (for DXRenderer11)
-	MTFirstPersonCam* GetCamera() { return &m_Camera; }
+	MTFirstPersonCam* GetCamera() override { return &m_Camera; }
 
 	// Background color
 	const float* GetBGColor() const override { return m_BGColor; }

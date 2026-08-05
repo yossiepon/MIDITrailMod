@@ -14,8 +14,8 @@
 #include "Commdlg.h"
 #include "YNBaseLib.h"
 #include "SMIDILib.h"
-#include "DXRenderer.h"
-#include "MTScene.h"
+#include "DXRenderer11.h"
+#include "IMTScene11.h"
 #include "MTWindowSizeCfgDlg.h"
 #include "MTMIDIOUTCfgDlg.h"
 #include "MTMIDIINCfgDlg.h"
@@ -176,8 +176,8 @@ private:
 	HMENU m_hMenu;
 
 	//レンダリング系
-	DXRenderer m_Renderer;
-	MTScene* m_pScene;
+	DXRenderer11 m_Renderer;
+	IMTScene11* m_pScene;
 	unsigned long m_MultiSampleType;
 
 	//FPS表示系
@@ -312,7 +312,7 @@ private:
 	int _OnMenuMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
-	int _OnMenuEnableEffect(MTScene::EffectType type);
+	int _OnMenuEnableEffect(MTEffectType type);
 	int _OnMenuWindowSize();
 	int _OnMenuFullScreen();
 	int _OnMenuMenuBar();
@@ -341,7 +341,7 @@ private:
 	void _UpdateWindowTitle(const WCHAR* pFileName);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);
-	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, MTScene* pScene);
+	int _SetMonitorPortDev(SMLiveMonitor* pLiveMonitor, IMTScene11* pScene);
 	int _ChangeWindowSize();
 	int _ChangePlayStatus(PlayStatus status);
 	int _ChangeMenuStyle();

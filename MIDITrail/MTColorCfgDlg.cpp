@@ -528,7 +528,7 @@ int MTColorCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 	unsigned long paletteNo = 0;
 	unsigned long chNo = 0;
 	MTColorPalette colorPalette;
-	D3DXCOLOR color;
+	DirectX::SimpleMath::Color color;
 	COLORREF bkColor1;
 	COLORREF bkColor2;
 	
@@ -581,7 +581,7 @@ int MTColorCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 	// ボタン描画
 	//---------------------------------
 	//デバイスコンテキストの背景色を設定
-	bkColor1 = SetBkColor(pDrawItem->hDC, RGB(color.r * 255.0f, color.g * 255.0f, color.b * 255.0f));
+	bkColor1 = SetBkColor(pDrawItem->hDC, RGB(color.x * 255.0f, color.y * 255.0f, color.z * 255.0f));
 	if (bkColor1 == CLR_INVALID) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;

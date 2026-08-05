@@ -13,6 +13,8 @@
 #include "YNBaseLib.h"
 #include "DXColorUtil.h"
 #include "MTColorPaletteCfgDlg.h"
+
+using DirectX::SimpleMath::Color;
 #include "MTColorParamExportDlg.h"
 #include "MTColorParamImportDlg.h"
 #include <Commdlg.h>
@@ -41,8 +43,8 @@ MTColorPaletteCfgDlg::MTColorPaletteCfgDlg(void)
 	m_isChanged = false;
 
 	//色設定 Start/End
-	m_ColorStart = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
-	m_ColorEnd = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	m_ColorStart = Color(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
+	m_ColorEnd = Color(1.0f, 1.0f, 1.0f, 1.0f); //RGBA
 
 	//色選択ダイアログ用パラメータ
 	for (i = 0; i < 16; i++) {
@@ -386,7 +388,7 @@ int MTColorPaletteCfgDlg::_InitColorText()
 {
 	int result = 0;
 	unsigned long targetNo = 0;
-	D3DXCOLOR color;
+	Color color;
 	TCHAR hexColor[16] = {_T('\0')};
 	BOOL bResult = FALSE;
 
@@ -449,8 +451,8 @@ EXIT:;
 int MTColorPaletteCfgDlg::_OnBtnColor(unsigned long targetNo)
 {
 	int result = 0;
-	D3DXCOLOR color;
-	D3DXCOLOR newColor;
+	Color color;
+	Color newColor;
 	bool isChoosed = false;
 	TCHAR hexColor[16] = {_T('\0')};
 	BOOL bResult = FALSE;
@@ -620,7 +622,7 @@ int MTColorPaletteCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 	bool isFound = false;
 	unsigned long i = 0;
 	unsigned long targetNo = 0;
-	D3DXCOLOR color;
+	Color color;
 	COLORREF bkColor1;
 	COLORREF bkColor2;
 	
@@ -649,7 +651,7 @@ int MTColorPaletteCfgDlg::_DrawColorButton(DRAWITEMSTRUCT* pDrawItem)
 	// ボタン描画
 	//---------------------------------
 	//デバイスコンテキストの背景色を設定
-	bkColor1 = SetBkColor(pDrawItem->hDC, RGB(color.r * 255.0f, color.g * 255.0f, color.b * 255.0f));
+	bkColor1 = SetBkColor(pDrawItem->hDC, RGB(color.x * 255.0f, color.y * 255.0f, color.z * 255.0f));
 	if (bkColor1 == CLR_INVALID) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
@@ -719,7 +721,7 @@ EXIT:;
 //******************************************************************************
 int MTColorPaletteCfgDlg::_GetCurColor(
 		unsigned long targetNo,
-		D3DXCOLOR* pColor
+		Color* pColor
 	)
 {
 	int result = 0;
@@ -762,7 +764,7 @@ EXIT:;
 //******************************************************************************
 int MTColorPaletteCfgDlg::_SetCurColor(
 	unsigned long targetNo,
-	D3DXCOLOR color
+	Color color
 )
 {
 	int result = 0;
@@ -804,8 +806,8 @@ EXIT:;
 // カラー選択ダイアログ表示
 //******************************************************************************
 int MTColorPaletteCfgDlg::_ShowChooseColorDlg(
-		D3DXCOLOR color,
-		D3DXCOLOR* pNewColor,
+		Color color,
+		Color* pNewColor,
 		bool* pIsChoosed
 	)
 {
@@ -819,7 +821,7 @@ int MTColorPaletteCfgDlg::_ShowChooseColorDlg(
 	cc.lStructSize = sizeof(CHOOSECOLOR);
 	cc.hwndOwner = m_hWnd;
 	cc.hInstance = NULL;
-	cc.rgbResult = RGB(color.r * 255.0f, color.g * 255.0f, color.b * 255.0f);
+	cc.rgbResult = RGB(color.x * 255.0f, color.y * 255.0f, color.z * 255.0f);
 	cc.lpCustColors = m_CustColors;
 	cc.Flags = CC_FULLOPEN		//ダイアログボックス全体を表示 
 				| CC_RGBINIT;	//rgbResultメンバで指定した色を初期カラーとして使用
@@ -843,7 +845,7 @@ int MTColorPaletteCfgDlg::_ShowChooseColorDlg(
 	}
 	else {
 		//新しい色が選択された場合
-		*pNewColor = D3DXCOLOR(
+		*pNewColor = Color(
 							GetRValue(cc.rgbResult) / 255.0f,
 							GetGValue(cc.rgbResult) / 255.0f,
 							GetBValue(cc.rgbResult) / 255.0f,
@@ -862,13 +864,13 @@ EXIT:;
 int MTColorPaletteCfgDlg::_SetGradationColor(
 		unsigned long chNoStart,
 		unsigned long chNoEnd,
-		D3DXCOLOR colorStart,
-		D3DXCOLOR colorEnd
+		Color colorStart,
+		Color colorEnd
 	)
 {
 	int result = 0;
 	unsigned int chNo = 0;
-	D3DXCOLOR color;
+	Color color;
 	float ratio = 0.0f;
 
 	if ((chNoStart >= SM_MAX_CH_NUM) || (chNoEnd >= SM_MAX_CH_NUM)) {
@@ -881,9 +883,9 @@ int MTColorPaletteCfgDlg::_SetGradationColor(
 	else if (chNoStart < chNoEnd) {
 		for (chNo = chNoStart; chNo <= chNoEnd; chNo++) {
 			ratio = (float)(chNo - chNoStart) / (float)(chNoEnd - chNoStart);
-			color = D3DXCOLOR((colorEnd.r - colorStart.r) * ratio + colorStart.r,
-				(colorEnd.g - colorStart.g) * ratio + colorStart.g,
-				(colorEnd.b - colorStart.b) * ratio + colorStart.b,
+			color = Color((colorEnd.x - colorStart.x) * ratio + colorStart.x,
+				(colorEnd.y - colorStart.y) * ratio + colorStart.y,
+				(colorEnd.z - colorStart.z) * ratio + colorStart.z,
 				1.0f);
 			//カラー設定
 			m_ColorPalette.SetChColor(chNo, color);
@@ -892,9 +894,9 @@ int MTColorPaletteCfgDlg::_SetGradationColor(
 	else {
 		for (chNo = chNoEnd; chNo <= chNoStart; chNo++) {
 			ratio = (float)(chNo - chNoEnd) / (float)(chNoStart - chNoEnd);
-			color = D3DXCOLOR((colorStart.r - colorEnd.r) * ratio + colorEnd.r,
-				(colorStart.g - colorEnd.g) * ratio + colorEnd.g,
-				(colorStart.b - colorEnd.b) * ratio + colorEnd.b,
+			color = Color((colorStart.x - colorEnd.x) * ratio + colorEnd.x,
+				(colorStart.y - colorEnd.y) * ratio + colorEnd.y,
+				(colorStart.z - colorEnd.z) * ratio + colorEnd.z,
 				1.0f);
 			//カラー設定
 			m_ColorPalette.SetChColor(chNo, color);
@@ -920,7 +922,7 @@ int MTColorPaletteCfgDlg::_MakeColorParamForExport(TCHAR* pTextBuf, unsigned lon
 {
 	int result = 0;
 	unsigned long chNo = 0;
-	D3DXCOLOR color;
+	Color color;
 	TCHAR hexColor[16] = { _T('\0') };
 	TCHAR line[64] = {_T('\0')};
 
@@ -1093,8 +1095,8 @@ int MTColorPaletteCfgDlg::_LoadParam(MTColorParamDictionary* pParamDictionary)
 	TCHAR key[32] = { _T('\0') };
 	const TCHAR* pValue = NULL;
 	MTColorParamDictionary::iterator itr;
-	D3DXCOLOR color;
-	D3DCOLOR colorRGB;
+	Color color;
+	unsigned long colorRGB;
 
 	//Ch.1-16
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
@@ -1124,7 +1126,7 @@ int MTColorPaletteCfgDlg::_LoadParam(MTColorParamDictionary* pParamDictionary)
 		pValue = (itr->second).c_str();
 		if (_tcslen(pValue) == 6) {
 			colorRGB = DXColorUtil::MakeColorFromHexRGB(pValue);
-			color = D3DXCOLOR(colorRGB);
+			color = Color(colorRGB);
 			m_ColorPalette.SetBackgroundColor(color);
 		}
 	}

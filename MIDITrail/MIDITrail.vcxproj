@@ -259,6 +259,12 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTNoteEffect.cpp" />
     <ClCompile Include="MTNoteRipple11.cpp" />
     <ClCompile Include="MTNoteLyrics11.cpp" />
+    <ClCompile Include="MIDITrailApp.cpp" />
+    <ClCompile Include="MTGraphicCfgDlg.cpp" />
+    <ClCompile Include="MTColorCfgDlg.cpp" />
+    <ClCompile Include="MTColorPaletteCfgDlg.cpp" />
+    <ClCompile Include="MTColorParamExportDlg.cpp" />
+    <ClCompile Include="MTColorParamImportDlg.cpp" />
     <ClCompile Include="MIDITrailMain.cpp" />
     <ClCompile Include="MTAboutDlg.cpp" />
     <ClCompile Include="MTCmdLineParser.cpp" />

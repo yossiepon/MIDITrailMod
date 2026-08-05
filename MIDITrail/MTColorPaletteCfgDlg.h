@@ -12,6 +12,7 @@
 
 #include "MTColorConf.h"
 #include <map>
+#include <directxtk/SimpleMath.h>
 
 
 //******************************************************************************
@@ -62,8 +63,8 @@ private:
 	MTColorPalette m_ColorPalette;
 	MTColorPalette m_DefaultColorPalette;
 	unsigned long m_ColorPaletteNo;
-	D3DXCOLOR m_ColorStart;
-	D3DXCOLOR m_ColorEnd;
+	DirectX::SimpleMath::Color m_ColorStart;
+	DirectX::SimpleMath::Color m_ColorEnd;
 
 	//色選択ダイアログ用パラメータ
 	COLORREF m_CustColors[16];
@@ -119,15 +120,15 @@ private:
 	int _UpdateColorText();
 
 	//カラー取得
-	int _GetCurColor(unsigned long targetNo, D3DXCOLOR* pColor);
+	int _GetCurColor(unsigned long targetNo, DirectX::SimpleMath::Color* pColor);
 
 	//カラー設定
-	int _SetCurColor(unsigned long targetNo, D3DXCOLOR color);
+	int _SetCurColor(unsigned long targetNo, DirectX::SimpleMath::Color color);
 
 	//カラー選択ダイアログ表示
 	int _ShowChooseColorDlg(
-				D3DXCOLOR color,
-				D3DXCOLOR* pNewColor,
+				DirectX::SimpleMath::Color color,
+				DirectX::SimpleMath::Color* pNewColor,
 				bool* pIsChoosed
 			);
 
@@ -135,8 +136,8 @@ private:
 	int _SetGradationColor(
 				unsigned long chNoStart,
 				unsigned long chNoEnd,
-				D3DXCOLOR colorStart,
-				D3DXCOLOR colorEnd
+				DirectX::SimpleMath::Color colorStart,
+				DirectX::SimpleMath::Color colorEnd
 			);
 
 	//出力用パラメータ文字列生成
