@@ -95,6 +95,10 @@ int MTScenePianoRoll3D11::Create(
 	result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
 
+	// ピクチャボード
+	result = m_PictBoard.Create(pDevice, pContext, GetName(), pSeqData);
+	if (result != 0) goto EXIT;
+
 	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
@@ -109,6 +113,7 @@ void MTScenePianoRoll3D11::Release()
 	m_Stars.Release();
 	m_Grid.Release();
 	m_TimeIndicator.Release();
+	m_PictBoard.Release();
 
 	MTSceneBase11::Release();
 }
@@ -127,15 +132,19 @@ void MTScenePianoRoll3D11::Transform(
 	// カメラ位置取得
 	Vector3 camPos;
 	m_Camera.GetPosition(&camPos);
+	float rollAngle = m_Camera.GetRollAngle();
 
 	// 星：カメラに追従
 	m_Stars.Transform(camPos);
 
 	// グリッド
-	m_Grid.Transform(0.0f);
+	m_Grid.Transform(rollAngle);
 
 	// タイムインジケータ
-	m_TimeIndicator.Transform(0.0f);
+	m_TimeIndicator.Transform(rollAngle);
+
+	// ピクチャボード
+	m_PictBoard.Transform(camPos, rollAngle);
 }
 
 //******************************************************************************
@@ -173,7 +182,10 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 	// グリッド
 	m_Grid.DrawDX11(pContext, viewProj, lightDir, rollAngle);
 
-	// Phase 2: ノート → 鍵盤 → 波紋
+	// Phase 2: ノート → 波紋
+
+	// ピクチャボード
+	m_PictBoard.DrawDX11(pContext, viewProj, lightDir, rollAngle);
 
 	// タイムインジケータ
 	m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
