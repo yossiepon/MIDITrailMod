@@ -247,6 +247,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTPictBoard11.cpp" />
     <ClCompile Include="MTBackgroundImage11.cpp" />
     <ClCompile Include="MTFontTexture11.cpp" />
+    <ClCompile Include="MTStaticCaption11.cpp" />
+    <ClCompile Include="MTDynamicCaption11.cpp" />
     <ClCompile Include="MIDITrailMain.cpp" />
     <ClCompile Include="MTAboutDlg.cpp" />
     <ClCompile Include="MTCmdLineParser.cpp" />
@@ -300,6 +302,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTPictBoard11.h" />
     <ClInclude Include="MTBackgroundImage11.h" />
     <ClInclude Include="MTFontTexture11.h" />
+    <ClInclude Include="MTStaticCaption11.h" />
+    <ClInclude Include="MTDynamicCaption11.h" />
     <ClInclude Include="MTSceneConst.h" />
     <ClInclude Include="MTViewParamMap.h" />
     <ClInclude Include="DXRenderer.h" />

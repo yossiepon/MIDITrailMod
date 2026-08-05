@@ -1,0 +1,74 @@
+﻿//******************************************************************************
+//
+// MIDITrail / MTDynamicCaption11
+//
+// DX11 dynamic caption renderer.
+// Pre-renders all possible characters to a tile texture, then updates
+// UV coordinates per frame to display changing text (counter, timer, etc.)
+// without regenerating the texture.
+//
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
+#pragma once
+
+#include "DXPrimitive11.h"
+#include "MTFontTexture11.h"
+#include <directxtk/SimpleMath.h>
+
+#define MTDYNAMICCAPTION11_MAX_CHARS  (256)
+
+
+//******************************************************************************
+// DX11 dynamic caption renderer
+//******************************************************************************
+class MTDynamicCaption11
+{
+public:
+
+	MTDynamicCaption11();
+	virtual ~MTDynamicCaption11();
+
+	int Create(
+			ID3D11Device* pDevice,
+			ID3D11DeviceContext* pContext,
+			const WCHAR* pFontName,
+			unsigned long fontSize,
+			const WCHAR* pCharacters,
+			unsigned long captionSize
+		);
+
+	void Release();
+
+	int SetString(const WCHAR* pStr);
+	void SetColor(DirectX::SimpleMath::Color color);
+	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
+
+	int Draw(
+			ID3D11DeviceContext* pContext,
+			float x, float y,
+			float magRate,
+			unsigned int screenWidth,
+			unsigned int screenHeight
+		);
+
+private:
+
+	MTFontTexture11 m_FontTexture;
+	DXPrimitive11 m_Primitive;
+	ID3D11Device* m_pDevice;
+	WCHAR m_Chars[MTDYNAMICCAPTION11_MAX_CHARS];
+	unsigned long m_CaptionSize;
+	DirectX::SimpleMath::Color m_Color;
+	bool m_isReady;
+	bool m_isDirty;
+
+	struct CharUV {
+		float u0, u1;
+	};
+	CharUV m_CharUV[MTDYNAMICCAPTION11_MAX_CHARS];
+	unsigned long m_CharCount;
+	WCHAR m_CurrentStr[MTDYNAMICCAPTION11_MAX_CHARS];
+};
