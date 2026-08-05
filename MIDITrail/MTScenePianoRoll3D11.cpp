@@ -127,6 +127,10 @@ int MTScenePianoRoll3D11::Create(
 	if (result != 0) goto EXIT;
 	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
 
+	// ノートボックス
+	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend);
+	if (result != 0) goto EXIT;
+
 	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
@@ -140,6 +144,7 @@ void MTScenePianoRoll3D11::Release()
 {
 	m_NoteTracker.RemoveListener(&m_Ripple);
 	m_NoteTracker.RemoveListener(&m_Lyrics);
+	m_NoteBox.Release();
 	m_Ripple.Release();
 	m_Lyrics.Release();
 	m_NoteTracker.Release();
@@ -174,6 +179,10 @@ int MTScenePianoRoll3D11::_UpdateComponents(
 
 	// ノートトラッカー → リスナー（Ripple, Lyrics）に通知
 	m_NoteTracker.Update(ctx.playTimeMSec);
+
+	// ノートボックス
+	result = m_NoteBox.Update(ctx);
+	if (result != 0) goto EXIT;
 
 	// 波紋・歌詞
 	result = m_Ripple.Update(ctx);
@@ -240,7 +249,9 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 	result = m_Grid.Draw(pContext, viewProj, lightDir, rollAngle);
 	if (result != 0) goto EXIT;
 
-	// Phase 2: NoteBox 描画（未実装）
+	// ノートボックス
+	result = m_NoteBox.Draw(pContext, viewProj, lightDir);
+	if (result != 0) goto EXIT;
 
 	// カメラ位置と再生位置の前後関係で描画順を切り替え（奥から手前へ）
 	// PictBoard は Keyboard 実装後に置き換え（現状は無効化）
@@ -350,7 +361,7 @@ void MTScenePianoRoll3D11::SetPlaySpeedRatio(unsigned long ratio)
 //******************************************************************************
 unsigned long MTScenePianoRoll3D11::GetNoteCount() const
 {
-	return m_NoteTracker.GetNoteCount();
+	return m_NoteBox.GetNoteCount();
 }
 
 //******************************************************************************
@@ -388,5 +399,6 @@ void MTScenePianoRoll3D11::_Reset()
 {
 	MTSceneBase11::_Reset();
 	m_NotePitchBend.Reset();
+	m_NoteBox.Reset();
 	m_NoteTracker.Seek(0);
 }

@@ -23,6 +23,7 @@
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
 #include "MTNoteTracker.h"
+#include "MTNoteBox11.h"
 #include "MTNoteRipple11.h"
 #include "MTNoteLyrics11.h"
 #include "MTNotePitchBend.h"
@@ -79,10 +80,10 @@ private:
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11      m_Dashboard;
 	MTNoteTracker      m_NoteTracker;
+	MTNoteBox11        m_NoteBox;
 	MTNoteRipple11     m_Ripple;
 	MTNoteLyrics11     m_Lyrics;
 	MTNotePitchBend    m_NotePitchBend;
 	// Phase 2: 残りのコンポーネント（段階的に追加）
-	// MTNoteBox11       m_NoteBox;
 	// MTKeyboard11      m_Keyboard;
 };

@@ -251,6 +251,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTDynamicCaption11.cpp" />
     <ClCompile Include="MTDashboard11.cpp" />
     <ClCompile Include="MTNoteTracker.cpp" />
+    <ClCompile Include="MTNoteBox11.cpp" />
     <ClCompile Include="MTNoteEffect.cpp" />
     <ClCompile Include="MTNoteRipple11.cpp" />
     <ClCompile Include="MTNoteLyrics11.cpp" />
@@ -312,6 +313,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTDashboard11.h" />
     <ClInclude Include="MTSceneComponent11.h" />
     <ClInclude Include="MTNoteTracker.h" />
+    <ClInclude Include="MTNoteBox11.h" />
     <ClInclude Include="MTNoteEffect.h" />
     <ClInclude Include="MTNoteRipple11.h" />
     <ClInclude Include="MTNoteLyrics11.h" />
