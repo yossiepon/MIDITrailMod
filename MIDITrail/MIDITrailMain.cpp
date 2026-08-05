@@ -19,7 +19,6 @@
 #include "MTScenePianoRoll3D11.h"
 
 using namespace SMIDILib;
-
 using namespace YNBaseLib;
 
 #define WINDOW_CLASS_NAME  _T("MIDITrailDX11")
@@ -27,6 +26,8 @@ using namespace YNBaseLib;
 
 static DXRenderer11 g_Renderer;
 static MTScenePianoRoll3D11* g_pScene = nullptr;
+static SMMsgQueue g_MsgQueue;
+static SMSequencer g_Sequencer;
 static bool g_IsRunning = true;
 
 //******************************************************************************
@@ -50,6 +51,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+//******************************************************************************
+// シーケンサメッセージ処理
+//******************************************************************************
+static int _SequencerMsgProc()
+{
+	int result = 0;
+	bool isExist = false;
+	unsigned long param1 = 0;
+	unsigned long param2 = 0;
+
+	while (true) {
+		result = g_MsgQueue.GetMessage(&isExist, &param1, &param2);
+		if (result != 0) goto EXIT;
+
+		if (!isExist) break;
+
+		if (g_pScene != NULL) {
+			result = g_pScene->OnRecvSequencerMsg(param1, param2);
+			if (result != 0) goto EXIT;
+		}
+	}
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
@@ -113,7 +140,6 @@ int APIENTRY _tWinMain(
 		result = reader.Load(L"C:\\Users\\yoshy\\Source\\Claude\\20260804_MIDITrailModMod\\temp\\test.mid", &seqData);
 		if (result != 0) {
 			YN_SHOW_ERR(hWnd);
-			// MIDI 読み込み失敗でもシーンは表示する（データなし）
 			result = 0;
 		}
 	}
@@ -127,15 +153,37 @@ int APIENTRY _tWinMain(
 		goto EXIT;
 	}
 
-	// メッセージループ（tick 自動進行で描画確認）
+	// シーケンサ初期化・再生開始
+	result = g_MsgQueue.Initialize(10000);
+	if (result != 0) {
+		YN_SHOW_ERR(hWnd);
+		goto EXIT;
+	}
+
+	result = g_Sequencer.Initialize(&g_MsgQueue);
+	if (result != 0) {
+		YN_SHOW_ERR(hWnd);
+		goto EXIT;
+	}
+
+	result = g_Sequencer.SetSeqData(&seqData);
+	if (result != 0) {
+		YN_SHOW_ERR(hWnd);
+		goto EXIT;
+	}
+
+	// MIDI 出力デバイス未設定（音なし再生）
+	g_pScene->OnPlayStart();
+
+	result = g_Sequencer.Play();
+	if (result != 0) {
+		YN_SHOW_ERR(hWnd);
+		goto EXIT;
+	}
+
+	// メッセージループ
 	{
 		MSG msg = {};
-		unsigned long startTime = timeGetTime();
-		unsigned long timeDivision = seqData.GetTimeDivision();
-		unsigned long tempoBPM = seqData.GetTempoBPM();
-		float ticksPerMs = (timeDivision > 0 && tempoBPM > 0)
-		                 ? (float)timeDivision * (float)tempoBPM / 60000.0f
-		                 : 48.0f * 120.0f / 60000.0f;
 
 		while (g_IsRunning) {
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -144,15 +192,10 @@ int APIENTRY _tWinMain(
 				DispatchMessage(&msg);
 			}
 			else {
-				unsigned long elapsedMs = timeGetTime() - startTime;
-				unsigned long curTick = (unsigned long)(elapsedMs * ticksPerMs);
-
-				// 演奏時間通知（SM_MSG_TIME=0x01, param1=種別<<24|msec, param2=tick）
-				{
-					unsigned long param1 = (0x01 << 24) | (elapsedMs & 0x00FFFFFF);
-					unsigned long param2 = curTick;
-					result = g_pScene->OnRecvSequencerMsg(param1, param2);
-					if (result != 0) goto EXIT;
+				// シーケンサメッセージ処理
+				result = _SequencerMsgProc();
+				if (result != 0) {
+					YN_SHOW_ERR(hWnd);
 				}
 
 				// シーン更新
@@ -165,6 +208,9 @@ int APIENTRY _tWinMain(
 			}
 		}
 	}
+
+	g_Sequencer.Stop();
+	g_pScene->OnPlayEnd();
 
 EXIT:;
 	if (g_pScene != NULL) {

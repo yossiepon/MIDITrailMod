@@ -14,6 +14,7 @@
 
 #include "StdAfx.h"
 #include "MTScenePianoRoll3D11.h"
+#include "SMMsgParser.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -309,8 +310,55 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 		unsigned long param2
 	)
 {
-	// Phase 2: シーン固有メッセージ処理（テンポ、ノートON/OFF 等）
-	return 0;
+	int result = 0;
+	SMMsgParser parser;
+
+	parser.Parse(param1, param2);
+
+	// テンポ変更通知
+	if (parser.GetMsg() == SMMsgParser::MsgTempo) {
+		m_Dashboard.SetTempoBPM(parser.GetTempoBPM());
+	}
+	// 小節番号通知
+	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
+		m_Dashboard.SetBarNo(parser.GetBarNo());
+	}
+	// 拍子記号変更通知
+	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
+		m_Dashboard.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
+	}
+	// ノートON通知
+	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
+		m_Dashboard.SetNoteOn();
+	}
+	// ピッチベンド通知
+	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
+		m_NotePitchBend.SetPitchBend(
+			parser.GetPortNo(), parser.GetChNo(),
+			parser.GetPitchBendValue(), parser.GetPitchBendSensitivity());
+	}
+	// スキップ開始通知
+	else if (parser.GetMsg() == SMMsgParser::MsgSkipStart) {
+		if (parser.GetSkipStartDirection() == SMMsgParser::SkipBack) {
+			m_NotePitchBend.Reset();
+		}
+		m_NoteBox.Reset();
+		m_NoteBox.SetSkipStatus(true);
+		m_Ripple.SetSkipStatus(true);
+		m_Lyrics.SetSkipStatus(true);
+		m_NoteTracker.Seek(0);
+		m_IsSkipping = true;
+	}
+	// スキップ終了通知
+	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
+		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
+		m_NoteBox.SetSkipStatus(false);
+		m_Ripple.SetSkipStatus(false);
+		m_Lyrics.SetSkipStatus(false);
+		m_IsSkipping = false;
+	}
+
+	return result;
 }
 
 //******************************************************************************
