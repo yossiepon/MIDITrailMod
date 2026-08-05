@@ -180,7 +180,7 @@ EXIT:;
 // 描画
 // WVP を単位行列にして NDC 座標のクワッドをそのまま描画する。
 //******************************************************************************
-int MTBackgroundImage11::DrawDX11(ID3D11DeviceContext* pContext)
+int MTBackgroundImage11::Draw(ID3D11DeviceContext* pContext)
 {
 	if (!m_isEnable || !m_isReady) return 0;
 

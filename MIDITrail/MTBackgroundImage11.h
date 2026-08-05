@@ -34,7 +34,7 @@ public:
 	int Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, HWND hWnd);
 	void Release();
 
-	int DrawDX11(ID3D11DeviceContext* pContext);
+	int Draw(ID3D11DeviceContext* pContext);
 
 	void Reset();
 	bool IsReady() const { return m_isReady; }
