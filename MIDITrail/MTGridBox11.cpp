@@ -163,7 +163,7 @@ int MTGridBox11::_CreateVertices(
 		m_NoteDesign.GetGridBoxVirtexPos(0, lastPortNo, &startFinal[0], &startFinal[1], &startFinal[2], &startFinal[3]);
 		m_NoteDesign.GetGridBoxVirtexPos(totalTickTime, lastPortNo, &endFinal[0], &endFinal[1], &endFinal[2], &endFinal[3]);
 
-		// 直方体頂点 (DX9 と同じ配置)
+		// 直方体頂点
 		//     1+----+3        y x
 		//    / 上 /           |/
 		//  0+----+2         z--+0
@@ -183,39 +183,46 @@ int MTGridBox11::_CreateVertices(
 			pVertex[i].uv[1] = 0.0f;
 		};
 
-		setVtx(0, Vector3(endFinal[0].x,   startFinal[0].y, startFinal[0].z));
-		setVtx(1, Vector3(startFinal[0].x,  startFinal[0].y, startFinal[0].z));
-		setVtx(2, Vector3(endFirst[1].x,    startFirst[1].y, startFirst[1].z));
-		setVtx(3, Vector3(startFirst[1].x,  startFirst[1].y, startFirst[1].z));
-		setVtx(4, Vector3(endFirst[3].x,    startFirst[3].y, startFirst[3].z));
-		setVtx(5, Vector3(startFirst[3].x,  startFirst[3].y, startFirst[3].z));
-		setVtx(6, Vector3(endFinal[2].x,    startFinal[2].y, startFinal[2].z));
-		setVtx(7, Vector3(startFinal[2].x,  startFinal[2].y, startFinal[2].z));
+		//     +   1+----+3   +
+		//    /|   / 上 /    /|      y x
+		//   + | 0+----+2   + |      |/
+		// 左| +   7+----+5 | +   z--+0
+		//   |/    / 下 /   |/
+		//   +   6+----+4   +
+		// 上面
+		setVtx(0, startFinal[0]);   // FinalPort, tickTime=0, 左上
+		setVtx(1, endFinal[0]);     // FinalPort, tickTime=end, 左上
+		setVtx(2, startFirst[1]);   // FirstPort, tickTime=0, 右上
+		setVtx(3, endFirst[1]);     // FirstPort, tickTime=end, 右上
+		// 下面
+		setVtx(4, startFirst[3]);   // FirstPort, tickTime=0, 右下
+		setVtx(5, endFirst[3]);     // FirstPort, tickTime=end, 右下
+		setVtx(6, startFinal[2]);   // FinalPort, tickTime=0, 左下
+		setVtx(7, endFinal[2]);     // FinalPort, tickTime=end, 左下
 
 		// 12辺のインデックス
 		unsigned long edges[] = {
-			0,1, 2,3, 4,5, 6,7,  // 横4辺
-			0,2, 1,3, 4,6, 5,7,  // 縦4辺
-			0,6, 1,7, 2,4, 3,5   // 奥行き4辺
+			0,1, 1,3, 3,2, 2,0,  // 上面 4辺
+			6,7, 7,5, 5,4, 4,6,  // 下面 4辺
+			0,6, 1,7, 3,5, 2,4   // 縦 4辺
 		};
 		for (unsigned long i = 0; i < 24; i++) {
 			pIndex[i] = edges[i];
 		}
 
-		// 小節線
+		// 小節線（lastPortNo の頂点 0 と 2 を結ぶ線 = 左面 y 軸方向）
 		unsigned long vi = 8;
 		unsigned long ii = 24;
 		for (unsigned long bar = 0; bar < barNum; bar++) {
 			unsigned long barTickTime = 0;
 			barList.GetBar(bar, &barTickTime);
 
-			Vector3 barStart[4], barEnd[4];
-			m_NoteDesign.GetGridBoxVirtexPos(barTickTime, 0, &barStart[0], &barStart[1], &barStart[2], &barStart[3]);
-			m_NoteDesign.GetGridBoxVirtexPos(barTickTime, lastPortNo, &barEnd[0], &barEnd[1], &barEnd[2], &barEnd[3]);
+			Vector3 barVtx[4];
+			m_NoteDesign.GetGridBoxVirtexPos(barTickTime, lastPortNo,
+				&barVtx[0], &barVtx[1], &barVtx[2], &barVtx[3]);
 
-			// 上辺に小節線（左端から右端）
-			setVtx(vi,     Vector3(barEnd[0].x,  barEnd[0].y,  barEnd[0].z));
-			setVtx(vi + 1, Vector3(barStart[1].x, barStart[1].y, barStart[1].z));
+			setVtx(vi,     barVtx[0]);  // 左上
+			setVtx(vi + 1, barVtx[2]);  // 左下
 			pIndex[ii]     = vi;
 			pIndex[ii + 1] = vi + 1;
 
@@ -223,7 +230,7 @@ int MTGridBox11::_CreateVertices(
 			ii += 2;
 		}
 
-		// ポート分割線
+		// ポート分割線（各ポートの頂点 1,3 を時刻 0 と末尾で結ぶ 2 本の線）
 		for (unsigned long p = 1; p < portNum; p++) {
 			unsigned char portNo = 0;
 			portList.GetPort(p, &portNo);
@@ -232,11 +239,10 @@ int MTGridBox11::_CreateVertices(
 			m_NoteDesign.GetGridBoxVirtexPos(0, portNo, &ps[0], &ps[1], &ps[2], &ps[3]);
 			m_NoteDesign.GetGridBoxVirtexPos(totalTickTime, portNo, &pe[0], &pe[1], &pe[2], &pe[3]);
 
-			// 上辺と下辺にポート分割線
-			setVtx(vi,     Vector3(pe[0].x,  ps[2].y, ps[2].z));
-			setVtx(vi + 1, Vector3(ps[0].x,  ps[2].y, ps[2].z));
-			setVtx(vi + 2, Vector3(pe[1].x,  ps[3].y, ps[3].z));
-			setVtx(vi + 3, Vector3(ps[1].x,  ps[3].y, ps[3].z));
+			setVtx(vi,     ps[1]);  // 時刻0, 右上
+			setVtx(vi + 1, pe[1]);  // 時刻末尾, 右上
+			setVtx(vi + 2, ps[3]);  // 時刻0, 右下
+			setVtx(vi + 3, pe[3]);  // 時刻末尾, 右下
 			pIndex[ii]     = vi;
 			pIndex[ii + 1] = vi + 1;
 			pIndex[ii + 2] = vi + 2;
