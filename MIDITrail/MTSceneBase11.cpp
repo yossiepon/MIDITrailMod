@@ -217,10 +217,9 @@ void MTSceneBase11::SetBGColor(unsigned long argb)
 
 void MTSceneBase11::_Reset()
 {
-	// Phase 2: Reset shared components
-	// m_Dashboard.Reset();
+	m_CurTickTime = 0;
+	m_PlayTimeMSec = 0;
 	m_Camera.Reset();
-	// m_PitchBend.Reset();
 }
 
 //******************************************************************************

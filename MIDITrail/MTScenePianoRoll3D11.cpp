@@ -90,6 +90,13 @@ int MTScenePianoRoll3D11::Create(
 	result = m_Stars.Create(pDevice, pContext, GetName());
 	if (result != 0) goto EXIT;
 
+	// 背景画像
+	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
+	if (result != 0) goto EXIT;
+
+	// データ依存コンポーネント: pSeqData が NULL の場合はスキップ
+	if (pSeqData == NULL) goto EXIT;
+
 	// グリッド
 	result = m_Grid.Create(pDevice, pContext, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
@@ -100,10 +107,6 @@ int MTScenePianoRoll3D11::Create(
 
 	// ピクチャボード
 	result = m_PictBoard.Create(pDevice, pContext, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-
-	// 背景画像
-	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
 	if (result != 0) goto EXIT;
 
 	// ダッシュボード
@@ -459,8 +462,11 @@ float MTScenePianoRoll3D11::_GetViewpointCompensation() const
 void MTScenePianoRoll3D11::_Reset()
 {
 	MTSceneBase11::_Reset();
-	m_NotePitchBend.Reset();
+	m_Dashboard.Reset();
+	m_TimeIndicator.Reset();
+	m_PictBoard.Reset();
 	m_NoteBox.Reset();
+	m_NotePitchBend.Reset();
 	m_KeyboardCtrl.Reset();
 	m_NoteTracker.Seek(0);
 }

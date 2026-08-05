@@ -304,7 +304,7 @@ int DXRenderer11::RenderScene(
 	}
 
 	// Present
-	hr = m_pSwapChain->Present(0, 0);
+	hr = m_pSwapChain->Present(1, 0);
 	if (FAILED(hr)) {
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
 			result = DXRENDERER11_ERR_DEVICE_LOST;
