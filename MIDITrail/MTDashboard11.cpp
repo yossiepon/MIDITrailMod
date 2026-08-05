@@ -296,7 +296,7 @@ EXIT:;
 // 各種設定
 //******************************************************************************
 void MTDashboard11::SetPlayTimeSec(unsigned long playTimeSec)  { m_PlayTimeMSec = playTimeSec * 1000; }
-void MTDashboard11::SetPlayTimeMSec(unsigned long playTimeMSec) { m_PlayTimeMSec = playTimeMSec; }
+void MTDashboard11::Update(const MTSceneUpdateContext& ctx) { m_PlayTimeMSec = ctx.playTimeMSec; }
 void MTDashboard11::SetTotalPlayTimeSec(unsigned long t)       { m_TotalPlayTimeMSec = t; }
 void MTDashboard11::SetTempoBPM(unsigned long bpm)             { m_TempoBPM = bpm; }
 void MTDashboard11::SetBarNo(unsigned long barNo)              { m_BarNo = barNo; }

@@ -191,7 +191,7 @@ void MTScenePianoRoll3D11::Transform(
 	m_Lyrics.Update(ctx);
 
 	// ダッシュボード
-	m_Dashboard.SetPlayTimeMSec(playTimeMSec);
+	m_Dashboard.Update(ctx);
 }
 
 //******************************************************************************
