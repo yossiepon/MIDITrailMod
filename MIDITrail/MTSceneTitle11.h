@@ -14,7 +14,7 @@
 #pragma once
 
 #include "IMTScene11.h"
-#include "DXCamera11.h"
+#include "DXCamera.h"
 #include "MTLogo11.h"
 
 #define MTSCENETITLE_CAMERA_POSZ        (-80.0f)
@@ -76,7 +76,7 @@ public:
 
 private:
 
-	DXCamera11 m_Camera;
+	DXCamera m_Camera;
 	MTLogo11 m_Logo;
 	HWND m_hWnd;
 	ID3D11DeviceContext* m_pContext;

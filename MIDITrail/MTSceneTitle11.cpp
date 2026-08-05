@@ -121,7 +121,7 @@ int MTSceneTitle11::Draw(
 	float aspect = (float)(rc.right - rc.left) / (float)(rc.bottom - rc.top);
 
 	Matrix view, proj;
-	m_Camera.GetViewProjection(aspect, &view, &proj);
+	m_Camera.GetMatrices(aspect, &view, &proj);
 	Matrix titleViewProj = view * proj;
 
 	Vector4 lightDir(1.0f, -1.0f, 2.0f, 0.0f);
