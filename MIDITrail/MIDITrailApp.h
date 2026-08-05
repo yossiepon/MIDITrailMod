@@ -52,7 +52,7 @@ using namespace SMIDILib;
 #define MT_PLAYSTATUS_NUM  (6)
 
 //デバイスロスト警告メッセージ
-#define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device is lost.")
+#define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device has been removed.\nThe graphics driver may have crashed or been updated.\nMIDITrail will attempt to recover.")
 
 //ファイルなし警告メッセージ
 #define MIDITRAIL_MSG_FILE_NOT_FOUND  _T("MIDI file (*.mid) not found.")

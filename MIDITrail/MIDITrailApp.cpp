@@ -3786,10 +3786,9 @@ int MIDITrailApp::_RebuildScene()
 	bool m_isResumeMonitoring = false;
 	MTViewParamMap viewParamMap;
 
-	//暫定対策
-	//  メッセージボックスを表示することにより
-	//  ユーザーがOKボタンを押すまでの間に
-	//  デバイスがリセット可能状態になることを期待する
+	// DX11: DXGI_ERROR_DEVICE_REMOVED はドライバクラッシュ等で発生。
+	// DX9 と異なりデバイス状態遷移を待っても回復しないため、
+	// メッセージボックスで状況を通知した後、デバイスを完全に再作成する。
 
 	//現在の視点を退避
 	if (m_pScene != NULL) {
@@ -3797,8 +3796,6 @@ int MIDITrailApp::_RebuildScene()
 	}
 
 	//演奏を一時停止する
-	//  なぜか一時停止しないとデバイスを再生成しても
-	//  デバイスロストから復帰できない
 	if (m_PlayStatus == Play) {
 		m_Sequencer.Pause();
 		m_isResume = true;
