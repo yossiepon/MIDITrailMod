@@ -53,7 +53,10 @@ int MTPictBoard11::Create(
 
 	Release();
 
-	if (pSeqData == NULL) goto EXIT;
+	if (pSeqData == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
 
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
@@ -214,7 +217,7 @@ int MTPictBoard11::Draw(
 //******************************************************************************
 // チックタイム / リセット / 再生制御
 //******************************************************************************
-void MTPictBoard11::Update(const MTSceneUpdateContext& ctx)
+int MTPictBoard11::Update(const MTSceneUpdateContext& ctx)
 {
 	m_CurTickTime = ctx.curTickTime;
 
@@ -224,6 +227,7 @@ void MTPictBoard11::Update(const MTSceneUpdateContext& ctx)
 	             * Matrix::CreateTranslation(moveVec.x + curPos, moveVec.y, moveVec.z);
 	m_Primitive.SetWorldMatrix(world);
 	m_Primitive.SetTexture(m_pSRV);
+	return 0;
 }
 
 void MTPictBoard11::Reset()

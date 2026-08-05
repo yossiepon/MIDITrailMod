@@ -67,14 +67,14 @@ public:
 	void OnNoteActivate(const NoteData& note, unsigned long index) override;
 	void OnReset() override;
 
-	void Update(const MTSceneUpdateContext& ctx) override;
+	int Update(const MTSceneUpdateContext& ctx) override;
 
 protected:
 
 	// Template Method hooks for derived classes
-	virtual void OnActivate(NoteEffectStatus& status) = 0;
-	virtual void OnDeactivate(NoteEffectStatus& status) = 0;
-	virtual void BuildVertices(unsigned long playTimeMSec) = 0;
+	virtual int OnActivate(NoteEffectStatus& status) = 0;
+	virtual int OnDeactivate(NoteEffectStatus& status) = 0;
+	virtual int BuildVertices(unsigned long playTimeMSec) = 0;
 
 	NoteEffectStatus m_Status[NOTEEFFECT_MAX_SLOTS];
 	float m_KeyDownRate[NOTEEFFECT_MAX_PORT][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];

@@ -76,7 +76,10 @@ int MTDashboard11::Create(
 
 	Release();
 
-	if (pSeqData == NULL) goto EXIT;
+	if (pSeqData == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
 
 	m_hWnd = hWnd;
 
@@ -295,8 +298,7 @@ EXIT:;
 //******************************************************************************
 // 各種設定
 //******************************************************************************
-void MTDashboard11::SetPlayTimeSec(unsigned long playTimeSec)  { m_PlayTimeMSec = playTimeSec * 1000; }
-void MTDashboard11::Update(const MTSceneUpdateContext& ctx) { m_PlayTimeMSec = ctx.playTimeMSec; }
+int MTDashboard11::Update(const MTSceneUpdateContext& ctx) { m_PlayTimeMSec = ctx.playTimeMSec; return 0; }
 void MTDashboard11::SetTotalPlayTimeSec(unsigned long t)       { m_TotalPlayTimeMSec = t; }
 void MTDashboard11::SetTempoBPM(unsigned long bpm)             { m_TempoBPM = bpm; }
 void MTDashboard11::SetBarNo(unsigned long barNo)              { m_BarNo = barNo; }

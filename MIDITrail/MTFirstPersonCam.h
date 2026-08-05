@@ -14,6 +14,7 @@
 
 #include <d3d11.h>
 #include <directxtk/SimpleMath.h>
+#include "MTSceneComponent11.h"
 #include "MTViewParamMap.h"
 #include "DIKeyCtrl.h"
 #include "DIMouseCtrl.h"
@@ -70,8 +71,8 @@ public:
 	void SetAutoRollMode(bool isEnable);
 	void SwitchAutoRollDir();
 
-	// Per-frame input processing and position update (no DX device needed)
-	int TransformInput();
+	// Per-frame update: input processing, position tracking, view matrix
+	int Update(const MTSceneUpdateContext& ctx);
 
 	// Get view/projection matrices for rendering
 	void GetViewProjection(float aspect,
@@ -81,8 +82,6 @@ public:
 	// Get current roll angle (manual roll + auto roll combined)
 	float GetRollAngle();
 
-	// Playback tick time (for camera tracking)
-	void SetCurTickTime(unsigned long curTickTime);
 
 	// Reset
 	void Reset();

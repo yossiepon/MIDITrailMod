@@ -46,7 +46,10 @@ int MTGridBox11::Create(
 
 	Release();
 
-	if (pSeqData == NULL) goto EXIT;
+	if (pSeqData == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
 
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
@@ -76,12 +79,13 @@ void MTGridBox11::Release()
 //******************************************************************************
 // 更新
 //******************************************************************************
-void MTGridBox11::Update(const MTSceneUpdateContext& ctx)
+int MTGridBox11::Update(const MTSceneUpdateContext& ctx)
 {
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
 	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
 	             * Matrix::CreateTranslation(moveVec);
 	m_Primitive.SetWorldMatrix(world);
+	return 0;
 }
 
 //******************************************************************************

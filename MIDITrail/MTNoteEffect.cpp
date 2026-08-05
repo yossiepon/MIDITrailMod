@@ -116,10 +116,12 @@ void MTNoteEffect::OnReset()
 //******************************************************************************
 // Update (per-frame)
 //******************************************************************************
-void MTNoteEffect::Update(
+int MTNoteEffect::Update(
 		const MTSceneUpdateContext& ctx
 	)
 {
+	int result = 0;
+
 	m_CurTickTime = ctx.curTickTime;
 	m_PlayTimeMSec = ctx.playTimeMSec;
 	m_RollAngle = ctx.rollAngle;
@@ -128,7 +130,8 @@ void MTNoteEffect::Update(
 		if (!m_Status[i].isActive) continue;
 
 		if (m_PlayTimeMSec > m_Status[i].endTimeMs) {
-			OnDeactivate(m_Status[i]);
+			result = OnDeactivate(m_Status[i]);
+			if (result != 0) goto EXIT;
 			m_Status[i].isActive = false;
 		}
 		else {
@@ -136,7 +139,6 @@ void MTNoteEffect::Update(
 				m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
 			m_Status[i].keyDownRate = rate;
 
-			// Derive keyStatus from timing
 			unsigned long decayEnd = m_Status[i].startTimeMs
 				+ m_NoteDesign.GetRippleDecayDuration();
 			unsigned long releaseStart = m_Status[i].endTimeMs
@@ -154,5 +156,9 @@ void MTNoteEffect::Update(
 		}
 	}
 
-	BuildVertices(m_PlayTimeMSec);
+	result = BuildVertices(m_PlayTimeMSec);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
 }

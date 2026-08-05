@@ -42,11 +42,10 @@ public:
 	           const TCHAR* pSceneName, SMSeqData* pSeqData, HWND hWnd);
 	void Release();
 
-	void Update(const MTSceneUpdateContext& ctx) override;
+	int Update(const MTSceneUpdateContext& ctx) override;
 	int Draw(ID3D11DeviceContext* pContext,
 	         unsigned int screenWidth, unsigned int screenHeight);
 
-	void SetPlayTimeSec(unsigned long playTimeSec);
 	void SetTotalPlayTimeSec(unsigned long totalPlayTimeSec);
 	void SetTempoBPM(unsigned long bpm);
 	void SetBarNo(unsigned long barNo);

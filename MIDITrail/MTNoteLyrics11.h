@@ -50,9 +50,9 @@ public:
 protected:
 
 	// MTNoteEffect Template Method
-	void OnActivate(NoteEffectStatus& status) override;
-	void OnDeactivate(NoteEffectStatus& status) override;
-	void BuildVertices(unsigned long playTimeMSec) override;
+	int OnActivate(NoteEffectStatus& status) override;
+	int OnDeactivate(NoteEffectStatus& status) override;
+	int BuildVertices(unsigned long playTimeMSec) override;
 
 private:
 

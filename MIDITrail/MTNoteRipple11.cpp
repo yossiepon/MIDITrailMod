@@ -97,23 +97,27 @@ void MTNoteRipple11::Release()
 //******************************************************************************
 // OnActivate / OnDeactivate (NOP for ripple)
 //******************************************************************************
-void MTNoteRipple11::OnActivate(NoteEffectStatus& status)
+int MTNoteRipple11::OnActivate(NoteEffectStatus& status)
 {
+	return 0;
 }
 
-void MTNoteRipple11::OnDeactivate(NoteEffectStatus& status)
+int MTNoteRipple11::OnDeactivate(NoteEffectStatus& status)
 {
+	return 0;
 }
 
 //******************************************************************************
 // BuildVertices
 //******************************************************************************
-void MTNoteRipple11::BuildVertices(
+int MTNoteRipple11::BuildVertices(
 		unsigned long playTimeMSec
 	)
 {
-	if (m_isSkipping) return;
-	if (m_pContext == NULL) return;
+	int result = 0;
+
+	if (m_isSkipping) goto EXIT;
+	if (m_pContext == NULL) goto EXIT;
 
 	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
@@ -122,8 +126,8 @@ void MTNoteRipple11::BuildVertices(
 	m_Prim.SetWorldMatrix(world);
 
 	DXPRIMITIVE11_VERTEX* pVertex = NULL;
-	int result = m_Prim.LockVertex(m_pContext, &pVertex);
-	if (result != 0) return;
+	result = m_Prim.LockVertex(m_pContext, &pVertex);
+	if (result != 0) goto EXIT;
 
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 
@@ -204,6 +208,9 @@ void MTNoteRipple11::BuildVertices(
 
 	m_ActiveNoteNum = activeNoteNum;
 	m_Prim.UnlockVertex(m_pContext);
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************

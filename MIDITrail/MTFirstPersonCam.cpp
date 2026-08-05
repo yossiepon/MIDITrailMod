@@ -179,8 +179,9 @@ void MTFirstPersonCam::SwitchAutoRollDir()
 //******************************************************************************
 // Per-frame input processing (replaces Transform(LPDIRECT3DDEVICE9))
 //******************************************************************************
-int MTFirstPersonCam::TransformInput()
+int MTFirstPersonCam::Update(const MTSceneUpdateContext& ctx)
 {
+	m_CurTickTime = ctx.curTickTime;
 	int result = 0;
 	float dt = 0.0f;
 	int dX = 0;
@@ -508,14 +509,6 @@ void MTFirstPersonCam::_CalcDeltaTime()
 	}
 
 	m_PrevTime = curTime;
-}
-
-//******************************************************************************
-// Tick time
-//******************************************************************************
-void MTFirstPersonCam::SetCurTickTime(unsigned long curTickTime)
-{
-	m_CurTickTime = curTickTime;
 }
 
 //******************************************************************************

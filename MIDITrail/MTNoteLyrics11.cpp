@@ -90,38 +90,52 @@ void MTNoteLyrics11::Release()
 //******************************************************************************
 // OnActivate (create font texture for lyric)
 //******************************************************************************
-void MTNoteLyrics11::OnActivate(
+int MTNoteLyrics11::OnActivate(
 		NoteEffectStatus& status
 	)
 {
+	int result = 0;
 	int slotIndex = (int)(&status - &m_Status[0]);
-	if (m_pDevice == NULL) return;
 
-	m_FontTextures[slotIndex].SetFont(L"HGSSoeiKakugothicUB", 64, 0x00FFFFFF, false);
-	m_FontTextures[slotIndex].CreateTexture(m_pDevice, status.lyric);
+	if (m_pDevice == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	result = m_FontTextures[slotIndex].SetFont(L"HGSSoeiKakugothicUB", 64, 0x00FFFFFF, false);
+	if (result != 0) goto EXIT;
+
+	result = m_FontTextures[slotIndex].CreateTexture(m_pDevice, status.lyric);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
 // OnDeactivate (release font texture)
 //******************************************************************************
-void MTNoteLyrics11::OnDeactivate(
+int MTNoteLyrics11::OnDeactivate(
 		NoteEffectStatus& status
 	)
 {
 	int slotIndex = (int)(&status - &m_Status[0]);
 	m_FontTextures[slotIndex].Clear();
 	m_pDrawSRV[slotIndex] = NULL;
+	return 0;
 }
 
 //******************************************************************************
 // BuildVertices
 //******************************************************************************
-void MTNoteLyrics11::BuildVertices(
+int MTNoteLyrics11::BuildVertices(
 		unsigned long playTimeMSec
 	)
 {
-	if (m_isSkipping) return;
-	if (m_pContext == NULL) return;
+	int result = 0;
+
+	if (m_isSkipping) goto EXIT;
+	if (m_pContext == NULL) goto EXIT;
 
 	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
@@ -130,8 +144,8 @@ void MTNoteLyrics11::BuildVertices(
 	m_Prim.SetWorldMatrix(world);
 
 	DXPRIMITIVE11_VERTEX* pVertex = NULL;
-	int result = m_Prim.LockVertex(m_pContext, &pVertex);
-	if (result != 0) return;
+	result = m_Prim.LockVertex(m_pContext, &pVertex);
+	if (result != 0) goto EXIT;
 
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 
@@ -210,6 +224,9 @@ void MTNoteLyrics11::BuildVertices(
 
 	m_DrawSRVCount = activeNoteNum;
 	m_Prim.UnlockVertex(m_pContext);
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************

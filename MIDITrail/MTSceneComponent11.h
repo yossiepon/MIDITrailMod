@@ -33,7 +33,7 @@ public:
 
 	virtual ~MTSceneComponent11() = default;
 
-	virtual void Update(const MTSceneUpdateContext& ctx) {}
+	virtual int Update(const MTSceneUpdateContext& ctx) { return 0; }
 
 	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsEnable() const { return m_isEnable; }

@@ -48,7 +48,10 @@ int MTTimeIndicator11::Create(
 
 	Release();
 
-	if (pSeqData == NULL) goto EXIT;
+	if (pSeqData == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
 
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
@@ -240,7 +243,7 @@ int MTTimeIndicator11::Draw(
 //******************************************************************************
 // 更新
 //******************************************************************************
-void MTTimeIndicator11::Update(const MTSceneUpdateContext& ctx)
+int MTTimeIndicator11::Update(const MTSceneUpdateContext& ctx)
 {
 	m_CurTickTime = ctx.curTickTime;
 	m_CurPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);
@@ -250,6 +253,7 @@ void MTTimeIndicator11::Update(const MTSceneUpdateContext& ctx)
 	             * Matrix::CreateTranslation(moveVec.x + m_CurPos, moveVec.y, moveVec.z);
 	m_Primitive.SetWorldMatrix(world);
 	m_PrimitiveLine.SetWorldMatrix(world);
+	return 0;
 }
 
 //******************************************************************************

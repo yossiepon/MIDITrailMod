@@ -81,10 +81,11 @@ void MTStars11::Release()
 //******************************************************************************
 // 更新：カメラ位置に追従（星は無限遠を擬似的に表現）
 //******************************************************************************
-void MTStars11::Update(const MTSceneUpdateContext& ctx)
+int MTStars11::Update(const MTSceneUpdateContext& ctx)
 {
 	Matrix world = Matrix::CreateTranslation(ctx.camPos);
 	m_Primitive.SetWorldMatrix(world);
+	return 0;
 }
 
 //******************************************************************************
