@@ -160,6 +160,9 @@ void MTScenePianoRoll3D11::Transform(
 	// ピクチャボード
 	m_PictBoard.SetCurTickTime(curTickTime);
 	m_PictBoard.Transform(camPos, rollAngle);
+
+	// ダッシュボード
+	m_Dashboard.SetPlayTimeMSec(playTimeMSec);
 }
 
 //******************************************************************************
