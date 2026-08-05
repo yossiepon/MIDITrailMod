@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "MTSceneComponent11.h"
 #include "DXPrimitive11.h"
 #include "MTNoteDesign.h"
 #include "SMIDILib.h"
@@ -23,7 +24,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 picture board renderer
 //******************************************************************************
-class MTPictBoard11
+class MTPictBoard11 : public MTSceneComponent11
 {
 public:
 
@@ -40,12 +41,11 @@ public:
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
 
-	void SetCurTickTime(unsigned long curTickTime);
+	void Update(unsigned long curTickTime, unsigned long playTimeMSec) override;
 	void Reset();
 	void OnPlayStart();
 	void OnPlayEnd();
 
-	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsReady() const { return m_isReady; }
 
 private:
@@ -56,7 +56,6 @@ private:
 	unsigned int m_ImgHeight;
 	unsigned long m_CurTickTime;
 	bool m_isPlay;
-	bool m_isEnable;
 	bool m_isReady;
 	MTNoteDesign m_NoteDesign;
 

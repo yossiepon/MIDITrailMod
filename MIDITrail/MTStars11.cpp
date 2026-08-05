@@ -28,7 +28,6 @@ using namespace DirectX::SimpleMath;
 MTStars11::MTStars11()
 {
 	m_NumOfStars = 2000;
-	m_isEnable = true;
 	m_isReady = false;
 }
 

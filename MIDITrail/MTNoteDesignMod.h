@@ -29,6 +29,13 @@ public:
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();
 
+	// Note envelope (3-phase: Decay/Sustain/Release)
+	float CalcNoteEnvelope(
+				unsigned long playTimeMSec,
+				unsigned long startTime,
+				unsigned long endTime
+			);
+
 	// Ripple blend settings (ini values match D3D11_BLEND numeric values)
 	D3D11_BLEND GetRippleSrcBlend();
 	D3D11_BLEND GetRippleDestBlend();

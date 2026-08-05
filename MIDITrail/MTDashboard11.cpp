@@ -48,7 +48,6 @@ MTDashboard11::MTDashboard11()
 	m_BeatDenominatorOnStart = 0;
 
 	m_CaptionColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
-	m_isEnable = true;
 	m_isEnableFileName = false;
 }
 
@@ -307,7 +306,6 @@ void MTDashboard11::SetNoteOn()                                { m_NoteCount++; 
 void MTDashboard11::SetPlaySpeedRatio(unsigned long ratio)     { m_PlaySpeedRatio = ratio; }
 void MTDashboard11::SetNotesCount(unsigned long c)             { m_NoteCount = c; }
 unsigned long MTDashboard11::GetPlayTimeSec()                  { return m_PlayTimeMSec; }
-void MTDashboard11::SetEnable(bool e)                          { m_isEnable = e; }
 void MTDashboard11::SetEnableFileName(bool e)                  { m_isEnableFileName = e; }
 
 void MTDashboard11::Reset()

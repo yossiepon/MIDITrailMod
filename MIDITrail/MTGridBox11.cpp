@@ -24,7 +24,6 @@ using namespace DirectX::SimpleMath;
 //******************************************************************************
 MTGridBox11::MTGridBox11()
 {
-	m_isEnable = true;
 	m_isReady = false;
 }
 

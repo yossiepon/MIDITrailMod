@@ -31,7 +31,6 @@ MTPictBoard11::MTPictBoard11()
 	m_ImgHeight = 0;
 	m_CurTickTime = 0;
 	m_isPlay = false;
-	m_isEnable = true;
 	m_isReady = false;
 }
 
@@ -228,7 +227,7 @@ int MTPictBoard11::DrawDX11(
 //******************************************************************************
 // チックタイム / リセット / 再生制御
 //******************************************************************************
-void MTPictBoard11::SetCurTickTime(unsigned long curTickTime)
+void MTPictBoard11::Update(unsigned long curTickTime, unsigned long playTimeMSec)
 {
 	m_CurTickTime = curTickTime;
 }

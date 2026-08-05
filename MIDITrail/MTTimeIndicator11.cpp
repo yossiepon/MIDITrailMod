@@ -26,7 +26,6 @@ MTTimeIndicator11::MTTimeIndicator11()
 	m_CurPos = 0.0f;
 	m_CurTickTime = 0;
 	m_isEnableLine = false;
-	m_isEnable = true;
 	m_isReady = false;
 }
 
@@ -254,9 +253,9 @@ int MTTimeIndicator11::DrawDX11(
 }
 
 //******************************************************************************
-// チックタイム設定
+// 更新
 //******************************************************************************
-void MTTimeIndicator11::SetCurTickTime(unsigned long curTickTime)
+void MTTimeIndicator11::Update(unsigned long curTickTime, unsigned long playTimeMSec)
 {
 	m_CurTickTime = curTickTime;
 	m_CurPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);

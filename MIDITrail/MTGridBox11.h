@@ -13,6 +13,7 @@
 #pragma once
 
 #include "DXPrimitive11.h"
+#include "MTSceneComponent11.h"
 #include "MTNoteDesign.h"
 #include "SMIDILib.h"
 #include <directxtk/SimpleMath.h>
@@ -23,7 +24,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 grid box renderer
 //******************************************************************************
-class MTGridBox11
+class MTGridBox11 : public MTSceneComponent11
 {
 public:
 
@@ -40,14 +41,12 @@ public:
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
 
-	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsReady() const { return m_isReady; }
 
 private:
 
 	DXPrimitive11 m_Primitive;
 	MTNoteDesign m_NoteDesign;
-	bool m_isEnable;
 	bool m_isReady;
 
 	int _CreateVertices(

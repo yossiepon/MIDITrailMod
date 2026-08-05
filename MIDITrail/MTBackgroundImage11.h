@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "MTSceneComponent11.h"
 #include "DXPrimitive11.h"
 #include "DXTexture11.h"
 #include "YNBaseLib.h"
@@ -23,7 +24,7 @@ using namespace YNBaseLib;
 //******************************************************************************
 // DX11 background image renderer
 //******************************************************************************
-class MTBackgroundImage11
+class MTBackgroundImage11 : public MTSceneComponent11
 {
 public:
 
@@ -36,7 +37,6 @@ public:
 	int DrawDX11(ID3D11DeviceContext* pContext);
 
 	void Reset();
-	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsReady() const { return m_isReady; }
 
 private:
@@ -46,7 +46,6 @@ private:
 	ID3D11ShaderResourceView* m_pSRV;
 	unsigned int m_ImgWidth;
 	unsigned int m_ImgHeight;
-	bool m_isEnable;
 	bool m_isReady;
 
 	YNConfFile m_ConfFile;

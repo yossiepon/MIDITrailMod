@@ -13,6 +13,7 @@
 #pragma once
 
 #include "DXPrimitive11.h"
+#include "MTSceneComponent11.h"
 #include "MTNoteDesign.h"
 #include "SMIDILib.h"
 #include <directxtk/SimpleMath.h>
@@ -23,7 +24,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 time indicator renderer
 //******************************************************************************
-class MTTimeIndicator11
+class MTTimeIndicator11 : public MTSceneComponent11
 {
 public:
 
@@ -40,12 +41,11 @@ public:
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
 
-	void SetCurTickTime(unsigned long curTickTime);
+	void Update(unsigned long curTickTime, unsigned long playTimeMSec) override;
 	void Reset();
 	float GetPos() const;
 	DirectX::SimpleMath::Vector3 GetMoveVector() const;
 
-	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsReady() const { return m_isReady; }
 
 private:

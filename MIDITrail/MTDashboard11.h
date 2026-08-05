@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "MTSceneComponent11.h"
 #include "SMIDILib.h"
 #include "MTStaticCaption11.h"
 #include "MTDynamicCaption11.h"
@@ -30,7 +31,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 dashboard renderer
 //******************************************************************************
-class MTDashboard11
+class MTDashboard11 : public MTSceneComponent11
 {
 public:
 
@@ -57,7 +58,6 @@ public:
 	void Reset();
 
 	unsigned long GetPlayTimeSec();
-	void SetEnable(bool isEnable);
 	void SetEnableFileName(bool isEnable);
 
 private:
@@ -87,7 +87,6 @@ private:
 	unsigned long m_BeatDenominatorOnStart;
 
 	DirectX::SimpleMath::Color m_CaptionColor;
-	bool m_isEnable;
 	bool m_isEnableFileName;
 
 	int _GetCounterPos(float* pX, float* pY);

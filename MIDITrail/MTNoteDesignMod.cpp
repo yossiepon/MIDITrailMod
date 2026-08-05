@@ -81,6 +81,72 @@ float MTNoteDesignMod::GetRippleSpacing()
 }
 
 //******************************************************************************
+// Note envelope (3-phase: Decay/Sustain/Release)
+//******************************************************************************
+float MTNoteDesignMod::CalcNoteEnvelope(
+		unsigned long playTimeMSec,
+		unsigned long startTime,
+		unsigned long endTime
+	)
+{
+	if (playTimeMSec > endTime) {
+		return 0.0f;
+	}
+
+	unsigned long decayDuration = (unsigned long)m_RippleDecayDuration;
+	unsigned long releaseDuration = (unsigned long)m_RippleReleaseDuration;
+	unsigned long noteLen = endTime - startTime;
+
+	float decayRatio = 0.3f;
+	float sustainRatio = 0.4f;
+	float releaseRatio = 0.3f;
+
+	if (noteLen < decayDuration) {
+		// Case A: no adjustment (whole note stays in Decay)
+	}
+	else if (noteLen < (decayDuration + releaseDuration)) {
+		// Case B: eliminate Sustain, shrink Release to fit
+		releaseDuration = noteLen - decayDuration;
+		decayRatio = 0.5f;
+		sustainRatio = 0.0f;
+		releaseRatio = 0.5f;
+	}
+	else if (noteLen < (decayDuration + releaseDuration) * 2) {
+		// Case C: midpoint split, eliminate Sustain
+		unsigned long midTime = (startTime + decayDuration) / 2
+		                      + (endTime - releaseDuration) / 2;
+		decayDuration = midTime - startTime;
+		releaseDuration = endTime - midTime;
+		decayRatio = 0.5f;
+		sustainRatio = 0.0f;
+		releaseRatio = 0.5f;
+	}
+
+	// Phase 1: Decay
+	if (playTimeMSec < (startTime + decayDuration)) {
+		if (decayDuration == 0) {
+			return 0.0f;
+		}
+		return decayRatio * (float)(playTimeMSec - startTime) / (float)decayDuration;
+	}
+	// Phase 2: Sustain
+	if (playTimeMSec <= (endTime - releaseDuration)) {
+		unsigned long denominator = noteLen - (decayDuration + releaseDuration);
+		if (denominator > 0) {
+			return decayRatio + sustainRatio
+				* (float)(playTimeMSec - (startTime + decayDuration)) / (float)denominator;
+		}
+		return decayRatio + sustainRatio;
+	}
+	// Phase 3: Release
+	if (releaseDuration == 0) {
+		return 1.0f;
+	}
+	return decayRatio + sustainRatio + releaseRatio
+		* (float)(playTimeMSec - (endTime - releaseDuration)) / (float)releaseDuration;
+}
+
+//******************************************************************************
 // Ripple size (rate-based decay)
 //******************************************************************************
 float MTNoteDesignMod::GetRippleHeight(float rate)

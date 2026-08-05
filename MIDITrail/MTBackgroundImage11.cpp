@@ -30,7 +30,6 @@ MTBackgroundImage11::MTBackgroundImage11()
 	m_pSRV = NULL;
 	m_ImgWidth = 0;
 	m_ImgHeight = 0;
-	m_isEnable = true;
 	m_isReady = false;
 }
 

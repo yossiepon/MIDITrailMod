@@ -14,13 +14,14 @@
 #pragma once
 
 #include "DXPrimitive11.h"
+#include "MTSceneComponent11.h"
 #include <directxtk/SimpleMath.h>
 
 
 //******************************************************************************
 // DX11 star particle renderer
 //******************************************************************************
-class MTStars11
+class MTStars11 : public MTSceneComponent11
 {
 public:
 
@@ -36,14 +37,12 @@ public:
 	             const DirectX::SimpleMath::Matrix& viewProj,
 	             float rollAngle);
 
-	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsReady() const { return m_isReady; }
 
 private:
 
 	DXPrimitive11 m_Primitive;
 	int m_NumOfStars;
-	bool m_isEnable;
 	bool m_isReady;
 
 	int _CreateVertices(ID3D11DeviceContext* pContext);
