@@ -198,10 +198,11 @@ void MTSceneBase11::ResetViewpoint()
 	SetViewParam(&paramMap);
 }
 
-void MTSceneBase11::Rewind()
+int MTSceneBase11::Rewind()
 {
 	_Reset();
 	SetViewParam(&m_ViewParamMap);
+	return 0;
 }
 
 //******************************************************************************
@@ -225,10 +226,11 @@ void MTSceneBase11::_Reset()
 //******************************************************************************
 // Key-value parameters
 //******************************************************************************
-void MTSceneBase11::SetParam(const char* pKey, const char* pValue)
+int MTSceneBase11::SetParam(const char* pKey, const char* pValue)
 {
-	if (pKey == nullptr || pValue == nullptr) return;
+	if (pKey == nullptr || pValue == nullptr) return 0;
 	m_Params[std::string(pKey)] = std::string(pValue);
+	return 0;
 }
 
 const char* MTSceneBase11::GetParam(const char* pKey)

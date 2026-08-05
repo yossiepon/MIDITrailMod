@@ -86,8 +86,8 @@ public:
 	//----------------------------------------------------------------------
 	// Playback events
 	//----------------------------------------------------------------------
-	virtual void OnPlayStart() = 0;
-	virtual void OnPlayEnd() = 0;
+	virtual int  OnPlayStart() = 0;
+	virtual int  OnPlayEnd() = 0;
 
 	//----------------------------------------------------------------------
 	// Sequencer message dispatch
@@ -123,13 +123,13 @@ public:
 	//----------------------------------------------------------------------
 	// Playback control
 	//----------------------------------------------------------------------
-	virtual void Rewind() = 0;
+	virtual int  Rewind() = 0;
 	virtual void SetPlaySpeedRatio(unsigned long ratio) = 0;
 
 	//----------------------------------------------------------------------
 	// Key-value parameters
 	//----------------------------------------------------------------------
-	virtual void SetParam(const char* pKey, const char* pValue) = 0;
+	virtual int  SetParam(const char* pKey, const char* pValue) = 0;
 	virtual const char* GetParam(const char* pKey) = 0;
 
 	//----------------------------------------------------------------------

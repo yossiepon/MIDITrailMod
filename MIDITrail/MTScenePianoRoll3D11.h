@@ -50,8 +50,8 @@ public:
 	          const DirectX::SimpleMath::Matrix& viewProj,
 	          float rollAngle,
 	          const DirectX::SimpleMath::Vector3& camPos) override;
-	void OnPlayStart() override;
-	void OnPlayEnd() override;
+	int  OnPlayStart() override;
+	int  OnPlayEnd() override;
 	int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
 	void SetEffect(MTEffectType type, bool isEnable) override;
 	void SetPlaySpeedRatio(unsigned long ratio) override;

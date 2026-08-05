@@ -81,10 +81,10 @@ public:
 	void SetViewParam(MTViewParamMap* pParamMap) override;
 	void MoveToStaticViewpoint(unsigned long viewpointNo) override;
 	void ResetViewpoint() override;
-	void Rewind() override;
+	int  Rewind() override;
 
 	// Key-value parameters
-	void SetParam(const char* pKey, const char* pValue) override;
+	int  SetParam(const char* pKey, const char* pValue) override;
 	const char* GetParam(const char* pKey) override;
 
 	// Camera accessor (for DXRenderer11)

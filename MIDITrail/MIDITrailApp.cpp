@@ -1253,11 +1253,13 @@ int MIDITrailApp::_OnMenuPlay()
 		//巻き戻し
 		if (m_isRewind) {
 			m_isRewind = false;
-			m_pScene->Rewind();
+			result = m_pScene->Rewind();
+			if (result != 0) goto EXIT;
 		}
 
 		//シーンに演奏開始を通知
-		m_pScene->OnPlayStart();
+		result = m_pScene->OnPlayStart();
+		if (result != 0) goto EXIT;
 
 		//最新シーケンサメッセージクリア
 		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
@@ -1497,7 +1499,8 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 	if (result != 0) goto EXIT;
 	
 	//シーンに演奏開始（ライブモニタ開始）を通知
-	m_pScene->OnPlayStart();
+	result = m_pScene->OnPlayStart();
+	if (result != 0) goto EXIT;
 
 	//ライブモニタ開始
 	result = m_LiveMonitor.Start();
@@ -1540,9 +1543,10 @@ int MIDITrailApp::_OnMenuStopMonitoring()
 	
 	//シーンに演奏終了を通知
 	if (m_pScene != NULL) {
-		m_pScene->OnPlayEnd();
+		result = m_pScene->OnPlayEnd();
+		if (result != 0) goto EXIT;
 	}
-	
+
 EXIT:;
 	return result;
 }
@@ -1594,10 +1598,12 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 			if (result != 0) goto EXIT;
 
 			//MIDI IN デバイス名を設定
-			m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+			if (result != 0) goto EXIT;
 
 			//デバイス名を画面に反映するためシーンに演奏終了（ライブモニタ停止）を通知
-			m_pScene->OnPlayEnd();
+			result = m_pScene->OnPlayEnd();
+			if (result != 0) goto EXIT;
 		}
 	}
 
@@ -2001,7 +2007,8 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 
 			//シーンに演奏終了を通知
 			if (m_pScene != NULL) {
-				m_pScene->OnPlayEnd();
+				result = m_pScene->OnPlayEnd();
+				if (result != 0) goto EXIT;
 			}
 
 			//視点保存
@@ -2013,7 +2020,8 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 			//ユーザーの要求によって停止した場合は巻き戻す
 			if ((m_isRewind) && (m_pScene != NULL)) {
 				m_isRewind = false;
-				m_pScene->Rewind();
+				result = m_pScene->Rewind();
+				if (result != 0) goto EXIT;
 			}
 			//停止後のファイルオープンが指定されている場合
 			else if ((m_isOpenFileAfterStop) && (m_pScene != NULL)) {
@@ -2891,7 +2899,8 @@ int MIDITrailApp::_SetMonitorPortDev(
 	}
 
 	//シーンに MIDI IN デバイス名を登録
-	pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+	if (result != 0) goto EXIT;
 
 	//--------------------------------------
 	// MIDI OUT (MIDITHRU)
@@ -2966,16 +2975,19 @@ int MIDITrailApp::_ChangeWindowSize()
 		if (result != 0) goto EXIT;
 
 		//MIDI IN デバイス名を設定
-		m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+		if (result != 0) goto EXIT;
 
 		//MIDI IN デバイス名を画面に反映
 		if (m_PlayStatus == MonitorON) {
 			//シーンに演奏開始（ライブモニタ開始）を通知
-			m_pScene->OnPlayStart();
+			result = m_pScene->OnPlayStart();
+			if (result != 0) goto EXIT;
 		}
 		else {
 			//シーンに演奏終了（ライブモニタ停止）を通知
-			m_pScene->OnPlayEnd();
+			result = m_pScene->OnPlayEnd();
+			if (result != 0) goto EXIT;
 		}
 	}
 
@@ -3821,7 +3833,8 @@ int MIDITrailApp::_RebuildScene()
 
 		//演奏中の場合はシーンに演奏開始を通知
 		if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-			m_pScene->OnPlayStart();
+			result = m_pScene->OnPlayStart();
+			if (result != 0) goto EXIT;
 		}
 		//演奏チックタイム通知
 		if (m_SequencerLastMsg.isRecvPlayTime) {
