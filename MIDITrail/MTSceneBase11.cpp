@@ -10,8 +10,12 @@
 //******************************************************************************
 
 #include "stdafx.h"
+#include "YNBaseLib.h"
 #include "MTSceneBase11.h"
 #include "MTConfFile.h"
+#include "MTColorConf.h"
+#include "MTColorPalette.h"
+#include "SMMsgParser.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -27,6 +31,55 @@ MTSceneBase11::MTSceneBase11()
 MTSceneBase11::~MTSceneBase11()
 {
 	MTSceneBase11::Release();
+}
+
+//******************************************************************************
+// Sequencer message: common handling
+//******************************************************************************
+int MTSceneBase11::OnRecvSequencerMsg(
+		unsigned long param1,
+		unsigned long param2
+	)
+{
+	int result = 0;
+	SMMsgParser parser;
+
+	parser.Parse(param1, param2);
+
+	if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
+		m_CurTickTime = parser.GetPlayTickTime();
+		m_PlayTimeMSec = parser.GetPlayTimeMSec();
+	}
+
+	return result;
+}
+
+//******************************************************************************
+// Per-frame update
+//******************************************************************************
+int MTSceneBase11::Update()
+{
+	int result = 0;
+
+	// コンテキスト生成（保存済みメンバから）
+	MTSceneUpdateContext ctx;
+	ctx.curTickTime = m_CurTickTime;
+	ctx.playTimeMSec = m_PlayTimeMSec;
+
+	// カメラ更新
+	result = m_Camera.Update(ctx);
+	if (result != 0) goto EXIT;
+
+	// カメラ位置・回転をコンテキストに反映
+	m_Camera.GetPosition(&ctx.camPos);
+	ctx.rollAngle = m_Camera.GetRollAngle();
+
+	// シーン固有コンポーネント更新
+	result = _UpdateComponents(ctx);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
@@ -149,6 +202,14 @@ void MTSceneBase11::Rewind()
 //******************************************************************************
 // Reset (subclasses extend by calling base then resetting own components)
 //******************************************************************************
+void MTSceneBase11::SetBGColor(unsigned long argb)
+{
+	m_BGColor[0] = ((argb >> 16) & 0xFF) / 255.0f;
+	m_BGColor[1] = ((argb >>  8) & 0xFF) / 255.0f;
+	m_BGColor[2] = ((argb >>  0) & 0xFF) / 255.0f;
+	m_BGColor[3] = ((argb >> 24) & 0xFF) / 255.0f;
+}
+
 void MTSceneBase11::_Reset()
 {
 	// Phase 2: Reset shared components
@@ -188,7 +249,21 @@ void MTSceneBase11::_LoadConf()
 	_LoadConfViewpoint(&confFile, 2, &m_Viewpoint2);
 	_LoadConfViewpoint(&confFile, 3, &m_Viewpoint3);
 
-	// Phase 2: Load background color from color palette
+	// 背景色読み込み
+	{
+		MTColorConf colorConf;
+		MTColorPalette colorPalette;
+		result = colorConf.Initialize(GetName());
+		if (result == 0) {
+			colorConf.GetSelectedColorPalette(&colorPalette);
+			Color bgColor;
+			colorPalette.GetBackgroundColor(&bgColor);
+			m_BGColor[0] = bgColor.R();
+			m_BGColor[1] = bgColor.G();
+			m_BGColor[2] = bgColor.B();
+			m_BGColor[3] = bgColor.A();
+		}
+	}
 }
 
 void MTSceneBase11::_LoadConfViewpoint(

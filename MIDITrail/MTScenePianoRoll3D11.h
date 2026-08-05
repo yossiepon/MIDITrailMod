@@ -44,7 +44,6 @@ public:
 	            ID3D11DeviceContext* pContext,
 	            SMIDILib::SMSeqData* pSeqData) override;
 	void Release() override;
-	void Transform(unsigned long curTickTime, unsigned long playTimeMSec) override;
 	int  Draw(ID3D11DeviceContext* pContext,
 	          const DirectX::SimpleMath::Matrix& viewProj,
 	          float rollAngle,
@@ -60,8 +59,9 @@ protected:
 
 	void _ComputeDefaultViewParam(MTViewParamMap* pParamMap) override;
 	float _GetViewpointCompensation() const override;
+	int _UpdateComponents(const MTSceneUpdateContext& ctx) override;
 	void _Reset() override;
-	void _DrawSceneComponents(
+	int _DrawSceneComponents(
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
 				float rollAngle,

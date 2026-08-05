@@ -107,9 +107,6 @@ int APIENTRY _tWinMain(
 		goto EXIT;
 	}
 
-	// 背景色設定（暗い青）
-	g_Renderer.SetBGColor(0xFF1A1A2E);
-
 	// テスト用 MIDI ファイル読み込み
 	{
 		SMFileReader reader;
@@ -150,11 +147,21 @@ int APIENTRY _tWinMain(
 				unsigned long elapsedMs = timeGetTime() - startTime;
 				unsigned long curTick = (unsigned long)(elapsedMs * ticksPerMs);
 
+				// 演奏時間通知（SM_MSG_TIME=0x01, param1=種別<<24|msec, param2=tick）
+				{
+					unsigned long param1 = (0x01 << 24) | (elapsedMs & 0x00FFFFFF);
+					unsigned long param2 = curTick;
+					result = g_pScene->OnRecvSequencerMsg(param1, param2);
+					if (result != 0) goto EXIT;
+				}
+
 				// シーン更新
-				g_pScene->Transform(curTick, elapsedMs);
+				result = g_pScene->Update();
+				if (result != 0) goto EXIT;
 
 				// フレーム描画
-				g_Renderer.RenderScene(g_pScene, g_pScene->GetCamera());
+				result = g_Renderer.RenderScene(g_pScene, g_pScene->GetCamera());
+				if (result != 0) goto EXIT;
 			}
 		}
 	}

@@ -156,42 +156,37 @@ void MTScenePianoRoll3D11::Release()
 //******************************************************************************
 // フレーム更新
 //******************************************************************************
-void MTScenePianoRoll3D11::Transform(
-		unsigned long curTickTime,
-		unsigned long playTimeMSec
+int MTScenePianoRoll3D11::_UpdateComponents(
+		const MTSceneUpdateContext& ctx
 	)
 {
-	// カメラ入力処理
-	m_Camera.SetCurTickTime(curTickTime);
-	m_Camera.TransformInput();
-
-	// カメラ位置取得
-	Vector3 camPos;
-	m_Camera.GetPosition(&camPos);
-	float rollAngle = m_Camera.GetRollAngle();
-
-	// コンテキスト生成
-	MTSceneUpdateContext ctx;
-	ctx.curTickTime = curTickTime;
-	ctx.playTimeMSec = playTimeMSec;
-	ctx.rollAngle = rollAngle;
-	ctx.camPos = camPos;
+	int result = 0;
 
 	// 各コンポーネント更新
-	m_Stars.Update(ctx);
-	m_Grid.Update(ctx);
-	m_TimeIndicator.Update(ctx);
-	m_PictBoard.Update(ctx);
+	result = m_Stars.Update(ctx);
+	if (result != 0) goto EXIT;
+	result = m_Grid.Update(ctx);
+	if (result != 0) goto EXIT;
+	result = m_TimeIndicator.Update(ctx);
+	if (result != 0) goto EXIT;
+	result = m_PictBoard.Update(ctx);
+	if (result != 0) goto EXIT;
 
 	// ノートトラッカー → リスナー（Ripple, Lyrics）に通知
-	m_NoteTracker.Update(playTimeMSec);
+	m_NoteTracker.Update(ctx.playTimeMSec);
 
 	// 波紋・歌詞
-	m_Ripple.Update(ctx);
-	m_Lyrics.Update(ctx);
+	result = m_Ripple.Update(ctx);
+	if (result != 0) goto EXIT;
+	result = m_Lyrics.Update(ctx);
+	if (result != 0) goto EXIT;
 
 	// ダッシュボード
-	m_Dashboard.Update(ctx);
+	result = m_Dashboard.Update(ctx);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
@@ -204,38 +199,46 @@ int MTScenePianoRoll3D11::Draw(
 		const Vector3& camPos
 	)
 {
+	int result = 0;
+
 	// 背景画像（最初に描画）
-	m_BackgroundImage.Draw(pContext);
+	result = m_BackgroundImage.Draw(pContext);
+	if (result != 0) goto EXIT;
 
 	// シーン固有コンポーネント描画
-	_DrawSceneComponents(pContext, viewProj, rollAngle, camPos);
+	result = _DrawSceneComponents(pContext, viewProj, rollAngle, camPos);
+	if (result != 0) goto EXIT;
 
 	// ダッシュボード（最後に描画）
 	{
 		RECT rect;
 		GetClientRect(m_hWnd, &rect);
-		m_Dashboard.Draw(pContext,
-		                 rect.right - rect.left,
-		                 rect.bottom - rect.top);
+		result = m_Dashboard.Draw(pContext,
+		                          rect.right - rect.left,
+		                          rect.bottom - rect.top);
+		if (result != 0) goto EXIT;
 	}
 
-	return 0;
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
 // シーン固有コンポーネント描画
 //******************************************************************************
-void MTScenePianoRoll3D11::_DrawSceneComponents(
+int MTScenePianoRoll3D11::_DrawSceneComponents(
 		ID3D11DeviceContext* pContext,
 		const Matrix& viewProj,
 		float rollAngle,
 		const Vector3& camPos
 	)
 {
+	int result = 0;
 	Vector4 lightDir(1.0f, -1.0f, 2.0f, 0.0f);
 
 	// グリッド
-	m_Grid.Draw(pContext, viewProj, lightDir, rollAngle);
+	result = m_Grid.Draw(pContext, viewProj, lightDir, rollAngle);
+	if (result != 0) goto EXIT;
 
 	// Phase 2: NoteBox 描画（未実装）
 
@@ -243,21 +246,33 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 	// PictBoard は Keyboard 実装後に置き換え（現状は無効化）
 	if (m_TimeIndicator.GetPos() > camPos.x) {
 		// カメラが再生位置より手前: Indicator → Lyrics → Ripple → Keyboard
-		m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
-		m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
-		m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
-		//m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
+		result = m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
+		if (result != 0) goto EXIT;
+		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
+		if (result != 0) goto EXIT;
+		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
+		if (result != 0) goto EXIT;
+		//result = m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
+		//if (result != 0) goto EXIT;
 	}
 	else {
 		// カメラが再生位置より奥: Keyboard → Ripple → Lyrics → Indicator
-		//m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
-		m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
-		m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
-		m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
+		//result = m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
+		//if (result != 0) goto EXIT;
+		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
+		if (result != 0) goto EXIT;
+		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
+		if (result != 0) goto EXIT;
+		result = m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
+		if (result != 0) goto EXIT;
 	}
 
 	// 星
-	m_Stars.Draw(pContext, viewProj, rollAngle);
+	result = m_Stars.Draw(pContext, viewProj, rollAngle);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
@@ -283,8 +298,16 @@ int MTScenePianoRoll3D11::OnRecvSequencerMsg(
 		unsigned long param2
 	)
 {
-	// Phase 2: メッセージをコンポーネントに配信
-	return 0;
+	int result = 0;
+
+	// 基底の共通処理（MsgPlayTime 等）
+	result = MTSceneBase11::OnRecvSequencerMsg(param1, param2);
+	if (result != 0) goto EXIT;
+
+	// Phase 2: シーン固有メッセージ処理（テンポ、ノートON/OFF 等）
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************

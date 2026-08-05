@@ -66,9 +66,6 @@ public:
 	// MSAA support check
 	int IsSupportAntialias(unsigned long multiSampleCount, bool* pIsSupport);
 
-	// Background color
-	void SetBGColor(unsigned long argb);
-
 private:
 
 	HWND                    m_hWnd;
@@ -81,7 +78,6 @@ private:
 	unsigned int            m_Width;
 	unsigned int            m_Height;
 	unsigned int            m_SampleCount;
-	float                   m_BGColor[4];
 
 	int _CreateRenderTarget();
 	void _ReleaseRenderTarget();

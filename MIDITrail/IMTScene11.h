@@ -69,12 +69,9 @@ public:
 	// Per-frame update and draw
 	//----------------------------------------------------------------------
 
-	// Transform updates component state (positions, animations) for the
-	// current playback position. No device access needed.
-	virtual void Transform(
-					unsigned long curTickTime,
-					unsigned long playTimeMSec
-				) = 0;
+	// Update component state (positions, animations) for the current
+	// playback position. No device access needed.
+	virtual int  Update() = 0;
 
 	// Draw renders all scene components. The caller (DXRenderer11) provides
 	// camera-derived parameters. Scene owns the draw order and lighting.
@@ -158,4 +155,9 @@ public:
 	// Information
 	//----------------------------------------------------------------------
 	virtual unsigned long GetNoteCount() const = 0;
+
+	//----------------------------------------------------------------------
+	// Background color (RGBA float[4], used by DXRenderer11 for Clear)
+	//----------------------------------------------------------------------
+	virtual const float* GetBGColor() const = 0;
 };

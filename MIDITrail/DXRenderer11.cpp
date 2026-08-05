@@ -37,10 +37,6 @@ DXRenderer11::DXRenderer11()
 	m_Width      = 0;
 	m_Height     = 0;
 	m_SampleCount = 1;
-	m_BGColor[0] = 0.0f;
-	m_BGColor[1] = 0.0f;
-	m_BGColor[2] = 0.0f;
-	m_BGColor[3] = 1.0f;
 }
 
 //******************************************************************************
@@ -275,11 +271,15 @@ int DXRenderer11::RenderScene(
 	)
 {
 	int result = 0;
+	HRESULT hr = S_OK;
 
-	if (m_pContext == nullptr || m_pRTV == nullptr) return 0;
+	if (m_pContext == nullptr || m_pRTV == nullptr || pScene == nullptr) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
 
 	// Clear render target and depth buffer
-	m_pContext->ClearRenderTargetView(m_pRTV, m_BGColor);
+	m_pContext->ClearRenderTargetView(m_pRTV, pScene->GetBGColor());
 	m_pContext->ClearDepthStencilView(m_pDSV,
 	                                  D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 	                                  1.0f, 0);
@@ -287,8 +287,8 @@ int DXRenderer11::RenderScene(
 	// Ensure render target is bound
 	m_pContext->OMSetRenderTargets(1, &m_pRTV, m_pDSV);
 
-	// Draw scene (lighting is managed internally by the scene)
-	if (pScene != nullptr && pCamera != nullptr) {
+	// Draw scene
+	if (pCamera != nullptr) {
 		float aspect = static_cast<float>(m_Width) / static_cast<float>(m_Height);
 		Matrix view, proj;
 		pCamera->GetViewProjection(aspect, &view, &proj);
@@ -300,29 +300,22 @@ int DXRenderer11::RenderScene(
 		float rollAngle = pCamera->GetRollAngle();
 
 		result = pScene->Draw(m_pContext, viewProj, rollAngle, camPos);
+		if (result != 0) goto EXIT;
 	}
 
 	// Present
-	HRESULT hr = m_pSwapChain->Present(0, 0);
+	hr = m_pSwapChain->Present(0, 0);
 	if (FAILED(hr)) {
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
-			return DXRENDERER11_ERR_DEVICE_LOST;
+			result = DXRENDERER11_ERR_DEVICE_LOST;
+			goto EXIT;
 		}
-		return YN_SET_ERR("Present failed.", hr, 0);
+		result = YN_SET_ERR("Present failed.", hr, 0);
+		goto EXIT;
 	}
 
+EXIT:;
 	return result;
-}
-
-//******************************************************************************
-// Set background color from ARGB
-//******************************************************************************
-void DXRenderer11::SetBGColor(unsigned long argb)
-{
-	m_BGColor[0] = ((argb >> 16) & 0xFF) / 255.0f;  // R
-	m_BGColor[1] = ((argb >>  8) & 0xFF) / 255.0f;  // G
-	m_BGColor[2] = ((argb >>  0) & 0xFF) / 255.0f;  // B
-	m_BGColor[3] = ((argb >> 24) & 0xFF) / 255.0f;  // A
 }
 
 //******************************************************************************

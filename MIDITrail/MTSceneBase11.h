@@ -15,6 +15,7 @@
 #pragma once
 
 #include "IMTScene11.h"
+#include "MTSceneComponent11.h"
 #include "MTFirstPersonCam.h"
 class MTConfFile;
 // Phase 2: DX11 component headers
@@ -58,6 +59,12 @@ public:
 
 	bool IsLive() const override { return m_IsLive; }
 
+	// Per-frame update: camera + context + components
+	int Update() override;
+
+	// Sequencer message: common handling (MsgPlayTime etc.)
+	int OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
+
 	// Release shared resources
 	void Release() override;
 
@@ -82,6 +89,10 @@ public:
 
 	// Camera accessor (for DXRenderer11)
 	MTFirstPersonCam* GetCamera() { return &m_Camera; }
+
+	// Background color
+	const float* GetBGColor() const override { return m_BGColor; }
+	void SetBGColor(unsigned long argb);
 
 	// Live input: default no-ops (overridden by scenes that support live)
 	void SetNoteOnLive(unsigned char, unsigned char,
@@ -115,6 +126,8 @@ protected:
 	// Shared state
 	//----------------------------------------------------------------------
 
+	unsigned long    m_CurTickTime    = 0;
+	unsigned long    m_PlayTimeMSec   = 0;
 	bool             m_IsMouseCamMode = false;
 	bool             m_IsAutoRollMode = false;
 	bool             m_IsSkipping     = false;
@@ -126,6 +139,9 @@ protected:
 	ID3D11Device*        m_pDevice  = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
+	// Background color (RGBA float[4])
+	float m_BGColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
 	//----------------------------------------------------------------------
 	// Virtual hooks for subclass customization
 	//----------------------------------------------------------------------
@@ -136,12 +152,15 @@ protected:
 	// Viewpoint compensation amount (Ring/3D use TimeIndicator position).
 	virtual float _GetViewpointCompensation() const { return 0.0f; }
 
+	// Scene-specific component update (called after camera update with full context).
+	virtual int _UpdateComponents(const MTSceneUpdateContext& ctx) = 0;
+
 	// Scene-specific component reset. Subclass calls base, then resets own.
 	virtual void _Reset();
 
 	// Draw scene-specific components (called between BackgroundImage and Dashboard).
 	// Lighting is managed internally by the scene (via SceneTraits).
-	virtual void _DrawSceneComponents(
+	virtual int _DrawSceneComponents(
 					ID3D11DeviceContext* pContext,
 					const DirectX::SimpleMath::Matrix& viewProj,
 					float rollAngle,
