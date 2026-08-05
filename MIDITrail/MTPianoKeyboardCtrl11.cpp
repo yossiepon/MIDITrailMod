@@ -276,21 +276,21 @@ int MTPianoKeyboardCtrl11::Update(
 {
 	int result = 0;
 
-	if (m_isSkipping) goto EXIT;
-
 	for (unsigned long k = 0; k < m_NumKbd; k++) {
 		if (m_Subs[k].pKeyboard == NULL) continue;
 
-		// Evaluate key states from per-key index
-		_EvaluateKeyStates(&m_Subs[k], ctx.playTimeMSec);
+		if (!m_isSkipping) {
+			// Evaluate key states from per-key index
+			_EvaluateKeyStates(&m_Subs[k], ctx.playTimeMSec);
 
-		// Apply active key color for fully pressed keys
-		for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-			MTKeyboardKeyState& ks = m_Subs[k].keyStates[noteNo];
-			if (ks.rate >= 1.0f) {
-				Color noteColor((unsigned int)ks.color);
-				Color activeColor = m_KeyboardDesign.GetActiveKeyColor(noteNo, 0, &noteColor);
-				ks.color = activeColor.BGRA();
+			// Apply active key color for fully pressed keys
+			for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+				MTKeyboardKeyState& ks = m_Subs[k].keyStates[noteNo];
+				if (ks.rate >= 1.0f) {
+					Color noteColor((unsigned int)ks.color);
+					Color activeColor = m_KeyboardDesign.GetActiveKeyColor(noteNo, 0, &noteColor);
+					ks.color = activeColor.BGRA();
+				}
 			}
 		}
 

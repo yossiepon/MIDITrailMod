@@ -146,8 +146,6 @@ int MTPianoKeyboardCtrlMod11::Update(
 {
 	int result = 0;
 
-	if (m_isSkipping) goto EXIT;
-
 	{
 		// Playback position vector
 		Vector3 playbackPos = m_NoteDesignMod.GetWorldMoveVector();
@@ -164,16 +162,18 @@ int MTPianoKeyboardCtrlMod11::Update(
 
 			if (m_Subs[keyboardIndex].pKeyboard == NULL) continue;
 
-			// Evaluate key states
-			_EvaluateKeyStates(&m_Subs[keyboardIndex], ctx.playTimeMSec);
+			if (!m_isSkipping) {
+				// Evaluate key states
+				_EvaluateKeyStates(&m_Subs[keyboardIndex], ctx.playTimeMSec);
 
-			// Apply active key color (DesignMod palette) for fully pressed keys
-			for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-				MTKeyboardKeyState& ks = m_Subs[keyboardIndex].keyStates[noteNo];
-				if (ks.rate >= 1.0f) {
-					Color noteColor((unsigned int)ks.color);
-					Color activeColor = m_DesignMod.GetActiveKeyColor(ks.chNo, noteNo, 0, &noteColor);
-					ks.color = activeColor.BGRA();
+				// Apply active key color (DesignMod palette) for fully pressed keys
+				for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+					MTKeyboardKeyState& ks = m_Subs[keyboardIndex].keyStates[noteNo];
+					if (ks.rate >= 1.0f) {
+						Color noteColor((unsigned int)ks.color);
+						Color activeColor = m_DesignMod.GetActiveKeyColor(ks.chNo, noteNo, 0, &noteColor);
+						ks.color = activeColor.BGRA();
+					}
 				}
 			}
 
