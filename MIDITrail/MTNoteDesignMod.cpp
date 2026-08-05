@@ -83,14 +83,16 @@ float MTNoteDesignMod::GetRippleSpacing()
 //******************************************************************************
 // Note envelope (3-phase: Decay/Sustain/Release)
 //******************************************************************************
-float MTNoteDesignMod::CalcNoteEnvelope(
+MTNoteEnvelopeResult MTNoteDesignMod::CalcNoteEnvelope(
 		unsigned long playTimeMSec,
 		unsigned long startTime,
 		unsigned long endTime
 	)
 {
+	MTNoteEnvelopeResult result = { 0.0f, BeforeNoteON };
+
 	if (playTimeMSec > endTime) {
-		return 0.0f;
+		return result;
 	}
 
 	unsigned long decayDuration = (unsigned long)m_RippleDecayDuration;
@@ -124,26 +126,38 @@ float MTNoteDesignMod::CalcNoteEnvelope(
 
 	// Phase 1: Decay
 	if (playTimeMSec < (startTime + decayDuration)) {
+		result.keyStatus = BeforeNoteON;
 		if (decayDuration == 0) {
-			return 0.0f;
+			result.keyDownRate = 0.0f;
 		}
-		return decayRatio * (float)(playTimeMSec - startTime) / (float)decayDuration;
+		else {
+			result.keyDownRate = decayRatio * (float)(playTimeMSec - startTime) / (float)decayDuration;
+		}
+		return result;
 	}
 	// Phase 2: Sustain
 	if (playTimeMSec <= (endTime - releaseDuration)) {
+		result.keyStatus = NoteON;
 		unsigned long denominator = noteLen - (decayDuration + releaseDuration);
 		if (denominator > 0) {
-			return decayRatio + sustainRatio
+			result.keyDownRate = decayRatio + sustainRatio
 				* (float)(playTimeMSec - (startTime + decayDuration)) / (float)denominator;
 		}
-		return decayRatio + sustainRatio;
+		else {
+			result.keyDownRate = decayRatio + sustainRatio;
+		}
+		return result;
 	}
 	// Phase 3: Release
+	result.keyStatus = AfterNoteOFF;
 	if (releaseDuration == 0) {
-		return 1.0f;
+		result.keyDownRate = 1.0f;
 	}
-	return decayRatio + sustainRatio + releaseRatio
-		* (float)(playTimeMSec - (endTime - releaseDuration)) / (float)releaseDuration;
+	else {
+		result.keyDownRate = decayRatio + sustainRatio + releaseRatio
+			* (float)(playTimeMSec - (endTime - releaseDuration)) / (float)releaseDuration;
+	}
+	return result;
 }
 
 //******************************************************************************

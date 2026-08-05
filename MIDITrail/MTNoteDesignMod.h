@@ -14,6 +14,23 @@
 #include "MTNoteDesign.h"
 
 //******************************************************************************
+// Note key status (envelope phase)
+//******************************************************************************
+enum MTKeyStatus {
+	BeforeNoteON,
+	NoteON,
+	AfterNoteOFF
+};
+
+//******************************************************************************
+// Note envelope result
+//******************************************************************************
+struct MTNoteEnvelopeResult {
+	float keyDownRate;
+	MTKeyStatus keyStatus;
+};
+
+//******************************************************************************
 // Note design Mod class
 //******************************************************************************
 class MTNoteDesignMod : public MTNoteDesign
@@ -30,7 +47,7 @@ public:
 	unsigned long GetRippleReleaseDuration();
 
 	// Note envelope (3-phase: Decay/Sustain/Release)
-	float CalcNoteEnvelope(
+	MTNoteEnvelopeResult CalcNoteEnvelope(
 				unsigned long playTimeMSec,
 				unsigned long startTime,
 				unsigned long endTime

@@ -135,24 +135,10 @@ int MTNoteEffect::Update(
 			m_Status[i].isActive = false;
 		}
 		else {
-			float rate = m_NoteDesign.CalcNoteEnvelope(
+			MTNoteEnvelopeResult env = m_NoteDesign.CalcNoteEnvelope(
 				m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
-			m_Status[i].keyDownRate = rate;
-
-			unsigned long decayEnd = m_Status[i].startTimeMs
-				+ m_NoteDesign.GetRippleDecayDuration();
-			unsigned long releaseStart = m_Status[i].endTimeMs
-				- m_NoteDesign.GetRippleReleaseDuration();
-
-			if (m_PlayTimeMSec < decayEnd) {
-				m_Status[i].keyStatus = BeforeNoteON;
-			}
-			else if (m_PlayTimeMSec <= releaseStart) {
-				m_Status[i].keyStatus = NoteON;
-			}
-			else {
-				m_Status[i].keyStatus = AfterNoteOFF;
-			}
+			m_Status[i].keyDownRate = env.keyDownRate;
+			m_Status[i].keyStatus = env.keyStatus;
 		}
 	}
 

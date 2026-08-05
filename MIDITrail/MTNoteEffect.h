@@ -24,20 +24,11 @@
 #define NOTEEFFECT_MAX_PORT   (8)
 
 //******************************************************************************
-// Key status enum
-//******************************************************************************
-enum KeyStatus {
-	BeforeNoteON,
-	NoteON,
-	AfterNoteOFF
-};
-
-//******************************************************************************
 // Note effect status (per-slot state)
 //******************************************************************************
 struct NoteEffectStatus {
 	bool isActive;
-	KeyStatus keyStatus;
+	MTKeyStatus keyStatus;
 	float keyDownRate;
 	unsigned long index;
 
