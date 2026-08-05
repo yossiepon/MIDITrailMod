@@ -288,16 +288,19 @@ int DXRenderer11::RenderScene(
 	m_pContext->OMSetRenderTargets(1, &m_pRTV, m_pDSV);
 
 	// Draw scene
-	if (pCamera != nullptr) {
+	{
 		float aspect = static_cast<float>(m_Width) / static_cast<float>(m_Height);
-		Matrix view, proj;
-		pCamera->GetViewProjection(aspect, &view, &proj);
-		Matrix viewProj = view * proj;
+		Matrix viewProj;
+		float rollAngle = 0.0f;
+		Vector3 camPos(0.0f, 0.0f, 0.0f);
 
-		Vector3 camPos;
-		pCamera->GetPosition(&camPos);
-
-		float rollAngle = pCamera->GetRollAngle();
+		if (pCamera != nullptr) {
+			Matrix view, proj;
+			pCamera->GetViewProjection(aspect, &view, &proj);
+			viewProj = view * proj;
+			pCamera->GetPosition(&camPos);
+			rollAngle = pCamera->GetRollAngle();
+		}
 
 		result = pScene->Draw(m_pContext, viewProj, rollAngle, camPos);
 		if (result != 0) goto EXIT;

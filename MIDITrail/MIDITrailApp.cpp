@@ -16,6 +16,7 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
+#include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
 #include "DXPrimitive11.h"
 // >>> add 20190828 yossiepon begin
@@ -3198,8 +3199,7 @@ int MIDITrailApp::_CreateScene(
 	// TODO: Title/2D/Rain/Ring/Live シーンの DX11 版を実装後に追加
 	try {
 		if (type == Title) {
-			// MTSceneTitle11 未実装: 暫定的に PianoRoll3D11 を使用
-			m_pScene = new MTScenePianoRoll3D11();
+			m_pScene = new MTSceneTitle11();
 		}
 		else {
 			//プレイヤ用シーン生成
