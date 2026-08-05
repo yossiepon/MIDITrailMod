@@ -91,6 +91,10 @@ int MTScenePianoRoll3D11::Create(
 	result = m_Grid.Create(pDevice, pContext, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
 
+	// タイムインジケータ
+	result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
+	if (result != 0) goto EXIT;
+
 	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
@@ -104,6 +108,7 @@ void MTScenePianoRoll3D11::Release()
 {
 	m_Stars.Release();
 	m_Grid.Release();
+	m_TimeIndicator.Release();
 
 	MTSceneBase11::Release();
 }
@@ -127,7 +132,10 @@ void MTScenePianoRoll3D11::Transform(
 	m_Stars.Transform(camPos);
 
 	// グリッド
-	m_Grid.Transform(0.0f);  // rollAngle は後で引数化
+	m_Grid.Transform(0.0f);
+
+	// タイムインジケータ
+	m_TimeIndicator.Transform(0.0f);
 }
 
 //******************************************************************************
@@ -165,7 +173,10 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 	// グリッド
 	m_Grid.DrawDX11(pContext, viewProj, lightDir, rollAngle);
 
-	// Phase 2: ノート → 鍵盤 → タイムインジケータ → 波紋
+	// Phase 2: ノート → 鍵盤 → 波紋
+
+	// タイムインジケータ
+	m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
 
 	// 星
 	m_Stars.DrawDX11(pContext, viewProj, rollAngle);
@@ -248,8 +259,7 @@ void MTScenePianoRoll3D11::_ComputeDefaultViewParam(MTViewParamMap* pParamMap)
 //******************************************************************************
 float MTScenePianoRoll3D11::_GetViewpointCompensation() const
 {
-	// Phase 2: TimeIndicator の位置を返す
-	return 0.0f;
+	return m_TimeIndicator.GetPos();
 }
 
 //******************************************************************************
