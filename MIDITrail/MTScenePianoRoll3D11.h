@@ -20,6 +20,7 @@
 #include "MTGridBox11.h"
 #include "MTTimeIndicator11.h"
 #include "MTPictBoard11.h"
+#include "MTBackgroundImage11.h"
 
 
 //******************************************************************************
@@ -69,6 +70,7 @@ private:
 	MTGridBox11        m_Grid;
 	MTTimeIndicator11  m_TimeIndicator;
 	MTPictBoard11      m_PictBoard;
+	MTBackgroundImage11 m_BackgroundImage;
 	// Phase 2: 残りのコンポーネント（段階的に追加）
 	// DXNoteBox11       m_NoteBox;
 	// MTKeyboard11      m_Keyboard;

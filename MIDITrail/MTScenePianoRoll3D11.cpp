@@ -99,6 +99,10 @@ int MTScenePianoRoll3D11::Create(
 	result = m_PictBoard.Create(pDevice, pContext, GetName(), pSeqData);
 	if (result != 0) goto EXIT;
 
+	// 背景画像
+	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
+	if (result != 0) goto EXIT;
+
 	// Phase 2: 残りのコンポーネント生成（段階的に追加）
 
 EXIT:;
@@ -114,6 +118,7 @@ void MTScenePianoRoll3D11::Release()
 	m_Grid.Release();
 	m_TimeIndicator.Release();
 	m_PictBoard.Release();
+	m_BackgroundImage.Release();
 
 	MTSceneBase11::Release();
 }
@@ -157,7 +162,8 @@ int MTScenePianoRoll3D11::Draw(
 		const Vector3& camPos
 	)
 {
-	// Phase 2: BackgroundImage を最初に描画
+	// 背景画像（最初に描画）
+	m_BackgroundImage.DrawDX11(pContext);
 
 	// シーン固有コンポーネント描画
 	_DrawSceneComponents(pContext, viewProj, rollAngle, camPos);
