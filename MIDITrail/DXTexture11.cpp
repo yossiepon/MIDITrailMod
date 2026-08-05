@@ -43,7 +43,8 @@ int DXTexture11::LoadFromFile(
 	ID3D11Texture2D* pTex = NULL;
 
 	if (pDevice == NULL || pImgFilePath == NULL || ppSRV == NULL) {
-		return YN_SET_ERR("Program error.", 0, 0);
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
 	}
 	*ppSRV = NULL;
 	if (pWidth != NULL) *pWidth = 0;
@@ -139,7 +140,8 @@ int DXTexture11::CreateFromRGBA(
 
 	if (pDevice == NULL || pPixels == NULL || ppSRV == NULL ||
 		width == 0 || height == 0) {
-		return YN_SET_ERR("Program error.", 0, 0);
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
 	}
 	*ppSRV = NULL;
 

@@ -91,19 +91,21 @@ int MTDynamicCaption11::Create(
 		ID3D11DeviceContext* pCtx = NULL;
 		pDevice->GetImmediateContext(&pCtx);
 		result = m_Primitive.LockIndex(pCtx, &pIndex);
-		if (result == 0) {
-			for (unsigned long i = 0; i < m_CaptionSize; i++) {
-				unsigned long base = i * 4;
-				unsigned long idx = i * 6;
-				pIndex[idx + 0] = base + 0;
-				pIndex[idx + 1] = base + 1;
-				pIndex[idx + 2] = base + 2;
-				pIndex[idx + 3] = base + 2;
-				pIndex[idx + 4] = base + 1;
-				pIndex[idx + 5] = base + 3;
-			}
-			m_Primitive.UnlockIndex(pCtx);
+		if (result != 0) {
+			pCtx->Release();
+			goto EXIT;
 		}
+		for (unsigned long i = 0; i < m_CaptionSize; i++) {
+			unsigned long base = i * 4;
+			unsigned long idx = i * 6;
+			pIndex[idx + 0] = base + 0;
+			pIndex[idx + 1] = base + 1;
+			pIndex[idx + 2] = base + 2;
+			pIndex[idx + 3] = base + 2;
+			pIndex[idx + 4] = base + 1;
+			pIndex[idx + 5] = base + 3;
+		}
+		m_Primitive.UnlockIndex(pCtx);
 		pCtx->Release();
 	}
 
