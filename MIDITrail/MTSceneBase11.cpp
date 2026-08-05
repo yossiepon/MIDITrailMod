@@ -79,7 +79,13 @@ int MTSceneBase11::Update()
 	m_Camera.GetPosition(&ctx.camPos);
 	ctx.rollAngle = m_Camera.GetRollAngle();
 
-	// シーン固有コンポーネント更新
+	// 登録済みコンポーネント更新
+	for (auto* pComp : m_ManagedComponents) {
+		result = pComp->Update(ctx);
+		if (result != 0) goto EXIT;
+	}
+
+	// シーン固有の追加更新
 	result = _UpdateComponents(ctx);
 	if (result != 0) goto EXIT;
 
@@ -226,6 +232,18 @@ void MTSceneBase11::_Reset()
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
 	m_Camera.Reset();
+
+	for (auto* pComp : m_ManagedComponents) {
+		pComp->Reset();
+	}
+}
+
+//******************************************************************************
+// Register managed component
+//******************************************************************************
+void MTSceneBase11::_RegisterComponent(IMTSceneManagedComponent* pComponent)
+{
+	m_ManagedComponents.push_back(pComponent);
 }
 
 //******************************************************************************

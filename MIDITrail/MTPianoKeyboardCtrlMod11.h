@@ -40,7 +40,7 @@ public:
 			) override;
 
 	int Update(const MTSceneUpdateContext& ctx) override;
-	void Reset();
+	void Reset() override;
 
 protected:
 

@@ -54,7 +54,7 @@ public:
 	void SetNoteOn();
 	void SetPlaySpeedRatio(unsigned long ratio);
 	void SetNotesCount(unsigned long notesCount);
-	void Reset();
+	void Reset() override;
 
 	unsigned long GetPlayTimeSec();
 	void SetEnableFileName(bool isEnable);

@@ -36,7 +36,7 @@ public:
 
 	int Draw(ID3D11DeviceContext* pContext);
 
-	void Reset();
+	void Reset() override;
 	bool IsReady() const { return m_isReady; }
 
 private:

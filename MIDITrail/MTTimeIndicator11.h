@@ -41,7 +41,7 @@ public:
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
 
-	void Reset();
+	void Reset() override;
 	float GetPos() const;
 	DirectX::SimpleMath::Vector3 GetMoveVector() const;
 

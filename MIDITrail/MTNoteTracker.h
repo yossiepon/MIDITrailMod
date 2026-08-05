@@ -14,6 +14,7 @@
 
 #include <vector>
 #include "SMIDILib.h"
+#include "IMTSceneManagedComponent.h"
 
 using namespace SMIDILib;
 
@@ -54,7 +55,7 @@ public:
 //******************************************************************************
 // Note tracker class
 //******************************************************************************
-class MTNoteTracker
+class MTNoteTracker : public IMTSceneManagedComponent
 {
 public:
 
@@ -64,7 +65,10 @@ public:
 	int Create(SMSeqData* pSeqData);
 	void Release();
 
-	void Update(unsigned long playTimeMSec);
+	int  Update(const MTSceneUpdateContext& ctx) override;
+	void Reset() override;
+
+	void Advance(unsigned long playTimeMSec);
 	void Seek(unsigned long playTimeMSec);
 
 	unsigned long GetNoteCount() const;

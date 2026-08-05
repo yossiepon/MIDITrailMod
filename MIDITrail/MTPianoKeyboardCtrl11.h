@@ -79,7 +79,7 @@ public:
 				const DirectX::SimpleMath::Vector4& lightDir
 			);
 
-	void Reset();
+	void Reset() override;
 	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
 
 protected:

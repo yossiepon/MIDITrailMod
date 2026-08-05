@@ -40,7 +40,7 @@ public:
 	             const DirectX::SimpleMath::Matrix& viewProj,
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
-	void Reset();
+	void Reset() override;
 	void OnPlayStart();
 	void OnPlayEnd();
 

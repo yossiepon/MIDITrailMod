@@ -325,6 +325,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTStaticCaption11.h" />
     <ClInclude Include="MTDynamicCaption11.h" />
     <ClInclude Include="MTDashboard11.h" />
+    <ClInclude Include="IMTSceneManagedComponent.h" />
+    <ClInclude Include="MTSceneUpdateContext.h" />
     <ClInclude Include="MTSceneComponent11.h" />
     <ClInclude Include="MTNoteTracker.h" />
     <ClInclude Include="MTNoteBox11.h" />

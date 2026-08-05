@@ -139,6 +139,20 @@ int MTScenePianoRoll3D11::Create(
 	result = m_KeyboardCtrl.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, false);
 	if (result != 0) goto EXIT;
 
+	// コンポーネント登録（Update/Reset 自動ディスパッチ）
+	_RegisterComponent(&m_Stars);
+	_RegisterComponent(&m_BackgroundImage);
+	_RegisterComponent(&m_Grid);
+	_RegisterComponent(&m_TimeIndicator);
+	_RegisterComponent(&m_PictBoard);
+	_RegisterComponent(&m_Dashboard);
+	_RegisterComponent(&m_NotePitchBend);
+	_RegisterComponent(&m_NoteTracker);
+	_RegisterComponent(&m_Ripple);
+	_RegisterComponent(&m_Lyrics);
+	_RegisterComponent(&m_NoteBox);
+	_RegisterComponent(&m_KeyboardCtrl);
+
 EXIT:;
 	return result;
 }
@@ -172,41 +186,7 @@ int MTScenePianoRoll3D11::_UpdateComponents(
 		const MTSceneUpdateContext& ctx
 	)
 {
-	int result = 0;
-
-	// 各コンポーネント更新
-	result = m_Stars.Update(ctx);
-	if (result != 0) goto EXIT;
-	result = m_Grid.Update(ctx);
-	if (result != 0) goto EXIT;
-	result = m_TimeIndicator.Update(ctx);
-	if (result != 0) goto EXIT;
-	result = m_PictBoard.Update(ctx);
-	if (result != 0) goto EXIT;
-
-	// ノートトラッカー → リスナー（Ripple, Lyrics）に通知
-	m_NoteTracker.Update(ctx.playTimeMSec);
-
-	// ノートボックス
-	result = m_NoteBox.Update(ctx);
-	if (result != 0) goto EXIT;
-
-	// 波紋・歌詞
-	result = m_Ripple.Update(ctx);
-	if (result != 0) goto EXIT;
-	result = m_Lyrics.Update(ctx);
-	if (result != 0) goto EXIT;
-
-	// キーボード
-	result = m_KeyboardCtrl.Update(ctx);
-	if (result != 0) goto EXIT;
-
-	// ダッシュボード
-	result = m_Dashboard.Update(ctx);
-	if (result != 0) goto EXIT;
-
-EXIT:;
-	return result;
+	return 0;
 }
 
 //******************************************************************************
@@ -464,11 +444,4 @@ float MTScenePianoRoll3D11::_GetViewpointCompensation() const
 void MTScenePianoRoll3D11::_Reset()
 {
 	MTSceneBase11::_Reset();
-	m_Dashboard.Reset();
-	m_TimeIndicator.Reset();
-	m_PictBoard.Reset();
-	m_NoteBox.Reset();
-	m_NotePitchBend.Reset();
-	m_KeyboardCtrl.Reset();
-	m_NoteTracker.Seek(0);
 }

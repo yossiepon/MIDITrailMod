@@ -107,9 +107,26 @@ void MTNoteTracker::Release()
 }
 
 //******************************************************************************
-// Update (per-frame forward scan)
+// Update (IMTSceneManagedComponent)
 //******************************************************************************
-void MTNoteTracker::Update(
+int MTNoteTracker::Update(const MTSceneUpdateContext& ctx)
+{
+	Advance(ctx.playTimeMSec);
+	return 0;
+}
+
+//******************************************************************************
+// Reset (IMTSceneManagedComponent)
+//******************************************************************************
+void MTNoteTracker::Reset()
+{
+	Seek(0);
+}
+
+//******************************************************************************
+// Advance (per-frame forward scan)
+//******************************************************************************
+void MTNoteTracker::Advance(
 		unsigned long playTimeMSec
 	)
 {

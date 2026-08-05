@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <vector>
 #include "IMTScene11.h"
 #include "MTSceneComponent11.h"
 #include "MTFirstPersonCam.h"
@@ -142,6 +143,9 @@ protected:
 	// Background color (RGBA float[4])
 	float m_BGColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
+	// Registered managed components (for automatic Update/Reset dispatch)
+	std::vector<IMTSceneManagedComponent*> m_ManagedComponents;
+
 	//----------------------------------------------------------------------
 	// Virtual hooks for subclass customization
 	//----------------------------------------------------------------------
@@ -152,8 +156,11 @@ protected:
 	// Viewpoint compensation amount (Ring/3D use TimeIndicator position).
 	virtual float _GetViewpointCompensation() const { return 0.0f; }
 
-	// Scene-specific component update (called after camera update with full context).
-	virtual int _UpdateComponents(const MTSceneUpdateContext& ctx) = 0;
+	// Register a managed component for automatic Update/Reset dispatch.
+	void _RegisterComponent(IMTSceneManagedComponent* pComponent);
+
+	// Scene-specific update logic beyond registered components (optional).
+	virtual int _UpdateComponents(const MTSceneUpdateContext& ctx) { return 0; }
 
 	// Scene-specific sequencer message handling (called after common handling).
 	virtual int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) { return 0; }

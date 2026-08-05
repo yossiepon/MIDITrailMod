@@ -14,12 +14,13 @@
 #pragma once
 
 #include "SMCommon.h"
+#include "IMTSceneManagedComponent.h"
 
 
 //******************************************************************************
 // ピッチベンド情報クラス
 //******************************************************************************
-class MTNotePitchBend
+class MTNotePitchBend : public IMTSceneManagedComponent
 {
 public:
 
@@ -45,7 +46,7 @@ public:
 	unsigned char GetSensitivity(unsigned long portNo, unsigned long chNo);
 
 	//リセット
-	void Reset();
+	void Reset() override;
 
 	//ピッチベンド表示効果設定
 	void SetEnable(bool isEnable);
