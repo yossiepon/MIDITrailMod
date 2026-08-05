@@ -11,6 +11,7 @@
 //******************************************************************************
 
 #include "stdafx.h"
+#include "mmsystem.h"
 #include "YNBaseLib.h"
 #include "SMIDILib.h"
 #include "DXRenderer11.h"
@@ -129,9 +130,16 @@ int APIENTRY _tWinMain(
 		goto EXIT;
 	}
 
-	// メッセージループ
+	// メッセージループ（tick 自動進行で描画確認）
 	{
 		MSG msg = {};
+		unsigned long startTime = timeGetTime();
+		unsigned long timeDivision = seqData.GetTimeDivision();
+		unsigned long tempoBPM = seqData.GetTempoBPM();
+		float ticksPerMs = (timeDivision > 0 && tempoBPM > 0)
+		                 ? (float)timeDivision * (float)tempoBPM / 60000.0f
+		                 : 48.0f * 120.0f / 60000.0f;
+
 		while (g_IsRunning) {
 			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 				if (msg.message == WM_QUIT) break;
@@ -139,8 +147,11 @@ int APIENTRY _tWinMain(
 				DispatchMessage(&msg);
 			}
 			else {
+				unsigned long elapsedMs = timeGetTime() - startTime;
+				unsigned long curTick = (unsigned long)(elapsedMs * ticksPerMs);
+
 				// シーン更新
-				g_pScene->Transform(0, 0);
+				g_pScene->Transform(curTick, elapsedMs);
 
 				// フレーム描画
 				g_Renderer.RenderScene(g_pScene, g_pScene->GetCamera());

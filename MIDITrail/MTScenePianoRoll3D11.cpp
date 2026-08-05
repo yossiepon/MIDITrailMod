@@ -139,6 +139,7 @@ void MTScenePianoRoll3D11::Transform(
 	)
 {
 	// カメラ入力処理
+	m_Camera.SetCurTickTime(curTickTime);
 	m_Camera.TransformInput();
 
 	// カメラ位置取得
@@ -153,9 +154,11 @@ void MTScenePianoRoll3D11::Transform(
 	m_Grid.Transform(rollAngle);
 
 	// タイムインジケータ
+	m_TimeIndicator.SetCurTickTime(curTickTime);
 	m_TimeIndicator.Transform(rollAngle);
 
 	// ピクチャボード
+	m_PictBoard.SetCurTickTime(curTickTime);
 	m_PictBoard.Transform(camPos, rollAngle);
 }
 
