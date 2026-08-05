@@ -115,6 +115,10 @@ void MTNoteRipple11::BuildVertices(
 	if (m_isSkipping) return;
 	if (m_pContext == NULL) return;
 
+	// WorldMoveVector via world matrix (DX9: set in Transform phase)
+	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
+	m_Prim.SetWorldMatrix(Matrix::CreateTranslation(moveVec));
+
 	DXPRIMITIVE11_VERTEX* pVertex = NULL;
 	int result = m_Prim.LockVertex(m_pContext, &pVertex);
 	if (result != 0) return;
@@ -216,10 +220,6 @@ int MTNoteRipple11::Draw(
 	if (m_ActiveNoteNum == 0) goto EXIT;
 
 	m_CamPos = camPos;
-
-	// WorldMoveVector via world matrix (same as DX9 SetTransform)
-	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
-	m_Prim.SetWorldMatrix(Matrix::CreateTranslation(moveVec));
 
 	m_Prim.SetTexture(m_pTextureSRV);
 	m_Prim.SetAdditiveBlend(true);
