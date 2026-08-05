@@ -157,6 +157,11 @@ void MTSceneBase11::SetViewParam(MTViewParamMap* pParamMap)
 
 	m_Camera.SetViewParam(&paramMap);
 
+	// Save for Rewind restoration
+	if (pParamMap != &m_ViewParamMap) {
+		m_ViewParamMap = *pParamMap;
+	}
+
 	// Restore mode flags from the viewpoint
 	m_IsMouseCamMode = false;
 	m_Camera.SetMouseCamMode(m_IsMouseCamMode);
