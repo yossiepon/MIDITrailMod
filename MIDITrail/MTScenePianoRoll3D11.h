@@ -27,6 +27,7 @@
 #include "MTNoteRipple11.h"
 #include "MTNoteLyrics11.h"
 #include "MTNotePitchBend.h"
+#include "MTPianoKeyboardCtrlMod11.h"
 
 
 //******************************************************************************
@@ -84,6 +85,5 @@ private:
 	MTNoteRipple11     m_Ripple;
 	MTNoteLyrics11     m_Lyrics;
 	MTNotePitchBend    m_NotePitchBend;
-	// Phase 2: 残りのコンポーネント（段階的に追加）
-	// MTKeyboard11      m_Keyboard;
+	MTPianoKeyboardCtrlMod11 m_KeyboardCtrl;
 };

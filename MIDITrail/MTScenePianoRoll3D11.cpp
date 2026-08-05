@@ -132,7 +132,9 @@ int MTScenePianoRoll3D11::Create(
 	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 
-	// Phase 2: 残りのコンポーネント生成（段階的に追加）
+	// キーボード
+	result = m_KeyboardCtrl.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, false);
+	if (result != 0) goto EXIT;
 
 EXIT:;
 	return result;
@@ -145,6 +147,7 @@ void MTScenePianoRoll3D11::Release()
 {
 	m_NoteTracker.RemoveListener(&m_Ripple);
 	m_NoteTracker.RemoveListener(&m_Lyrics);
+	m_KeyboardCtrl.Release();
 	m_NoteBox.Release();
 	m_Ripple.Release();
 	m_Lyrics.Release();
@@ -189,6 +192,10 @@ int MTScenePianoRoll3D11::_UpdateComponents(
 	result = m_Ripple.Update(ctx);
 	if (result != 0) goto EXIT;
 	result = m_Lyrics.Update(ctx);
+	if (result != 0) goto EXIT;
+
+	// キーボード
+	result = m_KeyboardCtrl.Update(ctx);
 	if (result != 0) goto EXIT;
 
 	// ダッシュボード
@@ -264,13 +271,13 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 		if (result != 0) goto EXIT;
 		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
-		//result = m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
-		//if (result != 0) goto EXIT;
+		result = m_KeyboardCtrl.Draw(pContext, viewProj, lightDir);
+		if (result != 0) goto EXIT;
 	}
 	else {
 		// カメラが再生位置より奥: Keyboard → Ripple → Lyrics → Indicator
-		//result = m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
-		//if (result != 0) goto EXIT;
+		result = m_KeyboardCtrl.Draw(pContext, viewProj, lightDir);
+		if (result != 0) goto EXIT;
 		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
 		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
@@ -344,6 +351,8 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 		}
 		m_NoteBox.Reset();
 		m_NoteBox.SetSkipStatus(true);
+		m_KeyboardCtrl.Reset();
+		m_KeyboardCtrl.SetSkipStatus(true);
 		m_Ripple.SetSkipStatus(true);
 		m_Lyrics.SetSkipStatus(true);
 		m_NoteTracker.Seek(0);
@@ -353,6 +362,7 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
 		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
 		m_NoteBox.SetSkipStatus(false);
+		m_KeyboardCtrl.SetSkipStatus(false);
 		m_Ripple.SetSkipStatus(false);
 		m_Lyrics.SetSkipStatus(false);
 		m_IsSkipping = false;
@@ -367,6 +377,9 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 void MTScenePianoRoll3D11::SetEffect(MTEffectType type, bool isEnable)
 {
 	switch (type) {
+	case MTEffectPianoKeyboard:
+		m_KeyboardCtrl.SetEnable(isEnable);
+		break;
 	case MTEffectRipple:
 		m_Ripple.SetEnable(isEnable);
 		break;
@@ -448,5 +461,6 @@ void MTScenePianoRoll3D11::_Reset()
 	MTSceneBase11::_Reset();
 	m_NotePitchBend.Reset();
 	m_NoteBox.Reset();
+	m_KeyboardCtrl.Reset();
 	m_NoteTracker.Seek(0);
 }
