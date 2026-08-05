@@ -44,8 +44,6 @@ public:
 				const DirectX::SimpleMath::Vector3& camPos
 			);
 
-	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
-
 protected:
 
 	// MTNoteEffect Template Method
@@ -61,7 +59,6 @@ private:
 	MTNotePitchBend* m_pNotePitchBend;
 
 	unsigned long m_ActiveNoteNum;
-	bool m_isSkipping;
 
 	DirectX::SimpleMath::Vector3 m_CamPos;
 

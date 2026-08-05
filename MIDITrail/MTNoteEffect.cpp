@@ -20,6 +20,7 @@ MTNoteEffect::MTNoteEffect()
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
 	m_RollAngle = 0.0f;
+	m_isSkipping = false;
 	ZeroMemory(m_Status, sizeof(m_Status));
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 }
@@ -69,6 +70,8 @@ void MTNoteEffect::OnNoteActivate(
 		unsigned long index
 	)
 {
+	if (m_isSkipping) return;
+
 	// Skip if already registered with same index
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (m_Status[i].isActive && m_Status[i].index == index) {
@@ -125,6 +128,8 @@ int MTNoteEffect::Update(
 	m_CurTickTime = ctx.curTickTime;
 	m_PlayTimeMSec = ctx.playTimeMSec;
 	m_RollAngle = ctx.rollAngle;
+
+	if (m_isSkipping) goto EXIT;
 
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (!m_Status[i].isActive) continue;

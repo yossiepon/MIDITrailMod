@@ -60,6 +60,8 @@ public:
 
 	int Update(const MTSceneUpdateContext& ctx) override;
 
+	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
+
 protected:
 
 	// Template Method hooks for derived classes
@@ -73,4 +75,5 @@ protected:
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
 	float m_RollAngle;
+	bool m_isSkipping;
 };

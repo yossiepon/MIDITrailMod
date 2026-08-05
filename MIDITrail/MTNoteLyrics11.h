@@ -45,9 +45,10 @@ public:
 				const DirectX::SimpleMath::Vector3& camPos
 			);
 
-	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
-
 protected:
+
+	// IMTNoteTrackerListener
+	void OnReset() override;
 
 	// MTNoteEffect Template Method
 	int OnActivate(NoteEffectStatus& status) override;
@@ -64,8 +65,6 @@ private:
 	MTFontTexture11 m_FontTextures[NOTEEFFECT_MAX_SLOTS];
 	ID3D11ShaderResourceView* m_pDrawSRV[NOTEEFFECT_MAX_SLOTS];
 	unsigned long m_DrawSRVCount;
-
-	bool m_isSkipping;
 
 	DirectX::SimpleMath::Vector3 m_CamPos;
 };

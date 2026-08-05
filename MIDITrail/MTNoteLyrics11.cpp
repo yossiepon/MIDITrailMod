@@ -27,7 +27,6 @@ MTNoteLyrics11::MTNoteLyrics11()
 	m_pContext = NULL;
 	m_pNotePitchBend = NULL;
 	m_DrawSRVCount = 0;
-	m_isSkipping = false;
 	m_CamPos = Vector3(0.0f, 0.0f, 0.0f);
 	ZeroMemory(m_pDrawSRV, sizeof(m_pDrawSRV));
 }
@@ -85,6 +84,16 @@ void MTNoteLyrics11::Release()
 	m_pNotePitchBend = NULL;
 
 	MTNoteEffect::Release();
+}
+
+//******************************************************************************
+// OnReset
+//******************************************************************************
+void MTNoteLyrics11::OnReset()
+{
+	MTNoteEffect::OnReset();
+	m_DrawSRVCount = 0;
+	ZeroMemory(m_pDrawSRV, sizeof(m_pDrawSRV));
 }
 
 //******************************************************************************

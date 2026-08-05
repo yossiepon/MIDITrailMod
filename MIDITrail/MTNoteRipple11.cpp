@@ -30,7 +30,6 @@ MTNoteRipple11::MTNoteRipple11()
 	m_pTextureSRV = NULL;
 	m_pNotePitchBend = NULL;
 	m_ActiveNoteNum = 0;
-	m_isSkipping = false;
 	m_CamPos = Vector3(0.0f, 0.0f, 0.0f);
 }
 
