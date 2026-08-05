@@ -62,7 +62,7 @@ public:
 	// Per-frame update: camera + context + components
 	int Update() override;
 
-	// Sequencer message: common handling (MsgPlayTime etc.)
+	// Sequencer message: common handling + scene-specific hook
 	int OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
 
 	// Release shared resources
@@ -154,6 +154,9 @@ protected:
 
 	// Scene-specific component update (called after camera update with full context).
 	virtual int _UpdateComponents(const MTSceneUpdateContext& ctx) = 0;
+
+	// Scene-specific sequencer message handling (called after common handling).
+	virtual int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) { return 0; }
 
 	// Scene-specific component reset. Subclass calls base, then resets own.
 	virtual void _Reset();

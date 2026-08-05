@@ -293,21 +293,13 @@ void MTScenePianoRoll3D11::OnPlayEnd()
 //******************************************************************************
 // シーケンサメッセージ受信
 //******************************************************************************
-int MTScenePianoRoll3D11::OnRecvSequencerMsg(
+int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 		unsigned long param1,
 		unsigned long param2
 	)
 {
-	int result = 0;
-
-	// 基底の共通処理（MsgPlayTime 等）
-	result = MTSceneBase11::OnRecvSequencerMsg(param1, param2);
-	if (result != 0) goto EXIT;
-
 	// Phase 2: シーン固有メッセージ処理（テンポ、ノートON/OFF 等）
-
-EXIT:;
-	return result;
+	return 0;
 }
 
 //******************************************************************************

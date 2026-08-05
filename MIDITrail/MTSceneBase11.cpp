@@ -51,6 +51,11 @@ int MTSceneBase11::OnRecvSequencerMsg(
 		m_PlayTimeMSec = parser.GetPlayTimeMSec();
 	}
 
+	// シーン固有処理
+	result = _OnRecvSequencerMsg(param1, param2);
+	if (result != 0) goto EXIT;
+
+EXIT:;
 	return result;
 }
 
