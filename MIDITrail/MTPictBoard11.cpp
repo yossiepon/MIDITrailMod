@@ -196,24 +196,11 @@ EXIT:;
 //******************************************************************************
 // 更新
 //******************************************************************************
-void MTPictBoard11::Transform(
-		const Vector3& camVector,
-		float rollAngle
-	)
-{
-	float curPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);
-	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
-	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(rollAngle))
-	             * Matrix::CreateTranslation(moveVec.x + curPos, moveVec.y, moveVec.z);
-
-	m_Primitive.SetWorldMatrix(world);
-	m_Primitive.SetTexture(m_pSRV);
-}
 
 //******************************************************************************
 // 描画
 //******************************************************************************
-int MTPictBoard11::DrawDX11(
+int MTPictBoard11::Draw(
 		ID3D11DeviceContext* pContext,
 		const Matrix& viewProj,
 		const Vector4& lightDir,
@@ -227,9 +214,16 @@ int MTPictBoard11::DrawDX11(
 //******************************************************************************
 // チックタイム / リセット / 再生制御
 //******************************************************************************
-void MTPictBoard11::Update(unsigned long curTickTime, unsigned long playTimeMSec)
+void MTPictBoard11::Update(const MTSceneUpdateContext& ctx)
 {
-	m_CurTickTime = curTickTime;
+	m_CurTickTime = ctx.curTickTime;
+
+	float curPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);
+	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
+	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
+	             * Matrix::CreateTranslation(moveVec.x + curPos, moveVec.y, moveVec.z);
+	m_Primitive.SetWorldMatrix(world);
+	m_Primitive.SetTexture(m_pSRV);
 }
 
 void MTPictBoard11::Reset()

@@ -19,6 +19,7 @@ MTNoteEffect::MTNoteEffect()
 {
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
+	m_RollAngle = 0.0f;
 	ZeroMemory(m_Status, sizeof(m_Status));
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 }
@@ -116,23 +117,23 @@ void MTNoteEffect::OnReset()
 // Update (per-frame)
 //******************************************************************************
 void MTNoteEffect::Update(
-		unsigned long curTickTime,
-		unsigned long playTimeMSec
+		const MTSceneUpdateContext& ctx
 	)
 {
-	m_CurTickTime = curTickTime;
-	m_PlayTimeMSec = playTimeMSec;
+	m_CurTickTime = ctx.curTickTime;
+	m_PlayTimeMSec = ctx.playTimeMSec;
+	m_RollAngle = ctx.rollAngle;
 
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (!m_Status[i].isActive) continue;
 
-		if (playTimeMSec > m_Status[i].endTimeMs) {
+		if (m_PlayTimeMSec > m_Status[i].endTimeMs) {
 			OnDeactivate(m_Status[i]);
 			m_Status[i].isActive = false;
 		}
 		else {
 			float rate = m_NoteDesign.CalcNoteEnvelope(
-				playTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
+				m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
 			m_Status[i].keyDownRate = rate;
 
 			// Derive keyStatus from timing
@@ -141,10 +142,10 @@ void MTNoteEffect::Update(
 			unsigned long releaseStart = m_Status[i].endTimeMs
 				- m_NoteDesign.GetRippleReleaseDuration();
 
-			if (playTimeMSec < decayEnd) {
+			if (m_PlayTimeMSec < decayEnd) {
 				m_Status[i].keyStatus = BeforeNoteON;
 			}
-			else if (playTimeMSec <= releaseStart) {
+			else if (m_PlayTimeMSec <= releaseStart) {
 				m_Status[i].keyStatus = NoteON;
 			}
 			else {
@@ -153,5 +154,5 @@ void MTNoteEffect::Update(
 		}
 	}
 
-	BuildVertices(playTimeMSec);
+	BuildVertices(m_PlayTimeMSec);
 }

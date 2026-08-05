@@ -1,4 +1,4 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTSceneComponent11
 //
@@ -11,6 +11,18 @@
 
 #pragma once
 
+#include <directxtk/SimpleMath.h>
+
+
+//******************************************************************************
+// Scene update context (passed to all components each frame)
+//******************************************************************************
+struct MTSceneUpdateContext {
+	unsigned long curTickTime;
+	unsigned long playTimeMSec;
+	float rollAngle;
+	DirectX::SimpleMath::Vector3 camPos;
+};
 
 //******************************************************************************
 // DX11 scene component base
@@ -21,7 +33,7 @@ public:
 
 	virtual ~MTSceneComponent11() = default;
 
-	virtual void Update(unsigned long curTickTime, unsigned long playTimeMSec) {}
+	virtual void Update(const MTSceneUpdateContext& ctx) {}
 
 	void SetEnable(bool isEnable) { m_isEnable = isEnable; }
 	bool IsEnable() const { return m_isEnable; }

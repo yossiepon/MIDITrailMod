@@ -67,7 +67,7 @@ public:
 	void OnNoteActivate(const NoteData& note, unsigned long index) override;
 	void OnReset() override;
 
-	void Update(unsigned long curTickTime, unsigned long playTimeMSec) override;
+	void Update(const MTSceneUpdateContext& ctx) override;
 
 protected:
 
@@ -81,4 +81,5 @@ protected:
 	MTNoteDesignMod m_NoteDesign;
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
+	float m_RollAngle;
 };

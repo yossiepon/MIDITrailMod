@@ -123,9 +123,11 @@ void MTNoteLyrics11::BuildVertices(
 	if (m_isSkipping) return;
 	if (m_pContext == NULL) return;
 
-	// WorldMoveVector via world matrix (DX9: set in Transform phase)
+	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
-	m_Prim.SetWorldMatrix(Matrix::CreateTranslation(moveVec));
+	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(m_RollAngle))
+	             * Matrix::CreateTranslation(moveVec);
+	m_Prim.SetWorldMatrix(world);
 
 	DXPRIMITIVE11_VERTEX* pVertex = NULL;
 	int result = m_Prim.LockVertex(m_pContext, &pVertex);

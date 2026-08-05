@@ -35,13 +35,11 @@ public:
 	           const TCHAR* pSceneName, SMSeqData* pSeqData);
 	void Release();
 
-	void Transform(const DirectX::SimpleMath::Vector3& camVector, float rollAngle);
-	int DrawDX11(ID3D11DeviceContext* pContext,
+	void Update(const MTSceneUpdateContext& ctx) override;
+	int Draw(ID3D11DeviceContext* pContext,
 	             const DirectX::SimpleMath::Matrix& viewProj,
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
-
-	void Update(unsigned long curTickTime, unsigned long playTimeMSec) override;
 	void Reset();
 	void OnPlayStart();
 	void OnPlayEnd();

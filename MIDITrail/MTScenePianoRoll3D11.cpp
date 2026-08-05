@@ -170,28 +170,25 @@ void MTScenePianoRoll3D11::Transform(
 	m_Camera.GetPosition(&camPos);
 	float rollAngle = m_Camera.GetRollAngle();
 
-	// 星：カメラに追従
-	m_Stars.Transform(camPos);
+	// コンテキスト生成
+	MTSceneUpdateContext ctx;
+	ctx.curTickTime = curTickTime;
+	ctx.playTimeMSec = playTimeMSec;
+	ctx.rollAngle = rollAngle;
+	ctx.camPos = camPos;
 
-	// グリッド
-	m_Grid.Transform(rollAngle);
-
-	// タイムインジケータ
-	m_TimeIndicator.Update(curTickTime, playTimeMSec);
-	m_TimeIndicator.Transform(rollAngle);
-
-	// ピクチャボード
-	m_PictBoard.Update(curTickTime, playTimeMSec);
-	m_PictBoard.Transform(camPos, rollAngle);
+	// 各コンポーネント更新
+	m_Stars.Update(ctx);
+	m_Grid.Update(ctx);
+	m_TimeIndicator.Update(ctx);
+	m_PictBoard.Update(ctx);
 
 	// ノートトラッカー → リスナー（Ripple, Lyrics）に通知
 	m_NoteTracker.Update(playTimeMSec);
 
-	// 波紋
-	m_Ripple.Update(curTickTime, playTimeMSec);
-
-	// 歌詞
-	m_Lyrics.Update(curTickTime, playTimeMSec);
+	// 波紋・歌詞
+	m_Ripple.Update(ctx);
+	m_Lyrics.Update(ctx);
 
 	// ダッシュボード
 	m_Dashboard.SetPlayTimeMSec(playTimeMSec);
@@ -208,7 +205,7 @@ int MTScenePianoRoll3D11::Draw(
 	)
 {
 	// 背景画像（最初に描画）
-	m_BackgroundImage.DrawDX11(pContext);
+	m_BackgroundImage.Draw(pContext);
 
 	// シーン固有コンポーネント描画
 	_DrawSceneComponents(pContext, viewProj, rollAngle, camPos);
@@ -238,7 +235,7 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 	Vector4 lightDir(1.0f, -1.0f, 2.0f, 0.0f);
 
 	// グリッド
-	m_Grid.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+	m_Grid.Draw(pContext, viewProj, lightDir, rollAngle);
 
 	// Phase 2: NoteBox 描画（未実装）
 
@@ -246,21 +243,21 @@ void MTScenePianoRoll3D11::_DrawSceneComponents(
 	// PictBoard は Keyboard 実装後に置き換え（現状は無効化）
 	if (m_TimeIndicator.GetPos() > camPos.x) {
 		// カメラが再生位置より手前: Indicator → Lyrics → Ripple → Keyboard
-		m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+		m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
 		m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
 		m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
-		//m_PictBoard.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+		//m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
 	}
 	else {
 		// カメラが再生位置より奥: Keyboard → Ripple → Lyrics → Indicator
-		//m_PictBoard.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+		//m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
 		m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
 		m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
-		m_TimeIndicator.DrawDX11(pContext, viewProj, lightDir, rollAngle);
+		m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
 	}
 
 	// 星
-	m_Stars.DrawDX11(pContext, viewProj, rollAngle);
+	m_Stars.Draw(pContext, viewProj, rollAngle);
 }
 
 //******************************************************************************

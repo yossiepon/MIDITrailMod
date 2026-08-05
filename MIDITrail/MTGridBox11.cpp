@@ -76,10 +76,10 @@ void MTGridBox11::Release()
 //******************************************************************************
 // 更新
 //******************************************************************************
-void MTGridBox11::Transform(float rollAngle)
+void MTGridBox11::Update(const MTSceneUpdateContext& ctx)
 {
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
-	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(rollAngle))
+	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
 	             * Matrix::CreateTranslation(moveVec);
 	m_Primitive.SetWorldMatrix(world);
 }
@@ -87,7 +87,7 @@ void MTGridBox11::Transform(float rollAngle)
 //******************************************************************************
 // 描画
 //******************************************************************************
-int MTGridBox11::DrawDX11(
+int MTGridBox11::Draw(
 		ID3D11DeviceContext* pContext,
 		const Matrix& viewProj,
 		const Vector4& lightDir,

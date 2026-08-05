@@ -35,8 +35,8 @@ public:
 	           const TCHAR* pSceneName, SMSeqData* pSeqData);
 	void Release();
 
-	void Transform(float rollAngle);
-	int DrawDX11(ID3D11DeviceContext* pContext,
+	void Update(const MTSceneUpdateContext& ctx) override;
+	int Draw(ID3D11DeviceContext* pContext,
 	             const DirectX::SimpleMath::Matrix& viewProj,
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);

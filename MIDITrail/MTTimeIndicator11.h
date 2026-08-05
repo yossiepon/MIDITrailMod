@@ -35,13 +35,12 @@ public:
 	           const TCHAR* pSceneName, SMSeqData* pSeqData);
 	void Release();
 
-	void Transform(float rollAngle);
-	int DrawDX11(ID3D11DeviceContext* pContext,
+	void Update(const MTSceneUpdateContext& ctx) override;
+	int Draw(ID3D11DeviceContext* pContext,
 	             const DirectX::SimpleMath::Matrix& viewProj,
 	             const DirectX::SimpleMath::Vector4& lightDir,
 	             float rollAngle);
 
-	void Update(unsigned long curTickTime, unsigned long playTimeMSec) override;
 	void Reset();
 	float GetPos() const;
 	DirectX::SimpleMath::Vector3 GetMoveVector() const;
@@ -56,7 +55,6 @@ private:
 	float m_CurPos;
 	unsigned long m_CurTickTime;
 	bool m_isEnableLine;
-	bool m_isEnable;
 	bool m_isReady;
 
 	int _CreatePrimitive(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

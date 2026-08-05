@@ -32,8 +32,8 @@ public:
 	           const TCHAR* pSceneName);
 	void Release();
 
-	void Transform(const DirectX::SimpleMath::Vector3& camPos);
-	int DrawDX11(ID3D11DeviceContext* pContext,
+	void Update(const MTSceneUpdateContext& ctx) override;
+	int Draw(ID3D11DeviceContext* pContext,
 	             const DirectX::SimpleMath::Matrix& viewProj,
 	             float rollAngle);
 
