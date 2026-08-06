@@ -25,8 +25,10 @@
 //******************************************************************************
 #define MTNOTEBOX11_MAX_ACTIVENOTE_NUM  (100)
 #define MTNOTEBOX11_MAX_PORT_NUM        (8)
-#define MTNOTEBOX11_NOTE_VERTEX_NUM     (4 * 6)
-#define MTNOTEBOX11_NOTE_INDEX_NUM      (3 * 2 * 6)
+#define MTNOTEBOX11_NOTE_VERTEX_NUM_BOX   (4 * 6)
+#define MTNOTEBOX11_NOTE_INDEX_NUM_BOX    (3 * 2 * 6)
+#define MTNOTEBOX11_NOTE_VERTEX_NUM_FLAT  (4)
+#define MTNOTEBOX11_NOTE_INDEX_NUM_FLAT   (6)
 
 
 //******************************************************************************
@@ -46,7 +48,8 @@ public:
 				SMSeqData* pSeqData,
 				MTNoteTracker* pNoteTracker,
 				MTNotePitchBend* pNotePitchBend,
-				MTNoteDesignMod* pNoteDesign = NULL
+				MTNoteDesignMod* pNoteDesign = NULL,
+				bool isFlatMode = false
 			);
 	void Release();
 
@@ -59,6 +62,7 @@ public:
 
 	void Reset() override;
 	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
+	void SetLightEnable(bool enable) { m_isLightEnable = enable; }
 	unsigned long GetNoteCount() const;
 
 private:
@@ -87,6 +91,10 @@ private:
 
 	NoteStatus m_NoteStatus[MTNOTEBOX11_MAX_ACTIVENOTE_NUM];
 	bool m_isSkipping;
+	bool m_isFlatMode;
+	bool m_isLightEnable;
+	unsigned long m_NoteVertexNum;
+	unsigned long m_NoteIndexNum;
 
 	int _CreateAllNoteBox(ID3D11Device* pDevice);
 	int _CreateActiveNoteBox(ID3D11Device* pDevice);

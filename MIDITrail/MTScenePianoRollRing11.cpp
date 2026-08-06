@@ -112,9 +112,9 @@ int MTScenePianoRollRing11::Create(
 	result = m_NoteTracker.Create(pSeqData);
 	if (result != 0) goto EXIT;
 
-	// NoteBox (with Ring NoteDesign injection)
+	// NoteBox (with Ring NoteDesign injection, flat mode for cylinder)
 	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData,
-	                          &m_NoteTracker, &m_NotePitchBend, &m_NoteDesignRing);
+	                          &m_NoteTracker, &m_NotePitchBend, &m_NoteDesignRing, true);
 	if (result != 0) goto EXIT;
 
 	// Ripple (with Ring NoteDesign injection)

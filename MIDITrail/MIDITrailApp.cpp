@@ -3210,8 +3210,7 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-					// MTScenePianoRoll2D11 未実装: 暫定的に 3D を使用
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRoll3D11(false, true);
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain11();
@@ -3230,7 +3229,7 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRoll3D11(true, true);
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain11(true);

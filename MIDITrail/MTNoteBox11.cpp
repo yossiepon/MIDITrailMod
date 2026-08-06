@@ -31,6 +31,10 @@ MTNoteBox11::MTNoteBox11()
 	m_CurNoteIndex = 0;
 	m_ActiveNoteNum = 0;
 	m_isSkipping = false;
+	m_isFlatMode = false;
+	m_isLightEnable = true;
+	m_NoteVertexNum = MTNOTEBOX11_NOTE_VERTEX_NUM_BOX;
+	m_NoteIndexNum = MTNOTEBOX11_NOTE_INDEX_NUM_BOX;
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 	ZeroMemory(m_NoteStatus, sizeof(m_NoteStatus));
 }
@@ -50,7 +54,8 @@ int MTNoteBox11::Create(
 		SMSeqData* pSeqData,
 		MTNoteTracker* pNoteTracker,
 		MTNotePitchBend* pNotePitchBend,
-		MTNoteDesignMod* pNoteDesign
+		MTNoteDesignMod* pNoteDesign,
+		bool isFlatMode
 	)
 {
 	int result = 0;
@@ -65,6 +70,9 @@ int MTNoteBox11::Create(
 	m_pContext = pContext;
 	m_pNoteTracker = pNoteTracker;
 	m_pNotePitchBend = pNotePitchBend;
+	m_isFlatMode = isFlatMode;
+	m_NoteVertexNum = isFlatMode ? MTNOTEBOX11_NOTE_VERTEX_NUM_FLAT : MTNOTEBOX11_NOTE_VERTEX_NUM_BOX;
+	m_NoteIndexNum = isFlatMode ? MTNOTEBOX11_NOTE_INDEX_NUM_FLAT : MTNOTEBOX11_NOTE_INDEX_NUM_BOX;
 
 	if (pNoteDesign != NULL) {
 		m_pNoteDesign = pNoteDesign;
@@ -117,11 +125,11 @@ int MTNoteBox11::_CreateAllNoteBox(
 	if (noteCount == 0) goto EXIT;
 
 	result = m_PrimAllNotes.CreateVertexBuffer(pDevice,
-		MTNOTEBOX11_NOTE_VERTEX_NUM * noteCount);
+		m_NoteVertexNum * noteCount);
 	if (result != 0) goto EXIT;
 
 	result = m_PrimAllNotes.CreateIndexBuffer(pDevice,
-		MTNOTEBOX11_NOTE_INDEX_NUM * noteCount);
+		m_NoteIndexNum * noteCount);
 	if (result != 0) goto EXIT;
 
 	result = m_PrimAllNotes.LockVertex(m_pContext, &pVertex);
@@ -133,9 +141,9 @@ int MTNoteBox11::_CreateAllNoteBox(
 		const NoteData& note = m_pNoteTracker->GetNote(i);
 		result = _CreateVertexOfNote(
 			note,
-			&pVertex[MTNOTEBOX11_NOTE_VERTEX_NUM * i],
-			MTNOTEBOX11_NOTE_VERTEX_NUM * i,
-			&pIndex[MTNOTEBOX11_NOTE_INDEX_NUM * i]
+			&pVertex[m_NoteVertexNum * i],
+			m_NoteVertexNum * i,
+			&pIndex[m_NoteIndexNum * i]
 		);
 		if (result != 0) goto EXIT;
 	}
@@ -159,11 +167,11 @@ int MTNoteBox11::_CreateActiveNoteBox(
 	int result = 0;
 
 	result = m_PrimActiveNotes.CreateVertexBuffer(pDevice,
-		MTNOTEBOX11_NOTE_VERTEX_NUM * MTNOTEBOX11_MAX_ACTIVENOTE_NUM);
+		m_NoteVertexNum * MTNOTEBOX11_MAX_ACTIVENOTE_NUM);
 	if (result != 0) goto EXIT;
 
 	result = m_PrimActiveNotes.CreateIndexBuffer(pDevice,
-		MTNOTEBOX11_NOTE_INDEX_NUM * MTNOTEBOX11_MAX_ACTIVENOTE_NUM);
+		m_NoteIndexNum * MTNOTEBOX11_MAX_ACTIVENOTE_NUM);
 	if (result != 0) goto EXIT;
 
 	m_PrimActiveNotes.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -304,7 +312,7 @@ int MTNoteBox11::_UpdateVertexOfActiveNotes()
 
 	// Rebuild all-notes index buffer: show all notes, hide active ones
 	{
-		unsigned long baseIndices[MTNOTEBOX11_NOTE_INDEX_NUM] = {
+		unsigned long boxIndices[36] = {
 			 0,  1,  2,   2,  1,  3,
 			 4,  5,  6,   6,  5,  7,
 			 8,  9, 10,  10,  9, 11,
@@ -312,10 +320,12 @@ int MTNoteBox11::_UpdateVertexOfActiveNotes()
 			16, 17, 18,  18, 17, 19,
 			20, 21, 22,  22, 21, 23,
 		};
+		unsigned long flatIndices[6] = { 0, 1, 2, 2, 1, 3 };
+		unsigned long* baseIndices = m_isFlatMode ? flatIndices : boxIndices;
 
 		for (unsigned long n = 0; n < noteCount; n++) {
-			unsigned long vertexOffset = MTNOTEBOX11_NOTE_VERTEX_NUM * n;
-			unsigned long indexOffset = MTNOTEBOX11_NOTE_INDEX_NUM * n;
+			unsigned long vertexOffset = m_NoteVertexNum * n;
+			unsigned long indexOffset = m_NoteIndexNum * n;
 
 			// Check if this note is currently active
 			bool isActive = false;
@@ -328,13 +338,13 @@ int MTNoteBox11::_UpdateVertexOfActiveNotes()
 
 			if (isActive) {
 				// Hide: set all indices to 0
-				for (int j = 0; j < MTNOTEBOX11_NOTE_INDEX_NUM; j++) {
+				for (int j = 0; j < m_NoteIndexNum; j++) {
 					pIndexAll[indexOffset + j] = 0;
 				}
 			}
 			else {
 				// Show: set proper indices
-				for (int j = 0; j < MTNOTEBOX11_NOTE_INDEX_NUM; j++) {
+				for (int j = 0; j < m_NoteIndexNum; j++) {
 					pIndexAll[indexOffset + j] = vertexOffset + baseIndices[j];
 				}
 			}
@@ -349,9 +359,9 @@ int MTNoteBox11::_UpdateVertexOfActiveNotes()
 
 		result = _CreateVertexOfNote(
 			note,
-			&pVertex[MTNOTEBOX11_NOTE_VERTEX_NUM * activeNoteNum],
-			MTNOTEBOX11_NOTE_VERTEX_NUM * activeNoteNum,
-			&pIndexActive[MTNOTEBOX11_NOTE_INDEX_NUM * activeNoteNum],
+			&pVertex[m_NoteVertexNum * activeNoteNum],
+			m_NoteVertexNum * activeNoteNum,
+			&pIndexActive[m_NoteIndexNum * activeNoteNum],
 			m_NoteStatus[i].keyDownRate,
 			true
 		);
@@ -414,54 +424,6 @@ int MTNoteBox11::_CreateVertexOfNote(
 			pbValue, pbSensitivity, keyDownRate);
 	}
 
-	//     +   1+----+3   +
-	//    /|   / top /    /|         y x
-	//   + | 0+----+2   + | right   |/
-	// L | +   7+----+5 | +      z--+0
-	//   |/    / bot /   |/
-	//   +   6+----+4   +
-
-	// Top face
-	pVertex[0].pos[0] = vectorStartLU.x; pVertex[0].pos[1] = vectorStartLU.y; pVertex[0].pos[2] = vectorStartLU.z;
-	pVertex[1].pos[0] = vectorEndLU.x;   pVertex[1].pos[1] = vectorEndLU.y;   pVertex[1].pos[2] = vectorEndLU.z;
-	pVertex[2].pos[0] = vectorStartRU.x; pVertex[2].pos[1] = vectorStartRU.y; pVertex[2].pos[2] = vectorStartRU.z;
-	pVertex[3].pos[0] = vectorEndRU.x;   pVertex[3].pos[1] = vectorEndRU.y;   pVertex[3].pos[2] = vectorEndRU.z;
-	// Bottom face
-	pVertex[4].pos[0] = vectorStartRD.x; pVertex[4].pos[1] = vectorStartRD.y; pVertex[4].pos[2] = vectorStartRD.z;
-	pVertex[5].pos[0] = vectorEndRD.x;   pVertex[5].pos[1] = vectorEndRD.y;   pVertex[5].pos[2] = vectorEndRD.z;
-	pVertex[6].pos[0] = vectorStartLD.x; pVertex[6].pos[1] = vectorStartLD.y; pVertex[6].pos[2] = vectorStartLD.z;
-	pVertex[7].pos[0] = vectorEndLD.x;   pVertex[7].pos[1] = vectorEndLD.y;   pVertex[7].pos[2] = vectorEndLD.z;
-	// Right face
-	pVertex[8]  = pVertex[2]; pVertex[9]  = pVertex[3];
-	pVertex[10] = pVertex[4]; pVertex[11] = pVertex[5];
-	// Left face
-	pVertex[12] = pVertex[6]; pVertex[13] = pVertex[7];
-	pVertex[14] = pVertex[0]; pVertex[15] = pVertex[1];
-	// Front face
-	pVertex[16] = pVertex[0]; pVertex[17] = pVertex[2];
-	pVertex[18] = pVertex[6]; pVertex[19] = pVertex[4];
-	// Back face
-	pVertex[20] = pVertex[3]; pVertex[21] = pVertex[1];
-	pVertex[22] = pVertex[5]; pVertex[23] = pVertex[7];
-
-	// Normals
-	Vector3 normals[6] = {
-		Vector3( 0.0f,  1.0f,  0.0f), // top
-		Vector3( 0.0f, -1.0f,  0.0f), // bottom
-		Vector3( 0.0f,  0.0f, -1.0f), // right
-		Vector3( 0.0f,  0.0f,  1.0f), // left
-		Vector3(-1.0f,  0.0f,  0.0f), // front
-		Vector3( 1.0f,  0.0f,  0.0f), // back
-	};
-	for (int face = 0; face < 6; face++) {
-		for (int v = 0; v < 4; v++) {
-			int idx = face * 4 + v;
-			pVertex[idx].normal[0] = normals[face].x;
-			pVertex[idx].normal[1] = normals[face].y;
-			pVertex[idx].normal[2] = normals[face].z;
-		}
-	}
-
 	// Color
 	unsigned long c;
 	if (keyDownRate == 0.0f) {
@@ -470,23 +432,94 @@ int MTNoteBox11::_CreateVertexOfNote(
 	else {
 		c = m_pNoteDesign->GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, keyDownRate).BGRA();
 	}
-	for (int i = 0; i < MTNOTEBOX11_NOTE_VERTEX_NUM; i++) {
-		pVertex[i].color = c;
-		pVertex[i].uv[0] = 0.0f;
-		pVertex[i].uv[1] = 0.0f;
-	}
 
-	// Indices
-	unsigned long baseIndices[MTNOTEBOX11_NOTE_INDEX_NUM] = {
-		 0,  1,  2,   2,  1,  3,  // top
-		 4,  5,  6,   6,  5,  7,  // bottom
-		 8,  9, 10,  10,  9, 11,  // right
-		12, 13, 14,  14, 13, 15,  // left
-		16, 17, 18,  18, 17, 19,  // front
-		20, 21, 22,  22, 21, 23,  // back
-	};
-	for (int i = 0; i < MTNOTEBOX11_NOTE_INDEX_NUM; i++) {
-		pIndex[i] = vertexOffset + baseIndices[i];
+	if (m_isFlatMode) {
+		// Flat mode: 1 face, 4 vertices, 6 indices
+		pVertex[0].pos[0] = vectorStartLU.x; pVertex[0].pos[1] = vectorStartLU.y; pVertex[0].pos[2] = vectorStartLU.z;
+		pVertex[1].pos[0] = vectorEndLU.x;   pVertex[1].pos[1] = vectorEndLU.y;   pVertex[1].pos[2] = vectorEndLU.z;
+		pVertex[2].pos[0] = vectorStartRU.x; pVertex[2].pos[1] = vectorStartRU.y; pVertex[2].pos[2] = vectorStartRU.z;
+		pVertex[3].pos[0] = vectorEndRU.x;   pVertex[3].pos[1] = vectorEndRU.y;   pVertex[3].pos[2] = vectorEndRU.z;
+
+		float nrm[3] = { 0.0f, 1.0f, 0.0f };
+		for (int i = 0; i < 4; i++) {
+			memcpy(pVertex[i].normal, nrm, sizeof(float) * 3);
+			pVertex[i].color = c;
+			pVertex[i].uv[0] = 0.0f;
+			pVertex[i].uv[1] = 0.0f;
+		}
+
+		unsigned long flatIndices[6] = { 0, 1, 2, 2, 1, 3 };
+		for (int i = 0; i < 6; i++) {
+			pIndex[i] = vertexOffset + flatIndices[i];
+		}
+	}
+	else {
+		// Box mode: 6 faces, 24 vertices, 36 indices
+		//     +   1+----+3   +
+		//    /|   / top /    /|         y x
+		//   + | 0+----+2   + | right   |/
+		// L | +   7+----+5 | +      z--+0
+		//   |/    / bot /   |/
+		//   +   6+----+4   +
+
+		// Top face
+		pVertex[0].pos[0] = vectorStartLU.x; pVertex[0].pos[1] = vectorStartLU.y; pVertex[0].pos[2] = vectorStartLU.z;
+		pVertex[1].pos[0] = vectorEndLU.x;   pVertex[1].pos[1] = vectorEndLU.y;   pVertex[1].pos[2] = vectorEndLU.z;
+		pVertex[2].pos[0] = vectorStartRU.x; pVertex[2].pos[1] = vectorStartRU.y; pVertex[2].pos[2] = vectorStartRU.z;
+		pVertex[3].pos[0] = vectorEndRU.x;   pVertex[3].pos[1] = vectorEndRU.y;   pVertex[3].pos[2] = vectorEndRU.z;
+		// Bottom face
+		pVertex[4].pos[0] = vectorStartRD.x; pVertex[4].pos[1] = vectorStartRD.y; pVertex[4].pos[2] = vectorStartRD.z;
+		pVertex[5].pos[0] = vectorEndRD.x;   pVertex[5].pos[1] = vectorEndRD.y;   pVertex[5].pos[2] = vectorEndRD.z;
+		pVertex[6].pos[0] = vectorStartLD.x; pVertex[6].pos[1] = vectorStartLD.y; pVertex[6].pos[2] = vectorStartLD.z;
+		pVertex[7].pos[0] = vectorEndLD.x;   pVertex[7].pos[1] = vectorEndLD.y;   pVertex[7].pos[2] = vectorEndLD.z;
+		// Right face
+		pVertex[8]  = pVertex[2]; pVertex[9]  = pVertex[3];
+		pVertex[10] = pVertex[4]; pVertex[11] = pVertex[5];
+		// Left face
+		pVertex[12] = pVertex[6]; pVertex[13] = pVertex[7];
+		pVertex[14] = pVertex[0]; pVertex[15] = pVertex[1];
+		// Front face
+		pVertex[16] = pVertex[0]; pVertex[17] = pVertex[2];
+		pVertex[18] = pVertex[6]; pVertex[19] = pVertex[4];
+		// Back face
+		pVertex[20] = pVertex[3]; pVertex[21] = pVertex[1];
+		pVertex[22] = pVertex[5]; pVertex[23] = pVertex[7];
+
+		// Normals
+		Vector3 normals[6] = {
+			Vector3( 0.0f,  1.0f,  0.0f), // top
+			Vector3( 0.0f, -1.0f,  0.0f), // bottom
+			Vector3( 0.0f,  0.0f, -1.0f), // right
+			Vector3( 0.0f,  0.0f,  1.0f), // left
+			Vector3(-1.0f,  0.0f,  0.0f), // front
+			Vector3( 1.0f,  0.0f,  0.0f), // back
+		};
+		for (int face = 0; face < 6; face++) {
+			for (int v = 0; v < 4; v++) {
+				int idx = face * 4 + v;
+				pVertex[idx].normal[0] = normals[face].x;
+				pVertex[idx].normal[1] = normals[face].y;
+				pVertex[idx].normal[2] = normals[face].z;
+			}
+		}
+
+		for (int i = 0; i < 24; i++) {
+			pVertex[i].color = c;
+			pVertex[i].uv[0] = 0.0f;
+			pVertex[i].uv[1] = 0.0f;
+		}
+
+		unsigned long boxIndices[36] = {
+			 0,  1,  2,   2,  1,  3,  // top
+			 4,  5,  6,   6,  5,  7,  // bottom
+			 8,  9, 10,  10,  9, 11,  // right
+			12, 13, 14,  14, 13, 15,  // left
+			16, 17, 18,  18, 17, 19,  // front
+			20, 21, 22,  22, 21, 23,  // back
+		};
+		for (int i = 0; i < 36; i++) {
+			pIndex[i] = vertexOffset + boxIndices[i];
+		}
 	}
 
 	return result;
@@ -506,17 +539,17 @@ int MTNoteBox11::Draw(
 	if (!m_isEnable) goto EXIT;
 
 	// All notes (non-active rendered with original color/size)
-	m_PrimAllNotes.SetLightEnable(true);
+	m_PrimAllNotes.SetLightEnable(m_isLightEnable);
 	m_PrimAllNotes.SetMaterialAmbient(0.5f, 0.5f, 0.5f);
 	result = m_PrimAllNotes.Draw(pContext, viewProj, lightDir);
 	if (result != 0) goto EXIT;
 
 	// Active notes (with envelope-based size/color variation)
 	if (m_ActiveNoteNum > 0) {
-		m_PrimActiveNotes.SetLightEnable(true);
+		m_PrimActiveNotes.SetLightEnable(m_isLightEnable);
 		m_PrimActiveNotes.SetMaterialAmbient(0.5f, 0.5f, 0.5f);
 		result = m_PrimActiveNotes.Draw(pContext, viewProj, lightDir,
-			(int)(m_ActiveNoteNum * MTNOTEBOX11_NOTE_INDEX_NUM / 3));
+			(int)(m_ActiveNoteNum * m_NoteIndexNum / 3));
 		if (result != 0) goto EXIT;
 	}
 

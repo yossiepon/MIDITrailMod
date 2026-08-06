@@ -134,6 +134,9 @@ int MTScenePianoRoll3D11::Create(
 	// ノートボックス
 	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
+	if (m_Is2D) {
+		m_NoteBox.SetLightEnable(false);
+	}
 
 	// キーボード
 	result = m_KeyboardCtrl.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, false);
