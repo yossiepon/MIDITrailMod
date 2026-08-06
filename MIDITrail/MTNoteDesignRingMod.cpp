@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignRingMod
 //
-// ƒm[ƒgƒfƒUƒCƒ“ƒŠƒ“ƒOModƒNƒ‰ƒX
+// ï¿½mï¿½[ï¿½gï¿½fï¿½Uï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½OModï¿½Nï¿½ï¿½ï¿½X
 //
 // Copyright (C) 2019 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -12,23 +12,26 @@
 #include "MTNoteDesignRingMod.h"
 #include "DXH.h"
 
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 //******************************************************************************
 MTNoteDesignRingMod::MTNoteDesignRingMod(void)
 {
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 //******************************************************************************
 MTNoteDesignRingMod::~MTNoteDesignRingMod(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //******************************************************************************
 int MTNoteDesignRingMod::Initialize(
 	const TCHAR* pSceneName,
@@ -48,34 +51,34 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•Wæ“¾
+// ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRingMod::GetNoteBoxCenterPosX(
+Vector3 MTNoteDesignRingMod::GetNoteBoxCenterPosX(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-	unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+	short pitchBendValue,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+	unsigned char pitchBendSensitivity	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
 )
 {
 	return MTNoteDesignRing::GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+// ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
 void MTNoteDesignRingMod::GetNoteBoxVirtexPos(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-	D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-	D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-	D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-	short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-	unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+	Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	short pitchBendValue,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+	unsigned char pitchBendSensitivity	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
 
 )
 {
@@ -84,20 +87,20 @@ void MTNoteDesignRingMod::GetNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
 void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-	D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-	D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-	D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-	short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-	unsigned char pitchBendSensitivity,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-	unsigned long elapsedTime			//È—ª‰ÂFŒo‰ßŠÔiƒ~ƒŠ•bj
+	Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	short pitchBendValue,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+	unsigned char pitchBendSensitivity,	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
+	unsigned long elapsedTime			//ï¿½È—ï¿½ï¿½ÂFï¿½oï¿½ßï¿½ï¿½Ôiï¿½~ï¿½ï¿½ï¿½bï¿½j
 )
 {
 	MTNoteDesignRing::GetActiveNoteBoxVirtexPos(
@@ -105,25 +108,25 @@ void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
 void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 	unsigned long curTickTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-	D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-	D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-	D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-	short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-	unsigned char pitchBendSensitivity,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-	float rate							//È—ª‰ÂFƒTƒCƒY”ä—¦
+	Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	short pitchBendValue,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+	unsigned char pitchBendSensitivity,	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
+	float rate							//ï¿½È—ï¿½ï¿½ÂFï¿½Tï¿½Cï¿½Yï¿½ä—¦
 )
 {
-	D3DXVECTOR3 basePos0;
-	D3DXVECTOR3 basePos1;
-	D3DXVECTOR3 basePos2;
+	Vector3 basePos0;
+	Vector3 basePos1;
+	Vector3 basePos2;
 	float angle0 = 0.0f;
 	float angle1 = 0.0f;
 	float angle2 = 0.0f;
@@ -133,14 +136,14 @@ void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 		curSizeRatio = 1.0f + (MTNoteDesignMod::m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
 	}
 
-	//ƒm[ƒgŠî€À•W
+	//ï¿½mï¿½[ï¿½gï¿½î€ï¿½ï¿½ï¿½W
 	basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
 	basePos1 = basePos0;
 	basePos1.y -= MTNoteDesignMod::GetNoteBoxWidth() * curSizeRatio / 2.0f;
 	basePos2 = basePos0;
 	basePos2.y += MTNoteDesignMod::GetNoteBoxWidth() * curSizeRatio / 2.0f;
 
-	//ƒm[ƒg”Ô†‚ÅŠp“x‚ğŒˆ’è
+	//ï¿½mï¿½[ï¿½gï¿½Ôï¿½ï¿½ÅŠpï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
 	angle1 = angle0 - (m_NoteAngleStep * curSizeRatio / 2.0f);
 	angle2 = angle0 + (m_NoteAngleStep * curSizeRatio / 2.0f);
@@ -152,19 +155,19 @@ void MTNoteDesignRingMod::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+// ï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½jï¿½^ï¿½pï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
 void MTNoteDesignRingMod::GetNoteBoxVirtexPosLive(
 	unsigned long elapsedTime,
 	unsigned char portNo,
 	unsigned char chNo,
 	unsigned char noteNo,
-	D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-	D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-	D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-	D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-	short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-	unsigned char pitchBendSensitivity	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+	Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+	Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+	short pitchBendValue,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+	unsigned char pitchBendSensitivity	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
 )
 {
 	MTNoteDesignRing::GetNoteBoxVirtexPosLive(
@@ -172,7 +175,7 @@ void MTNoteDesignRingMod::GetNoteBoxVirtexPosLive(
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_YÀ•Wæ“¾
+// ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½_Yï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
 float MTNoteDesignRingMod::GetPortOriginY(
 	unsigned char portNo
@@ -182,7 +185,7 @@ float MTNoteDesignRingMod::GetPortOriginY(
 }
 
 //******************************************************************************
-// ƒ|[ƒgŒ´“_ZÀ•Wæ“¾
+// ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½_Zï¿½ï¿½ï¿½Wï¿½æ“¾
 //******************************************************************************
 float MTNoteDesignRingMod::GetPortOriginZ(
 	unsigned char portNo
@@ -192,15 +195,15 @@ float MTNoteDesignRingMod::GetPortOriginZ(
 }
 
 //******************************************************************************
-// ¢ŠEÀ•W”z’uˆÚ“®ƒxƒNƒgƒ‹æ“¾
+// ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½Wï¿½zï¿½uï¿½Ú“ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½æ“¾
 //******************************************************************************
-D3DXVECTOR3 MTNoteDesignRingMod::GetWorldMoveVector()
+Vector3 MTNoteDesignRingMod::GetWorldMoveVector()
 {
 	return MTNoteDesignRing::GetWorldMoveVector();
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
 //******************************************************************************
 int MTNoteDesignRingMod::_LoadConfFile(
 	const TCHAR* pSceneName

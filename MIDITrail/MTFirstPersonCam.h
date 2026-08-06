@@ -1,21 +1,21 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFirstPersonCam
 //
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// First-person camera class.
+// Handles keyboard/mouse/gamepad input and updates the camera position.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
-// MEMO:
-// FPSƒQ[ƒ€ƒ‰ƒCƒN‚È‹“_ˆÚ“®‚ğÀŒ»‚·‚éB
-// –{ƒNƒ‰ƒX“à‚ÅƒL[ƒ{[ƒh^ƒ}ƒEƒX‚Ìó‘Ô‚ğæ“¾‚·‚éB
-
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <d3d11.h>
+#include <directxtk/SimpleMath.h>
+#include "MTSceneComponent11.h"
+#include "MTViewParamMap.h"
 #include "DIKeyCtrl.h"
 #include "DIMouseCtrl.h"
 #include "DXCamera.h"
@@ -27,20 +27,20 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// Parameter definitions
 //******************************************************************************
-//ƒJƒƒ‰ˆÊ’uÅ‘å”ÍˆÍ
 #define MTFIRSTPERSONCAM_CAMVECTOR_LIMIT  (1000000.0f)
 
 
 //******************************************************************************
-// ˆêlÌƒJƒƒ‰ƒNƒ‰ƒX
+// First-person camera class
 //******************************************************************************
 class MTFirstPersonCam
 {
 public:
 
 	enum MTProgressDirection {
+		DirNone,
 		DirX,
 		DirY,
 		DirZ
@@ -48,69 +48,62 @@ public:
 
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
-	MTFirstPersonCam(void);
-	virtual ~MTFirstPersonCam(void);
+	MTFirstPersonCam();
+	virtual ~MTFirstPersonCam();
 
-	//ƒNƒŠƒA
 	int Clear();
 
-	//‰Šú‰»
 	int Initialize(HWND hWnd, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
-	void SetPosition(
-			D3DXVECTOR3 camVector
-		);
+	// Position
+	void SetPosition(DirectX::SimpleMath::Vector3 camVector);
+	void GetPosition(DirectX::SimpleMath::Vector3* pCamVector);
 
-	//ƒJƒƒ‰•ûŒüİ’è
-	//  •ûˆÊŠpFXZ•½–Êã‚ÌX²‚Æ‚ÌŠp“x +X²•ûŒü=0“x +Z²•ûŒü=90“x
-	//  “V’¸ŠpFY²‚Æ‚ÌŠp“x           +Y²•ûŒü=0“x XZ•½–Êã=90“x
-	void SetDirection(
-			float phi,		//•ûˆÊŠp
-			float theta		//“V’¸Šp
-		);
+	// Direction (spherical coordinates)
+	//   phi:   azimuthal angle on XZ plane (+X=0, +Z=90)
+	//   theta: polar angle from +Y axis (+Y=0, XZ plane=90)
+	void SetDirection(float phi, float theta);
+	void GetDirection(float* pPhi, float* pTheta);
 
-	//ƒJƒƒ‰ˆÊ’uæ“¾
-	void GetPosition(D3DXVECTOR3* pCamVector);
-
-	//ƒJƒƒ‰•ûŒüæ“¾
-	void GetDirection(
-			float* pPhi,
-			float* pTheta
-		);
-
-	//ƒ}ƒEƒX‹üˆÚ“®ƒ‚[ƒh“o˜^
+	// Mouse camera mode
 	void SetMouseCamMode(bool isEnable);
 
-	//©“®‰ñ“]ƒ‚[ƒh“o˜^
+	// Auto-roll mode
 	void SetAutoRollMode(bool isEnable);
-	void SwitchAutoRllDirecton();
+	void SwitchAutoRollDir();
 
-	//XV
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+	// Per-frame update: input processing, position tracking, view matrix
+	int Update(const MTSceneUpdateContext& ctx);
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
-	void SetCurTickTime(unsigned long curTickTime);
+	// Get view/projection matrices for rendering
+	void GetViewProjection(float aspect,
+	                       DirectX::SimpleMath::Matrix* pView,
+	                       DirectX::SimpleMath::Matrix* pProj);
 
-	//ƒŠƒZƒbƒg
+	// Get current roll angle (manual roll + auto roll combined)
+	float GetRollAngle();
+
+
+	// Reset
 	void Reset();
 
-	//‰ñ“]Šp“xæ“¾
+	// Roll angle get/set
 	float GetManualRollAngle();
 	float GetAutoRollVelocity();
-
-	//‰ñ“]Šp“xİ’è
 	void SetManualRollAngle(float rollAngle);
 	void SetAutoRollVelocity(float rollVelocity);
 
-	//is•ûŒüİ’è
+	// Progress direction
 	void SetProgressDirection(MTProgressDirection dir);
+
+	// ViewParam support (used by MTSceneBase11)
+	void GetViewParam(MTViewParamMap* pParamMap);
+	void SetViewParam(MTViewParamMap* pParamMap);
 
 private:
 
 	DXCamera m_Camera;
-	D3DXVECTOR3 m_CamVector;
+	DirectX::SimpleMath::Vector3 m_CamVector;
 	float m_CamDirPhi;
 	float m_CamDirTheta;
 	MTProgressDirection m_ProgressDirection;
@@ -123,14 +116,12 @@ private:
 	HWND m_hWnd;
 	MTNoteDesign m_NoteDesign;
 
-	//ˆÚ“®‘¬“x
-	float m_VelocityFB;		//‘OŒãˆÚ“®—Ê m/sec.
-	float m_VelocityLR;		//¶‰EˆÚ“®—Ê m/sec.
-	float m_VelocityUD;		//ã‰ºˆÚ“®—Ê m/sec.
-	float m_VelocityPT;		//‹üˆÚ“®—Ê degrees/sec.
-	float m_AcceleRate;		//‰Á‘¬”{—¦
+	float m_VelocityFB;
+	float m_VelocityLR;
+	float m_VelocityUD;
+	float m_VelocityPT;
+	float m_AcceleRate;
 
-	//‰ñ“]§ŒäŒn
 	float m_RollAngle;
 	float m_VelocityAutoRoll;
 	float m_VelocityManualRoll;
@@ -148,8 +139,5 @@ private:
 	int _ClipCursor(bool isClip);
 	void _CalcDeltaTime();
 	int _LoadConfFile(const TCHAR* pSceneName);
-	void _ClipCamVector(D3DXVECTOR3* pVector);
-
+	void _ClipCamVector(DirectX::SimpleMath::Vector3* pVector);
 };
-
-

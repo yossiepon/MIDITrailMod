@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGridRing
 //
-// ƒOƒŠƒbƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+// ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019-2025 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTGridRing::MTGridRing(void)
 {
@@ -26,7 +26,7 @@ MTGridRing::MTGridRing(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTGridRing::~MTGridRing(void)
 {
@@ -34,7 +34,7 @@ MTGridRing::~MTGridRing(void)
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒh¶¬
+// ã‚°ãƒªãƒƒãƒ‰ç”Ÿæˆ
 //******************************************************************************
 int MTGridRing::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -60,71 +60,71 @@ int MTGridRing::Create(
 		goto EXIT;
 	}
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒPƒ“ƒXƒf[ƒ^FŠÔî•ñæ“¾
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ï¼šæ™‚é–“æƒ…å ±å–å¾—
 	totalTickTime = pSeqData->GetTotalTickTime();
 
-	//ƒV[ƒPƒ“ƒXƒf[ƒ^F¬ßƒŠƒXƒgæ“¾
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ï¼šå°ç¯€ãƒªã‚¹ãƒˆå–å¾—
 	result = pSeqData->GetBarList(&barList);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒPƒ“ƒXƒf[ƒ^Fƒ|[ƒgƒŠƒXƒgæ“¾
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ï¼šãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—
 	result = pSeqData->GetPortList(&m_PortList);
 	if (result != 0) goto EXIT;
 
-	//¬ß”
+	//å°ç¯€æ•°
 	barNum = barList.GetSize();
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTGRIDBOX_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_LINELIST				//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTGRIDBOX_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_LINELIST				//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬F1ƒŠƒ“ƒO128’¸“_ * (¬ß” + I’[)
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆï¼š1ãƒªãƒ³ã‚°128é ‚ç‚¹ * (å°ç¯€æ•° + çµ‚ç«¯)
 	vertexNum = 128 * (barNum + 1);
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬F1ƒŠƒ“ƒO128•Ó * 2(n“_/I“_) * (¬ß” + I’[)
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆï¼š1ãƒªãƒ³ã‚°128è¾º * 2(å§‹ç‚¹/çµ‚ç‚¹) * (å°ç¯€æ•° + çµ‚ç«¯)
 	indexNum = 128 * 2 * (barNum + 1);
 	result = m_Primitive.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.LockIndex(&pIndex);
 	if (result != 0) goto EXIT;
 
-	//ƒOƒŠƒbƒhƒ{ƒbƒNƒX‚Ì’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ¶¬
+	//ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹ã®é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ç”Ÿæˆ
 	result = _CreateVertexOfGrid(
-					pVertex,		//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-					pIndex,			//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-					totalTickTime,	//ƒg[ƒ^ƒ‹ƒ`ƒbƒNƒ^ƒCƒ€
+					pVertex,		//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+					pIndex,			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+					totalTickTime,	//ãƒˆãƒ¼ã‚¿ãƒ«ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ 
 					&barList
 				);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 	result = m_Primitive.UnlockIndex();
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒeƒŠƒAƒ‹ì¬
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 	_MakeMaterial(&material);
 	m_Primitive.SetMaterial(material);
 
-	//ƒOƒŠƒbƒh‚ÌF‚ğŠm”F
+	//ã‚°ãƒªãƒƒãƒ‰ã®è‰²ã‚’ç¢ºèª
 	lineColor = m_NoteDesign.GetGridLineColor();
 	if (((DWORD)lineColor & 0xFF000000) == 0) {
-		//“§–¾‚È‚ç•`‰æ‚µ‚È‚¢
+		//é€æ˜ãªã‚‰æç”»ã—ãªã„
 		m_isVisible = false;
 	}
 
@@ -133,7 +133,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTGridRing::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -146,29 +146,29 @@ int MTGridRing::Transform(
 	D3DXMATRIX moveMatrix;
 	D3DXMATRIX worldMatrix;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	moveVector = m_NoteDesign.GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
-	//s—ñ‚Ì‡¬
+	//è¡Œåˆ—ã®åˆæˆ
 	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_Primitive.Transform(worldMatrix);
 
 	return result;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTGridRing::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -177,11 +177,11 @@ int MTGridRing::Draw(
 	int result = 0;
 
 	if (m_isEnable && m_isVisible) {
-		//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
 		pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 		
-		//•`‰æ
+		//æç”»
 		result = m_Primitive.Draw(pD3DDevice);
 		if (result != 0) goto EXIT;
 	}
@@ -191,7 +191,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTGridRing::Release()
 {
@@ -199,7 +199,7 @@ void MTGridRing::Release()
 }
 
 //******************************************************************************
-// ƒOƒŠƒbƒh’¸“_¶¬
+// ã‚°ãƒªãƒƒãƒ‰é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTGridRing::_CreateVertexOfGrid(
 		MTGRIDBOX_VERTEX* pVertex,
@@ -214,7 +214,7 @@ int MTGridRing::_CreateVertexOfGrid(
 	unsigned long tickTime = 0;
 	D3DXVECTOR3 basePos;
 	
-	//¬ß’PˆÊ‚ÌƒŠƒ“ƒO
+	//å°ç¯€å˜ä½ã®ãƒªãƒ³ã‚°
 	for (i = 0; i < pBarList->GetSize(); i++) {
 		result = pBarList->GetBar(i, &tickTime);
 		if (result != 0) goto EXIT;
@@ -224,7 +224,7 @@ int MTGridRing::_CreateVertexOfGrid(
 		if (result != 0) goto EXIT;
 	}
 	
-	//I’[ƒŠƒ“ƒO
+	//çµ‚ç«¯ãƒªãƒ³ã‚°
 	m_NoteDesign.GetGridRingBasePos(totalTickTime, &basePos);
 	result = _CreateVertexOfRing(pVertex, &vertexIndex, pIndex, basePos);
 	if (result != 0) goto EXIT;
@@ -234,7 +234,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒŠƒ“ƒO’¸“_¶¬
+// ãƒªãƒ³ã‚°é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTGridRing::_CreateVertexOfRing(
 		MTGRIDBOX_VERTEX* pVertex,
@@ -251,9 +251,9 @@ int MTGridRing::_CreateVertexOfRing(
 	float angle = 0.0f;
 	
 	//----------------------------------
-	//I’[ƒŠƒ“ƒO
+	//çµ‚ç«¯ãƒªãƒ³ã‚°
 	//----------------------------------
-	//’¸“_ì¬
+	//é ‚ç‚¹ä½œæˆ
 	virtexIndexStart = *pVirtexIndex;
 	virtexIndex = *pVirtexIndex;
 	pVertex[virtexIndex].p = basePos;
@@ -262,18 +262,18 @@ int MTGridRing::_CreateVertexOfRing(
 	for (i = 1; i < 128; i++) {
 		virtexIndex++;
 		
-		//‰ñ“]Œã‚Ì’¸“_
+		//å›è»¢å¾Œã®é ‚ç‚¹
 		angle = (360.0f / 128.0f) * (float)i;
 		rotatedPos = DXH::RotateYZ(0.0f, 0.0f, basePos, angle);
 		pVertex[virtexIndex].p = rotatedPos;
 		pVertex[virtexIndex].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 		pVertex[virtexIndex].c = m_NoteDesign.GetGridLineColor();
 		
-		//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@i‘O‰ñ‚Ì’¸“_‚©‚ç¡‰ñ‚Ì’¸“_j
+		//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ï¼ˆå‰å›ã®é ‚ç‚¹ã‹ã‚‰ä»Šå›ã®é ‚ç‚¹ï¼‰
 		pIndex[(virtexIndex - 1) * 2]     = virtexIndex - 1;
 		pIndex[(virtexIndex - 1) * 2 + 1] = virtexIndex;
 	}
-	//I“_‚Æn“_‚ğ‚Â‚È‚®ü
+	//çµ‚ç‚¹ã¨å§‹ç‚¹ã‚’ã¤ãªãç·š
 	pIndex[virtexIndex * 2]     = virtexIndex;
 	pIndex[virtexIndex * 2 + 1] = virtexIndexStart;
 	
@@ -284,7 +284,7 @@ int MTGridRing::_CreateVertexOfRing(
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTGridRing::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -292,24 +292,24 @@ void MTGridRing::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 10.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.0f;
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
@@ -317,7 +317,7 @@ void MTGridRing::_MakeMaterial(
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTGridRing::SetEnable(
 		bool isEnable

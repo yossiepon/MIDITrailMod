@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorConf
 //
-// ƒJƒ‰[İ’èƒNƒ‰ƒX
+// ï¿½Jï¿½ï¿½ï¿½[ï¿½İ’ï¿½Nï¿½ï¿½ï¿½X
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,10 +16,11 @@
 #include "DXColorUtil.h"
 
 using namespace YNBaseLib;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 //******************************************************************************
 MTColorConf::MTColorConf(void)
 {
@@ -35,7 +36,7 @@ MTColorConf::MTColorConf(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 //******************************************************************************
 MTColorConf::~MTColorConf(void)
 {
@@ -52,14 +53,14 @@ MTColorConf::~MTColorConf(void)
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //******************************************************************************
 int MTColorConf::Initialize(const TCHAR* pDefaultSceneName)
 {
 	int result = 0;
 	int i = 0;
 		
-	//FƒpƒŒƒbƒg¶¬‚Æ‰Šú‰»
+	//ï¿½Fï¿½pï¿½ï¿½ï¿½bï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Æï¿½ï¿½ï¿½ï¿½ï¿½
 	for (i = 0; i < MT_COLOR_PALETTE_NUM_MAX; i++) {
 		try {
 			m_pColorPalette[i] = new MTColorPalette();
@@ -72,11 +73,11 @@ int MTColorConf::Initialize(const TCHAR* pDefaultSceneName)
 		if (result != 0) goto EXIT;
 	}
 	
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 	
-	//ƒ†[ƒUİ’è“Ç‚İ‚İ
+	//ï¿½ï¿½ï¿½[ï¿½Uï¿½İ’ï¿½Ç‚İï¿½ï¿½ï¿½
 	result = _LoadColorConf(pDefaultSceneName);
 	if (result != 0) goto EXIT;
 	
@@ -85,7 +86,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg”Ô†æ“¾F0 ƒfƒtƒHƒ‹ƒgA1-6 ƒpƒŒƒbƒg”Ô†
+// ï¿½Iï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½ï¿½æ“¾ï¿½F0 ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½A1-6 ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½
 //******************************************************************************
 unsigned long MTColorConf::GetSelectedColorPaletteNo()
 {
@@ -93,7 +94,7 @@ unsigned long MTColorConf::GetSelectedColorPaletteNo()
 }
 
 //******************************************************************************
-// ‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg”Ô†“o˜^F0 ƒfƒtƒHƒ‹ƒgA1-6 ƒpƒŒƒbƒg”Ô†
+// ï¿½Iï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½ï¿½oï¿½^ï¿½F0 ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½A1-6 ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½
 //******************************************************************************
 int MTColorConf::SetSelectedColorPaletteNo(unsigned long paletteNo)
 {
@@ -111,7 +112,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒpƒŒƒbƒgæ“¾F0 ƒfƒtƒHƒ‹ƒgA1-6 ƒpƒŒƒbƒg”Ô†
+// ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½æ“¾ï¿½F0 ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½A1-6 ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½
 //******************************************************************************
 int MTColorConf::GetColorPalette(
 		unsigned long paletteNo,
@@ -132,7 +133,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘I‘ğƒJƒ‰[ƒpƒŒƒbƒgæ“¾
+// ï¿½Iï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½æ“¾
 //******************************************************************************
 void MTColorConf::GetSelectedColorPalette(MTColorPalette* pColorPalette)
 {
@@ -140,7 +141,7 @@ void MTColorConf::GetSelectedColorPalette(MTColorPalette* pColorPalette)
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒpƒŒƒbƒg“o˜^F1-6 ƒpƒŒƒbƒg”Ô†A0 ƒfƒtƒHƒ‹ƒg‚Í“o˜^•s‰Â
+// ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½oï¿½^ï¿½F1-6 ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½ï¿½A0 ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Í“oï¿½^ï¿½sï¿½ï¿½
 //******************************************************************************
 int MTColorConf::SetColorPalette(
 		unsigned long paletteNo,
@@ -149,7 +150,7 @@ int MTColorConf::SetColorPalette(
 {
 	int result = 0;
 	
-	//ƒfƒtƒHƒ‹ƒg0‚ÌƒpƒŒƒbƒg‚Í‘‚«Š·‚¦•s‰Â
+	//ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½g0ï¿½Ìƒpï¿½ï¿½ï¿½bï¿½gï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
 	if ((paletteNo == 0) || (paletteNo >= MT_COLOR_PALETTE_NUM_MAX)) {
 		result = YN_SET_ERR("Program error.", paletteNo, 0);
 		goto EXIT;
@@ -162,7 +163,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+// ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //******************************************************************************
 int MTColorConf::_InitConfFile()
 {
@@ -183,29 +184,29 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ†[ƒUİ’è“Ç‚İ‚İ
+// ï¿½ï¿½ï¿½[ï¿½Uï¿½İ’ï¿½Ç‚İï¿½ï¿½ï¿½
 //******************************************************************************
 int MTColorConf::_LoadColorConf(const TCHAR* pDefaultSceneName)
 {
 	int result = 0;
 	unsigned long paletteNo = 0;
 	
-	//ƒZƒNƒVƒ‡ƒ“İ’è
+	//ï¿½Zï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
 	result = m_ConfFile.SetCurSection(_T("ColorSelect"));
 	if (result != 0) goto EXIT;
 	
-	//ƒ†[ƒUİ’è’læ“¾F‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg”Ô†
+	//ï¿½ï¿½ï¿½[ï¿½Uï¿½İ’ï¿½lï¿½æ“¾ï¿½Fï¿½Iï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½
 	result = m_ConfFile.GetInt(_T("SelectedColorPaletteNo"), &m_SelectedColorPaletteNo, 0);
 	if (result != 0) goto EXIT;
 	if ((m_SelectedColorPaletteNo < 0) || (m_SelectedColorPaletteNo >= MT_COLOR_PALETTE_NUM_MAX)) {
 		m_SelectedColorPaletteNo = 0;
 	}
 	
-	//ƒfƒtƒHƒ‹ƒgƒJƒ‰[ƒpƒŒƒbƒg“Ç‚İ‚İ
+	//ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ç‚İï¿½ï¿½ï¿½
 	result = _LoadColorPaletteDefault(pDefaultSceneName, m_pColorPalette[0]);
 	if (result != 0) goto EXIT;
 
-	//ƒJƒ‰[ƒpƒŒƒbƒgİ’è“Ç‚İ‚İ
+	//ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½İ’ï¿½Ç‚İï¿½ï¿½ï¿½
 	for (paletteNo = 1; paletteNo < MT_COLOR_PALETTE_NUM_MAX; paletteNo++) {
 		result = _LoadColorPalettes(paletteNo, m_pColorPalette[paletteNo]);
 		if (result != 0) goto EXIT;
@@ -216,7 +217,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒtƒHƒ‹ƒgƒJƒ‰[ƒpƒŒƒbƒg“Ç‚İ‚İ
+// ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ç‚İï¿½ï¿½ï¿½
 //******************************************************************************
 int MTColorConf::_LoadColorPaletteDefault(
 		const TCHAR* pDefaultSceneName,
@@ -229,32 +230,36 @@ int MTColorConf::_LoadColorPaletteDefault(
 	TCHAR hexColor[16] = {_T('\0')};
 	MTConfFile confFile;
 	
-	//İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ï¿½İ’ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
 	result = confFile.Initialize(pDefaultSceneName);
 	if (result != 0) goto EXIT;
 	
-	//ƒZƒNƒVƒ‡ƒ“w’è
+	//ï¿½Zï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½wï¿½ï¿½
 	result = confFile.SetCurSection(_T("Color"));
 	if (result != 0) goto EXIT;
 	
-	//ƒ`ƒƒƒ“ƒlƒ‹Fæ“¾
+	//ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Fï¿½æ“¾
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		_stprintf_s(key, 32, _T("Ch-%02d-NoteRGBA"), chNo+1);
 		result = confFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
 		if (result != 0) goto EXIT;
 		pColorPalette->SetChColor(chNo, DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	}
-	//”wŒiFæ“¾
-	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000FF"));
+	//ï¿½wï¿½iï¿½Fï¿½æ“¾ï¼ˆRGB 6æ¡ â†’ RGBA 8æ¡ã«å¤‰æ›ã—ã¦èª­ã¿è¾¼ã¿ï¼‰
+	result = confFile.GetStr(_T("BackGroundRGB"), hexColor, 16, _T("000000"));
 	if (result != 0) goto EXIT;
-	pColorPalette->SetBackgroundColor(DXColorUtil::MakeColorFromHexRGB(hexColor));
+	{
+		TCHAR hexRGBA[16] = {0};
+		_stprintf_s(hexRGBA, 16, _T("%sFF"), hexColor);
+		pColorPalette->SetBackgroundColor(DXColorUtil::MakeColorFromHexRGBA(hexRGBA));
+	}
 	
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“Fæ“¾
+	//ï¿½Oï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Fï¿½æ“¾
 	result = confFile.GetStr(_T("GridLineRGBA"), hexColor, 16, "444444FF");
 	if (result != 0) goto EXIT;
 	pColorPalette->SetGridLineColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	
-	//ƒJƒEƒ“ƒ^[Fæ“¾
+	//ï¿½Jï¿½Eï¿½ï¿½ï¿½^ï¿½[ï¿½Fï¿½æ“¾
 	result = confFile.GetStr(_T("CaptionRGBA"), hexColor, 16, "FFFFFFFF");
 	if (result != 0) goto EXIT;
 	pColorPalette->SetCounterColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
@@ -264,7 +269,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒpƒŒƒbƒg“Ç‚İ‚İ
+// ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ç‚İï¿½ï¿½ï¿½
 //******************************************************************************
 int MTColorConf::_LoadColorPalettes(
 		unsigned long paletteNo,
@@ -277,12 +282,12 @@ int MTColorConf::_LoadColorPalettes(
 	TCHAR key[32] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
 	
-	//ƒZƒNƒVƒ‡ƒ“İ’è
+	//ï¿½Zï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
 	_stprintf_s(section, 32, _T("ColorPalette-%u"), paletteNo);
 	result = m_ConfFile.SetCurSection(section);
 	if (result != 0) goto EXIT;
 	
-	//ƒ`ƒƒƒ“ƒlƒ‹Fæ“¾
+	//ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Fï¿½æ“¾
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		_stprintf_s(key, 32, _T("Ch-%02u-NoteRGBA"), chNo+1);
 		result = m_ConfFile.GetStr(key, hexColor, 16, _T("FFFFFFFF"));
@@ -290,17 +295,17 @@ int MTColorConf::_LoadColorPalettes(
 		pColorPalette->SetChColor(chNo, DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	}
 	
-	//”wŒiFæ“¾
+	//ï¿½wï¿½iï¿½Fï¿½æ“¾
 	result = m_ConfFile.GetStr(_T("BackGroundRGBA"), hexColor, 16, _T("000000FF"));
 	if (result != 0) goto EXIT;
 	pColorPalette->SetBackgroundColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“Fæ“¾
+	//ï¿½Oï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Fï¿½æ“¾
 	result = m_ConfFile.GetStr(_T("GridLineRGBA"), hexColor, 16, _T("444444FF"));
 	if (result != 0) goto EXIT;
 	pColorPalette->SetGridLineColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
 	
-	//ƒJƒEƒ“ƒ^[Fæ“¾
+	//ï¿½Jï¿½Eï¿½ï¿½ï¿½^ï¿½[ï¿½Fï¿½æ“¾
 	result = m_ConfFile.GetStr(_T("CaptionRGBA"), hexColor, 16, _T("FFFFFFFF"));
 	if (result != 0) goto EXIT;
 	pColorPalette->SetCounterColor(DXColorUtil::MakeColorFromHexRGBA(hexColor));
@@ -310,20 +315,20 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’è•Û‘¶
+// ï¿½İ’ï¿½Û‘ï¿½
 //******************************************************************************
 int MTColorConf::Save()
 {
 	int result = 0;
 	unsigned long paletteNo = 0;
 	
-	//‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg”Ô†•Û‘¶
+	//ï¿½Iï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Ôï¿½ï¿½Û‘ï¿½
 	result = m_ConfFile.SetCurSection(_T("ColorSelect"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("SelectedColorPaletteNo"), m_SelectedColorPaletteNo);
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒ‰[ƒpƒŒƒbƒg 1-6 •Û‘¶
+	//ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½g 1-6 ï¿½Û‘ï¿½
 	for (paletteNo = 1; paletteNo < MT_COLOR_PALETTE_NUM_MAX; paletteNo++) {
 		result = _SaveColorPalette(paletteNo, m_pColorPalette[paletteNo]);
 		if (result != 0) goto EXIT;
@@ -334,7 +339,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒJƒ‰[ƒpƒŒƒbƒg•Û‘¶
+// ï¿½Jï¿½ï¿½ï¿½[ï¿½pï¿½ï¿½ï¿½bï¿½gï¿½Û‘ï¿½
 //******************************************************************************
 int MTColorConf::_SaveColorPalette(
 		unsigned long paletteNo,
@@ -346,14 +351,14 @@ int MTColorConf::_SaveColorPalette(
 	TCHAR section[32] = {_T('\0')};
 	TCHAR key[32] = {_T('\0')};
 	TCHAR hexColor[16] = {_T('\0')};
-	D3DXCOLOR color;
+	Color color;
 	
-	//ƒZƒNƒVƒ‡ƒ“İ’è
+	//ï¿½Zï¿½Nï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
 	_stprintf_s(section, 32, _T("ColorPalette-%u"), paletteNo);
 	result = m_ConfFile.SetCurSection(section);
 	if (result != 0) goto EXIT;
 	
-	//ƒ`ƒƒƒ“ƒlƒ‹F“o˜^
+	//ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Fï¿½oï¿½^
 	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		_stprintf_s(key, 32, _T("Ch-%02u-NoteRGBA"), chNo+1);
 		result = pColorPalette->GetChColor(chNo, &color);
@@ -363,19 +368,19 @@ int MTColorConf::_SaveColorPalette(
 		if (result != 0) goto EXIT;
 	}
 	
-	//”wŒiF“o˜^
+	//ï¿½wï¿½iï¿½Fï¿½oï¿½^
 	pColorPalette->GetBackgroundColor(&color);
 	DXColorUtil::MakeHexRGBAFromColor(color, hexColor, 16);
 	result = m_ConfFile.SetStr(_T("BackGroundRGBA"), hexColor);
 	if (result != 0) goto EXIT;
 	
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“F“o˜^
+	//ï¿½Oï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Fï¿½oï¿½^
 	pColorPalette->GetGridLineColor(&color);
 	DXColorUtil::MakeHexRGBAFromColor(color, hexColor, 16);
 	result = m_ConfFile.SetStr(_T("GridLineRGBA"), hexColor);
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒEƒ“ƒ^[F“o˜^
+	//ï¿½Jï¿½Eï¿½ï¿½ï¿½^ï¿½[ï¿½Fï¿½oï¿½^
 	pColorPalette->GetCounterColor(&color);
 	DXColorUtil::MakeHexRGBAFromColor(color, hexColor, 16);
 	result = m_ConfFile.SetStr(_T("CaptionRGBA"), hexColor);

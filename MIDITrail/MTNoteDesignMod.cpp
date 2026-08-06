@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignMod
 //
-// ƒm[ƒgƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// Note design Mod class.
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -12,25 +12,24 @@
 #include "MTConfFile.h"
 #include "MTNoteDesignMod.h"
 
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// Constructor / Destructor
 //******************************************************************************
-MTNoteDesignMod::MTNoteDesignMod(void)
+MTNoteDesignMod::MTNoteDesignMod()
 {
-	// Šî’êƒNƒ‰ƒX‚Ì_Clear()‚àŒÄ‚Î‚ê‚é‚½‚ßAŠî’êƒNƒ‰ƒX‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ÍŒÄ‚Î‚È‚¢
 	_Clear();
 }
 
-//******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
-//******************************************************************************
-MTNoteDesignMod::~MTNoteDesignMod(void)
+MTNoteDesignMod::~MTNoteDesignMod()
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// Initialize
 //******************************************************************************
 int MTNoteDesignMod::Initialize(
 		const TCHAR* pSceneName,
@@ -39,10 +38,8 @@ int MTNoteDesignMod::Initialize(
 {
 	int result = 0;
 
-	//Šî’êƒNƒ‰ƒX‚Ì‰Šú‰»ˆ—‚ğŒÄ‚Ño‚·
 	MTNoteDesign::Initialize(pSceneName, pSeqData);
 
-	//ƒpƒ‰ƒ[ƒ^İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
@@ -51,144 +48,189 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”g–äƒfƒBƒPƒCŠÔæ“¾(msec)
+// Ripple parameters
 //******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleDecayDuration()
 {
 	return (unsigned long)m_RippleDecayDuration;
 }
 
-//******************************************************************************
-// ”g–äƒŠƒŠ[ƒXŠÔæ“¾(msec)
-//******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleReleaseDuration()
 {
 	return (unsigned long)m_RippleReleaseDuration;
 }
 
-//******************************************************************************
-// •`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è
-//******************************************************************************
-D3DBLEND MTNoteDesignMod::GetRippleSrcBlend()
+D3D11_BLEND MTNoteDesignMod::GetRippleSrcBlend()
 {
 	return m_RippleSrcBlend;
 }
 
-//******************************************************************************
-// •`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è
-//******************************************************************************
-D3DBLEND MTNoteDesignMod::GetRippleDestBlend()
+D3D11_BLEND MTNoteDesignMod::GetRippleDestBlend()
 {
 	return m_RippleDestBlend;
 }
 
-//******************************************************************************
-// ”g–äã‘‚«‰ñ”
-//******************************************************************************
 unsigned long MTNoteDesignMod::GetRippleOverwriteTimes()
 {
 	return (unsigned long)m_RippleOverwriteTimes;
 }
 
-//******************************************************************************
-// ”g–ä•`‰æŠÔŠu
-//******************************************************************************
 float MTNoteDesignMod::GetRippleSpacing()
 {
 	return m_RippleSpacing;
 }
 
 //******************************************************************************
-// ”g–äcƒTƒCƒYæ“¾
+// Note envelope (3-phase: Decay/Sustain/Release)
 //******************************************************************************
-float MTNoteDesignMod::GetRippleHeight(
-		float rate	//ƒTƒCƒY”ä—¦
+MTNoteEnvelopeResult MTNoteDesignMod::CalcNoteEnvelope(
+		unsigned long playTimeMSec,
+		unsigned long startTime,
+		unsigned long endTime
 	)
+{
+	MTNoteEnvelopeResult result = { 0.0f, BeforeNoteON };
+
+	if (playTimeMSec > endTime) {
+		return result;
+	}
+
+	unsigned long decayDuration = (unsigned long)m_RippleDecayDuration;
+	unsigned long releaseDuration = (unsigned long)m_RippleReleaseDuration;
+	unsigned long noteLen = endTime - startTime;
+
+	float decayRatio = 0.3f;
+	float sustainRatio = 0.4f;
+	float releaseRatio = 0.3f;
+
+	if (noteLen < decayDuration) {
+		// Case A: no adjustment (whole note stays in Decay)
+	}
+	else if (noteLen < (decayDuration + releaseDuration)) {
+		// Case B: eliminate Sustain, shrink Release to fit
+		releaseDuration = noteLen - decayDuration;
+		decayRatio = 0.5f;
+		sustainRatio = 0.0f;
+		releaseRatio = 0.5f;
+	}
+	else if (noteLen < (decayDuration + releaseDuration) * 2) {
+		// Case C: midpoint split, eliminate Sustain
+		unsigned long midTime = (startTime + decayDuration) / 2
+		                      + (endTime - releaseDuration) / 2;
+		decayDuration = midTime - startTime;
+		releaseDuration = endTime - midTime;
+		decayRatio = 0.5f;
+		sustainRatio = 0.0f;
+		releaseRatio = 0.5f;
+	}
+
+	// Phase 1: Decay
+	if (playTimeMSec < (startTime + decayDuration)) {
+		result.keyStatus = BeforeNoteON;
+		if (decayDuration == 0) {
+			result.keyDownRate = 0.0f;
+		}
+		else {
+			result.keyDownRate = decayRatio * (float)(playTimeMSec - startTime) / (float)decayDuration;
+		}
+		return result;
+	}
+	// Phase 2: Sustain
+	if (playTimeMSec <= (endTime - releaseDuration)) {
+		result.keyStatus = NoteON;
+		unsigned long denominator = noteLen - (decayDuration + releaseDuration);
+		if (denominator > 0) {
+			result.keyDownRate = decayRatio + sustainRatio
+				* (float)(playTimeMSec - (startTime + decayDuration)) / (float)denominator;
+		}
+		else {
+			result.keyDownRate = decayRatio + sustainRatio;
+		}
+		return result;
+	}
+	// Phase 3: Release
+	result.keyStatus = AfterNoteOFF;
+	if (releaseDuration == 0) {
+		result.keyDownRate = 1.0f;
+	}
+	else {
+		result.keyDownRate = decayRatio + sustainRatio + releaseRatio
+			* (float)(playTimeMSec - (endTime - releaseDuration)) / (float)releaseDuration;
+	}
+	return result;
+}
+
+//******************************************************************************
+// Ripple size (rate-based decay)
+//******************************************************************************
+float MTNoteDesignMod::GetRippleHeight(float rate)
 {
 	return m_RippleHeight * GetDecayCoefficient(rate);
 }
 
-//******************************************************************************
-// ”g–ä‰¡ƒTƒCƒYæ“¾
-//******************************************************************************
-float MTNoteDesignMod::GetRippleWidth(
-		float rate	//ƒTƒCƒY”ä—¦
-	)
+float MTNoteDesignMod::GetRippleWidth(float rate)
 {
 	return m_RippleWidth * GetDecayCoefficient(rate);
 }
 
-//******************************************************************************
-// ”g–ä“§–¾“xæ“¾
-//******************************************************************************
-float MTNoteDesignMod::GetRippleAlpha(
-		float rate	//ƒTƒCƒY”ä—¦
-	)
+float MTNoteDesignMod::GetRippleAlpha(float rate)
 {
 	return GetDecayCoefficient(rate);
 }
 
-//******************************************************************************
-// Œ¸ŠŒW”æ“¾
-//******************************************************************************
-float MTNoteDesignMod::GetDecayCoefficient(
-		float rate,			//ƒTƒCƒY”ä—¦
-		float saturation	//–O˜aƒŒƒxƒ‹
-	)
+float MTNoteDesignMod::GetDecayCoefficient(float rate, float saturation)
 {
 	float coeff = 1.0f;
 
-	if(rate < 0.5f) {
-		coeff = (pow(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / saturation;
-	} else {
-		coeff = (16.0f - pow(2.0f, (rate - 0.5f) * 8.0f)) / saturation;
+	if (rate < 0.5f) {
+		coeff = (powf(2.0f, (0.5f - rate) * 8.0f) + 14.0f) / saturation;
+	}
+	else {
+		coeff = (16.0f - powf(2.0f, (rate - 0.5f) * 8.0f)) / saturation;
 	}
 
-	coeff = coeff > 1.0f ? 1.0f : coeff;
+	if (coeff > 1.0f) coeff = 1.0f;
 
 	return coeff;
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+// Active note box vertex positions
 //******************************************************************************
 void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-		short pitchBendValue,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-		float rate							//È—ª‰ÂFƒTƒCƒY”ä—¦
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity,
+		float rate
 	)
 {
-	D3DXVECTOR3 center;
-	float bh, bw = 0.0f;
+	Vector3 center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo,
+	                                        pitchBendValue, pitchBendSensitivity);
 	float curSizeRatio = 1.0f;
-	
-	center = GetNoteBoxCenterPosX(curTickTime, portNo, chNo, noteNo, pitchBendValue, pitchBendSensitivity);
-	
 	if (rate > 0.0f) {
 		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
 	}
-	
-	bh = GetNoteBoxHeight() * curSizeRatio;
-	bw = GetNoteBoxWidth() * curSizeRatio;
-	
-	*pVector0 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z+(bw/2.0f));
-	*pVector1 = D3DXVECTOR3(center.x, center.y+(bh/2.0f), center.z-(bw/2.0f));
-	*pVector2 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z+(bw/2.0f));
-	*pVector3 = D3DXVECTOR3(center.x, center.y-(bh/2.0f), center.z-(bw/2.0f));
+
+	float bh = GetNoteBoxHeight() * curSizeRatio;
+	float bw = GetNoteBoxWidth() * curSizeRatio;
+
+	*pVector0 = Vector3(center.x, center.y + bh / 2.0f, center.z + bw / 2.0f);
+	*pVector1 = Vector3(center.x, center.y + bh / 2.0f, center.z - bw / 2.0f);
+	*pVector2 = Vector3(center.x, center.y - bh / 2.0f, center.z + bw / 2.0f);
+	*pVector3 = Vector3(center.x, center.y - bh / 2.0f, center.z - bw / 2.0f);
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[æ“¾
+// Active note box color
 //******************************************************************************
-D3DXCOLOR MTNoteDesignMod::GetActiveNoteBoxColor(
+Color MTNoteDesignMod::GetActiveNoteBoxColor(
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
@@ -196,90 +238,59 @@ D3DXCOLOR MTNoteDesignMod::GetActiveNoteBoxColor(
 	)
 {
 	float alpha = GetDecayCoefficient(rate, 30.0f);
+	Color color = GetNoteBoxColor(portNo, chNo, noteNo);
 
-	D3DXCOLOR color;
-	float r,g,b,a = 0.0f;
+	float r = color.R() + ((1.0f - color.R()) * alpha * m_ActiveNoteWhiteRate);
+	float g = color.G() + ((1.0f - color.G()) * alpha * m_ActiveNoteWhiteRate);
+	float b = color.B() + ((1.0f - color.B()) * alpha * m_ActiveNoteWhiteRate);
+	float a = color.A();
 
-	color = GetNoteBoxColor(portNo, chNo, noteNo);
-
-	//m_ActiveNoteDuration ƒŠƒŠ[ƒXƒ^ƒCƒ€
-	//  ”­‰¹ŠJn“_‚©‚çƒm[ƒgF‚ğŒ³‚É–ß‚·‚Ü‚Å‚ÌŠÔ
-	//  ‚½‚¾‚µ m_ActiveNoteEmissive ‚É‚æ‚Á‚ÄƒŠƒŠ[ƒXŒã‚àƒm[ƒgOFF‚Ü‚Å”­Œõ‚·‚é
-
-	//m_ActiveNoteWhiteRate Å‘å”’F—¦
-	//  0.0 ¨ ƒm[ƒgF•Ï‰»‚È‚µ
-	//  0.5 ¨ ƒm[ƒgF‚Æ”’‚Ì’†ŠÔF
-	//  1.0 ¨ ”’
-
-	r = color.r + ((1.0f - color.r) * alpha * m_ActiveNoteWhiteRate);
-	g = color.g + ((1.0f - color.g) * alpha * m_ActiveNoteWhiteRate);
-	b = color.b + ((1.0f - color.b) * alpha * m_ActiveNoteWhiteRate);
-	a = color.a;
-	color = D3DXCOLOR(r, g, b, a);
-
-	return color;
+	return Color(r, g, b, a);
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// Clear
 //******************************************************************************
-void MTNoteDesignMod::_Clear(void)
+void MTNoteDesignMod::_Clear()
 {
 	MTNoteDesign::_Clear();
 
 	m_RippleDecayDuration = 100;
 	m_RippleReleaseDuration = 250;
+	m_RippleSrcBlend = D3D11_BLEND_SRC_ALPHA;
+	m_RippleDestBlend = D3D11_BLEND_ONE;
+	m_RippleOverwriteTimes = 3;
+	m_RippleSpacing = 0.002f;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// Load configuration
 //******************************************************************************
-int MTNoteDesignMod::_LoadConfFile(
-		const TCHAR* pSceneName
-	)
+int MTNoteDesignMod::_LoadConfFile(const TCHAR* pSceneName)
 {
 	int result = 0;
 	MTConfFile confFile;
 
-	//Šî’êƒNƒ‰ƒX‚Ì“Ç‚İ‚İˆ—‚ğŒÄ‚Ño‚·
 	result = MTNoteDesign::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚ğŠJ‚­
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//----------------------------------
-	//”g–äî•ñ
-	//----------------------------------
 	result = confFile.SetCurSection(_T("Ripple"));
 	if (result != 0) goto EXIT;
 
-	//”g–äƒfƒBƒPƒCŠÔ(msec)
-	result = confFile.GetInt(_T("DecayDuration"), &m_RippleDecayDuration, 100);
-	if (result != 0) goto EXIT;
+	confFile.GetInt(_T("DecayDuration"), &m_RippleDecayDuration, 100);
+	confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
 
-	//”g–äƒŠƒŠ[ƒXŠÔ(msec)
-	result = confFile.GetInt(_T("ReleaseDuration"), &m_RippleReleaseDuration, 250);
-	if (result != 0) goto EXIT;
+	// Blend values: D3D9 D3DBLEND and D3D11 D3D11_BLEND share the same numeric values
+	// for common modes (SRCALPHA=5, ONE=2, etc.), so ini files are compatible.
+	confFile.GetInt(_T("SrcBlend"), (int*)&m_RippleSrcBlend, D3D11_BLEND_SRC_ALPHA);
+	confFile.GetInt(_T("DestBlend"), (int*)&m_RippleDestBlend, D3D11_BLEND_ONE);
 
-	//•`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è Default: D3DBLEND_SRCALPHA(5)
-	result = confFile.GetInt(_T("SrcBlend"), (int *)&m_RippleSrcBlend, 5);
-	if (result != 0) goto EXIT;
-
-	//•`‰ææi”wŒi‰æ‘œjƒuƒŒƒ“ƒhw’è Default: D3DBLEND_ONE(2)
-	result = confFile.GetInt(_T("DestBlend"), (int *)&m_RippleDestBlend, 2);
-	if (result != 0) goto EXIT;
-
-	//”g–äã‘‚«‰ñ”
-	result = confFile.GetInt(_T("OverwriteTimes"), &m_RippleOverwriteTimes, 3);
-	if (result != 0) goto EXIT;
-
-	//”g–ä•`‰æŠÔŠu
-	result = confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
-	if (result != 0) goto EXIT;
+	confFile.GetInt(_T("OverwriteTimes"), &m_RippleOverwriteTimes, 3);
+	confFile.GetFloat(_T("Spacing"), &m_RippleSpacing, 0.002f);
 
 EXIT:;
 	return result;
 }
-

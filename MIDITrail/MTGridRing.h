@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGridRing
 //
-// ƒOƒŠƒbƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+// ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
@@ -20,29 +20,29 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-//  ƒOƒŠƒbƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+//  ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTGridRing
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTGridRing(void);
 	virtual ~MTGridRing(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
 private:
@@ -53,17 +53,17 @@ private:
 	bool m_isVisible;
 	bool m_isEnable;
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTGRIDBOX_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
-	//ƒOƒŠƒbƒh’¸“_¶¬
+	//ã‚°ãƒªãƒƒãƒ‰é ‚ç‚¹ç”Ÿæˆ
 	int _CreateVertexOfGrid(
 			MTGRIDBOX_VERTEX* pVertex,
 			unsigned long* pIbIndex,
@@ -71,7 +71,7 @@ private:
 			SMBarList* pBarList
 		);
 
-	//ƒŠƒ“ƒO’¸“_¶¬
+	//ãƒªãƒ³ã‚°é ‚ç‚¹ç”Ÿæˆ
 	int _CreateVertexOfRing(
 			MTGRIDBOX_VERTEX* pVertex,
 			unsigned long* pVirtexIndex,

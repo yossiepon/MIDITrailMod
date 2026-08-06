@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -15,17 +15,17 @@
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒh•`‰æModƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboardMod : public MTPianoKeyboard
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPianoKeyboardMod(void);
 	virtual ~MTPianoKeyboardMod(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
@@ -33,7 +33,7 @@ public:
 			LPDIRECT3DTEXTURE9 pTexture = NULL
 		);
 
-	//XV
+	//æ›´æ–°
 	int Transform(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			D3DXVECTOR3 basePosVector,
@@ -41,7 +41,7 @@ public:
 			float rollAngle
 		);
 
-	//ƒL[ó‘Ô•ÏX
+	//ã‚­ãƒ¼çŠ¶æ…‹å¤‰æ›´
 	virtual int PushKey(
 			unsigned char chNo,
 			unsigned char noteNo,
@@ -52,7 +52,7 @@ public:
 
 private:
 
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³
 	MTPianoKeyboardDesignMod m_KeyboardDesignMod;
 
 };

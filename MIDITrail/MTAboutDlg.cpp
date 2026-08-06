@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTAboutDlg
 //
-// ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -17,12 +17,12 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^Ý’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTAboutDlg* MTAboutDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTAboutDlg::MTAboutDlg(void)
 {
@@ -30,14 +30,14 @@ MTAboutDlg::MTAboutDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTAboutDlg::~MTAboutDlg(void)
 {
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTAboutDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -45,7 +45,7 @@ INT_PTR CALLBACK MTAboutDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFŽÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTAboutDlg::_WndProcImpl(
 		HWND hDlg,
@@ -78,7 +78,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\Ž¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTAboutDlg::Show(
 		HWND hParentWnd
@@ -88,19 +88,19 @@ int MTAboutDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ðŽæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,						//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_ABOUTBOX),	//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,						//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc						//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,						//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_ABOUTBOX),	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,						//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc						//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -112,7 +112,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTAboutDlg::_OnInitDlg(
 		HWND hDlg
@@ -123,7 +123,7 @@ int MTAboutDlg::_OnInitDlg(
 	WCHAR* pVersion = NULL;
 	WCHAR* pCopyright = NULL;
 
-	//ƒo[ƒWƒ‡ƒ“•¶Žš—ñ
+	//ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ—
 #ifdef _WIN64
 	//64bit
 	pVersion = MIDITRAIL_VERSION_STRING_X64;
@@ -132,17 +132,17 @@ int MTAboutDlg::_OnInitDlg(
 	pVersion = MIDITRAIL_VERSION_STRING_X86;
 #endif
 
-	//ƒRƒs[ƒ‰ƒCƒg•¶Žš—ñ
+	//ã‚³ãƒ”ãƒ¼ãƒ©ã‚¤ãƒˆæ–‡å­—åˆ—
 	pCopyright = MIDITRAIL_COPYRIGHT;
 
-	//ƒo[ƒWƒ‡ƒ“•¶Žš—ñÝ’è
+	//ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ—è¨­å®š
 	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_VERSION), pVersion);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒRƒs[ƒ‰ƒCƒg•¶Žš—ñÝ’è
+	//ã‚³ãƒ”ãƒ¼ãƒ©ã‚¤ãƒˆæ–‡å­—åˆ—è¨­å®š
 	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT), pCopyright);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesign
 //
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ï¿½sï¿½Aï¿½mï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½fï¿½Uï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒL[ƒ{[ƒh‚ÌŠî–{”z’uÀ•W
+// ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ÌŠï¿½{ï¿½zï¿½uï¿½ï¿½ï¿½W
 //
 //  +y   +z
 //  |    /
@@ -21,38 +21,37 @@
 
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ƒNƒ‰ƒX
+// ï¿½sï¿½Aï¿½mï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½fï¿½Uï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X
 //******************************************************************************
 class MTPianoKeyboardDesign
 {
 public:
 
-	//ƒL[í•Ê
-	//  •Œ®‚Í”’Œ®‚Æ”’Œ®‚Ì’†S‚©‚ç”÷–­‚É‚¸‚ê‚Ä”z’u‚³‚ê‚Ä‚¢‚é
-	//  ‚±‚Ì‚½‚ß”’Œ®‚ÌŒ`‚ÍC‚©‚çB‚Ü‚Å‚·‚×‚ÄˆÙ‚È‚é
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½
+	//  ï¿½ï¿½ï¿½ï¿½ï¿½Í”ï¿½ï¿½ï¿½ï¿½Æ”ï¿½ï¿½ï¿½ï¿½Ì’ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½Ä”zï¿½uï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+	//  ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½ß”ï¿½ï¿½ï¿½ï¿½ÌŒ`ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½Bï¿½Ü‚Å‚ï¿½ï¿½×‚ÄˆÙ‚È‚ï¿½
 	enum KeyType {
-		KeyWhiteC,	//”’Œ®C
-		KeyWhiteD,	//”’Œ®D
-		KeyWhiteE,	//”’Œ®E
-		KeyWhiteF,	//”’Œ®F
-		KeyWhiteG,	//”’Œ®G
-		KeyWhiteA,	//”’Œ®A
-		KeyWhiteB,	//”’Œ®B
-		KeyBlack	//•Œ®
+		KeyWhiteC,	//ï¿½ï¿½ï¿½ï¿½C
+		KeyWhiteD,	//ï¿½ï¿½ï¿½ï¿½D
+		KeyWhiteE,	//ï¿½ï¿½ï¿½ï¿½E
+		KeyWhiteF,	//ï¿½ï¿½ï¿½ï¿½F
+		KeyWhiteG,	//ï¿½ï¿½ï¿½ï¿½G
+		KeyWhiteA,	//ï¿½ï¿½ï¿½ï¿½A
+		KeyWhiteB,	//ï¿½ï¿½ï¿½ï¿½B
+		KeyBlack	//ï¿½ï¿½ï¿½ï¿½
 	};
 
-	//”­‰¹’†ƒL[Fí•Ê
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½[ï¿½Fï¿½ï¿½ï¿½
 	enum ActiveKeyColorType {
-		DefaultColor,	//ƒfƒtƒHƒ‹ƒgF
-		NoteColor		//ƒm[ƒgF
+		DefaultColor,	//ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½F
+		NoteColor		//ï¿½mï¿½[ï¿½gï¿½F
 	};
 
 public:
@@ -60,143 +59,143 @@ public:
 	MTPianoKeyboardDesign(void);
 	virtual ~MTPianoKeyboardDesign(void);
 
-	//‰Šú‰»
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 // >>> modify 20120728 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 // <<< modify 20120728 yossiepon end
 
-	//ƒ|[ƒgŒ´“_À•Wæ“¾
+	//ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	float GetPortOriginX(unsigned char portNo);
 	float GetPortOriginY(unsigned char portNo);
 	float GetPortOriginZ(unsigned char portNo);
 
-	//ƒL[í•Êæ“¾
+	//ï¿½Lï¿½[ï¿½ï¿½Êæ“¾
 	KeyType GetKeyType(unsigned char noteNo);
 
-	//ƒL[’†SXÀ•Wæ“¾
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½SXï¿½ï¿½ï¿½Wï¿½æ“¾
 	float GetKeyCenterPosX(unsigned char noteNo);
 
-	//”’Œ®”z’uŠÔŠuæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½uï¿½ÔŠuï¿½æ“¾
 	float GetWhiteKeyStep();
 
-	//”’Œ®‰¡ƒTƒCƒYæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Tï¿½Cï¿½Yï¿½æ“¾
 	float GetWhiteKeyWidth();
 
-	//”’Œ®‚‚³æ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 	float GetWhiteKeyHeight();
 
-	//”’Œ®’·‚³æ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 	float GetWhiteKeyLen();
 
-	//•Œ®‰¡ƒTƒCƒYæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Tï¿½Cï¿½Yï¿½æ“¾
 	float GetBlackKeyWidth();
 
-	//•Œ®‚‚³æ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 	float GetBlackKeyHeight();
 
-	//•Œ®ŒXÎ’·‚³æ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Î’ï¿½ï¿½ï¿½ï¿½æ“¾
 	float GetBlackKeySlopeLen();
 
-	//•Œ®’·‚³æ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 	float GetBlackKeyLen();
 
-	//ƒL[ŠÔŠuƒTƒCƒYæ“¾
+	//ï¿½Lï¿½[ï¿½ÔŠuï¿½Tï¿½Cï¿½Yï¿½æ“¾
 	float GetKeySpaceSize();
 
-	//ƒL[‰Ÿ‰º‰ñ“]’†SY²À•Wæ“¾
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½SYï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½æ“¾
 	float GetKeyRotateAxisXPos();
 
-	//ƒL[‰Ÿ‰º‰ñ“]Šp“x
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]ï¿½pï¿½x
 	float GetKeyRotateAngle();
 
-	//ƒL[‰º~ŠÔæ“¾(msec)
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½Ôæ“¾(msec)
 	unsigned long GetKeyDownDuration();
 
-	//ƒL[ã¸ŠÔæ“¾(msec)
+	//ï¿½Lï¿½[ï¿½ã¸ï¿½ï¿½ï¿½Ôæ“¾(msec)
 	unsigned long GetKeyUpDuration();
 
-	//ƒsƒbƒ`ƒxƒ“ƒhƒL[ƒ{[ƒhƒVƒtƒg—Êæ“¾
+	//ï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½Vï¿½tï¿½gï¿½Êæ“¾
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
 
-	//ƒm[ƒgƒhƒƒbƒvÀ•Wæ“¾
+	//ï¿½mï¿½[ï¿½gï¿½hï¿½ï¿½ï¿½bï¿½vï¿½ï¿½ï¿½Wï¿½æ“¾
 	float GetNoteDropPosZ(unsigned char noteNo);
 
-	//”’Œ®ƒJƒ‰[æ“¾
-	D3DXCOLOR GetWhiteKeyColor();
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½æ“¾
+	DirectX::SimpleMath::Color GetWhiteKeyColor();
 
-	//•Œ®ƒJƒ‰[æ“¾
-	D3DXCOLOR GetBlackKeyColor();
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½[ï¿½æ“¾
+	DirectX::SimpleMath::Color GetBlackKeyColor();
 
-	//”­‰¹’†ƒL[ƒJƒ‰[æ“¾
-	D3DXCOLOR GetActiveKeyColor(
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½[ï¿½Jï¿½ï¿½ï¿½[ï¿½æ“¾
+	DirectX::SimpleMath::Color GetActiveKeyColor(
 			unsigned char noteNo,
 			unsigned long elapsedTime,
-			D3DXCOLOR* pNoteColor = NULL
+			DirectX::SimpleMath::Color* pNoteColor = NULL
 		);
 
-	//”’Œ®ƒeƒNƒXƒ`ƒƒÀ•Wæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½æ“¾
 	void GetWhiteKeyTexturePosTop(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos0,
-			D3DXVECTOR2* pTexPos1,
-			D3DXVECTOR2* pTexPos2,
-			D3DXVECTOR2* pTexPos3,
-			D3DXVECTOR2* pTexPos4,
-			D3DXVECTOR2* pTexPos5,
-			D3DXVECTOR2* pTexPos6,
-			D3DXVECTOR2* pTexPos7
+			DirectX::SimpleMath::Vector2* pTexPos0,
+			DirectX::SimpleMath::Vector2* pTexPos1,
+			DirectX::SimpleMath::Vector2* pTexPos2,
+			DirectX::SimpleMath::Vector2* pTexPos3,
+			DirectX::SimpleMath::Vector2* pTexPos4,
+			DirectX::SimpleMath::Vector2* pTexPos5,
+			DirectX::SimpleMath::Vector2* pTexPos6,
+			DirectX::SimpleMath::Vector2* pTexPos7
 		);
 	void GetWhiteKeyTexturePosFront(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos0,
-			D3DXVECTOR2* pTexPos1,
-			D3DXVECTOR2* pTexPos2,
-			D3DXVECTOR2* pTexPos3
+			DirectX::SimpleMath::Vector2* pTexPos0,
+			DirectX::SimpleMath::Vector2* pTexPos1,
+			DirectX::SimpleMath::Vector2* pTexPos2,
+			DirectX::SimpleMath::Vector2* pTexPos3
 		);
 	void GetWhiteKeyTexturePosSingleColor(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos
+			DirectX::SimpleMath::Vector2* pTexPos
 		);
 
-	//•Œ®ƒeƒNƒXƒ`ƒƒÀ•Wæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½Nï¿½Xï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½æ“¾
 	void GetBlackKeyTexturePos(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos0,
-			D3DXVECTOR2* pTexPos1,
-			D3DXVECTOR2* pTexPos2,
-			D3DXVECTOR2* pTexPos3,
-			D3DXVECTOR2* pTexPos4,
-			D3DXVECTOR2* pTexPos5,
-			D3DXVECTOR2* pTexPos6,
-			D3DXVECTOR2* pTexPos7,
-			D3DXVECTOR2* pTexPos8,
-			D3DXVECTOR2* pTexPos9,
+			DirectX::SimpleMath::Vector2* pTexPos0,
+			DirectX::SimpleMath::Vector2* pTexPos1,
+			DirectX::SimpleMath::Vector2* pTexPos2,
+			DirectX::SimpleMath::Vector2* pTexPos3,
+			DirectX::SimpleMath::Vector2* pTexPos4,
+			DirectX::SimpleMath::Vector2* pTexPos5,
+			DirectX::SimpleMath::Vector2* pTexPos6,
+			DirectX::SimpleMath::Vector2* pTexPos7,
+			DirectX::SimpleMath::Vector2* pTexPos8,
+			DirectX::SimpleMath::Vector2* pTexPos9,
 			bool isColored = false
 		);
 	void GetBlackKeyTexturePosSingleColor(
 			unsigned char noteNo,
-			D3DXVECTOR2* pTexPos,
+			DirectX::SimpleMath::Vector2* pTexPos,
 			bool isColored = false
 		);
 
-	//ƒL[ƒ{[ƒhŠî€À•Wæ“¾
-	D3DXVECTOR3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
+	//ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½î€ï¿½ï¿½ï¿½Wï¿½æ“¾
+	DirectX::SimpleMath::Vector3 GetKeyboardBasePos(unsigned char portNo, unsigned char chNo);
 
-	//ƒL[ƒ{[ƒhÅ‘å•\¦”æ“¾
+	//ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½Å‘ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 	unsigned long GetKeyboardMaxDispNum();
 
 // >>> add 20180404 yossiepon begin
 	void SetKeyboardSingle();
 // <<< add 20180404 yossiepon end
 
-	//ƒL[•\¦”ÍˆÍæ“¾
+	//ï¿½Lï¿½[ï¿½\ï¿½ï¿½ï¿½ÍˆÍæ“¾
 	unsigned char GetKeyDispRangeStart();
 	unsigned char GetKeyDispRangeEnd();
 	bool IsKeyDisp(unsigned char noteNo);
 
 private:
 
-	//ƒL[î•ñ
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½
 	typedef struct {
 		KeyType keyType;
 		float keyCenterPosX;
@@ -204,14 +203,14 @@ private:
 
 private:
 
-	//ƒL[î•ñ”z—ñ
+	//ï¿½Lï¿½[ï¿½ï¿½ï¿½zï¿½ï¿½
 	MTKeyInfo m_KeyInfo[SM_MAX_NOTE_NUM];
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ƒ|[ƒgî•ñ
+	//ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½
 	SMPortList m_PortList;
 	unsigned char m_PortIndex[SM_MAX_PORT_NUM];
 
@@ -219,7 +218,7 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒXƒP[ƒ‹î•ñ
+	//ï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½
 	float m_WhiteKeyStep;
 	float m_WhiteKeyWidth;
 	float m_WhiteKeyHeight;
@@ -234,13 +233,13 @@ private:
 	float m_BlackKeyShiftCDE;
 	float m_BlackKeyShiftFGAB;
 
-	//ƒL[‰ñ“]î•ñ
+	//ï¿½Lï¿½[ï¿½ï¿½]ï¿½ï¿½ï¿½
 	float m_KeyRotateAxisXPos;
 	float m_KeyRotateAngle;
 	int m_KeyDownDuration;
 	int m_KeyUpDuration;
 
-	//ƒL[ƒ{[ƒh”z’uî•ñ
+	//ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½zï¿½uï¿½ï¿½ï¿½
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
@@ -255,12 +254,12 @@ private:
 	float m_KeyboardStepZ;
 	int m_KeyboardMaxDispNum;
 
-	//ƒL[Fî•ñ
-	D3DXCOLOR m_WhiteKeyColor;
-	D3DXCOLOR m_BlackKeyColor;
+	//ï¿½Lï¿½[ï¿½Fï¿½ï¿½ï¿½
+	DirectX::SimpleMath::Color m_WhiteKeyColor;
+	DirectX::SimpleMath::Color m_BlackKeyColor;
 
-	//”­‰¹’†ƒL[Fî•ñ
-	D3DXCOLOR m_ActiveKeyColor;
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½[ï¿½Fï¿½ï¿½ï¿½
+	DirectX::SimpleMath::Color m_ActiveKeyColor;
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
@@ -274,7 +273,7 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒL[•\¦”ÍˆÍ
+	//ï¿½Lï¿½[ï¿½\ï¿½ï¿½ï¿½Íˆï¿½
 	int m_KeyDispRangeStart;
 	int m_KeyDispRangeEnd;
 

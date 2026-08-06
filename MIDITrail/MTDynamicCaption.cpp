@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTDynamicCaption
 //
-// “®“IƒLƒƒƒvƒVƒ‡ƒ“•`‰æƒNƒ‰ƒX
+// å‹•çš„ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTDynamicCaption::MTDynamicCaption(void)
 {
@@ -27,7 +27,7 @@ MTDynamicCaption::MTDynamicCaption(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTDynamicCaption::~MTDynamicCaption(void)
 {
@@ -35,7 +35,7 @@ MTDynamicCaption::~MTDynamicCaption(void)
 }
 
 //******************************************************************************
-// ƒtƒHƒ“ƒgƒ^ƒCƒ‹¶¬
+// ãƒ•ã‚©ãƒ³ãƒˆã‚¿ã‚¤ãƒ«ç”Ÿæˆ
 //******************************************************************************
 int MTDynamicCaption::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -64,11 +64,11 @@ int MTDynamicCaption::Create(
 	
 	m_CaptionSize = captionSize;
 	
-	//ƒeƒNƒXƒ`ƒƒ¶¬
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 	result = _CreateTexture(pD3DDevice, pFontName, fontSize, pCharacters);
 	if (result != 0) goto EXIT;
 	
-	//ƒ^ƒCƒ‹‚Ì’¸“_‚ğ¶¬‚·‚é
+	//ã‚¿ã‚¤ãƒ«ã®é ‚ç‚¹ã‚’ç”Ÿæˆã™ã‚‹
 	result = _CreateVertex();
 	if (result != 0) goto EXIT;
 
@@ -77,7 +77,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒƒTƒCƒYæ“¾
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºå–å¾—
 //******************************************************************************
 void MTDynamicCaption::GetTextureSize(
 		unsigned long* pHeight,
@@ -88,7 +88,7 @@ void MTDynamicCaption::GetTextureSize(
 }
 
 //******************************************************************************
-// •¶š—ñİ’è
+// æ–‡å­—åˆ—è¨­å®š
 //******************************************************************************
 int MTDynamicCaption::SetString(
 		WCHAR* pStr
@@ -129,7 +129,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •¶š—ñİ’è
+// æ–‡å­—åˆ—è¨­å®š
 //******************************************************************************
 void MTDynamicCaption::SetColor(
 		D3DXCOLOR color
@@ -139,7 +139,7 @@ void MTDynamicCaption::SetColor(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTDynamicCaption::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -161,58 +161,58 @@ int MTDynamicCaption::Draw(
 		goto EXIT;
 	}
 
-	//’¸“_À•Wİ’è
+	//é ‚ç‚¹åº§æ¨™è¨­å®š
 	_SetVertexPosition(
-			m_pVertex,	//’¸“_À•W”z—ñ
-			x,			//•`‰æˆÊ’ux
-			y,			//•`‰æˆÊ’uy
-			magRate		//Šg‘å—¦
+			m_pVertex,	//é ‚ç‚¹åº§æ¨™é…åˆ—
+			x,			//æç”»ä½ç½®x
+			y,			//æç”»ä½ç½®y
+			magRate		//æ‹¡å¤§ç‡
 		);
 
-	//’¸“_Fİ’è
+	//é ‚ç‚¹è‰²è¨­å®š
 	_SetVertexColor(m_pVertex, m_Color);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉƒeƒNƒXƒ`ƒƒ‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è¨­å®š
 	hresult = pD3DDevice->SetTexture(
-					0,							//ƒXƒe[ƒW¯•Êq
-					m_FontTexture.GetTexture()	//ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					0,							//ã‚¹ãƒ†ãƒ¼ã‚¸è­˜åˆ¥å­
+					m_FontTexture.GetTexture()	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚É’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg‚ğİ’è
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’è¨­å®š
 	hresult = pD3DDevice->SetFVF(_GetFVFFormat());
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éƒ}ƒeƒŠƒAƒ‹‚ğİ’è
-	//‚È‚µ
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’è¨­å®š
+	//ãªã—
 
-	//‘Sƒ{[ƒh•`‰æ
+	//å…¨ãƒœãƒ¼ãƒ‰æç”»
 	hresult = pD3DDevice->DrawPrimitiveUP(
-					D3DPT_TRIANGLELIST,				//ƒvƒŠƒ~ƒeƒBƒuí•Ê
-					2 * m_CaptionSize,				//ƒvƒŠƒ~ƒeƒBƒu”
-					m_pVertex,						//’¸“_ƒf[ƒ^
-					sizeof(MTDYNAMICCAPTION_VERTEX)	//’¸“_ƒf[ƒ^‚ÌƒTƒCƒY
+					D3DPT_TRIANGLELIST,				//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
+					2 * m_CaptionSize,				//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°
+					m_pVertex,						//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
+					sizeof(MTDYNAMICCAPTION_VERTEX)	//é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, m_CaptionSize);
@@ -224,7 +224,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTDynamicCaption::Release()
 {
@@ -235,7 +235,7 @@ void MTDynamicCaption::Release()
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ¶¬
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆ
 //******************************************************************************
 int MTDynamicCaption::_CreateTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -249,18 +249,18 @@ int MTDynamicCaption::_CreateTexture(
 	unsigned long color = 0x00FFFFFF;
 	bool isForceFixedPitch = true;
 
-	//ƒ^ƒCƒ‹•¶šˆê——‚ğŠi”[
+	//ã‚¿ã‚¤ãƒ«æ–‡å­—ä¸€è¦§ã‚’æ ¼ç´
 	eresult = wcscpy_s(m_Chars, MTDYNAMICCAPTION_MAX_CHARS, pCharacters);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//ƒtƒHƒ“ƒgİ’èFŒÅ’èƒsƒbƒ`‹­§
+	//ãƒ•ã‚©ãƒ³ãƒˆè¨­å®šï¼šå›ºå®šãƒ”ãƒƒãƒå¼·åˆ¶
 	result = m_FontTexture.SetFont(pFontName, fontSize, color, isForceFixedPitch);
 	if (result != 0) goto EXIT;
 
-	//ƒ^ƒCƒ‹•¶šˆê——ƒeƒNƒXƒ`ƒƒì¬
+	//ã‚¿ã‚¤ãƒ«æ–‡å­—ä¸€è¦§ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½œæˆ
 	result = m_FontTexture.CreateTexture(pD3DDevice, pCharacters);
 	if (result != 0) goto EXIT;
 
@@ -269,7 +269,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒHƒ“ƒgƒ^ƒCƒ‹’¸“_¶¬
+// ãƒ•ã‚©ãƒ³ãƒˆã‚¿ã‚¤ãƒ«é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTDynamicCaption::_CreateVertex()
 {
@@ -277,7 +277,7 @@ int MTDynamicCaption::_CreateVertex()
 	unsigned long i = 0;
 	MTDYNAMICCAPTION_VERTEX* pVertex = NULL;
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	try {
 		pVertex = new MTDYNAMICCAPTION_VERTEX[6*m_CaptionSize];
 	}
@@ -286,20 +286,20 @@ int MTDynamicCaption::_CreateVertex()
 		goto EXIT;
 	}
 
-	//’¸“_À•Wİ’è
+	//é ‚ç‚¹åº§æ¨™è¨­å®š
 	_SetVertexPosition(
-			pVertex,	//’¸“_À•W”z—ñ
-			0.0f,		//•`‰æˆÊ’ux
-			0.0f,		//•`‰æˆÊ’uy
-			1.0f		//Šg‘å—¦
+			pVertex,	//é ‚ç‚¹åº§æ¨™é…åˆ—
+			0.0f,		//æç”»ä½ç½®x
+			0.0f,		//æç”»ä½ç½®y
+			1.0f		//æ‹¡å¤§ç‡
 		);
 
 	for (i = 0; i < 6*m_CaptionSize; i++) {
-		//Še’¸“_‚ÌœZ”
+		//å„é ‚ç‚¹ã®é™¤ç®—æ•°
 		pVertex[i].rhw = 1.0f;
-		//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+		//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 		pVertex[i].c = m_Color;
-		//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+		//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 		pVertex[i].t = D3DXVECTOR2(0.0f, 0.0f);
 	}
 
@@ -312,7 +312,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒUVÀ•Wæ“¾
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£UVåº§æ¨™å–å¾—
 //******************************************************************************
 int MTDynamicCaption::_GetTextureUV(
 		WCHAR target,
@@ -340,33 +340,33 @@ int MTDynamicCaption::_GetTextureUV(
 
 	fontWidth = 1.0f / (float)charsNum;
 
-	//Œ©‚Â‚©‚Á‚½ê‡‚ÍŠY“–‚·‚é•¶š‚ÌUVÀ•W‚ğİ’è
+	//è¦‹ã¤ã‹ã£ãŸå ´åˆã¯è©²å½“ã™ã‚‹æ–‡å­—ã®UVåº§æ¨™ã‚’è¨­å®š
 	if (isFound) {
-		//¶ã
+		//å·¦ä¸Š
 		pV0->x = 1.0f * fontNo / (float)charsNum;
 		pV0->y = 0.0f;
-		//‰Eã
+		//å³ä¸Š
 		pV1->x = 1.0f * (fontNo + 1.0f) / (float)charsNum;
 		pV1->y = 0.0f;
-		//¶‰º
+		//å·¦ä¸‹
 		pV2->x = 1.0f * fontNo / (float)charsNum;
 		pV2->y = 1.0f;
-		//‰E‰º
+		//å³ä¸‹
 		pV3->x = 1.0f * (fontNo + 1.0f) / (float)charsNum;
 		pV3->y = 1.0f;
 	}
-	//Œ©‚Â‚©‚ç‚È‚¢ê‡‚ÍƒeƒNƒXƒ`ƒƒ–³Œø‚Æ‚·‚é
+	//è¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ç„¡åŠ¹ã¨ã™ã‚‹
 	else {
-		//¶ã
+		//å·¦ä¸Š
 		pV0->x = 0.0f;
 		pV0->y = 0.0f;
-		//‰Eã
+		//å³ä¸Š
 		pV1->x = 0.0f;
 		pV1->y = 0.0f;
-		//¶‰º
+		//å·¦ä¸‹
 		pV2->x = 0.0f;
 		pV2->y = 0.0f;
-		//‰E‰º
+		//å³ä¸‹
 		pV3->x = 0.0f;
 		pV3->y = 0.0f;
 	}
@@ -375,7 +375,7 @@ int MTDynamicCaption::_GetTextureUV(
 }
 
 //******************************************************************************
-// ’¸“_ˆÊ’uİ’è
+// é ‚ç‚¹ä½ç½®è¨­å®š
 //******************************************************************************
 void MTDynamicCaption::_SetVertexPosition(
 		MTDYNAMICCAPTION_VERTEX* pVertex,
@@ -393,12 +393,12 @@ void MTDynamicCaption::_SetVertexPosition(
 
 	charsNum = wcslen(m_Chars);
 
-	//•`‰æƒTƒCƒY
+	//æç”»ã‚µã‚¤ã‚º
 	m_FontTexture.GetTextureSize(&texHeight, &texWidth);
 	height = texHeight * magRate;
 	width  = ((float)texWidth / (float)charsNum) * magRate;
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	for (i = 0; i < m_CaptionSize; i++) {
 		pVertex[i*6+0].p = D3DXVECTOR3(width * (i     ), 0.0f,   0.0f);
 		pVertex[i*6+1].p = D3DXVECTOR3(width * (i+1.0f), 0.0f,   0.0f);
@@ -408,7 +408,7 @@ void MTDynamicCaption::_SetVertexPosition(
 		pVertex[i*6+5].p = D3DXVECTOR3(width * (i+1.0f), height, 0.0f);
 	}
 
-	//•`‰æˆÊ’u‚ÉˆÚ“®
+	//æç”»ä½ç½®ã«ç§»å‹•
 	for (i = 0; i < 6*m_CaptionSize; i++) {
 		pVertex[i].p.x += x;
 		pVertex[i].p.y += y;
@@ -418,7 +418,7 @@ void MTDynamicCaption::_SetVertexPosition(
 }
 
 //******************************************************************************
-// ’¸“_Fİ’è
+// é ‚ç‚¹è‰²è¨­å®š
 //******************************************************************************
 void MTDynamicCaption::_SetVertexColor(
 		MTDYNAMICCAPTION_VERTEX* pVertex,

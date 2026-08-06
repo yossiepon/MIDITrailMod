@@ -1,8 +1,8 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / DIMouseCtrl
 //
-// DirectInput �}�E�X����N���X
+// DirectInput マウス制御クラス
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -15,12 +15,12 @@
 using namespace YNBaseLib;
 
 //******************************************************************************
-// �}�N����`
+// マクロ定義
 //******************************************************************************
 #define IS_KEYDOWN(btn)  (btn & 0x80)
 
 //******************************************************************************
-// �R���X�g���N�^
+// コンストラクタ
 //******************************************************************************
 DIMouseCtrl::DIMouseCtrl(void)
 {
@@ -29,7 +29,7 @@ DIMouseCtrl::DIMouseCtrl(void)
 }
 
 //******************************************************************************
-// �f�X�g���N�^
+// デストラクタ
 //******************************************************************************
 DIMouseCtrl::~DIMouseCtrl(void)
 {
@@ -37,7 +37,7 @@ DIMouseCtrl::~DIMouseCtrl(void)
 }
 
 //******************************************************************************
-// ������
+// 初期化
 //******************************************************************************
 int DIMouseCtrl::Initialize(
 		HWND hWnd
@@ -49,82 +49,82 @@ int DIMouseCtrl::Initialize(
 
 	Terminate();
 
-	//�A�v���P�[�V�����C���X�^���X�n���h�����擾
+	//アプリケーションインスタンスハンドルを取得
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hWnd);
 		goto EXIT;
 	}
 
-	//DirectInput�I�u�W�F�N�g�̐���
+	//DirectInputオブジェクトの生成
 	hresult = DirectInput8Create(
-				hInstance,				//�A�v���P�[�V�����C���X�^���X�n���h��
-				DIRECTINPUT_VERSION,	//DirectInput�o�[�W�����ԍ�
-				IID_IDirectInput8,		//�C���^�[�t�F�[�X���ʎq
-				(void**)&m_pDI,			//�쐬���ꂽ�C���^�[�t�F�[�X�|�C���^
-				NULL					//IUnknown�C���^�[�t�F�C�X�|�C���^
+				hInstance,				//アプリケーションインスタンスハンドル
+				DIRECTINPUT_VERSION,	//DirectInputバージョン番号
+				IID_IDirectInput8,		//インターフェース識別子
+				(void**)&m_pDI,			//作成されたインターフェースポインタ
+				NULL					//IUnknownインターフェイスポインタ
 			);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hInstance);
 		goto EXIT;
 	}
 
-	//�f�o�C�X�I�u�W�F�N�g�̐���
+	//デバイスオブジェクトの生成
 	hresult = m_pDI->CreateDevice(
-					GUID_SysMouse,		//���̓f�o�C�X�̃C���X�^���XGUID
-					&m_pDIDevice,		//�쐬���ꂽ�C���^�[�t�F�[�X�|�C���^
-					NULL				//IUnknown�C���^�[�t�F�C�X�|�C���^
+					GUID_SysMouse,		//入力デバイスのインスタンスGUID
+					&m_pDIDevice,		//作成されたインターフェースポインタ
+					NULL				//IUnknownインターフェイスポインタ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//�f�o�C�X�̃f�[�^�t�H�[�}�b�g��ݒ�F��`�ς݃O���[�o���ϐ����w��
+	//デバイスのデータフォーマットを設定：定義済みグローバル変数を指定
 	hresult = m_pDIDevice->SetDataFormat(&c_dfDIMouse2);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//�f�o�C�X�̋������x����ݒ�
+	//デバイスの協調レベルを設定
 	hresult = m_pDIDevice->SetCooperativeLevel(
-					hWnd,					//�f�o�C�X�Ɋ֘A�t�����Ă���E�B���h�E�n���h��
-					DISCL_FOREGROUND		//�������x���F�t�H�A�O�����h�A�N�Z�X��
-					| DISCL_NONEXCLUSIVE	//�������x���F��r���I�A�N�Z�X��
+					hWnd,					//デバイスに関連付けられているウィンドウハンドル
+					DISCL_FOREGROUND		//協調レベル：フォアグランドアクセス権
+					| DISCL_NONEXCLUSIVE	//協調レベル：非排他的アクセス権
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hWnd);
 		goto EXIT;
 	}
 
-	//�f�o�C�X�̃v���p�e�B��ݒ�F�o�b�t�@�T�C�Y
+	//デバイスのプロパティを設定：バッファサイズ
 	DIPROPDWORD diprop;
 	diprop.diph.dwSize       = sizeof(DIPROPDWORD);
 	diprop.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-	diprop.diph.dwObj        = 0;			//DIPH_DEVICE�̏ꍇ�̓[��
-	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObj�̉��ߕ��@�F�f�o�C�X�S��
-	diprop.dwData            = 16;			//�ݒ肷��v���p�e�B�F�o�b�t�@�T�C�Y
+	diprop.diph.dwObj        = 0;			//DIPH_DEVICEの場合はゼロ
+	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObjの解釈方法：デバイス全体
+	diprop.dwData            = 16;			//設定するプロパティ：バッファサイズ
 
 	hresult = m_pDIDevice->SetProperty(
-					DIPROP_BUFFERSIZE,	//�ݒ�Ώۃv���p�e�B��GUID
-					&diprop.diph		//�ݒ肷��DIPROPHEADER�\����
+					DIPROP_BUFFERSIZE,	//設定対象プロパティのGUID
+					&diprop.diph		//設定するDIPROPHEADER構造体
 				);
 	if (FAILED(hresult) && (hresult != DI_PROPNOEFFECT)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//�f�o�C�X�̃v���p�e�B��ݒ�F�����[�h
+	//デバイスのプロパティを設定：軸モード
 	diprop.diph.dwSize       = sizeof(DIPROPDWORD);
 	diprop.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-	diprop.diph.dwObj        = 0;			//DIPH_DEVICE�̏ꍇ�̓[��
-	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObj�̉��ߕ��@�F�f�o�C�X�S��
-	diprop.dwData            = DIPROPAXISMODE_REL;	//�ݒ肷��v���p�e�B�F���Βl���[�h
+	diprop.diph.dwObj        = 0;			//DIPH_DEVICEの場合はゼロ
+	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObjの解釈方法：デバイス全体
+	diprop.dwData            = DIPROPAXISMODE_REL;	//設定するプロパティ：相対値モード
 
 	hresult = m_pDIDevice->SetProperty(
-					DIPROP_AXISMODE,	//�ݒ�Ώۃv���p�e�B��GUID
-					&diprop.diph		//�ݒ肷��DIPROPHEADER�\����
+					DIPROP_AXISMODE,	//設定対象プロパティのGUID
+					&diprop.diph		//設定するDIPROPHEADER構造体
 				);
 	if (FAILED(hresult) && (hresult != DI_PROPNOEFFECT)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -136,7 +136,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �I������
+// 終了処理
 //******************************************************************************
 void DIMouseCtrl::Terminate()
 {
@@ -155,7 +155,7 @@ void DIMouseCtrl::Terminate()
 }
 
 //******************************************************************************
-// �f�o�C�X�A�N�Z�X���擾
+// デバイスアクセス権取得
 //******************************************************************************
 int DIMouseCtrl::Acquire()
 {
@@ -164,7 +164,7 @@ int DIMouseCtrl::Acquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//�A�N�Z�X���擾�F//�f�o�C�X�擾�ς�(S_FALSE)�͐���Ƃ݂Ȃ�
+	//アクセス権取得：//デバイス取得済み(S_FALSE)は正常とみなす
 	hresult = m_pDIDevice->Acquire();
 	if (FAILED(hresult) && (hresult != S_FALSE)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -176,7 +176,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �f�o�C�X�A�N�Z�X�����
+// デバイスアクセス権解放
 //******************************************************************************
 int DIMouseCtrl::Unacquire()
 {
@@ -185,7 +185,7 @@ int DIMouseCtrl::Unacquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//�A�N�Z�X�����
+	//アクセス権解放
 	hresult = m_pDIDevice->Unacquire();
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -197,7 +197,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �}�E�X��Ԏ擾
+// マウス状態取得
 //******************************************************************************
 int DIMouseCtrl::GetMouseStatus()
 {
@@ -215,15 +215,15 @@ int DIMouseCtrl::GetMouseStatus()
 		goto EXIT;
 	}
 
-	//�E�B���h�E����A�N�e�B�u��Ԃł����GetDeviceState()�̓G���[�ɂȂ�(0x8007000c)
-	//�ǂ����悤�E�E�E
+	//ウィンドウが非アクティブ状態であるとGetDeviceState()はエラーになる(0x8007000c)
+	//どうしよう・・・
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// �}�E�X�{�^����Ԋm�F
+// マウスボタン状態確認
 //******************************************************************************
 bool DIMouseCtrl::IsBtnDown(
 		MouseButton	target
@@ -250,7 +250,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �}�E�X���Έړ��ʎ擾
+// マウス相対移動量取得
 //******************************************************************************
 int DIMouseCtrl::GetDelta(
 		MouseAxis	target
@@ -275,7 +275,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �o�b�t�@�f�[�^�擾
+// バッファデータ取得
 //******************************************************************************
 int DIMouseCtrl::GetBuffer(
 		bool* pIsExist,
@@ -295,22 +295,22 @@ int DIMouseCtrl::GetBuffer(
 
 	*pIsExist = false;
 
-	//�o�b�t�@�f�[�^�擾�i���s��o�b�t�@���ЂƂ���j
+	//バッファデータ取得（実行後バッファがひとつ減る）
 	hresult = m_pDIDevice->GetDeviceData(
-						sizeof(DIDEVICEOBJECTDATA),	//DIOBJECTDATAFORMAT�\���̃T�C�Y
-						&devObjData,				//�o�b�t�@�f�[�^�z��F1����
-						&inOut,						//���́F�o�b�t�@�v�f���^�o�́F�f�[�^�擾��
-						0							//�t���O
+						sizeof(DIDEVICEOBJECTDATA),	//DIOBJECTDATAFORMAT構造体サイズ
+						&devObjData,				//バッファデータ配列：1個だけ
+						&inOut,						//入力：バッファ要素数／出力：データ取得数
+						0							//フラグ
 					);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//�o�b�t�@���Ȃ���ΏI��
+	//バッファがなければ終了
 	if (inOut == 0) goto EXIT;
 
-	//�o�b�t�@�f�[�^���
+	//バッファデータ解析
 	switch (devObjData.dwOfs) {
 		case DIMOFS_BUTTON0:
 			if (IS_KEYDOWN(devObjData.dwData)) {

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignRingMod
 //
-// ƒm[ƒgƒfƒUƒCƒ“ƒŠƒ“ƒOModƒNƒ‰ƒX
+// ï¿½mï¿½[ï¿½gï¿½fï¿½Uï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½OModï¿½Nï¿½ï¿½ï¿½X
 //
 // Copyright (C) 2019 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -17,92 +17,92 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“ƒŠƒ“ƒOModƒNƒ‰ƒX
+// ï¿½mï¿½[ï¿½gï¿½fï¿½Uï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½OModï¿½Nï¿½ï¿½ï¿½X
 //******************************************************************************
 class MTNoteDesignRingMod : public MTNoteDesignMod, public MTNoteDesignRing
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^ï¿½^ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 	MTNoteDesignRingMod(void);
 	virtual ~MTNoteDesignRingMod(void);
 
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•Wæ“¾
-	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
+	//ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½Wï¿½æ“¾
+	virtual DirectX::SimpleMath::Vector3 GetNoteBoxCenterPosX(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+		short pitchBendValue = 0,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+		unsigned char pitchBendSensitivity = 0	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
 	);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	//ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	virtual void GetNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-		short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+		DirectX::SimpleMath::Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		short pitchBendValue = 0,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+		unsigned char pitchBendSensitivity = 0	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
 	);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	virtual void GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-		short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-		unsigned long elapsedTime = 0            //È—ª‰ÂFŒo‰ßŠÔiƒ~ƒŠ•bj
+		DirectX::SimpleMath::Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		short pitchBendValue = 0,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+		unsigned char pitchBendSensitivity = 0,	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
+		unsigned long elapsedTime = 0            //ï¿½È—ï¿½ï¿½ÂFï¿½oï¿½ßï¿½ï¿½Ôiï¿½~ï¿½ï¿½ï¿½bï¿½j
 	);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	virtual void GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-		short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-		float rate = 0.0f						//È—ª‰ÂFƒTƒCƒY”ä—¦
+		DirectX::SimpleMath::Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		short pitchBendValue = 0,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+		unsigned char pitchBendSensitivity = 0,	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
+		float rate = 0.0f						//ï¿½È—ï¿½ï¿½ÂFï¿½Tï¿½Cï¿½Yï¿½ä—¦
 	);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	//ï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½jï¿½^ï¿½pï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	virtual void GetNoteBoxVirtexPosLive(
-		unsigned long elapsedTime,	//Œo‰ßŠÔiƒ~ƒŠ•bj
+		unsigned long elapsedTime,	//ï¿½oï¿½ßï¿½ï¿½Ôiï¿½~ï¿½ï¿½ï¿½bï¿½j
 		unsigned char portNo,
 		unsigned char chNo,
 		unsigned char noteNo,
-		D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-		D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-		D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-		D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-		short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-		unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+		DirectX::SimpleMath::Vector3* pVector0,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector1,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector2,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äï¿½ï¿½ï¿½
+		DirectX::SimpleMath::Vector3* pVector3,	//YZï¿½ï¿½ï¿½ï¿½+Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‰Eï¿½ï¿½
+		short pitchBendValue = 0,				//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½h
+		unsigned char pitchBendSensitivity = 0	//ï¿½È—ï¿½ï¿½ÂFï¿½sï¿½bï¿½`ï¿½xï¿½ï¿½ï¿½hï¿½ï¿½ï¿½x
 	);
 
-	//ƒ|[ƒgŒ´“_À•Wæ“¾
+	//ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
 
-	//¢ŠEÀ•W”z’uˆÚ“®ƒxƒNƒgƒ‹æ“¾
-	virtual D3DXVECTOR3 GetWorldMoveVector();
+	//ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½Wï¿½zï¿½uï¿½Ú“ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½æ“¾
+	virtual DirectX::SimpleMath::Vector3 GetWorldMoveVector();
 
 private:
 

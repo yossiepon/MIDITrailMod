@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTDashboardLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
@@ -20,7 +20,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTDashboardLive::MTDashboardLive(void)
 {
@@ -35,7 +35,7 @@ MTDashboardLive::MTDashboardLive(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTDashboardLive::~MTDashboardLive(void)
 {
@@ -43,7 +43,7 @@ MTDashboardLive::~MTDashboardLive(void)
 }
 
 //******************************************************************************
-// ƒ_ƒbƒVƒ…ƒ{[ƒh¶¬
+// ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 //******************************************************************************
 int MTDashboardLive::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -58,33 +58,33 @@ int MTDashboardLive::Create(
 	
 	m_hWnd = hWnd;
 	
-	//İ’è“Ç‚İ‚İ
+	//è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 	
-	//ƒ^ƒCƒgƒ‹ƒLƒƒƒvƒVƒ‡ƒ“
+	//ã‚¿ã‚¤ãƒˆãƒ«ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	result = SetMIDIINDeviceName(pD3DDevice, _T(""));
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒEƒ“ƒ^ƒLƒƒƒvƒVƒ‡ƒ“
+	//ã‚«ã‚¦ãƒ³ã‚¿ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	result = m_Counter.Create(
 					pD3DDevice,
-					MTDASHBOARDLIVE_FONTNAME,		//ƒtƒHƒ“ƒg–¼Ì
-					MTDASHBOARDLIVE_FONTSIZE,		//ƒtƒHƒ“ƒgƒTƒCƒY
-					MTDASHBOARDLIVE_COUNTER_CHARS,	//•\¦•¶š
-					MTDASHBOARDLIVE_COUNTER_SIZE	//ƒLƒƒƒvƒVƒ‡ƒ“ƒTƒCƒY
+					MTDASHBOARDLIVE_FONTNAME,		//ãƒ•ã‚©ãƒ³ãƒˆåç§°
+					MTDASHBOARDLIVE_FONTSIZE,		//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+					MTDASHBOARDLIVE_COUNTER_CHARS,	//è¡¨ç¤ºæ–‡å­—
+					MTDASHBOARDLIVE_COUNTER_SIZE	//ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã‚µã‚¤ã‚º
 				);
 	if (result != 0) goto EXIT;
 	m_Counter.SetColor(m_CaptionColor);
 	
-	//ƒJƒEƒ“ƒ^•\¦•¶š—ñ¶¬
+	//ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºæ–‡å­—åˆ—ç”Ÿæˆ
 	result = _GetCounterStr(counter, 100);
 	if (result != 0) goto EXIT;
 	
 	result = m_Counter.SetString(counter);
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒEƒ“ƒ^•\¦ˆÊ’u‚ğZo
+	//ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºä½ç½®ã‚’ç®—å‡º
 	result = _GetCounterPos(&m_PosCounterX, &m_PosCounterY);
 	if (result != 0) goto EXIT;
 	
@@ -93,7 +93,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTDashboardLive::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -105,7 +105,7 @@ int MTDashboardLive::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTDashboardLive::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -121,11 +121,11 @@ int MTDashboardLive::Draw(
 	
 	if (!m_isEnable) goto EXIT;
 	
-	//ƒ^ƒCƒgƒ‹•`‰æFƒJƒEƒ“ƒ^‚Æ“¯‚¶Šg‘å—¦‚Å•\¦‚·‚é
+	//ã‚¿ã‚¤ãƒˆãƒ«æç”»ï¼šã‚«ã‚¦ãƒ³ã‚¿ã¨åŒã˜æ‹¡å¤§ç‡ã§è¡¨ç¤ºã™ã‚‹
 	result = m_Title.Draw(pD3DDevice, MTDASHBOARDLIVE_FRAMESIZE, MTDASHBOARDLIVE_FRAMESIZE, m_CounterMag);
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒEƒ“ƒ^•¶š—ñ•`‰æ
+	//ã‚«ã‚¦ãƒ³ã‚¿æ–‡å­—åˆ—æç”»
 	result = _GetCounterStr(counter, 100);
 	if (result != 0) goto EXIT;
 	
@@ -140,7 +140,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTDashboardLive::Release()
 {
@@ -149,7 +149,7 @@ void MTDashboardLive::Release()
 }
 
 //******************************************************************************
-// ƒJƒEƒ“ƒ^•\¦ˆÊ’uæ“¾
+// ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºä½ç½®å–å¾—
 //******************************************************************************
 int MTDashboardLive::_GetCounterPos(
 		float* pX,
@@ -168,7 +168,7 @@ int MTDashboardLive::_GetCounterPos(
 	unsigned long captionWidth = 0;
 	float newMag = 0.0f;
 	
-	//ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒTƒCƒY‚ğæ“¾
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚µã‚¤ã‚ºã‚’å–å¾—
 	bresult = GetClientRect(m_hWnd, &rect);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -177,18 +177,18 @@ int MTDashboardLive::_GetCounterPos(
 	cw = rect.right - rect.left;
 	ch = rect.bottom - rect.top;
 	
-	//ƒeƒNƒXƒ`ƒƒƒTƒCƒYæ“¾
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºå–å¾—
 	m_Counter.GetTextureSize(&th, &tw);
 	
-	//•¶šƒTƒCƒY
+	//æ–‡å­—ã‚µã‚¤ã‚º
 	charHeight = th;
 	charWidth = tw / (unsigned long)wcslen(MTDASHBOARDLIVE_COUNTER_CHARS);
 	
-	//Šg‘å—¦1.0‚ÌƒLƒƒƒvƒVƒ‡ƒ“ƒTƒCƒY
+	//æ‹¡å¤§ç‡1.0ã®ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã‚µã‚¤ã‚º
 	captionWidth = (unsigned long)(charWidth * MTDASHBOARDLIVE_COUNTER_SIZE);
 	
-	//ƒJƒEƒ“ƒ^•¶š—ñ‚ª‰æ–Ê‚©‚ç‚Í‚İo‚·ê‡‚Í‰æ–Ê‚Éû‚Ü‚é‚æ‚¤‚ÉŠg‘å—¦‚ğXV‚·‚é
-	//  ƒ^ƒCƒgƒ‹‚ª‚Í‚İo‚·‚Ì‚Í‹C‚É‚µ‚È‚¢‚±‚Æ‚É‚·‚é
+	//ã‚«ã‚¦ãƒ³ã‚¿æ–‡å­—åˆ—ãŒç”»é¢ã‹ã‚‰ã¯ã¿å‡ºã™å ´åˆã¯ç”»é¢ã«åã¾ã‚‹ã‚ˆã†ã«æ‹¡å¤§ç‡ã‚’æ›´æ–°ã™ã‚‹
+	//  ã‚¿ã‚¤ãƒˆãƒ«ãŒã¯ã¿å‡ºã™ã®ã¯æ°—ã«ã—ãªã„ã“ã¨ã«ã™ã‚‹
 	if (((cw - (MTDASHBOARDLIVE_FRAMESIZE*2)) < captionWidth) && (tw > 0)) {
 		newMag = (float)(cw - (MTDASHBOARDLIVE_FRAMESIZE*2)) / (float)captionWidth;
 		if (m_CounterMag > newMag) {
@@ -196,7 +196,7 @@ int MTDashboardLive::_GetCounterPos(
 		}
 	}
 	
-	//ƒeƒNƒXƒ`ƒƒ‚Ì•\¦”{—¦‚ğl—¶‚µ‚Ä•\¦ˆÊ’u‚ğZo
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¡¨ç¤ºå€ç‡ã‚’è€ƒæ…®ã—ã¦è¡¨ç¤ºä½ç½®ã‚’ç®—å‡º
 	*pX = MTDASHBOARDLIVE_FRAMESIZE;
 	*pY = (float)ch - ((float)th * m_CounterMag) - MTDASHBOARDLIVE_FRAMESIZE;
 
@@ -205,7 +205,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ‚ƒjƒ^ó‘Ô“o˜^
+// ãƒ¢ãƒ‹ã‚¿çŠ¶æ…‹ç™»éŒ²
 //******************************************************************************
 void MTDashboardLive::SetMonitoringStatus(
 		bool isMonitoring
@@ -215,7 +215,7 @@ void MTDashboardLive::SetMonitoringStatus(
 }
 
 //******************************************************************************
-// ƒm[ƒgON“o˜^
+// ãƒãƒ¼ãƒˆONç™»éŒ²
 //******************************************************************************
 void MTDashboardLive::SetNoteOn()
 {
@@ -223,7 +223,7 @@ void MTDashboardLive::SetNoteOn()
 }
 
 //******************************************************************************
-// ƒJƒEƒ“ƒ^•¶š—ñæ“¾
+// ã‚«ã‚¦ãƒ³ã‚¿æ–‡å­—åˆ—å–å¾—
 //******************************************************************************
 int MTDashboardLive::_GetCounterStr(
 		WCHAR* pStr,
@@ -258,7 +258,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTDashboardLive::Reset()
 {
@@ -267,7 +267,7 @@ void MTDashboardLive::Reset()
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTDashboardLive::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -278,11 +278,11 @@ int MTDashboardLive::_LoadConfFile(
 	MTColorPalette colorPalette;
 	D3DXCOLOR color;
 	
-	//ƒJƒ‰[İ’è‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼è¨­å®šåˆæœŸåŒ–
 	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 	
-	//‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg‚©‚çƒJƒEƒ“ƒ^[Fæ“¾
+	//é¸æŠã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã‹ã‚‰ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼è‰²å–å¾—
 	colorConf.GetSelectedColorPalette(&colorPalette);
 	colorPalette.GetCounterColor(&color);
 	m_CaptionColor = color;
@@ -292,7 +292,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTDashboardLive::SetEnable(
 		bool isEnable
@@ -301,12 +301,12 @@ void MTDashboardLive::SetEnable(
 	m_isEnable = isEnable;
 }
 
-// ƒƒ‚
-// SMLib‘¤‚ÅƒfƒoƒCƒX–¼‚ğƒƒCƒh•¶š—ñ‚Å•Ô‹p‚·‚×‚«‚Å‚ ‚é‚ªA
-// INIƒtƒ@ƒCƒ‹‚Ö‚Ìƒpƒ‰ƒ[ƒ^•Û‘¶‚È‚ÇL”ÍˆÍ‚É‰e‹¿‚ª‹y‚Ô‚½‚ßA
-// –{ƒNƒ‰ƒX‚ÅƒƒCƒh•¶š—ñ•ÏŠ·‚ğ‚µ‚Ä‹zû‚·‚éB
+// ãƒ¡ãƒ¢
+// SMLibå´ã§ãƒ‡ãƒã‚¤ã‚¹åã‚’ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ã§è¿”å´ã™ã¹ãã§ã‚ã‚‹ãŒã€
+// INIãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä¿å­˜ãªã©åºƒç¯„å›²ã«å½±éŸ¿ãŒåŠã¶ãŸã‚ã€
+// æœ¬ã‚¯ãƒ©ã‚¹ã§ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—å¤‰æ›ã‚’ã—ã¦å¸åã™ã‚‹ã€‚
 //******************************************************************************
-//MIDI IN ƒfƒoƒCƒX–¼“o˜^
+//MIDI IN ãƒ‡ãƒã‚¤ã‚¹åç™»éŒ²
 //******************************************************************************
 int MTDashboardLive::SetMIDIINDeviceName(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -315,21 +315,21 @@ int MTDashboardLive::SetMIDIINDeviceName(
 {
 	int result = 0;
 	int eresult = 0;
-	WCHAR title[256] = {0}; //MAXPNAMELEN 32 ‚æ‚è‘å‚«‚¢ƒTƒCƒY‚É‚·‚é
+	WCHAR title[256] = {0}; //MAXPNAMELEN 32 ã‚ˆã‚Šå¤§ãã„ã‚µã‚¤ã‚ºã«ã™ã‚‹
 	const WCHAR* pDisplayName = NULL;
 	std::string deviceName;
 	std::wstring deviceNameW;
 	
 	m_Title.Release();
 	
-	//ƒƒCƒh•¶š—ñ•ÏŠ·
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—å¤‰æ›
 	if (pName != NULL) {
 		deviceName = pName;
 		result = _StringToWstring(&deviceName, &deviceNameW);
 		if (result != 0) goto EXIT;
 	}
 
-	//•\¦–¼İ’è
+	//è¡¨ç¤ºåè¨­å®š
 	if (pName == NULL) {
 		pDisplayName = L"(none)";
 	}
@@ -340,7 +340,7 @@ int MTDashboardLive::SetMIDIINDeviceName(
 		pDisplayName = deviceNameW.c_str();
 	}
 	
-	//ƒ^ƒCƒgƒ‹ƒLƒƒƒvƒVƒ‡ƒ“
+	//ã‚¿ã‚¤ãƒˆãƒ«ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	eresult = swprintf_s(
 				title,
 				256,
@@ -349,10 +349,10 @@ int MTDashboardLive::SetMIDIINDeviceName(
 			);
 
 	result = m_Title.Create(
-					pD3DDevice,					//ƒfƒoƒCƒX
-					MTDASHBOARDLIVE_FONTNAME,	//ƒtƒHƒ“ƒg–¼Ì
-					MTDASHBOARDLIVE_FONTSIZE,	//ƒtƒHƒ“ƒgƒTƒCƒY
-					title						//ƒLƒƒƒvƒVƒ‡ƒ“
+					pD3DDevice,					//ãƒ‡ãƒã‚¤ã‚¹
+					MTDASHBOARDLIVE_FONTNAME,	//ãƒ•ã‚©ãƒ³ãƒˆåç§°
+					MTDASHBOARDLIVE_FONTSIZE,	//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+					title						//ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 				);
 	if (result != 0) goto EXIT;
 	m_Title.SetColor(m_CaptionColor);
@@ -362,7 +362,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒCƒh•¶š—ñ•ÏŠ·
+// ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—å¤‰æ›
 //******************************************************************************
 int MTDashboardLive::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 {
@@ -371,13 +371,13 @@ int MTDashboardLive::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 	int buffSize = 0;
 	WCHAR* wstrBuff = NULL;
 
-	//‹ó•¶š‚Ìê‡‚Í•ÏŠ·‚È‚µ
+	//ç©ºæ–‡å­—ã®å ´åˆã¯å¤‰æ›ãªã—
 	if (pStr->length() == 0) {
 		*pWstr = L"";
 		goto EXIT;
 	}
 
-	//ƒTƒƒQ[ƒgƒyƒA‚Æ0I’[‚ğl—¶‚µ‚½ƒoƒbƒtƒ@ƒTƒCƒY
+	//ã‚µãƒ­ã‚²ãƒ¼ãƒˆãƒšã‚¢ã¨0çµ‚ç«¯ã‚’è€ƒæ…®ã—ãŸãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 	buffSize = (int)(pStr->length()) * 2 + 1;
 
 	try {
@@ -391,12 +391,12 @@ int MTDashboardLive::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 	memset(wstrBuff, 0, sizeof(WCHAR) * buffSize);
 
 	apiresult = MultiByteToWideChar(
-						_getmbcp(),			//ƒR[ƒhƒy[ƒW
-						MB_PRECOMPOSED,		//ƒtƒ‰ƒOF
-						pStr->c_str(),		//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñ
-						(int)(pStr->length()),	//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñƒoƒCƒg”
-						wstrBuff,			//•ÏŠ·æƒƒCƒh•¶š—ñƒoƒbƒtƒ@
-						buffSize - 1		//ƒoƒbƒtƒ@ƒTƒCƒYiƒƒCƒh•¶š”’PˆÊj
+						_getmbcp(),			//ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸
+						MB_PRECOMPOSED,		//ãƒ•ãƒ©ã‚°ï¼š
+						pStr->c_str(),		//å¤‰æ›å…ƒãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—
+						(int)(pStr->length()),	//å¤‰æ›å…ƒãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—ãƒã‚¤ãƒˆæ•°
+						wstrBuff,			//å¤‰æ›å…ˆãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+						buffSize - 1		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼ˆãƒ¯ã‚¤ãƒ‰æ–‡å­—æ•°å˜ä½ï¼‰
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

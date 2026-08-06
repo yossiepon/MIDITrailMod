@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteRipple
 //
-// ƒm[ƒg”g–ä•`‰æƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
@@ -22,29 +22,29 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘å”g–ä•`‰æ”
+//æœ€å¤§æ³¢ç´‹æç”»æ•°
 #define MTNOTERIPPLE_MAX_RIPPLE_NUM  (100)
 
-// TODO: Å‘å”g–ä•`‰æ”‚ğ‰Â•Ï‚É‚·‚é
-//   –‘O‚ÉƒV[ƒPƒ“ƒXƒf[ƒ^‚ÌÅ‘å“¯”­‰¹”‚ğ’²¸‚µ‚Ä‚¨‚¯‚Î
-//   Šm•Û‚·‚éƒoƒbƒtƒ@ƒTƒCƒY‚ğ•ÏX‚Å‚«‚é
-//   Œ»ó‚Å‚àƒoƒbƒtƒ@ƒTƒCƒY‚Í‰Šú‰»“_‚Å“®“I‚É•ÏX‰Â”\‚Å‚ ‚é
+// TODO: æœ€å¤§æ³¢ç´‹æç”»æ•°ã‚’å¯å¤‰ã«ã™ã‚‹
+//   äº‹å‰ã«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§åŒæ™‚ç™ºéŸ³æ•°ã‚’èª¿æŸ»ã—ã¦ãŠã‘ã°
+//   ç¢ºä¿ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã§ãã‚‹
+//   ç¾çŠ¶ã§ã‚‚ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã¯åˆæœŸåŒ–æ™‚ç‚¹ã§å‹•çš„ã«å¤‰æ›´å¯èƒ½ã§ã‚ã‚‹
 
 
 //******************************************************************************
-// ƒm[ƒg”g–ä•`‰æƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ³¢ç´‹æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteRipple
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteRipple(void);
 	virtual ~MTNoteRipple(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 // >>> modify 20120728 yossiepon begin
 	virtual int Create(
 // <<< modify 20120728 yossiepon end
@@ -54,27 +54,27 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 // >>> modify 20120728 yossiepon begin
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify 20120728 yossiepon end
 
-	//‰ğ•ú
+	//è§£æ”¾
 // >>> modify 20120728 yossiepon begin
 	virtual void Release();
 // <<< modify 20120728 yossiepon end
 
-	//ƒm[ƒgOFF“o˜^
+	//ãƒãƒ¼ãƒˆOFFç™»éŒ²
 	void SetNoteOff(
 			unsigned char portNo,
 			unsigned char chNo,
 			unsigned char noteNo
 		);
 
-	//ƒm[ƒgON“o˜^
+	//ãƒãƒ¼ãƒˆONç™»éŒ²
 	void SetNoteOn(
 			unsigned char portNo,
 			unsigned char chNo,
@@ -82,25 +82,25 @@ public:
 			unsigned char velocity
 		);
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 // >>> modify 20120728 yossiepon begin
 	virtual void Reset();
 // <<< modify 20120728 yossiepon end
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	void SetSkipStatus(bool isSkipping);
 
 // >>> modify access level to protected 20120728 yossiepon begin
 protected:
 // <<< modify 20120728 yossiepon end
 
-	//ƒm[ƒg”­‰¹ó‘Ô\‘¢‘Ì
+	//ãƒãƒ¼ãƒˆç™ºéŸ³çŠ¶æ…‹æ§‹é€ ä½“
 	struct NoteStatus {
 		bool isActive;
 		unsigned char portNo;
@@ -110,17 +110,17 @@ protected:
 		unsigned long regTime;
 	};
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTNOTERIPPLE_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-// >>> revert 20250616 yossiepon begin PianoRoll3D‚Ì”g–ä‚ª‚¨‚©‚µ‚­‚È‚é‚Ì‚Å–@üƒpƒ‰ƒ[ƒ^‚ ‚è‚É–ß‚·
-		D3DXVECTOR3 n;	//–@ü
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+// >>> revert 20250616 yossiepon begin PianoRoll3Dã®æ³¢ç´‹ãŒãŠã‹ã—ããªã‚‹ã®ã§æ³•ç·šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚ã‚Šã«æˆ»ã™
+		D3DXVECTOR3 n;	//æ³•ç·š
 // <<< revert 20250616 yossiepon end
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
-		D3DXVECTOR2 t;	//ƒeƒNƒXƒ`ƒƒ‰æ‘œˆÊ’u
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+		D3DXVECTOR2 t;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒä½ç½®
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 // >>> revert 20250616 yossiepon begin
 //	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
@@ -128,31 +128,31 @@ protected:
 
 protected:
 
-	//•`‰æŒn
+	//æç”»ç³»
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	D3DMATERIAL9 m_Material;
 
-	//Ä¶
+	//å†ç”Ÿæ™‚åˆ»
 	unsigned long m_CurTickTime;
 
-	//ƒJƒƒ‰
+	//ã‚«ãƒ¡ãƒ©
 	D3DXVECTOR3 m_CamVector;
 
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesign* m_pNoteDesign;
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//ƒm[ƒg”­‰¹ó‘Ôî•ñ
+	//ãƒãƒ¼ãƒˆç™ºéŸ³çŠ¶æ…‹æƒ…å ±
 	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
-	//•\¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	bool m_isSkipping;
 
 	virtual int _CreateNoteDesign();

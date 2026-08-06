@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMLiveMonitor
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^ƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMLiveMonitor::SMLiveMonitor(void)
 {	
@@ -30,19 +30,19 @@ SMLiveMonitor::SMLiveMonitor(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMLiveMonitor::~SMLiveMonitor()
 {
-	//ƒ|[ƒgî•ñƒNƒŠƒA
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 	_ClearPortInfo();
 	
-	//MIDIƒfƒoƒCƒX‚ğ•Â‚¶‚é
+	//MIDIãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 	_CloseMIDIDev();
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int SMLiveMonitor::Initialize(
 		SMMsgQueue* pMsgQueue
@@ -52,22 +52,22 @@ int SMLiveMonitor::Initialize(
 	
 	m_pMsgQue = pMsgQueue;	
 	
-	//MIDIo—ÍƒfƒoƒCƒX‰Šú‰»
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹åˆæœŸåŒ–
 	result = m_OutDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
 	
-	//MIDI“ü—ÍƒfƒoƒCƒX‰Šú‰»
+	//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹åˆæœŸåŒ–
 	result = m_InDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
 	
-	//ƒ|[ƒgî•ñƒNƒŠƒA
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 	_ClearPortInfo();
 	
-	//ƒCƒxƒ“ƒg“]‘—ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ã‚¤ãƒ™ãƒ³ãƒˆè»¢é€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_MsgTrans.Initialize(pMsgQueue);
 	if (result != 0) goto EXIT;
 	
-	//ƒCƒxƒ“ƒgƒEƒHƒbƒ`ƒƒ[‰Šú‰»
+	//ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒãƒ£ãƒ¼åˆæœŸåŒ–
 	result = m_EventWatcher.Initialize(&m_MsgTrans);
 	if (result != 0) goto EXIT;
 	
@@ -76,7 +76,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// “ü—Íƒ|[ƒg‘Î‰ƒfƒoƒCƒX“o˜^
+// å…¥åŠ›ãƒãƒ¼ãƒˆå¯¾å¿œãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²
 //******************************************************************************
 int SMLiveMonitor::SetInPortDev(
 		const char* pProductName,
@@ -99,7 +99,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// o—Íƒ|[ƒg‘Î‰ƒfƒoƒCƒX“o˜^
+// å‡ºåŠ›ãƒãƒ¼ãƒˆå¯¾å¿œãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²
 //******************************************************************************
 int SMLiveMonitor::SetOutPortDev(
 		const char* pProductName
@@ -119,7 +119,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// “ü—Íƒ|[ƒgƒfƒoƒCƒX•\¦–¼Ìæ“¾
+// å…¥åŠ›ãƒãƒ¼ãƒˆãƒ‡ãƒã‚¤ã‚¹è¡¨ç¤ºåç§°å–å¾—
 //******************************************************************************
 int SMLiveMonitor::GetInPortDevDisplayName(
 		std::string& name
@@ -133,16 +133,16 @@ int SMLiveMonitor::GetInPortDevDisplayName(
 }
 
 //******************************************************************************
-// ƒ‚ƒjƒ^ŠJn
+// ãƒ¢ãƒ‹ã‚¿é–‹å§‹
 //******************************************************************************
 int SMLiveMonitor::Start()
 {
 	int result = 0;
 	
-	//ƒ‚ƒjƒ^’†‚È‚ç‰½‚à‚µ‚È‚¢
+	//ãƒ¢ãƒ‹ã‚¿ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (m_Status == StatusMonitorON) goto EXIT;
 		
-	//MIDIƒfƒoƒCƒX‚ğŠJ‚­
+	//MIDIãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 	result = _OpenMIDIDev();
 	if (result != 0) goto EXIT;
 	
@@ -153,17 +153,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ‚ƒjƒ^’â~
+// ãƒ¢ãƒ‹ã‚¿åœæ­¢
 //******************************************************************************
 int SMLiveMonitor::Stop()
 {
 	int result = 0;
 	
-	//‘Sƒgƒ‰ƒbƒNƒm[ƒgƒIƒt
+	//å…¨ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ãƒˆã‚ªãƒ•
 	result = m_OutDevCtrl.NoteOffAll();
 	if (result != 0) goto EXIT;
 	
-	//MIDIƒfƒoƒCƒX‚ğ•Â‚¶‚é
+	//MIDIãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 	result = _CloseMIDIDev();
 	if (result != 0) goto EXIT;
 
@@ -174,7 +174,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒgî•ñƒNƒŠƒA
+// ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 //******************************************************************************
 void SMLiveMonitor::_ClearPortInfo()
 {
@@ -183,13 +183,13 @@ void SMLiveMonitor::_ClearPortInfo()
 }
 
 //******************************************************************************
-// MIDIƒfƒoƒCƒXƒI[ƒvƒ“
+// MIDIãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ¼ãƒ—ãƒ³
 //******************************************************************************
 int SMLiveMonitor::_OpenMIDIDev()
 {
 	int result = 0;
 	
-	//o—Íƒ|[ƒg‚ÌƒfƒoƒCƒX‚ğŠJ‚­
+	//å‡ºåŠ›ãƒãƒ¼ãƒˆã®ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 	if (strlen(m_OutPortDevName) > 0) {
 		result = m_OutDevCtrl.SetPortDev(0, m_OutPortDevName);
 		if (result != 0) goto EXIT;
@@ -197,12 +197,12 @@ int SMLiveMonitor::_OpenMIDIDev()
 	result = m_OutDevCtrl.OpenPortDevAll();
 	if (result != 0) goto EXIT;
 	
-	//“ü—Íƒ|[ƒg‚ÌƒfƒoƒCƒX‚ğŠJ‚­
+	//å…¥åŠ›ãƒãƒ¼ãƒˆã®ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 	if (strlen(m_InPortDevName) > 0) {
 		result = m_InDevCtrl.SetPortDev(m_InPortDevName);
 		if (result != 0) goto EXIT;
 		
-		//ƒR[ƒ‹ƒoƒbƒN“o˜^
+		//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç™»éŒ²
 		m_InDevCtrl.SetInReadCallBack(_InReadCallBack, this);
 	}
 	result = m_InDevCtrl.OpenPortDev();
@@ -213,17 +213,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒfƒoƒCƒXƒNƒ[ƒY
+// MIDIãƒ‡ãƒã‚¤ã‚¹ã‚¯ãƒ­ãƒ¼ã‚º
 //******************************************************************************
 int SMLiveMonitor::_CloseMIDIDev()
 {
 	int result = 0;
 	
-	//“ü—Íƒ|[ƒg‚ÌƒfƒoƒCƒX‚ğ•Â‚¶‚é
+	//å…¥åŠ›ãƒãƒ¼ãƒˆã®ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 	result = m_InDevCtrl.ClosePortDev();
 	if (result != 0) goto EXIT;
 	
-	//o—Íƒ|[ƒg‚ÌƒfƒoƒCƒX‚ğ•Â‚¶‚é
+	//å‡ºåŠ›ãƒãƒ¼ãƒˆã®ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 	result = m_OutDevCtrl.ClosePortDevAll();
 	if (result != 0) goto EXIT;
 	
@@ -232,7 +232,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN “Ç‚İ‚İƒR[ƒ‹ƒoƒbƒN
+// MIDI IN èª­ã¿è¾¼ã¿ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 //******************************************************************************
 int SMLiveMonitor::_InReadCallBack(
 		SMEvent* pEvent,
@@ -254,18 +254,18 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN “Ç‚İ‚İˆ—
+// MIDI IN èª­ã¿è¾¼ã¿å‡¦ç†
 //******************************************************************************
 int SMLiveMonitor::_InReadProc(SMEvent* pEvent)
 {
 	int result = 0;
 	
-	//MIDIƒCƒxƒ“ƒg‚ğ‘I•Ê‚µ‚ÄƒƒbƒZ[ƒWƒLƒ…[‚É“o˜^
-	//ƒRƒ“ƒgƒ[ƒ‹ƒ`ƒFƒ“ƒW‚ÌŠÄ‹‚ ‚è
+	//MIDIã‚¤ãƒ™ãƒ³ãƒˆã‚’é¸åˆ¥ã—ã¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚­ãƒ¥ãƒ¼ã«ç™»éŒ²
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒã‚§ãƒ³ã‚¸ã®ç›£è¦–ã‚ã‚Š
 	result = _InReadProcParseEvent(pEvent);
 	if (result != 0) goto EXIT;
 	
-	//MIDIo—ÍƒfƒoƒCƒX‚Éo—Í
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹ã«å‡ºåŠ›
 	result = _InReadProcMIDITHRU(pEvent);
 	if (result != 0) goto EXIT;
 	
@@ -274,14 +274,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN “Ç‚İ‚İˆ—FƒCƒxƒ“ƒg‰ğÍ
+// MIDI IN èª­ã¿è¾¼ã¿å‡¦ç†ï¼šã‚¤ãƒ™ãƒ³ãƒˆè§£æ
 //******************************************************************************
 int SMLiveMonitor::_InReadProcParseEvent(SMEvent* pEvent)
 {
 	int result = 0;
 	unsigned char portNo = 0;
 	
-	//ƒCƒxƒ“ƒgƒEƒHƒbƒ`
+	//ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒ
 	result = m_EventWatcher.WatchEvent(portNo, pEvent);
 	if (result != 0) goto EXIT;
 	
@@ -290,27 +290,27 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN “Ç‚İ‚İˆ—FMIDITHRUˆ—
+// MIDI IN èª­ã¿è¾¼ã¿å‡¦ç†ï¼šMIDITHRUå‡¦ç†
 //******************************************************************************
 int SMLiveMonitor::_InReadProcMIDITHRU(SMEvent* pEvent)
 {
 	int result = 0;
 	unsigned char portNo = 0;
 	
-	//MIDITHRUƒIƒt‚È‚ç‚È‚É‚à‚µ‚È‚¢
+	//MIDITHRUã‚ªãƒ•ãªã‚‰ãªã«ã‚‚ã—ãªã„
 	if (!m_isMIDITHRU) goto EXIT;
 	
-	//MIDIƒCƒxƒ“ƒg‘—M
+	//MIDIã‚¤ãƒ™ãƒ³ãƒˆé€ä¿¡
 	if (pEvent->GetType() == SMEvent::EventMIDI) {
 		result = _InReadProcSendMIDIEvent(portNo, pEvent);
 		if (result != 0) goto EXIT;
 	}
-	//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu‘—M
+	//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–é€ä¿¡
 	else if (pEvent->GetType() == SMEvent::EventSysEx) {
 		result = _InReadProcSendSysExEvent(portNo, pEvent);
 		if (result != 0) goto EXIT;
 	}
-	//ƒVƒXƒeƒ€ƒƒbƒZ[ƒW‘—M
+	//ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 	else if (pEvent->GetType() == SMEvent::EventSysMsg) {
 		result = _InReadProcSendSysMsgEvent(portNo, pEvent);
 		if (result != 0) goto EXIT;
@@ -321,7 +321,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒCƒxƒ“ƒg‘—M
+// MIDIã‚¤ãƒ™ãƒ³ãƒˆé€ä¿¡
 //******************************************************************************
 int SMLiveMonitor::_InReadProcSendMIDIEvent(
 		unsigned char portNo,
@@ -334,11 +334,11 @@ int SMLiveMonitor::_InReadProcSendMIDIEvent(
 	
 	midiEvent.Attach(pEvent);
 	
-	//ƒƒbƒZ[ƒWæ“¾
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–å¾—
 	result = midiEvent.GetMIDIOutShortMsg(&msg);
 	if (result != 0) goto EXIT;
 	
-	//ƒƒbƒZ[ƒWo—Í
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›
 	result = m_OutDevCtrl.SendShortMsg(portNo, msg);
 	if (result != 0) goto EXIT;
 	
@@ -347,7 +347,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysExƒCƒxƒ“ƒg‘—M
+// SysExã‚¤ãƒ™ãƒ³ãƒˆé€ä¿¡
 //******************************************************************************
 int SMLiveMonitor::_InReadProcSendSysExEvent(
 		unsigned char portNo,
@@ -361,10 +361,10 @@ int SMLiveMonitor::_InReadProcSendSysExEvent(
 	
 	sysExEvent.Attach(pEvent);
 	
-	//ƒƒbƒZ[ƒWæ“¾
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–å¾—
 	sysExEvent.GetMIDIOutLongMsg(&pVarMsg, &size);
 	
-	//ƒƒbƒZ[ƒWo—ÍFo—ÍŠ®—¹‚Ü‚Å§Œä‚ª–ß‚ç‚È‚¢
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›ï¼šå‡ºåŠ›å®Œäº†ã¾ã§åˆ¶å¾¡ãŒæˆ»ã‚‰ãªã„
 	result = m_OutDevCtrl.SendLongMsg(portNo, pVarMsg, size);
 	if (result != 0) goto EXIT;
 	
@@ -373,7 +373,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysMsgƒCƒxƒ“ƒg‘—M
+// SysMsgã‚¤ãƒ™ãƒ³ãƒˆé€ä¿¡
 //******************************************************************************
 int SMLiveMonitor::_InReadProcSendSysMsgEvent(
 		unsigned char portNo,
@@ -387,11 +387,11 @@ int SMLiveMonitor::_InReadProcSendSysMsgEvent(
 	
 	sysMsgEvent.Attach(pEvent);
 	
-	//ƒƒbƒZ[ƒWæ“¾
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–å¾—
 	result = sysMsgEvent.GetMIDIOutShortMsg(&msg, &size);
 	if (result != 0) goto EXIT;
 	
-	//ƒƒbƒZ[ƒWo—Í
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›
 	result = m_OutDevCtrl.SendShortMsg(portNo, msg);
 	if (result != 0) goto EXIT;
 	

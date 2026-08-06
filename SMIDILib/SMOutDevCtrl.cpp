@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMOutDevCtrl
 //
-// MIDIo—ÍƒfƒoƒCƒX§ŒäƒNƒ‰ƒX
+// MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
 //
@@ -18,7 +18,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMOutDevCtrl::SMOutDevCtrl(void)
 {
@@ -32,24 +32,24 @@ SMOutDevCtrl::SMOutDevCtrl(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMOutDevCtrl::~SMOutDevCtrl(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int SMOutDevCtrl::Initialize()
 {
 	int result = 0;
 
-	//ƒ|[ƒgî•ñƒNƒŠƒA
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 	result = ClearPortInfo();
 	if (result != 0) goto EXIT;
 
-	//MIDIo—ÍƒfƒoƒCƒXˆê——‚ğì¬
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹ä¸€è¦§ã‚’ä½œæˆ
 	result = _InitDevList();
 	if (result != 0) goto EXIT;
 
@@ -58,7 +58,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒXƒŠƒXƒg‰Šú‰»
+// ãƒ‡ãƒã‚¤ã‚¹ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 //******************************************************************************
 int SMOutDevCtrl::_InitDevList()
 {
@@ -71,10 +71,10 @@ int SMOutDevCtrl::_InitDevList()
 
 	m_OutDevList.clear();
 
-	//MIDIo—ÍƒfƒoƒCƒX‚Ì”
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹ã®æ•°
 	devNum = midiOutGetNumDevs();
 
-	//MIDIo—ÍƒfƒoƒCƒX‚Ìî•ñ‚ğæ“¾‚·‚é
+	//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	for (devId = 0; devId < devNum; devId++) {
 
 		ZeroMemory(&moc, sizeof(MIDIOUTCAPS));
@@ -88,7 +88,7 @@ int SMOutDevCtrl::_InitDevList()
 		devInfo.devId = devId;
 		memcpy(devInfo.productName, moc.szPname, MAXPNAMELEN);
 
-		//æ“¾‚µ‚½î•ñ‚ğƒŠƒXƒg‚É“o˜^
+		//å–å¾—ã—ãŸæƒ…å ±ã‚’ãƒªã‚¹ãƒˆã«ç™»éŒ²
 		m_OutDevList.push_back(devInfo);
 	}
 
@@ -97,7 +97,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX”æ“¾
+// ãƒ‡ãƒã‚¤ã‚¹æ•°å–å¾—
 //******************************************************************************
 unsigned long SMOutDevCtrl::GetDevNum()
 {
@@ -105,7 +105,7 @@ unsigned long SMOutDevCtrl::GetDevNum()
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒXƒvƒƒ_ƒNƒg–¼Ìæ“¾
+// ãƒ‡ãƒã‚¤ã‚¹ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆåç§°å–å¾—
 //******************************************************************************
 int SMOutDevCtrl::GetDevProductName(
 		unsigned long index,
@@ -130,7 +130,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒX‚ğİ’è
+// ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’è¨­å®š
 //******************************************************************************
 int SMOutDevCtrl::SetPortDev(
 		unsigned char portNo,
@@ -169,7 +169,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒXID‚ğæ“¾
+// ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹IDã‚’å–å¾—
 //******************************************************************************
 int SMOutDevCtrl::GetPortDevId(
 		unsigned char portNo,
@@ -198,7 +198,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘Sƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒX‚ğŠJ‚­
+// å…¨ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 //******************************************************************************
 int SMOutDevCtrl::OpenPortDevAll()
 {
@@ -215,13 +215,13 @@ int SMOutDevCtrl::OpenPortDevAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ƒ|[ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//ãƒãƒ¼ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		//ƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒXID‚ğæ“¾
+		//ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹IDã‚’å–å¾—
 		devId = m_PortInfo[portNo].devId;
 
-		//•Ê‚Ìƒ|[ƒg‚Å“¯‚¶ƒfƒoƒCƒX‚ğ‚·‚Å‚ÉŠJ‚¢‚Ä‚¢‚éê‡‚Ì‘Îˆ
+		//åˆ¥ã®ãƒãƒ¼ãƒˆã§åŒã˜ãƒ‡ãƒã‚¤ã‚¹ã‚’ã™ã§ã«é–‹ã„ã¦ã„ã‚‹å ´åˆã®å¯¾å‡¦
 		isOpen = false;
 		for (prevPortNo = 0; prevPortNo < portNo; prevPortNo++) {
 			if (devId == m_PortInfo[prevPortNo].devId) {
@@ -231,14 +231,14 @@ int SMOutDevCtrl::OpenPortDevAll()
 			}
 		}
 
-		//V‹K‚ÉƒfƒoƒCƒX‚ğŠJ‚­
+		//æ–°è¦ã«ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 		if (!isOpen) {
 			apiresult = midiOutOpen(
-							&hMIDIOut,      //ƒnƒ“ƒhƒ‹
-							devId,          //MIDIo—ÍƒfƒoƒCƒX¯•Êq
-							NULL,           //Ä¶i’»ó‹µƒR[ƒ‹ƒoƒbƒNŠÖ”
-							NULL,           //ƒR[ƒ‹ƒoƒbƒNŠÖ”‚É“n‚·ƒ†[ƒU[ƒCƒ“ƒXƒ^ƒ“ƒXƒf[ƒ^
-							CALLBACK_NULL   //ƒR[ƒ‹ƒoƒbƒNƒtƒ‰ƒOFƒR[ƒ‹ƒoƒbƒN‚È‚µ
+							&hMIDIOut,      //ãƒãƒ³ãƒ‰ãƒ«
+							devId,          //MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹è­˜åˆ¥å­
+							NULL,           //å†ç”Ÿé€²æ—çŠ¶æ³ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+							NULL,           //ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã«æ¸¡ã™ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿
+							CALLBACK_NULL   //ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ãƒ•ãƒ©ã‚°ï¼šã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ãªã—
 						);
 			if (apiresult != MMSYSERR_NOERROR) {
 				result = YN_SET_ERR("MIDI OUT device open error.", apiresult, 0);
@@ -253,7 +253,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘Sƒ|[ƒg‚É‘Î‰‚·‚éƒfƒoƒCƒX‚ğ•Â‚¶‚é
+// å…¨ãƒãƒ¼ãƒˆã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 //******************************************************************************
 int SMOutDevCtrl::ClosePortDevAll()
 {
@@ -264,13 +264,13 @@ int SMOutDevCtrl::ClosePortDevAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ƒ|[ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//ãƒãƒ¼ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		//ƒfƒoƒCƒX‚ğŠJ‚¢‚Ä‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã„ã¦ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (m_PortInfo[portNo].hMIDIOut == NULL) continue;
 
-		//ƒfƒoƒCƒX‚ğ•Â‚¶‚é
+		//ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 		apiresult = midiOutClose(m_PortInfo[portNo].hMIDIOut);
 		if (apiresult != MMSYSERR_NOERROR) {
 			result = YN_SET_ERR("MIDI OUT device close error.", 0, 0);
@@ -278,7 +278,7 @@ int SMOutDevCtrl::ClosePortDevAll()
 		}
 		m_PortInfo[portNo].hMIDIOut = NULL;
 
-		//•Ê‚Ìƒ|[ƒg‚Å“¯‚¶ƒfƒoƒCƒX‚ğŠJ‚¢‚Ä‚¢‚éê‡‚Ì‘Îˆ
+		//åˆ¥ã®ãƒãƒ¼ãƒˆã§åŒã˜ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã„ã¦ã„ã‚‹å ´åˆã®å¯¾å‡¦
 		for (nextPortNo = portNo+1; nextPortNo < SM_MIDIOUT_PORT_NUM_MAX; nextPortNo++) {
 			if (m_PortInfo[portNo].devId == m_PortInfo[nextPortNo].devId) {
 				m_PortInfo[nextPortNo].hMIDIOut = NULL;
@@ -291,7 +291,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ|[ƒgî•ñƒNƒŠƒA
+// ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 //******************************************************************************
 int SMOutDevCtrl::ClearPortInfo()
 {
@@ -312,7 +312,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒf[ƒ^‘—MiƒVƒ‡[ƒgƒƒbƒZ[ƒWj
+// MIDIãƒ‡ãƒ¼ã‚¿é€ä¿¡ï¼ˆã‚·ãƒ§ãƒ¼ãƒˆãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼‰
 //******************************************************************************
 int SMOutDevCtrl::SendShortMsg(
 		unsigned char portNo,
@@ -323,20 +323,20 @@ int SMOutDevCtrl::SendShortMsg(
 	UINT apiresult = 0;
 	HMIDIOUT hMIDIOut = NULL;
 
-	//ƒTƒ|[ƒg”ÍˆÍŠO‚Ìƒ|[ƒg‚ªw’è‚³‚ê‚½ê‡‚Í‰½‚à‚µ‚È‚¢
+	//ã‚µãƒãƒ¼ãƒˆç¯„å›²å¤–ã®ãƒãƒ¼ãƒˆãŒæŒ‡å®šã•ã‚ŒãŸå ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (portNo >= SM_MIDIOUT_PORT_NUM_MAX) goto EXIT;
 
-	//ƒ|[ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒãƒ¼ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
-	//ƒfƒoƒCƒX‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¯‚ê‚ÎƒGƒ‰[
+	//ãƒ‡ãƒã‚¤ã‚¹ãŒé–‹ã‹ã‚Œã¦ã„ãªã‘ã‚Œã°ã‚¨ãƒ©ãƒ¼
 	if (m_PortInfo[portNo].hMIDIOut == NULL) {
 		result = YN_SET_ERR("Program error.", portNo, 0);
 		goto EXIT;
 	}
 	hMIDIOut = m_PortInfo[portNo].hMIDIOut;
 
-	//ƒƒbƒZ[ƒWo—ÍFMIDId—l‚É‚æ‚è–ñ0.3msecŠ|‚©‚é
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›ï¼šMIDIä»•æ§˜ã«ã‚ˆã‚Šç´„0.3msecæ›ã‹ã‚‹
 	apiresult = midiOutShortMsg(hMIDIOut, msg);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, msg);
@@ -348,7 +348,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒf[ƒ^‘—Miƒƒ“ƒOƒƒbƒZ[ƒWj
+// MIDIãƒ‡ãƒ¼ã‚¿é€ä¿¡ï¼ˆãƒ­ãƒ³ã‚°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼‰
 //******************************************************************************
 int SMOutDevCtrl::SendLongMsg(
 		unsigned char portNo,
@@ -361,50 +361,50 @@ int SMOutDevCtrl::SendLongMsg(
 	HMIDIOUT hMIDIOut = NULL;
 	MIDIHDR mh;
 
-	//ƒpƒ‰ƒ[ƒ^ƒ`ƒFƒbƒN
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯
 	if (pMsg == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//ƒTƒ|[ƒg”ÍˆÍŠO‚Ìƒ|[ƒg‚ªw’è‚³‚ê‚½ê‡‚Í‰½‚à‚µ‚È‚¢
+	//ã‚µãƒãƒ¼ãƒˆç¯„å›²å¤–ã®ãƒãƒ¼ãƒˆãŒæŒ‡å®šã•ã‚ŒãŸå ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (portNo >= SM_MIDIOUT_PORT_NUM_MAX) goto EXIT;
 
-	//ƒ|[ƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒãƒ¼ãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
-	//ƒfƒoƒCƒX‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¯‚ê‚ÎƒGƒ‰[
+	//ãƒ‡ãƒã‚¤ã‚¹ãŒé–‹ã‹ã‚Œã¦ã„ãªã‘ã‚Œã°ã‚¨ãƒ©ãƒ¼
 	if (m_PortInfo[portNo].hMIDIOut == NULL) {
 		result = YN_SET_ERR("Program error.", portNo, 0);
 		goto EXIT;
 	}
 	hMIDIOut = m_PortInfo[portNo].hMIDIOut;
 
-	//ƒwƒbƒ_ì¬
+	//ãƒ˜ãƒƒãƒ€ä½œæˆ
 	memset((void*)&mh, 0, sizeof(MIDIHDR));
 	mh.lpData         = (LPSTR)pMsg;
 	mh.dwBufferLength = size;
 	mh.dwFlags        = 0;
 
-	//o—Íƒoƒbƒtƒ@€”õ
+	//å‡ºåŠ›ãƒãƒƒãƒ•ã‚¡æº–å‚™
 	apiresult = midiOutPrepareHeader(hMIDIOut, &mh, sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, size);
 		goto EXIT;
 	}
-	//ƒƒbƒZ[ƒWo—ÍFMIDId—l‚É‚æ‚è–ñ0.3msecˆÈãŠ|‚©‚é
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡ºåŠ›ï¼šMIDIä»•æ§˜ã«ã‚ˆã‚Šç´„0.3msecä»¥ä¸Šæ›ã‹ã‚‹
 	apiresult = midiOutLongMsg(hMIDIOut, &mh, sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, size);
 		goto EXIT;
 	}
 
-	//o—ÍŠ®—¹‚Ü‚Å‘Ò‚¿‡‚í‚¹
+	//å‡ºåŠ›å®Œäº†ã¾ã§å¾…ã¡åˆã‚ã›
 	while ((mh.dwFlags & MHDR_DONE) == 0) {
-		//ƒR[ƒ‹ƒoƒbƒNI/F‚ª‚È‚¢‚Ì‚Å‚±‚¤‚·‚é‚µ‚©EEE
+		//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯I/FãŒãªã„ã®ã§ã“ã†ã™ã‚‹ã—ã‹ãƒ»ãƒ»ãƒ»
 	}
 
-	//o—Íƒoƒbƒtƒ@‰ğ•ú
+	//å‡ºåŠ›ãƒãƒƒãƒ•ã‚¡è§£æ”¾
 	apiresult = midiOutUnprepareHeader(hMIDIOut, &mh, sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, size);
@@ -416,7 +416,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘Sƒ|[ƒgƒm[ƒgƒIƒt
+// å…¨ãƒãƒ¼ãƒˆãƒãƒ¼ãƒˆã‚ªãƒ•
 //******************************************************************************
 int SMOutDevCtrl::NoteOffAll()
 {
@@ -428,11 +428,11 @@ int SMOutDevCtrl::NoteOffAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ƒ|[ƒg‚ÆƒfƒoƒCƒX‚ª‘¶İ‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//ãƒãƒ¼ãƒˆã¨ãƒ‡ãƒã‚¤ã‚¹ãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (!m_PortInfo[portNo].isExist) continue;
 		if (m_PortInfo[portNo].hMIDIOut == NULL) continue;
 
-		//‘Sƒgƒ‰ƒbƒNƒm[ƒgƒIƒt
+		//å…¨ãƒˆãƒ©ãƒƒã‚¯ãƒãƒ¼ãƒˆã‚ªãƒ•
 		for (i = 0; i < 16; i++) {
 			msg = (0x7B << 8) | (0xB0 | i);
 			apiresult = midiOutShortMsg(m_PortInfo[portNo].hMIDIOut, msg);
@@ -448,7 +448,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘Sƒ|[ƒgƒTƒEƒ“ƒhƒIƒt
+// å…¨ãƒãƒ¼ãƒˆã‚µã‚¦ãƒ³ãƒ‰ã‚ªãƒ•
 //******************************************************************************
 int SMOutDevCtrl::SoundOffAll()
 {
@@ -460,11 +460,11 @@ int SMOutDevCtrl::SoundOffAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ƒ|[ƒg‚ÆƒfƒoƒCƒX‚ª‘¶İ‚µ‚È‚¯‚ê‚ÎƒXƒLƒbƒv
+		//ãƒãƒ¼ãƒˆã¨ãƒ‡ãƒã‚¤ã‚¹ãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ã‚¹ã‚­ãƒƒãƒ—
 		if (!m_PortInfo[portNo].isExist) continue;
 		if (m_PortInfo[portNo].hMIDIOut == NULL) continue;
 
-		//‘Sƒgƒ‰ƒbƒNƒTƒEƒ“ƒhƒIƒt
+		//å…¨ãƒˆãƒ©ãƒƒã‚¯ã‚µã‚¦ãƒ³ãƒ‰ã‚ªãƒ•
 		for (i = 0; i < 16; i++) {
 			msg = (0x78 << 8) | (0xB0 | i);
 			apiresult = midiOutShortMsg(m_PortInfo[portNo].hMIDIOut, msg);

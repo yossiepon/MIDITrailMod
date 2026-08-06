@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteBoxLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2025 WADA Masashi. All Rights Reserved.
 //
@@ -16,16 +16,16 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//1ƒm[ƒg‚ ‚½‚è‚Ì’¸“_” = 1’·•ûŒ`4’¸“_ * 6–Ê 
+//1ãƒãƒ¼ãƒˆã‚ãŸã‚Šã®é ‚ç‚¹æ•° = 1é•·æ–¹å½¢4é ‚ç‚¹ * 6é¢ 
 #define NOTE_VERTEX_NUM  (4 * 6)
 
-//1ƒm[ƒg‚ ‚½‚è‚ÌƒCƒ“ƒfƒbƒNƒX” = 1OŠpŒ`3’¸“_ * 2ŒÂ * 6–Ê
+//1ãƒãƒ¼ãƒˆã‚ãŸã‚Šã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ•° = 1ä¸‰è§’å½¢3é ‚ç‚¹ * 2å€‹ * 6é¢
 #define NOTE_INDEX_NUM   (3 * 2 * 6)
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteBoxLive::MTNoteBoxLive(void)
 {
@@ -35,7 +35,7 @@ MTNoteBoxLive::MTNoteBoxLive(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteBoxLive::~MTNoteBoxLive(void)
 {
@@ -43,7 +43,7 @@ MTNoteBoxLive::~MTNoteBoxLive(void)
 }
 
 //******************************************************************************
-// ¶¬ˆ—
+// ç”Ÿæˆå‡¦ç†
 //******************************************************************************
 int MTNoteBoxLive::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -55,26 +55,26 @@ int MTNoteBoxLive::Create(
 	
 	Release();
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	result = _CreateNoteDesign();
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_pNoteDesign->Initialize(pSceneName, NULL);
 	if (result != 0) goto EXIT;
 	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^•\¦ŠúŒÀ
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿è¡¨ç¤ºæœŸé™
 	m_LiveMonitorDisplayDuration = m_pNoteDesign->GetLiveMonitorDisplayDuration();
 	
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	result = _CreateNoteStatus();
 	if (result != 0) goto EXIT;
 	
-	//ƒm[ƒgƒ{ƒbƒNƒX¶¬iƒoƒbƒtƒ@Šm•Ûj
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ç”Ÿæˆï¼ˆãƒãƒƒãƒ•ã‚¡ç¢ºä¿ï¼‰
 	result = _CreateNoteBox(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	m_pNotePitchBend = pNotePitchBend;
 	
 EXIT:;
@@ -82,7 +82,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“¶¬
+// ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTNoteBoxLive::_CreateNoteDesign()
 {
@@ -101,14 +101,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒgî•ñ”z—ñ¶¬
+// ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 //******************************************************************************
 int MTNoteBoxLive::_CreateNoteStatus()
 {
 	int result = 0;
 	unsigned long i = 0;
 	
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	try {
 		m_pNoteStatus = new NoteStatus[MTNOTEBOX_MAX_LIVENOTE_NUM];
 	}
@@ -117,7 +117,7 @@ int MTNoteBoxLive::_CreateNoteStatus()
 		goto EXIT;
 	}
 	
-	//ƒm[ƒgó‘ÔƒŠƒXƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆçŠ¶æ…‹ãƒªã‚¹ãƒˆåˆæœŸåŒ–
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		m_pNoteStatus[i].isActive = false;
 		m_pNoteStatus[i].portNo = 0;
@@ -132,7 +132,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX¶¬iƒoƒbƒtƒ@Šm•Ûj
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ç”Ÿæˆï¼ˆãƒãƒƒãƒ•ã‚¡ç¢ºä¿ï¼‰
 //******************************************************************************
 int MTNoteBoxLive::_CreateNoteBox(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -149,49 +149,49 @@ int MTNoteBoxLive::_CreateNoteBox(
 	
 	memset(&note, 0, sizeof(NoteStatus));
 	
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_PrimitiveNotes.Initialize(
-					sizeof(MTNOTEBOX_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLELIST			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTNOTEBOX_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLELIST			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 	
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = NOTE_VERTEX_NUM * MTNOTEBOX_MAX_LIVENOTE_NUM;
 	result = m_PrimitiveNotes.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 	
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	indexNum = NOTE_INDEX_NUM * MTNOTEBOX_MAX_LIVENOTE_NUM;
 	result = m_PrimitiveNotes.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 	
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_PrimitiveNotes.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 	result = m_PrimitiveNotes.LockIndex(&pIndex);
 	if (result != 0) goto EXIT;
 	
-	//ƒoƒbƒtƒ@‚É’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		result = _CreateVertexOfNote(
-						m_pNoteStatus[i],				//ƒm[ƒgó‘Ô
-						&(pVertex[NOTE_VERTEX_NUM * i]),//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-						NOTE_VERTEX_NUM * i,			//’¸“_ƒoƒbƒtƒ@ƒCƒ“ƒfƒbƒNƒXƒIƒtƒZƒbƒg
-						&(pIndex[NOTE_INDEX_NUM * i]),	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-						0								//Œ»İ
+						m_pNoteStatus[i],				//ãƒãƒ¼ãƒˆçŠ¶æ…‹
+						&(pVertex[NOTE_VERTEX_NUM * i]),//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+						NOTE_VERTEX_NUM * i,			//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+						&(pIndex[NOTE_INDEX_NUM * i]),	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+						0								//ç¾åœ¨æ™‚åˆ»
 					);
 		if (result != 0) goto EXIT;
 	}
 	
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveNotes.UnlockVertex();
 	if (result != 0) goto EXIT;
 	result = m_PrimitiveNotes.UnlockIndex();
 	if (result != 0) goto EXIT;
 	
-	//ƒ}ƒeƒŠƒAƒ‹ì¬
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 	_MakeMaterial(&material);
 	m_PrimitiveNotes.SetMaterial(material);
 	
@@ -200,7 +200,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTNoteBoxLive::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -213,26 +213,26 @@ int MTNoteBoxLive::Transform(
 	D3DXMATRIX moveMatrix;
 	D3DXMATRIX worldMatrix;
 	
-	//ƒm[ƒg‚Ì’¸“_¶¬
+	//ãƒãƒ¼ãƒˆã®é ‚ç‚¹ç”Ÿæˆ
 	result = _TransformNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 	
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 	
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 	
-	//s—ñ‚Ì‡¬
+	//è¡Œåˆ—ã®åˆæˆ
 	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
 	
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_PrimitiveNotes.Transform(worldMatrix);
 	
 EXIT:;
@@ -240,7 +240,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒg‚Ì’¸“_ˆ—
+// ãƒãƒ¼ãƒˆã®é ‚ç‚¹å‡¦ç†
 //******************************************************************************
 int MTNoteBoxLive::_TransformNotes(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -248,11 +248,11 @@ int MTNoteBoxLive::_TransformNotes(
 {
 	int result = 0;
 	
-	//ƒm[ƒg‚Ìó‘ÔXV
+	//ãƒãƒ¼ãƒˆã®çŠ¶æ…‹æ›´æ–°
 	result = _UpdateStatusOfNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
-	//ƒm[ƒg‚Ì’¸“_XV
+	//ãƒãƒ¼ãƒˆã®é ‚ç‚¹æ›´æ–°
 	result = _UpdateVertexOfNotes(pD3DDevice);
 	if (result != 0) goto EXIT;
 	
@@ -261,7 +261,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒg‚Ìó‘ÔXV
+// ãƒãƒ¼ãƒˆã®çŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 int MTNoteBoxLive::_UpdateStatusOfNotes(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -273,7 +273,7 @@ int MTNoteBoxLive::_UpdateStatusOfNotes(
 	
 	curTime = timeGetTime();
 	
-	//ŒÃ‚¢ƒm[ƒgî•ñ‚ğ”jŠü‚·‚é
+	//å¤ã„ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç ´æ£„ã™ã‚‹
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
 			if ((m_pNoteStatus[i].endTime != 0)
@@ -293,7 +293,7 @@ int MTNoteBoxLive::_UpdateStatusOfNotes(
 }
 
 //******************************************************************************
-// ƒm[ƒg‚Ì’¸“_XV
+// ãƒãƒ¼ãƒˆã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteBoxLive::_UpdateVertexOfNotes(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -308,23 +308,23 @@ int MTNoteBoxLive::_UpdateVertexOfNotes(
 	
 	curTime = timeGetTime();
 	
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_PrimitiveNotes.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 	result = m_PrimitiveNotes.LockIndex(&pIndex);
 	if (result != 0) goto EXIT;
 	
-	//”­‰¹’†ƒm[ƒg‚É‚Â‚¢‚Ä’¸“_‚ğXV
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã«ã¤ã„ã¦é ‚ç‚¹ã‚’æ›´æ–°
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
-			//’¸“_XV
+			//é ‚ç‚¹æ›´æ–°
 			result = _CreateVertexOfNote(
-							m_pNoteStatus[i],						//ƒm[ƒgó‘Ô
-							&(pVertex[NOTE_VERTEX_NUM * noteNum]),	//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-							NOTE_VERTEX_NUM * noteNum,				//’¸“_ƒoƒbƒtƒ@ƒCƒ“ƒfƒbƒNƒXƒIƒtƒZƒbƒg
-							&(pIndex[NOTE_INDEX_NUM * noteNum]),	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-							curTime,								//Œ»İ‚ÌŠÔ
-							true									//ƒsƒbƒ`ƒxƒ“ƒh“K—p
+							m_pNoteStatus[i],						//ãƒãƒ¼ãƒˆçŠ¶æ…‹
+							&(pVertex[NOTE_VERTEX_NUM * noteNum]),	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+							NOTE_VERTEX_NUM * noteNum,				//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+							&(pIndex[NOTE_INDEX_NUM * noteNum]),	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+							curTime,								//ç¾åœ¨ã®æ™‚é–“
+							true									//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰é©ç”¨
 						);
 			if (result != 0) goto EXIT;
 			
@@ -333,7 +333,7 @@ int MTNoteBoxLive::_UpdateVertexOfNotes(
 	}
 	m_NoteNum = noteNum;
 	
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveNotes.UnlockVertex();
 	if (result != 0) goto EXIT;
 	result = m_PrimitiveNotes.UnlockIndex();
@@ -344,7 +344,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTNoteBoxLive::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -352,17 +352,17 @@ int MTNoteBoxLive::Draw(
 {
 	int result = 0;
 	
-	//”­‰¹’†ƒm[ƒg‚Ì•`‰æ
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã®æç”»
 	if (m_NoteNum > 0) {
-		//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
 		pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 		
-		//•`‰æ
+		//æç”»
 		result = m_PrimitiveNotes.Draw(
-						pD3DDevice,						//ƒfƒoƒCƒX
-						NULL,							//ƒeƒNƒXƒ`ƒƒF‚È‚µ
-						(NOTE_INDEX_NUM/3)*m_NoteNum	//ƒvƒŠƒ~ƒeƒBƒu”
+						pD3DDevice,						//ãƒ‡ãƒã‚¤ã‚¹
+						NULL,							//ãƒ†ã‚¯ã‚¹ãƒãƒ£ï¼šãªã—
+						(NOTE_INDEX_NUM/3)*m_NoteNum	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°
 					);
 		if (result != 0) goto EXIT;
 	}
@@ -372,7 +372,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTNoteBoxLive::Release()
 {
@@ -386,7 +386,7 @@ void MTNoteBoxLive::Release()
 }
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX‚Ì’¸“_¶¬
+// ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã®é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTNoteBoxLive::_CreateVertexOfNote(
 		NoteStatus note,
@@ -418,14 +418,14 @@ int MTNoteBoxLive::_CreateVertexOfNote(
 	}
 	
 	//     +   1+----+3   +
-	//    /|   / ã /    /|         y x
-	//   + | 0+----+2   + |‰E       |/
-	// ¶| +   7+----+5 | +      z--+0
-	//   |/    / ‰º /   |/
-	//   +   6+----+4   + © 4 ‚ªŒ´“_(0,0,0)
+	//    /|   / ä¸Š /    /|         y x
+	//   + | 0+----+2   + |å³       |/
+	// å·¦| +   7+----+5 | +      z--+0
+	//   |/    / ä¸‹ /   |/
+	//   +   6+----+4   + â† 4 ãŒåŸç‚¹(0,0,0)
 	//
 	
-	//ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹é ‚ç‚¹åº§æ¨™å–å¾—
 	elapsedTime = curTime - note.startTime;
 	if (elapsedTime > m_LiveMonitorDisplayDuration) {
 		elapsedTime = m_LiveMonitorDisplayDuration;
@@ -460,86 +460,86 @@ int MTNoteBoxLive::_CreateVertexOfNote(
 			pitchBendSensitivity
 		);
 	
-	//’¸“_À•WEEE–@ü‚ªˆÙ‚È‚é‚Ì‚Å’¸“_‚ğ8ŒÂ‚ÉW–ñ‚Å‚«‚È‚¢
-	//ã‚Ì–Ê
+	//é ‚ç‚¹åº§æ¨™ãƒ»ãƒ»ãƒ»æ³•ç·šãŒç•°ãªã‚‹ã®ã§é ‚ç‚¹ã‚’8å€‹ã«é›†ç´„ã§ããªã„
+	//ä¸Šã®é¢
 	pVertex[0].p = vectorStartLU;
 	pVertex[1].p = vectorEndLU;
 	pVertex[2].p = vectorStartRU;
 	pVertex[3].p = vectorEndRU;
-	//‰º‚Ì–Ê
+	//ä¸‹ã®é¢
 	pVertex[4].p = vectorStartRD;
 	pVertex[5].p = vectorEndRD;
 	pVertex[6].p = vectorStartLD;
 	pVertex[7].p = vectorEndLD;
-	//‰E‚Ì–Ê
+	//å³ã®é¢
 	pVertex[8].p  = pVertex[2].p;
 	pVertex[9].p  = pVertex[3].p;
 	pVertex[10].p = pVertex[4].p;
 	pVertex[11].p = pVertex[5].p;
-	//¶‚Ì–Ê
+	//å·¦ã®é¢
 	pVertex[12].p = pVertex[6].p;
 	pVertex[13].p = pVertex[7].p;
 	pVertex[14].p = pVertex[0].p;
 	pVertex[15].p = pVertex[1].p;
-	//‘O‚Ì–Ê
+	//å‰ã®é¢
 	pVertex[16].p = pVertex[0].p;
 	pVertex[17].p = pVertex[2].p;
 	pVertex[18].p = pVertex[6].p;
 	pVertex[19].p = pVertex[4].p;
-	//Œã‚Ì–Ê
+	//å¾Œã®é¢
 	pVertex[20].p = pVertex[3].p;
 	pVertex[21].p = pVertex[1].p;
 	pVertex[22].p = pVertex[5].p;
 	pVertex[23].p = pVertex[7].p;
 	
-	//–@ü
-	//ã‚Ì–Ê
+	//æ³•ç·š
+	//ä¸Šã®é¢
 	pVertex[0].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
 	pVertex[1].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
 	pVertex[2].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
 	pVertex[3].n = D3DXVECTOR3( 0.0f, 1.0f, 0.0f);
-	//‰º‚Ì–Ê
+	//ä¸‹ã®é¢
 	pVertex[4].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
 	pVertex[5].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
 	pVertex[6].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
 	pVertex[7].n = D3DXVECTOR3( 0.0f,-1.0f, 0.0f);
-	//‰E‚Ì–Ê
+	//å³ã®é¢
 	pVertex[8].n  = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
 	pVertex[9].n  = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
 	pVertex[10].n = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
 	pVertex[11].n = D3DXVECTOR3( 0.0f, 0.0f,-1.0f);
-	//¶‚Ì–Ê
+	//å·¦ã®é¢
 	pVertex[12].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
 	pVertex[13].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
 	pVertex[14].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
 	pVertex[15].n = D3DXVECTOR3( 0.0f, 0.0f, 1.0f);
-	//‘O‚Ì–Ê
+	//å‰ã®é¢
 	pVertex[16].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[17].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[18].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[19].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
-	//Œã‚Ì–Ê
+	//å¾Œã®é¢
 	pVertex[20].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
 	pVertex[21].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
 	pVertex[22].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
 	pVertex[23].n = D3DXVECTOR3( 1.0f, 0.0f, 0.0f);
 	
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	if (note.endTime != 0) {
 		color = m_pNoteDesign->GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
 	}
 	else {
-		//”­‰¹’†‚Í”­‰¹ŠJn‚©‚ç‚ÌŒo‰ßŠÔ‚É‚æ‚Á‚ÄF‚ª•Ï‰»‚·‚é
+		//ç™ºéŸ³ä¸­ã¯ç™ºéŸ³é–‹å§‹ã‹ã‚‰ã®çµŒéæ™‚é–“ã«ã‚ˆã£ã¦è‰²ãŒå¤‰åŒ–ã™ã‚‹
 		elapsedTime = curTime - note.startTime;
 		color = m_pNoteDesign->GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, elapsedTime);
 	}
 	
-	//’¸“_‚ÌFİ’èŠ®—¹
+	//é ‚ç‚¹ã®è‰²è¨­å®šå®Œäº†
 	for (i = 0; i < NOTE_VERTEX_NUM; i++) {
 		pVertex[i].c = color;
 	}
 	
-	//ƒCƒ“ƒfƒbƒNƒXFDrawIndexdPrimitiveŒÄ‚Ño‚µ‚ª1‰ñ‚ÅÏ‚Ş‚æ‚¤‚ÉTRIANGLELIST‚Æ‚·‚é
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼šDrawIndexdPrimitiveå‘¼ã³å‡ºã—ãŒ1å›ã§æ¸ˆã‚€ã‚ˆã†ã«TRIANGLELISTã¨ã™ã‚‹
 	for (i = 0; i < NOTE_INDEX_NUM; i++) {
 		pIndex[i] = vertexOffset + _GetVertexIndexOfNote(i);
 	}
@@ -548,7 +548,7 @@ int MTNoteBoxLive::_CreateVertexOfNote(
 }
 
 //******************************************************************************
-// ƒm[ƒg’¸“_ƒCƒ“ƒfƒbƒNƒXæ“¾
+// ãƒãƒ¼ãƒˆé ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å–å¾—
 //******************************************************************************
 unsigned long MTNoteBoxLive::_GetVertexIndexOfNote(
 		unsigned long index
@@ -557,12 +557,12 @@ unsigned long MTNoteBoxLive::_GetVertexIndexOfNote(
 	unsigned long vertexIndex = 0;
 	unsigned long vertexIndexes[NOTE_INDEX_NUM] = {
 		//TRIANGLE-1   TRIANGLE-2
-		 0,  1,  2,     2,  1,  3,	//ã
-		 4,  5,  6,     6,  5,  7,	//‰º
-		 8,  9, 10,    10,  9, 11,	//‰E
-		12, 13, 14,    14, 13, 15,	//¶
-		16, 17, 18,    18, 17, 19,	//‘O
-		20, 21, 22,    22, 21, 23,	//Œã
+		 0,  1,  2,     2,  1,  3,	//ä¸Š
+		 4,  5,  6,     6,  5,  7,	//ä¸‹
+		 8,  9, 10,    10,  9, 11,	//å³
+		12, 13, 14,    14, 13, 15,	//å·¦
+		16, 17, 18,    18, 17, 19,	//å‰
+		20, 21, 22,    22, 21, 23,	//å¾Œ
 	};
 	
 	if (index < NOTE_INDEX_NUM) {
@@ -573,7 +573,7 @@ unsigned long MTNoteBoxLive::_GetVertexIndexOfNote(
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTNoteBoxLive::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -581,24 +581,24 @@ void MTNoteBoxLive::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 	
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 40.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.0f;
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
@@ -606,7 +606,7 @@ void MTNoteBoxLive::_MakeMaterial(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTNoteBoxLive::Reset()
 {
@@ -627,7 +627,7 @@ void MTNoteBoxLive::Reset()
 }
 
 //******************************************************************************
-// ƒm[ƒgON“o˜^
+// ãƒãƒ¼ãƒˆONç™»éŒ²
 //******************************************************************************
 void MTNoteBoxLive::SetNoteOn(
 		unsigned char portNo,
@@ -643,8 +643,8 @@ void MTNoteBoxLive::SetNoteOn(
 	
 	curTime = timeGetTime();
 	
-	//‹ó‚«ƒXƒy[ƒX‚Éƒm[ƒgî•ñ‚ğ“o˜^
-	//‹ó‚«‚ªŒ©‚Â‚©‚ç‚È‚¯‚ê‚Î“o˜^‚ğ‚ ‚«‚ç‚ß‚é
+	//ç©ºãã‚¹ãƒšãƒ¼ã‚¹ã«ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç™»éŒ²
+	//ç©ºããŒè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã°ç™»éŒ²ã‚’ã‚ãã‚‰ã‚ã‚‹
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
 			if ((m_pNoteStatus[i].endTime != 0)
@@ -663,12 +663,12 @@ void MTNoteBoxLive::SetNoteOn(
 		}
 	}
 	
-	//‹ó‚«ƒXƒy[ƒX‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍÅ‚àŒÃ‚¢ƒm[ƒgî•ñ‚ğƒNƒŠƒA‚·‚é
+	//ç©ºãã‚¹ãƒšãƒ¼ã‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯æœ€ã‚‚å¤ã„ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	if (!isFind) {
 		_ClearOldestNoteStatus(&cleardIndex);
 	}
 	
-	//ƒm[ƒgî•ñ“o˜^
+	//ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²
 	m_pNoteStatus[cleardIndex].isActive = true;
 	m_pNoteStatus[cleardIndex].portNo = portNo;
 	m_pNoteStatus[cleardIndex].chNo = chNo;
@@ -680,7 +680,7 @@ void MTNoteBoxLive::SetNoteOn(
 }
 
 //******************************************************************************
-// ƒm[ƒgOFF“o˜^
+// ãƒãƒ¼ãƒˆOFFç™»éŒ²
 //******************************************************************************
 void MTNoteBoxLive::SetNoteOff(
 		unsigned char portNo,
@@ -690,7 +690,7 @@ void MTNoteBoxLive::SetNoteOff(
 {
 	unsigned long i = 0;
 	
-	//ŠY“–‚Ìƒm[ƒgî•ñ‚ÉI—¹‚ğİ’è
+	//è©²å½“ã®ãƒãƒ¼ãƒˆæƒ…å ±ã«çµ‚äº†æ™‚åˆ»ã‚’è¨­å®š
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if ((m_pNoteStatus[i].isActive)
 			&& (m_pNoteStatus[i].portNo == portNo)
@@ -706,13 +706,13 @@ void MTNoteBoxLive::SetNoteOff(
 }
 
 //******************************************************************************
-// ‘Sƒm[ƒgOFF
+// å…¨ãƒãƒ¼ãƒˆOFF
 //******************************************************************************
 void MTNoteBoxLive::AllNoteOff()
 {
 	unsigned long i = 0;
 	
-	//ƒm[ƒgOFF‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ƒm[ƒgî•ñ‚ÉI—¹‚ğİ’è
+	//ãƒãƒ¼ãƒˆOFFãŒè¨­å®šã•ã‚Œã¦ã„ãªã„ãƒãƒ¼ãƒˆæƒ…å ±ã«çµ‚äº†æ™‚åˆ»ã‚’è¨­å®š
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if ((m_pNoteStatus[i].isActive) && (m_pNoteStatus[i].endTime == 0)) {
 			m_pNoteStatus[i].endTime = timeGetTime();
@@ -723,7 +723,7 @@ void MTNoteBoxLive::AllNoteOff()
 }
 
 //******************************************************************************
-// ‘Sƒm[ƒgOFFiƒ`ƒƒƒ“ƒlƒ‹w’èj
+// å…¨ãƒãƒ¼ãƒˆOFFï¼ˆãƒãƒ£ãƒ³ãƒãƒ«æŒ‡å®šï¼‰
 //******************************************************************************
 void MTNoteBoxLive::AllNoteOffOnCh(
 		unsigned char portNo,
@@ -732,7 +732,7 @@ void MTNoteBoxLive::AllNoteOffOnCh(
 {
 	unsigned long i = 0;
 	
-	//w’èƒ`ƒƒƒ“ƒlƒ‹‚Åƒm[ƒgOFF‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ƒm[ƒgî•ñ‚ÉI—¹‚ğİ’è
+	//æŒ‡å®šãƒãƒ£ãƒ³ãƒãƒ«ã§ãƒãƒ¼ãƒˆOFFãŒè¨­å®šã•ã‚Œã¦ã„ãªã„ãƒãƒ¼ãƒˆæƒ…å ±ã«çµ‚äº†æ™‚åˆ»ã‚’è¨­å®š
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if ((m_pNoteStatus[i].isActive) && (m_pNoteStatus[i].endTime == 0)
 			&& (m_pNoteStatus[i].portNo == portNo) && (m_pNoteStatus[i].chNo == chNo)) {
@@ -744,7 +744,7 @@ void MTNoteBoxLive::AllNoteOffOnCh(
 }
 
 //******************************************************************************
-// Å‚àŒÃ‚¢ƒm[ƒgî•ñ‚ÌƒNƒŠƒA
+// æœ€ã‚‚å¤ã„ãƒãƒ¼ãƒˆæƒ…å ±ã®ã‚¯ãƒªã‚¢
 //******************************************************************************
 void MTNoteBoxLive::_ClearOldestNoteStatus(
 		unsigned long* pCleardIndex
@@ -754,16 +754,16 @@ void MTNoteBoxLive::_ClearOldestNoteStatus(
 	unsigned long oldestIndex = 0;
 	bool isFind = false;
 	
-	//ƒm[ƒgON‚ªÅ‚àŒÃ‚¢ƒm[ƒgî•ñ‚ğƒNƒŠƒA‚·‚é
+	//ãƒãƒ¼ãƒˆONæ™‚åˆ»ãŒæœ€ã‚‚å¤ã„ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹
 	for (i = 0; i < MTNOTEBOX_MAX_LIVENOTE_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
 			if (!isFind) {
-				//—LŒø‚Èƒm[ƒg‚ªŒ»‚ê‚½ê‡F‰‰ñ
+				//æœ‰åŠ¹ãªãƒãƒ¼ãƒˆãŒç¾ã‚ŒãŸå ´åˆï¼šåˆå›
 				oldestIndex = i;
 				isFind = true;
 			}
 			else {
-				//—LŒø‚Èƒm[ƒg‚ªŒ»‚ê‚½ê‡F2‰ñ–ÚˆÈ~
+				//æœ‰åŠ¹ãªãƒãƒ¼ãƒˆãŒç¾ã‚ŒãŸå ´åˆï¼š2å›ç›®ä»¥é™
 				if (m_pNoteStatus[i].startTime < m_pNoteStatus[oldestIndex].startTime) {
 					oldestIndex = i;
 				}
@@ -771,8 +771,8 @@ void MTNoteBoxLive::_ClearOldestNoteStatus(
 		}
 	}
 	
-	//ƒm[ƒgî•ñƒNƒŠƒA
-	//  ƒm[ƒg‚ªˆê‚Â‚à“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í”z—ñ‚Ìæ“ª‚ªƒNƒŠƒA‘ÎÛ‚Æ‚È‚é
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
+	//  ãƒãƒ¼ãƒˆãŒä¸€ã¤ã‚‚ç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯é…åˆ—ã®å…ˆé ­ãŒã‚¯ãƒªã‚¢å¯¾è±¡ã¨ãªã‚‹
 	m_pNoteStatus[oldestIndex].isActive = false;
 	*pCleardIndex = oldestIndex;
 	

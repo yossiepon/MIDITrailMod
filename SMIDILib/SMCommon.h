@@ -1,8 +1,8 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // Simple MIDI Library / SMCommon
 //
-// ���ʒ�`
+// 共通定義
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
@@ -11,32 +11,32 @@
 #pragma once
 
 
-//�ő�|�[�g��
+//最大ポート数
 #define SM_MAX_PORT_NUM  (256)
 
-//�ő�`�����l����
+//最大チャンネル数
 #define SM_MAX_CH_NUM  (16)
 
-//�ő�m�[�g��
+//最大ノート数
 #define SM_MAX_NOTE_NUM  (128)
 
-//�ő�R���g���[���`�F���W��
+//最大コントロールチェンジ数
 #define SM_MAX_CC_NUM  (128)
 
-//�f�t�H���gBPM (beats per minute)
-//  �W��MIDI�t�@�C���d�l�ł͖��w��̏ꍇ��120�Ƃ݂Ȃ�
+//デフォルトBPM (beats per minute)
+//  標準MIDIファイル仕様では未指定の場合に120とみなす
 #define SM_DEFAULT_BPM    (120)
 
-//�f�t�H���g�e���|�i�l�������̎��ԊԊu�^�P�ʁF�}�C�N���b�j
-//  BPM=120�i1���ԂŎl������120��j�̏ꍇ = 500msec = 500,000��sec
-//  �W��MIDI�t�@�C���d�l�ł̓}�C�N���b�P�ʂŕ\�������
+//デフォルトテンポ（四分音符の時間間隔／単位：マイクロ秒）
+//  BPM=120（1分間で四分音符120回）の場合 = 500msec = 500,000μsec
+//  標準MIDIファイル仕様ではマイクロ秒単位で表現される
 #define SM_DEFAULT_TEMPO  ((60 * 1000 / SM_DEFAULT_BPM) * 1000)
 
-//�f�t�H���g���q�L��
-//  �W��MIDI�t�@�C���d�l�ł͖��w��̏ꍇ��4/4�Ƃ݂Ȃ�
-#define SM_DEFAULT_TIME_SIGNATURE_NUMERATOR     (4)   //���q
-#define SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR   (4)   //����
+//デフォルト拍子記号
+//  標準MIDIファイル仕様では未指定の場合に4/4とみなす
+#define SM_DEFAULT_TIME_SIGNATURE_NUMERATOR     (4)   //分子
+#define SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR   (4)   //分母
 
-//�f�t�H���g�s�b�`�x���h���x�F2����
+//デフォルトピッチベンド感度：2半音
 #define SM_DEFAULT_PITCHBEND_SENSITIVITY  (2)
 

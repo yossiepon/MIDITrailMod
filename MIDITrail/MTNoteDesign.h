@@ -1,194 +1,167 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesign
 //
-// ƒm[ƒgƒfƒUƒCƒ“ƒNƒ‰ƒX
+// Note design class.
+// Computes note box positions, sizes, colors, and layout parameters
+// from configuration files and sequence data.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
-// MEMO:
-// ƒm[ƒgƒ{ƒbƒNƒX‚Ì³–Ê‚ğ0-1-2-3‚ÌlŠp‚Æ‚·‚éB
-// ‚±‚ÌlŠp‚Ì’†SÀ•W‚ªŠî€“_‚Å‚ ‚èAƒ|[ƒg^ƒ`ƒƒƒ“ƒlƒ‹^ƒm[ƒg‚Ì”Ô†
-// ‚É‚æ‚Á‚ÄŒˆ’è‚³‚ê‚éB
-//
-//           +--+
-//          /  /|
-//         /  / +
-//        /  / /      +x
-//       /  / /      /
-//     0+--+1/ +y   /
-//      |  |/   |  /
-//     2+--+3   | /
-//              |/
-//   +z---------+0
-//
-
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“ƒNƒ‰ƒX
+// Note design class
 //******************************************************************************
 class MTNoteDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
-	MTNoteDesign(void);
-	virtual ~MTNoteDesign(void);
+	MTNoteDesign();
+	virtual ~MTNoteDesign();
 
-	//‰Šú‰»
-// >>> modify 20161225 yossiepon begin
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
-// <<< modify 20161225 yossiepon end
 
-	//‰‰‘tˆÊ’uæ“¾
+	// Playback position
 	float GetPlayPosX(unsigned long curTickTime);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgˆÊ’uæ“¾
+	// Live monitor note position
 	float GetLivePosX(unsigned long elapsedTime);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•Wæ“¾
-	virtual D3DXVECTOR3 GetNoteBoxCenterPosX(
+	// Note box center position
+	virtual DirectX::SimpleMath::Vector3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//ƒm[ƒgƒ{ƒbƒNƒXc‰¡ƒTƒCƒYæ“¾
+	// Note box dimensions
 	float GetNoteBoxHeight();
 	float GetNoteBoxWidth();
 
-	//ƒm[ƒgŠÔŠuæ“¾
+	// Spacing
 	float GetNoteStep();
-
-	//ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠuæ“¾
 	float GetChStep();
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^•\¦ŠúŒÀ
+	// Live monitor display duration
 	unsigned long GetLiveMonitorDisplayDuration();
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	// Note box vertex positions (4 corners of the front face)
 	virtual void GetNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	// Active note box vertex positions
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-				unsigned long elapsedTime = 0            //È—ª‰ÂFŒo‰ßŠÔiƒ~ƒŠ•bj
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0,
+				unsigned long elapsedTime = 0
 			);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	// Live monitor note box vertex positions
 	virtual void GetNoteBoxVirtexPosLive(
-				unsigned long elapsedTime,	//Œo‰ßŠÔiƒ~ƒŠ•bj
+				unsigned long elapsedTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
 			);
 
-	//ƒOƒŠƒbƒhƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	// Grid box vertex positions
 	void GetGridBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3 	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
 			);
 
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒOƒŠƒbƒhƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	// Live grid box vertex positions
 	void GetGridBoxVirtexPosLive(
-				unsigned long elapsedTime,	//Œo‰ßŠÔiƒ~ƒŠ•bj
-				unsigned char portNo,	//ƒ|[ƒg”Ô†
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3 	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
+				unsigned long elapsedTime,
+				unsigned char portNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
 			);
 
-	//Ä¶–Ê’¸“_À•Wæ“¾
+	// Playback section vertex positions
 	void GetPlaybackSectionVirtexPos(
 				unsigned long curTickTime,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3 	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
 			);
 
-	//”g–äƒTƒCƒYæ“¾FŒo‰ßŠÔiƒ~ƒŠ•bj‚ÍÈ—ª‰Â
+	// Ripple parameters
 	float GetRippleHeight(unsigned long elapsedTime = 0);
 	float GetRippleWidth(unsigned long elapsedTime = 0);
 	float GetRippleAlpha(unsigned long elapsedTime = 0);
 
-	//ƒsƒNƒ`ƒƒƒ{[ƒh‘Š‘ÎˆÊ’uæ“¾
+	// Picture board relative position
 	float GetPictBoardRelativePos();
 
-	//ƒ|[ƒgŒ´“_À•Wæ“¾
+	// Port origin coordinates
 	virtual float GetPortOriginY(unsigned char portNo);
 	virtual float GetPortOriginZ(unsigned char portNo);
 
-	//¢ŠEÀ•W”z’uˆÚ“®ƒxƒNƒgƒ‹æ“¾
-	virtual D3DXVECTOR3 GetWorldMoveVector();
+	// World move vector
+	virtual DirectX::SimpleMath::Vector3 GetWorldMoveVector();
 
-	//ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[æ“¾
-	D3DXCOLOR GetNoteBoxColor(
+	// Colors
+	DirectX::SimpleMath::Color GetNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[æ“¾
-	D3DXCOLOR GetActiveNoteBoxColor(
+	DirectX::SimpleMath::Color GetActiveNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
 				unsigned long elapsedTime
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒGƒ~ƒbƒVƒuæ“¾iƒ}ƒeƒŠƒAƒ‹—pj
-	D3DXCOLOR GetActiveNoteEmissive();
-
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“ƒJƒ‰[æ“¾
-	D3DXCOLOR GetGridLineColor();
-
-	//Ä¶–ÊƒJƒ‰[æ“¾
-	D3DXCOLOR GetPlaybackSectionColor();
+	DirectX::SimpleMath::Color GetActiveNoteEmissive();
+	DirectX::SimpleMath::Color GetGridLineColor();
+	DirectX::SimpleMath::Color GetPlaybackSectionColor();
 
 protected:
 
@@ -210,11 +183,11 @@ protected:
 	unsigned char m_PortIndex[256];
 
 	NoteColorType m_NoteColorType;
-	D3DXCOLOR m_NoteColor[16];
-	D3DXCOLOR m_NoteColorOfScale[12];
-	D3DXCOLOR m_ActiveNoteEmissive;
-	D3DXCOLOR m_GridLineColor;
-	D3DXCOLOR m_PlaybackSectionColor;
+	DirectX::SimpleMath::Color m_NoteColor[16];
+	DirectX::SimpleMath::Color m_NoteColorOfScale[12];
+	DirectX::SimpleMath::Color m_ActiveNoteEmissive;
+	DirectX::SimpleMath::Color m_GridLineColor;
+	DirectX::SimpleMath::Color m_PlaybackSectionColor;
 
 	int m_ActiveNoteDuration;
 	float m_ActiveNoteWhiteRate;
@@ -225,13 +198,7 @@ protected:
 	int m_LiveMonitorDisplayDuration;
 	float m_LiveNoteLengthPerSecond;
 
-// >>> modify 20120728 yossiepon begin
 	virtual void _Clear();
-// <<< modify 20120728 yossiepon end
-
 	virtual int _LoadConfFile(const TCHAR* pSceneName);
 	int _LoadUserConf();
-
 };
-
-

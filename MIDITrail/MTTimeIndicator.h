@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTTimeIndicator
 //
-// ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^•`‰æƒNƒ‰ƒX
+// ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// u¡Ä¶‚µ‚Ä‚¢‚é‚Æ‚±‚ëv‚ğw‚µ¦‚·Ä¶–Ê‚ğ•`‰æ‚·‚éB
+// ã€Œä»Šå†ç”Ÿã—ã¦ã„ã‚‹ã¨ã“ã‚ã€ã‚’æŒ‡ã—ç¤ºã™å†ç”Ÿé¢ã‚’æç”»ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -23,41 +23,41 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^•`‰æƒNƒ‰ƒX
+// ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTTimeIndicator
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTTimeIndicator(void);
 	virtual ~MTTimeIndicator(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//Œ»İˆÊ’uæ“¾
+	//ç¾åœ¨ä½ç½®å–å¾—
 	float GetPos();
 
-	//ˆÚ“®ƒxƒNƒgƒ‹æ“¾
+	//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 	D3DXVECTOR3 GetMoveVector();
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
 private:
@@ -70,14 +70,14 @@ private:
 	unsigned long m_CurTickTime;
 	bool m_isEnable;
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTTIMEINDICATOR_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
 	int _CreatePrimitive(LPDIRECT3DDEVICE9 pD3DDevice);

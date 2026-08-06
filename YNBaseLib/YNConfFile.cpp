@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple Base Library / YNConfFile
 //
-// İ’èƒtƒ@ƒCƒ‹ƒNƒ‰ƒX
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -18,12 +18,12 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
 #define YNCONFFILE_NO_DATA  _T("*** NO DATA ***")
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 YNConfFile::YNConfFile(void)
 {
@@ -32,14 +32,14 @@ YNConfFile::YNConfFile(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 YNConfFile::~YNConfFile(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int YNConfFile::Initialize(
 		const TCHAR* pConfFilePath
@@ -59,7 +59,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒZƒNƒVƒ‡ƒ“İ’è
+// ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 //******************************************************************************
 int YNConfFile::SetCurSection(
 		const TCHAR* pSection
@@ -79,7 +79,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ®”’læ“¾
+// æ•´æ•°å€¤å–å¾—
 //******************************************************************************
 int YNConfFile::GetInt(
 		const TCHAR* pKey,
@@ -92,14 +92,14 @@ int YNConfFile::GetInt(
 	TCHAR buf[20];
 
 	apiresult = GetPrivateProfileString(
-					m_Section,			//ƒZƒNƒVƒ‡ƒ“–¼
-					pKey,				//ƒL[–¼
-					YNCONFFILE_NO_DATA, //ƒfƒtƒHƒ‹ƒg•¶š—ñ
-					buf,				//ƒoƒbƒtƒ@ˆÊ’u
-					20,					//ƒoƒbƒtƒ@ƒTƒCƒYiTCHAR’PˆÊj
-					m_FilePath			//ƒtƒ@ƒCƒ‹ƒpƒX
+					m_Section,			//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+					pKey,				//ã‚­ãƒ¼å
+					YNCONFFILE_NO_DATA, //ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ–‡å­—åˆ—
+					buf,				//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					20,					//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼ˆTCHARå˜ä½ï¼‰
+					m_FilePath			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 				);
-	//–ß‚è’l‚Ìƒ`ƒFƒbƒN‚Í‚ ‚«‚ç‚ß‚é
+	//æˆ»ã‚Šå€¤ã®ãƒã‚§ãƒƒã‚¯ã¯ã‚ãã‚‰ã‚ã‚‹
 
 	if (_tcscmp(buf, YNCONFFILE_NO_DATA) == 0) {
 		*pVal = defaultVal;
@@ -113,7 +113,7 @@ int YNConfFile::GetInt(
 }
 
 //******************************************************************************
-// ®”’l“o˜^
+// æ•´æ•°å€¤ç™»éŒ²
 //******************************************************************************
 int YNConfFile::SetInt(
 		const TCHAR* pKey,
@@ -127,10 +127,10 @@ int YNConfFile::SetInt(
 	_stprintf_s(buf, 20, _T("%d"), val);
 
 	bresult = WritePrivateProfileString(
-					m_Section,		//ƒZƒNƒVƒ‡ƒ“–¼
-					pKey,			//ƒL[–¼
-					buf,			//“o˜^‚·‚é•¶š—ñ
-					m_FilePath		//ƒtƒ@ƒCƒ‹ƒpƒX
+					m_Section,		//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+					pKey,			//ã‚­ãƒ¼å
+					buf,			//ç™»éŒ²ã™ã‚‹æ–‡å­—åˆ—
+					m_FilePath		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 				);
 	if (!bresult) {
 		result = -1;  //GetLastError
@@ -142,7 +142,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •‚“®¬”’læ“¾
+// æµ®å‹•å°æ•°å€¤å–å¾—
 //******************************************************************************
 int YNConfFile::GetFloat(
 		const TCHAR* pKey,
@@ -155,20 +155,20 @@ int YNConfFile::GetFloat(
 	TCHAR buf[20];
 
 	apiresult = GetPrivateProfileString(
-					m_Section,			//ƒZƒNƒVƒ‡ƒ“–¼
-					pKey,				//ƒL[–¼
-					YNCONFFILE_NO_DATA, //ƒfƒtƒHƒ‹ƒg•¶š—ñ
-					buf,				//ƒoƒbƒtƒ@ˆÊ’u
-					20,					//ƒoƒbƒtƒ@ƒTƒCƒYiTCHAR’PˆÊj
-					m_FilePath			//ƒtƒ@ƒCƒ‹ƒpƒX
+					m_Section,			//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+					pKey,				//ã‚­ãƒ¼å
+					YNCONFFILE_NO_DATA, //ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ–‡å­—åˆ—
+					buf,				//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					20,					//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼ˆTCHARå˜ä½ï¼‰
+					m_FilePath			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 				);
-	//–ß‚è’l‚Ìƒ`ƒFƒbƒN‚Í‚ ‚«‚ç‚ß‚é
+	//æˆ»ã‚Šå€¤ã®ãƒã‚§ãƒƒã‚¯ã¯ã‚ãã‚‰ã‚ã‚‹
 
 	if (_tcscmp(buf, YNCONFFILE_NO_DATA) == 0) {
 		*pVal = defaultVal;
 	}
 	else {
-		//_tstof‚Ídouble‚ğ•Ô‚·
+		//_tstofã¯doubleã‚’è¿”ã™
 		*pVal = (float)_tstof(buf);
 	}
 
@@ -177,7 +177,7 @@ int YNConfFile::GetFloat(
 }
 
 //******************************************************************************
-// •‚“®¬”’l“o˜^
+// æµ®å‹•å°æ•°å€¤ç™»éŒ²
 //******************************************************************************
 int YNConfFile::SetFloat(
 		const TCHAR* pKey,
@@ -191,10 +191,10 @@ int YNConfFile::SetFloat(
 	_stprintf_s(buf, 20, _T("%f"), val);
 
 	bresult = WritePrivateProfileString(
-					m_Section,		//ƒZƒNƒVƒ‡ƒ“–¼
-					pKey,			//ƒL[–¼
-					buf,			//“o˜^‚·‚é•¶š—ñ
-					m_FilePath		//ƒtƒ@ƒCƒ‹ƒpƒX
+					m_Section,		//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+					pKey,			//ã‚­ãƒ¼å
+					buf,			//ç™»éŒ²ã™ã‚‹æ–‡å­—åˆ—
+					m_FilePath		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 				);
 	if (!bresult) {
 		result = -1;  //GetLastError
@@ -206,7 +206,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •¶š—ñæ“¾
+// æ–‡å­—åˆ—å–å¾—
 //******************************************************************************
 int YNConfFile::GetStr(
 		const TCHAR* pKey,
@@ -219,21 +219,21 @@ int YNConfFile::GetStr(
 	DWORD apiresult = 0;
 
 	apiresult = GetPrivateProfileString(
-					m_Section,			//ƒZƒNƒVƒ‡ƒ“–¼
-					pKey,				//ƒL[–¼
-					pDefaultVal,		//ƒfƒtƒHƒ‹ƒg•¶š—ñ
-					pBuf,				//ƒoƒbƒtƒ@ˆÊ’u
-					bufSize,			//ƒoƒbƒtƒ@ƒTƒCƒYiTCHAR’PˆÊj
-					m_FilePath			//ƒtƒ@ƒCƒ‹ƒpƒX
+					m_Section,			//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+					pKey,				//ã‚­ãƒ¼å
+					pDefaultVal,		//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ–‡å­—åˆ—
+					pBuf,				//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					bufSize,			//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼ˆTCHARå˜ä½ï¼‰
+					m_FilePath			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 				);
-	//–ß‚è’l‚Ìƒ`ƒFƒbƒN‚Í‚ ‚«‚ç‚ß‚é
+	//æˆ»ã‚Šå€¤ã®ãƒã‚§ãƒƒã‚¯ã¯ã‚ãã‚‰ã‚ã‚‹
 
 //EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// •¶š—ñ“o˜^
+// æ–‡å­—åˆ—ç™»éŒ²
 //******************************************************************************
 int YNConfFile::SetStr(
 		const TCHAR* pKey,
@@ -245,9 +245,9 @@ int YNConfFile::SetStr(
 	TCHAR* pValue = NULL;
 	size_t length = 0;
 
-	//INIƒtƒ@ƒCƒ‹‚É––”ö‚ª‹ó”’•¶š‚Ì’l‚ğ“o˜^‚·‚é‚Æ
-	//’l‚ğæ“¾‚·‚é‚Æ‚«‚É‹ó”’•¶š‚ğíœ‚³‚ê‚Ä‚µ‚Ü‚¤‚½‚ß
-	//ƒVƒ“ƒOƒ‹ƒNƒH[ƒg‚ÅˆÍ‚ñ‚Å“o˜^‚·‚é
+	//INIãƒ•ã‚¡ã‚¤ãƒ«ã«æœ«å°¾ãŒç©ºç™½æ–‡å­—ã®å€¤ã‚’ç™»éŒ²ã™ã‚‹ã¨
+	//å€¤ã‚’å–å¾—ã™ã‚‹ã¨ãã«ç©ºç™½æ–‡å­—ã‚’å‰Šé™¤ã•ã‚Œã¦ã—ã¾ã†ãŸã‚
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚¯ã‚©ãƒ¼ãƒˆã§å›²ã‚“ã§ç™»éŒ²ã™ã‚‹
 	length = _tcslen(pStr) + 4;
 	try {
 		pValue = new TCHAR[length];
@@ -259,10 +259,10 @@ int YNConfFile::SetStr(
 	_stprintf_s(pValue, length, _T("'%s'"), pStr);
 
 	bresult = WritePrivateProfileString(
-					m_Section,		//ƒZƒNƒVƒ‡ƒ“–¼
-					pKey,			//ƒL[–¼
-					pValue,			//“o˜^‚·‚é•¶š—ñ
-					m_FilePath		//ƒtƒ@ƒCƒ‹ƒpƒX
+					m_Section,		//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
+					pKey,			//ã‚­ãƒ¼å
+					pValue,			//ç™»éŒ²ã™ã‚‹æ–‡å­—åˆ—
+					m_FilePath		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 				);
 	if (!bresult) {
 		result = -1;  //GetLastError
@@ -275,7 +275,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •¶š—ñæ“¾i’l‚Ì‚İƒƒCƒh•¶š—ñj
+// æ–‡å­—åˆ—å–å¾—ï¼ˆå€¤ã®ã¿ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ï¼‰
 //******************************************************************************
 int YNConfFile::GetWStr(
 		const TCHAR* pKey,
@@ -294,7 +294,7 @@ int YNConfFile::GetWStr(
 	TCHAR* stopped = NULL;
 	WCHAR wchar = 0;
 
-	//ƒoƒbƒtƒ@ƒTƒCƒY‚ªƒfƒtƒHƒ‹ƒg’l‚ğŠi”[‚Å‚«‚È‚¯‚ê‚ÎƒGƒ‰[
+	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’æ ¼ç´ã§ããªã‘ã‚Œã°ã‚¨ãƒ©ãƒ¼
 	if (bufSize < (wcslen(pDefaultVal) + 1)) {
 		result = YN_SET_ERR("Program Error.", bufSize, 0);
 		goto EXIT;
@@ -302,7 +302,7 @@ int YNConfFile::GetWStr(
 
 	hexBufSize = (bufSize * 4) + (unsigned long)_tcslen(YNCONFFILE_NO_DATA) + 1;
 
-	//16i”•¶š—ñ‚ğŠi”[‚·‚éƒƒ‚ƒŠ‚ğŠm•Û
+	//16é€²æ•°æ–‡å­—åˆ—ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 	try {
 		pHexString = new TCHAR[hexBufSize];
 	}
@@ -312,11 +312,11 @@ int YNConfFile::GetWStr(
 	}
 	memset(pHexString, 0, hexBufSize);
 
-	//16i”•¶š—ñ‚ğæ“¾
+	//16é€²æ•°æ–‡å­—åˆ—ã‚’å–å¾—
 	result = GetStr(pKey, pHexString, hexBufSize, YNCONFFILE_NO_DATA);
 	if (result != 0) goto EXIT;
 	
-	//–¢“o˜^‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg•¶š—ñ‚ğ•Ô‚·
+	//æœªç™»éŒ²ã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ–‡å­—åˆ—ã‚’è¿”ã™
 	if (_tcscmp(pHexString, YNCONFFILE_NO_DATA) == 0) {
 		wcscpy_s(pBuf, bufSize, pDefaultVal);
 		goto EXIT;
@@ -324,14 +324,14 @@ int YNConfFile::GetWStr(
 
 	hexLength = (unsigned long)_tcslen(pHexString);
 
-	//‹ó•¶š—ñ‚Ìê‡
+	//ç©ºæ–‡å­—åˆ—ã®å ´åˆ
 	if (hexLength == 0) {
 		pBuf[0] = L'\0';
 		goto EXIT;
 	}
 
-	//16i”•¶š—ñ‚ğ4•¶š‚¸‚ÂƒƒCƒh•¶š‚É•ÏŠ·
-	//––”ö‚ª4•¶š’PˆÊ‚Å‚È‚¯‚ê‚ÎØ‚èÌ‚Ä‚é
+	//16é€²æ•°æ–‡å­—åˆ—ã‚’4æ–‡å­—ãšã¤ãƒ¯ã‚¤ãƒ‰æ–‡å­—ã«å¤‰æ›
+	//æœ«å°¾ãŒ4æ–‡å­—å˜ä½ã§ãªã‘ã‚Œã°åˆ‡ã‚Šæ¨ã¦ã‚‹
 	while ((index + 4) <= hexLength) {
 		hexChar[0] = pHexString[index + 0];
 		hexChar[1] = pHexString[index + 1];
@@ -340,7 +340,7 @@ int YNConfFile::GetWStr(
 		hexChar[4] = '\0';
 		pBuf[indexw] = (WCHAR)_tcstol(hexChar, &stopped, 16);
 
-		//ƒoƒbƒtƒ@I’[‚Å‚ ‚ê‚Î•ÏŠ·‚ğI—¹
+		//ãƒãƒƒãƒ•ã‚¡çµ‚ç«¯ã§ã‚ã‚Œã°å¤‰æ›ã‚’çµ‚äº†
 		if ((indexw + 1) == bufSize) {
 			break;
 		}
@@ -356,7 +356,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •¶š—ñ“o˜^i’l‚Ì‚İƒƒCƒh•¶š—ñj
+// æ–‡å­—åˆ—ç™»éŒ²ï¼ˆå€¤ã®ã¿ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ï¼‰
 //******************************************************************************
 int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
 {
@@ -370,7 +370,7 @@ int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
 	length = (unsigned long)wcslen(pStr);
 	bufSize = (length + 1) * 4;
 
-	//16i”•¶š—ñ‚ğŠi”[‚·‚éƒƒ‚ƒŠ‚ğŠm•Û
+	//16é€²æ•°æ–‡å­—åˆ—ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 	try {
 		pHexString = new TCHAR[bufSize];
 	}
@@ -380,13 +380,13 @@ int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
 	}
 	memset(pHexString, 0, bufSize);
 
-	//ƒƒCƒh•¶š•¶š—ñ‚ğ1•¶š‚¸‚Â16i”4•¶š‚É•ÏŠ·iI’[•¶š‚Í•ÏŠ·‚µ‚È‚¢j
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­—æ–‡å­—åˆ—ã‚’1æ–‡å­—ãšã¤16é€²æ•°4æ–‡å­—ã«å¤‰æ›ï¼ˆçµ‚ç«¯æ–‡å­—ã¯å¤‰æ›ã—ãªã„ï¼‰
 	for (index = 0; index < length; index ++) {
 		_stprintf_s(hexChar, 5, _T("%04X"), pStr[index]);
 		_tcscat_s(pHexString, bufSize, hexChar);
 	}
 
-	//•¶š—ñ“o˜^
+	//æ–‡å­—åˆ—ç™»éŒ²
 	result = SetStr(pKey, pHexString);
 	if (result != 0) goto EXIT;
 

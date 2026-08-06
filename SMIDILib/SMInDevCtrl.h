@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMInDevCtrl
 //
-// MIDI“ü—ÍƒfƒoƒCƒX§ŒäƒNƒ‰ƒX
+// MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
@@ -26,52 +26,52 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//MIDIƒCƒxƒ“ƒg“Ç‚İ‚İƒR[ƒ‹ƒoƒbƒNŠÖ”
+//MIDIã‚¤ãƒ™ãƒ³ãƒˆèª­ã¿è¾¼ã¿ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 typedef int (*SMInReadCallBack)(SMEvent* pEvent, void* pUserParam);
 
-//ƒVƒXƒeƒ€ƒGƒNƒXƒNƒ‹[ƒVƒu—pƒoƒbƒtƒ@ƒTƒCƒY
-//  ƒTƒCƒY‚Ìª‹’‚Í“Á‚É‚È‚µ
+//ã‚·ã‚¹ãƒ†ãƒ ã‚¨ã‚¯ã‚¹ã‚¯ãƒ«ãƒ¼ã‚·ãƒ–ç”¨ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+//  ã‚µã‚¤ã‚ºã®æ ¹æ‹ ã¯ç‰¹ã«ãªã—
 #define SM_MIDIIN_BUF_SIZE  (1024 * 10)
 
 
 //******************************************************************************
-// MIDI“ü—ÍƒfƒoƒCƒX§ŒäƒNƒ‰ƒX
+// MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMInDevCtrl
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMInDevCtrl(void);
 	virtual ~SMInDevCtrl(void);
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize();
 	
-	//ƒfƒoƒCƒX”æ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹æ•°å–å¾—
 	unsigned long GetDevNum();
 	
-	//ƒfƒoƒCƒXƒvƒƒ_ƒNƒg–¼Ìæ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆåç§°å–å¾—
 	int GetDevProductName(unsigned long index, std::string& name);
 	
-	//ƒ|[ƒg‘Î‰ƒfƒoƒCƒX“o˜^
+	//ãƒãƒ¼ãƒˆå¯¾å¿œãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²
 	int SetPortDev(const char* pProductName);
 	
-	//MIDIƒCƒxƒ“ƒg“Ç‚İ‚İƒR[ƒ‹ƒoƒbƒNŠÖ”“o˜^
+	//MIDIã‚¤ãƒ™ãƒ³ãƒˆèª­ã¿è¾¼ã¿ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ç™»éŒ²
 	void SetInReadCallBack(SMInReadCallBack pCallBack, void* pUserParam);
 	
-	//‘SƒfƒoƒCƒX‚ÌƒI[ƒvƒ“^ƒNƒ[ƒY
+	//å…¨ãƒ‡ãƒã‚¤ã‚¹ã®ã‚ªãƒ¼ãƒ—ãƒ³ï¼ã‚¯ãƒ­ãƒ¼ã‚º
 	int OpenPortDev();
 	int ClosePortDev();
 	
-	//ƒ|[ƒgî•ñƒNƒŠƒA
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚¯ãƒªã‚¢
 	int ClearPortInfo();
 	
 private:
 	
-	//ƒ|[ƒgî•ñ
+	//ãƒãƒ¼ãƒˆæƒ…å ±
 	typedef struct {
 		bool isExist;
 		unsigned long devId;
@@ -79,25 +79,25 @@ private:
 		MIDIHDR midiHdr;
 	} SMPortInfo;
 	
-	//ƒfƒoƒCƒXî•ñ
+	//ãƒ‡ãƒã‚¤ã‚¹æƒ…å ±
 	typedef struct {
 		unsigned long devId;
 		char productName[MAXPNAMELEN];
 	} SMInDevInfo;
 	
-	//“ü—ÍƒfƒoƒCƒXƒŠƒXƒg
+	//å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ãƒªã‚¹ãƒˆ
 	typedef std::list<SMInDevInfo> SMInDevList;
 	typedef std::list<SMInDevInfo>::iterator SMInDevListItr;
 	SMInDevList m_InDevList;
 	
-	//ƒ|[ƒgî•ñ
+	//ãƒãƒ¼ãƒˆæƒ…å ±
 	SMPortInfo m_PortInfo;
 	
-	//ƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	SMInReadCallBack m_pInReadCallBack;
 	void* m_pCallBackUserParam;
 	
-	//ƒpƒPƒbƒg‰ğÍŒn
+	//ãƒ‘ã‚±ãƒƒãƒˆè§£æç³»
 	bool m_isContinueSysEx;
 	
 	int _InitDevList();

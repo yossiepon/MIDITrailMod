@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRoll3D
 //
-// ƒsƒAƒmƒ[ƒ‹3DƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒŽãƒ­ãƒ¼ãƒ«3Dã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -33,57 +33,57 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒ[ƒ‹3DƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒŽãƒ­ãƒ¼ãƒ«3Dã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScenePianoRoll3D : public MTScene
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^l
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿l
 	MTScenePianoRoll3D();
 // >>> modify 20120728 yossiepon begin
 	virtual ~MTScenePianoRoll3D();
 // <<< modify 20120728 yossiepon end
 
-	//–¼ÌŽæ“¾
+	//åç§°å–å¾—
 	const TCHAR* GetName();
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			SMSeqData* pSeqData
 		);
 
-	//•ÏŠ·
+	//å¤‰æ›
 // >>> modify 20120728 yossiepon begin
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify 20120728 yossiepon end
 
-	//•`‰æ
+	//æç”»
 // >>> modify 20120728 yossiepon begin
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify 20120728 yossiepon end
 
-	//”jŠü
+	//ç ´æ£„
 // >>> modify 20120728 yossiepon begin
 	virtual void Release();
 // <<< modify 20120728 yossiepon end
 
-	//ƒEƒBƒ“ƒhƒEƒNƒŠƒbƒNƒCƒxƒ“ƒgŽóM
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	int OnWindowClicked(
 			UINT button,
 			WPARAM wParam,
 			LPARAM lParam
 		);
 
-	//‰‰‘tŠJŽnƒCƒxƒ“ƒgŽóM
+	//æ¼”å¥é–‹å§‹ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	int OnPlayStart(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰‰‘tI—¹ƒCƒxƒ“ƒgŽóM
+	//æ¼”å¥çµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWŽóM
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 // >>> modify 20120728 yossiepon begin
 	virtual int OnRecvSequencerMsg(
 // <<< modify 20120728 yossiepon end
@@ -91,36 +91,36 @@ public:
 			unsigned long param2
 		);
 
-	//Šª‚«–ß‚µ
+	//å·»ãæˆ»ã—
 	int Rewind();
 
-	//Ž‹“_Žæ“¾^“o˜^
+	//è¦–ç‚¹å–å¾—ï¼ç™»éŒ²
 	void GetDefaultViewParam(MTViewParamMap* pParamMap);
 	void GetViewParam(MTViewParamMap* pParamMap);
 	void SetViewParam(MTViewParamMap* pParamMap);
 	void MoveToStaticViewpoint(unsigned long viewpointNo);
 
-	//Ž‹“_ƒŠƒZƒbƒg
+	//è¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
 	void ResetViewpoint();
 
-	//ƒGƒtƒFƒNƒgÝ’è
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¨­å®š
 // >>> modify 20120728 yossiepon begin
 	virtual void SetEffect(MTScene::EffectType type, bool isEnable);
 // <<< modify 20120728 yossiepon end
 
-	//‰‰‘t‘¬“xÝ’è
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
 	void SetPlaySpeedRatio(unsigned long ratio);
 
 protected:
 
-	//ƒ‰ƒCƒg—L–³
+	//ãƒ©ã‚¤ãƒˆæœ‰ç„¡
 	BOOL m_IsEnableLight;
 
 // >>> modify access level to protected 20250616 yossiepon begin
 protected:
 // <<< modify 20250616 yossiepon end
 
-	//ƒ‰ƒCƒg
+	//ãƒ©ã‚¤ãƒˆ
 	DXDirLight m_DirLight;
 	DXDirLight m_DirLight2;
 
@@ -128,10 +128,10 @@ protected:
 protected:
 // <<< modify 20161223 yossiepon end
 
-	//ˆêlÌƒJƒƒ‰
+	//ä¸€äººç§°ã‚«ãƒ¡ãƒ©
 	MTFirstPersonCam m_FirstPersonCam;
 
-	//•`‰æƒIƒuƒWƒFƒNƒg
+	//æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	MTNoteBox m_NoteBox;
 	MTNoteRipple m_NoteRipple;
 	MTNotePitchBend m_NotePitchBend;
@@ -147,25 +147,25 @@ protected:
 private:
 // <<< modify access level 20161223 yossiepon end
 
-	//ƒ}ƒEƒXŽ‹üˆÚ“®ƒ‚[ƒh
+	//ãƒžã‚¦ã‚¹è¦–ç·šç§»å‹•ãƒ¢ãƒ¼ãƒ‰
 	bool m_IsMouseCamMode;
 
-	//Ž©“®‰ñ“]ƒ‚[ƒh
+	//è‡ªå‹•å›žè»¢ãƒ¢ãƒ¼ãƒ‰
 	bool m_IsAutoRollMode;
 
-	//Ž‹“_î•ñ
+	//è¦–ç‚¹æƒ…å ±
 	MTViewParamMap m_ViewParamMap;
 	MTViewParamMap m_Viewpoint2;
 	MTViewParamMap m_Viewpoint3;
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg
+	//ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	MTNoteDesign m_NoteDesign;
 
 // >>> modify access level to protected 20161223 yossiepon begin
 protected:
 // <<< modify 20161223 yossiepon end
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	bool m_IsSkipping;
 
 // >>> modify 20120728 yossiepon begin

@@ -1,10 +1,11 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXCamera
 //
-// ƒJƒƒ‰ƒNƒ‰ƒX
+// Camera class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,25 +14,27 @@
 #include "YNBaseLib.h"
 
 using namespace YNBaseLib;
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// Constructor
 //******************************************************************************
-DXCamera::DXCamera(void)
+DXCamera::DXCamera()
 {
 	_Clear();
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// Destructor
 //******************************************************************************
-DXCamera::~DXCamera(void)
+DXCamera::~DXCamera()
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// Initialize
 //******************************************************************************
 int DXCamera::Initialize()
 {
@@ -40,7 +43,7 @@ int DXCamera::Initialize()
 }
 
 //******************************************************************************
-// Šî–{ƒpƒ‰ƒ[ƒ^İ’è
+// Set base parameters
 //******************************************************************************
 void DXCamera::SetBaseParam(
 		float viewAngle,
@@ -50,130 +53,58 @@ void DXCamera::SetBaseParam(
 {
 	m_ViewAngle = viewAngle;
 	m_NearPlane = nearPlane;
-	m_FarPlane = farPlane;
+	m_FarPlane  = farPlane;
 }
 
 //******************************************************************************
-// ƒJƒƒ‰ˆÊ’uİ’è
+// Set camera position
 //******************************************************************************
 void DXCamera::SetPosition(
-		D3DXVECTOR3 camVector,
-		D3DXVECTOR3 camLookAtVector,
-		D3DXVECTOR3 camUpVector
+		Vector3 camVector,
+		Vector3 camLookAtVector,
+		Vector3 camUpVector
 	)
 {
-	m_CamVector = camVector;
+	m_CamVector       = camVector;
 	m_CamLookAtVector = camLookAtVector;
-	m_CamUpVector = camUpVector;
+	m_CamUpVector     = camUpVector;
 }
 
 //******************************************************************************
-// •ÏŠ·
+// Get view and projection matrices
 //******************************************************************************
-int DXCamera::Transform(
-		LPDIRECT3DDEVICE9 pD3DDevice
+int DXCamera::GetMatrices(
+		float aspect,
+		Matrix* pView,
+		Matrix* pProj
 	)
 {
-	int result = 0;
-	HRESULT hresult = D3D_OK;
-	D3DXMATRIX viewMatrix;
-	D3DXMATRIX projMatrix;
-
-	//Ë‰es—ñ‚ğæ“¾
-	result = _GetProjMatrix(pD3DDevice, &projMatrix);
-	if (result != 0) goto EXIT;
-
-	//Ë‰es—ñ‚ğƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
-	hresult = pD3DDevice->SetTransform(D3DTS_PROJECTION, &projMatrix);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
+	if (pView == nullptr || pProj == nullptr) {
+		return YN_SET_ERR("Program error.", 0, 0);
 	}
 
-	//ƒrƒ…[ƒCƒ“ƒOs—ñ‚ğæ“¾
-	result = _GetViewMatrix(&viewMatrix);
-	if (result != 0) goto EXIT;
+	// Projection matrix (left-handed perspective)
+	float fovRad = XMConvertToRadians(m_ViewAngle);
+	*pProj = XMMatrixPerspectiveFovLH(fovRad, aspect, m_NearPlane, m_FarPlane);
 
-	//ƒrƒ…[ƒCƒ“ƒOs—ñ‚ğƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚Éİ’è
-	hresult = pD3DDevice->SetTransform(D3DTS_VIEW, &viewMatrix);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
-	}
+	// View matrix (left-handed look-at)
+	XMVECTOR eye    = XMLoadFloat3(&m_CamVector);
+	XMVECTOR lookAt = XMLoadFloat3(&m_CamLookAtVector);
+	XMVECTOR up     = XMLoadFloat3(&m_CamUpVector);
+	*pView = XMMatrixLookAtLH(eye, lookAt, up);
 
-EXIT:;
-	return result;
+	return 0;
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// Clear
 //******************************************************************************
 void DXCamera::_Clear()
 {
 	m_ViewAngle = 45.0f;
 	m_NearPlane = 1.0f;
-	m_FarPlane = 1000.0f;
-	m_CamVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_CamLookAtVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	m_CamUpVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	m_FarPlane  = 1000.0f;
+	m_CamVector       = Vector3(0.0f, 0.0f, 0.0f);
+	m_CamLookAtVector = Vector3(0.0f, 0.0f, 1.0f);
+	m_CamUpVector     = Vector3(0.0f, 1.0f, 0.0f);
 }
-
-//******************************************************************************
-// Ë‰e—ñæ“¾
-//******************************************************************************
-int DXCamera::_GetProjMatrix(
-		LPDIRECT3DDEVICE9 pD3DDevice,
-		D3DXMATRIX* pViewMatrix
-	)
-{
-	int result = 0;
-	HRESULT hresult = D3D_OK;
-	D3DVIEWPORT9 viewPort;
-	float aspect = 0.0f;
-
-	//s—ñ‰Šú‰»
-	D3DXMatrixIdentity(pViewMatrix);
-
-	//ƒrƒ…[ƒ|[ƒgæ“¾
-	hresult = pD3DDevice->GetViewport(&viewPort);
-	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectX API error.", hresult, 0);
-		goto EXIT;
-	}
-
-	//ƒAƒXƒyƒNƒg”ä
-	aspect = (float)viewPort.Width / (float)viewPort.Height;
-	
-	//¶èŒnË‰eƒ}ƒgƒŠƒbƒNƒXì¬
-	D3DXMatrixPerspectiveFovLH(
-			pViewMatrix,				//¶¬‚³‚ê‚½s—ñ
-			D3DXToRadian(m_ViewAngle),	//ƒJƒƒ‰‚Ì‰æŠp
-			aspect,						//ƒAƒXƒyƒNƒg”ä
-			m_NearPlane,				//nearƒvƒŒ[ƒ“
-			m_FarPlane					//farƒvƒŒ[ƒ“
-		);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ƒrƒ…[•ÏŠ·s—ñæ“¾
-//******************************************************************************
-int DXCamera::_GetViewMatrix(
-		D3DXMATRIX* pViewMatrix
-	)
-{
-	int result = 0;
-
-	//ƒrƒ…[•ÏŠ·s—ñ¶¬
-	D3DXMatrixLookAtLH(
-			pViewMatrix,		//ì¬‚³‚ê‚½s—ñ
-			&m_CamVector,		//ƒJƒƒ‰ˆÊ’u
-			&m_CamLookAtVector,	//’–Ú“_
-			&m_CamUpVector		//ƒJƒƒ‰‚Ìã•ûŒü
-		);
-
-	return result;
-}
-

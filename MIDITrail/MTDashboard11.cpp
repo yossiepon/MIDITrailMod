@@ -1,0 +1,321 @@
+﻿//******************************************************************************
+//
+// MIDITrail / MTDashboard11
+//
+// DX11 dashboard renderer.
+//
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
+#include "StdAfx.h"
+#include "YNBaseLib.h"
+#include "DXColorUtil.h"
+#include "MTParam.h"
+#include "MTConfFile.h"
+#include "MTColorConf.h"
+#include "MTDashboard11.h"
+#include <string>
+
+using namespace YNBaseLib;
+using namespace DirectX::SimpleMath;
+
+
+//******************************************************************************
+// コンストラクタ / デストラクタ
+//******************************************************************************
+MTDashboard11::MTDashboard11()
+{
+	m_hWnd = NULL;
+	m_PosCounterX = 0.0f;
+	m_PosCounterY = 0.0f;
+	m_CounterMag = MTDASHBOARD11_DEFAULT_MAGRATE;
+
+	m_PlayTimeMSec = 0;
+	m_TotalPlayTimeMSec = 0;
+	m_TempoBPM = 0;
+	m_BeatNumerator = 0;
+	m_BeatDenominator = 0;
+	m_BarNo = 0;
+	m_BarNum = 0;
+	m_NoteCount = 0;
+	m_NoteNum = 0;
+	m_PlaySpeedRatio = 100;
+
+	m_TempoBPMOnStart = 0;
+	m_BeatNumeratorOnStart = 0;
+	m_BeatDenominatorOnStart = 0;
+
+	m_CaptionColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	m_isEnableFileName = false;
+}
+
+MTDashboard11::~MTDashboard11()
+{
+	Release();
+}
+
+//******************************************************************************
+// 生成
+//******************************************************************************
+int MTDashboard11::Create(
+		ID3D11Device* pDevice,
+		ID3D11DeviceContext* pContext,
+		const TCHAR* pSceneName,
+		SMSeqData* pSeqData,
+		HWND hWnd
+	)
+{
+	int result = 0;
+	std::wstring title;
+	std::wstring fileName;
+	SMTrack track;
+	SMNoteList noteList;
+	WCHAR counter[100];
+
+	Release();
+
+	if (pSeqData == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	m_hWnd = hWnd;
+
+	result = _LoadConfFile(pSceneName);
+	if (result != 0) goto EXIT;
+
+	// タイトルキャプション
+	title = pSeqData->GetTitle();
+	if (title.size() == 0) {
+		title += L" ";
+	}
+	result = m_Title.Create(pDevice, pContext,
+				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+				title.c_str());
+	if (result != 0) goto EXIT;
+	m_Title.SetColor(m_CaptionColor);
+
+	// ファイル名キャプション
+	fileName = pSeqData->GetFileName();
+	if (fileName.size() == 0) {
+		fileName += L" ";
+	}
+	result = m_FileName.Create(pDevice, pContext,
+				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+				fileName.c_str());
+	if (result != 0) goto EXIT;
+	m_FileName.SetColor(m_CaptionColor);
+
+	// カウンタキャプション
+	result = m_Counter.Create(pDevice, pContext,
+				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+				MTDASHBOARD11_COUNTER_CHARS, MTDASHBOARD11_COUNTER_SIZE);
+	if (result != 0) goto EXIT;
+	m_Counter.SetColor(m_CaptionColor);
+
+	// 初期値設定
+	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
+	SetTempoBPM(pSeqData->GetTempoBPM());
+	m_TempoBPMOnStart = pSeqData->GetTempoBPM();
+	SetBeat(pSeqData->GetBeatNumerator(), pSeqData->GetBeatDenominator());
+	m_BeatNumeratorOnStart = pSeqData->GetBeatNumerator();
+	m_BeatDenominatorOnStart = pSeqData->GetBeatDenominator();
+	SetBarNo(1);
+	SetBarNum(pSeqData->GetBarNum());
+
+	result = pSeqData->GetMergedTrack(&track);
+	if (result != 0) goto EXIT;
+	result = track.GetNoteList(&noteList);
+	if (result != 0) goto EXIT;
+	m_NoteNum = noteList.GetSize();
+
+	result = _GetCounterStr(counter, 100);
+	if (result != 0) goto EXIT;
+	result = m_Counter.SetString(counter);
+	if (result != 0) goto EXIT;
+
+	result = _GetCounterPos(&m_PosCounterX, &m_PosCounterY);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 解放
+//******************************************************************************
+void MTDashboard11::Release()
+{
+	m_Title.Release();
+	m_FileName.Release();
+	m_Counter.Release();
+}
+
+//******************************************************************************
+// 描画
+//******************************************************************************
+int MTDashboard11::Draw(
+		ID3D11DeviceContext* pContext,
+		unsigned int screenWidth,
+		unsigned int screenHeight
+	)
+{
+	int result = 0;
+	WCHAR counter[100];
+
+	if (!m_isEnable) goto EXIT;
+
+	if (m_isEnableFileName) {
+		result = m_FileName.Draw(pContext,
+					MTDASHBOARD11_FRAMESIZE, MTDASHBOARD11_FRAMESIZE,
+					m_CounterMag, screenWidth, screenHeight);
+		if (result != 0) goto EXIT;
+	}
+	else {
+		result = m_Title.Draw(pContext,
+					MTDASHBOARD11_FRAMESIZE, MTDASHBOARD11_FRAMESIZE,
+					m_CounterMag, screenWidth, screenHeight);
+		if (result != 0) goto EXIT;
+	}
+
+	result = _GetCounterStr(counter, 100);
+	if (result != 0) goto EXIT;
+
+	result = m_Counter.SetString(counter);
+	if (result != 0) goto EXIT;
+
+	result = m_Counter.Draw(pContext,
+				m_PosCounterX, m_PosCounterY,
+				m_CounterMag, screenWidth, screenHeight);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// カウンタ表示位置取得
+//******************************************************************************
+int MTDashboard11::_GetCounterPos(float* pX, float* pY)
+{
+	int result = 0;
+	RECT rect;
+
+	if (!GetClientRect(m_hWnd, &rect)) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	unsigned long cw = rect.right - rect.left;
+	unsigned long ch = rect.bottom - rect.top;
+
+	unsigned long th = 0, tw = 0;
+	m_Counter.GetTextureSize(&th, &tw);
+
+	unsigned long charWidth = 0;
+	if (wcslen(MTDASHBOARD11_COUNTER_CHARS) > 0) {
+		charWidth = tw / (unsigned long)wcslen(MTDASHBOARD11_COUNTER_CHARS);
+	}
+	unsigned long captionWidth = charWidth * MTDASHBOARD11_COUNTER_SIZE;
+
+	if (((cw - (unsigned long)(MTDASHBOARD11_FRAMESIZE * 2)) < captionWidth) && (tw > 0)) {
+		float newMag = (float)(cw - (unsigned long)(MTDASHBOARD11_FRAMESIZE * 2)) / (float)captionWidth;
+		if (m_CounterMag > newMag) {
+			m_CounterMag = newMag;
+		}
+	}
+
+	*pX = MTDASHBOARD11_FRAMESIZE;
+	*pY = (float)ch - ((float)th * m_CounterMag) - MTDASHBOARD11_FRAMESIZE;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// カウンタ文字列取得
+//******************************************************************************
+int MTDashboard11::_GetCounterStr(WCHAR* pStr, unsigned long bufSize)
+{
+	int eresult = 0;
+	WCHAR spdstr[16] = {0};
+
+	eresult = swprintf_s(
+				pStr, bufSize,
+				L"TIME:%02lu:%02lu.%03lu/%02lu:%02lu.%03lu BPM:%03lu BEAT:%lu/%lu BAR:%03lu/%03lu NOTES:%05lu/%05lu",
+				m_PlayTimeMSec / 60000,
+				(m_PlayTimeMSec % 60000) / 1000,
+				m_PlayTimeMSec % 1000,
+				m_TotalPlayTimeMSec / 60000,
+				(m_TotalPlayTimeMSec % 60000) / 1000,
+				m_TotalPlayTimeMSec % 1000,
+				m_TempoBPM,
+				m_BeatNumerator,
+				m_BeatDenominator,
+				m_BarNo,
+				m_BarNum,
+				m_NoteCount,
+				m_NoteNum);
+
+	if (eresult < 0) {
+		return YN_SET_ERR("Program error.", 0, 0);
+	}
+
+	if (m_PlaySpeedRatio != 100) {
+		eresult = swprintf_s(spdstr, 16, L" SPEED:%03lu%%", m_PlaySpeedRatio);
+		if (eresult < 0) {
+			return YN_SET_ERR("Program error.", 0, 0);
+		}
+		wcscat_s(pStr, bufSize, spdstr);
+	}
+
+	return 0;
+}
+
+//******************************************************************************
+// 設定読み込み
+//******************************************************************************
+int MTDashboard11::_LoadConfFile(const TCHAR* pSceneName)
+{
+	int result = 0;
+	MTColorConf colorConf;
+	MTColorPalette colorPalette;
+	Color color;
+
+	result = colorConf.Initialize(pSceneName);
+	if (result != 0) goto EXIT;
+
+	colorConf.GetSelectedColorPalette(&colorPalette);
+	colorPalette.GetCounterColor(&color);
+	m_CaptionColor = color;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 各種設定
+//******************************************************************************
+int MTDashboard11::Update(const MTSceneUpdateContext& ctx) { m_PlayTimeMSec = ctx.playTimeMSec; return 0; }
+void MTDashboard11::SetTotalPlayTimeSec(unsigned long t)       { m_TotalPlayTimeMSec = t; }
+void MTDashboard11::SetTempoBPM(unsigned long bpm)             { m_TempoBPM = bpm; }
+void MTDashboard11::SetBarNo(unsigned long barNo)              { m_BarNo = barNo; }
+void MTDashboard11::SetBarNum(unsigned long barNum)            { m_BarNum = barNum; }
+void MTDashboard11::SetBeat(unsigned long n, unsigned long d)  { m_BeatNumerator = n; m_BeatDenominator = d; }
+void MTDashboard11::SetNoteOn()                                { m_NoteCount++; }
+void MTDashboard11::SetPlaySpeedRatio(unsigned long ratio)     { m_PlaySpeedRatio = ratio; }
+void MTDashboard11::SetNotesCount(unsigned long c)             { m_NoteCount = c; }
+unsigned long MTDashboard11::GetPlayTimeSec()                  { return m_PlayTimeMSec; }
+void MTDashboard11::SetEnableFileName(bool e)                  { m_isEnableFileName = e; }
+
+void MTDashboard11::Reset()
+{
+	m_PlayTimeMSec = 0;
+	m_TempoBPM = m_TempoBPMOnStart;
+	m_BeatNumerator = m_BeatNumeratorOnStart;
+	m_BeatDenominator = m_BeatDenominatorOnStart;
+	m_BarNo = 1;
+	m_NoteCount = 0;
+}

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGridRingLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒOƒŠƒbƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 //
@@ -17,29 +17,29 @@
 
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒOƒŠƒbƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚°ãƒªãƒƒãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTGridRingLive
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTGridRingLive(void);
 	virtual ~MTGridRingLive(void);
 	
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName);
 	
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 	
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 	
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 	
 private:
@@ -49,14 +49,14 @@ private:
 	bool m_isVisible;
 	bool m_isEnable;
 	
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTGRIDBOXLIVE_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 	
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	unsigned long _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 	
 	int _CreateVertexOfGrid(

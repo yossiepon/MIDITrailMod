@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTTimeIndicator
 //
-// ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^•`‰æƒNƒ‰ƒX
+// ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTTimeIndicator::MTTimeIndicator(void)
 {
@@ -27,7 +27,7 @@ MTTimeIndicator::MTTimeIndicator(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTTimeIndicator::~MTTimeIndicator(void)
 {
@@ -35,7 +35,7 @@ MTTimeIndicator::~MTTimeIndicator(void)
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^¶¬
+// ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ç”Ÿæˆ
 //******************************************************************************
 int MTTimeIndicator::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -48,15 +48,15 @@ int MTTimeIndicator::Create(
 
 	Release();
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒŠƒ~ƒeƒBƒu¶¬
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç”Ÿæˆ
 	result = _CreatePrimitive(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒŠƒ~ƒeƒBƒu¶¬Fƒ^ƒCƒ€ƒ‰ƒCƒ“
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç”Ÿæˆï¼šã‚¿ã‚¤ãƒ ãƒ©ã‚¤ãƒ³
 	result = _CreatePrimitiveLine(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -65,7 +65,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒvƒŠƒ~ƒeƒBƒu¶¬
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç”Ÿæˆ
 //******************************************************************************
 int MTTimeIndicator::_CreatePrimitive(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -77,35 +77,35 @@ int MTTimeIndicator::_CreatePrimitive(
 	MTTIMEINDICATOR_VERTEX* pVertex = NULL;
 	unsigned long* pIndex = NULL;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTTIMEINDICATOR_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),				//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLESTRIP				//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTTIMEINDICATOR_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),				//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLESTRIP				//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 4;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	indexNum = 4;
 	result = m_Primitive.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.LockIndex(&pIndex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	result = _CreateVertexOfIndicator(pVertex, pIndex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 	result = m_Primitive.UnlockIndex();
@@ -116,7 +116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒvƒŠƒ~ƒeƒBƒu¶¬
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç”Ÿæˆ
 //******************************************************************************
 int MTTimeIndicator::_CreatePrimitiveLine(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -126,28 +126,28 @@ int MTTimeIndicator::_CreatePrimitiveLine(
 	unsigned long vertexNum = 0;
 	MTTIMEINDICATOR_VERTEX* pVertex = NULL;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_PrimitiveLine.Initialize(
-					sizeof(MTTIMEINDICATOR_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),				//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_LINELIST					//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTTIMEINDICATOR_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),				//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_LINELIST					//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 2;
 	result = m_PrimitiveLine.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_PrimitiveLine.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	result = _CreateVertexOfIndicatorLine(pVertex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_PrimitiveLine.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -156,7 +156,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTTimeIndicator::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -170,25 +170,25 @@ int MTTimeIndicator::Transform(
 	D3DXMATRIX moveMatrix;
 	D3DXMATRIX worldMatrix;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//‰‰‘tˆÊ’u
+	//æ¼”å¥ä½ç½®
 	m_CurPos = m_NoteDesign.GetPlayPosX(m_CurTickTime);
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	moveVector = m_NoteDesign.GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x + m_CurPos, moveVector.y, moveVector.z);
 
-	//s—ñ‚Ì‡¬
+	//è¡Œåˆ—ã®åˆæˆ
 	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_Primitive.Transform(worldMatrix);
 	m_PrimitiveLine.Transform(worldMatrix);
 
@@ -196,7 +196,7 @@ int MTTimeIndicator::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTTimeIndicator::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -206,18 +206,18 @@ int MTTimeIndicator::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
@@ -235,7 +235,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTTimeIndicator::Release()
 {
@@ -244,7 +244,7 @@ void MTTimeIndicator::Release()
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^’¸“_¶¬
+// ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTTimeIndicator::_CreateVertexOfIndicator(
 		MTTIMEINDICATOR_VERTEX* pVertex,
@@ -263,9 +263,9 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 	//  0+----+1    |/
 	//   |    |  z--+0
 	//   |    |
-	//  2+----+3 © 3 ‚ªŒ´“_(0,0,0)
+	//  2+----+3 â† 3 ãŒåŸç‚¹(0,0,0)
 
-	//Ä¶–Ê’¸“_À•Wæ“¾
+	//å†ç”Ÿé¢é ‚ç‚¹åº§æ¨™å–å¾—
 	m_NoteDesign.GetPlaybackSectionVirtexPos(
 			0,
 			&vectorLU,
@@ -274,13 +274,13 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 			&vectorRD
 		);
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	pVertex[0].p = vectorLU;
 	pVertex[1].p = vectorRU;
 	pVertex[2].p = vectorLD;
 	pVertex[3].p = vectorRD;
 
-	//Ä¶–Ê‚Ì•‚ªƒ[ƒ‚É‹ß‚¢ê‡‚Íƒ‰ƒCƒ“‚ğ•`‰æ‚·‚é
+	//å†ç”Ÿé¢ã®å¹…ãŒã‚¼ãƒ­ã«è¿‘ã„å ´åˆã¯ãƒ©ã‚¤ãƒ³ã‚’æç”»ã™ã‚‹
 	delta = vectorLU.z - vectorRU.z;
 	if (delta < 0) {
 		delta = -1.0f * delta;
@@ -289,18 +289,18 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 		m_isEnableLine = true;
 	}
 
-	//–@ü
+	//æ³•ç·š
 	pVertex[0].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[1].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[2].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	pVertex[3].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	for (i = 0; i < 4; i++) {
 		pVertex[i].c = m_NoteDesign.GetPlaybackSectionColor();
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒXFTRIANGLESTRIP
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼šTRIANGLESTRIP
 	pIndex[0] = 0;
 	pIndex[1] = 1;
 	pIndex[2] = 2;
@@ -310,7 +310,7 @@ int MTTimeIndicator::_CreateVertexOfIndicator(
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^ƒ‰ƒCƒ“’¸“_¶¬
+// ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒ©ã‚¤ãƒ³é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTTimeIndicator::_CreateVertexOfIndicatorLine(
 		MTTIMEINDICATOR_VERTEX* pVertex
@@ -327,9 +327,9 @@ int MTTimeIndicator::_CreateVertexOfIndicatorLine(
 	//  0+----+1    |/
 	//   |    |  z--+0
 	//   |    |
-	//  2+----+3 © 3 ‚ªŒ´“_(0,0,0)
+	//  2+----+3 â† 3 ãŒåŸç‚¹(0,0,0)
 
-	//Ä¶–Ê’¸“_À•Wæ“¾
+	//å†ç”Ÿé¢é ‚ç‚¹åº§æ¨™å–å¾—
 	m_NoteDesign.GetPlaybackSectionVirtexPos(
 			0,
 			&vectorLU,
@@ -338,15 +338,15 @@ int MTTimeIndicator::_CreateVertexOfIndicatorLine(
 			&vectorRD
 		);
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	pVertex[0].p = vectorLU;
 	pVertex[1].p = vectorLD;
 
-	//–@ü
+	//æ³•ç·š
 	pVertex[0].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 	pVertex[1].n = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	for (i = 0; i < 2; i++) {
 		pVertex[i].c = m_NoteDesign.GetGridLineColor();
 	}
@@ -355,7 +355,7 @@ int MTTimeIndicator::_CreateVertexOfIndicatorLine(
 }
 
 //******************************************************************************
-// ƒ`ƒbƒNƒ^ƒCƒ€İ’è
+// ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ è¨­å®š
 //******************************************************************************
 void MTTimeIndicator::SetCurTickTime(
 		unsigned long curTickTime
@@ -366,7 +366,7 @@ void MTTimeIndicator::SetCurTickTime(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTTimeIndicator::Reset()
 {
@@ -375,7 +375,7 @@ void MTTimeIndicator::Reset()
 }
 
 //******************************************************************************
-// Œ»İˆÊ’uæ“¾
+// ç¾åœ¨ä½ç½®å–å¾—
 //******************************************************************************
 float MTTimeIndicator::GetPos()
 {
@@ -383,7 +383,7 @@ float MTTimeIndicator::GetPos()
 }
 
 //******************************************************************************
-// ˆÚ“®ƒxƒNƒgƒ‹æ“¾
+// ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 //******************************************************************************
 D3DXVECTOR3 MTTimeIndicator::GetMoveVector()
 {
@@ -391,7 +391,7 @@ D3DXVECTOR3 MTTimeIndicator::GetMoveVector()
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTTimeIndicator::SetEnable(
 		bool isEnable

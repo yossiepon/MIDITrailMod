@@ -1,8 +1,8 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // Simple MIDI Library / SMRcpConv
 //
-// RCP�t�@�C���ϊ��N���X
+// RCPファイル変換クラス
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -20,7 +20,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// �R���X�g���N�^
+// コンストラクタ
 //******************************************************************************
 SMRcpConv::SMRcpConv(void)
 {
@@ -31,7 +31,7 @@ SMRcpConv::SMRcpConv(void)
 }
 
 //******************************************************************************
-// �f�X�g���N�^
+// デストラクタ
 //******************************************************************************
 SMRcpConv::~SMRcpConv(void)
 {
@@ -39,7 +39,7 @@ SMRcpConv::~SMRcpConv(void)
 }
 
 //******************************************************************************
-// ������
+// 初期化
 //******************************************************************************
 int SMRcpConv::Initialize()
 {
@@ -48,64 +48,64 @@ int SMRcpConv::Initialize()
 
 	_Release();
 
-	//�v���Z�X���s�t�@�C���f�B���N�g���p�X�擾
+	//プロセス実行ファイルディレクトリパス取得
 	result = YNPathUtil::GetModuleDirPath(dllFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//DLL�t�@�C���p�X
+	//DLLファイルパス
 	_tcscat_s(dllFilePath, _MAX_PATH, _T("RCPCV.DLL"));
 
-	//DLL���݊m�F
+	//DLL存在確認
 	if (!PathFileExists(dllFilePath)) {
-		//DLL�����݂��Ȃ��̂ŉ�����������I��
+		//DLLが存在しないので何もせず正常終了
 		goto EXIT;
 	}
 
-	//DLL�ǂݍ���
-	//  LoadLibrary / FreeLibrary ��API���ŎQ�ƃJ�E���g���Ǘ����邽��
-	//  �{�N���X�̃C���X�^���X���������݂��Ă����Ȃ�
+	//DLL読み込み
+	//  LoadLibrary / FreeLibrary はAPI側で参照カウントを管理するため
+	//  本クラスのインスタンスが複数存在しても問題ない
 	m_hModule = LoadLibrary(dllFilePath);
 	if (m_hModule == NULL) {
 		result = YN_SET_ERR("LoadLibrary Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�֐��|�C���^�擾�FrcpcvConvertFile
+	//関数ポインタ取得：rcpcvConvertFile
 	m_pFuncConvertFile = (RCPCV_ConvertFile)GetProcAddress(m_hModule, "rcpcvConvertFile");
 	if (m_pFuncConvertFile == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�֐��|�C���^�擾�FrcpcvSaveSMF
+	//関数ポインタ取得：rcpcvSaveSMF
 	m_pFuncSaveSMF = (RCPCV_SaveSMF)GetProcAddress(m_hModule, "rcpcvSaveSMF");
 	if (m_pFuncSaveSMF == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�֐��|�C���^�擾�FrcpcvDeleteObject
+	//関数ポインタ取得：rcpcvDeleteObject
 	m_pFuncDeleteObject = (RCPCV_DeleteObject)GetProcAddress(m_hModule, "rcpcvDeleteObject");
 	if (m_pFuncDeleteObject == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�֐��|�C���^�擾�FrcpcvConvertFileFromBuffer
+	//関数ポインタ取得：rcpcvConvertFileFromBuffer
 	m_pFuncConvertFileFromBuffer = (RCPCV_ConvertFileFromBuffer)GetProcAddress(m_hModule, "rcpcvConvertFileFromBuffer");
 	if (m_pFuncConvertFileFromBuffer == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�֐��|�C���^�擾�FrcpcvGetSMF
+	//関数ポインタ取得：rcpcvGetSMF
 	m_pFuncGetSMF = (RCPCV_GetSMF)GetProcAddress(m_hModule, "rcpcvGetSMF");
 	if (m_pFuncGetSMF == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//�֐��|�C���^�擾�FrcpcvGetSMFLength
+	//関数ポインタ取得：rcpcvGetSMFLength
 	m_pFuncGetSMFLength = (RCPCV_GetSMFLength)GetProcAddress(m_hModule, "rcpcvGetSMFLength");
 	if (m_pFuncGetSMFLength == NULL) {
 		result = YN_SET_ERR("GetProcAddress Error. (rcpcv.dll)", GetLastError(), 0);
@@ -120,7 +120,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// �g�p�۔���
+// 使用可否判定
 //******************************************************************************
 bool SMRcpConv::IsAvailable()
 {
@@ -134,7 +134,7 @@ bool SMRcpConv::IsAvailable()
 }
 
 //******************************************************************************
-// �t�@�C���ϊ�
+// ファイル変換
 //******************************************************************************
 int SMRcpConv::Convert(
 		const WCHAR* pRCPPath,
@@ -159,27 +159,27 @@ int SMRcpConv::Convert(
 		goto EXIT;
 	}
 
-	//�t�@�C�����J��
+	//ファイルを開く
 	eresult = _wfopen_s(&pRCPFile, pRCPPath, L"rb");
 	if (eresult != 0) {
 		result = YN_SET_ERR("File open error.", 0, 0);
 		goto EXIT;
 	}
 
-	//�t�@�C���T�C�Y���m�F
+	//ファイルサイズを確認
 	fileSize = _filelengthi64(_fileno(pRCPFile));
 	if (fileSize == -1L) {
 		result = YN_SET_ERR("File open error.", 0, 0);
 		goto EXIT;
 	}
-	//�t�@�C���T�C�Y��100MB�𒴂���ꍇ�̓T�|�[�g���Ȃ�
+	//ファイルサイズが100MBを超える場合はサポートしない
 	if (fileSize > (1024 * 1024 * 100)) {
 		result = YN_SET_ERR("File size is too long.", fileSize, 0);
 		goto EXIT;
 	}
 	buffSize = (size_t)fileSize;
 
-	//�������m��
+	//メモリ確保
 	try {
 		pBuffer = new unsigned char[buffSize];
 	}
@@ -188,7 +188,7 @@ int SMRcpConv::Convert(
 		goto EXIT;
 	}
 
-	//RCP�t�@�C���̓��e���������ɓW�J
+	//RCPファイルの内容をメモリに展開
 	readSize = fread_s(pBuffer, buffSize, 1, buffSize, pRCPFile);
 	if (readSize != buffSize) {
 		result = YN_SET_ERR("File read error.", readSize, buffSize);
@@ -196,27 +196,27 @@ int SMRcpConv::Convert(
 	}
 
 	try {
-		//RCP->SMF�R���o�[�g���s
-		//  �t�H�[�}�b�g�`����n���K�v�����邪�������ʂƂ���
-		//  ��������ł̕ϊ��̓t�@�C���g���q�̏�񂪂Ȃ����߂Ɛ���
+		//RCP->SMFコンバート実行
+		//  フォーマット形式を渡す必要があるが自動判別とする
+		//  メモリ上での変換はファイル拡張子の情報がないためと推定
 		hRCPCV = (*m_pFuncConvertFileFromBuffer)(
-						(LPCSTR)pBuffer,//���̓o�b�t�@
-						(UINT)buffSize,		//���̓o�b�t�@����
-						0,				//���̓f�[�^�̃t�H�[�}�b�g�`���F��������
-						0,				//�R�[���o�b�N��ʁF�Ȃ�
-						NULL,			//�R�[���o�b�N�֐��^�E�B���h�E�n���h���F�Ȃ�
-						0,				//�E�B���h�E���b�Z�[�W�F�Ȃ�
-						0				//�C���X�^���X���ʗpID�F�Ȃ�
+						(LPCSTR)pBuffer,//入力バッファ
+						(UINT)buffSize,		//入力バッファ長さ
+						0,				//入力データのフォーマット形式：自動判別
+						0,				//コールバック種別：なし
+						NULL,			//コールバック関数／ウィンドウハンドル：なし
+						0,				//ウィンドウメッセージ：なし
+						0				//インスタンス判別用ID：なし
 					);
 		if (hRCPCV == 0) {
 			result = YN_SET_ERR("File convert error. (rcpcv.dll)", 0, 0);
 			goto EXIT;
 		}
 
-		//SMF�f�[�^�ʒu
+		//SMFデータ位置
 		pSMFData = (*m_pFuncGetSMF)(hRCPCV);
 
-		//SMF�f�[�^�T�C�Y
+		//SMFデータサイズ
 		SMFDataSize = (*m_pFuncGetSMFLength)(hRCPCV);
 	}
 	catch (...) {
@@ -224,14 +224,14 @@ int SMRcpConv::Convert(
 		goto EXIT;
 	}
 
-	//�o�͐�t�@�C�����J��
+	//出力先ファイルを開く
 	eresult = _wfopen_s(&pSMFFile, pSMFPath, L"wb");
 	if (eresult != 0) {
 		result = YN_SET_ERR("File open error.", 0, 0);
 		goto EXIT;
 	}
 
-	//�o�͐�t�@�C����SMF�f�[�^����������
+	//出力先ファイルにSMFデータを書き込む
 	writeSize = fwrite(pSMFData, 1, SMFDataSize, pSMFFile);
 	if (writeSize != SMFDataSize) {
 		result = YN_SET_ERR("File write error.", writeSize, SMFDataSize);
@@ -252,12 +252,12 @@ EXIT:;
 	return result;
 }
 
-// ����
-// RCPCV �̓��C�h������ɂ��t�@�C���p�X�̎w��ɑΉ����Ă��Ȃ�����
-// RCPCV �ł�RCP�t�@�C���ǂݍ��݂�SMF�t�@�C���o�͂�����߁A
-// ��������ł̃R���o�[�g�����ɕύX����B
+// メモ
+// RCPCV はワイド文字列によるファイルパスの指定に対応していないため
+// RCPCV でのRCPファイル読み込みとSMFファイル出力を取りやめ、
+// メモリ上でのコンバート処理に変更する。
 //******************************************************************************
-// �t�@�C���ϊ�
+// ファイル変換
 //******************************************************************************
 //int SMRcpConv::Convert(
 //		const TCHAR* pRCPPath,
@@ -275,20 +275,20 @@ EXIT:;
 //
 //	try {
 //
-//		//RCP�t�@�C���ǂݍ���
+//		//RCPファイル読み込み
 //		hRCPCV = (*m_pFuncConvertFile)(
-//						pRCPPath,	//�t�@�C���p�X
-//						0,			//�R�[���o�b�N��ʁF�Ȃ�
-//						NULL,		//�R�[���o�b�N�֐��^�E�B���h�E�n���h���F�Ȃ�
-//						0,			//�E�B���h�E���b�Z�[�W�F�Ȃ�
-//						0			//�C���X�^���X���ʗpID�F�Ȃ�
+//						pRCPPath,	//ファイルパス
+//						0,			//コールバック種別：なし
+//						NULL,		//コールバック関数／ウィンドウハンドル：なし
+//						0,			//ウィンドウメッセージ：なし
+//						0			//インスタンス判別用ID：なし
 //					);
 //		if (hRCPCV == 0) {
 //			result = YN_SET_ERR("File read error.", 0, 0);
 //			goto EXIT;
 //		}
 //
-//		//SMF�o��
+//		//SMF出力
 //		apiresult = (*m_pFuncSaveSMF)(hRCPCV, pSMFPath);
 //		if (apiresult != 1) {
 //			result = YN_SET_ERR("File save error.", apiresult, 0);
@@ -309,7 +309,7 @@ EXIT:;
 //}
 
 //******************************************************************************
-// �����[�X
+// リリース
 //******************************************************************************
 void SMRcpConv::_Release()
 {
@@ -320,7 +320,7 @@ void SMRcpConv::_Release()
 }
 
 //******************************************************************************
-// �g���q�ɂ��T�|�[�g�Ώۃt�@�C������
+// 拡張子によるサポート対象ファイル判定
 //******************************************************************************
 bool SMRcpConv::IsSupportFileExt(
 		const WCHAR* pFilePath
@@ -338,7 +338,7 @@ bool SMRcpConv::IsSupportFileExt(
 }
 
 //******************************************************************************
-// GetOpenFileName�p�t�@�C���t�B���^�擾
+// GetOpenFileName用ファイルフィルタ取得
 //******************************************************************************
 const WCHAR* SMRcpConv::GetOpenFileNameFilter()
 {

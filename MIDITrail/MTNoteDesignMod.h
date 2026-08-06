@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteDesignMod
 //
-// ƒm[ƒgƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// Note design Mod class.
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -10,57 +10,78 @@
 
 #pragma once
 
+#include <d3d11.h>
 #include "MTNoteDesign.h"
+
 //******************************************************************************
-// ƒm[ƒgƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// Note key status (envelope phase)
+//******************************************************************************
+enum MTKeyStatus {
+	BeforeNoteON,
+	NoteON,
+	AfterNoteOFF
+};
+
+//******************************************************************************
+// Note envelope result
+//******************************************************************************
+struct MTNoteEnvelopeResult {
+	float keyDownRate;
+	MTKeyStatus keyStatus;
+};
+
+//******************************************************************************
+// Note design Mod class
 //******************************************************************************
 class MTNoteDesignMod : public MTNoteDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
-	MTNoteDesignMod(void);
-	virtual ~MTNoteDesignMod(void);
+	MTNoteDesignMod();
+	virtual ~MTNoteDesignMod();
 
-	//‰Šú‰»
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//”g–ä•\¦ŠÔæ“¾
+	// Ripple timing
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();
 
-	//”g–ä•`‰æî•ñæ“¾
-	D3DBLEND GetRippleSrcBlend();
-	D3DBLEND GetRippleDestBlend();
+	// Note envelope (3-phase: Decay/Sustain/Release)
+	MTNoteEnvelopeResult CalcNoteEnvelope(
+				unsigned long playTimeMSec,
+				unsigned long startTime,
+				unsigned long endTime
+			);
+
+	// Ripple blend settings (ini values match D3D11_BLEND numeric values)
+	D3D11_BLEND GetRippleSrcBlend();
+	D3D11_BLEND GetRippleDestBlend();
 	unsigned long GetRippleOverwriteTimes();
 	float GetRippleSpacing();
 
-	//”g–äƒTƒCƒYæ“¾
+	// Ripple size (rate-based decay)
 	float GetRippleHeight(float rate);
 	float GetRippleWidth(float rate);
 	float GetRippleAlpha(float rate);
-	float GetDecayCoefficient(
-				float rate,					//ƒTƒCƒY”ä—¦
-				float saturation = 20.0f	//–O˜aƒŒƒxƒ‹
-			);
+	float GetDecayCoefficient(float rate, float saturation = 20.0f);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX’¸“_À•Wæ“¾
+	// Active note box vertex positions (with decay rate)
 	virtual void GetActiveNoteBoxVirtexPos(
 				unsigned long curTickTime,
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
-				D3DXVECTOR3* pVector0,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶ã
-				D3DXVECTOR3* pVector1,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰Eã
-				D3DXVECTOR3* pVector2,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä¶‰º
-				D3DXVECTOR3* pVector3,	//YZ•½–Ê+X²•ûŒü‚ğŒ©‚Ä‰E‰º
-				short pitchBendValue = 0,				//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒh
-				unsigned char pitchBendSensitivity = 0,	//È—ª‰ÂFƒsƒbƒ`ƒxƒ“ƒhŠ´“x
-				float rate = 0.0f						//È—ª‰ÂFƒTƒCƒY”ä—¦
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0,
+				float rate = 0.0f
 			);
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒXƒJƒ‰[æ“¾
-	D3DXCOLOR GetActiveNoteBoxColor(
+	// Active note box color (with decay rate)
+	DirectX::SimpleMath::Color GetActiveNoteBoxColor(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo,
@@ -74,20 +95,12 @@ protected:
 
 private:
 
-	//”g–äƒfƒBƒPƒCŠÔ
 	int m_RippleDecayDuration;
-	//”g–äƒŠƒŠ[ƒXŠÔ
 	int m_RippleReleaseDuration;
 
-	//”g–ä•`‰æŒ³iƒŠƒbƒvƒ‹‰æ‘œjƒuƒŒƒ“ƒhw’è 
-	D3DBLEND m_RippleSrcBlend;
-	//”g–ä•`‰ææi”wŒi‰æ‘œjƒuƒŒƒ“ƒhw’è
-	D3DBLEND m_RippleDestBlend;
+	D3D11_BLEND m_RippleSrcBlend;
+	D3D11_BLEND m_RippleDestBlend;
 
-	//”g–äã‘‚«‰ñ”
 	int m_RippleOverwriteTimes;
-	//”g–ä•`‰æŠÔŠu
 	float m_RippleSpacing;
 };
-
-

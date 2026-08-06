@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesignMod
 //
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ï¿½sï¿½Aï¿½mï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½fï¿½Uï¿½Cï¿½ï¿½Modï¿½Nï¿½ï¿½ï¿½X
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -14,71 +14,71 @@
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒhƒfƒUƒCƒ“ModƒNƒ‰ƒX
+// ï¿½sï¿½Aï¿½mï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½fï¿½Uï¿½Cï¿½ï¿½Modï¿½Nï¿½ï¿½ï¿½X
 //******************************************************************************
 class MTPianoKeyboardDesignMod : public MTPianoKeyboardDesign
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^ï¿½^ï¿½fï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
 	MTPianoKeyboardDesignMod(void);
 	virtual ~MTPianoKeyboardDesignMod(void);
 
-	//‰Šú‰»
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	virtual int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData);
 
-	//ƒL[ƒ{[ƒhŠî€À•Wæ“¾
-	D3DXVECTOR3 GetKeyboardBasePos(
+	//ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½î€ï¿½ï¿½ï¿½Wï¿½æ“¾
+	DirectX::SimpleMath::Vector3 GetKeyboardBasePos(
 			int keyboardIndex,
 			float angle
 		);
 
-	//ƒ|[ƒgŒ´“_À•Wæ“¾
+	//ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Wï¿½æ“¾
 	float GetPortOriginX();
 	float GetPortOriginY(int keyboardIndex, bool flip);
 	float GetPortOriginZ(int keyboardIndex, bool flip);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX‚‚³E•æ“¾
+	//ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½æ“¾
 	float GetNoteBoxHeight();
 	float GetNoteBoxWidth();
 
-	//ƒm[ƒgŠÔŠuæ“¾
+	//ï¿½mï¿½[ï¿½gï¿½ÔŠuï¿½æ“¾
 	float GetNoteStep();
 
-	//ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠuæ“¾
+	//ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ÔŠuï¿½æ“¾
 	float GetChStep();
 
-	//ƒL[ƒ{[ƒh‚‚³E•æ“¾
+	//ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½æ“¾
 	float GetKeyboardHeight();
 	float GetKeyboardWidth();
 
-	//ƒOƒŠƒbƒh‚‚³E•æ“¾
+	//ï¿½Oï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½æ“¾
 	float GetGridHeight();
 	float GetGridWidth();
 
-	//ƒ|[ƒg‚‚³E•æ“¾
+	//ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½æ“¾
 	float GetPortHeight();
 	float GetPortWidth();
 
-	//Ä¶–Ê‚‚³E•æ“¾
+	//ï¿½Äï¿½ï¿½Êï¿½ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½æ“¾
 	float GetPlaybackSectionHeight();
 	float GetPlaybackSectionWidth();
 
-	//”g–ä•`‰æŠÔŠuæ“¾
+	//ï¿½gï¿½ï¿½`ï¿½ï¿½ÔŠuï¿½æ“¾
 	float GetRippleSpacing();
 
-	//”g–ä•`‰æƒ}[ƒWƒ“æ“¾
+	//ï¿½gï¿½ï¿½`ï¿½ï¿½}ï¿½[ï¿½Wï¿½ï¿½ï¿½æ“¾
 	float GetRippleMargin();
 
-	//ƒL[ƒ{[ƒhƒŠƒTƒCƒY”äæ“¾
+	//ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ï¿½ï¿½Tï¿½Cï¿½Yï¿½ï¿½æ“¾
 	float GetKeyboardResizeRatio();
 
-	//”­‰¹’†ƒL[ƒJƒ‰[æ“¾
-	D3DXCOLOR GetActiveKeyColor(
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½[ï¿½Jï¿½ï¿½ï¿½[ï¿½æ“¾
+	DirectX::SimpleMath::Color GetActiveKeyColor(
 			unsigned char chNo,
 			unsigned char noteNo,
 			unsigned long elapsedTime,
-			D3DXCOLOR* pNoteColor = NULL
+			DirectX::SimpleMath::Color* pNoteColor = NULL
 		);
 
 protected:
@@ -88,20 +88,20 @@ protected:
 
 private:
 
-	//ƒm[ƒgƒ{ƒbƒNƒX‚‚³
+	//ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½
 	float m_NoteBoxHeight;
-	//ƒm[ƒgƒ{ƒbƒNƒX•
+	//ï¿½mï¿½[ï¿½gï¿½{ï¿½bï¿½Nï¿½Xï¿½ï¿½
 	float m_NoteBoxWidth;
-	//ƒm[ƒgŠÔŠu
+	//ï¿½mï¿½[ï¿½gï¿½ÔŠu
 	float m_NoteStep;
-	//ƒ`ƒƒƒ“ƒlƒ‹ŠÔŠu
+	//ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ÔŠu
 	float m_ChStep;
 
-	//”g–ä•`‰æŠÔŠu
+	//ï¿½gï¿½ï¿½`ï¿½ï¿½ÔŠu
 	float m_RippleSpacing;
 
-	//”­‰¹’†ƒL[Fî•ñ
-	D3DXCOLOR m_ActiveKeyColorList[16];
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½[ï¿½Fï¿½ï¿½ï¿½
+	DirectX::SimpleMath::Color m_ActiveKeyColorList[16];
 
 };
 

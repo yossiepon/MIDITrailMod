@@ -1,17 +1,17 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPictBoardRing
 //
-// ƒsƒNƒ`ƒƒƒ{[ƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒsƒNƒ`ƒƒƒ{[ƒh‚ð•`‰æ‚·‚éB
-// ‰æ‘œƒtƒ@ƒCƒ‹‚Í .bmp .dds .dib .jpg .png .tga ‚ðŽw’è‰Â”\B
-// iD3DXCreateTextureFromFile ‚ªƒTƒ|[ƒg‚µ‚Ä‚¢‚é‰æ‘œj
+// ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ã‚’æç”»ã™ã‚‹ã€‚
+// ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã¯ .bmp .dds .dib .jpg .png .tga ã‚’æŒ‡å®šå¯èƒ½ã€‚
+// ï¼ˆD3DXCreateTextureFromFile ãŒã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã‚‹ç”»åƒï¼‰
 
 #pragma once
 
@@ -25,41 +25,41 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-//  ƒsƒNƒ`ƒƒƒ{[ƒhƒŠƒ“ƒO•`‰æƒNƒ‰ƒX
+//  ãƒ”ã‚¯ãƒãƒ£ãƒœãƒ¼ãƒ‰ãƒªãƒ³ã‚°æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPictBoardRing
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPictBoardRing(void);
 	virtual ~MTPictBoardRing(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 // >>> modify 20251101 yossiepon begin
 	virtual int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, bool isReverseMode);
 // <<< modify 20251101 yossiepon end
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ð•ú
+	//è§£æ”¾
 	void Release();
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//‰‰‘tŠJŽnI—¹
+	//æ¼”å¥é–‹å§‹çµ‚äº†
 	void OnPlayStart();
 	void OnPlayEnd();
 
-	//•\Ž¦Ý’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
 // >>> modify access level to protected 20251101 yossiepon begin
@@ -74,15 +74,15 @@ protected:
 	bool m_isEnable;
 	MTNoteDesignRing m_NoteDesign;
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTPICTBOARD_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
-		D3DXVECTOR2 t;	//ƒeƒNƒXƒ`ƒƒ‰æ‘œˆÊ’u
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+		D3DXVECTOR2 t;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒä½ç½®
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
 	// >>> modify 20251101 yossiepon begin

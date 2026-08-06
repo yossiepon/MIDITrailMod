@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGraphicCfgDlg
 //
-// ƒOƒ‰ƒtƒBƒbƒNÝ’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -11,103 +11,103 @@
 #pragma once
 
 #include "YNBaseLib.h"
-#include "DXRenderer.h"
+#include "DXRenderer11.h"
 
 using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒOƒ‰ƒtƒBƒbƒNÝ’è’è‹`
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šå®šç¾©
 //******************************************************************************
-//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒOFƒ}ƒ‹ƒ`ƒTƒ“ƒvƒ‹Ží•ÊƒfƒtƒHƒ‹ƒg
+//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°ï¼šãƒžãƒ«ãƒã‚µãƒ³ãƒ—ãƒ«ç¨®åˆ¥ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
 #define MT_GRAPHIC_MULTI_SAMPLE_TYPE_DEF  (0)  //OFF
 
 
 //******************************************************************************
-// ƒOƒ‰ƒtƒBƒbƒNÝ’èƒ_ƒCƒAƒƒOƒNƒ‰ƒX
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTGraphicCfgDlg
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTGraphicCfgDlg(void);
 	virtual ~MTGraphicCfgDlg(void);
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒOƒTƒ|[ƒgî•ñÝ’è
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°ã‚µãƒãƒ¼ãƒˆæƒ…å ±è¨­å®š
 	void SetAntialiasSupport(unsigned long multiSampleType, bool isSupport);
 
-	//•\Ž¦Fƒ_ƒCƒAƒƒO‚ª•Â‚¶‚ç‚ê‚é‚Ü‚Å§Œä‚ð•Ô‚³‚È‚¢
+	//è¡¨ç¤ºï¼šãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¾ã§åˆ¶å¾¡ã‚’è¿”ã•ãªã„
 	int Show(HWND hParentWnd);
 
-	//ƒpƒ‰ƒ[ƒ^•ÏXŠm”F
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¤‰æ›´ç¢ºèª
 	bool IsChanged();
 
 private:
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒ|ƒCƒ“ƒ^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒã‚¤ãƒ³ã‚¿
 	static MTGraphicCfgDlg* m_pThis;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒX
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
 	HINSTANCE m_hInstance;
 
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hWnd;
 
-	//Ý’èƒtƒ@ƒCƒ‹
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	YNConfFile m_ConfFile;
 
-	//ƒRƒ“ƒ{ƒ{ƒbƒNƒX‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//ã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hComboMultiSampleType;
 	bool m_MultSampleTypeSupport[DX_MULTI_SAMPLE_TYPE_MAX+1];
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒXƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hEditImageFilePath;
 	
-	//Žl•ª‰¹•„’·Šg‘å—¦ƒGƒfƒBƒbƒgƒ{ƒbƒNƒX‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§çŽ‡ã‚¨ãƒ‡ã‚£ãƒƒãƒˆãƒœãƒƒã‚¯ã‚¹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
 	HWND m_hEditQuarterNoteLengthMag;
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒVƒ“ƒOÝ’è
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚·ãƒ³ã‚°è¨­å®š
 	unsigned long m_MultiSampleType;
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 	WCHAR m_ImageFilePath[_MAX_PATH];
 	
-	//Žl•ª‰¹•„’·Šg‘å—¦
+	//å››åˆ†éŸ³ç¬¦é•·æ‹¡å¤§çŽ‡
 	int m_QuarterNoteLengthMag;
 
-	//XVƒtƒ‰ƒO
+	//æ›´æ–°ãƒ•ãƒ©ã‚°
 	bool m_isChanged;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ƒ_ƒCƒAƒƒO•\Ž¦’¼‘O‰Šú‰»
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 	int _OnInitDlg(HWND hDlg);
 
-	//Ý’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	int _InitConfFile();
 
-	//Ý’èƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	int _LoadConf();
 
-	//ƒfƒoƒCƒX‘I‘ðƒRƒ“ƒ{ƒ{ƒbƒNƒX‰Šú‰»
+	//ãƒ‡ãƒã‚¤ã‚¹é¸æŠžã‚³ãƒ³ãƒœãƒœãƒƒã‚¯ã‚¹åˆæœŸåŒ–
 	int _InitComboMultiSampleType(HWND hCombo, unsigned long selMultiSampleType);
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒX‰Šú‰»
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹åˆæœŸåŒ–
 	int _InitBackgroundImageFilePath();
 	
-	//Žl•ª‰¹•„Ý’è‰Šú‰»
+	//å››åˆ†éŸ³ç¬¦è¨­å®šåˆæœŸåŒ–
 	int _InitQuarterNote();
 
-	//•Û‘¶ˆ—
+	//ä¿å­˜å‡¦ç†
 	int _Save();
 
-	//”wŒi‰æ‘œƒtƒ@ƒCƒ‹ƒpƒXƒuƒ‰ƒEƒYƒ{ƒ^ƒ“‰Ÿ‰º
+	//èƒŒæ™¯ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒ–ãƒ©ã‚¦ã‚ºãƒœã‚¿ãƒ³æŠ¼ä¸‹
 	int _OnBtnBrowse();
 
-	//‰æ‘œƒtƒ@ƒCƒ‹‘I‘ð
+	//ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«é¸æŠž
 	int _SelectImageFile(WCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
 
 };

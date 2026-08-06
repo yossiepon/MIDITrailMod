@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMIDILib
 //
-// ƒVƒ“ƒvƒ‹MIDIƒ‰ƒCƒuƒ‰ƒŠƒwƒbƒ_
+// ã‚·ãƒ³ãƒ—ãƒ«MIDIãƒ©ã‚¤ãƒ–ãƒ©ãƒªãƒ˜ãƒƒãƒ€
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
@@ -14,37 +14,37 @@
 #define SMIDILIB_API __declspec(dllimport)
 #endif
 
-//‹¤’Ê’è‹`
+//å…±é€šå®šç¾©
 #include "SMCommon.h"
 
-//•W€MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İƒNƒ‰ƒX
+//æ¨™æº–MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã‚¯ãƒ©ã‚¹
 #include "SMFileReader.h"
 
-//ƒCƒxƒ“ƒgƒNƒ‰ƒXŒn
+//ã‚¤ãƒ™ãƒ³ãƒˆã‚¯ãƒ©ã‚¹ç³»
 #include "SMEvent.h"
 #include "SMEventMIDI.h"
 #include "SMEventSysEx.h"
 #include "SMEventSysMsg.h"
 #include "SMEventMeta.h"
 
-//ƒŠƒXƒgƒNƒ‰ƒXŒn
+//ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹ç³»
 #include "SMTrack.h"
 #include "SMNoteList.h"
 #include "SMBarList.h"
 #include "SMPortList.h"
 
-//ƒfƒoƒCƒX§ŒäŒn
+//ãƒ‡ãƒã‚¤ã‚¹åˆ¶å¾¡ç³»
 #include "SMOutDevCtrl.h"
 #include "SMInDevCtrl.h"
 
-//ƒV[ƒPƒ“ƒXˆ—Œn
+//ã‚·ãƒ¼ã‚±ãƒ³ã‚¹å‡¦ç†ç³»
 #include "SMSeqData.h"
 #include "SMSequencer.h"
 #include "SMMsgParser.h"
 
-//ƒ‚ƒjƒ^Œn
+//ãƒ¢ãƒ‹ã‚¿ç³»
 #include "SMLiveMonitor.h"
 
-//‚»‚Ì‘¼
+//ãã®ä»–
 #include "SMRcpConv.h"
 

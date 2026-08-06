@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteLyrics
 //
-// ƒm[ƒg‰ÌŒ•`‰æƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ­Œè©æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2012-2025 Yossiepon Oniichan. All Rights Reserved.
@@ -23,32 +23,32 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘åƒ|[ƒg”
+//æœ€å¤§ãƒãƒ¼ãƒˆæ•°
 #define MTNOTELYRICS_MAX_PORT_NUM  (8)
 
-//Å‘å‰ÌŒ•`‰æ”
+//æœ€å¤§æ­Œè©æç”»æ•°
 #define MTNOTELYRICS_MAX_LYRICS_NUM  (100)
 
-// TODO: Å‘å‰ÌŒ•`‰æ”‚ğ‰Â•Ï‚É‚·‚é
-//   –‘O‚ÉƒV[ƒPƒ“ƒXƒf[ƒ^‚ÌÅ‘å“¯”­‰¹”‚ğ’²¸‚µ‚Ä‚¨‚¯‚Î
-//   Šm•Û‚·‚éƒoƒbƒtƒ@ƒTƒCƒY‚ğ•ÏX‚Å‚«‚é
-//   Œ»ó‚Å‚àƒoƒbƒtƒ@ƒTƒCƒY‚Í‰Šú‰»“_‚Å“®“I‚É•ÏX‰Â”\‚Å‚ ‚é
+// TODO: æœ€å¤§æ­Œè©æç”»æ•°ã‚’å¯å¤‰ã«ã™ã‚‹
+//   äº‹å‰ã«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§åŒæ™‚ç™ºéŸ³æ•°ã‚’èª¿æŸ»ã—ã¦ãŠã‘ã°
+//   ç¢ºä¿ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã§ãã‚‹
+//   ç¾çŠ¶ã§ã‚‚ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã¯åˆæœŸåŒ–æ™‚ç‚¹ã§å‹•çš„ã«å¤‰æ›´å¯èƒ½ã§ã‚ã‚‹
 
 
 //******************************************************************************
-// ƒm[ƒg‰ÌŒ•`‰æƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ­Œè©æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteLyrics
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteLyrics(void);
 	virtual ~MTNoteLyrics(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
@@ -56,40 +56,40 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//‰‰‘tŠÔİ’è
+	//æ¼”å¥æ™‚é–“è¨­å®š
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	void SetSkipStatus(bool isSkipping);
 
 private:
 
-	//ƒL[ó‘Ô
+	//ã‚­ãƒ¼çŠ¶æ…‹
 	enum KeyStatus {
 		BeforeNoteON,
 		NoteON,
 		AfterNoteOFF
 	};
 
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatus {
 		bool isActive;
 		KeyStatus keyStatus;
@@ -98,50 +98,50 @@ private:
 		MTFontTexture fontTexture;
 	};
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTNOTELYRICS_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
-		D3DXVECTOR2 t;	//ƒeƒNƒXƒ`ƒƒ‰æ‘œˆÊ’u
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
+		D3DXVECTOR2 t;	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒä½ç½®
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1); }
 
 protected:
 
-	//•`‰æŒn
+	//æç”»ç³»
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTextures[MTNOTELYRICS_MAX_LYRICS_NUM];
 	D3DMATERIAL9 m_Material;
 
-	//ƒJƒƒ‰
+	//ã‚«ãƒ¡ãƒ©
 	D3DXVECTOR3 m_CamVector;
 
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesignMod* m_pNoteDesign;
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//ƒm[ƒgƒŠƒXƒg
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 	SMNoteList m_NoteListRT;
 
-	//”­‰¹’†ƒm[ƒgŠÇ—
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆç®¡ç†
 	unsigned long m_PlayTimeMSec;
 	unsigned long m_CurTickTime;
 	unsigned long m_CurNoteIndex;
 	float m_KeyDownRate[MTNOTELYRICS_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
-	//ƒm[ƒg”­‰¹ó‘Ôî•ñ
+	//ãƒãƒ¼ãƒˆç™ºéŸ³çŠ¶æ…‹æƒ…å ±
 	NoteStatus* m_pNoteStatus;
 	unsigned long m_ActiveNoteNum;
 
-	//•\¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	bool m_isSkipping;
 
 	virtual int _CreateNoteDesign();

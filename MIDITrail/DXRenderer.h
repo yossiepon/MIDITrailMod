@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXRenderer
 //
-// ƒŒƒ“ƒ_ƒ‰ƒNƒ‰ƒX
+// ãƒ¬ãƒ³ãƒ€ãƒ©ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -16,9 +16,9 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒfƒoƒCƒXƒƒXƒg
+//ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆ
 #define DXRENDERER_ERR_DEVICE_LOST  (100)
 
 #define DX_MULTI_SAMPLE_TYPE_MIN    (2)
@@ -26,34 +26,34 @@
 
 
 //******************************************************************************
-// ƒŒƒ“ƒ_ƒ‰ƒNƒ‰ƒX
+// ãƒ¬ãƒ³ãƒ€ãƒ©ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class DXRenderer
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	DXRenderer();
 	virtual ~DXRenderer();
 
 public:
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(HWND hWnd, unsigned long multiSampleType = 0, bool isFullScreen = false);
 
-	//ƒfƒoƒCƒXæ“¾
+	//ãƒ‡ãƒã‚¤ã‚¹å–å¾—
 	LPDIRECT3DDEVICE9 GetDevice();
 
-	//•`‰æ
+	//æç”»
 	int RenderScene(DXScene* pScene);
 
-	//I—¹ˆ—
+	//çµ‚äº†å‡¦ç†
 	void Terminate();
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒXƒTƒ|[ƒgŠm”F
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚µãƒãƒ¼ãƒˆç¢ºèª
 	int IsSupportAntialias(unsigned long multiSampleNum, bool* pIsSupport);
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒTƒ|[ƒgŠm”F
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã‚µãƒãƒ¼ãƒˆç¢ºèª
 	int IsSupportIndexBuffer(bool* pIsSupport, unsigned long* pMaxVertexIndex);
 
 private:

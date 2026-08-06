@@ -1,23 +1,23 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMTrack
 //
-// ƒgƒ‰ƒbƒNƒNƒ‰ƒX
+// ãƒˆãƒ©ãƒƒã‚¯ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// SysEXƒCƒxƒ“ƒg‚Æƒƒ^ƒCƒxƒ“ƒg‚Í‰Â•Ï’·ƒTƒCƒY‚Ì‚½‚ßA’PƒƒŠƒXƒgƒNƒ‰ƒX‚ğ
-// ‚»‚Ì‚Ü‚Ü—˜—p‚Å‚«‚È‚¢B‚µ‚©‚µ‚±‚ê‚ç‚ÌƒCƒxƒ“ƒg‚ÍA•K‚¸4byte‚Éû‚Ü‚éMIDI
-// ƒCƒxƒ“ƒg‚É”ä‚×‚Äˆ³“|“I‚É­‚È‚¢‚Ì‚ÅAŒÂX‚Énew‚³‚ê‚é‚±‚Æ‚ğ—e”F‚µA
-// map‚ÅŠÇ—‚·‚éB
+// SysEXã‚¤ãƒ™ãƒ³ãƒˆã¨ãƒ¡ã‚¿ã‚¤ãƒ™ãƒ³ãƒˆã¯å¯å¤‰é•·ã‚µã‚¤ã‚ºã®ãŸã‚ã€å˜ç´”ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹ã‚’
+// ãã®ã¾ã¾åˆ©ç”¨ã§ããªã„ã€‚ã—ã‹ã—ã“ã‚Œã‚‰ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯ã€å¿…ãš4byteã«åã¾ã‚‹MIDI
+// ã‚¤ãƒ™ãƒ³ãƒˆã«æ¯”ã¹ã¦åœ§å€’çš„ã«å°‘ãªã„ã®ã§ã€å€‹ã€…ã«newã•ã‚Œã‚‹ã“ã¨ã‚’å®¹èªã—ã€
+// mapã§ç®¡ç†ã™ã‚‹ã€‚
 //
 // TODO:
-// SMEventƒNƒ‰ƒX‚Éƒfƒ‹ƒ^ƒ^ƒCƒ€‚Æƒ|[ƒg”Ô†‚ğ‚½‚¹‚é‚×‚«B
-// ƒCƒxƒ“ƒg^ƒfƒ‹ƒ^ƒ^ƒCƒ€^ƒ|[ƒg”Ô†‚ğ•ª—£‚µ‚Ä‚¢‚é‚½‚ßA
-// SMTrackƒNƒ‰ƒX—˜—pÒ‚Ìˆ—‚ª”ÏG‚É‚È‚Á‚Ä‚¢‚éB
+// SMEventã‚¯ãƒ©ã‚¹ã«ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ã¨ãƒãƒ¼ãƒˆç•ªå·ã‚’æŒãŸã›ã‚‹ã¹ãã€‚
+// ã‚¤ãƒ™ãƒ³ãƒˆï¼ãƒ‡ãƒ«ã‚¿ã‚¿ã‚¤ãƒ ï¼ãƒãƒ¼ãƒˆç•ªå·ã‚’åˆ†é›¢ã—ã¦ã„ã‚‹ãŸã‚ã€
+// SMTrackã‚¯ãƒ©ã‚¹åˆ©ç”¨è€…ã®å‡¦ç†ãŒç…©é›‘ã«ãªã£ã¦ã„ã‚‹ã€‚
 
 #pragma once
 
@@ -38,51 +38,51 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒgƒ‰ƒbƒNƒNƒ‰ƒX
+// ãƒˆãƒ©ãƒƒã‚¯ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMTrack
 {
 
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMTrack(void);
 	virtual ~SMTrack(void);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void Clear();
 
-	//ƒf[ƒ^ƒZƒbƒg“o˜^
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆç™»éŒ²
 	int AddDataSet(unsigned long deltaTime, SMEvent* pEvent, unsigned char portNo);
 
-	//ƒf[ƒ^ƒZƒbƒgæ“¾
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆå–å¾—
 	int GetDataSet(unsigned long index, unsigned long* pDeltaTime, SMEvent* pEvent, unsigned char* pPortNo);
 
-	//ƒf[ƒ^ƒZƒbƒg”æ“¾
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆæ•°å–å¾—
 	unsigned long GetSize();
 
-	//ƒm[ƒgƒŠƒXƒgæ“¾FstartTime, endTime ‚Íƒ`ƒbƒNƒ^ƒCƒ€
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—ï¼šstartTime, endTime ã¯ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ 
 	int GetNoteList(SMNoteList* pNoteList);
 
-	//ƒm[ƒgƒŠƒXƒgæ“¾FstartTime, endTime ‚ÍƒŠƒAƒ‹ƒ^ƒCƒ€(msec)
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—ï¼šstartTime, endTime ã¯ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ (msec)
 	int GetNoteListWithRealTime(SMNoteList* pNoteList, unsigned long timeDivision);
 
-	//ƒRƒs[
+	//ã‚³ãƒ”ãƒ¼
 	int CopyFrom(SMTrack* pSrcTrack);
 
 // >>> add 20120728 yossiepon begin
 
-	//ƒ|[ƒg”Ô†ã‘‚«
+	//ãƒãƒ¼ãƒˆç•ªå·ä¸Šæ›¸ã
 	int OverwritePortNo(short portNo);
 
-	//ƒ`ƒƒƒ“ƒlƒ‹”Ô†ã‘‚«
+	//ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ä¸Šæ›¸ã
 	int OverwriteChNo(short chNo);
 
 // <<< add 20120728 yossiepon end
 
 private:
 
-	//ƒCƒxƒ“ƒgƒf[ƒ^
+	//ã‚¤ãƒ™ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿
 	typedef struct {
 		SMEvent::EventType type;
 		unsigned char status;
@@ -91,18 +91,18 @@ private:
 		unsigned char data[4];
 	} SMEventData;
 
-	//ƒf[ƒ^ƒZƒbƒg
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ
 	typedef struct {
 		unsigned long deltaTime;
 		SMEventData eventData;
 		unsigned char portNo;
 	} SMDataSet;
 
-	//Šg’£ƒf[ƒ^ƒ}ƒbƒvFƒCƒ“ƒfƒbƒNƒX¨ƒf[ƒ^ˆÊ’u
+	//æ‹¡å¼µãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ—ï¼šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹â†’ãƒ‡ãƒ¼ã‚¿ä½ç½®
 	typedef std::map<unsigned long, unsigned char*> SMExDataMap;
 	typedef std::pair<unsigned long, unsigned char*> SMExDataMapPair;
 
-	//ƒm[ƒgî•ñƒ}ƒbƒvFƒm[ƒg“Á’èƒL[¨ƒm[ƒgƒŠƒXƒgƒCƒ“ƒfƒbƒNƒX
+	//ãƒãƒ¼ãƒˆæƒ…å ±ãƒãƒƒãƒ—ï¼šãƒãƒ¼ãƒˆç‰¹å®šã‚­ãƒ¼â†’ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	typedef std::map<unsigned long, unsigned long> SMNoteMap;
 	typedef std::pair<unsigned long, unsigned long> SMNoteMapPair;
 
@@ -122,7 +122,7 @@ private:
 	int _GetNoteList(SMNoteList* pNoteList, unsigned long timeDivision);
 	double _ConvTick2TimeMsec(unsigned long tickTime, unsigned long tempo, unsigned long timeDivision);
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const SMTrack&);
 	SMTrack(const SMTrack&);
 

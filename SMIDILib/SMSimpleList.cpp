@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMSimpleList
 //
-// ’PƒƒŠƒXƒgƒNƒ‰ƒX
+// å˜ç´”ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -18,7 +18,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMSimpleList::SMSimpleList(
 		unsigned long itemSize,
@@ -31,7 +31,7 @@ SMSimpleList::SMSimpleList(
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 SMSimpleList::~SMSimpleList(void)
 {
@@ -39,7 +39,7 @@ SMSimpleList::~SMSimpleList(void)
 }
 
 //******************************************************************************
-// ƒNƒŠƒA
+// ã‚¯ãƒªã‚¢
 //******************************************************************************
 void SMSimpleList::Clear()
 {
@@ -56,7 +56,7 @@ void SMSimpleList::Clear()
 }
 
 //******************************************************************************
-// €–Ú’Ç‰Á
+// é …ç›®è¿½åŠ 
 //******************************************************************************
 int SMSimpleList::AddItem(
 		void* pItem
@@ -76,11 +76,11 @@ int SMSimpleList::AddItem(
 
 	index = m_DataNum;
 
-	//ƒf[ƒ^ƒZƒbƒg‚ğŠi”[‚·‚éƒƒ‚ƒŠƒuƒƒbƒN‚ÌˆÊ’u‚ğZo
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ã®ä½ç½®ã‚’ç®—å‡º
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//ƒƒ‚ƒŠƒuƒƒbƒN‚ª‚È‚¯‚ê‚Îì¬‚·‚é
+	//ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ãŒãªã‘ã‚Œã°ä½œæˆã™ã‚‹
 	blockitr = m_MemBlockMap.find(blockNo);
 	if (blockitr == m_MemBlockMap.end()) {
 		try {
@@ -97,7 +97,7 @@ int SMSimpleList::AddItem(
 		pBlock = blockitr->second;
 	}
 
-	//ƒƒ‚ƒŠƒuƒƒbƒNã‚ÉƒAƒCƒeƒ€‚ğƒRƒs[‚·‚é
+	//ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ä¸Šã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
 	try {
 		memcpy(pBlock + (m_ItemSize * blockIndex), pItem, m_ItemSize);
 	}
@@ -106,7 +106,7 @@ int SMSimpleList::AddItem(
 		goto EXIT;
 	}
 
-	//ƒCƒ“ƒfƒbƒNƒX‚ğXV
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›´æ–°
 	m_DataNum += 1;
 
 EXIT:;
@@ -114,7 +114,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// €–Úæ“¾
+// é …ç›®å–å¾—
 //******************************************************************************
 int SMSimpleList::GetItem(
 		unsigned long index,
@@ -136,11 +136,11 @@ int SMSimpleList::GetItem(
 		goto EXIT;
 	}
 
-	//ƒf[ƒ^ƒZƒbƒg‚ğŠi”[‚·‚éƒƒ‚ƒŠƒuƒƒbƒN‚ÌˆÊ’u‚ğZo
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ã®ä½ç½®ã‚’ç®—å‡º
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//ƒƒ‚ƒŠƒuƒƒbƒN‚ğŒŸõ
+	//ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ã‚’æ¤œç´¢
 	blockitr = m_MemBlockMap.find(blockNo);
 	if (blockitr == m_MemBlockMap.end()) {
 		result = YN_SET_ERR("Program error.", index, blockIndex);
@@ -148,7 +148,7 @@ int SMSimpleList::GetItem(
 	}
 	pBlock = blockitr->second;
 
-	//ƒƒ‚ƒŠƒuƒƒbƒNã‚ÌƒAƒCƒeƒ€‚ğQÆ‚·‚é
+	//ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ä¸Šã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’å‚ç…§ã™ã‚‹
 	try {
 		memcpy(pItem, pBlock + (m_ItemSize * blockIndex), m_ItemSize);
 	}
@@ -162,7 +162,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// €–Ú“o˜^iã‘‚«j
+// é …ç›®ç™»éŒ²ï¼ˆä¸Šæ›¸ãï¼‰
 //******************************************************************************
 int SMSimpleList::SetItem(
 		unsigned long index,
@@ -184,11 +184,11 @@ int SMSimpleList::SetItem(
 		goto EXIT;
 	}
 
-	//ƒf[ƒ^ƒZƒbƒg‚ğŠi”[‚·‚éƒƒ‚ƒŠƒuƒƒbƒN‚ÌˆÊ’u‚ğZo
+	//ãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ã®ä½ç½®ã‚’ç®—å‡º
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//ƒƒ‚ƒŠƒuƒƒbƒN‚ğŒŸõ
+	//ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ã‚’æ¤œç´¢
 	blockitr = m_MemBlockMap.find(blockNo);
 	if (blockitr == m_MemBlockMap.end()) {
 		result = YN_SET_ERR("Program error.", index, blockIndex);
@@ -196,7 +196,7 @@ int SMSimpleList::SetItem(
 	}
 	pBlock = blockitr->second;
 
-	//ƒƒ‚ƒŠƒuƒƒbƒNã‚ÉƒAƒCƒeƒ€‚ğƒRƒs[‚·‚é
+	//ãƒ¡ãƒ¢ãƒªãƒ–ãƒ­ãƒƒã‚¯ä¸Šã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹
 	try {
 		memcpy(pBlock + (m_ItemSize * blockIndex), pItem, m_ItemSize);
 	}
@@ -210,7 +210,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒAƒCƒeƒ€”æ“¾
+// ã‚¢ã‚¤ãƒ†ãƒ æ•°å–å¾—
 //******************************************************************************
 unsigned long SMSimpleList::GetSize()
 {
@@ -218,7 +218,7 @@ unsigned long SMSimpleList::GetSize()
 }
 
 //******************************************************************************
-// ƒuƒƒbƒN”Ô†æ“¾
+// ãƒ–ãƒ­ãƒƒã‚¯ç•ªå·å–å¾—
 //******************************************************************************
 unsigned long SMSimpleList::_GetBlockNo(
 		unsigned long index
@@ -228,7 +228,7 @@ unsigned long SMSimpleList::_GetBlockNo(
 }
 
 //******************************************************************************
-// ƒuƒƒbƒN“àƒCƒ“ƒfƒbƒNƒXæ“¾
+// ãƒ–ãƒ­ãƒƒã‚¯å†…ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å–å¾—
 //******************************************************************************
 unsigned long SMSimpleList::_GetBlockIndex(
 		unsigned long index
@@ -238,7 +238,7 @@ unsigned long SMSimpleList::_GetBlockIndex(
 }
 
 //******************************************************************************
-// ƒRƒs[
+// ã‚³ãƒ”ãƒ¼
 //******************************************************************************
 int SMSimpleList::CopyFrom(
 		SMSimpleList* pSrcList
@@ -248,7 +248,7 @@ int SMSimpleList::CopyFrom(
 	unsigned long index = 0;
 	unsigned char* pData = NULL;
 
-	//TODO: ‚à‚¤­‚µƒCƒ“ƒeƒŠƒWƒFƒ“ƒg‚ÈƒRƒs[‚É‚·‚é
+	//TODO: ã‚‚ã†å°‘ã—ã‚¤ãƒ³ãƒ†ãƒªã‚¸ã‚§ãƒ³ãƒˆãªã‚³ãƒ”ãƒ¼ã«ã™ã‚‹
 
 	if (pSrcList == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);

@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScene
 //
-// MIDITrail ƒV[ƒ“Šî’êƒNƒ‰ƒX
+// MIDITrail ã‚·ãƒ¼ãƒ³åŸºåº•ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// MIDITrail ƒV[ƒ“Šî’êƒNƒ‰ƒX
+// MIDITrail ã‚·ãƒ¼ãƒ³åŸºåº•ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScene : public DXScene
 {
@@ -44,67 +44,67 @@ public:
 
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTScene(void);
 	virtual ~MTScene(void);
 
-	//–¼Ìæ“¾
+	//åç§°å–å¾—
 	virtual const TCHAR* GetName();
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 					HWND hWnd,
 					LPDIRECT3DDEVICE9 pD3DDevice,
 					SMSeqData* pSeqData
 				);
 
-	//•ÏŠ·
+	//å¤‰æ›
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//•`‰æ
+	//æç”»
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//”jŠü
+	//ç ´æ£„
 	virtual void Release();
 
-	//ƒEƒBƒ“ƒhƒEƒNƒŠƒbƒNƒCƒxƒ“ƒgóM
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	virtual int OnWindowClicked(
 					UINT button,
 					WPARAM wParam,
 					LPARAM lParam
 				);
 
-	//‰‰‘tŠJnƒCƒxƒ“ƒgóM
+	//æ¼”å¥é–‹å§‹ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	virtual int OnPlayStart(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰‰‘tI—¹ƒCƒxƒ“ƒgóM
+	//æ¼”å¥çµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	virtual int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 	virtual int OnRecvSequencerMsg(
 					unsigned long param1,
 					unsigned long param2
 				);
 
-	//Šª‚«–ß‚µ
+	//å·»ãæˆ»ã—
 	virtual int Rewind();
 
-	//‹“_æ“¾^“o˜^
+	//è¦–ç‚¹å–å¾—ï¼ç™»éŒ²
 	virtual void GetDefaultViewParam(MTViewParamMap* pParamMap);
 	virtual void GetViewParam(MTViewParamMap* pParamMap);
 	virtual void SetViewParam(MTViewParamMap* pParamMap);
 	virtual void MoveToStaticViewpoint(unsigned long viewpointNo);
 
-	//‹“_ƒŠƒZƒbƒg
+	//è¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
 	virtual void ResetViewpoint();
 
-	//•\¦Œø‰Êİ’è
+	//è¡¨ç¤ºåŠ¹æœè¨­å®š
 	virtual void SetEffect(EffectType type, bool isEnable);
 
-	//‰‰‘t‘¬“xİ’è
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
 	virtual void SetPlaySpeedRatio(unsigned long ratio);
 
-	//ƒpƒ‰ƒ[ƒ^“o˜^^æ“¾
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç™»éŒ²ï¼å–å¾—
 	int SetParam(const char* pKey, const char* pValue);
 	const char* GetParam(const char* pKey);
 
@@ -113,7 +113,7 @@ protected:
 	typedef std::map<std::string, std::string> MTSceneParamDictionary;
 	typedef std::pair<std::string, std::string> MTSceneParamDictionaryPair;
 
-	//ƒV[ƒ“ƒpƒ‰ƒ[ƒ^
+	//ã‚·ãƒ¼ãƒ³ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 	MTSceneParamDictionary m_SceneParamDictionary;
 
 };

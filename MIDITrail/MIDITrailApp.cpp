@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MIDITrailApp
 //
-// MIDITrail ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒNƒ‰ƒX
+// MIDITrail ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,21 +16,11 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
-#include "MTSceneTitle.h"
-// >>> modify 20120729 yossiepon begin
-#include "MTScenePianoRoll3DMod.h"
-#include "MTScenePianoRoll2DMod.h"
-// <<< modify 20120729 yossiepon end
-#include "MTScenePianoRollRain.h"
-#include "MTScenePianoRollRain2D.h"
-// >>> modify 20191222 yossiepon begin
-#include "MTScenePianoRollRingMod.h"
-// <<< modify 20191222 yossiepon end
-#include "MTScenePianoRoll3DLive.h"
-#include "MTScenePianoRoll2DLive.h"
-#include "MTScenePianoRollRainLive.h"
-#include "MTScenePianoRollRain2DLive.h"
-#include "MTScenePianoRollRingLive.h"
+#include "MTSceneTitle11.h"
+#include "MTScenePianoRoll3D11.h"
+#include "MTScenePianoRollRain11.h"
+#include "MTScenePianoRollRing11.h"
+#include "DXPrimitive11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
 // <<< add 20190828 yossiepon end
@@ -42,12 +32,12 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MIDITrailApp* MIDITrailApp::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MIDITrailApp::MIDITrailApp(void)
 {
@@ -57,7 +47,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_hMailSlot = NULL;
 	m_isExitApp = false;
 
-	//ƒEƒBƒ“ƒhƒEŒn
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç³»
 	m_hWnd = NULL;
 	m_Accel = NULL;
 	m_Title[0] = L'\0';
@@ -66,18 +56,18 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnableMenuBar = true;
 	m_hMenu = NULL;
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOŒn
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ç³»
 	m_pScene = NULL;
 	m_MultiSampleType = 0;
 
-	//FPS•\¦Œn
+	//FPSè¡¨ç¤ºç³»
 	m_PrevTime = 0;
 	m_FPSCount = 0;
 
-	//MIDI§ŒäŒn
+	//MIDIåˆ¶å¾¡ç³»
 	m_MIDIINDevName[0] = _T('\0');
 
-	//‰‰‘tó‘Ô
+	//æ¼”å¥çŠ¶æ…‹
 	m_PlayStatus = NoData;
 	m_isRepeat = false;
 	m_isFolderPlayback = true;
@@ -86,7 +76,7 @@ MIDITrailApp::MIDITrailApp(void)
 	ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
 	m_PlaySpeedRatio = 100;
 
-	//•\¦ó‘Ô
+	//è¡¨ç¤ºçŠ¶æ…‹
 	m_isEnablePianoKeyboard = true;
 	m_isEnableRipple = true;
 	m_isEnablePitchBend = true;
@@ -97,37 +87,37 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnableGridLine = true;
 	m_isEnableTimeIndicator = true;
 
-	//ƒV[ƒ“í•Ê
+	//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥
 	m_SceneType = Title;
 	m_SelectedSceneType = PianoRoll3D;
 
-	//©“®‹“_•Û‘¶
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
 	m_isAutoSaveViewpoint = false;
 
-	//ƒvƒŒ[ƒ„[§Œä
+	//ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼åˆ¶å¾¡
 	m_AllowMultipleInstances = 0;
 	m_AutoPlaybackAfterOpenFile = 0;
 
-	//ƒŠƒƒCƒ“ƒh^ƒXƒLƒbƒv§Œä
+	//ãƒªãƒ¯ã‚¤ãƒ³ãƒ‰ï¼ã‚¹ã‚­ãƒƒãƒ—åˆ¶å¾¡
 	m_SkipBackTimeSpanInMsec = 10000;
 	m_SkipForwardTimeSpanInMsec = 10000;
 
-	//‰‰‘tƒXƒs[ƒh§Œä
+	//æ¼”å¥ã‚¹ãƒ”ãƒ¼ãƒ‰åˆ¶å¾¡
 	m_SpeedStepInPercent = 1;
 	m_MaxSpeedInPercent = 400;
 
-	//‰‰‘t§Œä
+	//æ¼”å¥åˆ¶å¾¡
 	m_DelayBetweenSongsInMsec = 0;
 
-	//Ÿ‰ñƒI[ƒvƒ“‘ÎÛƒtƒ@ƒCƒ‹ƒpƒX
+	//æ¬¡å›ã‚ªãƒ¼ãƒ—ãƒ³å¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 	m_NextFilePath[0] = L'\0';
 
-	//ƒQ[ƒ€ƒpƒbƒh—p‹“_”Ô†
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ç”¨è¦–ç‚¹ç•ªå·
 	m_GamePadViewPointNo = 0;
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MIDITrailApp::~MIDITrailApp(void)
 {
@@ -135,7 +125,7 @@ MIDITrailApp::~MIDITrailApp(void)
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int MIDITrailApp::Initialize(
 		HINSTANCE hInstance,
@@ -148,14 +138,14 @@ int MIDITrailApp::Initialize(
 
 	m_hInstance = hInstance;
 
-	//•¶š—ñ‰Šú‰»
+	//æ–‡å­—åˆ—åˆæœŸåŒ–
 	LoadStringW(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
 
 //>>> add yossiepon 20190828
 	WCHAR* pVersion = NULL;
 
-	//ƒo[ƒWƒ‡ƒ“•¶š—ñ
+	//ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ—
 #ifdef _WIN64
 	//64bit
 	pVersion = MIDITRAIL_VERSION_STRING_X64;
@@ -168,104 +158,108 @@ int MIDITrailApp::Initialize(
 	wcscpy_s(m_Title, MAX_LOADSTRING, m_TitleBase);
 	//<<< add yossiepon 20190828
 
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 
-	//ƒOƒ‰ƒtƒBƒbƒNİ’è“Ç‚İ‚İ
+	//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadGraphicConf();
 	if (result != 0) goto EXIT;
 
-	//ƒvƒŒ[ƒ„[İ’è“Ç‚İ‚İ
+	//ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadPlayerConf();
 	if (result != 0) goto EXIT;
 
-	//“ñd‹N“®ƒ`ƒFƒbƒN
+	//äºŒé‡èµ·å‹•ãƒã‚§ãƒƒã‚¯
 	result = _CheckMultipleInstances(&m_isExitApp);
 	if (result != 0) goto EXIT;
 
-	//“ñd‹N“®—}~‚Ìê‡
+	//äºŒé‡èµ·å‹•æŠ‘æ­¢ã®å ´åˆ
 	if (m_isExitApp) {
 		_PostFilePathToFirstMIDITrail();
 		goto EXIT;
 	}
 
-	//ƒ[ƒ‹ƒXƒƒbƒgì¬
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆä½œæˆ
 	result = _CreateMailSlot();
 	if (result != 0) goto EXIT;
 
-	//ƒƒbƒZ[ƒWƒLƒ…[‰Šú‰»
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚­ãƒ¥ãƒ¼åˆæœŸåŒ–
 	result = m_MsgQueue.Initialize(10000);
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX“o˜^
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ç™»éŒ²
 	result = _RegisterClass(hInstance);
 	if (result != 0) goto EXIT;
 
-	//ƒƒCƒ“ƒEƒBƒ“ƒhƒE¶¬
+	//ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆ
 	result = _CreateWindow(hInstance, nCmdShow);
 	if (result != 0) goto EXIT;
 
-	//ƒAƒNƒZƒ‰ƒŒ[ƒ^ƒe[ƒuƒ‹“Ç‚İ‚İ
+	//ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ«èª­ã¿è¾¼ã¿
 	m_Accel = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(IDC_MIDITRAIL));
 	if (m_Accel == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
 		goto EXIT;
 	}
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(NoData);
 	if (result != 0) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒ‰‰Šú‰»
+	//ãƒ¬ãƒ³ãƒ€ãƒ©åˆæœŸåŒ–
 	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//å…±æœ‰ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³åˆæœŸåŒ–
+	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
+	if (result != 0) goto EXIT;
+
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	m_SceneType = Title;
 	result = _CreateScene(m_SceneType, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“í•Ê“Ç‚İ‚İ
+	//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥èª­ã¿è¾¼ã¿
 	result = _LoadSceneType();
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“İ’è“Ç‚İ‚İ
+	//ã‚·ãƒ¼ãƒ³è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadSceneConf();
 	if (result != 0) goto EXIT;
 
-	//•\¦Œø‰Ê‘I‘ğó‘Ô“Ç‚İ‚İ
+	//è¡¨ç¤ºåŠ¹æœé¸æŠçŠ¶æ…‹èª­ã¿è¾¼ã¿
 	result = _LoadEffectStatus();
 	if (result != 0) goto EXIT;
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
-	//RCPƒtƒ@ƒCƒ‹ƒRƒ“ƒo[ƒ^‰Šú‰»
+	//RCPãƒ•ã‚¡ã‚¤ãƒ«ã‚³ãƒ³ãƒãƒ¼ã‚¿åˆæœŸåŒ–
 	result = m_RcpConv.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒ‰ƒ`ƒFƒbƒN
+	//ãƒ¬ãƒ³ãƒ€ãƒ©ãƒã‚§ãƒƒã‚¯
 	result = _CheckRenderer();
 	if (result != 0) goto EXIT;
 
-	//MIDI OUT ©“®İ’è
+	//MIDI OUT è‡ªå‹•è¨­å®š
 	result = _AutoConfigMIDIOUT();
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«æ›´æ–°
 	_UpdateWindowTitle(NULL);
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ‚ÆÀs
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æã¨å®Ÿè¡Œ
 	result = _ParseCmdLine();
 	if (result != 0) goto EXIT;
 
-	//ƒ^ƒCƒ}[ŠJn
+	//ã‚¿ã‚¤ãƒãƒ¼é–‹å§‹
 	result = _StartTimer();
 	if (result != 0) goto EXIT;
 
-	//ƒQ[ƒ€ƒpƒbƒh§ŒäFƒ†[ƒUƒCƒ“ƒfƒbƒNƒX0ŒÅ’è
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰åˆ¶å¾¡ï¼šãƒ¦ãƒ¼ã‚¶ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹0å›ºå®š
 	result = m_GamePadCtrl.Initialize(0);
 	if (result != 0) goto EXIT;
 
@@ -274,7 +268,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// I—¹ˆ—
+// çµ‚äº†å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::Terminate()
 {
@@ -304,7 +298,7 @@ int MIDITrailApp::Terminate()
 }
 
 //******************************************************************************
-// Às
+// å®Ÿè¡Œ
 //******************************************************************************
 int MIDITrailApp::Run()
 {
@@ -318,14 +312,14 @@ int MIDITrailApp::Run()
 
 	m_PrevTime = timeGetTime();
 
-	//ƒƒbƒZ[ƒWƒ‹[ƒv
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—
 	while (TRUE) {
 		isExist = PeekMessage(
-						&msg,		//æ“¾‚µ‚½ƒƒbƒZ[ƒW
-						NULL,		//æ“¾Œ³ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-						0,			//æ“¾‘ÎÛƒƒbƒZ[ƒWÅ¬’l
-						0,			//æ“¾‘ÎÛƒƒbƒZ[ƒWÅ‘å’l
-						PM_REMOVE	//ƒƒbƒZ[ƒWˆ—•û–@FƒLƒ…[‚©‚çíœ
+						&msg,		//å–å¾—ã—ãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+						NULL,		//å–å¾—å…ƒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+						0,			//å–å¾—å¯¾è±¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æœ€å°å€¤
+						0,			//å–å¾—å¯¾è±¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æœ€å¤§å€¤
+						PM_REMOVE	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†æ–¹æ³•ï¼šã‚­ãƒ¥ãƒ¼ã‹ã‚‰å‰Šé™¤
 					);
 		if (isExist) {
 			if (msg.message == WM_QUIT) {
@@ -338,30 +332,37 @@ int MIDITrailApp::Run()
 			}
 		}
 		else if (m_pScene != NULL) {
-			//ƒV[ƒPƒ“ƒT[ƒƒbƒZ[ƒWˆ—
+			//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
 			result = _SequencerMsgProc();
 			if (result != 0) {
 				YN_SHOW_ERR(m_hWnd);
 			}
 
-			//ƒQ[ƒ€ƒpƒbƒh‘€ìˆ—
+			//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œå‡¦ç†
 			result = _GamePadProc();
 			if (result != 0) {
 				YN_SHOW_ERR(m_hWnd);
 			}
 
-			//ƒEƒBƒ“ƒhƒE•\¦ó‘Ô‚Å‚Ì‚İ•`‰æ‚ğs‚¤
+			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºçŠ¶æ…‹ã§ã®ã¿æç”»ã‚’è¡Œã†
 			GetWindowPlacement(m_hWnd, &wndpl);
 			if ((wndpl.showCmd != SW_HIDE) &&
 				(wndpl.showCmd != SW_MINIMIZE) &&
 				(wndpl.showCmd != SW_SHOWMINIMIZED) &&
 				(wndpl.showCmd != SW_SHOWMINNOACTIVE)) {
-				//•`‰æ
-				result = m_Renderer.RenderScene(m_pScene);
+				//ã‚·ãƒ¼ãƒ³æ›´æ–°ï¼ˆã‚«ãƒ¡ãƒ©å…¥åŠ›ãƒ»æ¼”å¥ä½ç½®ãƒ»ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆçŠ¶æ…‹ï¼‰
+				result = m_pScene->Update();
 				if (result != 0) {
-					if (result == DXRENDERER_ERR_DEVICE_LOST) {
-						//ƒfƒoƒCƒXƒƒXƒg
-						//b’è“I‘Îô‚Æ‚µ‚ÄƒV[ƒ“‚ğÄ¶¬‚·‚é
+					YN_SHOW_ERR(m_hWnd);
+					PostMessage(m_hWnd, WM_DESTROY, 0, 0);
+				}
+
+				//æç”»
+				result = m_Renderer.RenderScene(m_pScene, m_pScene->GetCamera());
+				if (result != 0) {
+					if (result == DXRENDERER11_ERR_DEVICE_LOST) {
+						//ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆ
+						//æš«å®šçš„å¯¾ç­–ã¨ã—ã¦ã‚·ãƒ¼ãƒ³ã‚’å†ç”Ÿæˆã™ã‚‹
 						result = _RebuildScene();
 						if (result != 0) {
 							YN_SHOW_ERR(m_hWnd);
@@ -379,14 +380,14 @@ int MIDITrailApp::Run()
     }
 
 EXIT:;
-	//ŠÖ”‚ªWM_QUITƒƒbƒZ[ƒW‚ğó‚¯æ‚Á‚Ä³í‚ÉI—¹‚·‚éê‡‚Í
-	//wParam‚ÉŠi”[‚³‚ê‚Ä‚¢‚éI—¹ƒR[ƒh‚ğ•Ô‚·
-	//ƒƒbƒZ[ƒWƒ‹[ƒv‚É“ü‚é‘O‚ÉI—¹‚·‚éê‡‚Í0‚ğ•Ô‚·
+	//é–¢æ•°ãŒWM_QUITãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å—ã‘å–ã£ã¦æ­£å¸¸ã«çµ‚äº†ã™ã‚‹å ´åˆã¯
+	//wParamã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹çµ‚äº†ã‚³ãƒ¼ãƒ‰ã‚’è¿”ã™
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚‹å‰ã«çµ‚äº†ã™ã‚‹å ´åˆã¯0ã‚’è¿”ã™
 	return quitCode;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX“o˜^
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ç™»éŒ²
 //******************************************************************************
 int MIDITrailApp::_RegisterClass(
 		HINSTANCE hInstance
@@ -396,24 +397,24 @@ int MIDITrailApp::_RegisterClass(
 	ATOM aresult = 0;
 	WNDCLASSEXW wcex;
 
-	wcex.cbSize			= sizeof(WNDCLASSEXW);				//\‘¢‘ÌƒTƒCƒY
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;			//ƒNƒ‰ƒXƒXƒ^ƒCƒ‹
-	wcex.lpfnWndProc	= _WndProc;							//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
-	wcex.cbClsExtra		= 0;								//’Ç‰Áî•ñ‚ÌƒTƒCƒY
-	wcex.cbWndExtra		= 0;								//’Ç‰Áî•ñ‚ÌƒTƒCƒY
-	wcex.hInstance		= hInstance;						//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
+	wcex.cbSize			= sizeof(WNDCLASSEXW);				//æ§‹é€ ä½“ã‚µã‚¤ã‚º
+	wcex.style			= CS_HREDRAW | CS_VREDRAW;			//ã‚¯ãƒ©ã‚¹ã‚¹ã‚¿ã‚¤ãƒ«
+	wcex.lpfnWndProc	= _WndProc;							//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
+	wcex.cbClsExtra		= 0;								//è¿½åŠ æƒ…å ±ã®ã‚µã‚¤ã‚º
+	wcex.cbWndExtra		= 0;								//è¿½åŠ æƒ…å ±ã®ã‚µã‚¤ã‚º
+	wcex.hInstance		= hInstance;						//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MIDITRAIL));
-															//ƒAƒCƒRƒ“ƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
-	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//ƒJ[ƒ\ƒ‹ƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
-	wcex.hbrBackground  = CreateSolidBrush(RGB(0, 0, 0));	//”wŒi—pƒuƒ‰ƒVƒnƒ“ƒhƒ‹F•
-	wcex.lpszMenuName	= MAKEINTRESOURCEW(IDC_MIDITRAIL);	//ƒƒjƒ…[ƒŠƒ\[ƒX–¼Ì
-	wcex.lpszClassName	= m_WndClassName;					//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼Ì
+															//ã‚¢ã‚¤ã‚³ãƒ³ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);		//ã‚«ãƒ¼ã‚½ãƒ«ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+	wcex.hbrBackground  = CreateSolidBrush(RGB(0, 0, 0));	//èƒŒæ™¯ç”¨ãƒ–ãƒ©ã‚·ãƒãƒ³ãƒ‰ãƒ«ï¼šé»’
+	wcex.lpszMenuName	= MAKEINTRESOURCEW(IDC_MIDITRAIL);	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒªã‚½ãƒ¼ã‚¹åç§°
+	wcex.lpszClassName	= m_WndClassName;					//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹åç§°
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-				 											//¬ƒAƒCƒRƒ“ƒŠƒ\[ƒXƒnƒ“ƒhƒ‹
+				 											//å°ã‚¢ã‚¤ã‚³ãƒ³ãƒªã‚½ãƒ¼ã‚¹ãƒãƒ³ãƒ‰ãƒ«
 
-	//ˆÚ“®‚âƒTƒCƒY•ÏX‚É‚¨‚¯‚éƒEƒCƒ“ƒhƒE–³Œø—Ìˆæ‚ÌÄ•`‰æw’è
-	// CS_HREDRAW ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚Ì•‚ª•Ï‰»‚µ‚½‚Æ‚«‚ÉÄ•`‰æ‚·‚é
-	// CS_VREDRAW ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚Ì‚‚³‚ª•Ï‰»‚µ‚½‚Æ‚«‚ÉÄ•`‰æ‚·‚é
+	//ç§»å‹•ã‚„ã‚µã‚¤ã‚ºå¤‰æ›´ã«ãŠã‘ã‚‹ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ç„¡åŠ¹é ˜åŸŸã®å†æç”»æŒ‡å®š
+	// CS_HREDRAW ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®å¹…ãŒå¤‰åŒ–ã—ãŸã¨ãã«å†æç”»ã™ã‚‹
+	// CS_VREDRAW ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®é«˜ã•ãŒå¤‰åŒ–ã—ãŸã¨ãã«å†æç”»ã™ã‚‹
 
 	aresult = RegisterClassExW(&wcex);
 	if (aresult == 0) {
@@ -426,7 +427,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒE¶¬
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆ
 //******************************************************************************
 int MIDITrailApp::_CreateWindow(
 		HINSTANCE hInstance,
@@ -436,35 +437,35 @@ int MIDITrailApp::_CreateWindow(
 	int result = 0;
 
 	m_hWnd = CreateWindowW(
-				m_WndClassName,			//ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX–¼
-				m_Title,				//ƒEƒBƒ“ƒhƒE–¼
-				MIDITRAIL_WINDOW_STYLE,	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹
-				CW_USEDEFAULT,			//ƒEƒBƒ“ƒhƒE‚Ì‰¡•ûŒü‚ÌˆÊ’uFƒfƒtƒHƒ‹ƒg
-				0,						//ƒEƒBƒ“ƒhƒE‚Ìc•ûŒü‚ÌˆÊ’u
-				CW_USEDEFAULT,			//ƒEƒBƒ“ƒhƒE‚Ì•FƒfƒtƒHƒ‹ƒg
-				0,						//ƒEƒBƒ“ƒhƒE‚Ì‚‚³
-				NULL,					//e‚Ü‚½‚ÍƒI[ƒi[‚ÌƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-				NULL,					//ƒƒjƒ…[ƒnƒ“ƒhƒ‹‚Ü‚½‚ÍqƒEƒBƒ“ƒhƒEID
-				hInstance,				//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-				NULL					//ƒEƒBƒ“ƒhƒEì¬ƒf[ƒ^
+				m_WndClassName,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹å
+				m_Title,				//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
+				MIDITRAIL_WINDOW_STYLE,	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«
+				CW_USEDEFAULT,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ¨ªæ–¹å‘ã®ä½ç½®ï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+				0,						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ç¸¦æ–¹å‘ã®ä½ç½®
+				CW_USEDEFAULT,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¹…ï¼šãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+				0,						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é«˜ã•
+				NULL,					//è¦ªã¾ãŸã¯ã‚ªãƒ¼ãƒŠãƒ¼ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+				NULL,					//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«ã¾ãŸã¯å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ID
+				hInstance,				//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+				NULL					//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆãƒ‡ãƒ¼ã‚¿
 			);
 	if (m_hWnd == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 	
-	//ƒƒjƒ…[ƒo[•\¦Ø‘Ö‚Ì‚½‚ßƒEƒBƒ“ƒhƒE¶¬’¼Œã‚Éƒnƒ“ƒhƒ‹‚ğæ“¾‚µ‚Ä‚¨‚­
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºåˆ‡æ›¿ã®ãŸã‚ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç”Ÿæˆç›´å¾Œã«ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã—ã¦ãŠã
 	m_hMenu = GetMenu(m_hWnd);
 
-	//ƒEƒBƒ“ƒhƒE•\¦
-	//ƒEƒBƒ“ƒhƒE‚ğ•\¦‚µ‚Ä‚©‚ç‚Å‚È‚¢‚ÆƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏXˆ—‚ÅƒEƒBƒ“ƒhƒE‚Ì‰e‚Ìî•ñ‚ğæ“¾‚Å‚«‚È‚¢
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤º
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¡¨ç¤ºã—ã¦ã‹ã‚‰ã§ãªã„ã¨ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´å‡¦ç†ã§ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å½±ã®æƒ…å ±ã‚’å–å¾—ã§ããªã„
 	ShowWindow(m_hWnd, nCmdShow);
 
-	//ƒ†[ƒU[İ’èƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
 
-	//WM_PAINTŒÄ‚Ño‚µ‚ğ~‚ß‚é
+	//WM_PAINTå‘¼ã³å‡ºã—ã‚’æ­¢ã‚ã‚‹
 	ValidateRect(m_hWnd, 0);
 
 	UpdateWindow(m_hWnd);
@@ -474,7 +475,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_SetWindowSize()
 {
@@ -496,7 +497,7 @@ int MIDITrailApp::_SetWindowSize()
 		goto EXIT;
 	}
 
-	//ƒ†[ƒU‘I‘ğƒEƒBƒ“ƒhƒEƒTƒCƒYæ“¾
+	//ãƒ¦ãƒ¼ã‚¶é¸æŠã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
 	result = m_ViewConf.SetCurSection(_T("WindowSize"));
 	if (result != 0) goto EXIT;
 	result = m_ViewConf.GetInt(_T("Width"), &width, 0);
@@ -506,14 +507,14 @@ int MIDITrailApp::_SetWindowSize()
 	result = m_ViewConf.GetInt(_T("ApplyToViewArea"), &applyToViewArea, 0);
 	if (result != 0) goto EXIT;
 	
-	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹İ’è
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«è¨­å®š
 	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, MIDITRAIL_WINDOW_STYLE);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
 		goto EXIT;
 	}
 
-	//ƒƒjƒ…[ƒo[•\¦
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤º
 	if (m_isEnableMenuBar) {
 		result = _ShowMenu();
 		if (result != 0) goto EXIT;
@@ -523,18 +524,18 @@ int MIDITrailApp::_SetWindowSize()
 		if (result != 0) goto EXIT;
 	}
 
-	//‰‰ñ‹N“®‚ÌƒEƒBƒ“ƒhƒEƒTƒCƒY
+	//åˆå›èµ·å‹•æ™‚ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚º
 	if ((width <= 0) || (height <= 0)) {
 		width = 800;
 		height = 600;
 	}
 
-	//ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒYi‰e‚ğŠÜ‚Ü‚È‚¢ƒTƒCƒYj
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºï¼ˆå½±ã‚’å«ã¾ãªã„ã‚µã‚¤ã‚ºï¼‰
 	hresult = DwmGetWindowAttribute(
-					m_hWnd,							//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					DWMWA_EXTENDED_FRAME_BOUNDS,	//æ“¾’l‚ğ¦‚·ƒtƒ‰ƒOFŠg’£ƒtƒŒ[ƒ€‹«ŠE
-					&rect_excludeShadow, 			//’l‚ÌŠi”[æ
-					sizeof(RECT)					//’l‚ÌƒTƒCƒY
+					m_hWnd,							//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					DWMWA_EXTENDED_FRAME_BOUNDS,	//å–å¾—å€¤ã‚’ç¤ºã™ãƒ•ãƒ©ã‚°ï¼šæ‹¡å¼µãƒ•ãƒ¬ãƒ¼ãƒ å¢ƒç•Œ
+					&rect_excludeShadow, 			//å€¤ã®æ ¼ç´å…ˆ
+					sizeof(RECT)					//å€¤ã®ã‚µã‚¤ã‚º
 				);
 	if (hresult != S_OK) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
@@ -543,44 +544,44 @@ int MIDITrailApp::_SetWindowSize()
 	ww = rect_excludeShadow.right  - rect_excludeShadow.left;
 	wh = rect_excludeShadow.bottom - rect_excludeShadow.top;
 
-	//ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒTƒCƒY
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚µã‚¤ã‚º
 	GetClientRect(m_hWnd, &rect_client);
 	cw = rect_client.right  - rect_client.left;
 	ch = rect_client.bottom - rect_client.top;
 
-	//˜g‚ÌƒTƒCƒY
+	//æ ã®ã‚µã‚¤ã‚º
 	framew = ww - cw;
 	frameh = wh - ch;
 
-	//•`‰æ—Ìˆæ‚Éw’èƒTƒCƒY‚ğ“K—p‚·‚éê‡
+	//æç”»é ˜åŸŸã«æŒ‡å®šã‚µã‚¤ã‚ºã‚’é©ç”¨ã™ã‚‹å ´åˆ
 	if (applyToViewArea != 0) {
 		width = width + framew;
 		height = height + frameh;
 	}
 
-	//ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒYi‰e‚ğŠÜ‚ŞƒTƒCƒYj
-	//  Windows VistaˆÈ~‚É‚¨‚¢‚ÄGetWindowRect‚Í‰e‚ğŠÜ‚ŞƒTƒCƒY‚ğ•Ô‚·
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºï¼ˆå½±ã‚’å«ã‚€ã‚µã‚¤ã‚ºï¼‰
+	//  Windows Vistaä»¥é™ã«ãŠã„ã¦GetWindowRectã¯å½±ã‚’å«ã‚€ã‚µã‚¤ã‚ºã‚’è¿”ã™
 	GetWindowRect(m_hWnd, &rect_includeShadow);
 
-	//‰e‚Ì•Î·
-	rect_shadow.left   = rect_includeShadow.left   - rect_excludeShadow.left;	//—áF-7
-	rect_shadow.right  = rect_includeShadow.right  - rect_excludeShadow.right;	//—áF+7
-	rect_shadow.top    = rect_includeShadow.top    - rect_excludeShadow.top;	//—áF-7
-	rect_shadow.bottom = rect_includeShadow.bottom - rect_excludeShadow.bottom;	//—áF+7
+	//å½±ã®åå·®
+	rect_shadow.left   = rect_includeShadow.left   - rect_excludeShadow.left;	//ä¾‹ï¼š-7
+	rect_shadow.right  = rect_includeShadow.right  - rect_excludeShadow.right;	//ä¾‹ï¼š+7
+	rect_shadow.top    = rect_includeShadow.top    - rect_excludeShadow.top;	//ä¾‹ï¼š-7
+	rect_shadow.bottom = rect_includeShadow.bottom - rect_excludeShadow.bottom;	//ä¾‹ï¼š+7
 
-	//SetWindowPos‚Éw’è‚·‚éƒEƒBƒ“ƒhƒEƒTƒCƒY‚É‰e‚ğ”½‰f
+	//SetWindowPosã«æŒ‡å®šã™ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã«å½±ã‚’åæ˜ 
 	width  = width  + (rect_shadow.right  - rect_shadow.left);
 	height = height + (rect_shadow.bottom - rect_shadow.top);
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	bresult = SetWindowPos(
-					m_hWnd,			//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					HWND_TOP,		//”z’u‡˜FZƒI[ƒ_[æ“ª
-					0,				//‰¡•ûŒü‚ÌˆÊ’u
-					0,				//c•ûŒü‚ÌˆÊ’u
-					width,			//•
-					height,			//‚‚³
-					SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ƒEƒBƒ“ƒhƒEˆÊ’uw’è
+					m_hWnd,			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					HWND_TOP,		//é…ç½®é †åºï¼šZã‚ªãƒ¼ãƒ€ãƒ¼å…ˆé ­
+					0,				//æ¨ªæ–¹å‘ã®ä½ç½®
+					0,				//ç¸¦æ–¹å‘ã®ä½ç½®
+					width,			//å¹…
+					height,			//é«˜ã•
+					SWP_NOMOVE | SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®æŒ‡å®š
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -592,7 +593,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏXFƒtƒ‹ƒXƒNƒŠ[ƒ“
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´ï¼šãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 //******************************************************************************
 int MIDITrailApp::_SetWindowSizeFullScreen()
 {
@@ -605,17 +606,17 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 	int width = 0;
 	int height = 0;
 
-	//ƒ}ƒEƒXƒJ[ƒ\ƒ‹ˆÊ’u‚ğæ“¾
+	//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 	bresult = GetCursorPos(&mouseCursorPoint);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ÌˆÊ’u‚ÉŠY“–‚·‚éƒ‚ƒjƒ^‚ğ‘I‘ğ
+	//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®ã«è©²å½“ã™ã‚‹ãƒ¢ãƒ‹ã‚¿ã‚’é¸æŠ
 	hMonitor = MonitorFromPoint(mouseCursorPoint, MONITOR_DEFAULTTONEAREST);
 
-	//ƒ‚ƒjƒ^î•ñæ“¾
+	//ãƒ¢ãƒ‹ã‚¿æƒ…å ±å–å¾—
 	monitorInfo.cbSize = sizeof(MONITORINFOEX);
 	bresult = GetMonitorInfo(hMonitor, &monitorInfo);
 	if (!bresult) {
@@ -623,30 +624,30 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 		goto EXIT;
 	}
 
-	//ƒEƒBƒ“ƒhƒEc‰¡ƒTƒCƒY
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç¸¦æ¨ªã‚µã‚¤ã‚º
 	width  = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 	height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
 
-	//ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹İ’è
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«è¨­å®š
 	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, WS_POPUP);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
 		goto EXIT;
 	}
 
-	//ƒƒjƒ…[ƒo[”ñ•\¦
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤º
 	result = _HideMenu();
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	bresult = SetWindowPos(
-					m_hWnd,						//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					HWND_TOP,					//”z’u‡˜FZƒI[ƒ_[æ“ª
-					monitorInfo.rcMonitor.left,	//‰¡•ûŒü‚ÌˆÊ’u
-					monitorInfo.rcMonitor.top,	//c•ûŒü‚ÌˆÊ’u
-					width,						//•
-					height,						//‚‚³
-					SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ƒEƒBƒ“ƒhƒEˆÊ’uw’è
+					m_hWnd,						//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					HWND_TOP,					//é…ç½®é †åºï¼šZã‚ªãƒ¼ãƒ€ãƒ¼å…ˆé ­
+					monitorInfo.rcMonitor.left,	//æ¨ªæ–¹å‘ã®ä½ç½®
+					monitorInfo.rcMonitor.top,	//ç¸¦æ–¹å‘ã®ä½ç½®
+					width,						//å¹…
+					height,						//é«˜ã•
+					SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®æŒ‡å®š
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -658,7 +659,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 //******************************************************************************
 int MIDITrailApp::_InitConfFile()
 {
@@ -669,32 +670,32 @@ int MIDITrailApp::_InitConfFile()
 	TCHAR midiOutConfPath[_MAX_PATH] = {_T('\0')};
 	TCHAR graphicConfPath[_MAX_PATH] = {_T('\0')};
 
-	//ƒ†[ƒUİ’èƒtƒ@ƒCƒ‹Ši”[ƒfƒBƒŒƒNƒgƒŠƒpƒXì¬
+	//ãƒ¦ãƒ¼ã‚¶è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æ ¼ç´ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ä½œæˆ
 	result = YNPathUtil::GetAppDataDirPath(userConfDirPath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 	_tcscat_s(userConfDirPath, _MAX_PATH, MT_USER_CONFFILE_DIR);
 
-	//ƒ†[ƒUİ’èƒtƒ@ƒCƒ‹Ši”[ƒfƒBƒŒƒNƒgƒŠì¬
-	//TODO: Unicode‘Î‰‚ÉSHCreateDirectoryEx‚Ö•ÏX
+	//ãƒ¦ãƒ¼ã‚¶è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«æ ¼ç´ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
+	//TODO: Unicodeå¯¾å¿œæ™‚ã«SHCreateDirectoryExã¸å¤‰æ›´
 	bresult = MakeSureDirectoryPathExists(userConfDirPath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒrƒ…[î•ñİ’èƒtƒ@ƒCƒ‹
+	//ãƒ“ãƒ¥ãƒ¼æƒ…å ±è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	_tcscat_s(viewConfPath, _MAX_PATH, userConfDirPath);
 	_tcscat_s(viewConfPath, _MAX_PATH, MT_USER_CONFFILE_VIEW);
 	result = m_ViewConf.Initialize(viewConfPath);
 	if (result != 0) goto EXIT;
 
-	//MIDIî•ñİ’èƒtƒ@ƒCƒ‹
+	//MIDIæƒ…å ±è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	_tcscat_s(midiOutConfPath, _MAX_PATH, userConfDirPath);
 	_tcscat_s(midiOutConfPath, _MAX_PATH, MT_USER_CONFFILE_MIDI);
 	result = m_MIDIConf.Initialize(midiOutConfPath);
 	if (result != 0) goto EXIT;
 
-	//ƒOƒ‰ƒtƒBƒbƒNî•ñİ’èƒtƒ@ƒCƒ‹
+	//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯æƒ…å ±è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«
 	_tcscat_s(graphicConfPath, _MAX_PATH, userConfDirPath);
 	_tcscat_s(graphicConfPath, _MAX_PATH, MT_USER_CONFFILE_GRAPHIC);
 	result = m_GraphicConf.Initialize(graphicConfPath);
@@ -705,7 +706,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒEFƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 LRESULT CALLBACK MIDITrailApp::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -713,7 +714,7 @@ LRESULT CALLBACK MIDITrailApp::_WndProc(HWND hWnd, UINT message, WPARAM wParam, 
 }
 
 //******************************************************************************
-// ƒƒCƒ“ƒEƒBƒ“ƒhƒEFƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 LRESULT MIDITrailApp::_WndProcImpl(
 		HWND hWnd,
@@ -735,254 +736,254 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			wmEvent = HIWORD(wParam);
 			switch (wmId) {
 				case IDM_OPEN_FILE:
-					//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+					//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 					result = _OnMenuOpenFile();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPEN_FOLDER:
-					//ƒtƒHƒ‹ƒ_ƒI[ƒvƒ“
+					//ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³
 					result = _OnMenuOpenFolder();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_PREVIOUS_FILE:
-					//‘Oƒtƒ@ƒCƒ‹
+					//å‰ãƒ•ã‚¡ã‚¤ãƒ«
 					result = _OnMenuPreviousFile();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_NEXT_FILE:
-					//Ÿƒtƒ@ƒCƒ‹
+					//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«
 					result = _OnMenuNextFile();
 					if (result != 0) goto EXIT;
 					break;
 // >>> add 20120728 yossiepon begin
 				case IDM_ADD_FILE:
-					//ƒtƒ@ƒCƒ‹’Ç‰Á
+					//ãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ 
 					result = _OnMenuAddFile();
 					if (result != 0) goto EXIT;
 					break;
 // <<< add 20120728 yossiepon end
 				case IDM_EXIT:
-					//I—¹
+					//çµ‚äº†
 					DestroyWindow(hWnd);
 					break;
 				case IDM_PLAY:
-					//‰‰‘tŠJn^ˆê’â~^ÄŠJ
+					//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢ï¼å†é–‹
 					result = _OnMenuPlay();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_STOP:
-					//‰‰‘t’â~
+					//æ¼”å¥åœæ­¢
 					result = _OnMenuStop();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_REPEAT:
-					//ƒŠƒs[ƒg
+					//ãƒªãƒ”ãƒ¼ãƒˆ
 					result = _OnMenuRepeat();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_FOLDER_PLAYBACK:
-					//ƒtƒHƒ‹ƒ_‰‰‘t
+					//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥
 					result = _OnMenuFolderPlayback();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SKIP_BACK:
-					//Ä¶ƒXƒLƒbƒvƒoƒbƒN
+					//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒãƒƒã‚¯
 					result = _OnMenuSkipBack();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SKIP_FORWARD:
-					//Ä¶ƒXƒLƒbƒvƒtƒHƒ[ƒh
+					//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰
 					result = _OnMenuSkipForward();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_PLAY_SPEED_DOWN:
-					//Ä¶ƒXƒs[ƒhƒ_ƒEƒ“
+					//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
 					result = _OnMenuPlaySpeedDown();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_PLAY_SPEED_UP:
-					//Ä¶ƒXƒs[ƒhƒAƒbƒv
+					//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
 					result = _OnMenuPlaySpeedUp();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_START_MONITORING:
-					//ƒ‚ƒjƒ^ƒŠƒ“ƒOŠJn
+					//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°é–‹å§‹
 					result = _OnMenuStartMonitoring();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_STOP_MONITORING:
-					//ƒ‚ƒjƒ^ƒŠƒ“ƒO’â~
+					//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°åœæ­¢
 					result = _OnMenuStopMonitoring();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEW_3DPIANOROLL:
-					//ƒrƒ…[•ÏXF3DƒsƒAƒmƒ[ƒ‹
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼š3Dãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«
 					result = _OnMenuSelectSceneType(PianoRoll3D);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEW_2DPIANOROLL:
-					//ƒrƒ…[•ÏXF2DƒsƒAƒmƒ[ƒ‹
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼š2Dãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«
 					result = _OnMenuSelectSceneType(PianoRoll2D);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEW_PIANOROLLRAIN:
-					//ƒrƒ…[•ÏXFƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼šãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³
 					result = _OnMenuSelectSceneType(PianoRollRain);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEW_PIANOROLLRAIN2D:
-					//ƒrƒ…[•ÏXFƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“2D
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼šãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³2D
 					result = _OnMenuSelectSceneType(PianoRollRain2D);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEW_PIANOROLLRING:
-					//ƒrƒ…[•ÏXFƒsƒAƒmƒ[ƒ‹ƒŠƒ“ƒO
+					//ãƒ“ãƒ¥ãƒ¼å¤‰æ›´ï¼šãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒªãƒ³ã‚°
 					result = _OnMenuSelectSceneType(PianoRollRing);
 					if (result != 0) goto EXIT;
 					break;
-				//TAG: ƒV[ƒ“’Ç‰Á
+				//TAG: ã‚·ãƒ¼ãƒ³è¿½åŠ 
 				case IDM_ENABLE_PIANOKEYBOARD:
-					//•\¦Œø‰ÊFƒsƒAƒmƒL[ƒ{[ƒh
-					result = _OnMenuEnableEffect(MTScene::EffectPianoKeyboard);
+					//è¡¨ç¤ºåŠ¹æœï¼šãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
+					result = _OnMenuEnableEffect(MTEffectPianoKeyboard);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_RIPPLE:
-					//•\¦Œø‰ÊF”g–ä
-					result = _OnMenuEnableEffect(MTScene::EffectRipple);
+					//è¡¨ç¤ºåŠ¹æœï¼šæ³¢ç´‹
+					result = _OnMenuEnableEffect(MTEffectRipple);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_PITCHBEND:
-					//•\¦Œø‰ÊFƒsƒbƒ`ƒxƒ“ƒh
-					result = _OnMenuEnableEffect(MTScene::EffectPitchBend);
+					//è¡¨ç¤ºåŠ¹æœï¼šãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰
+					result = _OnMenuEnableEffect(MTEffectPitchBend);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_STARS:
-					//•\¦Œø‰ÊF¯
-					result = _OnMenuEnableEffect(MTScene::EffectStars);
+					//è¡¨ç¤ºåŠ¹æœï¼šæ˜Ÿ
+					result = _OnMenuEnableEffect(MTEffectStars);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_COUNTER:
-					//•\¦Œø‰ÊFƒJƒEƒ“ƒ^
-					result = _OnMenuEnableEffect(MTScene::EffectCounter);
+					//è¡¨ç¤ºåŠ¹æœï¼šã‚«ã‚¦ãƒ³ã‚¿
+					result = _OnMenuEnableEffect(MTEffectCounter);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_BACKGROUNDIMAGE:
-					//•\¦Œø‰ÊF”wŒi‰æ‘œ
-					result = _OnMenuEnableEffect(MTScene::EffectBackgroundImage);
+					//è¡¨ç¤ºåŠ¹æœï¼šèƒŒæ™¯ç”»åƒ
+					result = _OnMenuEnableEffect(MTEffectBackgroundImage);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_GRIDLINE:
-					//•\¦Œø‰ÊFƒOƒŠƒbƒhƒ‰ƒCƒ“
-					result = _OnMenuEnableEffect(MTScene::EffectGridLine);
+					//è¡¨ç¤ºåŠ¹æœï¼šã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³
+					result = _OnMenuEnableEffect(MTEffectGridBox);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ENABLE_TIMEINDICATOR:
-					//•\¦Œø‰ÊFƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^
-					result = _OnMenuEnableEffect(MTScene::EffectTimeIndicator);
+					//è¡¨ç¤ºåŠ¹æœï¼šã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
+					result = _OnMenuEnableEffect(MTEffectTimeIndicator);
 					if (result != 0) goto EXIT;
 					break;
-				//©“®‹“_•Û‘¶‚Æ‹“_•Û‘¶‚Í”p~
+				//è‡ªå‹•è¦–ç‚¹ä¿å­˜ã¨è¦–ç‚¹ä¿å­˜ã¯å»ƒæ­¢
 				//case IDM_AUTO_SAVE_VIEWPOINT:
-				//	//©“®‹“_•Û‘¶
+				//	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
 				//	result = _OnMenuAutoSaveViewpoint();
 				//	if (result != 0) goto EXIT;
 				//	break;
 				//case IDM_SAVE_VIEWPOINT:
-				//	//‹“_•Û‘¶
+				//	//è¦–ç‚¹ä¿å­˜
 				//	result = _OnMenuSaveViewpoint();
 				//	if (result != 0) goto EXIT;
 				//	break;
 				case IDM_RESET_VIEWPOINT:
-					//Ã“I‹“_1‚ÉˆÚ“®i‹“_ƒŠƒZƒbƒgj
+					//é™çš„è¦–ç‚¹1ã«ç§»å‹•ï¼ˆè¦–ç‚¹ãƒªã‚»ãƒƒãƒˆï¼‰
 					result = _OnMenuResetViewpoint();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEWPOINT2:
-					//Ã“I‹“_2‚ÉˆÚ“®
+					//é™çš„è¦–ç‚¹2ã«ç§»å‹•
 					result = _OnMenuViewpoint(2);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEWPOINT3:
-					//Ã“I‹“_3‚ÉˆÚ“®
+					//é™çš„è¦–ç‚¹3ã«ç§»å‹•
 					result = _OnMenuViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MYVIEWPOINT1:
-					//„‚Ì‹“_1‚ÉˆÚ“®
+					//ç§ã®è¦–ç‚¹1ã«ç§»å‹•
 					result = _OnMenuMyViewpoint(1);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MYVIEWPOINT2:
-					//„‚Ì‹“_2‚ÉˆÚ“®
+					//ç§ã®è¦–ç‚¹2ã«ç§»å‹•
 					result = _OnMenuMyViewpoint(2);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MYVIEWPOINT3:
-					//„‚Ì‹“_3‚ÉˆÚ“®
+					//ç§ã®è¦–ç‚¹3ã«ç§»å‹•
 					result = _OnMenuMyViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SAVE_MYVIEWPOINT1:
-					//„‚Ì‹“_1‚ğ•Û‘¶
+					//ç§ã®è¦–ç‚¹1ã‚’ä¿å­˜
 					result = _OnMenuSaveMyViewpoint(1);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SAVE_MYVIEWPOINT2:
-					//„‚Ì‹“_2‚ğ•Û‘¶
+					//ç§ã®è¦–ç‚¹2ã‚’ä¿å­˜
 					result = _OnMenuSaveMyViewpoint(2);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_SAVE_MYVIEWPOINT3:
-					//„‚Ì‹“_3‚ğ•Û‘¶
+					//ç§ã®è¦–ç‚¹3ã‚’ä¿å­˜
 					result = _OnMenuSaveMyViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_WINDOWSIZE:
-					//ƒEƒBƒ“ƒhƒEƒTƒCƒYİ’è
+					//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºè¨­å®š
 					result = _OnMenuWindowSize();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_FULLSCREEN:
-					//ƒtƒ‹ƒXƒNƒŠ[ƒ“
+					//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 					result = _OnMenuFullScreen();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_MENUBAR:
-					//ƒƒjƒ…[ƒo[
+					//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼
 					result = _OnMenuMenuBar();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_MIDIOUT:
-					//MIDIo—ÍƒfƒoƒCƒXİ’è
+					//MIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
 					result = _OnMenuOptionMIDIOUT();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_MIDIIN:
-					//MIDI“ü—ÍƒfƒoƒCƒXİ’è
+					//MIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
 					result = _OnMenuOptionMIDIIN();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_GRAPHIC:
-					//ƒOƒ‰ƒtƒBƒbƒNİ’è
+					//ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®š
 					result = _OnMenuOptionGraphic();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_OPTION_COLOR:
-					//ƒJƒ‰[İ’è
+					//ã‚«ãƒ©ãƒ¼è¨­å®š
 					result = _OnMenuOptionColor();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_HOWTOVIEW:
-					//‘€ì•û–@ƒ_ƒCƒAƒƒO•\¦
+					//æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 					m_HowToViewDlg.Show(m_hWnd);
 					break;
 				case IDM_MANUAL:
-					//ƒ}ƒjƒ…ƒAƒ‹•\¦
+					//ãƒãƒ‹ãƒ¥ã‚¢ãƒ«è¡¨ç¤º
 					result = _OnMenuManual();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ABOUT:
-					//ƒo[ƒWƒ‡ƒ“î•ñƒ_ƒCƒAƒƒO•\¦
+					//ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 					m_AboutDlg.Show(m_hWnd);
 					break;
 				default:
@@ -995,14 +996,14 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			EndPaint(hWnd, &ps);
 			break;
 		case WM_KEYDOWN:
-			//ƒL[‰Ÿ‰ºƒƒbƒZ[ƒW
+			//ã‚­ãƒ¼æŠ¼ä¸‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			result = _OnKeyDown(wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 		case WM_MBUTTONDOWN:
-			//ƒ}ƒEƒXƒ{ƒ^ƒ“‰Ÿ‰ºƒƒbƒZ[ƒW
+			//ãƒã‚¦ã‚¹ãƒœã‚¿ãƒ³æŠ¼ä¸‹ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			result = _OnMouseButtonDown(message, wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
@@ -1011,36 +1012,36 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			if (result != 0) goto EXIT;
 			break;
 		case WM_DROPFILES:
-			//ƒtƒ@ƒCƒ‹ƒhƒƒbƒv
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—
 			result = _OnDropFiles(wParam, lParam);
 			if (result != 0) goto EXIT;
 			break;
 		case WM_TIMER:
-			//ƒ^ƒCƒ}[
+			//ã‚¿ã‚¤ãƒãƒ¼
 			result = _OnTimer(wParam);
 			if (result != 0) goto EXIT;
 			break;
 		case WM_DESTROY:
-			//”jŠü
+			//ç ´æ£„
 			result = _OnDestroy();
-			//–ß‚è’l‚Í–³‹‚·‚é
+			//æˆ»ã‚Šå€¤ã¯ç„¡è¦–ã™ã‚‹
 			PostQuitMessage(0);
 			break;
 		case WM_FILEPATH_POSTED:
-			//ƒtƒ@ƒCƒ‹ƒpƒXƒ|ƒXƒg’Ê’m
+			//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒã‚¹ãƒˆé€šçŸ¥
 			result = _OnFilePathPosted();
 			if (result != 0) goto EXIT;
 			break;
 		case WM_SIZE:
-			//ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 			if (wParam == SIZE_MAXIMIZED) {
-				//Å‘å‰»Fƒtƒ‹ƒXƒNƒŠ[ƒ“
+				//æœ€å¤§åŒ–ï¼šãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 				result = _OnMenuFullScreen();
 				if (result != 0) goto EXIT;
 			}
 			break;
 		case WM_SETTEXT:
-			//Unicode”ÅSetWindowTextWŒÄ‚Ño‚µ‚É‘Î‰
+			//Unicodeç‰ˆSetWindowTextWå‘¼ã³å‡ºã—ã«å¯¾å¿œ
 			lresult = DefWindowProcW(hWnd, message, wParam, lParam);
 			break;
 		default:
@@ -1056,7 +1057,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 //******************************************************************************
 int MIDITrailApp::_OnMenuOpenFile()
 {
@@ -1064,39 +1065,39 @@ int MIDITrailApp::_OnMenuOpenFile()
 	WCHAR filePath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
-	////‰‰‘t’†‚Íƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚³‚¹‚È‚¢
+	////æ¼”å¥ä¸­ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã•ã›ãªã„
 	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-	//	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“OK
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³OK
 	//}
 	//else {
-	//	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“NG
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³NG
 	//	goto EXIT;
 	//}
 
-	//‰‰‘t’†‚Å‚àƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‰Â‚Æ‚·‚é
+	//æ¼”å¥ä¸­ã§ã‚‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å¯ã¨ã™ã‚‹
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = _SelectMIDIFile(filePath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğ‚Ìˆ—
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠæ™‚ã®å‡¦ç†
 	if (isSelected) {
-		//ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Åƒƒjƒ…[‚©‚çƒtƒ@ƒCƒ‹‘I‘ğ‚µ‚½ê‡
-		//  ƒV[ƒ“¶¬ˆ—‚ÅƒNƒ‰ƒCƒAƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğQÆ‚µ‚Ä‚¢‚é‚½‚ß
-		//  ˆê“I‚É•\¦‚µ‚½ƒƒjƒ…[‚ğ”ñ•\¦‚É–ß‚µ‚Ä‚¨‚­
+		//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã§ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠã—ãŸå ´åˆ
+		//  ã‚·ãƒ¼ãƒ³ç”Ÿæˆå‡¦ç†ã§ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’å‚ç…§ã—ã¦ã„ã‚‹ãŸã‚
+		//  ä¸€æ™‚çš„ã«è¡¨ç¤ºã—ãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’éè¡¨ç¤ºã«æˆ»ã—ã¦ãŠã
 		if (m_isFullScreen) {
 			_HideMenu();
 		}
 		
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg”jŠü
+		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆç ´æ£„
 		m_MIDIFileList.Clear();
 
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		result = _StopPlaybackAndOpenFile(filePath);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -1105,7 +1106,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒHƒ‹ƒ_ƒI[ƒvƒ“
+// ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³
 //******************************************************************************
 int MIDITrailApp::_OnMenuOpenFolder()
 {
@@ -1113,27 +1114,27 @@ int MIDITrailApp::_OnMenuOpenFolder()
 	WCHAR folderPath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
-	//‰‰‘t’†‚Å‚àƒtƒHƒ‹ƒ_ƒI[ƒvƒ“‰Â‚Æ‚·‚é
+	//æ¼”å¥ä¸­ã§ã‚‚ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³å¯ã¨ã™ã‚‹
 
-	//ƒtƒHƒ‹ƒ_‘I‘ğƒ_ƒCƒAƒƒO•\¦
+	//ãƒ•ã‚©ãƒ«ãƒ€é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = _SelectFolder(folderPath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒHƒ‹ƒ_‘I‘ğ‚Ìˆ—
+	//ãƒ•ã‚©ãƒ«ãƒ€é¸æŠæ™‚ã®å‡¦ç†
 	if (isSelected) {
-		//ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Åƒƒjƒ…[‚©‚çƒtƒ@ƒCƒ‹‘I‘ğ‚µ‚½ê‡
-		//  ƒV[ƒ“¶¬ˆ—‚ÅƒNƒ‰ƒCƒAƒ“ƒgƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒY‚ğQÆ‚µ‚Ä‚¢‚é‚½‚ß
-		//  ˆê“I‚É•\¦‚µ‚½ƒƒjƒ…[‚ğ”ñ•\¦‚É–ß‚µ‚Ä‚¨‚­
+		//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã§ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠã—ãŸå ´åˆ
+		//  ã‚·ãƒ¼ãƒ³ç”Ÿæˆå‡¦ç†ã§ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºã‚’å‚ç…§ã—ã¦ã„ã‚‹ãŸã‚
+		//  ä¸€æ™‚çš„ã«è¡¨ç¤ºã—ãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’éè¡¨ç¤ºã«æˆ»ã—ã¦ãŠã
 		if (m_isFullScreen) {
 			_HideMenu();
 		}
 
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆƒtƒHƒ‹ƒ_ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		result = _StopPlaybackAndOpenFolder(folderPath);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -1142,7 +1143,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‘Oƒtƒ@ƒCƒ‹
+// å‰ãƒ•ã‚¡ã‚¤ãƒ«
 //******************************************************************************
 int MIDITrailApp::_OnMenuPreviousFile()
 {
@@ -1150,15 +1151,15 @@ int MIDITrailApp::_OnMenuPreviousFile()
 	bool isExist = false;
 	const WCHAR* pFilePath = NULL;
 
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆãŒãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
 
-	//‘Oƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
+	//å‰ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ
 	m_MIDIFileList.SelectPreviousFile(&isExist);
 
-	//‘Oƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
+	//å‰ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 	if (isExist) {
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
 		result = _StopPlaybackAndOpenFile(pFilePath);
 		if (result != 0) goto EXIT;
@@ -1169,7 +1170,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Ÿƒtƒ@ƒCƒ‹
+// æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«
 //******************************************************************************
 int MIDITrailApp::_OnMenuNextFile()
 {
@@ -1177,15 +1178,15 @@ int MIDITrailApp::_OnMenuNextFile()
 	bool isExist = false;
 	const WCHAR* pFilePath = NULL;
 
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆãŒãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_MIDIFileList.GetFileCount() == 0) goto EXIT;
 
-	//Ÿƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
+	//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ
 	m_MIDIFileList.SelectNextFile(&isExist);
 
-	//Ÿƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
+	//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
 	if (isExist) {
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
 		result = _StopPlaybackAndOpenFile(pFilePath);
 		if (result != 0) goto EXIT;
@@ -1198,7 +1199,7 @@ EXIT:;
 // >>> add 20120728 yossiepon begin
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹’Ç‰Á
+// ãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ 
 //******************************************************************************
 int MIDITrailApp::_OnMenuAddFile()
 {
@@ -1206,22 +1207,22 @@ int MIDITrailApp::_OnMenuAddFile()
 	WCHAR filePath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
-	//‰‰‘t’†‚Íƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚³‚¹‚È‚¢
+	//æ¼”å¥ä¸­ã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ã•ã›ãªã„
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“OK
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³OK
 	}
 	else {
-		//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“NG
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³NG
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = _SelectMIDIFile(filePath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğ‚Ìˆ—
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠæ™‚ã®å‡¦ç†
 	if (isSelected) {
-		//MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
+		//MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‡¦ç†
 		result = _AddMIDIFile(filePath);
 		if (result != 0) goto EXIT;
 	}
@@ -1233,64 +1234,64 @@ EXIT:;
 // <<< add 20120728 yossiepon end
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFÄ¶^ˆê’â~^ÄŠJ
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šå†ç”Ÿï¼ä¸€æ™‚åœæ­¢ï¼å†é–‹
 //******************************************************************************
 int MIDITrailApp::_OnMenuPlay()
 {
 	int result = 0;
 
 	if (m_PlayStatus == Stop) {
-		//ƒV[ƒPƒ“ƒT‰Šú‰»
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µåˆæœŸåŒ–
 		result = m_Sequencer.Initialize(&m_MsgQueue);
 		if (result != 0) goto EXIT;
 
-		//ƒV[ƒPƒ“ƒT‚Éƒ|[ƒgî•ñ‚ğ“o˜^
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç™»éŒ²
 		result = _SetPortDev(&m_Sequencer);
 		if (result != 0) goto EXIT;
 
-		//ƒV[ƒPƒ“ƒT‚ÉƒV[ƒPƒ“ƒXƒf[ƒ^‚ğ“o˜^
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²
 		result = m_Sequencer.SetSeqData(&m_SeqData);
 		if (result != 0) goto EXIT;
 
-		//Šª‚«–ß‚µ
+		//å·»ãæˆ»ã—
 		if (m_isRewind) {
 			m_isRewind = false;
 			result = m_pScene->Rewind();
 			if (result != 0) goto EXIT;
 		}
 
-		//ƒV[ƒ“‚É‰‰‘tŠJn‚ğ’Ê’m
-		result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
+		//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
+		result = m_pScene->OnPlayStart();
 		if (result != 0) goto EXIT;
 
-		//ÅVƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWƒNƒŠƒA
+		//æœ€æ–°ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚¯ãƒªã‚¢
 		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
 
-		//‰‰‘t‘¬“x
+		//æ¼”å¥é€Ÿåº¦
 		m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
 
-		//‰‰‘tŠJn
+		//æ¼”å¥é–‹å§‹
 		result = m_Sequencer.Play();
 		if (result != 0) goto EXIT;
 
-		//‰‰‘tó‘Ô•ÏX
+		//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 		result = _ChangePlayStatus(Play);
 		if (result != 0) goto EXIT;
 	}
 	else if (m_PlayStatus == Play) {
-		//‰‰‘tˆê’â~
+		//æ¼”å¥ä¸€æ™‚åœæ­¢
 		m_Sequencer.Pause();
 
-		//‰‰‘tó‘Ô•ÏX
+		//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 		result = _ChangePlayStatus(Pause);
 		if (result != 0) goto EXIT;
 	}
 	else if (m_PlayStatus == Pause) {
-		//‰‰‘tÄŠJ
+		//æ¼”å¥å†é–‹
 		result = m_Sequencer.Resume();
 		if (result != 0) goto EXIT;
 
-		//‰‰‘tó‘Ô•ÏX
+		//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 		result = _ChangePlayStatus(Play);
 		if (result != 0) goto EXIT;
 	}
@@ -1300,7 +1301,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF’â~
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šåœæ­¢
 //******************************************************************************
 int MIDITrailApp::_OnMenuStop()
 {
@@ -1308,10 +1309,10 @@ int MIDITrailApp::_OnMenuStop()
 
 	if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
 		m_Sequencer.Stop();
-		//‰‰‘tó‘Ô’Ê’m‚ª“Í‚­‚Ü‚ÅÄ¶’†‚Æ‚İ‚È‚·
-		//‚±‚±‚Å‚Í‰‰‘tó‘Ô‚ğ•ÏX‚µ‚È‚¢
+		//æ¼”å¥çŠ¶æ…‹é€šçŸ¥ãŒå±Šãã¾ã§å†ç”Ÿä¸­ã¨ã¿ãªã™
+		//ã“ã“ã§ã¯æ¼”å¥çŠ¶æ…‹ã‚’å¤‰æ›´ã—ãªã„
 
-		//I—¹Œã‚ÉŠª‚«–ß‚·
+		//çµ‚äº†å¾Œã«å·»ãæˆ»ã™
 		m_isRewind = true;
 	}
 
@@ -1319,13 +1320,13 @@ int MIDITrailApp::_OnMenuStop()
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒŠƒs[ƒg
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒªãƒ”ãƒ¼ãƒˆ
 //******************************************************************************
 int MIDITrailApp::_OnMenuRepeat()
 {
 	int result = 0;
 
-	//ƒŠƒs[ƒgØ‚è‘Ö‚¦
+	//ãƒªãƒ”ãƒ¼ãƒˆåˆ‡ã‚Šæ›¿ãˆ
 	if (m_isRepeat) {
 		m_isRepeat = false;
 	}
@@ -1333,7 +1334,7 @@ int MIDITrailApp::_OnMenuRepeat()
 		m_isRepeat = true;
 	}
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
@@ -1342,13 +1343,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒtƒHƒ‹ƒ_‰‰‘t
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥
 //******************************************************************************
 int MIDITrailApp::_OnMenuFolderPlayback()
 {
 	int result = 0;
 
-	//ƒtƒHƒ‹ƒ_‰‰‘tØ‚è‘Ö‚¦
+	//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥åˆ‡ã‚Šæ›¿ãˆ
 	if (m_isFolderPlayback) {
 		m_isFolderPlayback = false;
 	}
@@ -1356,7 +1357,7 @@ int MIDITrailApp::_OnMenuFolderPlayback()
 		m_isFolderPlayback = true;
 	}
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
@@ -1365,7 +1366,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒLƒbƒvƒoƒbƒN
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ã‚­ãƒƒãƒ—ãƒãƒƒã‚¯
 //******************************************************************************
 int MIDITrailApp::_OnMenuSkipBack()
 {
@@ -1379,7 +1380,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒLƒbƒvƒtƒHƒ[ƒh
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ã‚­ãƒƒãƒ—ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰
 //******************************************************************************
 int MIDITrailApp::_OnMenuSkipForward()
 {
@@ -1393,30 +1394,30 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒs[ƒhƒ_ƒEƒ“
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
 //******************************************************************************
 int MIDITrailApp::_OnMenuPlaySpeedDown()
 {
 	int result = 0;
 
-	//‰‰‘tó‘ÔŠm”F
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
 	if ((m_PlayStatus == Stop) || (m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		//•ÏXOK
+		//å¤‰æ›´OK
 	}
 	else {
-		//•ÏXNG
+		//å¤‰æ›´NG
 		goto EXIT;
 	}
 
-	//‰‰‘t‘¬“xƒ_ƒEƒ“
+	//æ¼”å¥é€Ÿåº¦ãƒ€ã‚¦ãƒ³
 	m_PlaySpeedRatio -= m_SpeedStepInPercent;
 
-	//ƒŠƒ~ƒbƒg
+	//ãƒªãƒŸãƒƒãƒˆ
 	if (m_PlaySpeedRatio < m_SpeedStepInPercent) {
 		m_PlaySpeedRatio = m_SpeedStepInPercent;
 	}
 
-	//‰‰‘t‘¬“xİ’è
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
 	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
 	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
 
@@ -1425,30 +1426,30 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒXƒs[ƒhƒAƒbƒv
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
 //******************************************************************************
 int MIDITrailApp::_OnMenuPlaySpeedUp()
 {
 	int result = 0;
 
-	//‰‰‘tó‘ÔŠm”F
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
 	if ((m_PlayStatus == Stop) || (m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		//•ÏXOK
+		//å¤‰æ›´OK
 	}
 	else {
-		//•ÏXNG
+		//å¤‰æ›´NG
 		goto EXIT;
 	}
 
-	//‰‰‘t‘¬“xƒAƒbƒv
+	//æ¼”å¥é€Ÿåº¦ã‚¢ãƒƒãƒ—
 	m_PlaySpeedRatio += m_SpeedStepInPercent;
 
-	//ƒŠƒ~ƒbƒg 400%
+	//ãƒªãƒŸãƒƒãƒˆ 400%
 	if (m_PlaySpeedRatio > m_MaxSpeedInPercent) {
 		m_PlaySpeedRatio = m_MaxSpeedInPercent;
 	}
 
-	//‰‰‘t‘¬“xİ’è
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
 	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
 	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
 
@@ -1457,62 +1458,62 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒ‰ƒCƒuƒ‚ƒjƒ^ŠJn
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿é–‹å§‹
 //******************************************************************************
 int MIDITrailApp::_OnMenuStartMonitoring()
 {
 	int result = 0;
 	
-	//‰‰‘tó‘ÔŠm”F
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒ‚ƒjƒ^ŠJnOK
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹OK
 	}
 	else {
-		//ƒ‚ƒjƒ^ŠJnNG
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹NG
 		goto EXIT;
 	}
 	
-	//ƒV[ƒPƒ“ƒT‰Šú‰»
-	//  ƒV[ƒPƒ“ƒT‚ÍÄ¶I—¹‚ÉƒfƒoƒCƒX‚ğƒNƒ[ƒY‚µ‚È‚¢‚½‚ß
-	//  ‰Šú‰»‚·‚é‚±‚Æ‚É‚æ‚Á‚ÄƒNƒ[ƒY‚³‚¹‚é
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µåˆæœŸåŒ–
+	//  ã‚·ãƒ¼ã‚±ãƒ³ã‚µã¯å†ç”Ÿçµ‚äº†æ™‚ã«ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚¯ãƒ­ãƒ¼ã‚ºã—ãªã„ãŸã‚
+	//  åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã«ã‚ˆã£ã¦ã‚¯ãƒ­ãƒ¼ã‚ºã•ã›ã‚‹
 	result = m_Sequencer.Initialize(&m_MsgQueue);
 	if (result != 0) goto EXIT;
 	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒV[ƒ“¶¬
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 	if (m_PlayStatus != MonitorOFF) {
-		//‹“_•Û‘¶
+		//è¦–ç‚¹ä¿å­˜
 		if (m_isAutoSaveViewpoint) {
 			result = _OnMenuSaveViewpoint();
 			if (result != 0) goto EXIT;
 		}
 		
-		//ƒV[ƒ“í•Ê
+		//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥
 		m_SceneType = m_SelectedSceneType;
 		
-		//ƒV[ƒ“¶¬
+		//ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 		result = _CreateScene(m_SceneType, NULL);
 		if (result != 0) goto EXIT;
 	}
 	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^‰Šú‰»
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åˆæœŸåŒ–
 	result = m_LiveMonitor.Initialize(&m_MsgQueue);
 	if (result != 0) goto EXIT;
 	result = _SetMonitorPortDev(&m_LiveMonitor, m_pScene);
 	if (result != 0) goto EXIT;
 	
-	//ƒV[ƒ“‚É‰‰‘tŠJniƒ‰ƒCƒuƒ‚ƒjƒ^ŠJnj‚ğ’Ê’m
-	result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
+	//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ï¼ˆãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿é–‹å§‹ï¼‰ã‚’é€šçŸ¥
+	result = m_pScene->OnPlayStart();
 	if (result != 0) goto EXIT;
-	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^ŠJn
+
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿é–‹å§‹
 	result = m_LiveMonitor.Start();
 	if (result != 0) goto EXIT;
 	
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(MonitorON);
 	if (result != 0) goto EXIT;
 
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«æ›´æ–°
 	_UpdateWindowTitle(NULL);
 
 EXIT:;
@@ -1520,41 +1521,41 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒ‰ƒCƒuƒ‚ƒjƒ^’â~
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åœæ­¢
 //******************************************************************************
 int MIDITrailApp::_OnMenuStopMonitoring()
 {
 	int result = 0;
 	
-	//‰‰‘tó‘ÔŠm”F
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
 	if (m_PlayStatus == MonitorON) {
-		//ƒ‚ƒjƒ^ŠJnOK
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹OK
 	}
 	else {
-		//ƒ‚ƒjƒ^ŠJnNG
+		//ãƒ¢ãƒ‹ã‚¿é–‹å§‹NG
 		goto EXIT;
 	}
 	
-	//ƒ‰ƒCƒuƒ‚ƒjƒ^’â~
+	//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åœæ­¢
 	result = m_LiveMonitor.Stop();
 	if (result != 0) goto EXIT;
 	
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(MonitorOFF);
 	if (result != 0) goto EXIT;
 	
-	//ƒV[ƒ“‚É‰‰‘tI—¹‚ğ’Ê’m
+	//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥çµ‚äº†ã‚’é€šçŸ¥
 	if (m_pScene != NULL) {
-		result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
+		result = m_pScene->OnPlayEnd();
 		if (result != 0) goto EXIT;
 	}
-	
+
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒV[ƒ“í•Ê
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚·ãƒ¼ãƒ³ç¨®åˆ¥
 //******************************************************************************
 int MIDITrailApp::_OnMenuSelectSceneType(
 		MIDITrailApp::SceneType type
@@ -1562,27 +1563,27 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 {
 	int result = 0;
 
-	//‰‰‘tó‘ÔŠm”F
+	//æ¼”å¥çŠ¶æ…‹ç¢ºèª
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒV[ƒ“ƒ^ƒCƒv‘I‘ğOK
+		//ã‚·ãƒ¼ãƒ³ã‚¿ã‚¤ãƒ—é¸æŠOK
 	}
 	else {
-		//ƒV[ƒ“ƒ^ƒCƒv‘I‘ğNG
+		//ã‚·ãƒ¼ãƒ³ã‚¿ã‚¤ãƒ—é¸æŠNG
 		goto EXIT;
 	}
 
-	//•Û‘¶
+	//ä¿å­˜
 	m_SelectedSceneType = type;
 	result = _SaveSceneType();
 	if (result != 0) goto EXIT;
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
-	//’â~’†‚Ìê‡‚ÍƒV[ƒ“‚ğÄ\’z
+	//åœæ­¢ä¸­ã®å ´åˆã¯ã‚·ãƒ¼ãƒ³ã‚’å†æ§‹ç¯‰
 	if ((m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//‹“_•Û‘¶
+		//è¦–ç‚¹ä¿å­˜
 		if (m_isAutoSaveViewpoint) {
 			result = _OnMenuSaveViewpoint();
 			if (result != 0) goto EXIT;
@@ -1590,21 +1591,21 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 
 		m_SceneType = m_SelectedSceneType;
 		if (m_PlayStatus == Stop) {
-			//ƒvƒŒƒCƒ„‚ÌƒV[ƒ“í•ÊØ‚è‘Ö‚¦
+			//ãƒ—ãƒ¬ã‚¤ãƒ¤ã®ã‚·ãƒ¼ãƒ³ç¨®åˆ¥åˆ‡ã‚Šæ›¿ãˆ
 			result = _CreateScene(m_SceneType, &m_SeqData);
 			if (result != 0) goto EXIT;
 		}
 		else {
-			//ƒ‰ƒCƒuƒ‚ƒjƒ^‚ÌƒV[ƒ“í•ÊØ‚è‘Ö‚¦
+			//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã®ã‚·ãƒ¼ãƒ³ç¨®åˆ¥åˆ‡ã‚Šæ›¿ãˆ
 			result = _CreateScene(m_SceneType, NULL);
 			if (result != 0) goto EXIT;
 
-			//MIDI IN ƒfƒoƒCƒX–¼‚ğİ’è
+			//MIDI IN ãƒ‡ãƒã‚¤ã‚¹åã‚’è¨­å®š
 			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 			if (result != 0) goto EXIT;
 
-			//ƒfƒoƒCƒX–¼‚ğ‰æ–Ê‚É”½‰f‚·‚é‚½‚ßƒV[ƒ“‚É‰‰‘tI—¹iƒ‰ƒCƒuƒ‚ƒjƒ^’â~j‚ğ’Ê’m
-			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
+			//ãƒ‡ãƒã‚¤ã‚¹åã‚’ç”»é¢ã«åæ˜ ã™ã‚‹ãŸã‚ã‚·ãƒ¼ãƒ³ã«æ¼”å¥çµ‚äº†ï¼ˆãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åœæ­¢ï¼‰ã‚’é€šçŸ¥
+			result = m_pScene->OnPlayEnd();
 			if (result != 0) goto EXIT;
 		}
 	}
@@ -1614,7 +1615,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF©“®‹“_•Û‘¶
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè‡ªå‹•è¦–ç‚¹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_OnMenuAutoSaveViewpoint()
 {
@@ -1622,11 +1623,11 @@ int MIDITrailApp::_OnMenuAutoSaveViewpoint()
 
 	m_isAutoSaveViewpoint = m_isAutoSaveViewpoint ? false : true;
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“İ’è•Û‘¶
+	//ã‚·ãƒ¼ãƒ³è¨­å®šä¿å­˜
 	result = _SaveSceneConf();
 	if (result != 0) goto EXIT;
 
@@ -1635,7 +1636,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFÃ“I‹“_ˆÚ“®
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šé™çš„è¦–ç‚¹ç§»å‹•
 //******************************************************************************
 int MIDITrailApp::_OnMenuViewpoint(
 		unsigned long viewpointNo
@@ -1645,7 +1646,7 @@ int MIDITrailApp::_OnMenuViewpoint(
 
 	if (m_PlayStatus == NoData) goto EXIT;
 
-	//Ã“I‹“_‚ÉˆÚ“®
+	//é™çš„è¦–ç‚¹ã«ç§»å‹•
 	m_pScene->MoveToStaticViewpoint(viewpointNo);
 
 EXIT:;
@@ -1653,7 +1654,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF„‚Ì‹“_ˆÚ“®
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šç§ã®è¦–ç‚¹ç§»å‹•
 //******************************************************************************
 int MIDITrailApp::_OnMenuMyViewpoint(
 		unsigned long viewpointNo
@@ -1663,7 +1664,7 @@ int MIDITrailApp::_OnMenuMyViewpoint(
 
 	if (m_PlayStatus == NoData) goto EXIT;
 
-	//„‚Ì‹“_‚ÉˆÚ“®
+	//ç§ã®è¦–ç‚¹ã«ç§»å‹•
 	result = _MoveToMyViewpoint(viewpointNo);
 	if (result != 0) goto EXIT;
 
@@ -1672,7 +1673,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF„‚Ì‹“_•Û‘¶
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šç§ã®è¦–ç‚¹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_OnMenuSaveMyViewpoint(
 		unsigned long viewpointNo
@@ -1682,7 +1683,7 @@ int MIDITrailApp::_OnMenuSaveMyViewpoint(
 
 	if (m_PlayStatus == NoData) goto EXIT;
 
-	//„‚Ì‹“_‚ğ•Û‘¶
+	//ç§ã®è¦–ç‚¹ã‚’ä¿å­˜
 	result = _SaveMyViewpoint(viewpointNo);
 	if (result != 0) goto EXIT;
 
@@ -1691,7 +1692,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF‹“_ƒŠƒZƒbƒg
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 int MIDITrailApp::_OnMenuResetViewpoint()
 {
@@ -1699,10 +1700,10 @@ int MIDITrailApp::_OnMenuResetViewpoint()
 
 	if (m_PlayStatus == NoData) goto EXIT;
 
-	//ƒV[ƒ“‚Ì‹“_‚ğƒŠƒZƒbƒg
+	//ã‚·ãƒ¼ãƒ³ã®è¦–ç‚¹ã‚’ãƒªã‚»ãƒƒãƒˆ
 	m_pScene->ResetViewpoint();
 
-	//‹“_•Û‘¶
+	//è¦–ç‚¹ä¿å­˜
 	result = _SaveViewpoint();
 	if (result != 0) goto EXIT;
 
@@ -1711,7 +1712,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF‹“_•Û‘¶
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¦–ç‚¹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_OnMenuSaveViewpoint()
 {
@@ -1719,7 +1720,7 @@ int MIDITrailApp::_OnMenuSaveViewpoint()
 
 	if (m_PlayStatus == NoData) goto EXIT;
 
-	//‹“_•Û‘¶
+	//è¦–ç‚¹ä¿å­˜
 	result = _SaveViewpoint();
 	if (result != 0) goto EXIT;
 
@@ -1728,50 +1729,50 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğF•\¦Œø‰Êİ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šè¡¨ç¤ºåŠ¹æœè¨­å®š
 //******************************************************************************
 int MIDITrailApp::_OnMenuEnableEffect(
-		MTScene::EffectType type
+		MTEffectType type
 	)
 {
 	int result = 0;
 
 	switch (type) {
-		case MTScene::EffectPianoKeyboard:
+		case MTEffectPianoKeyboard:
 			m_isEnablePianoKeyboard = m_isEnablePianoKeyboard ? false : true;
 			break;
-		case MTScene::EffectRipple:
+		case MTEffectRipple:
 			m_isEnableRipple = m_isEnableRipple ? false : true;
 			break;
-		case MTScene::EffectPitchBend:
+		case MTEffectPitchBend:
 			m_isEnablePitchBend = m_isEnablePitchBend ? false : true;
 			break;
-		case MTScene::EffectStars:
+		case MTEffectStars:
 			m_isEnableStars = m_isEnableStars ? false : true;
 			break;
-		case MTScene::EffectCounter:
+		case MTEffectCounter:
 			m_isEnableCounter = m_isEnableCounter ? false : true;
 			break;
-		case MTScene::EffectBackgroundImage:
+		case MTEffectBackgroundImage:
 			m_isEnableBackgroundImage = m_isEnableBackgroundImage ? false : true;
 			break;
-		case MTScene::EffectGridLine:
+		case MTEffectGridBox:
 			m_isEnableGridLine = m_isEnableGridLine ? false : true;
 			break;
-		case MTScene::EffectTimeIndicator:
+		case MTEffectTimeIndicator:
 			m_isEnableTimeIndicator = m_isEnableTimeIndicator ? false : true;
 			break;
 		default:
 			break;
 	}
 
-	//•\¦Œø‰Ê”½‰f
+	//è¡¨ç¤ºåŠ¹æœåæ˜ 
 	_UpdateEffect();
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	_UpdateMenuCheckmark();
 
-	//•\¦Œø‰Ê‘I‘ğó‘Ô•Û‘¶
+	//è¡¨ç¤ºåŠ¹æœé¸æŠçŠ¶æ…‹ä¿å­˜
 	result = _SaveEffectStatus();
 	if (result != 0) goto EXIT;
 
@@ -1780,17 +1781,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_OnMenuWindowSize()
 {
 	int result = 0;
 
-	//İ’èƒ_ƒCƒAƒƒO•\¦
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = m_WindowSizeCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğXV
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’æ›´æ–°
 	if (m_WindowSizeCfgDlg.IsChanged()) {
 		result = _ChangeWindowSize();
 		if (result != 0) goto EXIT;
@@ -1801,13 +1802,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒtƒ‹ƒXƒNƒŠ[ƒ“
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 //******************************************************************************
 int MIDITrailApp::_OnMenuFullScreen()
 {
 	int result = 0;
 
-	//ƒtƒ‹ƒXƒNƒŠ[ƒ“Ø‘Ö
+	//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åˆ‡æ›¿
 	result = _ToggleFullScreen();
 	if (result != 0) goto EXIT;
 
@@ -1816,13 +1817,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒƒjƒ…[ƒo[
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼
 //******************************************************************************
 int MIDITrailApp::_OnMenuMenuBar()
 {
 	int result = 0;
 
-	//ƒƒjƒ…[ƒo[•\¦Ø‘Ö
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºåˆ‡æ›¿
 	result = _ToggleMenuBar();
 	if (result != 0) goto EXIT;
 
@@ -1831,13 +1832,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFMIDIo—ÍƒfƒoƒCƒXİ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šMIDIå‡ºåŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
 //******************************************************************************
 int MIDITrailApp::_OnMenuOptionMIDIOUT()
 {
 	int result = 0;
 
-	//İ’èƒ_ƒCƒAƒƒO•\¦
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = m_MIDIOUTCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
@@ -1847,13 +1848,13 @@ EXIT:;
 
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFMIDI“ü—ÍƒfƒoƒCƒXİ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šMIDIå…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹è¨­å®š
 //******************************************************************************
 int MIDITrailApp::_OnMenuOptionMIDIIN()
 {
 	int result = 0;
 
-	//İ’èƒ_ƒCƒAƒƒO•\¦
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = m_MIDIINCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
@@ -1862,7 +1863,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒOƒ‰ƒtƒBƒbƒNİ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®š
 //******************************************************************************
 int MIDITrailApp::_OnMenuOptionGraphic()
 {
@@ -1870,18 +1871,18 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	unsigned long multiSampleType = 0;
 	bool isSupport = false;
 
-	//ƒAƒ“ƒ`ƒGƒCƒŠƒAƒXƒTƒ|[ƒgî•ñ‚ğƒ_ƒCƒAƒƒO‚Éİ’è
+	//ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚µãƒãƒ¼ãƒˆæƒ…å ±ã‚’ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã«è¨­å®š
 	for (multiSampleType = DX_MULTI_SAMPLE_TYPE_MIN; multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX; multiSampleType++) {
 		result = m_Renderer.IsSupportAntialias(multiSampleType, &isSupport);
 		if (result != 0) goto EXIT;
 		m_GraphicCfgDlg.SetAntialiasSupport(multiSampleType, isSupport);
 	}
 
-	//İ’èƒ_ƒCƒAƒƒO•\¦
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = m_GraphicCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ğÄ¶¬
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ãƒ¬ãƒ³ãƒ€ãƒ©ã¨ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å†ç”Ÿæˆ
 	if (m_GraphicCfgDlg.IsChanged()) {
 		result = _LoadGraphicConf();
 		if (result != 0) goto EXIT;
@@ -1894,17 +1895,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğFƒJƒ‰[İ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠï¼šã‚«ãƒ©ãƒ¼è¨­å®š
 //******************************************************************************
 int MIDITrailApp::_OnMenuOptionColor()
 {
 	int result = 0;
 
-	//İ’èƒ_ƒCƒAƒƒO•\¦
+	//è¨­å®šãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	result = m_ColorCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
-	//•ÏX‚³‚ê‚½ê‡‚ÍƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ğÄ¶¬
+	//å¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ãƒ¬ãƒ³ãƒ€ãƒ©ã¨ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å†ç”Ÿæˆ
 	if (m_ColorCfgDlg.IsChanged()) {
 		result = _ChangeWindowSize();
 		if (result != 0) goto EXIT;
@@ -1915,7 +1916,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ}ƒjƒ…ƒAƒ‹•\¦
+// ãƒãƒ‹ãƒ¥ã‚¢ãƒ«è¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_OnMenuManual()
 {
@@ -1923,21 +1924,21 @@ int MIDITrailApp::_OnMenuManual()
 	HINSTANCE hresult = 0;
 	TCHAR manualPath[_MAX_PATH] = {_T('\0')};
 
-	//ƒvƒƒZƒXÀsƒtƒ@ƒCƒ‹ƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
+	//ãƒ—ãƒ­ã‚»ã‚¹å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
 	result = YNPathUtil::GetModuleDirPath(manualPath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒjƒ…ƒAƒ‹ƒtƒ@ƒCƒ‹ƒpƒXì¬
+	//ãƒãƒ‹ãƒ¥ã‚¢ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
 	_tcscat_s(manualPath, _MAX_PATH, MT_MANUALFILE);
 
-	//ƒ}ƒjƒ…ƒAƒ‹ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//ãƒãƒ‹ãƒ¥ã‚¢ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	hresult = ShellExecute(
-					NULL,			//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_T("open"),		//‘€ì
-					manualPath,		//‘€ì‘ÎÛ‚Ìƒtƒ@ƒCƒ‹
-					NULL,			//‘€ìƒpƒ‰ƒ[ƒ^
-					NULL,			//Šù’èƒfƒBƒŒƒNƒgƒŠ
-					SW_SHOWNORMAL	//•\¦ó‘Ô
+					NULL,			//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_T("open"),		//æ“ä½œ
+					manualPath,		//æ“ä½œå¯¾è±¡ã®ãƒ•ã‚¡ã‚¤ãƒ«
+					NULL,			//æ“ä½œãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+					NULL,			//æ—¢å®šãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+					SW_SHOWNORMAL	//è¡¨ç¤ºçŠ¶æ…‹
 				);
 	if (hresult <= (HINSTANCE)32) {
 		result = YN_SET_ERR("File open error.", (DWORD64)hresult, 0);
@@ -1949,7 +1950,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWˆ—
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_SequencerMsgProc()
 {
@@ -1960,14 +1961,14 @@ int MIDITrailApp::_SequencerMsgProc()
 	SMMsgParser parser;
 	
 	while (true) {
-		//ƒƒbƒZ[ƒWæ‚èo‚µ
+		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–ã‚Šå‡ºã—
 		result = m_MsgQueue.GetMessage(&isExist, &param1, &param2);
 		if (result != 0) goto EXIT;
 		
-		//ƒƒbƒZ[ƒW‚ª‚È‚¯‚ê‚ÎI—¹
+		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒãªã‘ã‚Œã°çµ‚äº†
 		if (!isExist) break;
 		
-		//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóMˆ—
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡å‡¦ç†
 		result = _OnRecvSequencerMsg(param1, param2);
 		if (result != 0) goto EXIT;	
 	}
@@ -1977,7 +1978,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
+// ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 //******************************************************************************
 int MIDITrailApp::_OnRecvSequencerMsg(
 		unsigned long param1,
@@ -1988,121 +1989,121 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 	SMMsgParser parser;
 	bool isExist = false;
 
-	//ƒV[ƒ“‚ÉƒV[ƒPƒ“ƒTƒƒbƒZ[ƒW‚ğ“n‚·
+	//ã‚·ãƒ¼ãƒ³ã«ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ¸¡ã™
 	if (m_pScene != NULL) {
 		result = m_pScene->OnRecvSequencerMsg(param1, param2);
 		if (result != 0) goto EXIT;
 	}
 
-	//‰‰‘tó‘Ô•ÏX’Ê’m‚Ö‚Ì‘Î‰
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´é€šçŸ¥ã¸ã®å¯¾å¿œ
 	parser.Parse(param1, param2);
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
-		//ˆê’â~
+		//ä¸€æ™‚åœæ­¢
 		if (parser.GetPlayStatus() == SMMsgParser::StatusPause) {
 			result = _ChangePlayStatus(Pause);
 			if (result != 0) goto EXIT;
 		}
-		//’â~i‰‰‘tI—¹j
+		//åœæ­¢ï¼ˆæ¼”å¥çµ‚äº†ï¼‰
 		if (parser.GetPlayStatus() == SMMsgParser::StatusStop) {
 			result = _ChangePlayStatus(Stop);
 			if (result != 0) goto EXIT;
 
-			//ƒV[ƒ“‚É‰‰‘tI—¹‚ğ’Ê’m
+			//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥çµ‚äº†ã‚’é€šçŸ¥
 			if (m_pScene != NULL) {
-				result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
+				result = m_pScene->OnPlayEnd();
 				if (result != 0) goto EXIT;
 			}
 
-			//‹“_•Û‘¶
+			//è¦–ç‚¹ä¿å­˜
 			if (m_isAutoSaveViewpoint) {
 				result = _OnMenuSaveViewpoint();
 				if (result != 0) goto EXIT;
 			}
 
-			//ƒ†[ƒU[‚Ì—v‹‚É‚æ‚Á‚Ä’â~‚µ‚½ê‡‚ÍŠª‚«–ß‚·
+			//ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®è¦æ±‚ã«ã‚ˆã£ã¦åœæ­¢ã—ãŸå ´åˆã¯å·»ãæˆ»ã™
 			if ((m_isRewind) && (m_pScene != NULL)) {
 				m_isRewind = false;
 				result = m_pScene->Rewind();
 				if (result != 0) goto EXIT;
 			}
-			//’â~Œã‚Ìƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ªw’è‚³‚ê‚Ä‚¢‚éê‡
+			//åœæ­¢å¾Œã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 			else if ((m_isOpenFileAfterStop) && (m_pScene != NULL)) {
 				m_isOpenFileAfterStop = false;
-				//ƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
+				//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‡¦ç†
 				result = _FileOpenProc(m_NextFilePath);
 				if (result != 0) goto EXIT;
 			}
-			//’Êí‚Ì‰‰‘tI—¹‚Ìê‡
+			//é€šå¸¸ã®æ¼”å¥çµ‚äº†ã®å ´åˆ
 			else {
-				//’Êí‚Ì‰‰‘tI—¹‚Ìê‡‚ÍŸ‰ñ‚Ì‰‰‘t‚ÉŠª‚«–ß‚·
+				//é€šå¸¸ã®æ¼”å¥çµ‚äº†ã®å ´åˆã¯æ¬¡å›ã®æ¼”å¥æ™‚ã«å·»ãæˆ»ã™
 				m_isRewind = true;
-				//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚È‚µ‚Ìê‡
+				//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆãªã—ã®å ´åˆ
 				if (m_MIDIFileList.GetFileCount() == 0) {
-					//ƒŠƒs[ƒg—LŒø‚È‚çÄ¶ŠJn
+					//ãƒªãƒ”ãƒ¼ãƒˆæœ‰åŠ¹ãªã‚‰å†ç”Ÿé–‹å§‹
 					if (m_isRepeat) {
-						//ƒŠƒs[ƒg‚É‚æ‚éMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
+						//ãƒªãƒ”ãƒ¼ãƒˆã«ã‚ˆã‚‹MIDIãƒ•ã‚¡ã‚¤ãƒ«æ¼”å¥é–‹å§‹
 						result = _StartTimer_Play(m_DelayBetweenSongsInMsec);
 						if (result != 0) goto EXIT;
 					}
 				}
-				//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ ‚è‚Ìê‡
+				//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚ã‚Šã®å ´åˆ
 				else {
-					//ƒtƒHƒ‹ƒ_‰‰‘t–³Œø‚©‚ÂƒŠƒs[ƒg—LŒø‚È‚çÄ¶ŠJn
+					//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ç„¡åŠ¹ã‹ã¤ãƒªãƒ”ãƒ¼ãƒˆæœ‰åŠ¹ãªã‚‰å†ç”Ÿé–‹å§‹
 					if (!m_isFolderPlayback && m_isRepeat) {
-						//ƒŠƒs[ƒg‚É‚æ‚éMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
+						//ãƒªãƒ”ãƒ¼ãƒˆã«ã‚ˆã‚‹MIDIãƒ•ã‚¡ã‚¤ãƒ«æ¼”å¥é–‹å§‹
 						result = _StartTimer_Play(m_DelayBetweenSongsInMsec);
 						if (result != 0) goto EXIT;
 					}
-					//ƒtƒHƒ‹ƒ_‰‰‘t—LŒø‚È‚çŸƒtƒ@ƒCƒ‹‚ğ©“®‘I‘ğ
+					//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥æœ‰åŠ¹ãªã‚‰æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è‡ªå‹•é¸æŠ
 					else if (m_isFolderPlayback) {
 						m_MIDIFileList.SelectNextFile(&isExist);
 						if (isExist) {
-							//Ÿƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
-							//ƒtƒHƒ‹ƒ_‰‰‘t‚É‚æ‚éŸMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
+							//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
+							//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ã«ã‚ˆã‚‹æ¬¡MIDIãƒ•ã‚¡ã‚¤ãƒ«æ¼”å¥é–‹å§‹
 							result = _StartTimer_OpenFileAndPlay(m_DelayBetweenSongsInMsec);
 							if (result != 0) goto EXIT;
 						}
 						else if (m_isRepeat) {
-							//Ÿƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢‚ªƒŠƒs[ƒg—LŒø‚Ìê‡
-							//ƒtƒHƒ‹ƒ_‰‰‘t‚É‚æ‚éŸMIDIƒtƒ@ƒCƒ‹‰‰‘tŠJn
+							//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„ãŒãƒªãƒ”ãƒ¼ãƒˆæœ‰åŠ¹ã®å ´åˆ
+							//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥ã«ã‚ˆã‚‹æ¬¡MIDIãƒ•ã‚¡ã‚¤ãƒ«æ¼”å¥é–‹å§‹
 							result = _StartTimer_OpenFileAndPlay(m_DelayBetweenSongsInMsec);
 							if (result != 0) goto EXIT;
-							//æ“ªƒtƒ@ƒCƒ‹‚ğ‘I‘ğ
+							//å…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ
 							m_MIDIFileList.SelectFirstFile();
 						}
 					}
 				}
 			}
 
-			//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ÅI—¹w’è‚³‚ê‚Ä‚¢‚éê‡
+			//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§çµ‚äº†æŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 			if (m_CmdLineParser.GetSwitch(CMDSW_QUIET) == CMDSW_ON) {
 				DestroyWindow(m_hWnd);
 			}
 		}
 	}
 
-	//ƒfƒoƒCƒXƒƒXƒg‘Îô
-	//ƒV[ƒ“‚É“n‚µ‚½ÅVƒƒbƒZ[ƒW‚ğ‹L˜^‚µ‚Ä‚¨‚­
+	//ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆå¯¾ç­–
+	//ã‚·ãƒ¼ãƒ³ã«æ¸¡ã—ãŸæœ€æ–°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¨˜éŒ²ã—ã¦ãŠã
 	if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€’Ê’m
+		//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ é€šçŸ¥
 		m_SequencerLastMsg.isRecvPlayTime = true;
 		m_SequencerLastMsg.playTime.param1 = param1;
 		m_SequencerLastMsg.playTime.param2 = param2;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
-		//ƒeƒ“ƒ|•ÏX’Ê’m
+		//ãƒ†ãƒ³ãƒå¤‰æ›´é€šçŸ¥
 		m_SequencerLastMsg.isRecvTempo = true;
 		m_SequencerLastMsg.tempo.param1 = param1;
 		m_SequencerLastMsg.tempo.param2 = param2;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
-		//¬ß”Ô†’Ê’m
+		//å°ç¯€ç•ªå·é€šçŸ¥
 		m_SequencerLastMsg.isRecvBar = true;
 		m_SequencerLastMsg.bar.param1 = param1;
 		m_SequencerLastMsg.bar.param2 = param2;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
-		//”q‹L†•ÏX’Ê’m
+		//æ‹å­è¨˜å·å¤‰æ›´é€šçŸ¥
 		m_SequencerLastMsg.isRecvBeat = true;
 		m_SequencerLastMsg.beat.param1 = param1;
 		m_SequencerLastMsg.beat.param2 = param2;
@@ -2113,7 +2114,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒNƒŠƒbƒNƒCƒxƒ“ƒg
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int MIDITrailApp::_OnMouseButtonDown(
 		UINT button,
@@ -2133,7 +2134,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ}ƒEƒXˆÚ“®ƒCƒxƒ“ƒg
+// ãƒã‚¦ã‚¹ç§»å‹•ã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int MIDITrailApp::_OnMouseMove(
 		UINT button,
@@ -2148,32 +2149,32 @@ int MIDITrailApp::_OnMouseMove(
 	point.x = LOWORD(lParam);
 	point.y = HIWORD(lParam);
 	
-	//ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Ìê‡
+	//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®å ´åˆ
 	if (m_isFullScreen) {
-		//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªƒXƒNƒŠ[ƒ“ã’[‚ÉˆÚ“®‚µ‚½ê‡
+		//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒã‚¹ã‚¯ãƒªãƒ¼ãƒ³ä¸Šç«¯ã«ç§»å‹•ã—ãŸå ´åˆ
 		if (point.y == 0) {
-			//ƒƒjƒ…[ƒo[•\¦
+			//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤º
 			result = _ShowMenu();
 			if (result != 0) goto EXIT;
 		}
 		else {
-			//ƒƒjƒ…[ƒo[”ñ•\¦
+			//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤º
 			result = _HideMenu();
 			if (result != 0) goto EXIT;
 		}
 	}
-	//ƒEƒBƒ“ƒhƒE•\¦‚Ìê‡
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºã®å ´åˆ
 	else {
-		//ƒƒjƒ…[”ñ•\¦‚Ìê‡
-		//ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ªƒEƒBƒ“ƒhƒEã’[‹ß‚­‚ÉˆÚ“®‚µ‚½‚Æ‚«‚¾‚¯ƒƒjƒ…[‚ğ•\¦‚·‚é
+		//ãƒ¡ãƒ‹ãƒ¥ãƒ¼éè¡¨ç¤ºã®å ´åˆ
+		//ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ãŒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä¸Šç«¯è¿‘ãã«ç§»å‹•ã—ãŸã¨ãã ã‘ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹
 		if (!m_isEnableMenuBar) {
 			if (point.y <= 5) {
-				//ƒƒjƒ…[ƒo[•\¦
+				//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤º
 				result = _ShowMenu();
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//ƒƒjƒ…[ƒo[”ñ•\¦
+				//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤º
 				result = _HideMenu();
 				if (result != 0) goto EXIT;
 			}
@@ -2185,7 +2186,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒL[“ü—ÍƒCƒxƒ“ƒg
+// ã‚­ãƒ¼å…¥åŠ›ã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int MIDITrailApp::_OnKeyDown(
 		WPARAM wParam,
@@ -2201,30 +2202,30 @@ int MIDITrailApp::_OnKeyDown(
 		case VK_SPACE:
 		case VK_NUMPAD0:
 			if (GetKeyState(VK_SHIFT) & 0x8000) {
-				//ƒ‚ƒjƒ^ƒŠƒ“ƒOŠJn
+				//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°é–‹å§‹
 				result = _OnMenuStartMonitoring();
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//‰‰‘tŠJn^ˆê’â~
+				//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢
 				result = _OnMenuPlay();
 				if (result != 0) goto EXIT;
 			}
 			break;
 		case VK_ESCAPE:
 			if (m_PlayStatus == MonitorON) {
-				//ƒ‚ƒjƒ^ƒŠƒ“ƒO’â~
+				//ãƒ¢ãƒ‹ã‚¿ãƒªãƒ³ã‚°åœæ­¢
 				result = _OnMenuStopMonitoring();
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//‰‰‘t’â~
+				//æ¼”å¥åœæ­¢
 				result = _OnMenuStop();
 				if (result != 0) goto EXIT;
 			}
 			break;
 		case VK_RETURN:
-			//‰‰‘t’â~Fƒeƒ“ƒL[‚ÌENTER‚Å‚©‚ÂNUMLOCKƒIƒ“‚Ìê‡
+			//æ¼”å¥åœæ­¢ï¼šãƒ†ãƒ³ã‚­ãƒ¼ã®ENTERã§ã‹ã¤NUMLOCKã‚ªãƒ³ã®å ´åˆ
 			if ((HIWORD((DWORD)lParam) & KF_EXTENDED) && (GetKeyState(VK_NUMLOCK) & 0x01)) {
 				result = _OnMenuStop();
 				if (result != 0) goto EXIT;
@@ -2232,42 +2233,42 @@ int MIDITrailApp::_OnKeyDown(
 			break;
 		case '1':
 		case VK_NUMPAD1:
-			//Ä¶ƒXƒLƒbƒvƒoƒbƒN
+			//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒãƒƒã‚¯
 			result = _OnMenuSkipBack();
 			if (result != 0) goto EXIT;
 			break;
 		case '2':
 		case VK_NUMPAD2:
-			//Ä¶ƒXƒLƒbƒvƒtƒHƒ[ƒh
+			//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰
 			result = _OnMenuSkipForward();
 			if (result != 0) goto EXIT;
 			break;
 		case '4':
 		case VK_NUMPAD4:
-			//Ä¶ƒXƒs[ƒhƒ_ƒEƒ“
+			//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ€ã‚¦ãƒ³
 			result = _OnMenuPlaySpeedDown();
 			if (result != 0) goto EXIT;
 			break;
 		case '5':
 		case VK_NUMPAD5:
-			//Ä¶ƒXƒs[ƒhƒAƒbƒv
+			//å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚¢ãƒƒãƒ—
 			result = _OnMenuPlaySpeedUp();
 			if (result != 0) goto EXIT;
 			break;
 		case '7':
 		case VK_NUMPAD7:
 			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
-				//„‚Ì‹“_1•Û‘¶
+				//ç§ã®è¦–ç‚¹1ä¿å­˜
 				result = _OnMenuSaveMyViewpoint(1);
 				if (result != 0) goto EXIT;
 			}
 			else if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//„‚Ì‹“_1ˆÚ“®
+				//ç§ã®è¦–ç‚¹1ç§»å‹•
 				result = _OnMenuMyViewpoint(1);
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//‹“_ƒŠƒZƒbƒg
+				//è¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
 				result = _OnMenuResetViewpoint();
 				if (result != 0) goto EXIT;
 			}
@@ -2275,17 +2276,17 @@ int MIDITrailApp::_OnKeyDown(
 		case '8':
 		case VK_NUMPAD8:
 			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
-				//„‚Ì‹“_2•Û‘¶
+				//ç§ã®è¦–ç‚¹2ä¿å­˜
 				result = _OnMenuSaveMyViewpoint(2);
 				if (result != 0) goto EXIT;
 			}
 			else if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//„‚Ì‹“_2ˆÚ“®
+				//ç§ã®è¦–ç‚¹2ç§»å‹•
 				result = _OnMenuMyViewpoint(2);
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//Ã“I‹“_2ˆÚ“®
+				//é™çš„è¦–ç‚¹2ç§»å‹•
 				result = _OnMenuViewpoint(2);
 				if (result != 0) goto EXIT;
 			}
@@ -2293,24 +2294,24 @@ int MIDITrailApp::_OnKeyDown(
 		case '9':
 		case VK_NUMPAD9:
 			if ((GetKeyState(VK_SHIFT) & 0x8000) && (GetKeyState(VK_CONTROL) & 0x8000)) {
-				//„‚Ì‹“_3•Û‘¶
+				//ç§ã®è¦–ç‚¹3ä¿å­˜
 				result = _OnMenuSaveMyViewpoint(3);
 				if (result != 0) goto EXIT;
 			}
 			else if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//„‚Ì‹“_3ˆÚ“®
+				//ç§ã®è¦–ç‚¹3ç§»å‹•
 				result = _OnMenuMyViewpoint(3);
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//Ã“I‹“_3ˆÚ“®
+				//é™çš„è¦–ç‚¹3ç§»å‹•
 				result = _OnMenuViewpoint(3);
 				if (result != 0) goto EXIT;
 			}
 			break;
 		case 'O':
 			if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+				//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 				result = _OnMenuOpenFile();
 				if (result != 0) goto EXIT;
 			}
@@ -2318,25 +2319,25 @@ int MIDITrailApp::_OnKeyDown(
 		case 'B':
 		case 'P':
 			if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//‘Oƒtƒ@ƒCƒ‹
+				//å‰ãƒ•ã‚¡ã‚¤ãƒ«
 				result = _OnMenuPreviousFile();
 				if (result != 0) goto EXIT;
 			}
 			break;
 		case 'N':
 			if (GetKeyState(VK_CONTROL) & 0x8000) {
-				//Ÿƒtƒ@ƒCƒ‹
+				//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«
 				result = _OnMenuNextFile();
 				if (result != 0) goto EXIT;
 			}
 			break;
 		case VK_F11:
-			//ƒtƒ‹ƒXƒNƒŠ[ƒ“
+			//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 			result = _OnMenuFullScreen();
 			if (result != 0) goto EXIT;
 			break;
 		case VK_F12:
-			//ƒƒjƒ…[ƒo[
+			//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼
 			result = _OnMenuMenuBar();
 			if (result != 0) goto EXIT;
 			break;
@@ -2349,7 +2350,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒhƒƒbƒvƒCƒxƒ“ƒg
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã‚¤ãƒ™ãƒ³ãƒˆ
 //******************************************************************************
 int MIDITrailApp::_OnDropFiles(
 		WPARAM wParam,
@@ -2363,71 +2364,71 @@ int MIDITrailApp::_OnDropFiles(
 	WCHAR path[_MAX_PATH] = { L'\0' };
 	bool isMIDIDataFile = false;
 
-	////’â~’†‚Å‚È‚¯‚ê‚Îƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚Í–³‹‚·‚é
+	////åœæ­¢ä¸­ã§ãªã‘ã‚Œã°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã¯ç„¡è¦–ã™ã‚‹
 	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-	//	//ƒtƒ@ƒCƒ‹ƒhƒƒbƒvOK
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—OK
 	//}
 	//else {
-	//	//ƒtƒ@ƒCƒ‹ƒhƒƒbƒvNG
+	//	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—NG
 	//	goto EXIT;
 	//}
 
-	//í‚Éƒtƒ@ƒCƒ‹ƒhƒƒbƒv‚ğ‹–‰Â‚·‚é
+	//å¸¸ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ­ãƒƒãƒ—ã‚’è¨±å¯ã™ã‚‹
 
 	hDrop = (HDROP)wParam;
 
-	//ƒtƒ@ƒCƒ‹”Šm”F
+	//ãƒ•ã‚¡ã‚¤ãƒ«æ•°ç¢ºèª
 	fileNum = DragQueryFile(
 					hDrop,		//wParam
-					0xFFFFFFFF,	//ƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒX
-					NULL,		//ƒtƒ@ƒCƒ‹–¼æ“¾ƒoƒbƒtƒ@
-					0			//ƒoƒbƒtƒ@ƒTƒCƒY
+					0xFFFFFFFF,	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+					NULL,		//ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—ãƒãƒƒãƒ•ã‚¡
+					0			//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 				);
 
-	//•¡”ƒtƒ@ƒCƒ‹‚Ìê‡‚Í–³‹‚·‚é
+	//è¤‡æ•°ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆã¯ç„¡è¦–ã™ã‚‹
 	if (fileNum != 1) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹ƒpƒXæ“¾
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 	charNum = DragQueryFileW(
 					hDrop,		//wParam
-					0,			//ƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒX
-					path,		//ƒtƒ@ƒCƒ‹–¼æ“¾ƒoƒbƒtƒ@
-					_MAX_PATH	//ƒoƒbƒtƒ@ƒTƒCƒY
+					0,			//ãƒ•ã‚¡ã‚¤ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+					path,		//ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—ãƒãƒƒãƒ•ã‚¡
+					_MAX_PATH	//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 				);
 	if (charNum == 0) {
 		result = YN_SET_ERR("Windows API error.", wParam, lParam);
 		goto EXIT;
 	}
 
-	//ƒtƒHƒ‹ƒ_‚ğƒhƒƒbƒv‚³‚ê‚½ê‡
+	//ãƒ•ã‚©ãƒ«ãƒ€ã‚’ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸå ´åˆ
 	if (PathIsDirectoryW(path)) {
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆƒtƒHƒ‹ƒ_ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		result = _StopPlaybackAndOpenFolder(path);
 		if (result != 0) goto EXIT;
 	}
-	//ƒtƒ@ƒCƒ‹‚ğƒhƒƒbƒv‚³‚ê‚½ê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸå ´åˆ
 	else {
-		//ƒtƒ@ƒCƒ‹Šg’£q‚ÌŠm”F
+		//ãƒ•ã‚¡ã‚¤ãƒ«æ‹¡å¼µå­ã®ç¢ºèª
 		if (YNPathUtil::IsFileExtMatch(path, L".mid")) {
 			isMIDIDataFile = true;
 		}
-		//rcpcv.dll‚ª—LŒø‚È‚çƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚é‚©’Ç‰ÁŠm”F‚·‚é
+		//rcpcv.dllãŒæœ‰åŠ¹ãªã‚‰ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚ã‚‹ã‹è¿½åŠ ç¢ºèªã™ã‚‹
 		else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(path)) {
 			isMIDIDataFile = true;
 		}
 
-		//ƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+		//ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 		if (!isMIDIDataFile) goto EXIT;
 
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg”jŠü
+		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆç ´æ£„
 		m_MIDIFileList.Clear();
 
-		//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+		//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 		result = _StopPlaybackAndOpenFile(path);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -2439,7 +2440,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹‘I‘ğ
+// ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 //******************************************************************************
 int MIDITrailApp::_SelectMIDIFile(
 		WCHAR* pFilePath,
@@ -2466,15 +2467,15 @@ int MIDITrailApp::_SelectMIDIFile(
 	ofn.lpstrTitle  = L"Select Standard MIDI File.";
 	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
 
-	//rcpcv.dll‚ª—LŒø‚È‚çƒtƒ@ƒCƒ‹ƒtƒBƒ‹ƒ^‚ğ•ÏX‚·‚é
+	//rcpcv.dllãŒæœ‰åŠ¹ãªã‚‰ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚£ãƒ«ã‚¿ã‚’å¤‰æ›´ã™ã‚‹
 	if (m_RcpConv.IsAvailable()) {
 		ofn.lpstrFilter = m_RcpConv.GetOpenFileNameFilter();
 	}
 
-	//ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO•\¦
+	//ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	apiresult = GetOpenFileNameW(&ofn);
 	if (!apiresult) {
-		//ƒLƒƒƒ“ƒZƒ‹‚Ü‚½‚ÍƒGƒ‰[”­¶FƒGƒ‰[‚Íƒ`ƒFƒbƒN‚µ‚È‚¢
+		//ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã¾ãŸã¯ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿï¼šã‚¨ãƒ©ãƒ¼ã¯ãƒã‚§ãƒƒã‚¯ã—ãªã„
 		*pIsSelected = false;
 		goto EXIT;
 	}
@@ -2486,7 +2487,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒHƒ‹ƒ_‘I‘ğ
+// ãƒ•ã‚©ãƒ«ãƒ€é¸æŠ
 //******************************************************************************
 int MIDITrailApp::_SelectFolder(
 		WCHAR* pFolderPath,
@@ -2511,27 +2512,27 @@ int MIDITrailApp::_SelectFolder(
 
 	*pIsSelected = false;
 
-	//ƒ_ƒCƒAƒƒO¶¬
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ç”Ÿæˆ
 	hresult = CoCreateInstance(
 					CLSID_FileOpenDialog,			//CLSID
-					NULL,							//ƒAƒOƒŠƒQ[ƒgƒIƒuƒWƒFƒNƒg
-					CLSCTX_INPROC_SERVER,			//ƒRƒ“ƒeƒLƒXƒg
-					IID_PPV_ARGS(&pFileOpenDialog)	//IID‚Æ•Ï”ƒAƒhƒŒƒX
+					NULL,							//ã‚¢ã‚°ãƒªã‚²ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+					CLSCTX_INPROC_SERVER,			//ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+					IID_PPV_ARGS(&pFileOpenDialog)	//IIDã¨å¤‰æ•°ã‚¢ãƒ‰ãƒ¬ã‚¹
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
 		goto EXIT;
 	}
 
-	//ƒIƒvƒVƒ‡ƒ“İ’è
+	//ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®š
 	pFileOpenDialog->GetOptions(&options);
 	pFileOpenDialog->SetOptions(options | FOS_PICKFOLDERS);
 
-	//ƒ_ƒCƒAƒƒO•\¦iƒtƒHƒ‹ƒ_‘I‘ğ‚Ì‚İ‰Â”\j
-	//  m_hWnd‚ğw’è‚·‚é‚Æ‰‰‘tŠJnŒã‚Ìƒ_ƒCƒAƒƒO•\¦‚Åƒnƒ“ƒO‚·‚éiŒ´ˆö•s–¾j
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºï¼ˆãƒ•ã‚©ãƒ«ãƒ€é¸æŠã®ã¿å¯èƒ½ï¼‰
+	//  m_hWndã‚’æŒ‡å®šã™ã‚‹ã¨æ¼”å¥é–‹å§‹å¾Œã®ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºã§ãƒãƒ³ã‚°ã™ã‚‹ï¼ˆåŸå› ä¸æ˜ï¼‰
 	hresult = pFileOpenDialog->Show(NULL);
 	if (hresult == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
-		//ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½ê‡‚Í‰½‚à‚¹‚¸I—¹
+		//ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸå ´åˆã¯ä½•ã‚‚ã›ãšçµ‚äº†
 		goto EXIT;
 	}
 	if (FAILED(hresult)) {
@@ -2539,8 +2540,8 @@ int MIDITrailApp::_SelectFolder(
 		goto EXIT;
 	}
 
-	//ƒtƒHƒ‹ƒ_‘I‘ğ‚³‚ê‚½ê‡‚ÍƒpƒX‚ğæ“¾
-	//ƒƒCƒh•¶š—ñ‚Å‚µ‚©æ“¾‚Å‚«‚È‚¢‚±‚Æ‚É’ˆÓ
+	//ãƒ•ã‚©ãƒ«ãƒ€é¸æŠã•ã‚ŒãŸå ´åˆã¯ãƒ‘ã‚¹ã‚’å–å¾—
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ã§ã—ã‹å–å¾—ã§ããªã„ã“ã¨ã«æ³¨æ„
 	hresult = pFileOpenDialog->GetResult(&pShellItem);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
@@ -2574,7 +2575,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadMIDIFile(
 		const WCHAR* pFilePath
@@ -2586,15 +2587,15 @@ int MIDITrailApp::_LoadMIDIFile(
 	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
 	SMFileReader smfReader;
 
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‘O‚É•\¦‚µ‚ÄƒGƒ‰[”­¶‚Éƒtƒ@ƒCƒ‹–¼‚ğŠm”F‰Â”\‚Æ‚·‚é
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«æ›´æ–°
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‰ã«è¡¨ç¤ºã—ã¦ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿæ™‚ã«ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ç¢ºèªå¯èƒ½ã¨ã™ã‚‹
 	_UpdateWindowTitle(PathFindFileNameW(pFilePath));
 
-	//Šg’£q‚ª*.mid‚Ìê‡
+	//æ‹¡å¼µå­ãŒ*.midã®å ´åˆ
 	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
 		pPath = (WCHAR*)pFilePath;
 	}
-	//rcpcv.dll—LŒø‚Å‚©‚ÂƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚ê‚ÎSMF‚É•ÏŠ·
+	//rcpcv.dllæœ‰åŠ¹ã§ã‹ã¤ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚ã‚Œã°SMFã«å¤‰æ›
 	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(pFilePath)) {
 		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, L"RCP");
 		if (result != 0) goto EXIT;
@@ -2602,35 +2603,35 @@ int MIDITrailApp::_LoadMIDIFile(
 		if (result != 0) goto EXIT;
 		pPath = smfTempPath;
 	}
-	//‚¢‚¸‚ê‚É‚àŠY“–‚µ‚È‚¢ê‡
+	//ã„ãšã‚Œã«ã‚‚è©²å½“ã—ãªã„å ´åˆ
 	else {
-		//‚»‚Ì‚Ü‚Ü“Ç‚İ‚Ş
+		//ãã®ã¾ã¾èª­ã¿è¾¼ã‚€
 		pPath = (WCHAR*)pFilePath;
 	}
 
-	//ƒfƒoƒbƒOƒ‚[ƒh‚Å‚ ‚ê‚ÎMIDIƒtƒ@ƒCƒ‹‰ğÍŒ‹‰Ê‚ğƒ_ƒ“ƒv‚·‚é
+	//ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰ã§ã‚ã‚Œã°MIDIãƒ•ã‚¡ã‚¤ãƒ«è§£æçµæœã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹
 	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
 		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
 		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
 		smfReader.SetLogPath(smfDumpPath);
 	}
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = smfReader.Load(pPath, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹–¼“o˜^FSMF•ÏŠ·ˆ—À{‘O‚ÌƒIƒŠƒWƒiƒ‹‚Ìƒtƒ@ƒCƒ‹–¼‚ğİ’è
+	//ãƒ•ã‚¡ã‚¤ãƒ«åç™»éŒ²ï¼šSMFå¤‰æ›å‡¦ç†å®Ÿæ–½å‰ã®ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¨­å®š
 	m_SeqData.SetFileName(PathFindFileNameW(pFilePath));
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÉÄ¶ƒXƒs[ƒh‚ğ100%‚É–ß‚·F_CreateScene‚ÅƒJƒEƒ“ƒ^‚É”½‰f
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿æ™‚ã«å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’100%ã«æˆ»ã™ï¼š_CreateSceneã§ã‚«ã‚¦ãƒ³ã‚¿ã«åæ˜ 
 	m_PlaySpeedRatio = 100;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	m_SceneType = m_SelectedSceneType;
 	result = _CreateScene(m_SceneType, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
 
@@ -2646,9 +2647,9 @@ EXIT:;
 // >>> add 20120728 yossiepon begin
 
 //******************************************************************************
-// MIDIƒtƒ@ƒCƒ‹’Ç‰Á“Ç‚İ‚İ
-// ƒtƒ@ƒCƒ‹–¼‚ÉuportXv‚ªŠÜ‚Ü‚ê‚éê‡AX‚ğƒ|[ƒg”Ô†‚Æ‚İ‚È‚·ia-Z:‘å¬“¯ˆê‹j
-// ƒtƒ@ƒCƒ‹–¼‚ÉuchXXv‚ªŠÜ‚Ü‚ê‚éê‡AXX‚ğƒ`ƒƒƒ“ƒlƒ‹”Ô†‚ÆŒ©‚È‚·i00-99)
+// MIDIãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ èª­ã¿è¾¼ã¿
+// ãƒ•ã‚¡ã‚¤ãƒ«åã«ã€ŒportXã€ãŒå«ã¾ã‚Œã‚‹å ´åˆã€Xã‚’ãƒãƒ¼ãƒˆç•ªå·ã¨ã¿ãªã™ï¼ˆa-Z:å¤§å°åŒä¸€è¦–ï¼‰
+// ãƒ•ã‚¡ã‚¤ãƒ«åã«ã€ŒchXXã€ãŒå«ã¾ã‚Œã‚‹å ´åˆã€XXã‚’ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ã¨è¦‹ãªã™ï¼ˆ00-99)
 //******************************************************************************
 int MIDITrailApp::_AddMIDIFile(
 		const WCHAR* pFilePath
@@ -2663,11 +2664,11 @@ int MIDITrailApp::_AddMIDIFile(
 	int portNo = -1;
 	int chNo = -1;
 
-	//Šg’£q‚ª*.mid‚Ìê‡
+	//æ‹¡å¼µå­ãŒ*.midã®å ´åˆ
 	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
 		pPath = (WCHAR*)pFilePath;
 	}
-	//rcpcv.dll—LŒø‚Å‚©‚ÂƒTƒ|[ƒg‘ÎÛƒtƒ@ƒCƒ‹‚Å‚ ‚ê‚ÎSMF‚É•ÏŠ·
+	//rcpcv.dllæœ‰åŠ¹ã§ã‹ã¤ã‚µãƒãƒ¼ãƒˆå¯¾è±¡ãƒ•ã‚¡ã‚¤ãƒ«ã§ã‚ã‚Œã°SMFã«å¤‰æ›
 	else if (m_RcpConv.IsAvailable() && m_RcpConv.IsSupportFileExt(pFilePath)) {
 		result = YNPathUtil::GetTempFilePath(smfTempPath, _MAX_PATH, L"RCP");
 		if (result != 0) goto EXIT;
@@ -2675,24 +2676,24 @@ int MIDITrailApp::_AddMIDIFile(
 		if (result != 0) goto EXIT;
 		pPath = smfTempPath;
 	}
-	//‚¢‚¸‚ê‚É‚àŠY“–‚µ‚È‚¢ê‡
+	//ã„ãšã‚Œã«ã‚‚è©²å½“ã—ãªã„å ´åˆ
 	else {
-		//‚»‚Ì‚Ü‚Ü“Ç‚İ‚Ş
+		//ãã®ã¾ã¾èª­ã¿è¾¼ã‚€
 		pPath = (WCHAR*)pFilePath;
 	}
 
-	//ƒfƒoƒbƒOƒ‚[ƒh‚Å‚ ‚ê‚ÎMIDIƒtƒ@ƒCƒ‹‰ğÍŒ‹‰Ê‚ğƒ_ƒ“ƒv‚·‚é
+	//ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰ã§ã‚ã‚Œã°MIDIãƒ•ã‚¡ã‚¤ãƒ«è§£æçµæœã‚’ãƒ€ãƒ³ãƒ—ã™ã‚‹
 	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
 		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
 		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
 		smfReader.SetLogPath(smfDumpPath);
 	}
 
-	//ƒtƒ@ƒCƒ‹‚ğˆêƒV[ƒPƒ“ƒX‚É“Ç‚İ‚İ
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¸€æ™‚ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã«èª­ã¿è¾¼ã¿
 	result = smfReader.Load(pPath, &tmpSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹–¼‚Éƒ|[ƒg”Ô†‚ªŠÜ‚Ü‚ê‚Ä‚¢‚ê‚Î’Šo
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã«ãƒãƒ¼ãƒˆç•ªå·ãŒå«ã¾ã‚Œã¦ã„ã‚Œã°æŠ½å‡º
 	WCHAR *pPortNo = wcsstr(pPath, L"port");
 	if(pPortNo != NULL) {
 		portNo = towlower(*(pPortNo + 4)) - L'a';
@@ -2704,7 +2705,7 @@ int MIDITrailApp::_AddMIDIFile(
 #endif
 	}
 
-	//ƒtƒ@ƒCƒ‹–¼‚Éƒ`ƒƒƒ“ƒlƒ‹”Ô†‚ªŠÜ‚Ü‚ê‚Ä‚¢‚ê‚Î’Šo
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã«ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ãŒå«ã¾ã‚Œã¦ã„ã‚Œã°æŠ½å‡º
 	WCHAR *pChNo = wcsstr(pPath, L"ch");
 	if(pChNo != NULL) {
 		WCHAR bufChNo[3];
@@ -2719,18 +2720,18 @@ int MIDITrailApp::_AddMIDIFile(
 #endif
 	}
 
-	//ˆêƒV[ƒPƒ“ƒX‚ğƒ}[ƒW
+	//ä¸€æ™‚ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ãƒãƒ¼ã‚¸
 	m_SeqData.AddSequence(tmpSeqData, portNo, chNo);
 
-	//ƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÉÄ¶ƒXƒs[ƒh‚ğ100%‚É–ß‚·F_CreateScene‚ÅƒJƒEƒ“ƒ^‚É”½‰f
+	//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿æ™‚ã«å†ç”Ÿã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’100%ã«æˆ»ã™ï¼š_CreateSceneã§ã‚«ã‚¦ãƒ³ã‚¿ã«åæ˜ 
 	m_PlaySpeedRatio = 100;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	m_SceneType = m_SelectedSceneType;
 	result = _CreateScene(m_SceneType, &m_SeqData);
 	if (result != 0) goto EXIT;
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
 
@@ -2746,7 +2747,7 @@ EXIT:;
 // <<< add 20120728 yossiepon end
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹XV
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«æ›´æ–°
 //******************************************************************************
 void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 {
@@ -2757,7 +2758,7 @@ void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 //<<< add yossiepon 20250616 end
 
 //>>> modify yossiepon 20250616 begin
-	//ƒtƒ@ƒCƒ‹–¼‚È‚µ‚Ìê‡
+	//ãƒ•ã‚¡ã‚¤ãƒ«åãªã—ã®å ´åˆ
 	if (pFileName == NULL) {
 		swprintf_s(
 			m_Title,
@@ -2766,7 +2767,7 @@ void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 		);
 	}
 	else {
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚È‚µ‚Ìê‡
+		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆãªã—ã®å ´åˆ
 		if (m_MIDIFileList.GetFileCount() == 0) {
 			wcscat_s(
 				format,
@@ -2781,7 +2782,7 @@ void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 				pFileName
 			);
 		}
-		//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ ‚è‚Ìê‡
+		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚ã‚Šã®å ´åˆ
 		else {
 			wcscat_s(
 				format,
@@ -2801,14 +2802,14 @@ void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 	}
 //<<< modify yossiepon 20250616 end
 
-	//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹İ’è
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«è¨­å®š
 	SetWindowTextW(m_hWnd, m_Title);
 
 	return;
 }
 
 //******************************************************************************
-// FPSXV
+// FPSæ›´æ–°
 //******************************************************************************
 void MIDITrailApp::_UpdateFPS()
 {
@@ -2820,7 +2821,7 @@ void MIDITrailApp::_UpdateFPS()
 	curTime = timeGetTime();
 	m_FPSCount += 1;
 
-	//1•b‚²‚Æ‚ÉFPS‚ğŒvZ
+	//1ç§’ã”ã¨ã«FPSã‚’è¨ˆç®—
 	diffTime = curTime - m_PrevTime;
 	if (diffTime > 1000) {
 
@@ -2829,7 +2830,7 @@ void MIDITrailApp::_UpdateFPS()
 		m_PrevTime = curTime;
 		m_FPSCount = 0;
 
-		//ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹‚Éİ’è
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«ã«è¨­å®š
 		swprintf_s(title, MAX_LOADSTRING, MIDITRAIL_WINDOW_TITLE_FPS, m_Title, fps);
 		SetWindowTextW(m_hWnd, title);
 	}
@@ -2838,7 +2839,7 @@ void MIDITrailApp::_UpdateFPS()
 }
 
 //******************************************************************************
-// ƒ|[ƒgî•ñ“o˜^
+// ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²
 //******************************************************************************
 int MIDITrailApp::_SetPortDev(
 		SMSequencer* pSequencer
@@ -2852,7 +2853,7 @@ int MIDITrailApp::_SetPortDev(
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚çƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚ÄƒV[ƒPƒ“ƒT‚É“o˜^
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ç™»éŒ²
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
 		result = m_MIDIConf.GetStr(portName[portNo], devName, MAXPNAMELEN, _T(""));
@@ -2867,11 +2868,11 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN ƒ‚ƒjƒ^î•ñ“o˜^
+// MIDI IN ãƒ¢ãƒ‹ã‚¿æƒ…å ±ç™»éŒ²
 //******************************************************************************
 int MIDITrailApp::_SetMonitorPortDev(
 		SMLiveMonitor* pLiveMonitor,
-		MTScene* pScene
+		IMTScene11* pScene
 	)
 {
 	int result = 0;
@@ -2882,11 +2883,11 @@ int MIDITrailApp::_SetMonitorPortDev(
 	//--------------------------------------
 	// MIDI IN
 	//--------------------------------------
-	//ƒJƒeƒSƒŠ^ƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ†ã‚´ãƒªï¼ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	result = m_MIDIConf.SetCurSection(_T("MIDIIN"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚çƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚ÄƒV[ƒPƒ“ƒT‚É“o˜^
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ç™»éŒ²
 	result = m_MIDIConf.GetStr("PortA", m_MIDIINDevName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 	result = m_MIDIConf.GetInt("MIDITHRU", &checkMIDITHRU, 1);
@@ -2900,18 +2901,18 @@ int MIDITrailApp::_SetMonitorPortDev(
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒV[ƒ“‚É MIDI IN ƒfƒoƒCƒX–¼‚ğ“o˜^
+	//ã‚·ãƒ¼ãƒ³ã« MIDI IN ãƒ‡ãƒã‚¤ã‚¹åã‚’ç™»éŒ²
 	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 	if (result != 0) goto EXIT;
 
 	//--------------------------------------
 	// MIDI OUT (MIDITHRU)
 	//--------------------------------------
-	//ƒJƒeƒSƒŠ^ƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ†ã‚´ãƒªï¼ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚çƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚ÄƒV[ƒPƒ“ƒT‚É“o˜^
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ç™»éŒ²
 	result = m_MIDIConf.GetStr("PortA", midiOutDevName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 
@@ -2925,71 +2926,75 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_ChangeWindowSize()
 {
 	int result = 0;
 	bool isMonitor = false;
-	MTScene::MTViewParamMap viewParamMap;
+	MTViewParamMap viewParamMap;
 
-	//ƒ‚ƒjƒ^ó‘Ô‚ÌŠm”F
+	//ãƒ¢ãƒ‹ã‚¿çŠ¶æ…‹ã®ç¢ºèª
 	if ((m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON)) {
 		isMonitor = true;
 	}
 
-	//Œ»İ‚Ì‹“_‚ğ‘Ş”ğ
+	//ç¾åœ¨ã®è¦–ç‚¹ã‚’é€€é¿
 	if (m_pScene != NULL) {
 		m_pScene->GetViewParam(&viewParamMap);
 	}
 
-	//ƒV[ƒ“”jŠü
+	//ã‚·ãƒ¼ãƒ³ç ´æ£„
 	if (m_pScene != NULL) {
 		m_pScene->Release();
 		delete m_pScene;
 		m_pScene = NULL;
 	}
 
-	//ƒŒƒ“ƒ_ƒ‰I—¹
+	//ãƒ¬ãƒ³ãƒ€ãƒ©çµ‚äº†
 	m_Renderer.Terminate();
 
-	//ƒ†[ƒU[İ’èƒEƒBƒ“ƒhƒEƒTƒCƒY•ÏX
+	//ãƒ¦ãƒ¼ã‚¶ãƒ¼è¨­å®šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå¤‰æ›´
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
 
-	//ƒŒƒ“ƒ_ƒ‰‰Šú‰»
+	//ãƒ¬ãƒ³ãƒ€ãƒ©åˆæœŸåŒ–
 	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//å…±æœ‰ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³åˆæœŸåŒ–
+	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
+	if (result != 0) goto EXIT;
+
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	if (!isMonitor) {
-		//ƒvƒŒƒCƒ„‚ÌƒV[ƒ“¶¬
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ã®ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 		result = _CreateScene(m_SceneType, &m_SeqData);
 		if (result != 0) goto EXIT;
 	}
 	else {
-		//ƒ‰ƒCƒuƒ‚ƒjƒ^‚ÌƒV[ƒ“¶¬
+		//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ã®ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 		result = _CreateScene(m_SceneType, NULL);
 		if (result != 0) goto EXIT;
 
-		//MIDI IN ƒfƒoƒCƒX–¼‚ğİ’è
+		//MIDI IN ãƒ‡ãƒã‚¤ã‚¹åã‚’è¨­å®š
 		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
 		if (result != 0) goto EXIT;
 
-		//MIDI IN ƒfƒoƒCƒX–¼‚ğ‰æ–Ê‚É”½‰f
+		//MIDI IN ãƒ‡ãƒã‚¤ã‚¹åã‚’ç”»é¢ã«åæ˜ 
 		if (m_PlayStatus == MonitorON) {
-			//ƒV[ƒ“‚É‰‰‘tŠJniƒ‰ƒCƒuƒ‚ƒjƒ^ŠJnj‚ğ’Ê’m
-			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
+			//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ï¼ˆãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿é–‹å§‹ï¼‰ã‚’é€šçŸ¥
+			result = m_pScene->OnPlayStart();
 			if (result != 0) goto EXIT;
 		}
 		else {
-			//ƒV[ƒ“‚É‰‰‘tI—¹iƒ‰ƒCƒuƒ‚ƒjƒ^’â~j‚ğ’Ê’m
-			result = m_pScene->OnPlayEnd(m_Renderer.GetDevice());
+			//ã‚·ãƒ¼ãƒ³ã«æ¼”å¥çµ‚äº†ï¼ˆãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿åœæ­¢ï¼‰ã‚’é€šçŸ¥
+			result = m_pScene->OnPlayEnd();
 			if (result != 0) goto EXIT;
 		}
 	}
 
-	//‹“_‚ğ•œ‹A
+	//è¦–ç‚¹ã‚’å¾©å¸°
 	if (m_pScene != NULL) {
 		m_pScene->SetViewParam(&viewParamMap);
 	}
@@ -2999,7 +3004,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘tó‘Ô•ÏX
+// æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 //******************************************************************************
 int MIDITrailApp::_ChangePlayStatus(
 		PlayStatus status
@@ -3007,10 +3012,10 @@ int MIDITrailApp::_ChangePlayStatus(
 {
 	int result = 0;
 
-	//‰‰‘tó‘Ô•ÏX
+	//æ¼”å¥çŠ¶æ…‹å¤‰æ›´
 	m_PlayStatus = status;
 
-	////ƒtƒ@ƒCƒ‹ƒhƒ‰ƒbƒN‹–‰Â
+	////ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ©ãƒƒã‚¯è¨±å¯
 	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
 	//	DragAcceptFiles(m_hWnd, TRUE);
 	//}
@@ -3018,10 +3023,10 @@ int MIDITrailApp::_ChangePlayStatus(
 	//	DragAcceptFiles(m_hWnd, FALSE);
 	//}
 
-	//í‚Éƒtƒ@ƒCƒ‹ƒhƒ‰ƒbƒO‹–‰Â
+	//å¸¸ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‰ãƒ©ãƒƒã‚°è¨±å¯
 	DragAcceptFiles(m_hWnd, TRUE);
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -3030,7 +3035,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 //******************************************************************************
 int MIDITrailApp::_ChangeMenuStyle()
 {
@@ -3039,8 +3044,8 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long statusIndex = 0;
 	unsigned long style = 0;
 
-	//ƒƒjƒ…[IDˆê——
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼IDä¸€è¦§
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
 // >>> add 20120728 yossiepon begin
@@ -3094,9 +3099,9 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_ABOUT
 	};
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹ˆê——
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«ä¸€è¦§
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
-		//ƒf[ƒ^–³,     ’â~,       Ä¶’†,     ˆê’â~,   ƒ‚ƒjƒ^’â~, ƒ‚ƒjƒ^’†
+		//ãƒ‡ãƒ¼ã‚¿ç„¡,     åœæ­¢,       å†ç”Ÿä¸­,     ä¸€æ™‚åœæ­¢,   ãƒ¢ãƒ‹ã‚¿åœæ­¢, ãƒ¢ãƒ‹ã‚¿ä¸­
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FILE
 // >>> add 20120728 yossiepon begin
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
@@ -3158,13 +3163,13 @@ int MIDITrailApp::_ChangeMenuStyle()
 		case MonitorON:  statusIndex = 5; break;
 	}
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	for (menuIndex = 0; menuIndex < MT_MENU_NUM; menuIndex++) {
 		style = menuStyle[menuIndex][statusIndex];
 		EnableMenuItem(GetMenu(m_hWnd), menuID[menuIndex], style);
 	}
 
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚ª‘¶İ‚µ‚È‚¢ê‡"Previous File","Next File"‚Í‘I‘ğ•s‰Â
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆãŒå­˜åœ¨ã—ãªã„å ´åˆ"Previous File","Next File"ã¯é¸æŠä¸å¯
 	if (m_MIDIFileList.GetFileCount() == 0) {
 		EnableMenuItem(GetMenu(m_hWnd), IDM_PREVIOUS_FILE, MF_GRAYED);
 		EnableMenuItem(GetMenu(m_hWnd), IDM_NEXT_FILE, MF_GRAYED);
@@ -3175,69 +3180,65 @@ int MIDITrailApp::_ChangeMenuStyle()
 }
 
 //******************************************************************************
-// ƒV[ƒ“¶¬
+// ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MIDITrailApp::_CreateScene(
 		SceneType type,
-		SMSeqData* pSeqData  //ƒ‰ƒCƒuƒ‚ƒjƒ^‚ÍNULL
+		SMSeqData* pSeqData  //ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿æ™‚ã¯NULL
 	)
 {
 	int result = 0;
 
-	//ƒV[ƒ“”jŠü
+	//ã‚·ãƒ¼ãƒ³ç ´æ£„
 	if (m_pScene != NULL) {
 		m_pScene->Release();
 		delete m_pScene;
 		m_pScene = NULL;
 	}
 
-	//ƒV[ƒ“ƒIƒuƒWƒFƒNƒg¶¬
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
+	// TODO: Title/2D/Rain/Ring/Live ã‚·ãƒ¼ãƒ³ã® DX11 ç‰ˆã‚’å®Ÿè£…å¾Œã«è¿½åŠ 
 	try {
 		if (type == Title) {
-			m_pScene = new MTSceneTitle();
+			m_pScene = new MTSceneTitle11();
 		}
 		else {
-			//ƒvƒŒƒCƒ„—pƒV[ƒ“¶¬
+			//ãƒ—ãƒ¬ã‚¤ãƒ¤ç”¨ã‚·ãƒ¼ãƒ³ç”Ÿæˆ
 			if (pSeqData != NULL) {
 				if (type == PianoRoll3D) {
-// >>> modify 20120729 yossiepon begin
-					m_pScene = new MTScenePianoRoll3DMod();
-// <<< modify 20120729 yossiepon end
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-// >>> modify 20120729 yossiepon begin
-					m_pScene = new MTScenePianoRoll2DMod();
-// <<< modify 20120729 yossiepon end
+					m_pScene = new MTScenePianoRoll3D11(false, true);
 				}
 				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRain();
+					m_pScene = new MTScenePianoRollRain11();
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain2D();
+					m_pScene = new MTScenePianoRollRain11(false, true);
 				}
 				else if (type == PianoRollRing) {
-					// >>> modify 20191222 yossiepon begin
-					m_pScene = new MTScenePianoRollRingMod();
-					// <<< modify 20191222 yossiepon end
+					m_pScene = new MTScenePianoRollRing11();
 				}
 			}
-			//ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒV[ƒ“¶¬
+			//ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ã‚·ãƒ¼ãƒ³ç”Ÿæˆ (DX11: isLive=true)
 			else {
 				if (type == PianoRoll3D) {
-					m_pScene = new MTScenePianoRoll3DLive();
+					// Live ã‚·ãƒ¼ãƒ³æœªå®Ÿè£…: æš«å®šçš„ã« Playback ç”¨ã‚’ä½¿ç”¨
+					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll2DLive();
+					m_pScene = new MTScenePianoRoll3D11(true, true);
 				}
 				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRainLive();
+					m_pScene = new MTScenePianoRollRain11(true);
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain2DLive();
+					m_pScene = new MTScenePianoRollRain11(true, true);
 				}
 				else if (type == PianoRollRing) {
-					m_pScene = new MTScenePianoRollRingLive();
+					m_pScene = new MTScenePianoRollRing11(true);
 				}
 			}
 		}
@@ -3252,20 +3253,24 @@ int MIDITrailApp::_CreateScene(
 		goto EXIT;
 	}
 
-	//ƒV[ƒ“‚Ì¶¬
-	result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), pSeqData);
-	if (result != 0) goto EXIT;
+	//ã‚·ãƒ¼ãƒ³ã®ç”Ÿæˆ
+	// Title ã‚·ãƒ¼ãƒ³ã¯ãƒ‡ãƒ¼ã‚¿ãªã—: pSeqData ã‚’ NULL ã¨ã—ã¦æ¸¡ã™
+	{
+		SMSeqData* pCreateSeqData = (type == Title) ? NULL : pSeqData;
+		result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), m_Renderer.GetContext(), pCreateSeqData);
+		if (result != 0) goto EXIT;
+	}
 
-	//•Û‘¶‚³‚ê‚Ä‚¢‚é‹“_‚ğƒV[ƒ“‚É”½‰f‚·‚é
+	//ä¿å­˜ã•ã‚Œã¦ã„ã‚‹è¦–ç‚¹ã‚’ã‚·ãƒ¼ãƒ³ã«åæ˜ ã™ã‚‹
 	if (type != Title) {
 		result = _LoadViewpoint();
 		if (result != 0) goto EXIT;
 	}
 
-	//•\¦Œø‰Ê”½‰f
+	//è¡¨ç¤ºåŠ¹æœåæ˜ 
 	_UpdateEffect();
 
-	//‰‰‘t‘¬“xİ’è
+	//æ¼”å¥é€Ÿåº¦è¨­å®š
 	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
 
 EXIT:;
@@ -3273,7 +3278,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒ“í•Ê“Ç‚İ‚İ
+// ã‚·ãƒ¼ãƒ³ç¨®åˆ¥èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadSceneType()
 {
@@ -3286,7 +3291,7 @@ int MIDITrailApp::_LoadSceneType()
 	result = m_ViewConf.GetStr(_T("Type"), type, 256, _T(""));
 	if (result != 0) goto EXIT;
 
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	if (_tcscmp(type, _T("PianoRoll3D")) == 0) {
 		m_SelectedSceneType = PianoRoll3D;
 	}
@@ -3311,14 +3316,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒ“í•Ê•Û‘¶
+// ã‚·ãƒ¼ãƒ³ç¨®åˆ¥ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveSceneType()
 {
 	int result = 0;
 	TCHAR* pType = _T("");
 
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	switch (m_SelectedSceneType) {
 		case PianoRoll3D:
 			pType = _T("PianoRoll3D");
@@ -3352,7 +3357,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒ“İ’è“Ç‚İ‚İ
+// ã‚·ãƒ¼ãƒ³è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadSceneConf()
 {
@@ -3362,7 +3367,7 @@ int MIDITrailApp::_LoadSceneConf()
 	result = m_ViewConf.SetCurSection(_T("Scene"));
 	if (result != 0) goto EXIT;
 
-	//©“®‹“_•Û‘¶
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
 	//result = m_ViewConf.GetInt(_T("AutoSaveViewpoint"), &autoSaveViewpoint, 0);
 	//if (result != 0) goto EXIT;
 	//
@@ -3371,7 +3376,7 @@ int MIDITrailApp::_LoadSceneConf()
 	//	m_isAutoSaveViewpoint = true;
 	//}
 
-	//©“®‹“_•Û‘¶Fí‚É—LŒø‚Æ‚·‚é
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜ï¼šå¸¸ã«æœ‰åŠ¹ã¨ã™ã‚‹
 	m_isAutoSaveViewpoint = true;
 
 EXIT:;
@@ -3379,7 +3384,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒV[ƒ“İ’è•Û‘¶
+// ã‚·ãƒ¼ãƒ³è¨­å®šä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveSceneConf()
 {
@@ -3389,7 +3394,7 @@ int MIDITrailApp::_SaveSceneConf()
 	result = m_ViewConf.SetCurSection(_T("Scene"));
 	if (result != 0) goto EXIT;
 
-	//©“®‹“_•Û‘¶
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜
 	autoSaveViewpoint = m_isAutoSaveViewpoint ? 1 : 0;
 	result = m_ViewConf.SetInt(_T("AutoSaveViewpoint"), autoSaveViewpoint);
 	if (result != 0) goto EXIT;
@@ -3399,7 +3404,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\¦Œø‰Ê‘I‘ğó‘Ô“Ç‚İ‚İ
+// è¡¨ç¤ºåŠ¹æœé¸æŠçŠ¶æ…‹èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadEffectStatus()
 {
@@ -3446,7 +3451,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\¦Œø‰Ê‘I‘ğó‘Ô•Û‘¶
+// è¡¨ç¤ºåŠ¹æœé¸æŠçŠ¶æ…‹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveEffectStatus()
 {
@@ -3493,34 +3498,34 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹“_“Ç‚İ‚İ
+// è¦–ç‚¹èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadViewpoint()
 {
 	int result = 0;
-	MTScene::MTViewParamMap defParamMap;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap defParamMap;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 	float param = 0.0f;
 
-	//ƒV[ƒ“‚©‚çƒfƒtƒHƒ‹ƒg‚Ì‹“_‚ğæ“¾
+	//ã‚·ãƒ¼ãƒ³ã‹ã‚‰ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è¦–ç‚¹ã‚’å–å¾—
 	m_pScene->GetDefaultViewParam(&defParamMap);
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
+	//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 	_tcscat_s(section, 256, _T("Viewpoint-"));
 	_tcscat_s(section, 256, m_pScene->GetName());
 	result = m_ViewConf.SetCurSection(section);
 	if (result != 0) goto EXIT;
 
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚©‚çæ“¾
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å–å¾—
 	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
 		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
 		if (result != 0) goto EXIT;
-		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
+		viewParamMap.insert(MTViewParamMapPair((itr->first).c_str(), param));
 	}
 
-	//ƒV[ƒ“‚É‹“_‚ğ“o˜^
+	//ã‚·ãƒ¼ãƒ³ã«è¦–ç‚¹ã‚’ç™»éŒ²
 	m_pScene->SetViewParam(&viewParamMap);
 
 EXIT:;
@@ -3528,31 +3533,31 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹“_•Û‘¶
+// è¦–ç‚¹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveViewpoint()
 {
 	int result = 0;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 
-	//ƒV[ƒ“‚©‚çŒ»İ‚Ì‹“_‚ğæ“¾
+	//ã‚·ãƒ¼ãƒ³ã‹ã‚‰ç¾åœ¨ã®è¦–ç‚¹ã‚’å–å¾—
 	m_pScene->GetViewParam(&viewParamMap);
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
+	//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 	_tcscat_s(section, 256, _T("Viewpoint-"));
 	_tcscat_s(section, 256, m_pScene->GetName());
 	result = m_ViewConf.SetCurSection(section);
 	if (result != 0) goto EXIT;
 
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚É“o˜^
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã«ç™»éŒ²
 	for (itr = viewParamMap.begin(); itr != viewParamMap.end(); itr++) {
 		result = m_ViewConf.SetFloat((itr->first).c_str(), itr->second);
 		if (result != 0) goto EXIT;
 	}
 
-	//‹“_‚ªØ‚è‘Ö‚¦‚ç‚ê‚½‚±‚Æ‚ğƒV[ƒ“‚É“`’B
+	//è¦–ç‚¹ãŒåˆ‡ã‚Šæ›¿ãˆã‚‰ã‚ŒãŸã“ã¨ã‚’ã‚·ãƒ¼ãƒ³ã«ä¼é”
 	m_pScene->SetViewParam(&viewParamMap);
 
 EXIT:;
@@ -3560,36 +3565,36 @@ EXIT:;
 }
 
 //******************************************************************************
-// „‚Ì‹“_‚ÉˆÚ“®
+// ç§ã®è¦–ç‚¹ã«ç§»å‹•
 //******************************************************************************
 int MIDITrailApp::_MoveToMyViewpoint(
 		unsigned long viewpointNo
 	)
 {
 	int result = 0;
-	MTScene::MTViewParamMap defParamMap;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap defParamMap;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 	float param = 0.0f;
 
-	//ƒV[ƒ“‚©‚çƒfƒtƒHƒ‹ƒg‹“_‚ğæ“¾
+	//ã‚·ãƒ¼ãƒ³ã‹ã‚‰ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¦–ç‚¹ã‚’å–å¾—
 	m_pScene->GetDefaultViewParam(&defParamMap);
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
+	//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
 	_tcscat_s(section, 256, m_pScene->GetName());
 	result = m_ViewConf.SetCurSection(section);
 	if (result != 0) goto EXIT;
 
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚©‚çæ“¾i–¢İ’è‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg‹“_‚ğ“K—pj
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å–å¾—ï¼ˆæœªè¨­å®šã®å ´åˆã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¦–ç‚¹ã‚’é©ç”¨ï¼‰
 	for (itr = defParamMap.begin(); itr != defParamMap.end(); itr++) {
 		result = m_ViewConf.GetFloat((itr->first).c_str(), &param, itr->second);
 		if (result != 0) goto EXIT;
-		viewParamMap.insert(MTScene::MTViewParamMapPair((itr->first).c_str(), param));
+		viewParamMap.insert(MTViewParamMapPair((itr->first).c_str(), param));
 	}
 
-	//‹“_‚ªØ‚è‘Ö‚¦‚ç‚ê‚½‚±‚Æ‚ğƒV[ƒ“‚É“`’B
+	//è¦–ç‚¹ãŒåˆ‡ã‚Šæ›¿ãˆã‚‰ã‚ŒãŸã“ã¨ã‚’ã‚·ãƒ¼ãƒ³ã«ä¼é”
 	m_pScene->SetViewParam(&viewParamMap);
 
 EXIT:;
@@ -3597,27 +3602,27 @@ EXIT:;
 }
 
 //******************************************************************************
-// „‚Ì‹“_•Û‘¶
+// ç§ã®è¦–ç‚¹ä¿å­˜
 //******************************************************************************
 int MIDITrailApp::_SaveMyViewpoint(
 		unsigned long viewpointNo
 	)
 {
 	int result = 0;
-	MTScene::MTViewParamMap viewParamMap;
-	MTScene::MTViewParamMap::iterator itr;
+	MTViewParamMap viewParamMap;
+	MTViewParamMap::iterator itr;
 	TCHAR section[256] = {_T('\0')};
 
-	//ƒV[ƒ“‚©‚çŒ»İ‚Ì‹“_‚ğæ“¾
+	//ã‚·ãƒ¼ãƒ³ã‹ã‚‰ç¾åœ¨ã®è¦–ç‚¹ã‚’å–å¾—
 	m_pScene->GetViewParam(&viewParamMap);
 
-	//ƒZƒNƒVƒ‡ƒ“–¼
+	//ã‚»ã‚¯ã‚·ãƒ§ãƒ³å
 	_stprintf_s(section, 256, _T("MyViewpoint-%d-"), viewpointNo);
 	_tcscat_s(section, 256, m_pScene->GetName());
 	result = m_ViewConf.SetCurSection(section);
 	if (result != 0) goto EXIT;
 
-	//ƒpƒ‰ƒ[ƒ^‚ğİ’èƒtƒ@ƒCƒ‹‚É“o˜^
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã«ç™»éŒ²
 	for (itr = viewParamMap.begin(); itr != viewParamMap.end(); itr++) {
 		result = m_ViewConf.SetFloat((itr->first).c_str(), itr->second);
 		if (result != 0) goto EXIT;
@@ -3628,7 +3633,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒOƒ‰ƒtƒBƒbƒNİ’è“Ç‚İ‚İ
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadGraphicConf()
 {
@@ -3645,7 +3650,7 @@ int MIDITrailApp::_LoadGraphicConf()
 				);
 	if (result != 0) goto EXIT;
 
-	//–³Œø’l‚ÍƒAƒ“ƒ`ƒGƒCƒŠƒAƒXOFF‚É‚·‚é
+	//ç„¡åŠ¹å€¤ã¯ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹OFFã«ã™ã‚‹
 	if ((DX_MULTI_SAMPLE_TYPE_MIN <= multiSampleType)
 	 && (multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX)) {
 		m_MultiSampleType = multiSampleType;
@@ -3659,7 +3664,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒvƒŒ[ƒ„[İ’è“Ç‚İ‚İ
+// ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼è¨­å®šèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MIDITrailApp::_LoadPlayerConf()
 {
@@ -3674,7 +3679,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//ƒvƒŒ[ƒ„[§Œä
+	//ãƒ—ãƒ¬ãƒ¼ãƒ¤ãƒ¼åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("PlayerControl");
 	if (result != 0) goto EXIT;
@@ -3684,7 +3689,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//•\¦§Œä
+	//è¡¨ç¤ºåˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("ViewControl");
 	if (result != 0) goto EXIT;
@@ -3693,7 +3698,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	m_isEnableFileName = (showFileName > 0) ? true : false;
 
 	//----------------------------------
-	//ƒŠƒƒCƒ“ƒh^ƒXƒLƒbƒv§Œä
+	//ãƒªãƒ¯ã‚¤ãƒ³ãƒ‰ï¼ã‚¹ã‚­ãƒƒãƒ—åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("SkipControl");
 	if (result != 0) goto EXIT;
@@ -3704,11 +3709,11 @@ int MIDITrailApp::_LoadPlayerConf()
 	result = confFile.GetInt("MovingTimeSpanInMsec", &timeSpan, 400);
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒPƒ“ƒT‚ÉƒŠƒƒCƒ“ƒh^ƒXƒLƒbƒvˆÚ“®ŠÔ‚ğİ’è
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«ãƒªãƒ¯ã‚¤ãƒ³ãƒ‰ï¼ã‚¹ã‚­ãƒƒãƒ—ç§»å‹•æ™‚é–“ã‚’è¨­å®š
 	m_Sequencer.SetMovingTimeSpanInMsec(timeSpan);
 
 	//----------------------------------
-	//‰‰‘tƒXƒs[ƒh§Œä
+	//æ¼”å¥ã‚¹ãƒ”ãƒ¼ãƒ‰åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("PlaybackSpeedControl");
 	if (result != 0) goto EXIT;
@@ -3721,7 +3726,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	m_MaxSpeedInPercent = (unsigned long)maxSpeedInPercent;
 
 	//----------------------------------
-	//‰‰‘t§Œä
+	//æ¼”å¥åˆ¶å¾¡
 	//----------------------------------
 	result = confFile.SetCurSection("Playback");
 	if (result != 0) goto EXIT;
@@ -3739,28 +3744,28 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒE”jŠü
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ç ´æ£„
 //******************************************************************************
 int MIDITrailApp::_OnDestroy()
 {
 	int result = 0;
 
-	//‹“_•Û‘¶
+	//è¦–ç‚¹ä¿å­˜
 	if (m_isAutoSaveViewpoint) {
 		result = _OnMenuSaveViewpoint();
 		//if (result != 0) goto EXIT;
-		//ƒGƒ‰[‚ª”­¶‚µ‚Ä‚àˆ—‚ğ‘±s‚·‚é
+		//ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¦ã‚‚å‡¦ç†ã‚’ç¶šè¡Œã™ã‚‹
 	}
 
-	//‰‰‘t‚ğ~‚ß‚é
+	//æ¼”å¥ã‚’æ­¢ã‚ã‚‹
 	if (m_PlayStatus == Play) {
 		m_Sequencer.Stop();
-		//ƒV[ƒPƒ“ƒT‘¤‚ÌƒXƒŒƒbƒhI—¹‚ğ‘Ò‚¿‡‚í‚¹‚é‚×‚«‚¾‚ªè‚ğ”²‚­
+		//ã‚·ãƒ¼ã‚±ãƒ³ã‚µå´ã®ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ã‚’å¾…ã¡åˆã‚ã›ã‚‹ã¹ãã ãŒæ‰‹ã‚’æŠœã
 		Sleep(100);
 	}
 	else if (m_PlayStatus == MonitorON) {
 		m_LiveMonitor.Stop();
-		//Œµ–§‚É‚ÍƒR[ƒ‹ƒoƒbƒNŠÖ”I—¹‚ğ‘Ò‚¿‡‚í‚¹‚é‚×‚«‚¾‚ªè‚ğ”²‚­
+		//å³å¯†ã«ã¯ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°çµ‚äº†ã‚’å¾…ã¡åˆã‚ã›ã‚‹ã¹ãã ãŒæ‰‹ã‚’æŠœã
 		Sleep(100);
 	}
 
@@ -3769,7 +3774,7 @@ int MIDITrailApp::_OnDestroy()
 }
 
 //******************************************************************************
-// ƒV[ƒ“Ä¶¬
+// ã‚·ãƒ¼ãƒ³å†ç”Ÿæˆ
 //******************************************************************************
 int MIDITrailApp::_RebuildScene()
 {
@@ -3777,59 +3782,56 @@ int MIDITrailApp::_RebuildScene()
 	int apiresult = 0;
 	bool m_isResume = false;
 	bool m_isResumeMonitoring = false;
-	MTScene::MTViewParamMap viewParamMap;
+	MTViewParamMap viewParamMap;
 
-	//b’è‘Îô
-	//  ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğ•\¦‚·‚é‚±‚Æ‚É‚æ‚è
-	//  ƒ†[ƒU[‚ªOKƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚Ü‚Å‚ÌŠÔ‚É
-	//  ƒfƒoƒCƒX‚ªƒŠƒZƒbƒg‰Â”\ó‘Ô‚É‚È‚é‚±‚Æ‚ğŠú‘Ò‚·‚é
+	// DX11: DXGI_ERROR_DEVICE_REMOVED ã¯ãƒ‰ãƒ©ã‚¤ãƒã‚¯ãƒ©ãƒƒã‚·ãƒ¥ç­‰ã§ç™ºç”Ÿã€‚
+	// DX9 ã¨ç•°ãªã‚Šãƒ‡ãƒã‚¤ã‚¹çŠ¶æ…‹é·ç§»ã‚’å¾…ã£ã¦ã‚‚å›å¾©ã—ãªã„ãŸã‚ã€
+	// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã§çŠ¶æ³ã‚’é€šçŸ¥ã—ãŸå¾Œã€ãƒ‡ãƒã‚¤ã‚¹ã‚’å®Œå…¨ã«å†ä½œæˆã™ã‚‹ã€‚
 
-	//Œ»İ‚Ì‹“_‚ğ‘Ş”ğ
+	//ç¾åœ¨ã®è¦–ç‚¹ã‚’é€€é¿
 	if (m_pScene != NULL) {
 		m_pScene->GetViewParam(&viewParamMap);
 	}
 
-	//‰‰‘t‚ğˆê’â~‚·‚é
-	//  ‚È‚º‚©ˆê’â~‚µ‚È‚¢‚ÆƒfƒoƒCƒX‚ğÄ¶¬‚µ‚Ä‚à
-	//  ƒfƒoƒCƒXƒƒXƒg‚©‚ç•œ‹A‚Å‚«‚È‚¢
+	//æ¼”å¥ã‚’ä¸€æ™‚åœæ­¢ã™ã‚‹
 	if (m_PlayStatus == Play) {
 		m_Sequencer.Pause();
 		m_isResume = true;
 	}
 	else if (m_PlayStatus == MonitorON) {
-		//ƒ‚ƒjƒ^’â~
+		//ãƒ¢ãƒ‹ã‚¿åœæ­¢
 		result = _OnMenuStopMonitoring();
 		if (result != 0) goto EXIT;
 		m_isResumeMonitoring = true;
 	}
 
-	//ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤º
 	apiresult = MessageBox(
-					m_hWnd,						//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-					MIDITRAIL_MSG_DEVICELOST,	//ƒƒbƒZ[ƒW
-					_T("WARNING"),				//ƒ^ƒCƒgƒ‹
-					MB_OK | MB_ICONWARNING		//ƒtƒ‰ƒO
+					m_hWnd,						//ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+					MIDITRAIL_MSG_DEVICELOST,	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+					_T("WARNING"),				//ã‚¿ã‚¤ãƒˆãƒ«
+					MB_OK | MB_ICONWARNING		//ãƒ•ãƒ©ã‚°
 				);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒ‰‚ÆƒV[ƒ“ƒIƒuƒWƒFƒNƒg‚ÌÄ¶¬
+	//ãƒ¬ãƒ³ãƒ€ãƒ©ã¨ã‚·ãƒ¼ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ç”Ÿæˆ
 	result = _ChangeWindowSize();
 	if (result != 0) goto EXIT;
 
-	//ƒV[ƒ“‚ÌÄİ’è
+	//ã‚·ãƒ¼ãƒ³ã®å†è¨­å®š
 	if (m_pScene != NULL) {
-		//‹“_‚ğ•œ‹A
+		//è¦–ç‚¹ã‚’å¾©å¸°
 		m_pScene->SetViewParam(&viewParamMap);
 
-		//‰‰‘t’†‚Ìê‡‚ÍƒV[ƒ“‚É‰‰‘tŠJn‚ğ’Ê’m
+		//æ¼”å¥ä¸­ã®å ´åˆã¯ã‚·ãƒ¼ãƒ³ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
 		if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-			result = m_pScene->OnPlayStart(m_Renderer.GetDevice());
+			result = m_pScene->OnPlayStart();
 			if (result != 0) goto EXIT;
 		}
-		//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€’Ê’m
+		//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvPlayTime) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.playTime.param1,
@@ -3837,7 +3839,7 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//ƒeƒ“ƒ|•ÏX’Ê’m
+		//ãƒ†ãƒ³ãƒå¤‰æ›´é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvTempo) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.tempo.param1,
@@ -3845,7 +3847,7 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//¬ß”Ô†’Ê’m
+		//å°ç¯€ç•ªå·é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvBar) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.bar.param1,
@@ -3853,7 +3855,7 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//”q‹L†•ÏX’Ê’m
+		//æ‹å­è¨˜å·å¤‰æ›´é€šçŸ¥
 		if (m_SequencerLastMsg.isRecvBeat) {
 			result = m_pScene->OnRecvSequencerMsg(
 							m_SequencerLastMsg.beat.param1,
@@ -3861,17 +3863,17 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//TODO: ƒm[ƒg”‚ÌƒJƒEƒ“ƒ^•\¦‚ª•œŒ³‚Å‚«‚Ä‚¢‚È‚¢
-		//TODO: ƒsƒbƒ`ƒxƒ“ƒh‚ª•œŒ³‚Å‚«‚Ä‚¢‚È‚¢
+		//TODO: ãƒãƒ¼ãƒˆæ•°ã®ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºãŒå¾©å…ƒã§ãã¦ã„ãªã„
+		//TODO: ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ãŒå¾©å…ƒã§ãã¦ã„ãªã„
 	}
 
-	//ˆê’â~‚µ‚½ê‡‚Í‰‰‘t‚ğÄŠJ‚³‚¹‚é
+	//ä¸€æ™‚åœæ­¢ã—ãŸå ´åˆã¯æ¼”å¥ã‚’å†é–‹ã•ã›ã‚‹
 	if (m_isResume) {
 		result = m_Sequencer.Resume();
 		if (result != 0) goto EXIT;
 	}
 	else if (m_isResumeMonitoring) {
-		//ƒ‚ƒjƒ^ÄŠJ
+		//ãƒ¢ãƒ‹ã‚¿å†é–‹
 		result = _OnMenuStartMonitoring();
 		if (result != 0) goto EXIT;
 	}
@@ -3881,7 +3883,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// HowToView•\¦
+// HowToViewè¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_DispHowToView()
 {
@@ -3895,7 +3897,7 @@ int MIDITrailApp::_DispHowToView()
 	if (result != 0) goto EXIT;
 
 	if (count != 2) {
-		//‘€ì•û–@ƒ_ƒCƒAƒƒO•\¦
+		//æ“ä½œæ–¹æ³•ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 		m_HowToViewDlg.Show(m_hWnd);
 	}
 
@@ -3908,20 +3910,20 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 //******************************************************************************
 int MIDITrailApp::_UpdateMenuCheckmark()
 {
 	int result = 0;
 
-	//ƒŠƒs[ƒg
+	//ãƒªãƒ”ãƒ¼ãƒˆ
 	_CheckMenuItem(IDM_REPEAT, m_isRepeat);
 	
-	//ƒtƒHƒ‹ƒ_‰‰‘t
+	//ãƒ•ã‚©ãƒ«ãƒ€æ¼”å¥
 	_CheckMenuItem(IDM_FOLDER_PLAYBACK, m_isFolderPlayback);
 
-	//ƒV[ƒ“í•Ê‘I‘ğ
-	//TAG:ƒV[ƒ“’Ç‰Á
+	//ã‚·ãƒ¼ãƒ³ç¨®åˆ¥é¸æŠ
+	//TAG:ã‚·ãƒ¼ãƒ³è¿½åŠ 
 	_CheckMenuItem(IDM_VIEW_3DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_2DPIANOROLL, false);
 	_CheckMenuItem(IDM_VIEW_PIANOROLLRAIN, false);
@@ -3949,37 +3951,37 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 			break;
 	}
 
-	//ƒsƒAƒmƒL[ƒ{[ƒh•\¦
+	//ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰è¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_PIANOKEYBOARD, m_isEnablePianoKeyboard);
 
-	//”g–äŒø‰Ê
+	//æ³¢ç´‹åŠ¹æœ
 	_CheckMenuItem(IDM_ENABLE_RIPPLE, m_isEnableRipple);
 
-	//ƒsƒbƒ`ƒxƒ“ƒhŒø‰Ê
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰åŠ¹æœ
 	_CheckMenuItem(IDM_ENABLE_PITCHBEND, m_isEnablePitchBend);
 
-	//¯•\¦
+	//æ˜Ÿè¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_STARS, m_isEnableStars);
 
-	//ƒJƒEƒ“ƒ^•\¦
+	//ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_COUNTER, m_isEnableCounter);
 
-	//”wŒi‰æ‘œ•\¦
+	//èƒŒæ™¯ç”»åƒè¡¨ç¤º
 	_CheckMenuItem(IDM_ENABLE_BACKGROUNDIMAGE, m_isEnableBackgroundImage);
 
-	//©“®‹“_•Û‘¶‚Í”p~
+	//è‡ªå‹•è¦–ç‚¹ä¿å­˜ã¯å»ƒæ­¢
 	//_CheckMenuItem(IDM_AUTO_SAVE_VIEWPOINT, m_isAutoSaveViewpoint);
 
-	//ƒOƒŠƒbƒhƒ‰ƒCƒ“
+	//ã‚°ãƒªãƒƒãƒ‰ãƒ©ã‚¤ãƒ³
 	_CheckMenuItem(IDM_ENABLE_GRIDLINE, m_isEnableGridLine);
 
-	//ƒ^ƒCƒ€ƒCƒ“ƒWƒP[ƒ^
+	//ã‚¿ã‚¤ãƒ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
 	_CheckMenuItem(IDM_ENABLE_TIMEINDICATOR, m_isEnableTimeIndicator);
 
-	//ƒtƒ‹ƒXƒNƒŠ[ƒ“
+	//ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³
 	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
 
-	//ƒƒjƒ…[ƒo[
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼
 	_CheckMenuItem(IDM_MENUBAR, m_isEnableMenuBar);
 
 EXIT:;
@@ -3987,7 +3989,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[‘I‘ğƒ}[ƒNİ’è
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯è¨­å®š
 //******************************************************************************
 void MIDITrailApp::_CheckMenuItem(
 		UINT uIDCheckItem,
@@ -4009,26 +4011,26 @@ void MIDITrailApp::_CheckMenuItem(
 }
 
 //******************************************************************************
-// •\¦Œø‰Ê”½‰f
+// è¡¨ç¤ºåŠ¹æœåæ˜ 
 //******************************************************************************
 void MIDITrailApp::_UpdateEffect()
 {
 	if (m_pScene != NULL) {
-		m_pScene->SetEffect(MTScene::EffectPianoKeyboard, m_isEnablePianoKeyboard);
-		m_pScene->SetEffect(MTScene::EffectRipple, m_isEnableRipple);
-		m_pScene->SetEffect(MTScene::EffectPitchBend, m_isEnablePitchBend);
-		m_pScene->SetEffect(MTScene::EffectStars, m_isEnableStars);
-		m_pScene->SetEffect(MTScene::EffectCounter, m_isEnableCounter);
-		m_pScene->SetEffect(MTScene::EffectBackgroundImage, m_isEnableBackgroundImage);
-		m_pScene->SetEffect(MTScene::EffectGridLine, m_isEnableGridLine);
-		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
-		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
+		m_pScene->SetEffect(MTEffectPianoKeyboard, m_isEnablePianoKeyboard);
+		m_pScene->SetEffect(MTEffectRipple, m_isEnableRipple);
+		m_pScene->SetEffect(MTEffectPitchBend, m_isEnablePitchBend);
+		m_pScene->SetEffect(MTEffectStars, m_isEnableStars);
+		m_pScene->SetEffect(MTEffectCounter, m_isEnableCounter);
+		m_pScene->SetEffect(MTEffectBackgroundImage, m_isEnableBackgroundImage);
+		m_pScene->SetEffect(MTEffectGridBox, m_isEnableGridLine);
+		m_pScene->SetEffect(MTEffectTimeIndicator, m_isEnableTimeIndicator);
+		m_pScene->SetEffect(MTEffectFileName, m_isEnableFileName);
 	}
 	return;
 }
 
 //******************************************************************************
-// ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
+// ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
 //******************************************************************************
 int MIDITrailApp::_ParseCmdLine()
 {
@@ -4036,29 +4038,29 @@ int MIDITrailApp::_ParseCmdLine()
 	DWORD dwResult = 0;
 	WCHAR filePath[_MAX_PATH];
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
 	result = m_CmdLineParser.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Åƒtƒ@ƒCƒ‹‚ğw’è‚³‚ê‚Ä‚¢‚éê‡
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆ
 	if (m_CmdLineParser.GetSwitch(CMDSW_FILE_PATH) == CMDSW_ON) {
-		//ƒtƒ‹ƒpƒX‚É•ÏŠ·
+		//ãƒ•ãƒ«ãƒ‘ã‚¹ã«å¤‰æ›
 		dwResult = GetFullPathNameW(
-						m_CmdLineParser.GetFilePath(),	//•ÏŠ·Œ³ƒtƒ@ƒCƒ‹–¼i‘Š‘ÎƒpƒXw’è‰Â”\j
-						_MAX_PATH,		//ƒtƒ‹ƒpƒXŠi”[æƒoƒbƒtƒ@ƒTƒCƒY
-						filePath,		//ƒtƒ‹ƒpƒXŠi”[æƒoƒbƒtƒ@
-						NULL			//ƒtƒ@ƒCƒ‹–¼‚Ö‚Ìƒ|ƒCƒ“ƒ^
+						m_CmdLineParser.GetFilePath(),	//å¤‰æ›å…ƒãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆç›¸å¯¾ãƒ‘ã‚¹æŒ‡å®šå¯èƒ½ï¼‰
+						_MAX_PATH,		//ãƒ•ãƒ«ãƒ‘ã‚¹æ ¼ç´å…ˆãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+						filePath,		//ãƒ•ãƒ«ãƒ‘ã‚¹æ ¼ç´å…ˆãƒãƒƒãƒ•ã‚¡
+						NULL			//ãƒ•ã‚¡ã‚¤ãƒ«åã¸ã®ãƒã‚¤ãƒ³ã‚¿
 					);
 		if (dwResult == 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 			goto EXIT;
 		}
 
-		//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 		result = _LoadMIDIFile(filePath);
 		if (result != 0) goto EXIT;
 
-		//Ä¶w’è‚³‚ê‚Ä‚¢‚éê‡‚ÍÄ¶ŠJn
+		//å†ç”ŸæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å†ç”Ÿé–‹å§‹
 		if ((m_CmdLineParser.GetSwitch(CMDSW_PLAY) == CMDSW_ON) ||
 		    (m_AutoPlaybackAfterOpenFile > 0)) {
 			result = _OnMenuPlay();
@@ -4071,19 +4073,19 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[ŠJn
+// ã‚¿ã‚¤ãƒãƒ¼é–‹å§‹
 //******************************************************************************
 int MIDITrailApp::_StartTimer()
 {
 	int result = 0;
 	UINT_PTR apiresult = 0;
 
-	//ƒL[ó‘ÔŠm”Fƒ^ƒCƒ}[
+	//ã‚­ãƒ¼çŠ¶æ…‹ç¢ºèªã‚¿ã‚¤ãƒãƒ¼
 	apiresult = SetTimer(
-						m_hWnd,			//’Ê’mæƒEƒBƒ“ƒhƒE
-						MIDITRAIL_TIMER_CHECK_KEY,	//ƒ^ƒCƒ}[ID
-						200,			//ƒ^ƒCƒ€ƒAƒEƒg’liƒ~ƒŠ•bj
-						NULL			//ƒ^ƒCƒ}[ŠÖ”
+						m_hWnd,			//é€šçŸ¥å…ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+						MIDITRAIL_TIMER_CHECK_KEY,	//ã‚¿ã‚¤ãƒãƒ¼ID
+						200,			//ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤ï¼ˆãƒŸãƒªç§’ï¼‰
+						NULL			//ã‚¿ã‚¤ãƒãƒ¼é–¢æ•°
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4095,7 +4097,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[’â~
+// ã‚¿ã‚¤ãƒãƒ¼åœæ­¢
 //******************************************************************************
 int MIDITrailApp::_StopTimer()
 {
@@ -4109,19 +4111,19 @@ int MIDITrailApp::_StopTimer()
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[ŠJnF‰‰‘tŠJn
+// ã‚¿ã‚¤ãƒãƒ¼é–‹å§‹ï¼šæ¼”å¥é–‹å§‹
 //******************************************************************************
 int MIDITrailApp::_StartTimer_Play(int delayBetweenSongsInMsec)
 {
 	int result = 0;
 	UINT_PTR apiresult = 0;
 
-	//ƒ^ƒCƒ}[“o˜^
+	//ã‚¿ã‚¤ãƒãƒ¼ç™»éŒ²
 	apiresult = SetTimer(
-						m_hWnd,						//’Ê’mæƒEƒBƒ“ƒhƒE
-						MIDITRAIL_TIMER_PLAY,		//ƒ^ƒCƒ}[ID
-						delayBetweenSongsInMsec,	//ƒ^ƒCƒ€ƒAƒEƒg’liƒ~ƒŠ•bj
-						NULL						//ƒ^ƒCƒ}[ŠÖ”
+						m_hWnd,						//é€šçŸ¥å…ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+						MIDITRAIL_TIMER_PLAY,		//ã‚¿ã‚¤ãƒãƒ¼ID
+						delayBetweenSongsInMsec,	//ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤ï¼ˆãƒŸãƒªç§’ï¼‰
+						NULL						//ã‚¿ã‚¤ãƒãƒ¼é–¢æ•°
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4133,19 +4135,19 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[ŠJnFƒtƒ@ƒCƒ‹ƒI[ƒvƒ“•‰‰‘tŠJn
+// ã‚¿ã‚¤ãƒãƒ¼é–‹å§‹ï¼šãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ï¼†æ¼”å¥é–‹å§‹
 //******************************************************************************
 int MIDITrailApp::_StartTimer_OpenFileAndPlay(int delayBetweenSongsInMsec)
 {
 	int result = 0;
 	UINT_PTR apiresult = 0;
 
-	//ƒ^ƒCƒ}[“o˜^
+	//ã‚¿ã‚¤ãƒãƒ¼ç™»éŒ²
 	apiresult = SetTimer(
-						m_hWnd,						//’Ê’mæƒEƒBƒ“ƒhƒE
-						MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY,	//ƒ^ƒCƒ}[ID
-						delayBetweenSongsInMsec,	//ƒ^ƒCƒ€ƒAƒEƒg’liƒ~ƒŠ•bj
-						NULL						//ƒ^ƒCƒ}[ŠÖ”
+						m_hWnd,						//é€šçŸ¥å…ˆã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+						MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY,	//ã‚¿ã‚¤ãƒãƒ¼ID
+						delayBetweenSongsInMsec,	//ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤ï¼ˆãƒŸãƒªç§’ï¼‰
+						NULL						//ã‚¿ã‚¤ãƒãƒ¼é–¢æ•°
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4157,7 +4159,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ^ƒCƒ}[ŒÄ‚Ño‚µ
+// ã‚¿ã‚¤ãƒãƒ¼å‘¼ã³å‡ºã—
 //******************************************************************************
 int MIDITrailApp::_OnTimer(
 		WPARAM timerId
@@ -4165,32 +4167,32 @@ int MIDITrailApp::_OnTimer(
 {
 	int result = 0;
 
-	//ƒL[ó‘ÔŠm”Fƒ^ƒCƒ}[
+	//ã‚­ãƒ¼çŠ¶æ…‹ç¢ºèªã‚¿ã‚¤ãƒãƒ¼
 	if (timerId == MIDITRAIL_TIMER_CHECK_KEY) {
-		//Ä¶‘¬“x§Œä
+		//å†ç”Ÿé€Ÿåº¦åˆ¶å¾¡
 		if ((GetKeyState(VK_F2) & 0x8000) && (GetForegroundWindow() == m_hWnd)) {
-			m_Sequencer.SetPlaybackSpeed(2);  //2”{‘¬
+			m_Sequencer.SetPlaybackSpeed(2);  //2å€é€Ÿ
 		}
 		else {
 			m_Sequencer.SetPlaybackSpeed(1);
 		}
 	}
-	//‰‰‘tŠJnƒ^ƒCƒ}[
+	//æ¼”å¥é–‹å§‹ã‚¿ã‚¤ãƒãƒ¼
 	else if (timerId == MIDITRAIL_TIMER_PLAY) {
-		//ƒ^ƒCƒ}[’â~
+		//ã‚¿ã‚¤ãƒãƒ¼åœæ­¢
 		KillTimer(m_hWnd, MIDITRAIL_TIMER_PLAY);
-		//‰‰‘tŠJn
+		//æ¼”å¥é–‹å§‹
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
 	}
-	//ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“•‰‰‘tŠJnƒ^ƒCƒ}[
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³ï¼†æ¼”å¥é–‹å§‹ã‚¿ã‚¤ãƒãƒ¼
 	else if (timerId == MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY) {
-		//ƒ^ƒCƒ}[’â~
+		//ã‚¿ã‚¤ãƒãƒ¼åœæ­¢
 		KillTimer(m_hWnd, MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY);
-		//ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 		result = _LoadMIDIFile(m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex()));
 		if (result != 0) goto EXIT;
-		//‰‰‘tŠJn
+		//æ¼”å¥é–‹å§‹
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
 	}
@@ -4200,32 +4202,16 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒŒƒ“ƒ_ƒ‰ƒ`ƒFƒbƒN
+// ãƒ¬ãƒ³ãƒ€ãƒ©ãƒã‚§ãƒƒã‚¯
 //******************************************************************************
 int MIDITrailApp::_CheckRenderer()
 {
-	int result = 0;
-	bool isSupport = true;
-	unsigned long maxVertexIndex = 0;
-
-	result = m_Renderer.IsSupportIndexBuffer(&isSupport, &maxVertexIndex);
-	if (result != 0) goto EXIT;
-
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ğƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢ê‡‚ÍŒxƒƒbƒZ[ƒW‚ğ•\¦
-	if (!isSupport) {
-		YN_SET_WARN("This PC does not have sufficient graphics capabilities.\n"
-					"Therefore, MIDITrail will not work correctly.",
-					maxVertexIndex, 0);
-		YN_SHOW_ERR(NULL);
-		//–ß‚è’l‚É‚Í”½‰f‚¹‚¸ˆ—‚ğ‘±s‚³‚¹‚é
-	}
-
-EXIT:;
-	return result;
+	// DX11: index buffer is always supported.
+	return 0;
 }
 
 //******************************************************************************
-// MIDI OUT ©“®İ’è
+// MIDI OUT è‡ªå‹•è¨­å®š
 //******************************************************************************
 int MIDITrailApp::_AutoConfigMIDIOUT()
 {
@@ -4236,34 +4222,34 @@ int MIDITrailApp::_AutoConfigMIDIOUT()
 	int autoConfigConfirm = 0;
 	std::string productName;
 
-	//ƒJƒeƒSƒŠ^ƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ†ã‚´ãƒªï¼ã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
 
-	//İ’èƒtƒ@ƒCƒ‹‚©‚ç MIDI OUT ƒ†[ƒU‘I‘ğƒfƒoƒCƒX–¼‚ğæ“¾
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ MIDI OUT ãƒ¦ãƒ¼ã‚¶é¸æŠãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—
 	result = m_MIDIConf.GetStr("PortA", devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 
 	if (_tcslen(devName) == 0) {
-		//İ’è‚È‚µ‚Ìê‡
+		//è¨­å®šãªã—ã®å ´åˆ
 		result = m_MIDIConf.GetInt("AutoConfigConfirm", &autoConfigConfirm, 0);
 		if (result != 0) goto EXIT;
 
 		if (autoConfigConfirm == 0) {
-			//©“®İ’è–¢Šm”F‚Ìê‡‚ÍMIDI OUTƒfƒoƒCƒX‚ğ©“®İ’è‚·‚é
+			//è‡ªå‹•è¨­å®šæœªç¢ºèªã®å ´åˆã¯MIDI OUTãƒ‡ãƒã‚¤ã‚¹ã‚’è‡ªå‹•è¨­å®šã™ã‚‹
 			result = m_MIDIConf.SetInt("AutoConfigConfirm", 1);
 			if (result != 0) goto EXIT;
 
-			//Microsoft GS Wavetable Synth‚ğŒŸõ
+			//Microsoft GS Wavetable Synthã‚’æ¤œç´¢
 			result = _SearchMicrosoftWavetableSynth(productName);
 			if (result != 0) goto EXIT;
 
-			//Œ©‚Â‚©‚Á‚½ê‡‚ÍMIDI OUTƒfƒoƒCƒX‚É“o˜^‚·‚é
+			//è¦‹ã¤ã‹ã£ãŸå ´åˆã¯MIDI OUTãƒ‡ãƒã‚¤ã‚¹ã«ç™»éŒ²ã™ã‚‹
 			if (productName.size() > 0) {
 				result = m_MIDIConf.SetStr("PortA", productName.c_str());
 				if (result != 0) goto EXIT;
 
-				//©“®İ’èŠm”FƒAƒ‰[ƒgƒpƒlƒ‹•\¦
+				//è‡ªå‹•è¨­å®šç¢ºèªã‚¢ãƒ©ãƒ¼ãƒˆãƒ‘ãƒãƒ«è¡¨ç¤º
 				_stprintf_s(
 						message,
 						512,
@@ -4272,10 +4258,10 @@ int MIDITrailApp::_AutoConfigMIDIOUT()
 						productName.c_str()
 					);
 				apiresult = MessageBox(
-								m_hWnd,						//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-								message,					//ƒƒbƒZ[ƒW
-								_T("INFORMATION"),			//ƒ^ƒCƒgƒ‹
-								MB_OK | MB_ICONINFORMATION	//ƒtƒ‰ƒO
+								m_hWnd,						//ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+								message,					//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+								_T("INFORMATION"),			//ã‚¿ã‚¤ãƒˆãƒ«
+								MB_OK | MB_ICONINFORMATION	//ãƒ•ãƒ©ã‚°
 							);
 				if (apiresult == 0) {
 					result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4284,11 +4270,11 @@ int MIDITrailApp::_AutoConfigMIDIOUT()
 			}
 		}
 		else {
-			//©“®İ’èŠm”FÏ‚İ‚Ì‚½‚ß‰½‚à‚µ‚È‚¢
+			//è‡ªå‹•è¨­å®šç¢ºèªæ¸ˆã¿ã®ãŸã‚ä½•ã‚‚ã—ãªã„
 		}
 	}
 	else {
-		//İ’è‚ ‚è‚Ìê‡
+		//è¨­å®šã‚ã‚Šã®å ´åˆ
 		result = m_MIDIConf.SetInt("AutoConfigConfirm", 1);
 		if (result != 0) goto EXIT;
 	}
@@ -4298,7 +4284,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Microsoft GS Wavetable SynthŒŸõ
+// Microsoft GS Wavetable Synthæ¤œç´¢
 //******************************************************************************
 int MIDITrailApp::_SearchMicrosoftWavetableSynth(
 		std::string& productName
@@ -4311,11 +4297,11 @@ int MIDITrailApp::_SearchMicrosoftWavetableSynth(
 	string::size_type pos;
 	SMOutDevCtrl outDevCtrl;
 
-	//ŒŸõ‘ÎÛMIDIƒfƒoƒCƒX
-	//  Windows XPˆÈ‘O    : Microsoft GS Wavetable SW Synth
-	//  Windows VistaˆÈ~ : Microsoft GS Wavetable Synth
+	//æ¤œç´¢å¯¾è±¡MIDIãƒ‡ãƒã‚¤ã‚¹
+	//  Windows XPä»¥å‰    : Microsoft GS Wavetable SW Synth
+	//  Windows Vistaä»¥é™ : Microsoft GS Wavetable Synth
 
-	//ŒŸõ‘ÎÛ•¶š—ñ
+	//æ¤œç´¢å¯¾è±¡æ–‡å­—åˆ—
 	target = "Microsoft GS Wavetable";
 
 	result = outDevCtrl.Initialize();
@@ -4328,7 +4314,7 @@ int MIDITrailApp::_SearchMicrosoftWavetableSynth(
 
 		pos = name.find(target);
 		if (pos != string::npos) {
-			//Œ©‚Â‚©‚Á‚½
+			//è¦‹ã¤ã‹ã£ãŸ
 			productName = name;
 			break;
 		}
@@ -4339,7 +4325,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// “ñd‹N“®ƒ`ƒFƒbƒN
+// äºŒé‡èµ·å‹•ãƒã‚§ãƒƒã‚¯
 //******************************************************************************
 int MIDITrailApp::_CheckMultipleInstances(
 		 bool* pIsExitApp
@@ -4351,41 +4337,41 @@ int MIDITrailApp::_CheckMultipleInstances(
 
 	*pIsExitApp = false;
 
-	//“ñd‹N“®‚ğ‹–‰Â‚·‚éê‡‚Í‰½‚à‚µ‚È‚¢
+	//äºŒé‡èµ·å‹•ã‚’è¨±å¯ã™ã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_AllowMultipleInstances > 0) {
 		goto EXIT;
 	}
 
-	//ƒZƒLƒ…ƒŠƒeƒB‹Lqq‰Šú‰»
+	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­åˆæœŸåŒ–
 	InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
 
-	//ƒZƒLƒ…ƒŠƒeƒB‹Lqq‚ÉˆÓƒAƒNƒZƒX§ŒäƒŠƒXƒg(DACL)‚ğİ’è
+	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­ã«éšæ„ã‚¢ã‚¯ã‚»ã‚¹åˆ¶å¾¡ãƒªã‚¹ãƒˆ(DACL)ã‚’è¨­å®š
 	SetSecurityDescriptorDacl(
-			&sd,	//ƒZƒLƒ…ƒŠƒeƒB‹Lqq‚ÌƒAƒhƒŒƒX
-			TRUE,	//DACL‚Ì‘¶İƒtƒ‰ƒO
-			NULL,	//DACL‚ÌƒAƒhƒŒƒXFƒIƒuƒWƒFƒNƒg‚Ö‚Ì‚·‚×‚Ä‚ÌƒAƒNƒZƒX‚ğ‹–‰Â
-			FALSE	//DACL‚ÌŠù’èƒtƒ‰ƒO
+			&sd,	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+			TRUE,	//DACLã®å­˜åœ¨ãƒ•ãƒ©ã‚°
+			NULL,	//DACLã®ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼šã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ã™ã¹ã¦ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’è¨±å¯
+			FALSE	//DACLã®æ—¢å®šãƒ•ãƒ©ã‚°
 		);
 
-	//ƒZƒLƒ…ƒŠƒeƒB‘®«
-	secAttribute.nLength = sizeof(SECURITY_ATTRIBUTES);	//\‘¢‘ÌƒTƒCƒY
-	secAttribute.lpSecurityDescriptor = &sd;			//ƒZƒLƒ…ƒŠƒeƒB‹Lqq
-	secAttribute.bInheritHandle = TRUE; 				//Œp³ƒtƒ‰ƒO
+	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§
+	secAttribute.nLength = sizeof(SECURITY_ATTRIBUTES);	//æ§‹é€ ä½“ã‚µã‚¤ã‚º
+	secAttribute.lpSecurityDescriptor = &sd;			//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£è¨˜è¿°å­
+	secAttribute.bInheritHandle = TRUE; 				//ç¶™æ‰¿ãƒ•ãƒ©ã‚°
 
-	//ƒ~ƒ…[ƒeƒNƒXì¬
-	//  u•Ê‚Ìƒ†[ƒU[‚Æ‚µ‚ÄÀsv‚ğ‘I‘ğ‚µ‚½‚Æ‚«ƒ~ƒ…[ƒeƒNƒXì¬‚ª¸”s‚·‚é‚½‚ß
-	//  ƒZƒLƒ…ƒŠƒeƒB‘®«‚ğw’è‚·‚é
+	//ãƒŸãƒ¥ãƒ¼ãƒ†ã‚¯ã‚¹ä½œæˆ
+	//  ã€Œåˆ¥ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã¨ã—ã¦å®Ÿè¡Œã€ã‚’é¸æŠã—ãŸã¨ããƒŸãƒ¥ãƒ¼ãƒ†ã‚¯ã‚¹ä½œæˆãŒå¤±æ•—ã™ã‚‹ãŸã‚
+	//  ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§ã‚’æŒ‡å®šã™ã‚‹
 	m_hAppMutex = CreateMutex(
-						&secAttribute,	//ƒZƒLƒ…ƒŠƒeƒB‘®«
-						FALSE,			//ƒIƒuƒWƒFƒNƒg‚ÌŠ—LŒ ‚ğæ“¾‚µ‚È‚¢
-						MIDITRAIL_MUTEX	//ƒIƒuƒWƒFƒNƒg–¼Ì
+						&secAttribute,	//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§
+						FALSE,			//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ‰€æœ‰æ¨©ã‚’å–å¾—ã—ãªã„
+						MIDITRAIL_MUTEX	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåç§°
 					);
 	if (m_hAppMutex == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 	else if (GetLastError() ==  ERROR_ALREADY_EXISTS) {
-		//‚·‚Å‚É‘¶İ‚·‚éê‡
+		//ã™ã§ã«å­˜åœ¨ã™ã‚‹å ´åˆ
 		CloseHandle(m_hAppMutex);
 		m_hAppMutex = NULL;
 		*pIsExitApp = true;
@@ -4396,23 +4382,23 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ[ƒ‹ƒXƒƒbƒgì¬
+// ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆä½œæˆ
 //******************************************************************************
 int MIDITrailApp::_CreateMailSlot()
 {
 	int result = 0;
 
-	//“ñd‹N“®‚ğ‹–‰Â‚·‚éê‡‚Í‰½‚à‚µ‚È‚¢
+	//äºŒé‡èµ·å‹•ã‚’è¨±å¯ã™ã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_AllowMultipleInstances > 0) {
 		goto EXIT;
 	}
 
-	//ƒ[ƒ‹ƒXƒƒbƒgì¬
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆä½œæˆ
 	m_hMailSlot = CreateMailslot(
-						MIDITRAIL_MAILSLOT,	//ƒ[ƒ‹ƒXƒƒbƒg–¼Ì
-						1024,				//Å‘åƒƒbƒZ[ƒWƒTƒCƒY(byte)F§ŒÀ‚È‚µ
-						0,					//“Ç‚İæ‚èƒ^ƒCƒ€ƒAƒEƒg’l(ms)FƒƒbƒZ[ƒW‚ª‚È‚¯‚ê‚Î‘¦À‚É§Œä‚ğ•Ô‚·
-						NULL				//Œp³ƒIƒvƒVƒ‡ƒ“
+						MIDITRAIL_MAILSLOT,	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆåç§°
+						1024,				//æœ€å¤§ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚º(byte)ï¼šåˆ¶é™ãªã—
+						0,					//èª­ã¿å–ã‚Šã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå€¤(ms)ï¼šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒãªã‘ã‚Œã°å³åº§ã«åˆ¶å¾¡ã‚’è¿”ã™
+						NULL				//ç¶™æ‰¿ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 					);
 	if (m_hMailSlot == INVALID_HANDLE_VALUE) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4424,7 +4410,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// æsƒvƒƒZƒX‚ÌMIDITrail‚Öƒtƒ@ƒCƒ‹ƒpƒX‚ğƒ|ƒXƒg
+// å…ˆè¡Œãƒ—ãƒ­ã‚»ã‚¹ã®MIDITrailã¸ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ãƒã‚¹ãƒˆ
 //******************************************************************************
 int MIDITrailApp::_PostFilePathToFirstMIDITrail()
 {
@@ -4437,34 +4423,34 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail()
 	WCHAR* pFilePart = NULL;
 	WCHAR filePath[_MAX_PATH] = { L'\0' };
 
-	//æs‚ÌMIDITrail‚ÌƒEƒBƒ“ƒhƒE‚ğŒŸõ‚·‚é
+	//å…ˆè¡Œã®MIDITrailã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ¤œç´¢ã™ã‚‹
 	hWnd = FindWindowW(
-				m_WndClassName,	//ƒNƒ‰ƒX–¼
-				NULL			//ƒEƒBƒ“ƒhƒE–¼
+				m_WndClassName,	//ã‚¯ãƒ©ã‚¹å
+				NULL			//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å
 			);
 	if (hWnd == NULL) {
-		//ƒEƒBƒ“ƒhƒE‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+		//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 		goto EXIT;
 	}
 
-	//æs‚ÌMIDITrail‚ÌƒEƒBƒ“ƒhƒE‚ğ‘O–Ê‚ÉˆÚ“®
+	//å…ˆè¡Œã®MIDITrailã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰é¢ã«ç§»å‹•
 	SetForegroundWindow(hWnd);
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‰ğÍ
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³è§£æ
 	result = m_CmdLineParser.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Åƒtƒ@ƒCƒ‹‚ğw’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã•ã‚Œã¦ã„ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_CmdLineParser.GetSwitch(CMDSW_FILE_PATH) != CMDSW_ON) {
 		goto EXIT;
 	}
 
-	//ƒtƒ@ƒCƒ‹ƒpƒX‚ğƒtƒ‹ƒpƒX‚É•ÏŠ·
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ãƒ•ãƒ«ãƒ‘ã‚¹ã«å¤‰æ›
 	written = GetFullPathNameW(
-					m_CmdLineParser.GetFilePath(),	//ƒtƒ@ƒCƒ‹ƒpƒX
-					_MAX_PATH,		//ƒoƒbƒtƒ@ƒTƒCƒYFTCHAR’PˆÊ
-					filePath,		//ƒoƒbƒtƒ@ˆÊ’u
-					&pFilePart		//ƒtƒ@ƒCƒ‹–¼‚ÌˆÊ’u
+					m_CmdLineParser.GetFilePath(),	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+					_MAX_PATH,		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼šTCHARå˜ä½
+					filePath,		//ãƒãƒƒãƒ•ã‚¡ä½ç½®
+					&pFilePart		//ãƒ•ã‚¡ã‚¤ãƒ«åã®ä½ç½®
 				);
 	if (written == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4475,43 +4461,43 @@ int MIDITrailApp::_PostFilePathToFirstMIDITrail()
 		goto EXIT;
 	}
 
-	//æs‹N“®ƒvƒƒZƒX‚Ìƒ[ƒ‹ƒXƒƒbƒg‚ğŠJ‚­
+	//å…ˆè¡Œèµ·å‹•ãƒ—ãƒ­ã‚»ã‚¹ã®ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆã‚’é–‹ã
 	hFile = CreateFile(
-				MIDITRAIL_MAILSLOT,		//ƒ[ƒ‹ƒXƒƒbƒg–¼Ì
-				GENERIC_WRITE,			//ƒAƒNƒZƒXƒ^ƒCƒv
-				FILE_SHARE_READ,		//‹¤—L•û–@
-				NULL,					//ƒZƒLƒ…ƒŠƒeƒB‘®«
-				OPEN_EXISTING,			//¶¬w’è
-				FILE_ATTRIBUTE_NORMAL,	//ƒtƒ@ƒCƒ‹‘®«‚Æƒtƒ‰ƒO
-				NULL					//ƒeƒ“ƒvƒŒ[ƒgƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
+				MIDITRAIL_MAILSLOT,		//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆåç§°
+				GENERIC_WRITE,			//ã‚¢ã‚¯ã‚»ã‚¹ã‚¿ã‚¤ãƒ—
+				FILE_SHARE_READ,		//å…±æœ‰æ–¹æ³•
+				NULL,					//ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£å±æ€§
+				OPEN_EXISTING,			//ç”ŸæˆæŒ‡å®š
+				FILE_ATTRIBUTE_NORMAL,	//ãƒ•ã‚¡ã‚¤ãƒ«å±æ€§ã¨ãƒ•ãƒ©ã‚°
+				NULL					//ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
 			);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		//ƒ[ƒ‹ƒXƒƒbƒg‚ªŠJ‚¯‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
-		//æsƒvƒƒZƒX‚Ìó‘Ô‚ÉˆË‘¶‚·‚é‚½‚ß¸”s‚·‚é‰Â”\«‚Í‚ ‚é
+		//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆãŒé–‹ã‘ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
+		//å…ˆè¡Œãƒ—ãƒ­ã‚»ã‚¹ã®çŠ¶æ…‹ã«ä¾å­˜ã™ã‚‹ãŸã‚å¤±æ•—ã™ã‚‹å¯èƒ½æ€§ã¯ã‚ã‚‹
 		goto EXIT;
 	}
 
-	//ƒ[ƒ‹ƒXƒƒbƒg‚Éƒtƒ@ƒCƒ‹ƒpƒX‚ğ‘‚«‚Ş
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	//_tcscat_s(filePath, _MAX_PATH, m_CmdLineParser.GetFilePath());
 	size = (wcslen(filePath) + 1) * sizeof(WCHAR);
 	bresult = WriteFile(
-				hFile,		//ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
-				filePath,	//ƒf[ƒ^ƒoƒbƒtƒ@
-				(DWORD)size,	//‘‚«‚İƒTƒCƒY(byte)
-				&written,	//‘‚«‚ñ‚¾ƒTƒCƒY(byte)
-				NULL		//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ì
+				hFile,		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+				filePath,	//ãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡
+				(DWORD)size,	//æ›¸ãè¾¼ã¿ã‚µã‚¤ã‚º(byte)
+				&written,	//æ›¸ãè¾¼ã‚“ã ã‚µã‚¤ã‚º(byte)
+				NULL		//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“
 			);
 	if (!bresult) {
-		//‘‚«‚ß‚È‚©‚Á‚½ê‡‚Í‰½‚à‚µ‚È‚¢
-		//æsƒvƒƒZƒX‚Ìó‘Ô‚ÉˆË‘¶‚·‚é‚½‚ß¸”s‚·‚é‰Â”\«‚Í‚ ‚é
+		//æ›¸ãè¾¼ã‚ãªã‹ã£ãŸå ´åˆã¯ä½•ã‚‚ã—ãªã„
+		//å…ˆè¡Œãƒ—ãƒ­ã‚»ã‚¹ã®çŠ¶æ…‹ã«ä¾å­˜ã™ã‚‹ãŸã‚å¤±æ•—ã™ã‚‹å¯èƒ½æ€§ã¯ã‚ã‚‹
 		goto EXIT;
 	}
 
-	//æs‚ÌMIDITrail‚ÌƒEƒBƒ“ƒhƒE‚Éƒtƒ@ƒCƒ‹ƒpƒXƒ|ƒXƒg’Ê’m
+	//å…ˆè¡Œã®MIDITrailã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒã‚¹ãƒˆé€šçŸ¥
 	PostMessage(hWnd, WM_FILEPATH_POSTED, 0, 0);
 
 EXIT:;
-	//ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ÍƒNƒ[ƒY‚µ‚Ä‚Í‚È‚ç‚È‚¢
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã¯ã‚¯ãƒ­ãƒ¼ã‚ºã—ã¦ã¯ãªã‚‰ãªã„
 	//if (hWnd != NULL) {
 	//	CloseHandle(hWnd);
 	//}
@@ -4522,7 +4508,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Œã‘±ƒvƒƒZƒX‚©‚ç‚Ìƒtƒ@ƒCƒ‹ƒpƒXƒ|ƒXƒg’Ê’m
+// å¾Œç¶šãƒ—ãƒ­ã‚»ã‚¹ã‹ã‚‰ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ãƒã‚¹ãƒˆé€šçŸ¥
 //******************************************************************************
 int MIDITrailApp::_OnFilePathPosted()
 {
@@ -4535,45 +4521,45 @@ int MIDITrailApp::_OnFilePathPosted()
 
 	ZeroMemory(filePath, sizeof(WCHAR)*(_MAX_PATH + 4));
 
-	//ƒ[ƒ‹ƒXƒƒbƒg‚ª‘¶İ‚µ‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_hMailSlot == NULL) goto EXIT;
 
-	//ƒ[ƒ‹ƒXƒƒbƒgî•ñæ“¾
+	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆæƒ…å ±å–å¾—
 	bresult = GetMailslotInfo(
-					m_hMailSlot,	//ƒ[ƒ‹ƒXƒƒbƒg
-					NULL,			//Å‘åƒƒbƒZ[ƒWƒTƒCƒY
-					&nextSize,		//ŸƒƒbƒZ[ƒWƒTƒCƒY
-					&count,			//ƒƒbƒZ[ƒW”
-					NULL			//“Ç‚İæ‚èƒ^ƒCƒ€ƒAƒEƒgŠÔ
+					m_hMailSlot,	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆ
+					NULL,			//æœ€å¤§ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚º
+					&nextSize,		//æ¬¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚º
+					&count,			//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°
+					NULL			//èª­ã¿å–ã‚Šã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆæ™‚é–“
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒƒbƒZ[ƒW‚ª‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (nextSize == MAILSLOT_NO_MESSAGE) goto EXIT;
 
-	//ƒƒbƒZ[ƒWƒTƒCƒY‚Ì®‡«ƒ`ƒFƒbƒN
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚µã‚¤ã‚ºã®æ•´åˆæ€§ãƒã‚§ãƒƒã‚¯
 	if (nextSize > (sizeof(WCHAR) * (_MAX_PATH))) {
 		result = YN_SET_ERR("Program error.", nextSize, 0);
 		goto EXIT;
 	}
 
-	//ƒƒbƒZ[ƒW“Ç‚İ‚İ
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸èª­ã¿è¾¼ã¿
 	bresult = ReadFile(
-					m_hMailSlot,	//ƒ[ƒ‹ƒXƒƒbƒg
-					filePath,		//ƒoƒbƒtƒ@
-					nextSize,		//“Ç‚İæ‚èƒTƒCƒY(byte)
-					&readSize,		//“Ç‚İæ‚Á‚½ƒTƒCƒY(byte)
-					NULL			//ƒI[ƒo[ƒ‰ƒbƒv\‘¢‘Ì
+					m_hMailSlot,	//ãƒ¡ãƒ¼ãƒ«ã‚¹ãƒ­ãƒƒãƒˆ
+					filePath,		//ãƒãƒƒãƒ•ã‚¡
+					nextSize,		//èª­ã¿å–ã‚Šã‚µã‚¤ã‚º(byte)
+					&readSize,		//èª­ã¿å–ã£ãŸã‚µã‚¤ã‚º(byte)
+					NULL			//ã‚ªãƒ¼ãƒãƒ¼ãƒ©ãƒƒãƒ—æ§‹é€ ä½“
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//‰‰‘t/ƒ‚ƒjƒ^’â~‚Æƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+	//æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 	result = _StopPlaybackAndOpenFile(filePath);
 	if (result != 0) goto EXIT;
 
@@ -4582,7 +4568,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆMIDIƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+// æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨MIDIãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_StopPlaybackAndOpenFile(
 		const WCHAR* pFilePath
@@ -4590,40 +4576,40 @@ int MIDITrailApp::_StopPlaybackAndOpenFile(
 {
 	int result = 0;
 
-	//‰‰‘tƒXƒe[ƒ^ƒX‚²‚Æ‚Ì‘Î‰•û®
-	//  ƒf[ƒ^–³   ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ’â~       ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  Ä¶’†     ¨ ƒV[ƒPƒ“ƒT‚É’â~—v‹‚ğo‚· ¨ ’â~’Ê’m‚ğó‚¯‚½Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ˆê’â~   ¨ ƒV[ƒPƒ“ƒT‚É’â~—v‹‚ğo‚· ¨ ’â~’Ê’m‚ğó‚¯‚½Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ƒ‚ƒjƒ^’â~ ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
-	//  ƒ‚ƒjƒ^’†   ¨ ƒ‚ƒjƒ^‚ğ’â~‚µ‚Äƒ‚ƒjƒ^’â~ó‘Ô‚Ö‘JˆÚ ¨ ‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//æ¼”å¥ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã”ã¨ã®å¯¾å¿œæ–¹å¼
+	//  ãƒ‡ãƒ¼ã‚¿ç„¡   â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  åœæ­¢       â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  å†ç”Ÿä¸­     â†’ ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«åœæ­¢è¦æ±‚ã‚’å‡ºã™ â†’ åœæ­¢é€šçŸ¥ã‚’å—ã‘ãŸå¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  ä¸€æ™‚åœæ­¢   â†’ ã‚·ãƒ¼ã‚±ãƒ³ã‚µã«åœæ­¢è¦æ±‚ã‚’å‡ºã™ â†’ åœæ­¢é€šçŸ¥ã‚’å—ã‘ãŸå¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  ãƒ¢ãƒ‹ã‚¿åœæ­¢ â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+	//  ãƒ¢ãƒ‹ã‚¿ä¸­   â†’ ãƒ¢ãƒ‹ã‚¿ã‚’åœæ­¢ã—ã¦ãƒ¢ãƒ‹ã‚¿åœæ­¢çŠ¶æ…‹ã¸é·ç§» â†’ ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 
-	//‹“_•Û‘¶
+	//è¦–ç‚¹ä¿å­˜
 	if (m_isAutoSaveViewpoint) {
 		result = _OnMenuSaveViewpoint();
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒ‚ƒjƒ^’†‚Å‚ ‚ê‚Î’â~‚·‚é
+	//ãƒ¢ãƒ‹ã‚¿ä¸­ã§ã‚ã‚Œã°åœæ­¢ã™ã‚‹
 	if (m_PlayStatus == MonitorON) {
 		result = _OnMenuStopMonitoring();
 		if (result != 0) goto EXIT;
-		//‚±‚Ì“_‚Åƒ‚ƒjƒ^’â~‚É‘JˆÚÏ‚İ
+		//ã“ã®æ™‚ç‚¹ã§ãƒ¢ãƒ‹ã‚¿åœæ­¢ã«é·ç§»æ¸ˆã¿
 	}
 
-	//’â~’†‚Å‚ ‚ê‚Î‚·‚®‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//åœæ­¢ä¸­ã§ã‚ã‚Œã°ã™ãã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
-		//ƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—
+		//ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å‡¦ç†
 		result = _FileOpenProc(pFilePath);
 		if (result != 0) goto EXIT;
 	}
-	//‰‰‘t’†‚Ìê‡‚Í‰‰‘t’â~Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	//æ¼”å¥ä¸­ã®å ´åˆã¯æ¼”å¥åœæ­¢å¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	else if ((m_PlayStatus == Play) || (m_PlayStatus == Pause)) {
-		//‰‰‘tó‘Ô’Ê’m‚ª“Í‚­‚Ü‚ÅÄ¶’†‚Æ‚İ‚È‚·
-		//‚±‚±‚Å‚Í‰‰‘tó‘Ô‚ğ•ÏX‚µ‚È‚¢
+		//æ¼”å¥çŠ¶æ…‹é€šçŸ¥ãŒå±Šãã¾ã§å†ç”Ÿä¸­ã¨ã¿ãªã™
+		//ã“ã“ã§ã¯æ¼”å¥çŠ¶æ…‹ã‚’å¤‰æ›´ã—ãªã„
 		m_Sequencer.Stop();
 		
-		//’â~Š®—¹Œã‚Éƒtƒ@ƒCƒ‹‚ğŠJ‚­
+		//åœæ­¢å®Œäº†å¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 		wcscpy_s(m_NextFilePath, _MAX_PATH, pFilePath);
 		m_isOpenFileAfterStop = true;
 	}
@@ -4633,7 +4619,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘t/ƒ‚ƒjƒ^’â~‚ÆƒtƒHƒ‹ƒ_ƒI[ƒvƒ“ˆ—
+// æ¼”å¥/ãƒ¢ãƒ‹ã‚¿åœæ­¢ã¨ãƒ•ã‚©ãƒ«ãƒ€ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_StopPlaybackAndOpenFolder(
 		const WCHAR* pFolderPath
@@ -4644,19 +4630,19 @@ int MIDITrailApp::_StopPlaybackAndOpenFolder(
 	MTFileList midiFileList;
 	const WCHAR* pFilePath = NULL;
 	
-	//w’èƒtƒ@ƒCƒ‹‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚É‘¶İ‚·‚éMIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚ğì¬
-	//–‘OŠm”F‚Ì‚½‚ßƒeƒ“ƒ|ƒ‰ƒŠ‚ÌƒŠƒXƒgƒIƒuƒWƒFƒNƒg‚ğw’è
+	//æŒ‡å®šãƒ•ã‚¡ã‚¤ãƒ«ã¨åŒã˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«å­˜åœ¨ã™ã‚‹MIDIãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªã‚¹ãƒˆã‚’ä½œæˆ
+	//äº‹å‰ç¢ºèªã®ãŸã‚ãƒ†ãƒ³ãƒãƒ©ãƒªã®ãƒªã‚¹ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æŒ‡å®š
 	result = _MakeFileListWithFolder(pFolderPath, &midiFileList);
 	if (result != 0) goto EXIT;
 
-	//MIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍƒƒbƒZ[ƒW‚ğ•\¦‚µ‚ÄI—¹
+	//MIDIãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¦çµ‚äº†
 	if (midiFileList.GetFileCount() == 0) {
-		//ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦
+		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤º
 		apiresult = MessageBox(
-							m_hWnd,							//ƒI[ƒi[ƒEƒBƒ“ƒhƒE
-							MIDITRAIL_MSG_FILE_NOT_FOUND,	//ƒƒbƒZ[ƒW
-							_T("WARNING"),					//ƒ^ƒCƒgƒ‹
-							MB_OK | MB_ICONWARNING			//ƒtƒ‰ƒO
+							m_hWnd,							//ã‚ªãƒ¼ãƒŠãƒ¼ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+							MIDITRAIL_MSG_FILE_NOT_FOUND,	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+							_T("WARNING"),					//ã‚¿ã‚¤ãƒˆãƒ«
+							MB_OK | MB_ICONWARNING			//ãƒ•ãƒ©ã‚°
 						);
 		if (apiresult == 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -4665,11 +4651,11 @@ int MIDITrailApp::_StopPlaybackAndOpenFolder(
 		goto EXIT;
 	}
 
-	//w’èƒtƒ@ƒCƒ‹‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚É‘¶İ‚·‚éMIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚ğì¬
+	//æŒ‡å®šãƒ•ã‚¡ã‚¤ãƒ«ã¨åŒã˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«å­˜åœ¨ã™ã‚‹MIDIãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªã‚¹ãƒˆã‚’ä½œæˆ
 	result = _MakeFileListWithFolder(pFolderPath, &m_MIDIFileList);
 	if (result != 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹ƒŠƒXƒg‚Ìæ“ªƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚ÄŠJ‚­
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã®å…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦é–‹ã
 	m_MIDIFileList.SelectFirstFile();
 	pFilePath = m_MIDIFileList.GetFilePath(m_MIDIFileList.GetSelectedFileIndex());
 	result = _StopPlaybackAndOpenFile(pFilePath);
@@ -4680,7 +4666,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIƒtƒ@ƒCƒ‹ƒI[ƒvƒ“ˆ—
+// MIDIãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³å‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_FileOpenProc(
 		const WCHAR* pFilePath
@@ -4688,15 +4674,15 @@ int MIDITrailApp::_FileOpenProc(
 {
 	int result = 0;
 
-	//MIDIƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//MIDIãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadMIDIFile(pFilePath);
 	if (result != 0) goto EXIT;
 
-	//HowToView•\¦
+	//HowToViewè¡¨ç¤º
 	result = _DispHowToView();
 	if (result != 0) goto EXIT;
 
-	//Ä¶w’è‚³‚ê‚Ä‚¢‚éê‡‚ÍÄ¶ŠJn
+	//å†ç”ŸæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å†ç”Ÿé–‹å§‹
 	if (m_AutoPlaybackAfterOpenFile > 0) {
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
@@ -4707,7 +4693,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒ‹ƒXƒNƒŠ[ƒ“Ø‘Ö
+// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åˆ‡æ›¿
 //******************************************************************************
 int MIDITrailApp::_ToggleFullScreen()
 {
@@ -4723,7 +4709,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[ƒo[•\¦Ø‘Ö
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºåˆ‡æ›¿
 //******************************************************************************
 int MIDITrailApp::_ToggleMenuBar()
 {
@@ -4739,14 +4725,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[•\¦
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_ShowMenu()
 {
 	int result = 0;
 	LONG apiresult = 0;
 	
-	//ƒƒjƒ…[ƒo[•\¦ˆ—
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼è¡¨ç¤ºå‡¦ç†
 	if (GetMenu(m_hWnd) == NULL) {
 		apiresult = SetMenu(m_hWnd, m_hMenu);
 		if (apiresult == 0) {
@@ -4755,11 +4741,11 @@ int MIDITrailApp::_ShowMenu()
 		}
 	}
 
-	//ƒƒjƒ…[‘I‘ğƒ}[ƒNXV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠãƒãƒ¼ã‚¯æ›´æ–°
 	result = _UpdateMenuCheckmark();
 	if (result != 0) goto EXIT;
 
-	//ƒƒjƒ…[ƒXƒ^ƒCƒ‹XV
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ã‚¿ã‚¤ãƒ«æ›´æ–°
 	result = _ChangeMenuStyle();
 	if (result != 0) goto EXIT;
 
@@ -4768,17 +4754,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒjƒ…[”ñ•\¦
+// ãƒ¡ãƒ‹ãƒ¥ãƒ¼éè¡¨ç¤º
 //******************************************************************************
 int MIDITrailApp::_HideMenu()
 {
 	int result = 0;
 	LONG apiresult = 0;
 
-	//ƒƒjƒ…[ƒo[”ñ•\¦ˆ—
-	//‚·‚Å‚Éƒƒjƒ…[ƒo[”ñ•\¦‚È‚ç‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤ºå‡¦ç†
+	//ã™ã§ã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼éè¡¨ç¤ºãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (GetMenu(m_hWnd) != NULL) {
-		//GetMenu‚Åæ“¾‚µ‚½ƒnƒ“ƒhƒ‹‚Í”jŠü‚³‚ê‚È‚¢
+		//GetMenuã§å–å¾—ã—ãŸãƒãƒ³ãƒ‰ãƒ«ã¯ç ´æ£„ã•ã‚Œãªã„
 		apiresult = SetMenu(m_hWnd, NULL);
 		if (apiresult == 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)m_hWnd);
@@ -4791,7 +4777,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒQ[ƒ€ƒpƒbƒh‘€ìˆ—
+// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ“ä½œå‡¦ç†
 //******************************************************************************
 int MIDITrailApp::_GamePadProc()
 {
@@ -4802,51 +4788,51 @@ int MIDITrailApp::_GamePadProc()
 	
 	//_RPTN(_CRT_WARN, "GamePad: %d %d\n", m_GamePadCtrl.DidPressNow_A(), m_GamePadCtrl.DidPressNow_B());
 
-	//ƒXƒ^[ƒg ‰Ÿ‰º
+	//ã‚¹ã‚¿ãƒ¼ãƒˆ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_Start()) {
-		//‰‰‘tŠJn^ˆê’â~
+		//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒ{ƒ^ƒ“A ‰Ÿ‰º
+	//ãƒœã‚¿ãƒ³A æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_A()) {
-		//‰‰‘tŠJn^ˆê’â~
+		//æ¼”å¥é–‹å§‹ï¼ä¸€æ™‚åœæ­¢
 		result = _OnMenuPlay();
 		if (result != 0) goto EXIT;
 	}
 	
-	//ƒ{ƒ^ƒ“B ‰Ÿ‰º
+	//ãƒœã‚¿ãƒ³B æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_B()) {
-		//‰‰‘t’â~
+		//æ¼”å¥åœæ­¢
 		result = _OnMenuStop();
 		if (result != 0) goto EXIT;
 	}
 	
-	//¶ƒVƒ‡ƒ‹ƒ_[ ‰Ÿ‰º
+	//å·¦ã‚·ãƒ§ãƒ«ãƒ€ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_LShoulder()) {
-		//‹“_Ø‚è‘Ö‚¦
+		//è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 		result = _ChangeViewPoint(-1);
 		if (result != 0) goto EXIT;
 	}
 	
-	//‰EƒVƒ‡ƒ‹ƒ_[ ‰Ÿ‰º
+	//å³ã‚·ãƒ§ãƒ«ãƒ€ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_RShoulder()) {
-		//‹“_Ø‚è‘Ö‚¦
+		//è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 		result = _ChangeViewPoint(+1);
 		if (result != 0) goto EXIT;
 	}
 	
-	//¶ƒgƒŠƒK[ ‰Ÿ‰º
+	//å·¦ãƒˆãƒªã‚¬ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_LTrigger()) {
-		//Ä¶ƒŠƒƒCƒ“ƒh
+		//å†ç”Ÿãƒªãƒ¯ã‚¤ãƒ³ãƒ‰
 		result = _OnMenuSkipBack();
 		if (result != 0) goto EXIT;
 	}
 	
-	//‰EƒgƒŠƒK[ ‰Ÿ‰º
+	//å³ãƒˆãƒªã‚¬ãƒ¼ æŠ¼ä¸‹
 	if (m_GamePadCtrl.DidPressNow_RTrigger()) {
-		//Ä¶ƒXƒLƒbƒv
+		//å†ç”Ÿã‚¹ã‚­ãƒƒãƒ—
 		result = _OnMenuSkipForward();
 		if (result != 0) goto EXIT;
 	}
@@ -4856,13 +4842,13 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‹“_Ø‚è‘Ö‚¦
+// è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 //******************************************************************************
 int MIDITrailApp::_ChangeViewPoint(int step)
 {
 	int result = 0;
 
-	//ƒQ[ƒ€ƒpƒbƒh—p‹“_”Ô†XV
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ç”¨è¦–ç‚¹ç•ªå·æ›´æ–°
 	m_GamePadViewPointNo += step;
 
 	if (m_GamePadViewPointNo < 0) {
@@ -4872,7 +4858,7 @@ int MIDITrailApp::_ChangeViewPoint(int step)
 		m_GamePadViewPointNo = 0;
 	}
 
-	//‹“_Ø‚è‘Ö‚¦
+	//è¦–ç‚¹åˆ‡ã‚Šæ›¿ãˆ
 	switch (m_GamePadViewPointNo) {
 	case 0:
 		result = _OnMenuResetViewpoint();
@@ -4895,7 +4881,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒtƒHƒ‹ƒ_“àƒtƒ@ƒCƒ‹ƒŠƒXƒgì¬
+// ãƒ•ã‚©ãƒ«ãƒ€å†…ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆä½œæˆ
 //******************************************************************************
 int MIDITrailApp::_MakeFileListWithFolder(
 		const WCHAR* pFolderPath,
@@ -4909,7 +4895,7 @@ int MIDITrailApp::_MakeFileListWithFolder(
 		goto EXIT;
 	}
 
-	//w’èƒtƒHƒ‹ƒ_’¼‰º‚É‘¶İ‚·‚éMIDIƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌƒŠƒXƒg‚ğì¬
+	//æŒ‡å®šãƒ•ã‚©ãƒ«ãƒ€ç›´ä¸‹ã«å­˜åœ¨ã™ã‚‹MIDIãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒªã‚¹ãƒˆã‚’ä½œæˆ
 	result = pFileList->MakeFileListWithDirectory(pFolderPath, &m_RcpConv);
 	if (result != 0) goto EXIT;
 

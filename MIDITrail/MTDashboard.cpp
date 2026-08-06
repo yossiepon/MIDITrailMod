@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTDashboard
 //
-// ƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTDashboard::MTDashboard(void)
 {
@@ -52,7 +52,7 @@ MTDashboard::MTDashboard(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTDashboard::~MTDashboard(void)
 {
@@ -60,7 +60,7 @@ MTDashboard::~MTDashboard(void)
 }
 
 //******************************************************************************
-// ƒ_ƒbƒVƒ…ƒ{[ƒh¶¬
+// ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰ç”Ÿæˆ
 //******************************************************************************
 int MTDashboard::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -85,68 +85,68 @@ int MTDashboard::Create(
 
 	m_hWnd = hWnd;
 
-	//İ’è“Ç‚İ‚İ
+	//è¨­å®šèª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒ^ƒCƒgƒ‹ƒLƒƒƒvƒVƒ‡ƒ“
+	//ã‚¿ã‚¤ãƒˆãƒ«ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	title = pSeqData->GetTitle();
 	if (title.size() == 0) {
-		//‹ó•¶š‚Å‚ÍƒeƒNƒXƒ`ƒƒ¶¬‚ÅƒGƒ‰[‚Æ‚È‚é‚½‚ß‹ó”’•¶š‚Æ‚·‚é
+		//ç©ºæ–‡å­—ã§ã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”Ÿæˆã§ã‚¨ãƒ©ãƒ¼ã¨ãªã‚‹ãŸã‚ç©ºç™½æ–‡å­—ã¨ã™ã‚‹
 		title += L" ";
 	}
 	result = m_Title.Create(
 					pD3DDevice,
-					MTDASHBOARD_FONTNAME,	//ƒtƒHƒ“ƒg–¼Ì
-					MTDASHBOARD_FONTSIZE,	//ƒtƒHƒ“ƒgƒTƒCƒY
-					(WCHAR*)title.c_str()	//ƒLƒƒƒvƒVƒ‡ƒ“
+					MTDASHBOARD_FONTNAME,	//ãƒ•ã‚©ãƒ³ãƒˆåç§°
+					MTDASHBOARD_FONTSIZE,	//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+					(WCHAR*)title.c_str()	//ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 				);
 	if (result != 0) goto EXIT;
 	m_Title.SetColor(m_CaptionColor);
 
-	//ƒtƒ@ƒCƒ‹–¼ƒLƒƒƒvƒVƒ‡ƒ“
+	//ãƒ•ã‚¡ã‚¤ãƒ«åã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	fileName = pSeqData->GetFileName();
 	result = m_FileName.Create(
 					pD3DDevice,
-					MTDASHBOARD_FONTNAME,	//ƒtƒHƒ“ƒg–¼Ì
-					MTDASHBOARD_FONTSIZE,	//ƒtƒHƒ“ƒgƒTƒCƒY
-					(WCHAR*)fileName.c_str()	//ƒtƒ@ƒCƒ‹–¼
+					MTDASHBOARD_FONTNAME,	//ãƒ•ã‚©ãƒ³ãƒˆåç§°
+					MTDASHBOARD_FONTSIZE,	//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+					(WCHAR*)fileName.c_str()	//ãƒ•ã‚¡ã‚¤ãƒ«å
 				);
 	if (result != 0) goto EXIT;
 	m_FileName.SetColor(m_CaptionColor);
 
-	//ƒJƒEƒ“ƒ^ƒLƒƒƒvƒVƒ‡ƒ“
+	//ã‚«ã‚¦ãƒ³ã‚¿ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
 	result = m_Counter.Create(
 					pD3DDevice,
-					MTDASHBOARD_FONTNAME,		//ƒtƒHƒ“ƒg–¼Ì
-					MTDASHBOARD_FONTSIZE,		//ƒtƒHƒ“ƒgƒTƒCƒY
-					MTDASHBOARD_COUNTER_CHARS,	//•\¦•¶š
-					MTDASHBOARD_COUNTER_SIZE	//ƒLƒƒƒvƒVƒ‡ƒ“ƒTƒCƒY
+					MTDASHBOARD_FONTNAME,		//ãƒ•ã‚©ãƒ³ãƒˆåç§°
+					MTDASHBOARD_FONTSIZE,		//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
+					MTDASHBOARD_COUNTER_CHARS,	//è¡¨ç¤ºæ–‡å­—
+					MTDASHBOARD_COUNTER_SIZE	//ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã‚µã‚¤ã‚º
 				);
 	if (result != 0) goto EXIT;
 	m_Counter.SetColor(m_CaptionColor);
 
 // >>> modify 20120728 yossiepon begin
 
-	//‘S‘Ì‰‰‘tŠÔ
-	//GetTotalPlayTime‚Ì–ß‚è’l‚ª[sec.]‚©‚ç[msec.]‚É‚È‚Á‚Ä‚¢‚é‚½‚ßA/1000‚ğíœ
+	//å…¨ä½“æ¼”å¥æ™‚é–“
+	//GetTotalPlayTimeã®æˆ»ã‚Šå€¤ãŒ[sec.]ã‹ã‚‰[msec.]ã«ãªã£ã¦ã„ã‚‹ãŸã‚ã€/1000ã‚’å‰Šé™¤
 	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
 
 // <<< modify 20120728 yossiepon end
 
-	//ƒeƒ“ƒ|(BPM)
+	//ãƒ†ãƒ³ãƒ(BPM)
 	SetTempoBPM(pSeqData->GetTempoBPM());
 	m_TempoBPMOnStart = pSeqData->GetTempoBPM();
 
-	//”q‹L†
+	//æ‹å­è¨˜å·
 	SetBeat(pSeqData->GetBeatNumerator(), pSeqData->GetBeatDenominator());
 	m_BeatNumeratorOnStart = pSeqData->GetBeatNumerator();
 	m_BeatDenominatorOnStart = pSeqData->GetBeatDenominator();
 
-	//¬ß”Ô†
+	//å°ç¯€ç•ªå·
 	SetBarNo(1);
 
-	//¬ß”
+	//å°ç¯€æ•°
 	SetBarNum(pSeqData->GetBarNum());
 
 	result = pSeqData->GetMergedTrack(&track);
@@ -163,7 +163,7 @@ int MTDashboard::Create(
 	result = m_Counter.SetString(counter);
 	if (result != 0) goto EXIT;
 	
-	//ƒJƒEƒ“ƒ^•\¦ˆÊ’u‚ğZo
+	//ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºä½ç½®ã‚’ç®—å‡º
 	result = _GetCounterPos(&m_PosCounterX, &m_PosCounterY);
 	if (result != 0) goto EXIT;
 
@@ -172,7 +172,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTDashboard::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -184,7 +184,7 @@ int MTDashboard::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTDashboard::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -202,17 +202,17 @@ int MTDashboard::Draw(
 	if (!m_isEnable) goto EXIT;
 
 	if (m_isEnableFileName) {
-		//ƒtƒ@ƒCƒ‹–¼•`‰æFƒJƒEƒ“ƒ^‚Æ“¯‚¶Šg‘å—¦‚Å•\¦‚·‚é
+		//ãƒ•ã‚¡ã‚¤ãƒ«åæç”»ï¼šã‚«ã‚¦ãƒ³ã‚¿ã¨åŒã˜æ‹¡å¤§ç‡ã§è¡¨ç¤ºã™ã‚‹
 		result = m_FileName.Draw(pD3DDevice, MTDASHBOARD_FRAMESIZE, MTDASHBOARD_FRAMESIZE, m_CounterMag);
 		if (result != 0) goto EXIT;
 	}
 	else {
-		//ƒ^ƒCƒgƒ‹•`‰æFƒJƒEƒ“ƒ^‚Æ“¯‚¶Šg‘å—¦‚Å•\¦‚·‚é
+		//ã‚¿ã‚¤ãƒˆãƒ«æç”»ï¼šã‚«ã‚¦ãƒ³ã‚¿ã¨åŒã˜æ‹¡å¤§ç‡ã§è¡¨ç¤ºã™ã‚‹
 		result = m_Title.Draw(pD3DDevice, MTDASHBOARD_FRAMESIZE, MTDASHBOARD_FRAMESIZE, m_CounterMag);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒJƒEƒ“ƒ^•¶š—ñ•`‰æ
+	//ã‚«ã‚¦ãƒ³ã‚¿æ–‡å­—åˆ—æç”»
 	result = _GetCounterStr(counter, 100);
 	if (result != 0) goto EXIT;
 
@@ -227,7 +227,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTDashboard::Release()
 {
@@ -237,7 +237,7 @@ void MTDashboard::Release()
 }
 
 //******************************************************************************
-// ƒJƒEƒ“ƒ^•\¦ˆÊ’uæ“¾
+// ã‚«ã‚¦ãƒ³ã‚¿è¡¨ç¤ºä½ç½®å–å¾—
 //******************************************************************************
 int MTDashboard::_GetCounterPos(
 		float* pX,
@@ -256,7 +256,7 @@ int MTDashboard::_GetCounterPos(
 	unsigned long captionWidth = 0;
 	float newMag = 0.0f;
 
-	//ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒTƒCƒY‚ğæ“¾
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚µã‚¤ã‚ºã‚’å–å¾—
 	bresult = GetClientRect(m_hWnd, &rect);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -265,18 +265,18 @@ int MTDashboard::_GetCounterPos(
 	cw = rect.right - rect.left;
 	ch = rect.bottom - rect.top;
 
-	//ƒeƒNƒXƒ`ƒƒƒTƒCƒYæ“¾
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µã‚¤ã‚ºå–å¾—
 	m_Counter.GetTextureSize(&th, &tw);
 
-	//•¶šƒTƒCƒY
+	//æ–‡å­—ã‚µã‚¤ã‚º
 	charHeight = th;
 	charWidth = tw / (unsigned long)wcslen(MTDASHBOARD_COUNTER_CHARS);
 
-	//Šg‘å—¦1.0‚ÌƒLƒƒƒvƒVƒ‡ƒ“ƒTƒCƒY
+	//æ‹¡å¤§ç‡1.0ã®ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã‚µã‚¤ã‚º
 	captionWidth = (unsigned long)(charWidth * MTDASHBOARD_COUNTER_SIZE);
 
-	//ƒJƒEƒ“ƒ^•¶š—ñ‚ª‰æ–Ê‚©‚ç‚Í‚İo‚·ê‡‚Í‰æ–Ê‚Éû‚Ü‚é‚æ‚¤‚ÉŠg‘å—¦‚ğXV‚·‚é
-	//  ƒ^ƒCƒgƒ‹‚ª‚Í‚İo‚·‚Ì‚Í‹C‚É‚µ‚È‚¢‚±‚Æ‚É‚·‚é
+	//ã‚«ã‚¦ãƒ³ã‚¿æ–‡å­—åˆ—ãŒç”»é¢ã‹ã‚‰ã¯ã¿å‡ºã™å ´åˆã¯ç”»é¢ã«åã¾ã‚‹ã‚ˆã†ã«æ‹¡å¤§ç‡ã‚’æ›´æ–°ã™ã‚‹
+	//  ã‚¿ã‚¤ãƒˆãƒ«ãŒã¯ã¿å‡ºã™ã®ã¯æ°—ã«ã—ãªã„ã“ã¨ã«ã™ã‚‹
 	if (((cw - (MTDASHBOARD_FRAMESIZE*2)) < captionWidth) && (tw > 0)) {
 		newMag = (float)(cw - (MTDASHBOARD_FRAMESIZE*2)) / (float)captionWidth;
 		if (m_CounterMag > newMag) {
@@ -284,7 +284,7 @@ int MTDashboard::_GetCounterPos(
 		}
 	}
 
-	//ƒeƒNƒXƒ`ƒƒ‚Ì•\¦”{—¦‚ğl—¶‚µ‚Ä•\¦ˆÊ’u‚ğZo
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®è¡¨ç¤ºå€ç‡ã‚’è€ƒæ…®ã—ã¦è¡¨ç¤ºä½ç½®ã‚’ç®—å‡º
 	*pX = MTDASHBOARD_FRAMESIZE;
 	*pY = (float)ch - ((float)th * m_CounterMag) - MTDASHBOARD_FRAMESIZE;
 
@@ -294,7 +294,7 @@ EXIT:;
 
 // >>> modify 20120729 yossiepon begin
 //******************************************************************************
-// ‰‰‘tŠÔ“o˜^i•bj
+// æ¼”å¥æ™‚é–“ç™»éŒ²ï¼ˆç§’ï¼‰
 //******************************************************************************
 void MTDashboard::SetPlayTimeSec(
 		unsigned long playTimeSec
@@ -306,7 +306,7 @@ void MTDashboard::SetPlayTimeSec(
 
 // >>> add 20120729 yossiepon begin
 //******************************************************************************
-// ‰‰‘tŠÔ“o˜^iƒ~ƒŠ•bj
+// æ¼”å¥æ™‚é–“ç™»éŒ²ï¼ˆãƒŸãƒªç§’ï¼‰
 //******************************************************************************
 void MTDashboard::SetPlayTimeMSec(
 		unsigned long playTimeMSec
@@ -317,7 +317,7 @@ void MTDashboard::SetPlayTimeMSec(
 // <<< add 20120729 yossiepon end
 
 //******************************************************************************
-// ‘S‘Ì‰‰‘tŠÔ“o˜^i•bj
+// å…¨ä½“æ¼”å¥æ™‚é–“ç™»éŒ²ï¼ˆç§’ï¼‰
 //******************************************************************************
 void MTDashboard::SetTotalPlayTimeSec(
 		unsigned long totalPlayTimeSec
@@ -327,7 +327,7 @@ void MTDashboard::SetTotalPlayTimeSec(
 }
 
 //******************************************************************************
-// ƒeƒ“ƒ|“o˜^(BPM)
+// ãƒ†ãƒ³ãƒç™»éŒ²(BPM)
 //******************************************************************************
 void MTDashboard::SetTempoBPM(
 		unsigned long bpm
@@ -337,7 +337,7 @@ void MTDashboard::SetTempoBPM(
 }
 
 //******************************************************************************
-// ”q‹L†“o˜^
+// æ‹å­è¨˜å·ç™»éŒ²
 //******************************************************************************
 void MTDashboard::SetBeat(
 		unsigned long numerator,
@@ -349,7 +349,7 @@ void MTDashboard::SetBeat(
 }
 
 //******************************************************************************
-// ¬ß”“o˜^
+// å°ç¯€æ•°ç™»éŒ²
 //******************************************************************************
 void MTDashboard::SetBarNum(
 		unsigned long barNum
@@ -359,7 +359,7 @@ void MTDashboard::SetBarNum(
 }
 
 //******************************************************************************
-// ¬ß”Ô†“o˜^
+// å°ç¯€ç•ªå·ç™»éŒ²
 //******************************************************************************
 void MTDashboard::SetBarNo(
 		unsigned long barNo
@@ -369,7 +369,7 @@ void MTDashboard::SetBarNo(
 }
 
 //******************************************************************************
-// ƒm[ƒgON“o˜^
+// ãƒãƒ¼ãƒˆONç™»éŒ²
 //******************************************************************************
 void MTDashboard::SetNoteOn()
 {
@@ -377,7 +377,7 @@ void MTDashboard::SetNoteOn()
 }
 
 //******************************************************************************
-// ‰‰‘t‘¬“x“o˜^
+// æ¼”å¥é€Ÿåº¦ç™»éŒ²
 //******************************************************************************
 void MTDashboard::SetPlaySpeedRatio(
 		unsigned long ratio
@@ -387,7 +387,7 @@ void MTDashboard::SetPlaySpeedRatio(
 }
 
 //******************************************************************************
-// ƒm[ƒg”“o˜^
+// ãƒãƒ¼ãƒˆæ•°ç™»éŒ²
 //******************************************************************************
 void MTDashboard::SetNotesCount(
 		unsigned long notesCount
@@ -397,7 +397,7 @@ void MTDashboard::SetNotesCount(
 }
 
 //******************************************************************************
-// ƒJƒEƒ“ƒ^•¶š—ñæ“¾
+// ã‚«ã‚¦ãƒ³ã‚¿æ–‡å­—åˆ—å–å¾—
 //******************************************************************************
 int MTDashboard::_GetCounterStr(
 		WCHAR* pStr,
@@ -433,7 +433,7 @@ int MTDashboard::_GetCounterStr(
 		goto EXIT;
 	}
 
-	//‰‰‘t‘¬“x‚ª100%ˆÈŠO‚Ìê‡‚ÉŒÀ‚èƒJƒEƒ“ƒ^‚É•\¦‚·‚é
+	//æ¼”å¥é€Ÿåº¦ãŒ100%ä»¥å¤–ã®å ´åˆã«é™ã‚Šã‚«ã‚¦ãƒ³ã‚¿ã«è¡¨ç¤ºã™ã‚‹
 	if (m_PlaySpeedRatio != 100) {
 		eresult = swprintf_s(spdstr, 16, L" SPEED:%03lu%%", m_PlaySpeedRatio);
 		if (eresult < 0) {
@@ -448,7 +448,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTDashboard::Reset()
 {
@@ -461,7 +461,7 @@ void MTDashboard::Reset()
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTDashboard::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -472,11 +472,11 @@ int MTDashboard::_LoadConfFile(
 	MTColorPalette colorPalette;
 	D3DXCOLOR color;
 	
-	//ƒJƒ‰[İ’è‰Šú‰»
+	//ã‚«ãƒ©ãƒ¼è¨­å®šåˆæœŸåŒ–
 	result = colorConf.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//‘I‘ğƒJƒ‰[ƒpƒŒƒbƒg‚©‚çƒJƒEƒ“ƒ^[Fæ“¾
+	//é¸æŠã‚«ãƒ©ãƒ¼ãƒ‘ãƒ¬ãƒƒãƒˆã‹ã‚‰ã‚«ã‚¦ãƒ³ã‚¿ãƒ¼è‰²å–å¾—
 	colorConf.GetSelectedColorPalette(&colorPalette);
 	colorPalette.GetCounterColor(&color);
 	m_CaptionColor = color;
@@ -486,7 +486,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰‰‘tŠÔæ“¾
+// æ¼”å¥æ™‚é–“å–å¾—
 //******************************************************************************
 unsigned long MTDashboard::GetPlayTimeSec()
 {
@@ -494,7 +494,7 @@ unsigned long MTDashboard::GetPlayTimeSec()
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTDashboard::SetEnable(
 		bool isEnable
@@ -504,7 +504,7 @@ void MTDashboard::SetEnable(
 }
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹–¼•\¦İ’è
+// ãƒ•ã‚¡ã‚¤ãƒ«åè¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTDashboard::SetEnableFileName(
 		bool isEnable

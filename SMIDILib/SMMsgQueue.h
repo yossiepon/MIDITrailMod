@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMMsgQueue
 //
-// ƒƒbƒZ[ƒWƒLƒ…[ƒNƒ‰ƒXƒwƒbƒ_
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚­ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ãƒ˜ãƒƒãƒ€
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
@@ -22,23 +22,23 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ƒƒbƒZ[ƒWƒLƒ…[ƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚­ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMMsgQueue
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMMsgQueue(void);
 	virtual ~SMMsgQueue(void);
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(unsigned long maxMsgNum);
 	
-	//ƒƒbƒZ[ƒW“o˜^
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç™»éŒ²
 	int PostMessage(unsigned long param1, unsigned long param2);
 	
-	//ƒƒbƒZ[ƒWæ“¾
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å–å¾—
 	int GetMessage(bool* pIsExist, unsigned long* pParam1, unsigned long* pParam2);
 	
 private:

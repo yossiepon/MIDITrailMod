@@ -1,18 +1,18 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardCtrlLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒsƒAƒmƒL[ƒ{[ƒh§ŒäƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// •¡”‚ÌƒsƒAƒmƒL[ƒ{[ƒh‚ğŠÇ—‚·‚éƒNƒ‰ƒXB
-// ŠeƒL[ƒ{[ƒh‚Ì”z’u‚ÆƒL[‚Ì‰Ÿ‰ºó‘Ô‚ğ§Œä‚·‚éB
-// Œ»ó‚Í1ƒ|[ƒg(16ch)‚Ì•`‰æ‚Ì‚İ‚É‘Î‰‚µ‚Ä‚¢‚éB
-// 2ƒ|[ƒg–ÚˆÈ~‚Ì•`‰æ‚É‚Í‘Î‰‚µ‚Ä‚¢‚È‚¢B
+// è¤‡æ•°ã®ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+// å„ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®é…ç½®ã¨ã‚­ãƒ¼ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’åˆ¶å¾¡ã™ã‚‹ã€‚
+// ç¾çŠ¶ã¯1ãƒãƒ¼ãƒˆ(16ch)ã®æç”»ã®ã¿ã«å¯¾å¿œã—ã¦ã„ã‚‹ã€‚
+// 2ãƒãƒ¼ãƒˆç›®ä»¥é™ã®æç”»ã«ã¯å¯¾å¿œã—ã¦ã„ãªã„ã€‚
 
 #pragma once
 
@@ -24,17 +24,17 @@
 
 
 //******************************************************************************
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒsƒAƒmƒL[ƒ{[ƒh§ŒäƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ”ã‚¢ãƒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboardCtrlLive
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPianoKeyboardCtrlLive(void);
 	virtual ~MTPianoKeyboardCtrlLive(void);
 	
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
@@ -42,22 +42,22 @@ public:
 			bool isSingleKeyboard
 		);
 	
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 	
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 	
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 	
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 	
-	//ƒm[ƒgON“o˜^
+	//ãƒãƒ¼ãƒˆONç™»éŒ²
 	void SetNoteOn(
 			unsigned char portNo,
 			unsigned char chNo,
@@ -65,27 +65,27 @@ public:
 			unsigned char velocity
 		);
 	
-	//ƒm[ƒgOFF“o˜^
+	//ãƒãƒ¼ãƒˆOFFç™»éŒ²
 	void SetNoteOff(
 			unsigned char portNo,
 			unsigned char chNo,
 			unsigned char noteNo
 		);
 	
-	//‘Sƒm[ƒgOFF
+	//å…¨ãƒãƒ¼ãƒˆOFF
 	void AllNoteOff();
 	void AllNoteOffOnCh(unsigned char portNo, unsigned char chNo);
 	
 private:
 	
-	//ƒL[ó‘Ô
+	//ã‚­ãƒ¼çŠ¶æ…‹
 	enum KeyStatus {
 		BeforeNoteON,
 		NoteON,
 		AfterNoteOFF
 	};
 	
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatus {
 		bool isActive;
 		unsigned long startTime;
@@ -95,25 +95,25 @@ private:
 	
 private:
 	
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesign m_NoteDesign;
 	
-	//ƒL[ƒ{[ƒh•`‰æƒIƒuƒWƒFƒNƒgFƒ|ƒCƒ“ƒ^”z—ñ
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼šãƒã‚¤ãƒ³ã‚¿é…åˆ—
 	MTPianoKeyboard* m_pPianoKeyboard[SM_MAX_CH_NUM];
 	
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³
 	MTPianoKeyboardDesign m_KeyboardDesign;
 	
-	//ƒm[ƒgó‘Ô
+	//ãƒãƒ¼ãƒˆçŠ¶æ…‹
 	NoteStatus m_NoteStatus[SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 	
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNotePitchBend* m_pNotePitchBend;
 	
-	//•\¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 	
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒhƒtƒ‰ƒO
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ãƒ©ã‚°
 	bool m_isSingleKeyboard;
 	
 	void _ClearNoteStatus();

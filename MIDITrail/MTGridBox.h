@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGridBox
 //
-// ƒOƒŠƒbƒhƒ{ƒbƒNƒX•`‰æƒNƒ‰ƒX
+// ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒOƒŠƒbƒhƒ{ƒbƒNƒX‚Æ¬ßü‚ğ•`‰æ‚·‚éB
+// ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹ã¨å°ç¯€ç·šã‚’æç”»ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -23,31 +23,31 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-//  ƒOƒŠƒbƒhƒ{ƒbƒNƒX•`‰æƒNƒ‰ƒX
+//  ã‚°ãƒªãƒƒãƒ‰ãƒœãƒƒã‚¯ã‚¹æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTGridBox
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTGridBox(void);
 	virtual ~MTGridBox(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData);
 
 // >>> modify function to virtual 20180404 yossiepon begin
-	//XV
+	//æ›´æ–°
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
-	//•`‰æ
+	//æç”»
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify function to virtual 20180404 yossiepon end
 
-	//‰ğ•ú
+	//è§£æ”¾
 	void Release();
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
 // >>> modify access level to protected 20161224 yossiepon begin
@@ -76,14 +76,14 @@ private:
 	bool m_isVisible;
 	bool m_isEnable;
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTGRIDBOX_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
 	int _CreateVertexOfGrid(

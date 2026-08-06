@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXMesh
 //
-// ƒƒbƒVƒ…•`‰æƒNƒ‰ƒX
+// ãƒ¡ãƒƒã‚·ãƒ¥æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2025 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXMesh::DXMesh(void)
 {
@@ -27,7 +27,7 @@ DXMesh::DXMesh(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXMesh::~DXMesh(void)
 {
@@ -35,7 +35,7 @@ DXMesh::~DXMesh(void)
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void DXMesh::Release()
 {
@@ -62,7 +62,7 @@ void DXMesh::Release()
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int DXMesh::Initialize(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -71,10 +71,10 @@ int DXMesh::Initialize(
 {
 	int result = 0;
 
-	//ƒtƒ@ƒCƒ‹–¢w’è‚È‚ç‰½‚à‚µ‚È‚¢
+	//ãƒ•ã‚¡ã‚¤ãƒ«æœªæŒ‡å®šãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (_tcslen(pMeshFilePath) == 0) goto EXIT;
 
-	//ƒƒbƒVƒ…ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadMeshFile(pD3DDevice, pMeshFilePath);
 	if (result != 0) goto EXIT;
 
@@ -83,7 +83,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒƒbƒVƒ…ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// ãƒ¡ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int DXMesh::_LoadMeshFile(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -97,26 +97,26 @@ int DXMesh::_LoadMeshFile(
 	TCHAR textureFilePath[_MAX_PATH];
 	D3DXMATERIAL* pMaterials = NULL;
 
-	//ƒƒbƒVƒ…ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	hresult = D3DXLoadMeshFromX(
-					pMeshFilePath,		//ƒƒbƒVƒ…ƒtƒ@ƒCƒ‹ƒpƒX
-					D3DXMESH_MANAGED,	//ƒƒbƒVƒ…ì¬ƒIƒvƒVƒ‡ƒ“
-					pD3DDevice,			//ƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg
-					NULL,				//—×Ú«ƒf[ƒ^
-					&pMaterialBuffer,	//ƒ}ƒeƒŠƒAƒ‹
-					NULL,				//ƒGƒtƒFƒNƒgƒCƒ“ƒXƒ^ƒ“ƒX
-					&m_NumMaterials,	//ƒ}ƒeƒŠƒAƒ‹”
-					&m_pMesh			//ƒƒbƒVƒ…
+					pMeshFilePath,		//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+					D3DXMESH_MANAGED,	//ãƒ¡ãƒƒã‚·ãƒ¥ä½œæˆã‚ªãƒ—ã‚·ãƒ§ãƒ³
+					pD3DDevice,			//ãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+					NULL,				//éš£æ¥æ€§ãƒ‡ãƒ¼ã‚¿
+					&pMaterialBuffer,	//ãƒãƒ†ãƒªã‚¢ãƒ«
+					NULL,				//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+					&m_NumMaterials,	//ãƒãƒ†ãƒªã‚¢ãƒ«æ•°
+					&m_pMesh			//ãƒ¡ãƒƒã‚·ãƒ¥
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒ}ƒeƒŠƒAƒ‹æ“ªˆÊ’u
+	//ãƒãƒ†ãƒªã‚¢ãƒ«å…ˆé ­ä½ç½®
 	pMaterials = (D3DXMATERIAL*)pMaterialBuffer->GetBufferPointer();
 
-	//”z—ñƒoƒbƒtƒ@¶¬
+	//é…åˆ—ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	try {
 		m_pMeshMaterials = new D3DMATERIAL9[m_NumMaterials];
 		m_pMeshTextures = new LPDIRECT3DTEXTURE9[m_NumMaterials];
@@ -126,19 +126,19 @@ int DXMesh::_LoadMeshFile(
 		goto EXIT;
 	}
 
-	//ƒoƒbƒtƒ@ƒNƒŠƒA
+	//ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	for (i = 0; i < m_NumMaterials; i++) {
 		m_pMeshTextures[i] = NULL;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	for (i = 0; i < m_NumMaterials; i++) {
 		m_pMeshMaterials[i] = pMaterials[i].MatD3D;
 		//m_pMeshMaterials[i].Ambient = m_pMeshMaterials[i].Diffuse;
 		
 		if (pMaterials[i].pTextureFilename == NULL) continue;
 		
-		//ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹ƒpƒXì¬
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ä½œæˆ
 		result = _GetTextureFilePath(
 						pMeshFilePath,
 						pMaterials[i].pTextureFilename,
@@ -147,7 +147,7 @@ int DXMesh::_LoadMeshFile(
 					);
 		if (result != 0) goto EXIT;
 		
-		//ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 		hresult = D3DXCreateTextureFromFile(
 						pD3DDevice,
 						textureFilePath,
@@ -167,7 +167,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹ƒpƒXæ“¾
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 //******************************************************************************
 int DXMesh::_GetTextureFilePath(
 		TCHAR* pMeshFilePath,
@@ -184,31 +184,31 @@ int DXMesh::_GetTextureFilePath(
 	TCHAR fname[_MAX_FNAME];
 	TCHAR ext[_MAX_EXT];
 
-	//ƒpƒX—v‘f‚Ì•ªŠ„
+	//ãƒ‘ã‚¹è¦ç´ ã®åˆ†å‰²
 	eresult = _tsplitpath_s(
-					pMeshFilePath,	//ƒƒbƒVƒ…ƒtƒ@ƒCƒ‹ƒpƒX
-					drive,			//ƒhƒ‰ƒCƒu•¶š—ñƒoƒbƒtƒ@
-					_MAX_DRIVE,		//ƒoƒbƒtƒ@ƒTƒCƒY
-					dir,			//ƒfƒBƒŒƒNƒgƒŠ•¶š—ñƒoƒbƒtƒ@
-					_MAX_DIR,		//ƒoƒbƒtƒ@ƒTƒCƒY
-					fname,			//ƒtƒ@ƒCƒ‹–¼•¶š—ñƒoƒbƒtƒ@
-					_MAX_FNAME,		//ƒoƒbƒtƒ@ƒTƒCƒY
-					ext,			//Šg’£q•¶š—ñƒoƒbƒtƒ@
-					_MAX_EXT		//ƒoƒbƒtƒ@ƒTƒCƒY
+					pMeshFilePath,	//ãƒ¡ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+					drive,			//ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_DRIVE,		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					dir,			//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_DIR,		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					fname,			//ãƒ•ã‚¡ã‚¤ãƒ«åæ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_FNAME,		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					ext,			//æ‹¡å¼µå­æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+					_MAX_EXT		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//ƒpƒXì¬
+	//ãƒ‘ã‚¹ä½œæˆ
 	eresult = _tmakepath_s(
-					pBuf,			//ƒpƒXŠi”[æƒoƒbƒtƒ@
-					bufSize,		//ƒoƒbƒtƒ@ƒTƒCƒY
-					drive,			//ƒhƒ‰ƒCƒu•¶š—ñ
-					dir,			//ƒfƒBƒŒƒNƒgƒŠ•¶š—ñ
-					pTextureFileName,	//ƒtƒ@ƒCƒ‹–¼•¶š—ñ
-					NULL			//Šg’£q•¶š—ñ
+					pBuf,			//ãƒ‘ã‚¹æ ¼ç´å…ˆãƒãƒƒãƒ•ã‚¡
+					bufSize,		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+					drive,			//ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—åˆ—
+					dir,			//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ–‡å­—åˆ—
+					pTextureFileName,	//ãƒ•ã‚¡ã‚¤ãƒ«åæ–‡å­—åˆ—
+					NULL			//æ‹¡å¼µå­æ–‡å­—åˆ—
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -220,7 +220,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 void DXMesh::Transform(
 		D3DXMATRIX worldMatrix
@@ -230,7 +230,7 @@ void DXMesh::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int DXMesh::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -240,48 +240,48 @@ int DXMesh::Draw(
 	HRESULT hresult = D3D_OK;
 	unsigned long i = 0;
 
-	//ƒƒbƒVƒ…‚ğ“Ç‚İ‚ñ‚Å‚¢‚È‚¯‚ê‚Î‰½‚à‚µ‚È‚¢
+	//ãƒ¡ãƒƒã‚·ãƒ¥ã‚’èª­ã¿è¾¼ã‚“ã§ã„ãªã‘ã‚Œã°ä½•ã‚‚ã—ãªã„
 	if (m_pMesh == NULL) goto EXIT;
 
-	//ˆÚ“®ƒ}ƒgƒŠƒNƒX‚ğƒZƒbƒg
+	//ç§»å‹•ãƒãƒˆãƒªã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 	hresult = pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldMatrix);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒƒbƒVƒ…•`‰æ
+	//ãƒ¡ãƒƒã‚·ãƒ¥æç”»
 	for (i = 0; i < m_NumMaterials; i++) {
-		//ƒ}ƒeƒŠƒAƒ‹İ’è
+		//ãƒãƒ†ãƒªã‚¢ãƒ«è¨­å®š
 		hresult = pD3DDevice->SetMaterial(&(m_pMeshMaterials[i]));
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, 0);
 			goto EXIT;
 		}
 		
-		//ƒeƒNƒXƒ`ƒƒİ’èFƒXƒe[ƒW0
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®šï¼šã‚¹ãƒ†ãƒ¼ã‚¸0
 		hresult = pD3DDevice->SetTexture(0, m_pMeshTextures[i]);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, 0);
 			goto EXIT;
 		}
 		
-		//ƒƒbƒVƒ…ƒTƒuƒZƒbƒg•`‰æ
+		//ãƒ¡ãƒƒã‚·ãƒ¥ã‚µãƒ–ã‚»ãƒƒãƒˆæç”»
 		hresult = m_pMesh->DrawSubset(i);
 		if (FAILED(hresult)) {
 			result = YN_SET_ERR("DirectX API error.", hresult, 0);

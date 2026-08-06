@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTFileList
 //
-// ƒtƒ@ƒCƒ‹ƒŠƒXƒgƒNƒ‰ƒX
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //
@@ -19,49 +19,49 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒtƒ@ƒCƒ‹ƒŠƒXƒgƒNƒ‰ƒX
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTFileList
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTFileList(void);
 	virtual ~MTFileList(void);
 
-	//ƒfƒBƒŒƒNƒgƒŠ”z‰ºƒtƒ@ƒCƒ‹ƒŠƒXƒgì¬
+	//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªé…ä¸‹ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆä½œæˆ
 	int MakeFileListWithDirectory(const WCHAR* pTargetDirPath, SMRcpConv* pRcpConv);
 
-	//ƒtƒ@ƒCƒ‹”
+	//ãƒ•ã‚¡ã‚¤ãƒ«æ•°
 	size_t GetFileCount();
 
-	//ƒtƒ@ƒCƒ‹ƒpƒXæ“¾
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
 	const WCHAR* GetFilePath(unsigned long index);
 
-	//ƒtƒ@ƒCƒ‹–¼æ“¾
+	//ãƒ•ã‚¡ã‚¤ãƒ«åå–å¾—
 	const WCHAR* GetFileName(unsigned long index);
 
-	//ƒNƒŠƒA
+	//ã‚¯ãƒªã‚¢
 	void Clear();
 
-	//‘I‘ğƒtƒ@ƒCƒ‹“o˜^
+	//é¸æŠãƒ•ã‚¡ã‚¤ãƒ«ç™»éŒ²
 	int SetSelectedFileName(const WCHAR* pFileName);
 
-	//æ“ªƒtƒ@ƒCƒ‹‘I‘ğ
+	//å…ˆé ­ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 	void SelectFirstFile();
 
-	//‘Oƒtƒ@ƒCƒ‹‘I‘ğ
+	//å‰ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 	void SelectPreviousFile(bool* pExist);
 
-	//Ÿƒtƒ@ƒCƒ‹‘I‘ğ
+	//æ¬¡ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ
 	void SelectNextFile(bool* pExist);
 
-	//‘I‘ğƒtƒ@ƒCƒ‹ƒCƒ“ƒfƒbƒNƒXæ“¾
+	//é¸æŠãƒ•ã‚¡ã‚¤ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹å–å¾—
 	unsigned long GetSelectedFileIndex();
 
 private:
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const MTFileList&);
 	MTFileList(const MTFileList&);
 

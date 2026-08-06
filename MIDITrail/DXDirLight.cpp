@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXDirLight
 //
-// ƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒgƒNƒ‰ƒX
+// ãƒ‡ã‚£ãƒ¬ã‚¯ã‚·ãƒ§ãƒŠãƒ«ãƒ©ã‚¤ãƒˆã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXDirLight::DXDirLight(void)
 {
@@ -24,14 +24,14 @@ DXDirLight::DXDirLight(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 DXDirLight::~DXDirLight(void)
 {
 }
 
 //******************************************************************************
-// ‰Šú‰»
+// åˆæœŸåŒ–
 //******************************************************************************
 int DXDirLight::Initialize()
 {
@@ -39,35 +39,35 @@ int DXDirLight::Initialize()
 
 	ZeroMemory(&m_Light, sizeof(D3DLIGHT9));
 
-	//ƒ‰ƒCƒgƒ^ƒCƒvF•½sŒõü
+	//ãƒ©ã‚¤ãƒˆã‚¿ã‚¤ãƒ—ï¼šå¹³è¡Œå…‰ç·š
 	m_Light.Type = D3DLIGHT_DIRECTIONAL;
 
-	//ŠgŽUŒõ
+	//æ‹¡æ•£å…‰
 	m_Light.Diffuse.r  = 1.0f;
 	m_Light.Diffuse.g  = 1.0f;
 	m_Light.Diffuse.b  = 1.0f;
 	m_Light.Diffuse.a  = 1.0f;
 
-	//‹¾–Ê”½ŽËŒõ
+	//é¡é¢åå°„å…‰
 	m_Light.Specular.r = 0.0f;
 	m_Light.Specular.g = 0.0f;
 	m_Light.Specular.b = 0.0f;
 	m_Light.Specular.a = 0.0f;
 
-	//ŠÂ‹«Œõ
+	//ç’°å¢ƒå…‰
 	m_Light.Ambient.r  = 0.2f;
 	m_Light.Ambient.g  = 0.2f;
 	m_Light.Ambient.b  = 0.2f;
 	m_Light.Ambient.a  = 1.0f;
 
-	//•ûŒüFƒxƒNƒgƒ‹‚Í³‹K‰»‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‚È‚ç‚È‚¢
+	//æ–¹å‘ï¼šãƒ™ã‚¯ãƒˆãƒ«ã¯æ­£è¦åŒ–ã•ã‚Œã¦ã„ãªã‘ã‚Œã°ãªã‚‰ãªã„
 	m_Light.Direction = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 
 	return result;
 }
 
 //******************************************************************************
-// ƒ‰ƒCƒgFÝ’è
+// ãƒ©ã‚¤ãƒˆè‰²è¨­å®š
 //******************************************************************************
 void DXDirLight::SetColor(
 		D3DXCOLOR diffuse,
@@ -81,7 +81,7 @@ void DXDirLight::SetColor(
 }
 
 //******************************************************************************
-// ƒ‰ƒCƒg•ûŒüÝ’è
+// ãƒ©ã‚¤ãƒˆæ–¹å‘è¨­å®š
 //******************************************************************************
 void DXDirLight::SetDirection(
 		D3DXVECTOR3 dirVector
@@ -89,15 +89,15 @@ void DXDirLight::SetDirection(
 {
 	D3DXVECTOR3 normalizedVector;
 
-	//ƒxƒNƒgƒ‹³‹K‰»
+	//ãƒ™ã‚¯ãƒˆãƒ«æ­£è¦åŒ–
 	D3DXVec3Normalize(&normalizedVector, &dirVector);
 
-	//ƒ‰ƒCƒgî•ñ\‘¢‘Ì‚É“o˜^
+	//ãƒ©ã‚¤ãƒˆæƒ…å ±æ§‹é€ ä½“ã«ç™»éŒ²
 	m_Light.Direction = normalizedVector;
 }
 
 //******************************************************************************
-// ƒ‰ƒCƒg•ûŒüŽæ“¾
+// ãƒ©ã‚¤ãƒˆæ–¹å‘å–å¾—
 //******************************************************************************
 D3DXVECTOR3 DXDirLight::GetDirection()
 {
@@ -105,7 +105,7 @@ D3DXVECTOR3 DXDirLight::GetDirection()
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX“o˜^FƒCƒ“ƒfƒbƒNƒX0
+// ãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²ï¼šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹0
 //******************************************************************************
 int DXDirLight::SetDevice(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -116,7 +116,7 @@ int DXDirLight::SetDevice(
 }
 
 //******************************************************************************
-// ƒfƒoƒCƒX“o˜^FƒCƒ“ƒfƒbƒNƒXŽw’è
+// ãƒ‡ãƒã‚¤ã‚¹ç™»éŒ²ï¼šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æŒ‡å®š
 //******************************************************************************
 int DXDirLight::SetDevice(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -127,30 +127,30 @@ int DXDirLight::SetDevice(
 	int result = 0;
 	HRESULT hresult = D3D_OK;
 
-	//ƒ‰ƒCƒeƒBƒ“ƒOƒ‚[ƒh
+	//ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰
 	hresult = pD3DDevice->SetRenderState(D3DRS_LIGHTING, isLightON);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, isLightON);
 		goto EXIT;
 	}
 
-	//ƒXƒyƒLƒ…ƒ‰Œõ
-	//  ƒXƒyƒLƒ…ƒ‰‚ð—LŒø‚É‚·‚é‚Æ’Êí‚Ìƒ‰ƒCƒg‚É”ä‚×‚Ä2”{‚Ì•‰‰×‚ª¶‚¶‚é‚½‚ß–³Œø‚É‚·‚é
-	//  TODO: ŠO•”‚©‚çÝ’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
+	//ã‚¹ãƒšã‚­ãƒ¥ãƒ©å…‰
+	//  ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã¨é€šå¸¸ã®ãƒ©ã‚¤ãƒˆã«æ¯”ã¹ã¦2å€ã®è² è·ãŒç”Ÿã˜ã‚‹ãŸã‚ç„¡åŠ¹ã«ã™ã‚‹
+	//  TODO: å¤–éƒ¨ã‹ã‚‰è¨­å®šã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
 	hresult = pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, isLightON);
 		goto EXIT;
 	}
 
-	// ƒ‰ƒCƒg‚ðƒŒƒ“ƒ_ƒŠƒ“ƒOƒpƒCƒvƒ‰ƒCƒ“‚ÉÝ’è
+	// ãƒ©ã‚¤ãƒˆã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã«è¨­å®š
 	hresult = pD3DDevice->SetLight(index, &m_Light);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒ‰ƒCƒg—LŒø‰»
+	//ãƒ©ã‚¤ãƒˆæœ‰åŠ¹åŒ–
 	hresult = pD3DDevice->LightEnable(index, isLightON);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, isLightON);

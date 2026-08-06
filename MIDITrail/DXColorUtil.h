@@ -1,48 +1,45 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXColorUtil
 //
-// ƒJƒ‰[ƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// Color utility class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
+#include <tchar.h>
 
 
 //******************************************************************************
-// ƒJƒ‰[ƒ†[ƒeƒBƒŠƒeƒBƒNƒ‰ƒX
+// Color utility class
 //******************************************************************************
 class DXColorUtil
 {
 public:
 
-	//RGBAi16i”•¶š—ñj‚©‚ç‚Ì”’l•ÏŠ·
-	static D3DXCOLOR MakeColorFromHexRGBA(const TCHAR* pHexRGBA);
+	// RGBA hex string "RRGGBBAA" -> Color(r, g, b, a) in [0,1]
+	static DirectX::SimpleMath::Color MakeColorFromHexRGBA(const TCHAR* pHexRGBA);
 
-	//RGBi16i”•¶š—ñj‚©‚ç‚Ì”’l•ÏŠ·
-	static D3DCOLOR MakeColorFromHexRGB(const TCHAR* pHexRGB);
+	// RGB hex string "RRGGBB" -> D3DCOLOR-style 0xFFRRGGBB (unsigned long)
+	static unsigned long MakeColorFromHexRGB(const TCHAR* pHexRGB);
 
-	//”’l‚©‚çRGBAi16i”•¶š—ñj‚Ö‚Ì•ÏŠ·
+	// Color(r, g, b, a) -> RGBA hex string "RRGGBBAA"
 	static void MakeHexRGBAFromColor(
-						D3DXCOLOR color,
-						TCHAR* pHexRGBA,
-						unsigned long bufSize
-					);
+					DirectX::SimpleMath::Color color,
+					TCHAR* pHexRGBA,
+					unsigned long bufSize
+				);
 
 private:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
-	DXColorUtil(void);
-	virtual ~DXColorUtil(void);
+	DXColorUtil();
+	virtual ~DXColorUtil();
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
 	void operator=(const DXColorUtil&);
 	DXColorUtil(const DXColorUtil&);
-
 };
-

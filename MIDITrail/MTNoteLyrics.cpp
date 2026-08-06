@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteLyrics
 //
-// ƒm[ƒg‰ÌŒ•`‰æƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆæ­Œè©æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
@@ -20,7 +20,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteLyrics::MTNoteLyrics(void)
 {
@@ -38,7 +38,7 @@ MTNoteLyrics::MTNoteLyrics(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTNoteLyrics::~MTNoteLyrics(void)
 {
@@ -46,7 +46,7 @@ MTNoteLyrics::~MTNoteLyrics(void)
 }
 
 //******************************************************************************
-// ƒm[ƒg‰ÌŒ¶¬
+// ãƒãƒ¼ãƒˆæ­Œè©ç”Ÿæˆ
 //******************************************************************************
 int MTNoteLyrics::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -60,34 +60,34 @@ int MTNoteLyrics::Create(
 
 	Release();
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg¶¬
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	result = _CreateNoteDesign();
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒfƒUƒCƒ“ƒIƒuƒWƒFƒNƒg‰Šú‰»
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåˆæœŸåŒ–
 	result = m_pNoteDesign->Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	//ƒgƒ‰ƒbƒNæ“¾
+	//ãƒˆãƒ©ãƒƒã‚¯å–å¾—
 	result = pSeqData->GetMergedTrack(&track);
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgƒŠƒXƒgæ“¾FstartTime, endTime ‚ÍƒŠƒAƒ‹ƒ^ƒCƒ€(msec)
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆå–å¾—ï¼šstartTime, endTime ã¯ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ (msec)
 	result = track.GetNoteListWithRealTime(&m_NoteListRT, pSeqData->GetTimeDivision());
 	if (result != 0) goto EXIT;
 
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	result = _CreateNoteStatus();
 	if (result != 0) goto EXIT;
 
-	//’¸“_¶¬
+	//é ‚ç‚¹ç”Ÿæˆ
 	result = _CreateVertex(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒeƒŠƒAƒ‹ì¬
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 	_MakeMaterial(&m_Material);
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	m_pNotePitchBend = pNotePitchBend;
 
 EXIT:;
@@ -95,7 +95,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒm[ƒg‰ÌŒƒfƒUƒCƒ“¶¬
+// ãƒãƒ¼ãƒˆæ­Œè©ãƒ‡ã‚¶ã‚¤ãƒ³ç”Ÿæˆ
 //******************************************************************************
 int MTNoteLyrics::_CreateNoteDesign()
 {
@@ -114,7 +114,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTNoteLyrics::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -130,27 +130,27 @@ int MTNoteLyrics::Transform(
 
 	m_CamVector = camVector;
 
-	//‰ÌŒ‚Ì’¸“_XV
+	//æ­Œè©ã®é ‚ç‚¹æ›´æ–°
 	result = _TransformLyrics(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//s—ñ‰Šú‰»
+	//è¡Œåˆ—åˆæœŸåŒ–
 	D3DXMatrixIdentity(&rotateMatrix);
 	D3DXMatrixIdentity(&moveMatrix);
 	D3DXMatrixIdentity(&worldMatrix);
 
-	//‰ñ“]s—ñ
+	//å›è»¢è¡Œåˆ—
 	//D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle + 180.0f));
 	D3DXMatrixRotationX(&rotateMatrix, D3DXToRadian(rollAngle));
 
-	//ˆÚ“®s—ñ
+	//ç§»å‹•è¡Œåˆ—
 	moveVector = m_pNoteDesign->GetWorldMoveVector();
 	D3DXMatrixTranslation(&moveMatrix, moveVector.x, moveVector.y, moveVector.z);
 
-	//s—ñ‚Ì‡¬
+	//è¡Œåˆ—ã®åˆæˆ
 	D3DXMatrixMultiply(&worldMatrix, &rotateMatrix, &moveMatrix);
 
-	//•ÏŠ·s—ñİ’è
+	//å¤‰æ›è¡Œåˆ—è¨­å®š
 	m_Primitive.Transform(worldMatrix);
 
 EXIT:;
@@ -158,7 +158,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ÌŒ‚Ì’¸“_XV
+// æ­Œè©ã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteLyrics::_TransformLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -166,14 +166,14 @@ int MTNoteLyrics::_TransformLyrics(
 {
 	int result = 0;
 
-	//ƒXƒLƒbƒv’†‚È‚ç‰½‚à‚µ‚È‚¢
+	//ã‚¹ã‚­ãƒƒãƒ—ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (m_isSkipping) goto EXIT;
 
-	//‰ÌŒ‚Ìó‘ÔXV
+	//æ­Œè©ã®çŠ¶æ…‹æ›´æ–°
 	result = _UpdateStatusOfLyrics(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//‰ÌŒ‚Ì’¸“_XV
+	//æ­Œè©ã®é ‚ç‚¹æ›´æ–°
 	result = _UpdateVertexOfLyrics(pD3DDevice);
 	if (result != 0) goto EXIT;
 
@@ -182,7 +182,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ÌŒ‚Ìó‘ÔXV
+// æ­Œè©ã®çŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 int MTNoteLyrics::_UpdateStatusOfLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -194,18 +194,18 @@ int MTNoteLyrics::_UpdateStatusOfLyrics(
 	bool isRegist = false;
 	SMNote note;
 
-	//‰ÌŒƒfƒBƒPƒCEƒŠƒŠ[ƒXŠÔ(msec)
+	//æ­Œè©ãƒ‡ã‚£ã‚±ã‚¤ãƒ»ãƒªãƒªãƒ¼ã‚¹æ™‚é–“(msec)
 	unsigned long decayDuration = m_pNoteDesign->GetRippleDecayDuration();
 	unsigned long releaseDuration   = m_pNoteDesign->GetRippleReleaseDuration();
 
-	//ƒm[ƒgî•ñ‚ğXV‚·‚é
+	//ãƒãƒ¼ãƒˆæƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
-			//ƒm[ƒgî•ñæ“¾
+			//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
 			if (result != 0) goto EXIT;
 
-			//”­‰¹’†ƒm[ƒgó‘ÔXV
+			//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 			result = _UpdateNoteStatus(
 							m_PlayTimeMSec,
 							decayDuration,
@@ -217,28 +217,28 @@ int MTNoteLyrics::_UpdateStatusOfLyrics(
 		}
 	}
 
-	//‘O‰ñŒŸõI—¹ˆÊ’u‚©‚ç”­‰¹ŠJnƒm[ƒg‚ğŒŸõ
+	//å‰å›æ¤œç´¢çµ‚äº†ä½ç½®ã‹ã‚‰ç™ºéŸ³é–‹å§‹ãƒãƒ¼ãƒˆã‚’æ¤œç´¢
 	while (m_CurNoteIndex < m_NoteListRT.GetSize()) {
-		//ƒm[ƒgî•ñæ“¾
+		//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 		result = m_NoteListRT.GetNote(m_CurNoteIndex, &note);
 		if (result != 0) goto EXIT;
 
-		//‰‰‘tŠÔ‚ªƒL[‰Ÿ‰ºŠJnŠÔi”­‰¹ŠJn’¼‘Oj‚É‚½‚Ç‚è‚Â‚¢‚Ä‚¢‚È‚¯‚ê‚ÎŒŸõI—¹
+		//æ¼”å¥æ™‚é–“ãŒã‚­ãƒ¼æŠ¼ä¸‹é–‹å§‹æ™‚é–“ï¼ˆç™ºéŸ³é–‹å§‹ç›´å‰ï¼‰ã«ãŸã©ã‚Šã¤ã„ã¦ã„ãªã‘ã‚Œã°æ¤œç´¢çµ‚äº†
 		if (m_PlayTimeMSec < note.startTime) {
 			break;
 		}
 
-		//ƒm[ƒgî•ñ“o˜^”»’è
+		//ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²åˆ¤å®š
 		isRegist = false;
 		if ((note.startTime <= m_PlayTimeMSec) && (m_PlayTimeMSec <= note.endTime) && (note.lyric[0] != '\0')) {
 			isRegist = true;
 		}
 
-		//ƒm[ƒgî•ñ“o˜^
-		//  ƒL[‰º~’†^ã¸’†‚Ìî•ñ‚à“o˜^‘ÎÛ‚Æ‚µ‚Ä‚¢‚é‚½‚ß
-		//  “¯ˆêƒm[ƒg‚Å•¡”ƒGƒ“ƒgƒŠ‚³‚ê‚éê‡‚ª‚ ‚é‚±‚Æ‚É’ˆÓ‚·‚é
+		//ãƒãƒ¼ãƒˆæƒ…å ±ç™»éŒ²
+		//  ã‚­ãƒ¼ä¸‹é™ä¸­ï¼ä¸Šæ˜‡ä¸­ã®æƒ…å ±ã‚‚ç™»éŒ²å¯¾è±¡ã¨ã—ã¦ã„ã‚‹ãŸã‚
+		//  åŒä¸€ãƒãƒ¼ãƒˆã§è¤‡æ•°ã‚¨ãƒ³ãƒˆãƒªã•ã‚Œã‚‹å ´åˆãŒã‚ã‚‹ã“ã¨ã«æ³¨æ„ã™ã‚‹
 		if (isRegist) {
-			//‚·‚Å‚É“¯ˆêƒCƒ“ƒfƒbƒNƒX‚Å“o˜^Ï‚İ‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+			//ã™ã§ã«åŒä¸€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã§ç™»éŒ²æ¸ˆã¿ã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 			isFound = false;
 			for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 				if ((m_pNoteStatus[i].isActive)
@@ -247,7 +247,7 @@ int MTNoteLyrics::_UpdateStatusOfLyrics(
 					break;
 				}
 			}
-			//‹ó‚¢‚Ä‚¢‚é‚Æ‚±‚ë‚É’Ç‰Á‚·‚é
+			//ç©ºã„ã¦ã„ã‚‹ã¨ã“ã‚ã«è¿½åŠ ã™ã‚‹
 			if (!isFound) {
 				for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 					if (!(m_pNoteStatus[i].isActive)) {
@@ -262,7 +262,7 @@ int MTNoteLyrics::_UpdateStatusOfLyrics(
 					}
 				}
 			}
-			//”­‰¹’†ƒm[ƒgó‘ÔXV
+			//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 			result = _UpdateNoteStatus(
 							m_PlayTimeMSec,
 							decayDuration,
@@ -280,7 +280,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ”­‰¹’†ƒm[ƒgó‘ÔXV
+// ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆçŠ¶æ…‹æ›´æ–°
 //******************************************************************************
 int MTNoteLyrics::_UpdateNoteStatus(
 		unsigned long playTimeMSec,
@@ -292,9 +292,9 @@ int MTNoteLyrics::_UpdateNoteStatus(
 {
 	int result= 0;
 
-	//”­‰¹I—¹ƒm[ƒg
+	//ç™ºéŸ³çµ‚äº†ãƒãƒ¼ãƒˆ
 	if(playTimeMSec > note.endTime) {
-		//ƒm[ƒgî•ñ‚ğ”jŠü
+		//ãƒãƒ¼ãƒˆæƒ…å ±ã‚’ç ´æ£„
 		pNoteStatus->isActive = false;
 		pNoteStatus->index = 0;
 		pNoteStatus->keyStatus = BeforeNoteON;
@@ -310,7 +310,7 @@ int MTNoteLyrics::_UpdateNoteStatus(
 	float sustainRatio = 0.4f;
 	float releaseRatio = 0.3f;
 
-	//‰ÌŒƒfƒBƒPƒCŠÔ‚ª”­‰¹’·‚æ‚è’·‚¢ê‡AƒfƒBƒPƒC‚ğÁ‰¹ŠÔ‚Ü‚Å‚ÉC³‚·‚é
+	//æ­Œè©ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“ãŒç™ºéŸ³é•·ã‚ˆã‚Šé•·ã„å ´åˆã€ãƒ‡ã‚£ã‚±ã‚¤ã‚’æ¶ˆéŸ³æ™‚é–“ã¾ã§ã«ä¿®æ­£ã™ã‚‹
 	if(noteLen < decayDuration) {
 
 		//decayDuration = noteLen;
@@ -320,7 +320,7 @@ int MTNoteLyrics::_UpdateNoteStatus(
 		//sustainRatio = 0.0f;
 		//releaseRatio = 0.0f;
 	}
-	//‰ÌŒƒfƒBƒPƒC{ƒŠƒŠ[ƒXŠÔ‚ª”­‰¹’·‚æ‚è’·‚¢ê‡AƒŠƒŠ[ƒXŠJnŠÔ‚ğƒfƒBƒPƒCŠÔŒo‰ß’¼Œã‚ÉC³‚·‚é
+	//æ­Œè©ãƒ‡ã‚£ã‚±ã‚¤ï¼‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“ãŒç™ºéŸ³é•·ã‚ˆã‚Šé•·ã„å ´åˆã€ãƒªãƒªãƒ¼ã‚¹é–‹å§‹æ™‚é–“ã‚’ãƒ‡ã‚£ã‚±ã‚¤æ™‚é–“çµŒéç›´å¾Œã«ä¿®æ­£ã™ã‚‹
 	else if(noteLen < (decayDuration + releaseDuration)) {
 
 		releaseDuration = noteLen - decayDuration;
@@ -328,7 +328,7 @@ int MTNoteLyrics::_UpdateNoteStatus(
 		sustainRatio = 0.0f;
 		releaseRatio = 0.5f;
 	}
-	//”­‰¹’·‚ªi‰ÌŒƒfƒBƒPƒC{ƒŠƒŠ[ƒXŠÔj~‚QˆÈ“à‚Ìê‡AØ‚è‘Ö‚¦“_‚ğƒfƒBƒPƒCI—¹ŠÔ‚ÆƒŠƒŠ[ƒXŠJnŠÔ‚Ì’†ŠÔ‚É‚·‚é
+	//ç™ºéŸ³é•·ãŒï¼ˆæ­Œè©ãƒ‡ã‚£ã‚±ã‚¤ï¼‹ãƒªãƒªãƒ¼ã‚¹æ™‚é–“ï¼‰Ã—ï¼’ä»¥å†…ã®å ´åˆã€åˆ‡ã‚Šæ›¿ãˆç‚¹ã‚’ãƒ‡ã‚£ã‚±ã‚¤çµ‚äº†æ™‚é–“ã¨ãƒªãƒªãƒ¼ã‚¹é–‹å§‹æ™‚é–“ã®ä¸­é–“ã«ã™ã‚‹
 	else if(noteLen < (decayDuration + releaseDuration) * 2) {
 
 		unsigned long midTime = (note.startTime + decayDuration) / 2 + (note.endTime - releaseDuration) / 2;
@@ -341,7 +341,7 @@ int MTNoteLyrics::_UpdateNoteStatus(
 		releaseRatio = 0.5f;
 	}
 
-	//ƒm[ƒgONŒãiŒ¸Š’†j
+	//ãƒãƒ¼ãƒˆONå¾Œï¼ˆæ¸›è¡°ä¸­ï¼‰
 	if (playTimeMSec < (note.startTime + decayDuration)) {
 		pNoteStatus->keyStatus = BeforeNoteON;
 		if (decayDuration == 0) {
@@ -351,7 +351,7 @@ int MTNoteLyrics::_UpdateNoteStatus(
 			pNoteStatus->keyDownRate = decayRatio * (float)(playTimeMSec - note.startTime) / (float)decayDuration;
 		}
 	}
-	//ƒm[ƒgONŒ¸ŠŒã‚©‚çƒŠƒŠ[ƒX‘O‚Ü‚Å
+	//ãƒãƒ¼ãƒˆONæ¸›è¡°å¾Œã‹ã‚‰ãƒªãƒªãƒ¼ã‚¹å‰ã¾ã§
 	else if (((note.startTime + decayDuration) <= playTimeMSec)
 			&& (playTimeMSec <= (note.endTime - releaseDuration))) {
 		pNoteStatus->keyStatus = NoteON;
@@ -364,7 +364,7 @@ int MTNoteLyrics::_UpdateNoteStatus(
 			pNoteStatus->keyDownRate = decayRatio + sustainRatio;
 		}
 	}
-	//ƒm[ƒgOFF‘OiƒŠƒŠ[ƒX’†j
+	//ãƒãƒ¼ãƒˆOFFå‰ï¼ˆãƒªãƒªãƒ¼ã‚¹ä¸­ï¼‰
 	else if (((note.endTime - releaseDuration) < playTimeMSec) && (playTimeMSec <= note.endTime)) {
 		pNoteStatus->keyStatus = AfterNoteOFF;
 		if (releaseDuration == 0) {
@@ -381,7 +381,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ÌŒ‚Ì’¸“_XV
+// æ­Œè©ã®é ‚ç‚¹æ›´æ–°
 //******************************************************************************
 int MTNoteLyrics::_UpdateVertexOfLyrics(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -399,31 +399,31 @@ int MTNoteLyrics::_UpdateVertexOfLyrics(
 		goto EXIT;
 	}
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
 	ZeroMemory(m_KeyDownRate, sizeof(float) * MTNOTELYRICS_MAX_PORT_NUM * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
 
-	//”­‰¹’†ƒm[ƒg‚Ì‰ÌŒ‚É‚Â‚¢‚Ä’¸“_‚ğXV
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆã®æ­Œè©ã«ã¤ã„ã¦é ‚ç‚¹ã‚’æ›´æ–°
 	for (i = 0; i < MTNOTELYRICS_MAX_LYRICS_NUM; i++) {
 		if (m_pNoteStatus[i].isActive) {
-			//ƒm[ƒgî•ñæ“¾
+			//ãƒãƒ¼ãƒˆæƒ…å ±å–å¾—
 			SMNote note;
 			result = m_NoteListRT.GetNote(m_pNoteStatus[i].index, &note);
 			if (result != 0) goto EXIT;
 
-			//”­‰¹‘ÎÛƒL[‚ğ‰ñ“]
-			//  ‚·‚Å‚É“¯ˆêƒm[ƒg‚É‘Î‚µ‚Ä’¸“_‚ğXV‚µ‚Ä‚¢‚éê‡
-			//  ‰Ÿ‰º—¦‚ª‘O‰ñ‚æ‚è‚àã‰ñ‚éê‡‚ÉŒÀ‚è’¸“_‚ğXV‚·‚é
+			//ç™ºéŸ³å¯¾è±¡ã‚­ãƒ¼ã‚’å›è»¢
+			//  ã™ã§ã«åŒä¸€ãƒãƒ¼ãƒˆã«å¯¾ã—ã¦é ‚ç‚¹ã‚’æ›´æ–°ã—ã¦ã„ã‚‹å ´åˆ
+			//  æŠ¼ä¸‹ç‡ãŒå‰å›ã‚ˆã‚Šã‚‚ä¸Šå›ã‚‹å ´åˆã«é™ã‚Šé ‚ç‚¹ã‚’æ›´æ–°ã™ã‚‹
 			if ((note.portNo < MTNOTELYRICS_MAX_PORT_NUM)
 			 && (m_KeyDownRate[note.portNo][note.chNo][note.noteNo] < m_pNoteStatus[i].keyDownRate)) {
-				//’¸“_XVF‰ÌŒ‚Ì•`‰æˆÊ’u‚ÆƒTƒCƒY‚ğ•Ï‚¦‚é
+				//é ‚ç‚¹æ›´æ–°ï¼šæ­Œè©ã®æç”»ä½ç½®ã¨ã‚µã‚¤ã‚ºã‚’å¤‰ãˆã‚‹
 				_SetVertexPosition(
-						&(pVertex[activeNoteNum*6]),	//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-						note,							//ƒm[ƒgî•ñ
-						&(m_pNoteStatus[i]),			//ƒm[ƒgó‘Ô
-						i								//ƒm[ƒgó‘Ô“o˜^ƒCƒ“ƒfƒbƒNƒXˆÊ’u
+						&(pVertex[activeNoteNum*6]),	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+						note,							//ãƒãƒ¼ãƒˆæƒ…å ±
+						&(m_pNoteStatus[i]),			//ãƒãƒ¼ãƒˆçŠ¶æ…‹
+						i								//ãƒãƒ¼ãƒˆçŠ¶æ…‹ç™»éŒ²ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ä½ç½®
 					);
 				m_pTextures[activeNoteNum] = m_pNoteStatus[i].fontTexture.GetTexture();
 		 		activeNoteNum++;
@@ -435,7 +435,7 @@ int MTNoteLyrics::_UpdateVertexOfLyrics(
 	}
 	m_ActiveNoteNum = activeNoteNum;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -444,7 +444,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTNoteLyrics::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -459,32 +459,32 @@ int MTNoteLyrics::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFæZ  ˆø”1FƒeƒNƒXƒ`ƒƒ  ˆø”2Fƒ|ƒŠƒSƒ“
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šä¹—ç®—  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£  å¼•æ•°2ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1Fƒ|ƒŠƒSƒ“
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒãƒªã‚´ãƒ³
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 	pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èF‰ÁZ‡¬
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šåŠ ç®—åˆæˆ
 	//pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 
-	//ƒvƒŠƒ~ƒeƒBƒu•`‰æ
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
 	if (m_ActiveNoteNum > 0) {
-		//ƒoƒbƒtƒ@‘S‘Ì‚Å‚È‚­‰ÌŒ‚Ì”‚É‡‚í‚¹‚Ä•`‰æ‚·‚éƒvƒŠƒ~ƒeƒBƒu‚ğŒ¸‚ç‚·
+		//ãƒãƒƒãƒ•ã‚¡å…¨ä½“ã§ãªãæ­Œè©ã®æ•°ã«åˆã‚ã›ã¦æç”»ã™ã‚‹ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æ¸›ã‚‰ã™
 		result = m_Primitive.DrawLyrics(pD3DDevice, m_pTextures, 2 * m_ActiveNoteNum);
 		if (result != 0) goto EXIT;
 	}
 
-	//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒXƒe[ƒgİ’èF’Êí‚ÌƒAƒ‹ƒtƒ@‡¬
+	//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¹ãƒ†ãƒ¼ãƒˆè¨­å®šï¼šé€šå¸¸ã®ã‚¢ãƒ«ãƒ•ã‚¡åˆæˆ
 	//pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
@@ -493,7 +493,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTNoteLyrics::Release()
 {
@@ -507,14 +507,14 @@ void MTNoteLyrics::Release()
 }
 
 //******************************************************************************
-// ƒm[ƒgî•ñ”z—ñ¶¬
+// ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 //******************************************************************************
 int MTNoteLyrics::_CreateNoteStatus()
 {
 	int result = 0;
 	unsigned long i = 0;
 
-	//ƒm[ƒgî•ñ”z—ñ¶¬
+	//ãƒãƒ¼ãƒˆæƒ…å ±é…åˆ—ç”Ÿæˆ
 	try {
 		m_pNoteStatus = new NoteStatus[MTNOTELYRICS_MAX_LYRICS_NUM];
 	}
@@ -537,7 +537,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_¶¬
+// é ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTNoteLyrics::_CreateVertex(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -547,26 +547,26 @@ int MTNoteLyrics::_CreateVertex(
 	unsigned long vertexNum = 0;
 	MTNOTELYRICS_VERTEX* pVertex = NULL;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTNOTELYRICS_VERTEX),//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLELIST			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTNOTELYRICS_VERTEX),//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLELIST			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 6 * MTNOTELYRICS_MAX_LYRICS_NUM;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
 	ZeroMemory(pVertex, sizeof(MTNOTELYRICS_VERTEX) * 6 * MTNOTELYRICS_MAX_LYRICS_NUM);
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
@@ -575,7 +575,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ’¸“_‚ÌÀ•Wİ’è
+// é ‚ç‚¹ã®åº§æ¨™è¨­å®š
 //******************************************************************************
 int MTNoteLyrics::_SetVertexPosition(
 		MTNOTELYRICS_VERTEX* pVertex,
@@ -596,7 +596,7 @@ int MTNoteLyrics::_SetVertexPosition(
 	pbValue =       m_pNotePitchBend->GetValue(note.portNo, note.chNo);
 	pbSensitivity = m_pNotePitchBend->GetSensitivity(note.portNo, note.chNo);
 
-	//ƒm[ƒgƒ{ƒbƒNƒX’†SÀ•Wæ“¾
+	//ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ä¸­å¿ƒåº§æ¨™å–å¾—
 	center = m_pNoteDesign->GetNoteBoxCenterPosX(
 					m_CurTickTime,
 					note.portNo,
@@ -606,21 +606,21 @@ int MTNoteLyrics::_SetVertexPosition(
 					pbSensitivity
 				);
 
-	//‰ÌŒƒTƒCƒY
+	//æ­Œè©ã‚µã‚¤ã‚º
 	unsigned long tx, ty;
 	pNoteStatus->fontTexture.GetTextureSize(&tx, &ty);
 	rh = tx * m_pNoteDesign->GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
 	rw = ty * m_pNoteDesign->GetDecayCoefficient(pNoteStatus->keyDownRate) / 64.0f;
 
-	//•`‰æI—¹Šm”F
+	//æç”»çµ‚äº†ç¢ºèª
 	if ((rh <= 0.0f) || (rw <= 0.0f)) {
 		goto EXIT;
 	}
 
-	//‰ÌŒ‚ğÄ¶•½–Êã‚©‚çƒJƒƒ‰‘¤‚É­‚µ‚¾‚¯•‚‚©‚¹‚Ä•`‰æ‚·‚é
-	//‚Ü‚½‰ÌŒ“¯m‚ª“¯ˆê•½–Êã‚Åd‚È‚ç‚È‚¢‚æ‚¤‚É•`‰æ‚·‚é
-	//  Zƒtƒ@ƒCƒeƒBƒ“ƒO‚É‚æ‚Á‚Ä”­¶‚·‚é‚¿‚ç‚Â‚«‚â‚©‚·‚ê‚ğ‰ñ”ğ‚·‚é
-	//  ƒOƒ‰ƒtƒBƒbƒNƒJ[ƒh‚É‚æ‚Á‚ÄŒ»Û‚ªˆÙ‚È‚é
+	//æ­Œè©ã‚’å†ç”Ÿå¹³é¢ä¸Šã‹ã‚‰ã‚«ãƒ¡ãƒ©å´ã«å°‘ã—ã ã‘æµ®ã‹ã›ã¦æç”»ã™ã‚‹
+	//ã¾ãŸæ­Œè©åŒå£«ãŒåŒä¸€å¹³é¢ä¸Šã§é‡ãªã‚‰ãªã„ã‚ˆã†ã«æç”»ã™ã‚‹
+	//  Zãƒ•ã‚¡ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã«ã‚ˆã£ã¦ç™ºç”Ÿã™ã‚‹ã¡ã‚‰ã¤ãã‚„ã‹ã™ã‚Œã‚’å›é¿ã™ã‚‹
+	//  ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚«ãƒ¼ãƒ‰ã«ã‚ˆã£ã¦ç¾è±¡ãŒç•°ãªã‚‹
 	if (center.x < m_CamVector.x) {
 		center.x -= 0.002f * MTNOTELYRICS_MAX_LYRICS_NUM - (rippleNo + 1) * 0.002f;
 	}
@@ -629,7 +629,7 @@ int MTNoteLyrics::_SetVertexPosition(
 	}
 
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	//pVertex[0].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z+(rw/2.0f));
 	//pVertex[1].p = D3DXVECTOR3(center.x, center.y+(rh/2.0f), center.z-(rw/2.0f));
 	//pVertex[2].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z+(rw/2.0f));
@@ -642,15 +642,15 @@ int MTNoteLyrics::_SetVertexPosition(
 	pVertex[3].p = pVertex[0].p;
 	pVertex[4].p = pVertex[2].p;
 	pVertex[5].p = D3DXVECTOR3(center.x, center.y-(rh/2.0f), center.z-(rw/2.0f));
-	//–@ü
+	//æ³•ç·š
 	for (i = 0; i < 6; i++) {
 		pVertex[i].n = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
 	}
 
-	//“§–¾“x‚ğ™X‚É—‚Æ‚·
+	//é€æ˜åº¦ã‚’å¾ã€…ã«è½ã¨ã™
 	alpha = m_pNoteDesign->GetRippleAlpha(pNoteStatus->keyDownRate);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	for (i = 0; i < 6; i++) {
 		color = m_pNoteDesign->GetNoteBoxColor(
 								note.portNo,
@@ -660,7 +660,7 @@ int MTNoteLyrics::_SetVertexPosition(
 		pVertex[i].c = D3DXCOLOR(color.r, color.g, color.b, alpha);
 	}
 
-	//ƒeƒNƒXƒ`ƒƒÀ•W
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	//pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
 	//pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
 	//pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
@@ -679,7 +679,7 @@ EXIT:
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTNoteLyrics::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -687,24 +687,24 @@ void MTNoteLyrics::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 	
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 10.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.5f;
 	pMaterial->Emissive.g = 0.5f;
 	pMaterial->Emissive.b = 0.5f;
@@ -712,7 +712,7 @@ void MTNoteLyrics::_MakeMaterial(
 }
 
 //******************************************************************************
-// ƒJƒŒƒ“ƒgƒ`ƒbƒNƒ^ƒCƒ€İ’è
+// ã‚«ãƒ¬ãƒ³ãƒˆãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ è¨­å®š
 //******************************************************************************
 void MTNoteLyrics::SetCurTickTime(
 		unsigned long curTickTime
@@ -722,7 +722,7 @@ void MTNoteLyrics::SetCurTickTime(
 }
 
 //******************************************************************************
-// ‰‰‘tŠÔİ’è
+// æ¼”å¥æ™‚é–“è¨­å®š
 //******************************************************************************
 void MTNoteLyrics::SetPlayTimeMSec(
 		unsigned long playTimeMsec
@@ -732,7 +732,7 @@ void MTNoteLyrics::SetPlayTimeMSec(
 }
 
 //******************************************************************************
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //******************************************************************************
 void MTNoteLyrics::Reset()
 {
@@ -755,7 +755,7 @@ void MTNoteLyrics::Reset()
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTNoteLyrics::SetEnable(
 		bool isEnable
@@ -765,7 +765,7 @@ void MTNoteLyrics::SetEnable(
 }
 
 //******************************************************************************
-// ƒXƒLƒbƒvó‘Ôİ’è
+// ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹è¨­å®š
 //******************************************************************************
 void MTNoteLyrics::SetSkipStatus(
 		bool isSkipping

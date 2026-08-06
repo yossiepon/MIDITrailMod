@@ -1,10 +1,11 @@
-//******************************************************************************
+Ôªø//******************************************************************************
 //
 // MIDITrail / MTColorPalette
 //
-// ÉJÉâÅ[ÉpÉåÉbÉgÉNÉâÉX
+// Color palette class.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,162 +14,120 @@
 #include "MTColorPalette.h"
 
 using namespace YNBaseLib;
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// ÉRÉìÉXÉgÉâÉNÉ^
+// Constructor / Destructor
 //******************************************************************************
-MTColorPalette::MTColorPalette(void)
+MTColorPalette::MTColorPalette()
 {
 	_Clear();
 }
 
-//******************************************************************************
-// ÉfÉXÉgÉâÉNÉ^
-//******************************************************************************
-MTColorPalette::~MTColorPalette(void)
+MTColorPalette::~MTColorPalette()
 {
 }
 
 //******************************************************************************
-// èâä˙âª
+// Initialize
 //******************************************************************************
 int MTColorPalette::Initialize()
 {
-	int result = 0;
-	
 	_Clear();
-	
-	return result;
+	return 0;
 }
 
 //******************************************************************************
-// ÉNÉäÉA
+// Clear
 //******************************************************************************
 void MTColorPalette::_Clear()
 {
-	unsigned int chNo = 0;
-	
-	//êFèâä˙âª
-	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-		m_ChColor[chNo] = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	for (unsigned int chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+		m_ChColor[chNo] = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-	m_BgColor       = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_GridLineColor = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_CounterColor  = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-
-	return;
+	m_BgColor       = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	m_GridLineColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
+	m_CounterColor  = Color(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 //******************************************************************************
-// É`ÉÉÉìÉlÉãêFéÊìæ
+// Channel color
 //******************************************************************************
-int MTColorPalette::GetChColor(unsigned int chNo, D3DXCOLOR* pColor)
+int MTColorPalette::GetChColor(unsigned int chNo, Color* pColor)
 {
-	int result = 0;
-	
 	if (chNo >= SM_MAX_CH_NUM) {
-		result = YN_SET_ERR("Program error.", chNo, 0);
-		goto EXIT;
+		return YN_SET_ERR("Program error.", chNo, 0);
 	}
-	
 	*pColor = m_ChColor[chNo];
-	
-EXIT:;
-	return result;
+	return 0;
 }
 
-//******************************************************************************
-// É`ÉÉÉìÉlÉãêFìoò^
-//******************************************************************************
-int MTColorPalette::SetChColor(unsigned int chNo, D3DXCOLOR color)
+int MTColorPalette::SetChColor(unsigned int chNo, Color color)
 {
-	int result = 0;
-	
 	if (chNo >= SM_MAX_CH_NUM) {
-		result = YN_SET_ERR("Program error.", chNo, 0);
-		goto EXIT;
+		return YN_SET_ERR("Program error.", chNo, 0);
 	}
-	
 	m_ChColor[chNo] = color;
-	
-EXIT:;
-	return result;
+	return 0;
 }
 
 //******************************************************************************
-// îwåiêFéÊìæ
+// Background color
 //******************************************************************************
-void MTColorPalette::GetBackgroundColor(D3DXCOLOR* pColor)
+void MTColorPalette::GetBackgroundColor(Color* pColor)
 {
 	*pColor = m_BgColor;
 }
 
-//******************************************************************************
-// îwåiêFìoò^
-//******************************************************************************
-void MTColorPalette::SetBackgroundColor(D3DXCOLOR color)
+void MTColorPalette::SetBackgroundColor(Color color)
 {
 	m_BgColor = color;
 }
 
 //******************************************************************************
-// ÉOÉäÉbÉhÉâÉCÉìêFéÊìæ
+// Grid line color
 //******************************************************************************
-void MTColorPalette::GetGridLineColor(D3DXCOLOR* pColor)
+void MTColorPalette::GetGridLineColor(Color* pColor)
 {
 	*pColor = m_GridLineColor;
 }
 
-//******************************************************************************
-// ÉOÉäÉbÉhÉâÉCÉìêFìoò^
-//******************************************************************************
-void MTColorPalette::SetGridLineColor(D3DXCOLOR color)
+void MTColorPalette::SetGridLineColor(Color color)
 {
 	m_GridLineColor = color;
 }
 
 //******************************************************************************
-// ÉJÉEÉìÉ^Å[êFéÊìæ
+// Counter color
 //******************************************************************************
-void MTColorPalette::GetCounterColor(D3DXCOLOR* pColor)
+void MTColorPalette::GetCounterColor(Color* pColor)
 {
 	*pColor = m_CounterColor;
 }
 
-//******************************************************************************
-// ÉJÉEÉìÉ^Å[êFìoò^
-//******************************************************************************
-void MTColorPalette::SetCounterColor(D3DXCOLOR color)
+void MTColorPalette::SetCounterColor(Color color)
 {
 	m_CounterColor = color;
 }
 
 //******************************************************************************
-// ÉRÉsÅ[
+// Copy
 //******************************************************************************
 int MTColorPalette::CopyFrom(MTColorPalette* pColorSrc)
 {
 	int result = 0;
-	unsigned int chNo = 0;
-	
-	//É`ÉÉÉìÉlÉãêFÇÃÉRÉsÅ[
-	for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+
+	for (unsigned int chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		result = pColorSrc->GetChColor(chNo, &m_ChColor[chNo]);
 		if (result != 0) goto EXIT;
 	}
-	
-	//îwåiêFÇÃÉRÉsÅ[
+
 	pColorSrc->GetBackgroundColor(&m_BgColor);
-	
-	//ÉOÉäÉbÉhÉâÉCÉìêFÇÃÉRÉsÅ[
 	pColorSrc->GetGridLineColor(&m_GridLineColor);
-	
-	//ÉJÉEÉìÉ^Å[êFÇÃÉRÉsÅ[
 	pColorSrc->GetCounterColor(&m_CounterColor);
-	
+
 EXIT:;
 	return result;
 }
-
-

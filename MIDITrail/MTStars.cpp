@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTStars
 //
-// ¯•`‰æƒNƒ‰ƒX
+// æ˜Ÿæç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 //
@@ -18,7 +18,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTStars::MTStars(void)
 {
@@ -28,7 +28,7 @@ MTStars::MTStars(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTStars::~MTStars(void)
 {
@@ -36,7 +36,7 @@ MTStars::~MTStars(void)
 }
 
 //******************************************************************************
-// ¯¶¬
+// æ˜Ÿç”Ÿæˆ
 //******************************************************************************
 int MTStars::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -55,35 +55,35 @@ int MTStars::Create(
 		goto EXIT;
 	}
 
-	//ƒpƒ‰ƒ[ƒ^İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTSTARS_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),		//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_POINTLIST			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTSTARS_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),		//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_POINTLIST			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, m_NumOfStars);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã‚’æ›¸ãè¾¼ã‚€
 	result = _CreateVertexOfStars(pVertex, pLight);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 
-	//ƒ}ƒeƒŠƒAƒ‹ì¬
+	//ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 	_MakeMaterial(&material);
 	m_Primitive.SetMaterial(material);
 
@@ -92,7 +92,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ˆÚ“®
+// ç§»å‹•
 //******************************************************************************
 int MTStars::Transform(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -102,9 +102,9 @@ int MTStars::Transform(
 	int result = 0;
 	D3DXMATRIX worldMatrix;
 	
-	//Œ»À¢ŠE‚Ì¯‚Í”ñí‚É‰“‚­‚É‘¶İ‚·‚é‚Ì‚Å
-	//‹ü•ûŒü‚ğ•Ï‚¦‚¸‚ÉƒJƒƒ‰‚ğˆÚ“®‚µ‚Ä‚à¯‚Í“®‚©‚È‚¢‚æ‚¤‚ÉŒ©‚¦‚é
-	//‚±‚ê‚ğ‹[—“I‚ÉÄŒ»‚·‚é‚½‚ßƒJƒƒ‰‚É‡‚í‚¹‚Ä¯‚à“¯‚¶‚¾‚¯ˆÚ“®‚³‚¹‚é
+	//ç¾å®Ÿä¸–ç•Œã®æ˜Ÿã¯éå¸¸ã«é ãã«å­˜åœ¨ã™ã‚‹ã®ã§
+	//è¦–ç·šæ–¹å‘ã‚’å¤‰ãˆãšã«ã‚«ãƒ¡ãƒ©ã‚’ç§»å‹•ã—ã¦ã‚‚æ˜Ÿã¯å‹•ã‹ãªã„ã‚ˆã†ã«è¦‹ãˆã‚‹
+	//ã“ã‚Œã‚’æ“¬ä¼¼çš„ã«å†ç¾ã™ã‚‹ãŸã‚ã‚«ãƒ¡ãƒ©ã«åˆã‚ã›ã¦æ˜Ÿã‚‚åŒã˜ã ã‘ç§»å‹•ã•ã›ã‚‹
 	D3DXMatrixIdentity(&worldMatrix);
 	D3DXMatrixTranslation(&worldMatrix, camVector.x, camVector.y, camVector.z);
 	m_Primitive.Transform(worldMatrix);
@@ -113,7 +113,7 @@ int MTStars::Transform(
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTStars::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -123,11 +123,11 @@ int MTStars::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
-	//•`‰æ
+	//æç”»
 	result = m_Primitive.Draw(pD3DDevice, m_pTexture);
 	if (result != 0) goto EXIT;
 
@@ -136,7 +136,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTStars::Release()
 {
@@ -149,7 +149,7 @@ void MTStars::Release()
 }
 
 //******************************************************************************
-// ¯’¸“_¶¬
+// æ˜Ÿé ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTStars::_CreateVertexOfStars(
 		MTSTARS_VERTEX* pVertex,
@@ -169,45 +169,45 @@ int MTStars::_CreateVertexOfStars(
 	int i = 0;
 	D3DXVECTOR3 normal;
 
-	//ƒ‰ƒCƒg‚Ì•ûŒü‚É‚æ‚Á‚Ä¯‚ÌF‚ª•Ï‚í‚é‚±‚Æ‚ğ–h‚®‚½‚ß
-	//–@üƒxƒNƒgƒ‹‚ğƒ‰ƒCƒg‚Ì•ûŒüƒxƒNƒgƒ‹‚Ì‹tŒü‚«‚É‚·‚é
+	//ãƒ©ã‚¤ãƒˆã®æ–¹å‘ã«ã‚ˆã£ã¦æ˜Ÿã®è‰²ãŒå¤‰ã‚ã‚‹ã“ã¨ã‚’é˜²ããŸã‚
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’ãƒ©ã‚¤ãƒˆã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®é€†å‘ãã«ã™ã‚‹
 	normal = -(pLight->GetDirection());
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	for (i = 0; i < m_NumOfStars; i++) {
 
-		//‹ÉÀ•W(theta,phi)‚É—”‚ğ“K—p‚·‚é‚Æ–k‹É‚Æ“ì‹É‚Å¯‚Ì•ª•z–§“x‚ª‚‚­‚È‚Á‚Ä‚µ‚Ü‚¤
+		//æ¥µåº§æ¨™(theta,phi)ã«ä¹±æ•°ã‚’é©ç”¨ã™ã‚‹ã¨åŒ—æ¥µã¨å—æ¥µã§æ˜Ÿã®åˆ†å¸ƒå¯†åº¦ãŒé«˜ããªã£ã¦ã—ã¾ã†
 		//
-		//‹ÉÀ•WF‹…–Êã‚É¯‚ğ”z’u
+		//æ¥µåº§æ¨™ï¼šçƒé¢ä¸Šã«æ˜Ÿã‚’é…ç½®
 		//r     = 500.0f;
 		//phi   = ((float)rand() / RAND_MAX) * 360.0f;
 		//theta = ((float)rand() / RAND_MAX) * 180.0f;
-		//’¼sÀ•W‚É•ÏŠ·
+		//ç›´è¡Œåº§æ¨™ã«å¤‰æ›
 		//x = r * sin(D3DXToRadian(theta)) * cos(D3DXToRadian(phi));
 		//y = r * cos(D3DXToRadian(theta));
 		//z = r * sin(D3DXToRadian(theta)) * sin(D3DXToRadian(phi));
 
-		//‹…–Êã‚É¯‚ğˆê—l•ª•z‚³‚¹‚é‚½‚ß(y, phi)‚É—”‚ğ“K—p‚·‚é
+		//çƒé¢ä¸Šã«æ˜Ÿã‚’ä¸€æ§˜åˆ†å¸ƒã•ã›ã‚‹ãŸã‚(y, phi)ã«ä¹±æ•°ã‚’é©ç”¨ã™ã‚‹
 		r   = 500.0f;
 		phi = ((float)rand() / RAND_MAX) * 2.0f * 3.1415926f;
 		y   = ((float)rand() / RAND_MAX) * 2.0f * r - r;
 		x = sqrt((r * r) - (y * y)) * cos(phi);
 		z = sqrt((r * r) - (y * y)) * sin(phi);
 
-		//FFƒOƒŒ[ƒXƒP[ƒ‹‚É‚·‚éê‡
+		//è‰²ï¼šã‚°ãƒ¬ãƒ¼ã‚¹ã‚±ãƒ¼ãƒ«ã«ã™ã‚‹å ´åˆ
 		cr = ((float)rand() / RAND_MAX);
 		cg = cr;
 		cb = cr;
-		//FFƒJƒ‰ƒtƒ‹‚É‚·‚éê‡
+		//è‰²ï¼šã‚«ãƒ©ãƒ•ãƒ«ã«ã™ã‚‹å ´åˆ
 		//cr = ((float)rand() / RAND_MAX);
 		//cg = ((float)rand() / RAND_MAX);
 		//cb = ((float)rand() / RAND_MAX);
 
-		//’¸“_À•W
+		//é ‚ç‚¹åº§æ¨™
 		pVertex[i].p = D3DXVECTOR3(x, y, z);
-		//–@ü
+		//æ³•ç·š
 		pVertex[i].n = normal;
-		//ƒfƒBƒtƒ…[ƒYF
+		//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 		pVertex[i].c = D3DXCOLOR(cr, cg, cb, 1.0f);
 	}
 
@@ -215,7 +215,7 @@ int MTStars::_CreateVertexOfStars(
 }
 
 //******************************************************************************
-// ƒ}ƒeƒŠƒAƒ‹ì¬
+// ãƒãƒ†ãƒªã‚¢ãƒ«ä½œæˆ
 //******************************************************************************
 void MTStars::_MakeMaterial(
 		D3DMATERIAL9* pMaterial
@@ -223,24 +223,24 @@ void MTStars::_MakeMaterial(
 {
 	ZeroMemory(pMaterial, sizeof(D3DMATERIAL9));
 
-	//ŠgUŒõ
+	//æ‹¡æ•£å…‰
 	pMaterial->Diffuse.r = 1.0f;
 	pMaterial->Diffuse.g = 1.0f;
 	pMaterial->Diffuse.b = 1.0f;
 	pMaterial->Diffuse.a = 1.0f;
-	//ŠÂ‹«ŒõF‰e‚ÌF
+	//ç’°å¢ƒå…‰ï¼šå½±ã®è‰²
 	pMaterial->Ambient.r = 0.5f;
 	pMaterial->Ambient.g = 0.5f;
 	pMaterial->Ambient.b = 0.5f;
 	pMaterial->Ambient.a = 1.0f;
-	//‹¾–Ê”½ËŒõ
+	//é¡é¢åå°„å…‰
 	pMaterial->Specular.r = 0.2f;
 	pMaterial->Specular.g = 0.2f;
 	pMaterial->Specular.b = 0.2f;
 	pMaterial->Specular.a = 1.0f;
-	//‹¾–Ê”½ËŒõ‚Ì‘N–¾“x
+	//é¡é¢åå°„å…‰ã®é®®æ˜åº¦
 	pMaterial->Power = 100.0f;
-	//”­ŒõF
+	//ç™ºå…‰è‰²
 	pMaterial->Emissive.r = 0.0f;
 	pMaterial->Emissive.g = 0.0f;
 	pMaterial->Emissive.b = 0.0f;
@@ -248,7 +248,7 @@ void MTStars::_MakeMaterial(
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTStars::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -260,7 +260,7 @@ int MTStars::_LoadConfFile(
 	result = confFile.Initialize(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//¯‚Ì”
+	//æ˜Ÿã®æ•°
 	result = confFile.SetCurSection(_T("Stars"));
 	if (result != 0) goto EXIT;
 	result = confFile.GetInt(_T("NumberOfStars"), &m_NumOfStars, 2000);
@@ -271,7 +271,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTStars::SetEnable(
 		bool isEnable

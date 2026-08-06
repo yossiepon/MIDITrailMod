@@ -1,36 +1,36 @@
-//******************************************************************************
+Ôªø//******************************************************************************
 //
 // MIDITrail / DXH
 //
-// ÉwÉãÉpä÷êîÉNÉâÉX
+// Helper function class.
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "DXH.h"
+#include <cmath>
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// ç¿ïWâÒì]ÅFYZïΩñ 
+// Rotate point on YZ plane
 //******************************************************************************
-D3DXVECTOR3 DXH::RotateYZ(
+Vector3 DXH::RotateYZ(
 		float centerY,
 		float centerZ,
-		D3DXVECTOR3 p1,
+		Vector3 p1,
 		float angle
 	)
 {
-	D3DXVECTOR3 p2;
-	float rad = 0.0f;
-
-	rad = D3DXToRadian(angle);
+	float rad = XMConvertToRadians(angle);
+	Vector3 p2;
 	p2.x = p1.x;
-	p2.y = (float)(centerY + (sin(rad) * (p1.z - centerZ)) + (cos(rad) * (p1.y - centerY)));
-	p2.z = (float)(centerZ + (cos(rad) * (p1.z - centerZ)) - (sin(rad) * (p1.y - centerY)));
-
+	p2.y = centerY + sinf(rad) * (p1.z - centerZ) + cosf(rad) * (p1.y - centerY);
+	p2.z = centerZ + cosf(rad) * (p1.z - centerZ) - sinf(rad) * (p1.y - centerY);
 	return p2;
 }
-
-

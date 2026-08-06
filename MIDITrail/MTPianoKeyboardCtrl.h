@@ -1,18 +1,18 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardCtrl
 //
-// ƒsƒAƒmƒL[ƒ{[ƒh§ŒäƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒŽã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// •¡”‚ÌƒsƒAƒmƒL[ƒ{[ƒh‚ðŠÇ—‚·‚éƒNƒ‰ƒXB
-// ŠeƒL[ƒ{[ƒh‚Ì”z’u‚ÆƒL[‚Ì‰Ÿ‰ºó‘Ô‚ð§Œä‚·‚éB
-// Œ»ó‚Í1ƒ|[ƒg(16ch)‚Ì•`‰æ‚Ì‚Ý‚É‘Î‰ž‚µ‚Ä‚¢‚éB
-// 2ƒ|[ƒg–ÚˆÈ~‚Ì•`‰æ‚É‚Í‘Î‰ž‚µ‚Ä‚¢‚È‚¢B
+// è¤‡æ•°ã®ãƒ”ã‚¢ãƒŽã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+// å„ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®é…ç½®ã¨ã‚­ãƒ¼ã®æŠ¼ä¸‹çŠ¶æ…‹ã‚’åˆ¶å¾¡ã™ã‚‹ã€‚
+// ç¾çŠ¶ã¯1ãƒãƒ¼ãƒˆ(16ch)ã®æç”»ã®ã¿ã«å¯¾å¿œã—ã¦ã„ã‚‹ã€‚
+// 2ãƒãƒ¼ãƒˆç›®ä»¥é™ã®æç”»ã«ã¯å¯¾å¿œã—ã¦ã„ãªã„ã€‚
 
 #pragma once
 
@@ -26,17 +26,17 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒL[ƒ{[ƒh§ŒäƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒŽã‚­ãƒ¼ãƒœãƒ¼ãƒ‰åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTPianoKeyboardCtrl
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTPianoKeyboardCtrl(void);
 	virtual ~MTPianoKeyboardCtrl(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 // >>> modify 20120728 yossiepon begin
 	virtual int Create(
 // <<< modify 20120728 yossiepon end
@@ -47,48 +47,48 @@ public:
 			bool isSingleKeyboard
 		);
 
-	//XV
+	//æ›´æ–°
 // >>> modify 20120728 yossiepon begin
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 // <<< modify 20120728 yossiepon end
 
-	//•`‰æ
+	//æç”»
 // >>> modify 20120728 yossiepon begin
 	virtual int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 // <<< modify 20120728 yossiepon end
 
-	//‰ð•ú
+	//è§£æ”¾
 	void Release();
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//‰‰‘tŽžŠÔÝ’è
+	//æ¼”å¥æ™‚é–“è¨­å®š
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 // >>> modify 20120728 yossiepon begin
 	virtual void Reset();
 // <<< modify 20120728 yossiepon end
 
-	//•\Ž¦Ý’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	void SetSkipStatus(bool isSkipping);
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ƒL[ó‘Ô
+	//ã‚­ãƒ¼çŠ¶æ…‹
 	enum KeyStatus {
 		BeforeNoteON,
 		NoteON,
 		AfterNoteOFF
 	};
 
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒŽãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatus {
 		bool isActive;
 		KeyStatus keyStatus;
@@ -99,19 +99,19 @@ protected:
 // >>> modify access level to protected 20161224 yossiepon begin
 // <<< modify 20161224 yossiepon end
 
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesign m_NoteDesign;
 
-	//ƒL[ƒ{[ƒh•`‰æƒIƒuƒWƒFƒNƒgFƒ|ƒCƒ“ƒ^”z—ñ
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼šãƒã‚¤ãƒ³ã‚¿é…åˆ—
 	MTPianoKeyboard* m_pPianoKeyboard[SM_MAX_CH_NUM];
 
-	//ƒL[ƒ{[ƒhƒfƒUƒCƒ“
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ‡ã‚¶ã‚¤ãƒ³
 	MTPianoKeyboardDesign m_KeyboardDesign;
 
-	//ƒm[ƒgƒŠƒXƒg
+	//ãƒŽãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 	SMNoteList m_NoteListRT;
 
-	//”­‰¹’†ƒm[ƒgŠÇ—
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆç®¡ç†
 	unsigned long m_PlayTimeMSec;
 	unsigned long m_CurTickTime;
 	unsigned long m_CurNoteIndex;
@@ -122,20 +122,20 @@ protected:
 private:
 // <<< modify 20161224 yossiepon end
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	bool m_isSkipping;
 
 // >>> modify access level to protected 20161224 yossiepon begin
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//•\Ž¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒhƒtƒ‰ƒO
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ãƒ©ã‚°
 	bool m_isSingleKeyboard;
 
 	int _CreateNoteStatus();

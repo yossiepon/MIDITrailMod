@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteBoxMod
 //
-// ƒm[ƒgƒ{ƒbƒNƒX•`‰æModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æç”»Modã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -15,24 +15,24 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘åƒ|[ƒg”
+//æœ€å¤§ãƒãƒ¼ãƒˆæ•°
 #define MT_NOTEBOX_MAX_PORT_NUM  (8)
 
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX•`‰æModƒNƒ‰ƒX
+// ãƒãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æç”»Modã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteBoxMod : public MTNoteBox
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteBoxMod(void);
 	virtual ~MTNoteBoxMod(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			const TCHAR* pSceneName,
@@ -40,28 +40,28 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//XV
+	//æ›´æ–°
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 
-	//‰‰‘tŠÔİ’è
+	//æ¼”å¥æ™‚é–“è¨­å®š
 	void SetPlayTimeMSec(unsigned long playTimeMsec);
 
-	//‰ğ•ú
+	//è§£æ”¾
 	virtual void Release();
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	virtual void Reset();
 
 private:
 
-	//ƒL[ó‘Ô
+	//ã‚­ãƒ¼çŠ¶æ…‹
 	enum KeyStatus {
 		BeforeNoteON,
 		NoteON,
 		AfterNoteOFF
 	};
 
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatusMod {
 		bool isActive;
 		bool isHide;
@@ -77,17 +77,17 @@ protected:
 
 private:
 
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesignMod m_NoteDesignMod;
 
-	//ƒm[ƒgƒŠƒXƒg
+	//ãƒãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 	SMNoteList m_NoteListRT;
 
-	//”­‰¹’†ƒm[ƒgŠÇ—
+	//ç™ºéŸ³ä¸­ãƒãƒ¼ãƒˆç®¡ç†
 	unsigned long m_PlayTimeMSec;
 	float m_KeyDownRate[MT_NOTEBOX_MAX_PORT_NUM][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 
-	//ƒm[ƒg”­‰¹ó‘Ôî•ñ
+	//ãƒãƒ¼ãƒˆç™ºéŸ³çŠ¶æ…‹æƒ…å ±
 	NoteStatusMod* m_pNoteStatusMod;
 
 	virtual int _CreateNoteStatus();

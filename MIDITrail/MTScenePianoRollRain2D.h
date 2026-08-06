@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRollRain2D
 //
-// ƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“2DƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³2Dã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2013 WADA Masashi. All Rights Reserved.
 //
@@ -13,27 +13,27 @@
 
 
 //******************************************************************************
-// ƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“2DƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³2Dã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScenePianoRollRain2D : public MTScenePianoRollRain
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTScenePianoRollRain2D(void);
 	virtual ~MTScenePianoRollRain2D(void);
 
-	//–¼Ìæ“¾
+	//åç§°å–å¾—
 	const TCHAR* GetName();
 
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			SMSeqData* pSeqData
 		);
 
-	//‹“_æ“¾
+	//è¦–ç‚¹å–å¾—
 	virtual void GetDefaultViewParam(MTViewParamMap* pParamMap);
 
 };

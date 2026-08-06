@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTColorParamExportDlg
 //
-// ƒJƒ‰[ƒpƒ‰ƒ[ƒ^o—Íƒ_ƒCƒAƒƒO
+// ã‚«ãƒ©ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å‡ºåŠ›ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -17,12 +17,12 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ§Œä—pƒpƒ‰ƒ[ƒ^İ’è
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£åˆ¶å¾¡ç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®š
 //******************************************************************************
 MTColorParamExportDlg* MTColorParamExportDlg::m_pThis = NULL;
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTColorParamExportDlg::MTColorParamExportDlg(void)
 {
@@ -35,7 +35,7 @@ MTColorParamExportDlg::MTColorParamExportDlg(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTColorParamExportDlg::~MTColorParamExportDlg(void)
 {
@@ -43,7 +43,7 @@ MTColorParamExportDlg::~MTColorParamExportDlg(void)
 }
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^•¶š—ñ“o˜^
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—ç™»éŒ²
 //******************************************************************************
 void MTColorParamExportDlg::SetParamString(TCHAR* pString)
 {
@@ -52,7 +52,7 @@ void MTColorParamExportDlg::SetParamString(TCHAR* pString)
 }
 
 //******************************************************************************
-// •\¦
+// è¡¨ç¤º
 //******************************************************************************
 int MTColorParamExportDlg::Show(
 		HWND hParentWnd
@@ -62,19 +62,19 @@ int MTColorParamExportDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ƒ_ƒCƒAƒƒO•\¦
+	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
 	dresult = DialogBox(
-					hInstance,							//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-					MAKEINTRESOURCE(IDD_COLOR_PARAM_EXPORT),	//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒeƒ“ƒvƒŒ[ƒg
-					hParentWnd,							//eƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-					_WndProc							//ƒ_ƒCƒAƒƒOƒ{ƒbƒNƒXƒvƒƒV[ƒWƒƒ
+					hInstance,							//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+					MAKEINTRESOURCE(IDD_COLOR_PARAM_EXPORT),	//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆ
+					hParentWnd,							//è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+					_WndProc							//ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ãƒœãƒƒã‚¯ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -86,7 +86,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 //******************************************************************************
 INT_PTR CALLBACK MTColorParamExportDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -94,7 +94,7 @@ INT_PTR CALLBACK MTColorParamExportDlg::_WndProc(HWND hWnd, UINT message, WPARAM
 }
 
 //******************************************************************************
-// ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒFÀ‘•
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ï¼šå®Ÿè£…
 //******************************************************************************
 INT_PTR MTColorParamExportDlg::_WndProcImpl(
 		HWND hDlg,
@@ -126,7 +126,7 @@ INT_PTR MTColorParamExportDlg::_WndProcImpl(
 			}
 			break;
 		default:
-			//ˆ—‚µ‚È‚¢ƒƒbƒZ[ƒW
+			//å‡¦ç†ã—ãªã„ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
 			break;
 	}
 
@@ -138,7 +138,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒ_ƒCƒAƒƒO•\¦’¼‘O‰Šú‰»
+// ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç›´å‰åˆæœŸåŒ–
 //******************************************************************************
 int MTColorParamExportDlg::_OnInitDlg(HWND hDlg)
 {
@@ -147,7 +147,7 @@ int MTColorParamExportDlg::_OnInitDlg(HWND hDlg)
 
 	m_hWnd = hDlg;
 
-	//ƒpƒ‰ƒ[ƒ^•¶š—ñ•\¦
+	//ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—è¡¨ç¤º
 	bresult = SetWindowText(GetDlgItem(m_hWnd, IDC_EDIT_TEXT_EXPORT), m_ParamString);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -159,7 +159,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒRƒs[ƒ{ƒ^ƒ“‰Ÿ‰º
+// ã‚³ãƒ”ãƒ¼ãƒœã‚¿ãƒ³æŠ¼ä¸‹
 //******************************************************************************
 int MTColorParamExportDlg::_OnBtnCopy()
 {
@@ -170,38 +170,38 @@ int MTColorParamExportDlg::_OnBtnCopy()
 	HGLOBAL hGlobalMemory;
 	TCHAR* pGlobalMemory = NULL;
 
-	//ƒƒ‚ƒŠŠm•Û
+	//ãƒ¡ãƒ¢ãƒªç¢ºä¿
 	hGlobalMemory = GlobalAlloc(GHND, MT_COLOR_PARAM_EXPORT_STRING_LENGTH_MAX);
 	if (hGlobalMemory == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒƒ‚ƒŠƒƒbƒN
+	//ãƒ¡ãƒ¢ãƒªãƒ­ãƒƒã‚¯
 	pGlobalMemory = (LPSTR)GlobalLock(hGlobalMemory);
 	if (pGlobalMemory == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒƒ‚ƒŠ‚Éƒpƒ‰ƒ[ƒ^•¶š—ñ‚ğ‘‚«‚Ş
+	//ãƒ¡ãƒ¢ãƒªã«ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—ã‚’æ›¸ãè¾¼ã‚€
 	_tcscat_s(pGlobalMemory, MT_COLOR_PARAM_EXPORT_STRING_LENGTH_MAX, m_ParamString);
 
-	//ƒƒ‚ƒŠƒƒbƒN‰ğœ
+	//ãƒ¡ãƒ¢ãƒªãƒ­ãƒƒã‚¯è§£é™¤
 	bresult = GlobalUnlock(hGlobalMemory);
 	if ((!bresult) && (GetLastError() != NO_ERROR)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚ğŠJ‚­
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‹ã
 	bresult = OpenClipboard(m_hWnd);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚ğƒNƒŠƒA
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’ã‚¯ãƒªã‚¢
 	bresult = EmptyClipboard();
 	if (!bresult) {
 		CloseClipboard();
@@ -209,7 +209,7 @@ int MTColorParamExportDlg::_OnBtnCopy()
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚Éƒf[ƒ^‚ğ“o˜^
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²
 	hData = SetClipboardData(CF_TEXT, hGlobalMemory);
 	if (hData == NULL) {
 		CloseClipboard();
@@ -217,10 +217,10 @@ int MTColorParamExportDlg::_OnBtnCopy()
 		goto EXIT;
 	}
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚Ö‚Ìƒf[ƒ^“o˜^‚ª¬Œ÷‚µ‚½‚½‚ßƒƒ‚ƒŠŠÇ—‚ÍOS‚Éˆø‚«Œp‚ª‚ê‚é
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã¸ã®ãƒ‡ãƒ¼ã‚¿ç™»éŒ²ãŒæˆåŠŸã—ãŸãŸã‚ãƒ¡ãƒ¢ãƒªç®¡ç†ã¯OSã«å¼•ãç¶™ãŒã‚Œã‚‹
 	hGlobalMemory = NULL;
 
-	//ƒNƒŠƒbƒvƒ{[ƒh‚ğ•Â‚¶‚é
+	//ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã‚’é–‰ã˜ã‚‹
 	bresult = CloseClipboard();
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

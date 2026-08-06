@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTScenePianoRollRainLive
 //
-// ƒ‰ƒCƒuƒ‚ƒjƒ^—pƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“ƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ©ã‚¤ãƒ–ãƒ¢ãƒ‹ã‚¿ç”¨ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³ã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2019 WADA Masashi. All Rights Reserved.
 //
@@ -29,86 +29,86 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒsƒAƒmƒ[ƒ‹ƒŒƒCƒ“ƒV[ƒ“•`‰æƒNƒ‰ƒX
+// ãƒ”ã‚¢ãƒãƒ­ãƒ¼ãƒ«ãƒ¬ã‚¤ãƒ³ã‚·ãƒ¼ãƒ³æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTScenePianoRollRainLive : public MTScene
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTScenePianoRollRainLive(void);
 	virtual ~MTScenePianoRollRainLive(void);
 	
-	//–¼Ìæ“¾
+	//åç§°å–å¾—
 	const TCHAR* GetName();
 	
-	//¶¬
+	//ç”Ÿæˆ
 	virtual int Create(
 			HWND hWnd,
 			LPDIRECT3DDEVICE9 pD3DDevice,
 			SMSeqData* pSeqData
 		);
 	
-	//•ÏŠ·
+	//å¤‰æ›
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//”jŠü
+	//ç ´æ£„
 	void Release();
 	
-	//ƒEƒBƒ“ƒhƒEƒNƒŠƒbƒNƒCƒxƒ“ƒgóM
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	int OnWindowClicked(
 			UINT button,
 			WPARAM wParam,
 			LPARAM lParam
 		);
 	
-	//‰‰‘tŠJnƒCƒxƒ“ƒgóM
+	//æ¼”å¥é–‹å§‹ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	int OnPlayStart(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//‰‰‘tI—¹ƒCƒxƒ“ƒgóM
+	//æ¼”å¥çµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆå—ä¿¡
 	int OnPlayEnd(LPDIRECT3DDEVICE9 pD3DDevice);
 	
-	//ƒV[ƒPƒ“ƒTƒƒbƒZ[ƒWóM
+	//ã‚·ãƒ¼ã‚±ãƒ³ã‚µãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å—ä¿¡
 	int OnRecvSequencerMsg(
 			unsigned long param1,
 			unsigned long param2
 		);
 	
-	//Šª‚«–ß‚µ
+	//å·»ãæˆ»ã—
 	int Rewind();
 	
-	//‹“_æ“¾^“o˜^
+	//è¦–ç‚¹å–å¾—ï¼ç™»éŒ²
 	virtual void GetDefaultViewParam(MTViewParamMap* pParamMap);
 	void GetViewParam(MTViewParamMap* pParamMap);
 	void SetViewParam(MTViewParamMap* pParamMap);
 	
-	//‹“_ƒŠƒZƒbƒg
+	//è¦–ç‚¹ãƒªã‚»ãƒƒãƒˆ
 	void ResetViewpoint();
 	void MoveToStaticViewpoint(unsigned long viewpointNo);
 	
-	//ƒGƒtƒFƒNƒgİ’è
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¨­å®š
 	void SetEffect(MTScene::EffectType type, bool isEnable);
 	
 protected:
 	
-	//ƒ‰ƒCƒg—L–³
+	//ãƒ©ã‚¤ãƒˆæœ‰ç„¡
 	bool m_IsEnableLight;
 	
-	//ƒVƒ“ƒOƒ‹ƒL[ƒ{[ƒhƒtƒ‰ƒO
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ãƒ©ã‚°
 	bool m_IsSingleKeyboard;
 	
 private:
 	
-	//ƒ‰ƒCƒg
+	//ãƒ©ã‚¤ãƒˆ
 	DXDirLight m_DirLight;
 	
-	//ˆêlÌƒJƒƒ‰
+	//ä¸€äººç§°ã‚«ãƒ¡ãƒ©
 	MTFirstPersonCam m_FirstPersonCam;
 	
-	//•`‰æƒIƒuƒWƒFƒNƒg
+	//æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	MTStars m_Stars;
 	MTPianoKeyboardCtrlLive m_PianoKeyboardCtrlLive;
 	MTNoteRainLive m_NoteRainLive;
@@ -117,13 +117,13 @@ private:
 	MTMeshCtrl m_MeshCtrl;
 	MTBackgroundImage m_BackgroundImage;
 	
-	//ƒ}ƒEƒX‹üˆÚ“®ƒ‚[ƒh
+	//ãƒã‚¦ã‚¹è¦–ç·šç§»å‹•ãƒ¢ãƒ¼ãƒ‰
 	bool m_IsMouseCamMode;
 	
-	//©“®‰ñ“]ƒ‚[ƒh
+	//è‡ªå‹•å›è»¢ãƒ¢ãƒ¼ãƒ‰
 	bool m_IsAutoRollMode;
 	
-	//‹“_î•ñ
+	//è¦–ç‚¹æƒ…å ±
 	MTViewParamMap m_ViewParamMap;
 	MTViewParamMap m_Viewpoint2;
 	MTViewParamMap m_Viewpoint3;

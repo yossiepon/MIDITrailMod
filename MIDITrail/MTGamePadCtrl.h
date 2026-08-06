@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTGamePadCtrl
 //
-// ƒQ[ƒ€ƒpƒbƒh§ŒäƒNƒ‰ƒX
+// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// XInput‚ğ—p‚¢‚ÄƒQ[ƒ€ƒpƒbƒh‚Ìó‘Ô‚ğæ“¾‚·‚éB
+// XInputã‚’ç”¨ã„ã¦ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã®çŠ¶æ…‹ã‚’å–å¾—ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -17,31 +17,31 @@
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
 
-//ƒgƒŠƒK[ONè‡’l(0-255)
+//ãƒˆãƒªã‚¬ãƒ¼ONé–¾å€¤(0-255)
 #define MT_GAME_PAD_TRRIGER_ON_THRESHOLD		(250)
 
 
 //******************************************************************************
-// ƒQ[ƒ€ƒpƒbƒh§ŒäƒNƒ‰ƒX
+// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰åˆ¶å¾¡ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTGamePadCtrl
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTGamePadCtrl(void);
 	virtual ~MTGamePadCtrl();
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(int userIndex);
 	
-	//ó‘ÔXV
+	//çŠ¶æ…‹æ›´æ–°
 	int UpdateState();
 	
-	//ƒ{ƒ^ƒ“ó‘Ôæ“¾
+	//ãƒœã‚¿ãƒ³çŠ¶æ…‹å–å¾—
 	bool GetState_DPadUp();
 	bool GetState_DPadDown();
 	bool GetState_DPadLeft();
@@ -57,13 +57,13 @@ public:
 	bool GetState_Start();
 	bool GetState_Back();
 	
-	//ƒXƒeƒBƒbƒNó‘Ôæ“¾(0.0 - 1.0)
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯çŠ¶æ…‹å–å¾—(0.0 - 1.0)
 	float GetState_ThumbLX();
 	float GetState_ThumbLY();
 	float GetState_ThumbRX();
 	float GetState_ThumbRY();
 	
-	//ƒ{ƒ^ƒ“‰Ÿ‰ºŠm”F
+	//ãƒœã‚¿ãƒ³æŠ¼ä¸‹ç¢ºèª
 	bool DidPressNow_A();
 	bool DidPressNow_B();
 	bool DidPressNow_X();
@@ -77,17 +77,17 @@ public:
 	
 private:
 	
-	//ƒ†[ƒUƒCƒ“ƒfƒbƒNƒX
+	//ãƒ¦ãƒ¼ã‚¶ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	int m_UserIndex;
 	
-	//ƒQ[ƒ€ƒpƒbƒhÚ‘±ó‘Ô
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰æ¥ç¶šçŠ¶æ…‹
 	bool m_isConnected;
 	
-	//ƒQ[ƒ€ƒpƒbƒhó‘Ô
+	//ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰çŠ¶æ…‹
 	XINPUT_GAMEPAD m_PrevGamePadState;
 	XINPUT_GAMEPAD m_CurGamePadState;
 
-	//ƒXƒeƒBƒbƒNó‘Ô
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯çŠ¶æ…‹
 	float m_ThumbLX;
 	float m_ThumbLY;
 	float m_ThumbRX;

@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTStars
 //
-// ¯•`‰æƒNƒ‰ƒX
+// æ˜Ÿæç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ¯‚ğƒ‰ƒ“ƒ_ƒ€‚É”z’u‚µ‚Ä•`‰æ‚·‚éB
+// æ˜Ÿã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«é…ç½®ã—ã¦æç”»ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -20,29 +20,29 @@
 
 
 //******************************************************************************
-// ¯•`‰æƒNƒ‰ƒX
+// æ˜Ÿæç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTStars
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTStars(void);
 	virtual ~MTStars(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, DXDirLight* pLight);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//”jŠü
+	//ç ´æ£„
 	void Release();
 
-	//•\¦İ’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
 private:
@@ -51,17 +51,17 @@ private:
 	DXPrimitive m_Primitive;
 	LPDIRECT3DTEXTURE9 m_pTexture;
 
-	//•\¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTSTARS_VERTEX {
-		D3DXVECTOR3 p;		//’¸“_À•W
-		D3DXVECTOR3 n;		//–@ü
-		DWORD		c;		//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;		//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;		//æ³•ç·š
+		DWORD		c;		//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
 	int _CreateVertexOfStars(MTSTARS_VERTEX* pVertex, DXDirLight* pLight);

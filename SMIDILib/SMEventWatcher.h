@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple MIDI Library / SMEventWatcher
 //
-// ƒCƒxƒ“ƒgƒEƒHƒbƒ`ƒƒ[ƒNƒ‰ƒX
+// ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒãƒ£ãƒ¼ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //
@@ -26,36 +26,36 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// ƒCƒxƒ“ƒgƒEƒHƒbƒ`ƒƒ[ƒNƒ‰ƒX
+// ã‚¤ãƒ™ãƒ³ãƒˆã‚¦ã‚©ãƒƒãƒãƒ£ãƒ¼ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class SMIDILIB_API SMEventWatcher
 {
 public:
 	
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SMEventWatcher(void);
 	virtual ~SMEventWatcher(void);
 	
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(SMMsgTransmitter* pMsgTrans);
 	
-	//ƒCƒxƒ“ƒgŠÄ‹
+	//ã‚¤ãƒ™ãƒ³ãƒˆç›£è¦–
 	int WatchEvent(unsigned char portNo, SMEvent* pEvent);
 	
-	//ƒCƒxƒ“ƒgŠÄ‹FƒV[ƒPƒ“ƒTŒü‚¯
+	//ã‚¤ãƒ™ãƒ³ãƒˆç›£è¦–ï¼šã‚·ãƒ¼ã‚±ãƒ³ã‚µå‘ã‘
 	int WatchEventMIDI(unsigned char portNo, SMEventMIDI* pMIDIEvent);
 	int WatchEventControlChange(unsigned char portNo, SMEventMIDI* pMIDIEvent);
 	
 private:
 	
-	//RPN/NRPN‘I‘ğó‘Ô
+	//RPN/NRPNé¸æŠçŠ¶æ…‹
 	enum RPN_NRPN_Select {
 		RPN_NULL,
 		RPN,
 		NRPN
 	};
 	
-	//RPNí•Ê
+	//RPNç¨®åˆ¥
 	enum RPN_Type {
 		RPN_None,
 		PitchBendSensitivity,
@@ -63,13 +63,13 @@ private:
 		MasterCourseTune
 	};
 	
-	//ƒƒbƒZ[ƒW‘—M§Œä
+	//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡åˆ¶å¾¡
 	SMMsgTransmitter* m_pMsgTrans;
 	
-	//ƒsƒbƒ`ƒxƒ“ƒh§Œä
+	//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰åˆ¶å¾¡
 	unsigned char m_PitchBendSensitivity[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	
-	//RPN§ŒäŒn
+	//RPNåˆ¶å¾¡ç³»
 	RPN_NRPN_Select m_RPN_NRPN_Select[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	unsigned char m_RPN_MSB[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	unsigned char m_RPN_LSB[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];

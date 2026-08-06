@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTDashboard
 //
-// ƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ‹È–¼^‰‰‘tŽžŠÔ^ƒeƒ“ƒ|^ƒr[ƒg^¬ß”Ô† ‚ð•\Ž¦‚·‚éB
+// æ›²åï¼æ¼”å¥æ™‚é–“ï¼ãƒ†ãƒ³ãƒï¼ãƒ“ãƒ¼ãƒˆï¼å°ç¯€ç•ªå· ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
 
 #pragma once
 
@@ -23,91 +23,91 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//ƒtƒHƒ“ƒgÝ’è
+//ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
 #define MTDASHBOARD_FONTNAME  L"MS Gothic"
 #define MTDASHBOARD_FONTSIZE  (40)
 
 // >>> modify 20120728 yossiepon begin
 
-//ƒJƒEƒ“ƒ^ƒLƒƒƒvƒVƒ‡ƒ“•¶Žš—ñ
+//ã‚«ã‚¦ãƒ³ã‚¿ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³æ–‡å­—åˆ—
 #define MTDASHBOARD_COUNTER_CHARS  L"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:./% "
 
-//ƒJƒEƒ“ƒ^ƒLƒƒƒvƒVƒ‡ƒ“ƒTƒCƒY
+//ã‚«ã‚¦ãƒ³ã‚¿ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã‚µã‚¤ã‚º
 //   1234567890123456789012345678901234567890123456789012345678901234567890123456789012  (82)
 //  "TIME:00:00.000/00:00.000 BPM:000 BEAT:4/4 BAR:000/000 NOTES:00000/00000 SPEED:000%"
-//  —]—T‚ð‚Ý‚Ä90‚É‚µ‚Ä‚¨‚­
+//  ä½™è£•ã‚’ã¿ã¦90ã«ã—ã¦ãŠã
 #define MTDASHBOARD_COUNTER_SIZE  (90)
 
 // <<< modify 20120728 yossiepon end
 
-//˜gƒTƒCƒYiƒsƒNƒZƒ‹j
+//æž ã‚µã‚¤ã‚ºï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰
 #define MTDASHBOARD_FRAMESIZE  (5.0f)
 
-//ƒfƒtƒHƒ‹ƒg•\Ž¦Šg‘å—¦
+//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè¡¨ç¤ºæ‹¡å¤§çŽ‡
 #define MTDASHBOARD_DEFAULT_MAGRATE  (0.5f)
 
 
 //******************************************************************************
-// ƒ_ƒbƒVƒ…ƒ{[ƒh•`‰æƒNƒ‰ƒX
+// ãƒ€ãƒƒã‚·ãƒ¥ãƒœãƒ¼ãƒ‰æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTDashboard
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTDashboard(void);
 	virtual ~MTDashboard(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 	int Create(LPDIRECT3DDEVICE9 pD3DDevice, const TCHAR* pSceneName, SMSeqData* pSeqData, HWND hWnd);
 
-	//XV
+	//æ›´æ–°
 	int Transform(LPDIRECT3DDEVICE9 pD3DDevice, D3DXVECTOR3 camVector);
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ð•ú
+	//è§£æ”¾
 	void Release();
 
-	//‰‰‘tŒo‰ßŽžŠÔ‚Æ‘‰‰‘tŽžŠÔ‚Ì“o˜^
+	//æ¼”å¥çµŒéŽæ™‚é–“ã¨ç·æ¼”å¥æ™‚é–“ã®ç™»éŒ²
 	void SetPlayTimeSec(unsigned long playTimeSec);
 // >>> add 20120729 yossiepon begin
 	void SetPlayTimeMSec(unsigned long playTimeMSec);
 // <<< add 20120729 yossiepon end
 	void SetTotalPlayTimeSec(unsigned long totalPlayTimeSec);
 
-	//ƒeƒ“ƒ|“o˜^
+	//ãƒ†ãƒ³ãƒç™»éŒ²
 	void SetTempoBPM(unsigned long bpm);
 
-	//¬ß”Ô†‚Æ‘S¬ß”‚Ì“o˜^
+	//å°ç¯€ç•ªå·ã¨å…¨å°ç¯€æ•°ã®ç™»éŒ²
 	void SetBarNo(unsigned long barNo);
 	void SetBarNum(unsigned long barNum);
 
-	//”Žq‹L†“o˜^
+	//æ‹å­è¨˜å·ç™»éŒ²
 	void SetBeat(unsigned long numerator, unsigned long denominator);
 
-	//ƒm[ƒgON“o˜^
+	//ãƒŽãƒ¼ãƒˆONç™»éŒ²
 	void SetNoteOn();
 
-	//‰‰‘t‘¬“x“o˜^
+	//æ¼”å¥é€Ÿåº¦ç™»éŒ²
 	void SetPlaySpeedRatio(unsigned long ratio);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 	void Reset();
 
-	//ƒm[ƒg”“o˜^
+	//ãƒŽãƒ¼ãƒˆæ•°ç™»éŒ²
 	void SetNotesCount(unsigned long notesCount);
 
-	//‰‰‘tŽžŠÔŽæ“¾
+	//æ¼”å¥æ™‚é–“å–å¾—
 	unsigned long GetPlayTimeSec();
 
-	//•\Ž¦Ý’è
+	//è¡¨ç¤ºè¨­å®š
 	void SetEnable(bool isEnable);
 
-	//ƒtƒ@ƒCƒ‹–¼•\Ž¦Ý’è
+	//ãƒ•ã‚¡ã‚¤ãƒ«åè¡¨ç¤ºè¨­å®š
 	void SetEnableFileName(bool isEnable);
 
 private:
@@ -139,7 +139,7 @@ private:
 
 	D3DXCOLOR m_CaptionColor;
 
-	//•\Ž¦‰Â”Û
+	//è¡¨ç¤ºå¯å¦
 	bool m_isEnable;
 	bool m_isEnableFileName;
 

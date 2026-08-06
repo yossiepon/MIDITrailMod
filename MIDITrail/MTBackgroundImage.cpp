@@ -1,8 +1,8 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTBackgroundImage
 //
-// ”wŒi‰æ‘œ•`‰æƒNƒ‰ƒX
+// èƒŒæ™¯ç”»åƒæç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2016-2025 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@
 
 
 //******************************************************************************
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTBackgroundImage::MTBackgroundImage(void)
 {
@@ -29,7 +29,7 @@ MTBackgroundImage::MTBackgroundImage(void)
 }
 
 //******************************************************************************
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 //******************************************************************************
 MTBackgroundImage::~MTBackgroundImage(void)
 {
@@ -37,7 +37,7 @@ MTBackgroundImage::~MTBackgroundImage(void)
 }
 
 //******************************************************************************
-// ”wŒi‰æ‘œ¶¬
+// èƒŒæ™¯ç”»åƒç”Ÿæˆ
 //******************************************************************************
 int MTBackgroundImage::Create(
 		LPDIRECT3DDEVICE9 pD3DDevice,
@@ -54,49 +54,49 @@ int MTBackgroundImage::Create(
 
 	m_hWnd = hWnd;
 
-	//İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+	//è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	result = _LoadTexture(pD3DDevice);
 	if (result != 0) goto EXIT;
 
-	//ƒeƒNƒXƒ`ƒƒ‚ğ¶¬‚µ‚È‚©‚Á‚½ê‡‚Í‰½‚à‚µ‚È‚¢
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ç”Ÿæˆã—ãªã‹ã£ãŸå ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_pTexture == NULL) goto EXIT;
 
-	//ƒvƒŠƒ~ƒeƒBƒu‰Šú‰»
+	//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–åˆæœŸåŒ–
 	result = m_Primitive.Initialize(
-					sizeof(MTBACKGROUNDIMAGE_VERTEX),	//’¸“_ƒTƒCƒY
-					_GetFVFFormat(),			//’¸“_FVFƒtƒH[ƒ}ƒbƒg
-					D3DPT_TRIANGLESTRIP			//ƒvƒŠƒ~ƒeƒBƒuí•Ê
+					sizeof(MTBACKGROUNDIMAGE_VERTEX),	//é ‚ç‚¹ã‚µã‚¤ã‚º
+					_GetFVFFormat(),			//é ‚ç‚¹FVFãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPT_TRIANGLESTRIP			//ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ç¨®åˆ¥
 				);
 	if (result != 0) goto EXIT;
 
-	//’¸“_ƒoƒbƒtƒ@¶¬
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	vertexNum = 4;
 	result = m_Primitive.CreateVertexBuffer(pD3DDevice, vertexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@¶¬
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	indexNum = 4;
 	result = m_Primitive.CreateIndexBuffer(pD3DDevice, indexNum);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯
 	result = m_Primitive.LockVertex((void**)&pVertex);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.LockIndex(&pIndex);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚É’¸“_‚ÆƒCƒ“ƒfƒbƒNƒX‚ğ‘‚«‚Ş
+	//ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›¸ãè¾¼ã‚€
 	result = _CreateVertexOfBackground(
-					pVertex,		//’¸“_ƒoƒbƒtƒ@‘‚«‚İˆÊ’u
-					pIndex			//ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‘‚«‚İˆÊ’u
+					pVertex,		//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+					pIndex			//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
 				);
 	if (result != 0) goto EXIT;
 
-	//ƒoƒbƒtƒ@‚ÌƒƒbƒN‰ğœ
+	//ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯è§£é™¤
 	result = m_Primitive.UnlockVertex();
 	if (result != 0) goto EXIT;
 	result = m_Primitive.UnlockIndex();
@@ -107,7 +107,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •`‰æ
+// æç”»
 //******************************************************************************
 int MTBackgroundImage::Draw(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -119,37 +119,37 @@ int MTBackgroundImage::Draw(
 	if (!m_isEnable) goto EXIT;
 	if (m_pTexture == NULL) goto EXIT;
 
-	//Zƒoƒbƒtƒ@‚ğˆê“I‚É–³Œø‰»‚·‚é
+	//Zãƒãƒƒãƒ•ã‚¡ã‚’ä¸€æ™‚çš„ã«ç„¡åŠ¹åŒ–ã™ã‚‹
 	pD3DDevice->GetRenderState(D3DRS_ZENABLE, &value);
 	pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 
-	//ƒeƒNƒXƒ`ƒƒƒXƒe[ƒWİ’è
-	//  ƒJƒ‰[‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸è¨­å®š
+	//  ã‚«ãƒ©ãƒ¼æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	// ƒAƒ‹ƒtƒ@‰‰ZFˆø”1‚ğg—p  ˆø”1FƒeƒNƒXƒ`ƒƒ
+	// ã‚¢ãƒ«ãƒ•ã‚¡æ¼”ç®—ï¼šå¼•æ•°1ã‚’ä½¿ç”¨  å¼•æ•°1ï¼šãƒ†ã‚¯ã‚¹ãƒãƒ£
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1);
 	pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-	//  ŸƒXƒe[ƒW–³Œø‰»
+	//  æ¬¡ã‚¹ãƒ†ãƒ¼ã‚¸ç„¡åŠ¹åŒ–
 	pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP,   D3DTOP_DISABLE);
 	pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE);
 
-	//ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿
 	if (m_isFilterLinear) {
 		pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
 		pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 	}
 	else {
-		//ƒsƒNƒZƒ‹“™”{‚Å•`‰æ‚·‚éê‡ƒ{ƒP‚È‚¢‚æ‚¤‚É‚·‚é
+		//ãƒ”ã‚¯ã‚»ãƒ«ç­‰å€ã§æç”»ã™ã‚‹å ´åˆãƒœã‚±ãªã„ã‚ˆã†ã«ã™ã‚‹
 		pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
 		pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 	}
 
-	//•`‰æ
+	//æç”»
 	result = m_Primitive.Draw(pD3DDevice, m_pTexture);
 	if (result != 0) goto EXIT;
 
-	//Zƒoƒbƒtƒ@—LŒø‰»ó‘Ô‚ğ–ß‚·
+	//Zãƒãƒƒãƒ•ã‚¡æœ‰åŠ¹åŒ–çŠ¶æ…‹ã‚’æˆ»ã™
 	pD3DDevice->SetRenderState(D3DRS_ZENABLE, value);
 
 EXIT:;
@@ -157,7 +157,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ‰ğ•ú
+// è§£æ”¾
 //******************************************************************************
 void MTBackgroundImage::Release()
 {
@@ -170,7 +170,7 @@ void MTBackgroundImage::Release()
 }
 
 //******************************************************************************
-// ”wŒi‰æ‘œ’¸“_¶¬
+// èƒŒæ™¯ç”»åƒé ‚ç‚¹ç”Ÿæˆ
 //******************************************************************************
 int MTBackgroundImage::_CreateVertexOfBackground(
 		MTBACKGROUNDIMAGE_VERTEX* pVertex,
@@ -190,7 +190,7 @@ int MTBackgroundImage::_CreateVertexOfBackground(
 	float y1 = 0.0f;
 	float y2 = 0.0f;
 
-	//ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚ÌƒTƒCƒY‚ğæ“¾
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã®ã‚µã‚¤ã‚ºã‚’å–å¾—
 	bresult = GetClientRect(m_hWnd, &rect);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -202,7 +202,7 @@ int MTBackgroundImage::_CreateVertexOfBackground(
 	ratio_cwh = (float)cw / (float)ch;
 	ratio_iwh = (float)m_ImgInfo.Width / (float)m_ImgInfo.Height;
 
-	// ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚æ‚è‰æ‘œ‚Ì•û‚ª‰¡’·‚Ìê‡
+	// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚ˆã‚Šç”»åƒã®æ–¹ãŒæ¨ªé•·ã®å ´åˆ
 	//     |----- cw -----|
 	//  ---0--------------+-- +x
 	//   | |              |
@@ -219,12 +219,12 @@ int MTBackgroundImage::_CreateVertexOfBackground(
 		y1 = ((float)ch - ((float)cw / ratio_iwh)) / 2.0f;
 		y2 = (float)ch - y1;
 		
-		//ƒsƒNƒZƒ‹“™”{‚Å•`‰æ‚·‚éê‡‚ÍƒŠƒjƒAƒtƒBƒ‹ƒ^‚ğ‰ğœ‚µ‚Äƒ{ƒP‚È‚¢‚æ‚¤‚É‚·‚é
+		//ãƒ”ã‚¯ã‚»ãƒ«ç­‰å€ã§æç”»ã™ã‚‹å ´åˆã¯ãƒªãƒ‹ã‚¢ãƒ•ã‚£ãƒ«ã‚¿ã‚’è§£é™¤ã—ã¦ãƒœã‚±ãªã„ã‚ˆã†ã«ã™ã‚‹
 		if (cw == m_ImgInfo.Width) {
 			m_isFilterLinear = false;
 		}
 	}
-	// ƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæ‚æ‚è‰æ‘œ‚Ì•û‚ªc’·‚Ìê‡
+	// ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸã‚ˆã‚Šç”»åƒã®æ–¹ãŒç¸¦é•·ã®å ´åˆ
 	//     |----- cw -----|
 	//  ---0--+--------+--+-- +x
 	//   | |  |        |  |
@@ -241,39 +241,39 @@ int MTBackgroundImage::_CreateVertexOfBackground(
 		y1 = 0.0f;
 		y2 = (float)ch - 1.0f;
 		
-		//ƒsƒNƒZƒ‹“™”{‚Å•`‰æ‚·‚éê‡‚ÍƒŠƒjƒAƒtƒBƒ‹ƒ^‚ğ‰ğœ‚µ‚Äƒ{ƒP‚È‚¢‚æ‚¤‚É‚·‚é
+		//ãƒ”ã‚¯ã‚»ãƒ«ç­‰å€ã§æç”»ã™ã‚‹å ´åˆã¯ãƒªãƒ‹ã‚¢ãƒ•ã‚£ãƒ«ã‚¿ã‚’è§£é™¤ã—ã¦ãƒœã‚±ãªã„ã‚ˆã†ã«ã™ã‚‹
 		if (ch == m_ImgInfo.Height) {
 			m_isFilterLinear = false;
 		}
 	}
 
-	//ƒsƒNƒZƒ‹“™”{‚Å•`‰æ‚·‚éê‡‚ğ‘z’è‚µ‚ÄÀ•W‚ğ’²®
+	//ãƒ”ã‚¯ã‚»ãƒ«ç­‰å€ã§æç”»ã™ã‚‹å ´åˆã‚’æƒ³å®šã—ã¦åº§æ¨™ã‚’èª¿æ•´
 	x1 -= 0.5f;
 	x2 -= 0.5f;
 	y1 -= 0.5f;
 	y2 -= 0.5f;
 
-	//’¸“_À•W
+	//é ‚ç‚¹åº§æ¨™
 	pVertex[0].p = D3DXVECTOR3(x1, y1, 0.0f);
 	pVertex[1].p = D3DXVECTOR3(x2, y1, 0.0f);
 	pVertex[2].p = D3DXVECTOR3(x1, y2, 0.0f);
 	pVertex[3].p = D3DXVECTOR3(x2, y2, 0.0f);
 
-	//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+	//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	for (i = 0; i < 4; i++) {
-		//Še’¸“_‚ÌœZ”
+		//å„é ‚ç‚¹ã®é™¤ç®—æ•°
 		pVertex[i].rhw = 1.0f;
-		//Še’¸“_‚ÌƒfƒBƒtƒ…[ƒYF
+		//å„é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 		pVertex[i].c = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	//Še’¸“_‚ÌƒeƒNƒXƒ`ƒƒÀ•W
+	//å„é ‚ç‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 	pVertex[0].t = D3DXVECTOR2(0.0f, 0.0f);
 	pVertex[1].t = D3DXVECTOR2(1.0f, 0.0f);
 	pVertex[2].t = D3DXVECTOR2(0.0f, 1.0f);
 	pVertex[3].t = D3DXVECTOR2(1.0f, 1.0f);
 
-	//ƒCƒ“ƒfƒbƒNƒXFTRIANGLESTRIP
+	//ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼šTRIANGLESTRIP
 	pIndex[0] = 0;
 	pIndex[1] = 1;
 	pIndex[2] = 2;
@@ -284,7 +284,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹‰Šú‰»
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«åˆæœŸåŒ–
 //******************************************************************************
 int MTBackgroundImage::_InitConfFile()
 {
@@ -305,7 +305,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ƒeƒNƒXƒ`ƒƒ‰æ‘œ“Ç‚İ‚İ
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒèª­ã¿è¾¼ã¿
 //******************************************************************************
 int MTBackgroundImage::_LoadTexture(
 		LPDIRECT3DDEVICE9 pD3DDevice
@@ -317,27 +317,27 @@ int MTBackgroundImage::_LoadTexture(
 	WCHAR imageFilePathW[_MAX_PATH] = { L'\0' };
 	TCHAR imageFilePathA[_MAX_PATH] = { _T('\0') };
 
-	//ƒrƒbƒgƒ}ƒbƒvƒtƒ@ƒCƒ‹ƒpƒX
+	//ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
 	result = m_ConfFile.SetCurSection(_T("Background-image"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.GetWStr(_T("ImageFilePath_W"), imageFilePathW, _MAX_PATH, L"*** NO DATA ***");
 	if (result != 0) goto EXIT;
 
-	//ƒƒCƒh•¶š—ñƒtƒ@ƒCƒ‹ƒpƒX–¢İ’è‚Ìê‡
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹æœªè¨­å®šã®å ´åˆ
 	if (wcscmp(imageFilePathW, L"*** NO DATA ***") == 0) {
-		//Ver.1.4.0ˆÈ~‚ÅƒƒCƒh•¶š—ñƒtƒ@ƒCƒ‹ƒpƒX‚ğ•Û‘¶‚·‚é‚æ‚¤‚É•ÏX‚µ‚½‚½‚ß
-		//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñƒtƒ@ƒCƒ‹ƒpƒX‚Ìæ“¾‚ğ‚İ‚é
+		//Ver.1.4.0ä»¥é™ã§ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’ä¿å­˜ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ã—ãŸãŸã‚
+		//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®å–å¾—ã‚’è©¦ã¿ã‚‹
 		memset(imageFilePathW, 0, sizeof(WCHAR) * _MAX_PATH);
 		result = m_ConfFile.GetStr(_T("ImageFilePath"), imageFilePathA, _MAX_PATH, _T(""));
 		if (result != 0) goto EXIT;
 		if (_tcslen(imageFilePathA) > 0) {
 			apiresult = MultiByteToWideChar(
-								_getmbcp(),			//ƒR[ƒhƒy[ƒW
-								MB_PRECOMPOSED,		//ƒtƒ‰ƒOF
-								imageFilePathA,		//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñ
-								(int)_tcslen(imageFilePathA),	//•ÏŠ·Œ³ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š—ñƒoƒCƒg”
-								imageFilePathW,		//•ÏŠ·æƒƒCƒh•¶š—ñƒoƒbƒtƒ@
-								_MAX_PATH - 1		//ƒoƒbƒtƒ@ƒTƒCƒYiƒƒCƒh•¶š”’PˆÊj
+								_getmbcp(),			//ã‚³ãƒ¼ãƒ‰ãƒšãƒ¼ã‚¸
+								MB_PRECOMPOSED,		//ãƒ•ãƒ©ã‚°ï¼š
+								imageFilePathA,		//å¤‰æ›å…ƒãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—
+								(int)_tcslen(imageFilePathA),	//å¤‰æ›å…ƒãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—åˆ—ãƒã‚¤ãƒˆæ•°
+								imageFilePathW,		//å¤‰æ›å…ˆãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡
+								_MAX_PATH - 1		//ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºï¼ˆãƒ¯ã‚¤ãƒ‰æ–‡å­—æ•°å˜ä½ï¼‰
 							);
 			if (apiresult == 0) {
 				result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -346,37 +346,37 @@ int MTBackgroundImage::_LoadTexture(
 		}
 	}
 
-	//ƒtƒ@ƒCƒ‹–¢w’è‚È‚ç‰½‚à‚µ‚È‚¢
+	//ãƒ•ã‚¡ã‚¤ãƒ«æœªæŒ‡å®šãªã‚‰ä½•ã‚‚ã—ãªã„
 	if (wcslen(imageFilePathW) == 0) goto EXIT;
 
-	//ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (!PathFileExistsW(imageFilePathW)) goto EXIT;
 
-	//“Ç‚İ‚Ş‰æ‘œ‚Ìc‰¡ƒTƒCƒY‚ğæ“¾‚µ‚Ä‚¨‚­
+	//èª­ã¿è¾¼ã‚€ç”»åƒã®ç¸¦æ¨ªã‚µã‚¤ã‚ºã‚’å–å¾—ã—ã¦ãŠã
 	hresult = D3DXGetImageInfoFromFileW(imageFilePathW, &m_ImgInfo);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//ƒeƒNƒXƒ`ƒƒ‰æ‘œ‚Æ‚µ‚Ä“Ç‚İ‚İ
-	//  ƒsƒNƒZƒ‹“™”{‚Å•`‰æ‚·‚éê‡‚Éƒ{ƒP‚È‚¢‚æ‚¤‚É‚·‚é‚½‚ß
-	//  ‰æ‘œƒTƒCƒY‚ğw’è‚µ‚Ä“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒã¨ã—ã¦èª­ã¿è¾¼ã¿
+	//  ãƒ”ã‚¯ã‚»ãƒ«ç­‰å€ã§æç”»ã™ã‚‹å ´åˆã«ãƒœã‚±ãªã„ã‚ˆã†ã«ã™ã‚‹ãŸã‚
+	//  ç”»åƒã‚µã‚¤ã‚ºã‚’æŒ‡å®šã—ã¦èª­ã¿è¾¼ã¿
 	hresult = D3DXCreateTextureFromFileExW(
-					pD3DDevice,			//ƒfƒoƒCƒX
-					imageFilePathW,		//ƒtƒ@ƒCƒ‹ƒpƒX
-					m_ImgInfo.Width,	//•iƒsƒNƒZƒ‹jF’¼Úw’è
-					m_ImgInfo.Height,	//‚‚³iƒsƒNƒZƒ‹jF’¼Úw’è
-					1,					//ƒ~ƒbƒvƒŒƒxƒ‹
-					0,					//g—p•û–@
-					D3DFMT_A8R8G8B8,	//ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg
-					D3DPOOL_MANAGED,	//ƒeƒNƒXƒ`ƒƒ”z’uæƒƒ‚ƒŠƒNƒ‰ƒX
-					D3DX_FILTER_NONE,	//ƒtƒBƒ‹ƒ^ƒŠƒ“ƒOw’è
-					D3DX_FILTER_NONE,	//ƒtƒBƒ‹ƒ^ƒŠƒ“ƒOw’èiƒ~ƒbƒvj
-					0xFF000000,			//“§–¾F‚Ìw’èF•s“§–¾•
-					NULL,				//ƒ\[ƒXƒCƒ[ƒWî•ñ
-					NULL,				//256FƒpƒŒƒbƒg
-					&m_pTexture			//ì¬‚³‚ê‚½ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg
+					pD3DDevice,			//ãƒ‡ãƒã‚¤ã‚¹
+					imageFilePathW,		//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+					m_ImgInfo.Width,	//å¹…ï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰ï¼šç›´æ¥æŒ‡å®š
+					m_ImgInfo.Height,	//é«˜ã•ï¼ˆãƒ”ã‚¯ã‚»ãƒ«ï¼‰ï¼šç›´æ¥æŒ‡å®š
+					1,					//ãƒŸãƒƒãƒ—ãƒ¬ãƒ™ãƒ«
+					0,					//ä½¿ç”¨æ–¹æ³•
+					D3DFMT_A8R8G8B8,	//ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+					D3DPOOL_MANAGED,	//ãƒ†ã‚¯ã‚¹ãƒãƒ£é…ç½®å…ˆãƒ¡ãƒ¢ãƒªã‚¯ãƒ©ã‚¹
+					D3DX_FILTER_NONE,	//ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°æŒ‡å®š
+					D3DX_FILTER_NONE,	//ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°æŒ‡å®šï¼ˆãƒŸãƒƒãƒ—ï¼‰
+					0xFF000000,			//é€æ˜è‰²ã®æŒ‡å®šï¼šä¸é€æ˜é»’
+					NULL,				//ã‚½ãƒ¼ã‚¹ã‚¤ãƒ¡ãƒ¼ã‚¸æƒ…å ±
+					NULL,				//256è‰²ãƒ‘ãƒ¬ãƒƒãƒˆ
+					&m_pTexture			//ä½œæˆã•ã‚ŒãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectX API error.", hresult, 0);
@@ -388,7 +388,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// •\¦İ’è
+// è¡¨ç¤ºè¨­å®š
 //******************************************************************************
 void MTBackgroundImage::SetEnable(
 		bool isEnable

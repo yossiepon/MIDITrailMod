@@ -1,79 +1,59 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / DXCamera
 //
-// ƒJƒƒ‰ƒNƒ‰ƒX
+// Camera class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
-#include <d3d9.h>
-#include <d3dx9.h>
+#include <directxtk/SimpleMath.h>
 
 
 //******************************************************************************
-// ƒJƒƒ‰ƒNƒ‰ƒX
+// Camera class
 //******************************************************************************
 class DXCamera
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
-	DXCamera(void);
-	virtual ~DXCamera(void);
+	DXCamera();
+	virtual ~DXCamera();
 
-	//‰Šú‰»
 	int Initialize();
 
-	//Šî–{ƒpƒ‰ƒ[ƒ^İ’è
 	void SetBaseParam(
 			float viewAngle,
 			float nearPlane,
 			float farPlane
 		);
 
-	//ƒJƒƒ‰ˆÊ’uİ’è
 	void SetPosition(
-			D3DXVECTOR3 camVector,
-			D3DXVECTOR3 camLookAtVector,
-			D3DXVECTOR3 camUpVector
+			DirectX::SimpleMath::Vector3 camVector,
+			DirectX::SimpleMath::Vector3 camLookAtVector,
+			DirectX::SimpleMath::Vector3 camUpVector
 		);
 
-	//XV
-	int Transform(LPDIRECT3DDEVICE9 pD3DDevice);
+	// Returns view and projection matrices for the given aspect ratio.
+	int GetMatrices(
+			float aspect,
+			DirectX::SimpleMath::Matrix* pView,
+			DirectX::SimpleMath::Matrix* pProj
+		);
 
 private:
 
-	//ƒJƒƒ‰‚Ì‰æŠp
 	float m_ViewAngle;
-
-	//NearƒvƒŒ[ƒ“F0‚¾‚ÆZ²‡§Œä‚ª‚¨‚©‚µ‚­‚È‚é
 	float m_NearPlane;
-
-	//FarƒvƒŒ[ƒ“
 	float m_FarPlane;
 
-	//ƒJƒƒ‰ˆÊ’u
-	D3DXVECTOR3 m_CamVector;
-
-	//’–Ú“_
-	D3DXVECTOR3 m_CamLookAtVector;
-
-	//ƒJƒƒ‰‚Ìã•ûŒü
-	D3DXVECTOR3 m_CamUpVector;
+	DirectX::SimpleMath::Vector3 m_CamVector;
+	DirectX::SimpleMath::Vector3 m_CamLookAtVector;
+	DirectX::SimpleMath::Vector3 m_CamUpVector;
 
 	void _Clear();
-
-	int _GetProjMatrix(
-			LPDIRECT3DDEVICE9 pD3DDevice,
-			D3DXMATRIX* pViewMatrix
-		);
-	int _GetViewMatrix(
-			D3DXMATRIX* pViewMatrix
-		);
-
 };
-

@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // Simple Base Library / YNConfFile
 //
-// İ’èƒtƒ@ƒCƒ‹ƒNƒ‰ƒX
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// INIƒtƒ@ƒCƒ‹‚Ö‚ÌƒAƒNƒZƒX‚ğƒ‰ƒbƒv‚·‚éƒNƒ‰ƒXB
+// INIãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’ãƒ©ãƒƒãƒ—ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
 
 #pragma once
 
@@ -24,35 +24,35 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-// İ’èƒtƒ@ƒCƒ‹ƒNƒ‰ƒX
+// è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class YNBASELIB_API YNConfFile
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	YNConfFile(void);
 	virtual ~YNConfFile(void);
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	int Initialize(const TCHAR* pConfFilePath);
 
-	//ƒJƒŒƒ“ƒgƒZƒNƒVƒ‡ƒ“İ’è
+	//ã‚«ãƒ¬ãƒ³ãƒˆã‚»ã‚¯ã‚·ãƒ§ãƒ³è¨­å®š
 	int SetCurSection(const TCHAR* pSection);
 
-	//®”’læ“¾^“o˜^
+	//æ•´æ•°å€¤å–å¾—ï¼ç™»éŒ²
 	int GetInt(const TCHAR* pKey, int* pVal, int defaultVal);
 	int SetInt(const TCHAR* pKey, int val);
 
-	//•‚“®¬”’læ“¾^“o˜^
+	//æµ®å‹•å°æ•°å€¤å–å¾—ï¼ç™»éŒ²
 	int GetFloat(const TCHAR* pKey, float* pVal, float defaultVal);
 	int SetFloat(const TCHAR* pKey, float val);
 
-	//•¶š—ñæ“¾^“o˜^
+	//æ–‡å­—åˆ—å–å¾—ï¼ç™»éŒ²
 	int GetStr(const TCHAR* pKey, TCHAR* pBuf, unsigned long bufSize, const TCHAR* pDefaultVal);
 	int SetStr(const TCHAR* pKey, const TCHAR* pStr);
 
-	//•¶š—ñæ“¾^“o˜^i’l‚Ì‚İƒƒCƒh•¶š—ñj
+	//æ–‡å­—åˆ—å–å¾—ï¼ç™»éŒ²ï¼ˆå€¤ã®ã¿ãƒ¯ã‚¤ãƒ‰æ–‡å­—åˆ—ï¼‰
 	int GetWStr(const TCHAR* pKey, WCHAR* pBuf, unsigned long bufSize, const WCHAR* pDefaultVal);
 	int SetWStr(const TCHAR* pKey, const WCHAR* pStr);
 
@@ -61,7 +61,7 @@ private:
 	TCHAR m_FilePath[_MAX_PATH];
 	TCHAR m_Section[_MAX_PATH];
 
-	//‘ã“ü‚ÆƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ì‹Ö~
+	//ä»£å…¥ã¨ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã®ç¦æ­¢
 	void operator=(const YNConfFile&);
 	YNConfFile(const YNConfFile&);
 

@@ -1,15 +1,15 @@
-//******************************************************************************
+ï»¿//******************************************************************************
 //
 // MIDITrail / MTNoteBox
 //
-// ƒm[ƒgƒ{ƒbƒNƒX•`‰æƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æç”»ã‚¯ãƒ©ã‚¹
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ƒm[ƒgƒ{ƒbƒNƒX‚ð•`‰æ‚·‚éB
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹ã‚’æç”»ã™ã‚‹ã€‚
 
 #pragma once
 
@@ -24,29 +24,29 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ƒpƒ‰ƒ[ƒ^’è‹`
+// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å®šç¾©
 //******************************************************************************
-//Å‘å”­‰¹ƒm[ƒg•`‰æ”
+//æœ€å¤§ç™ºéŸ³ãƒŽãƒ¼ãƒˆæç”»æ•°
 #define MTNOTEBOX_MAX_ACTIVENOTE_NUM  (100)
 
-// TODO: Å‘å”­‰¹ƒm[ƒg•`‰æ”‚ð‰Â•Ï‚É‚·‚é
-//   Ž–‘O‚ÉƒV[ƒPƒ“ƒXƒf[ƒ^‚ÌÅ‘å“¯Žž”­‰¹”‚ð’²¸‚µ‚Ä‚¨‚¯‚Î
-//   Šm•Û‚·‚éƒoƒbƒtƒ@ƒTƒCƒY‚ð•ÏX‚Å‚«‚é
-//   Œ»ó‚Å‚àƒoƒbƒtƒ@ƒTƒCƒY‚Í‰Šú‰»Žž“_‚Å“®“I‚É•ÏX‰Â”\‚Å‚ ‚é
+// TODO: æœ€å¤§ç™ºéŸ³ãƒŽãƒ¼ãƒˆæç”»æ•°ã‚’å¯å¤‰ã«ã™ã‚‹
+//   äº‹å‰ã«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãƒ‡ãƒ¼ã‚¿ã®æœ€å¤§åŒæ™‚ç™ºéŸ³æ•°ã‚’èª¿æŸ»ã—ã¦ãŠã‘ã°
+//   ç¢ºä¿ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã§ãã‚‹
+//   ç¾çŠ¶ã§ã‚‚ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã¯åˆæœŸåŒ–æ™‚ç‚¹ã§å‹•çš„ã«å¤‰æ›´å¯èƒ½ã§ã‚ã‚‹
 
 
 //******************************************************************************
-// ƒm[ƒgƒ{ƒbƒNƒX•`‰æƒNƒ‰ƒX
+// ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹æç”»ã‚¯ãƒ©ã‚¹
 //******************************************************************************
 class MTNoteBox
 {
 public:
 
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^^ƒfƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	MTNoteBox(void);
 	virtual ~MTNoteBox(void);
 
-	//¶¬
+	//ç”Ÿæˆ
 // >>> modify 20120728 yossiepon begin
 	virtual int Create(
 // <<< modify 20120728 yossiepon end
@@ -56,33 +56,33 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	//XV
+	//æ›´æ–°
 // >>> modify 20120728 yossiepon begin
 	virtual int Transform(LPDIRECT3DDEVICE9 pD3DDevice, float rollAngle);
 // <<< modify 20120728 yossiepon end
 
-	//•`‰æ
+	//æç”»
 	int Draw(LPDIRECT3DDEVICE9 pD3DDevice);
 
-	//‰ð•ú
+	//è§£æ”¾
 // >>> modify 20120728 yossiepon begin
 	virtual void Release();
 // <<< modify 20120728 yossiepon end
 
-	//‰‰‘tƒ`ƒbƒNƒ^ƒCƒ€“o˜^
+	//æ¼”å¥ãƒãƒƒã‚¯ã‚¿ã‚¤ãƒ ç™»éŒ²
 	void SetCurTickTime(unsigned long curTickTime);
 
-	//ƒŠƒZƒbƒg
+	//ãƒªã‚»ãƒƒãƒˆ
 // >>> modify 20120728 yossiepon begin
 	virtual void Reset();
 // <<< modify 20120728 yossiepon end
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	void SetSkipStatus(bool isSkipping);
 
 private:
 
-	//”­‰¹ƒm[ƒgî•ñ\‘¢‘Ì
+	//ç™ºéŸ³ãƒŽãƒ¼ãƒˆæƒ…å ±æ§‹é€ ä½“
 	struct NoteStatus {
 		bool isActive;
 		bool isHide;
@@ -94,38 +94,38 @@ private:
 protected:
 // <<< modify 20161224 yossiepon end
 
-	//’¸“_ƒoƒbƒtƒ@\‘¢‘Ì
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡æ§‹é€ ä½“
 	struct MTNOTEBOX_VERTEX {
-		D3DXVECTOR3 p;	//’¸“_À•W
-		D3DXVECTOR3 n;	//–@ü
-		DWORD		c;	//ƒfƒBƒtƒ…[ƒYF
+		D3DXVECTOR3 p;	//é ‚ç‚¹åº§æ¨™
+		D3DXVECTOR3 n;	//æ³•ç·š
+		DWORD		c;	//ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºè‰²
 	};
 
 protected:
 
-	//ƒm[ƒgƒfƒUƒCƒ“
+	//ãƒŽãƒ¼ãƒˆãƒ‡ã‚¶ã‚¤ãƒ³
 	MTNoteDesign* m_pNoteDesign;
 
-	//ƒm[ƒgƒŠƒXƒg
+	//ãƒŽãƒ¼ãƒˆãƒªã‚¹ãƒˆ
 	SMNoteList m_NoteList;
 
-	//‘Sƒm[ƒgƒ{ƒbƒNƒX
+	//å…¨ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹
 	DXPrimitive m_PrimitiveAllNotes;
 
-	//”­‰¹’†ƒm[ƒgƒ{ƒbƒNƒX
+	//ç™ºéŸ³ä¸­ãƒŽãƒ¼ãƒˆãƒœãƒƒã‚¯ã‚¹
 	DXPrimitive m_PrimitiveActiveNotes;
 	unsigned long m_CurTickTime;
 	unsigned long m_CurNoteIndex;
 	unsigned long m_ActiveNoteNum;
 	NoteStatus* m_pNoteStatus;
 
-	//ƒXƒLƒbƒvó‘Ô
+	//ã‚¹ã‚­ãƒƒãƒ—çŠ¶æ…‹
 	bool m_isSkipping;
 
-		//ƒsƒbƒ`ƒxƒ“ƒhî•ñ
+		//ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰æƒ…å ±
 	MTNotePitchBend* m_pNotePitchBend;
 
-	//’¸“_ƒoƒbƒtƒ@FVFƒtƒH[ƒ}ƒbƒg
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡FVFãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆ
 	DWORD _GetFVFFormat(){ return (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE); }
 
 	virtual int _CreateNoteDesign();

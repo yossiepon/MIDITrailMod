@@ -2,7 +2,7 @@
 //
 // MIDITrail / MIDITrailMain
 //
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -17,25 +17,22 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg
+// ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
 //******************************************************************************
 int APIENTRY _tWinMain(
-		HINSTANCE hInstance,		//ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-		HINSTANCE hPrevInstance,	//ˆÈ‘O‚ÌƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹Fí‚ÉNULL
-		LPTSTR lpCmdLine,			//ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“
-		int nCmdShow				//ƒEƒBƒ“ƒhƒE•\¦ó‘Ôw’è
+		HINSTANCE hInstance,
+		HINSTANCE hPrevInstance,
+		LPTSTR lpCmdLine,
+		int nCmdShow
 	)
 {
 	int result = 0;
 	int winMainResult = 0;
 	MIDITrailApp app;
 
-	//–¢QÆŒx‰ñ”ğ
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‰Šú‰»
-	//ƒƒbƒZ[ƒWƒ‹[ƒv‚É“ü‚é‘O‚ÉI—¹‚·‚éê‡‚Í–ß‚è’l‚ğ0‚Æ‚·‚é
 	result = app.Initialize(hInstance, lpCmdLine, nCmdShow);
 	if (result != 0) {
 		YN_SHOW_ERR(NULL);
@@ -43,13 +40,9 @@ int APIENTRY _tWinMain(
 		goto EXIT;
 	}
 
-	//ƒAƒvƒŠƒP[ƒVƒ‡ƒ“Às
-	//Run‚ÍWinMain‚Ì–ß‚è’l‚Æ‚È‚é’l‚ğ•Ô‚·
 	winMainResult = app.Run();
 
 EXIT:;
 	app.Terminate();
 	return winMainResult;
 }
-
-
