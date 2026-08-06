@@ -27,7 +27,7 @@
 #include "MTNoteRipple11.h"
 #include "MTNoteLyrics11.h"
 #include "MTNotePitchBend.h"
-#include "MTPianoKeyboardCtrlMod11.h"
+#include "MTPianoKeyboardCtrlRoll11.h"
 
 
 //******************************************************************************
@@ -85,5 +85,5 @@ private:
 	MTNoteRipple11     m_Ripple;
 	MTNoteLyrics11     m_Lyrics;
 	MTNotePitchBend    m_NotePitchBend;
-	MTPianoKeyboardCtrlMod11 m_KeyboardCtrl;
+	MTPianoKeyboardCtrlRoll11 m_KeyboardCtrl;
 };

@@ -1,12 +1,12 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardCtrl11
 //
-// DX11 piano keyboard controller.
-// Manages multiple keyboards (one per channel), evaluates key states via
-// per-key index built from NoteTracker data, and dispatches to each
-// MTPianoKeyboard11 via Update(keyStates, world).
-// Used by Rain scene (non-Mod keyboard, simple world transform).
+// DX11 piano keyboard controller base class.
+// Manages multiple keyboards, evaluates key states via per-key index, and
+// dispatches to each MTPianoKeyboard11 via Update(keyStates, world).
+// Derived classes implement keyboard creation, world matrix computation,
+// and active key color application for each scene type (Rain, Roll, Ring).
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -17,7 +17,6 @@
 
 #include "MTSceneComponent11.h"
 #include "MTPianoKeyboard11.h"
-#include "MTPianoKeyboardDesign.h"
 #include "MTNoteDesign.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
@@ -52,7 +51,7 @@ struct MTKbdSub {
 
 
 //******************************************************************************
-// DX11 piano keyboard controller
+// DX11 piano keyboard controller base class
 //******************************************************************************
 class MTPianoKeyboardCtrl11 : public MTSceneComponent11
 {
@@ -81,16 +80,36 @@ public:
 
 	void Reset() override;
 	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
-	void SetPlaybackPosTracking(bool enable) { m_isPlaybackPosTracking = enable; }
 
 protected:
+
+	// -- Pure virtual hooks (derived classes must implement) --
 
 	virtual int _CreateKeyboards(
 				ID3D11Device* pDevice,
 				ID3D11DeviceContext* pContext,
 				const TCHAR* pSceneName,
 				SMSeqData* pSeqData
-			);
+			) = 0;
+
+	virtual void _GetPerKeyIndexParams(
+				unsigned long kbdIndex,
+				int& outPortFilter,
+				int& outChFilter
+			) = 0;
+
+	virtual void _ApplyActiveKeyColor(
+				MTKbdSub* pSub,
+				unsigned long kbdIndex
+			) = 0;
+
+	virtual DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				unsigned long kbdIndex,
+				const MTSceneUpdateContext& ctx
+			) = 0;
+
+	// -- Shared logic --
+
 	int _BuildPerKeyIndex(MTKbdSub* pSub, int portFilter, int chFilter = -1);
 	void _EvaluateKeyStates(MTKbdSub* pSub, unsigned long playTimeMSec);
 
@@ -100,13 +119,11 @@ protected:
 	ID3D11ShaderResourceView* m_pSRV;
 	MTNoteTracker* m_pNoteTracker;
 	MTNotePitchBend* m_pNotePitchBend;
-	MTPianoKeyboardDesign m_KeyboardDesign;
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign* m_pNoteDesign;
 	unsigned long m_KeyDownDurMs;
 	unsigned long m_KeyUpDurMs;
 	bool m_isSingleKeyboard;
 	bool m_isSkipping;
-	bool m_isPlaybackPosTracking;
 
 private:
 
