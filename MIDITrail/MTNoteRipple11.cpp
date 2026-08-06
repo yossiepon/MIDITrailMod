@@ -46,7 +46,8 @@ int MTNoteRipple11::Create(
 		ID3D11DeviceContext* pContext,
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
-		MTNotePitchBend* pNotePitchBend
+		MTNotePitchBend* pNotePitchBend,
+		MTNoteDesignMod* pNoteDesign
 	)
 {
 	int result = 0;
@@ -56,7 +57,7 @@ int MTNoteRipple11::Create(
 	m_pNotePitchBend = pNotePitchBend;
 
 	// Initialize base class (NoteDesign, slot array)
-	result = MTNoteEffect::Create(pSceneName, pSeqData);
+	result = MTNoteEffect::Create(pSceneName, pSeqData, pNoteDesign);
 	if (result != 0) goto EXIT;
 
 	// Load ripple texture
@@ -65,7 +66,7 @@ int MTNoteRipple11::Create(
 
 	// Create vertex buffer: 6 vertices per ripple * overwrite times * max slots
 	{
-		unsigned long overwriteTimes = m_NoteDesign.GetRippleOverwriteTimes();
+		unsigned long overwriteTimes = m_pNoteDesign->GetRippleOverwriteTimes();
 		vertexNum = 6 * overwriteTimes * NOTEEFFECT_MAX_SLOTS;
 	}
 	result = m_Prim.CreateVertexBuffer(pDevice, vertexNum);
@@ -119,7 +120,7 @@ int MTNoteRipple11::BuildVertices(
 	if (m_pContext == NULL) goto EXIT;
 
 	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
-	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
+	Vector3 moveVec = m_pNoteDesign->GetWorldMoveVector();
 	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(m_RollAngle))
 	             * Matrix::CreateTranslation(moveVec);
 	m_Prim.SetWorldMatrix(world);
@@ -130,8 +131,8 @@ int MTNoteRipple11::BuildVertices(
 
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 
-	unsigned long overwriteTimes = m_NoteDesign.GetRippleOverwriteTimes();
-	float spacing = m_NoteDesign.GetRippleSpacing();
+	unsigned long overwriteTimes = m_pNoteDesign->GetRippleOverwriteTimes();
+	float spacing = m_pNoteDesign->GetRippleSpacing();
 	unsigned long activeNoteNum = 0;
 
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
@@ -151,14 +152,14 @@ int MTNoteRipple11::BuildVertices(
 			}
 
 			// Note center position (raw coords — WorldMoveVector applied via world matrix)
-			Vector3 center = m_NoteDesign.GetNoteBoxCenterPosX(
+			Vector3 center = m_pNoteDesign->GetNoteBoxCenterPosX(
 				m_CurTickTime, s.portNo, s.chNo, s.noteNo,
 				pbValue, pbSensitivity);
 
 			// Ripple size from rate
-			float rh = m_NoteDesign.GetRippleHeight(s.keyDownRate);
-			float rw = m_NoteDesign.GetRippleWidth(s.keyDownRate);
-			float alpha = m_NoteDesign.GetRippleAlpha(s.keyDownRate);
+			float rh = m_pNoteDesign->GetRippleHeight(s.keyDownRate);
+			float rw = m_pNoteDesign->GetRippleWidth(s.keyDownRate);
+			float alpha = m_pNoteDesign->GetRippleAlpha(s.keyDownRate);
 
 			if (rh <= 0.0f || rw <= 0.0f) continue;
 
@@ -172,7 +173,7 @@ int MTNoteRipple11::BuildVertices(
 			}
 
 			// Note color
-			Color color = m_NoteDesign.GetNoteBoxColor(s.portNo, s.chNo, s.noteNo);
+			Color color = m_pNoteDesign->GetNoteBoxColor(s.portNo, s.chNo, s.noteNo);
 			unsigned long c = Color(color.R(), color.G(), color.B(), alpha).BGRA();
 
 			for (unsigned long j = 0; j < overwriteTimes; j++) {

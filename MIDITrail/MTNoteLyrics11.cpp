@@ -44,7 +44,8 @@ int MTNoteLyrics11::Create(
 		ID3D11DeviceContext* pContext,
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
-		MTNotePitchBend* pNotePitchBend
+		MTNotePitchBend* pNotePitchBend,
+		MTNoteDesignMod* pNoteDesign
 	)
 {
 	int result = 0;
@@ -54,7 +55,7 @@ int MTNoteLyrics11::Create(
 	m_pNotePitchBend = pNotePitchBend;
 
 	// Initialize base class (NoteDesign, slot array)
-	result = MTNoteEffect::Create(pSceneName, pSeqData);
+	result = MTNoteEffect::Create(pSceneName, pSeqData, pNoteDesign);
 	if (result != 0) goto EXIT;
 
 	// Vertex buffer: 6 vertices per lyric * max slots
@@ -147,7 +148,7 @@ int MTNoteLyrics11::BuildVertices(
 	if (m_pContext == NULL) goto EXIT;
 
 	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
-	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
+	Vector3 moveVec = m_pNoteDesign->GetWorldMoveVector();
 	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(m_RollAngle))
 	             * Matrix::CreateTranslation(moveVec);
 	m_Prim.SetWorldMatrix(world);
@@ -177,14 +178,14 @@ int MTNoteLyrics11::BuildVertices(
 			}
 
 			// Note center position (raw coords — WorldMoveVector applied via world matrix)
-			Vector3 center = m_NoteDesign.GetNoteBoxCenterPosX(
+			Vector3 center = m_pNoteDesign->GetNoteBoxCenterPosX(
 				m_CurTickTime, s.portNo, s.chNo, s.noteNo,
 				pbValue, pbSensitivity);
 
 			// Lyric size from texture dimensions
 			unsigned long tx = 0, ty = 0;
 			m_FontTextures[i].GetTextureSize(&tx, &ty);
-			float decayCoeff = m_NoteDesign.GetDecayCoefficient(s.keyDownRate);
+			float decayCoeff = m_pNoteDesign->GetDecayCoefficient(s.keyDownRate);
 			float rh = tx * decayCoeff / 64.0f;
 			float rw = ty * decayCoeff / 64.0f;
 
@@ -198,8 +199,8 @@ int MTNoteLyrics11::BuildVertices(
 				center.x -= (i + 1) * 0.002f;
 			}
 
-			float alpha = m_NoteDesign.GetRippleAlpha(s.keyDownRate);
-			Color color = m_NoteDesign.GetNoteBoxColor(s.portNo, s.chNo, s.noteNo);
+			float alpha = m_pNoteDesign->GetRippleAlpha(s.keyDownRate);
+			Color color = m_pNoteDesign->GetNoteBoxColor(s.portNo, s.chNo, s.noteNo);
 			unsigned long c = Color(color.R(), color.G(), color.B(), alpha).BGRA();
 
 			DXPRIMITIVE11_VERTEX* v = &pVertex[activeNoteNum * 6];

@@ -33,7 +33,8 @@ public:
 				ID3D11DeviceContext* pContext,
 				const TCHAR* pSceneName,
 				SMSeqData* pSeqData,
-				MTNotePitchBend* pNotePitchBend
+				MTNotePitchBend* pNotePitchBend,
+				MTNoteDesignMod* pNoteDesign = NULL
 			);
 
 	void Release();

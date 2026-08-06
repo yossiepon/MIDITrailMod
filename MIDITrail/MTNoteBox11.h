@@ -45,7 +45,8 @@ public:
 				const TCHAR* pSceneName,
 				SMSeqData* pSeqData,
 				MTNoteTracker* pNoteTracker,
-				MTNotePitchBend* pNotePitchBend
+				MTNotePitchBend* pNotePitchBend,
+				MTNoteDesignMod* pNoteDesign = NULL
 			);
 	void Release();
 
@@ -73,7 +74,8 @@ private:
 	DXPrimitive11 m_PrimActiveNotes;
 	ID3D11DeviceContext* m_pContext;
 
-	MTNoteDesignMod m_NoteDesign;
+	MTNoteDesignMod m_NoteDesignLocal;
+	MTNoteDesignMod* m_pNoteDesign;
 	MTNoteTracker* m_pNoteTracker;
 	MTNotePitchBend* m_pNotePitchBend;
 

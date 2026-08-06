@@ -23,6 +23,7 @@ using namespace DirectX::SimpleMath;
 MTNoteBox11::MTNoteBox11()
 {
 	m_pContext = NULL;
+	m_pNoteDesign = NULL;
 	m_pNoteTracker = NULL;
 	m_pNotePitchBend = NULL;
 	m_CurTickTime = 0;
@@ -48,7 +49,8 @@ int MTNoteBox11::Create(
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
 		MTNoteTracker* pNoteTracker,
-		MTNotePitchBend* pNotePitchBend
+		MTNotePitchBend* pNotePitchBend,
+		MTNoteDesignMod* pNoteDesign
 	)
 {
 	int result = 0;
@@ -64,8 +66,14 @@ int MTNoteBox11::Create(
 	m_pNoteTracker = pNoteTracker;
 	m_pNotePitchBend = pNotePitchBend;
 
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
+	if (pNoteDesign != NULL) {
+		m_pNoteDesign = pNoteDesign;
+	}
+	else {
+		result = m_NoteDesignLocal.Initialize(pSceneName, pSeqData);
+		if (result != 0) goto EXIT;
+		m_pNoteDesign = &m_NoteDesignLocal;
+	}
 
 	result = _CreateAllNoteBox(pDevice);
 	if (result != 0) goto EXIT;
@@ -186,7 +194,7 @@ int MTNoteBox11::Update(
 
 	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
 	{
-		Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
+		Vector3 moveVec = m_pNoteDesign->GetWorldMoveVector();
 		Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
 		             * Matrix::CreateTranslation(moveVec);
 		m_PrimAllNotes.SetWorldMatrix(world);
@@ -206,8 +214,8 @@ int MTNoteBox11::_UpdateStatusOfActiveNotes()
 
 	if (m_pNoteTracker == NULL) goto EXIT;
 
-	unsigned long decayDuration = m_NoteDesign.GetRippleDecayDuration();
-	unsigned long releaseDuration = m_NoteDesign.GetRippleReleaseDuration();
+	unsigned long decayDuration = m_pNoteDesign->GetRippleDecayDuration();
+	unsigned long releaseDuration = m_pNoteDesign->GetRippleReleaseDuration();
 
 	// Update existing active notes
 	for (unsigned long i = 0; i < MTNOTEBOX11_MAX_ACTIVENOTE_NUM; i++) {
@@ -222,7 +230,7 @@ int MTNoteBox11::_UpdateStatusOfActiveNotes()
 			m_NoteStatus[i].keyDownRate = 0.0f;
 		}
 		else {
-			MTNoteEnvelopeResult env = m_NoteDesign.CalcNoteEnvelope(
+			MTNoteEnvelopeResult env = m_pNoteDesign->CalcNoteEnvelope(
 				m_PlayTimeMSec, note.startTimeMs, note.endTimeMs);
 			m_NoteStatus[i].keyDownRate = env.keyDownRate;
 			m_NoteStatus[i].keyStatus = env.keyStatus;
@@ -386,21 +394,21 @@ int MTNoteBox11::_CreateVertexOfNote(
 	}
 
 	if (keyDownRate == 0.0f) {
-		m_NoteDesign.GetNoteBoxVirtexPos(
+		m_pNoteDesign->GetNoteBoxVirtexPos(
 			note.startTimeTick, note.portNo, note.chNo, note.noteNo,
 			&vectorStartLU, &vectorStartRU, &vectorStartLD, &vectorStartRD,
 			pbValue, pbSensitivity);
-		m_NoteDesign.GetNoteBoxVirtexPos(
+		m_pNoteDesign->GetNoteBoxVirtexPos(
 			note.endTimeTick, note.portNo, note.chNo, note.noteNo,
 			&vectorEndLU, &vectorEndRU, &vectorEndLD, &vectorEndRD,
 			pbValue, pbSensitivity);
 	}
 	else {
-		m_NoteDesign.GetActiveNoteBoxVirtexPos(
+		m_pNoteDesign->GetActiveNoteBoxVirtexPos(
 			note.startTimeTick, note.portNo, note.chNo, note.noteNo,
 			&vectorStartLU, &vectorStartRU, &vectorStartLD, &vectorStartRD,
 			pbValue, pbSensitivity, keyDownRate);
-		m_NoteDesign.GetActiveNoteBoxVirtexPos(
+		m_pNoteDesign->GetActiveNoteBoxVirtexPos(
 			note.endTimeTick, note.portNo, note.chNo, note.noteNo,
 			&vectorEndLU, &vectorEndRU, &vectorEndLD, &vectorEndRD,
 			pbValue, pbSensitivity, keyDownRate);
@@ -457,10 +465,10 @@ int MTNoteBox11::_CreateVertexOfNote(
 	// Color
 	unsigned long c;
 	if (keyDownRate == 0.0f) {
-		c = m_NoteDesign.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo).BGRA();
+		c = m_pNoteDesign->GetNoteBoxColor(note.portNo, note.chNo, note.noteNo).BGRA();
 	}
 	else {
-		c = m_NoteDesign.GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, keyDownRate).BGRA();
+		c = m_pNoteDesign->GetActiveNoteBoxColor(note.portNo, note.chNo, note.noteNo, keyDownRate).BGRA();
 	}
 	for (int i = 0; i < MTNOTEBOX11_NOTE_VERTEX_NUM; i++) {
 		pVertex[i].color = c;

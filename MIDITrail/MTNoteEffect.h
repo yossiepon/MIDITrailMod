@@ -51,7 +51,8 @@ public:
 	MTNoteEffect();
 	virtual ~MTNoteEffect();
 
-	virtual int Create(const TCHAR* pSceneName, SMSeqData* pSeqData);
+	virtual int Create(const TCHAR* pSceneName, SMSeqData* pSeqData,
+	                   MTNoteDesignMod* pNoteDesign = NULL);
 	virtual void Release();
 
 	// IMTNoteTrackerListener
@@ -71,7 +72,8 @@ protected:
 
 	NoteEffectStatus m_Status[NOTEEFFECT_MAX_SLOTS];
 	float m_KeyDownRate[NOTEEFFECT_MAX_PORT][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
-	MTNoteDesignMod m_NoteDesign;
+	MTNoteDesignMod m_NoteDesignLocal;
+	MTNoteDesignMod* m_pNoteDesign;
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
 	float m_RollAngle;

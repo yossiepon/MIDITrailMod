@@ -17,6 +17,7 @@
 //******************************************************************************
 MTNoteEffect::MTNoteEffect()
 {
+	m_pNoteDesign = NULL;
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
 	m_RollAngle = 0.0f;
@@ -34,13 +35,20 @@ MTNoteEffect::~MTNoteEffect()
 //******************************************************************************
 int MTNoteEffect::Create(
 		const TCHAR* pSceneName,
-		SMSeqData* pSeqData
+		SMSeqData* pSeqData,
+		MTNoteDesignMod* pNoteDesign
 	)
 {
 	int result = 0;
 
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
+	if (pNoteDesign != NULL) {
+		m_pNoteDesign = pNoteDesign;
+	}
+	else {
+		result = m_NoteDesignLocal.Initialize(pSceneName, pSeqData);
+		if (result != 0) goto EXIT;
+		m_pNoteDesign = &m_NoteDesignLocal;
+	}
 
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
@@ -140,7 +148,7 @@ int MTNoteEffect::Update(
 			m_Status[i].isActive = false;
 		}
 		else {
-			MTNoteEnvelopeResult env = m_NoteDesign.CalcNoteEnvelope(
+			MTNoteEnvelopeResult env = m_pNoteDesign->CalcNoteEnvelope(
 				m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
 			m_Status[i].keyDownRate = env.keyDownRate;
 			m_Status[i].keyStatus = env.keyStatus;
