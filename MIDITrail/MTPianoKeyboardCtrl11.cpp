@@ -34,6 +34,7 @@ MTPianoKeyboardCtrl11::MTPianoKeyboardCtrl11()
 	m_KeyUpDurMs = 0;
 	m_isSingleKeyboard = false;
 	m_isSkipping = false;
+	m_isPlaybackPosTracking = true;
 	ZeroMemory(m_Subs, sizeof(m_Subs));
 }
 
@@ -86,9 +87,9 @@ int MTPianoKeyboardCtrl11::Create(
 	result = _CreateKeyboards(pDevice, pContext, pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	// Build per-key index for each sub-keyboard
+	// Build per-key index for each sub-keyboard (one per channel)
 	for (unsigned long k = 0; k < m_NumKbd; k++) {
-		result = _BuildPerKeyIndex(&m_Subs[k], -1);
+		result = _BuildPerKeyIndex(&m_Subs[k], -1, (int)k);
 		if (result != 0) goto EXIT;
 	}
 
@@ -147,7 +148,8 @@ EXIT:;
 //******************************************************************************
 int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 		MTKbdSub* pSub,
-		int portFilter
+		int portFilter,
+		int chFilter
 	)
 {
 	int result = 0;
@@ -161,6 +163,7 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 	for (unsigned long i = 0; i < totalNotes; i++) {
 		const NoteData& nd = m_pNoteTracker->GetNote(i);
 		if (portFilter >= 0 && nd.portNo != (unsigned char)portFilter) continue;
+		if (chFilter >= 0 && nd.chNo != (unsigned char)chFilter) continue;
 		if (nd.noteNo < SM_MAX_NOTE_NUM) {
 			pSub->keyOffset[nd.noteNo + 1]++;
 		}
@@ -189,6 +192,7 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 		for (unsigned long i = 0; i < totalNotes; i++) {
 			const NoteData& nd = m_pNoteTracker->GetNote(i);
 			if (portFilter >= 0 && nd.portNo != (unsigned char)portFilter) continue;
+			if (chFilter >= 0 && nd.chNo != (unsigned char)chFilter) continue;
 			if (nd.noteNo >= SM_MAX_NOTE_NUM) continue;
 
 			unsigned long idx = tempOffset[nd.noteNo]++;
@@ -294,11 +298,13 @@ int MTPianoKeyboardCtrl11::Update(
 			}
 		}
 
-		// World matrix: base position + playback tracking + roll
+		// World matrix: base position + roll (+ playback tracking if enabled)
 		unsigned char chNo = (unsigned char)k;
 		unsigned char portNo = 0;
 		Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
-		moveVec.y += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
+		if (m_isPlaybackPosTracking) {
+			moveVec.y += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
+		}
 		Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
 		             * Matrix::CreateTranslation(moveVec);
 

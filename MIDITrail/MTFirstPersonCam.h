@@ -40,6 +40,7 @@ class MTFirstPersonCam
 public:
 
 	enum MTProgressDirection {
+		DirNone,
 		DirX,
 		DirY,
 		DirZ

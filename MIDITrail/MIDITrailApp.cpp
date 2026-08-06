@@ -18,6 +18,7 @@
 #include "MIDITrailApp.h"
 #include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
+#include "MTScenePianoRollRain11.h"
 #include "DXPrimitive11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
@@ -3212,12 +3213,10 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRain) {
-					// MTScenePianoRollRain11 未実装: 暫定的に 3D を使用
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRollRain11();
 				}
 				else if (type == PianoRollRain2D) {
-					// MTScenePianoRollRain2D11 未実装: 暫定的に 3D を使用
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRollRain11(false, true);
 				}
 				else if (type == PianoRollRing) {
 					// MTScenePianoRollRing11 未実装: 暫定的に 3D を使用
@@ -3234,10 +3233,10 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRollRain11(true);
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRollRain11(true, true);
 				}
 				else if (type == PianoRollRing) {
 					m_pScene = new MTScenePianoRoll3D11();

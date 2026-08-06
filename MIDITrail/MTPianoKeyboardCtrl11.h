@@ -81,6 +81,7 @@ public:
 
 	void Reset() override;
 	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
+	void SetPlaybackPosTracking(bool enable) { m_isPlaybackPosTracking = enable; }
 
 protected:
 
@@ -90,7 +91,7 @@ protected:
 				const TCHAR* pSceneName,
 				SMSeqData* pSeqData
 			);
-	int _BuildPerKeyIndex(MTKbdSub* pSub, int portFilter);
+	int _BuildPerKeyIndex(MTKbdSub* pSub, int portFilter, int chFilter = -1);
 	void _EvaluateKeyStates(MTKbdSub* pSub, unsigned long playTimeMSec);
 
 	MTKbdSub m_Subs[SM_MAX_CH_NUM];
@@ -105,6 +106,7 @@ protected:
 	unsigned long m_KeyUpDurMs;
 	bool m_isSingleKeyboard;
 	bool m_isSkipping;
+	bool m_isPlaybackPosTracking;
 
 private:
 
