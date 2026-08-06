@@ -247,6 +247,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTGridRing11.cpp" />
     <ClCompile Include="MTTimeIndicatorRing11.cpp" />
     <ClCompile Include="MTPictBoardRing11.cpp" />
+    <ClCompile Include="MTScenePianoRollRing11.cpp" />
     <ClCompile Include="MTSceneTitle11.cpp" />
     <ClCompile Include="MTLogo11.cpp" />
     <ClCompile Include="MTStars11.cpp" />
@@ -326,6 +327,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTGridRing11.h" />
     <ClInclude Include="MTTimeIndicatorRing11.h" />
     <ClInclude Include="MTPictBoardRing11.h" />
+    <ClInclude Include="MTScenePianoRollRing11.h" />
     <ClInclude Include="MTSceneTitle11.h" />
     <ClInclude Include="MTLogo11.h" />
     <ClInclude Include="MTStars11.h" />

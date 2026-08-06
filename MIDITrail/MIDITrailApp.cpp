@@ -19,6 +19,7 @@
 #include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
 #include "MTScenePianoRollRain11.h"
+#include "MTScenePianoRollRing11.h"
 #include "DXPrimitive11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
@@ -3219,8 +3220,7 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRollRain11(false, true);
 				}
 				else if (type == PianoRollRing) {
-					// MTScenePianoRollRing11 未実装: 暫定的に 3D を使用
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRollRing11();
 				}
 			}
 			//ライブモニタ用シーン生成 (DX11: isLive=true)
@@ -3239,7 +3239,7 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRollRain11(true, true);
 				}
 				else if (type == PianoRollRing) {
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRollRing11(true);
 				}
 			}
 		}
