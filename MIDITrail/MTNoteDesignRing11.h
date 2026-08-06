@@ -1,0 +1,111 @@
+//******************************************************************************
+//
+// MIDITrail / MTNoteDesignRing11
+//
+// Ring note design class (DX11).
+// Extends MTNoteDesignMod with cylindrical coordinate transformation.
+// Replaces DX9's diamond inheritance (MTNoteDesignRingMod).
+//
+// Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
+#pragma once
+
+#include "MTNoteDesignMod.h"
+
+using namespace SMIDILib;
+
+
+//******************************************************************************
+// Ring note design class
+//******************************************************************************
+class MTNoteDesignRing11 : public MTNoteDesignMod
+{
+public:
+
+	MTNoteDesignRing11();
+	virtual ~MTNoteDesignRing11();
+
+	int Initialize(const TCHAR* pSceneName, SMSeqData* pSeqData) override;
+
+	DirectX::SimpleMath::Vector3 GetNoteBoxCenterPosX(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
+			) override;
+
+	void GetNoteBoxVirtexPos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
+			) override;
+
+	void GetActiveNoteBoxVirtexPos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0,
+				unsigned long elapsedTime = 0
+			) override;
+
+	void GetActiveNoteBoxVirtexPos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue,
+				unsigned char pitchBendSensitivity,
+				float rate
+			);
+
+	void GetGridRingBasePos(
+				unsigned long tickTime,
+				DirectX::SimpleMath::Vector3* pBasePos
+			);
+
+	float GetPortOriginY(unsigned char portNo) override;
+	float GetPortOriginZ(unsigned char portNo) override;
+
+	DirectX::SimpleMath::Vector3 GetWorldMoveVector() override;
+
+protected:
+
+	float m_NoteAngleStep;
+	float m_RingRadius;
+
+	DirectX::SimpleMath::Vector3 _GetNoteBasePos(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo
+			);
+
+	float _GetNoteAngle(
+				unsigned char noteNo,
+				short pitchBendValue,
+				unsigned char pitchBendSensitivity
+			);
+
+	int _LoadConfFile(const TCHAR* pSceneName) override;
+};
