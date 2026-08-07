@@ -76,7 +76,8 @@ int MTPianoKeyboardCtrlRain11::_CreateKeyboards(
 {
 	int result = 0;
 
-	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+	unsigned long numKbd = m_isSingleKeyboard ? 1 : SM_MAX_CH_NUM;
+	for (unsigned char chNo = 0; chNo < numKbd; chNo++) {
 		m_Subs[chNo].pKeyboard = new MTPianoKeyboardRain11();
 		if (m_Subs[chNo].pKeyboard == NULL) {
 			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
@@ -86,7 +87,7 @@ int MTPianoKeyboardCtrlRain11::_CreateKeyboards(
 		result = m_Subs[chNo].pKeyboard->Create(pDevice, pContext, pSceneName, pSeqData, m_pSRV);
 		if (result != 0) goto EXIT;
 	}
-	m_NumKbd = SM_MAX_CH_NUM;
+	m_NumKbd = numKbd;
 
 EXIT:;
 	return result;
@@ -102,7 +103,7 @@ void MTPianoKeyboardCtrlRain11::_GetPerKeyIndexParams(
 	)
 {
 	outPortFilter = -1;
-	outChFilter = (int)kbdIndex;
+	outChFilter = m_isSingleKeyboard ? -1 : (int)kbdIndex;
 }
 
 //******************************************************************************
