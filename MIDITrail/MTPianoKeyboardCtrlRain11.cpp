@@ -137,6 +137,6 @@ Matrix MTPianoKeyboardCtrlRain11::_ComputeWorldMatrix(
 	if (m_isPlaybackPosTracking) {
 		moveVec.y += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
 	}
-	return Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
-	     * Matrix::CreateTranslation(moveVec);
+	return Matrix::CreateTranslation(moveVec)
+	     * Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle));
 }
