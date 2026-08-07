@@ -263,6 +263,7 @@ int MTScenePianoRollRain11::_OnRecvSequencerMsg(
 		m_KeyboardCtrl.SetSkipStatus(false);
 		m_NoteRain.SetSkipStatus(false);
 		m_IsSkipping = false;
+		m_NoteTracker.Seek(m_PlayTimeMSec);
 	}
 
 	return result;

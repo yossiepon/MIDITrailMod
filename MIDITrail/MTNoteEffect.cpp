@@ -116,6 +116,8 @@ void MTNoteEffect::OnNoteActivate(
 //******************************************************************************
 void MTNoteEffect::OnReset()
 {
+	m_isSkipping = false;
+
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (m_Status[i].isActive) {
 			OnDeactivate(m_Status[i]);
