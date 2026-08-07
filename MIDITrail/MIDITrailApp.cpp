@@ -21,6 +21,7 @@
 #include "MTScenePianoRollRain11.h"
 #include "MTScenePianoRollRing11.h"
 #include "DXPrimitive11.h"
+#include "MTNoteBoxInstanced11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
 // <<< add 20190828 yossiepon end
@@ -277,6 +278,8 @@ int MIDITrailApp::Terminate()
 	_StopTimer();
 
 	m_Renderer.Terminate();
+
+	MTNoteBoxInstanced11::ReleasePipeline();
 
 	if (m_pScene != NULL) {
 		m_pScene->Release();
