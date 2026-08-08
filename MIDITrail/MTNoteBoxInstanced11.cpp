@@ -507,8 +507,7 @@ int MTNoteBoxInstanced11::Draw(
 		unsigned long loActive = 0, hiActive = 0;
 		GetVisibleRange(m_CurTickTime, m_CurTickTime, &loActive, &hiActive);
 
-		float decayDurMs = (float)m_pNoteDesign->GetRippleDecayDuration();
-		float releaseDurMs = (float)m_pNoteDesign->GetRippleReleaseDuration();
+		MTEnvelopeConfig envConfig = m_pNoteDesign->GetEnvelopeConfig();
 
 		pContext->IASetInputLayout(s_pLayout);
 		pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -543,7 +542,8 @@ int MTNoteBoxInstanced11::Draw(
 			cb->opts = XMFLOAT4((float)m_PlayTimeMSec, emissive.R(), emissive.G(), emissive.B());
 			cb->light = XMFLOAT4(lightDir.x, lightDir.y, lightDir.z, 1.2f);
 			cb->lambient = XMFLOAT4(0.2f, 0.0f, 0.0f, m_isLightEnable ? 1.0f : 0.0f);
-			cb->envelope = XMFLOAT4(decayDurMs, releaseDurMs, 0.3f, 0.4f);
+			cb->envelope = XMFLOAT4(envConfig.decayDurationMs, envConfig.releaseDurationMs,
+			                       envConfig.decayRatio, envConfig.sustainRatio);
 
 			ZeroMemory(cb->pb, sizeof(cb->pb));
 			if (m_pNotePitchBend != nullptr) {
@@ -551,16 +551,8 @@ int MTNoteBoxInstanced11::Draw(
 					for (unsigned char ch = 0; ch < 16; ch++) {
 						short pbValue = m_pNotePitchBend->GetValue(port, ch);
 						unsigned char pbSens = m_pNotePitchBend->GetSensitivity(port, ch);
-						float pbShift = 0.0f;
-						if (pbValue != 0) {
-							float step = m_pNoteDesign->GetNoteStep();
-							if (pbValue < 0)
-								pbShift = step * pbSens * ((float)pbValue / 8192.0f);
-							else
-								pbShift = step * pbSens * ((float)pbValue / 8191.0f);
-						}
 						unsigned int idx = port * 16 + ch;
-						((float*)cb->pb)[idx] = pbShift;
+						((float*)cb->pb)[idx] = m_pNoteDesign->GetPitchBendShift(pbValue, pbSens);
 					}
 				}
 			}

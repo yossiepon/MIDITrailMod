@@ -55,6 +55,9 @@ public:
 	float GetNoteStep();
 	float GetChStep();
 
+	// Pitch bend Y shift in note-space coordinates
+	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
+
 	// Live monitor display duration
 	unsigned long GetLiveMonitorDisplayDuration();
 
@@ -163,8 +166,8 @@ public:
 	DirectX::SimpleMath::Color GetGridLineColor();
 	DirectX::SimpleMath::Color GetPlaybackSectionColor();
 
-	float GetActiveNoteWhiteRate() const { return m_ActiveNoteWhiteRate; }
-	float GetActiveNoteBoxSizeRatio() const { return m_ActiveNoteBoxSizeRatio; }
+	float GetActiveNoteWhiteRate();
+	float GetActiveNoteBoxSizeRatio();
 
 protected:
 

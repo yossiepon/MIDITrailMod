@@ -31,6 +31,16 @@ struct MTNoteEnvelopeResult {
 };
 
 //******************************************************************************
+// Envelope configuration (for GPU shader parameters)
+//******************************************************************************
+struct MTEnvelopeConfig {
+	float decayDurationMs;
+	float releaseDurationMs;
+	float decayRatio;
+	float sustainRatio;
+};
+
+//******************************************************************************
 // Note design Mod class
 //******************************************************************************
 class MTNoteDesignMod : public MTNoteDesign
@@ -45,6 +55,9 @@ public:
 	// Ripple timing
 	unsigned long GetRippleDecayDuration();
 	unsigned long GetRippleReleaseDuration();
+
+	// Envelope configuration for GPU shader
+	MTEnvelopeConfig GetEnvelopeConfig();
 
 	// Note envelope (3-phase: Decay/Sustain/Release)
 	MTNoteEnvelopeResult CalcNoteEnvelope(

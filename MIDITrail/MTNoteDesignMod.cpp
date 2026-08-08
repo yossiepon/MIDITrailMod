@@ -81,6 +81,19 @@ float MTNoteDesignMod::GetRippleSpacing()
 }
 
 //******************************************************************************
+// Envelope configuration for GPU shader
+//******************************************************************************
+MTEnvelopeConfig MTNoteDesignMod::GetEnvelopeConfig()
+{
+	MTEnvelopeConfig config;
+	config.decayDurationMs = (float)m_RippleDecayDuration;
+	config.releaseDurationMs = (float)m_RippleReleaseDuration;
+	config.decayRatio = 0.3f;
+	config.sustainRatio = 0.4f;
+	return config;
+}
+
+//******************************************************************************
 // Note envelope (3-phase: Decay/Sustain/Release)
 //******************************************************************************
 MTNoteEnvelopeResult MTNoteDesignMod::CalcNoteEnvelope(
