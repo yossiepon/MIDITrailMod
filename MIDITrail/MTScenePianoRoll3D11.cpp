@@ -130,6 +130,7 @@ int MTScenePianoRoll3D11::Create(
 	result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
 	if (result != 0) goto EXIT;
 	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
+	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 	// ノートボックス
 	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend);
@@ -322,10 +323,6 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
 		m_Dashboard.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
 	}
-	// ノートON通知
-	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
-		m_Dashboard.SetNoteOn();
-	}
 	// ピッチベンド通知
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
 		m_NotePitchBend.SetPitchBend(
@@ -403,7 +400,7 @@ void MTScenePianoRoll3D11::SetEffect(MTEffectType type, bool isEnable)
 //******************************************************************************
 void MTScenePianoRoll3D11::SetPlaySpeedRatio(unsigned long ratio)
 {
-	// Phase 2: Dashboard に転送
+	m_Dashboard.SetPlaySpeedRatio(ratio);
 }
 
 //******************************************************************************

@@ -13,6 +13,7 @@
 #include "YNBaseLib.h"
 #include "MTNoteBoxInstanced11.h"
 
+
 using namespace YNBaseLib;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;

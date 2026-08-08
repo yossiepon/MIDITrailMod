@@ -13,6 +13,7 @@
 #pragma once
 
 #include "MTSceneComponent11.h"
+#include "MTNoteTracker.h"
 #include "SMIDILib.h"
 #include "MTStaticCaption11.h"
 #include "MTDynamicCaption11.h"
@@ -31,7 +32,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 dashboard renderer
 //******************************************************************************
-class MTDashboard11 : public MTSceneComponent11
+class MTDashboard11 : public MTSceneComponent11, public IMTNoteTrackerListener
 {
 public:
 
@@ -51,10 +52,13 @@ public:
 	void SetBarNo(unsigned long barNo);
 	void SetBarNum(unsigned long barNum);
 	void SetBeat(unsigned long numerator, unsigned long denominator);
-	void SetNoteOn();
 	void SetPlaySpeedRatio(unsigned long ratio);
 	void SetNotesCount(unsigned long notesCount);
 	void Reset() override;
+
+	// IMTNoteTrackerListener
+	void OnNoteActivate(const NoteData& note, unsigned long index) override;
+	void OnReset() override;
 
 	unsigned long GetPlayTimeSec();
 	void SetEnableFileName(bool isEnable);

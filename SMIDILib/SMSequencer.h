@@ -88,6 +88,9 @@ public:
 	//演奏位置変更
 	int Skip(int relativeTimeInMsec);
 
+	//再生済みノート数取得
+	unsigned long GetNotesCount() { return m_NotesCount; }
+
 private:
 
 	//演奏状態
@@ -138,6 +141,8 @@ private:
 
 	//スキップ制御
 	bool m_isSkipping;
+	volatile bool m_isInTimer;
+	unsigned long long m_TotalPlayTimeNano;
 	unsigned long long m_SkipTargetTime;
 	unsigned long m_NotesCount;
 	unsigned long m_MovingTimeSpanInMsec;

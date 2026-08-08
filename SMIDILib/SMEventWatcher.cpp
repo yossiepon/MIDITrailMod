@@ -24,6 +24,7 @@ namespace SMIDILib {
 SMEventWatcher::SMEventWatcher(void)
 {
 	m_pMsgTrans = NULL;
+	m_isNoteEventPostEnabled = true;
 	_ClearChInfo();
 }
 
@@ -142,25 +143,21 @@ int SMEventWatcher::_WatchEventMIDI(
 {
 	int result = 0;
 	
-	//ノートOFFを通知
-	if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOff) {
-		m_pMsgTrans->PostNoteOff(
-				portNo,
-				pMIDIEvent->GetChNo(),
-				pMIDIEvent->GetNoteNo()
-			);
+	//ノートOFF/ONを通知（Live用。Playback時はNoteTrackerが管理するため無効化）
+	if (m_isNoteEventPostEnabled) {
+		if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOff) {
+			m_pMsgTrans->PostNoteOff(
+					portNo, pMIDIEvent->GetChNo(), pMIDIEvent->GetNoteNo());
+		}
+		else if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
+			m_pMsgTrans->PostNoteOn(
+					portNo, pMIDIEvent->GetChNo(),
+					pMIDIEvent->GetNoteNo(), pMIDIEvent->GetVelocity());
+		}
 	}
-	//ノートONを通知
-	else if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
-		m_pMsgTrans->PostNoteOn(
-				portNo,
-				pMIDIEvent->GetChNo(),
-				pMIDIEvent->GetNoteNo(),
-				pMIDIEvent->GetVelocity()
-			);
-	}
+	
 	//ピッチベンドを通知
-	else if (pMIDIEvent->GetChMsg() == SMEventMIDI::PitchBend) {
+	if (pMIDIEvent->GetChMsg() == SMEventMIDI::PitchBend) {
 		m_pMsgTrans->PostPitchBend(
 				portNo,
 				pMIDIEvent->GetChNo(),
@@ -325,10 +322,11 @@ int SMEventWatcher::_WatchEventControlChange2(
 	
 	chNo = pMIDIEvent->GetChNo();
 	
-	//ALL SOUND OFF (CC#120)
-	//ALL NOTE OFF (CC#123)
-	if ((pMIDIEvent->GetCCNo() == 0x78) || (pMIDIEvent->GetCCNo() == 0x7B)) {
-		m_pMsgTrans->PostAllNoteOff(portNo, chNo);
+	//ALL SOUND OFF (CC#120) / ALL NOTE OFF (CC#123)
+	if (m_isNoteEventPostEnabled) {
+		if ((pMIDIEvent->GetCCNo() == 0x78) || (pMIDIEvent->GetCCNo() == 0x7B)) {
+			m_pMsgTrans->PostAllNoteOff(portNo, chNo);
+		}
 	}
 	
 	return result;

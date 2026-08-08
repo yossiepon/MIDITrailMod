@@ -113,6 +113,7 @@ int MTScenePianoRollRain11::Create(
 	// Dashboard
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
 	if (result != 0) goto EXIT;
+	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 	// Register components for auto Update/Reset
 	_RegisterComponent(&m_Stars);
@@ -239,9 +240,6 @@ int MTScenePianoRollRain11::_OnRecvSequencerMsg(
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
 		m_Dashboard.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
-	}
-	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
-		m_Dashboard.SetNoteOn();
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
 		m_NotePitchBend.SetPitchBend(

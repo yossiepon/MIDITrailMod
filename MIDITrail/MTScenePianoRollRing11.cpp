@@ -128,6 +128,7 @@ int MTScenePianoRollRing11::Create(
 	                         &m_NotePitchBend, &m_NoteDesignRing);
 	if (result != 0) goto EXIT;
 	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
+	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 	// Register components for auto Update/Reset
 	_RegisterComponent(&m_Stars);
@@ -271,9 +272,6 @@ int MTScenePianoRollRing11::_OnRecvSequencerMsg(
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
 		m_Dashboard.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
-	}
-	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
-		m_Dashboard.SetNoteOn();
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
 		m_NotePitchBend.SetPitchBend(
