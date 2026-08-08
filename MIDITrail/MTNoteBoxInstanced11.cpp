@@ -34,10 +34,10 @@ static const char* MTNOTEBOXINST_SHADER =
 	"  float4x4 g_WVP;\n"
 	"  float4x4 g_World;\n"
 	"  float4 g_Active;\n"    // x=nowLineX, y=growFactor(sizeRatio-1), z=whiteRate, w=pass(0/1)
-	"  float4 g_Opts;\n"      // x=unused, yzw=emissiveRGB
+	"  float4 g_Opts;\n"      // x=playTimeMSec, yzw=emissiveRGB
 	"  float4 g_Light;\n"     // xyz=lightDir, w=diffuseLevel
 	"  float4 g_LAmb;\n"      // x=ambientLevel, y=unused, z=unused, w=lightEnable(0/1)
-	"  float4 g_Envelope;\n"  // x=decayDurX, y=releaseDurX, z=decayRatio, w=sustainRatio
+	"  float4 g_Envelope;\n"  // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio
 	"  float4 g_PB[32];\n"    // pitch-bend Y shift (128 values packed in 32 float4s)
 	"};\n"
 
@@ -49,6 +49,8 @@ static const char* MTNOTEBOXINST_SHADER =
 	"  float4 color  : COLOR0;\n"
 	"  float  pbIdxF : TEXCOORD2;\n"
 	"  float  alpha  : TEXCOORD3;\n"
+	"  float  startMs: TEXCOORD4;\n"
+	"  float  endMs  : TEXCOORD5;\n"
 	"};\n"
 
 	"struct VSOUT {\n"
@@ -69,22 +71,22 @@ static const char* MTNOTEBOXINST_SHADER =
 	"  return saturate(c);\n"
 	"}\n"
 
-	// 3-phase envelope (mirrors MTNoteDesignMod::CalcNoteEnvelope in world-X space)
-	"float CalcEnvelope(float playX, float startX, float endX,\n"
+	// 3-phase envelope (mirrors MTNoteDesignMod::CalcNoteEnvelope in ms)
+	"float CalcEnvelope(float playMs, float startMs, float endMs,\n"
 	"                   float decDur, float relDur, float decR, float susR) {\n"
-	"  float noteLen = endX - startX;\n"
+	"  float noteLen = endMs - startMs;\n"
 	"  float relR = 1.0 - decR - susR;\n"
 	"  if (noteLen < decDur) {\n"
 	"  } else if (noteLen < decDur + relDur) {\n"
 	"    relDur = noteLen - decDur;\n"
 	"    decR = 0.5; susR = 0.0; relR = 0.5;\n"
 	"  } else if (noteLen < (decDur + relDur) * 2.0) {\n"
-	"    float midX = (startX + decDur + endX - relDur) * 0.5;\n"
-	"    decDur = midX - startX;\n"
-	"    relDur = endX - midX;\n"
+	"    float mid = (startMs + decDur + endMs - relDur) * 0.5;\n"
+	"    decDur = mid - startMs;\n"
+	"    relDur = endMs - mid;\n"
 	"    decR = 0.5; susR = 0.0; relR = 0.5;\n"
 	"  }\n"
-	"  float progress = playX - startX;\n"
+	"  float progress = playMs - startMs;\n"
 	"  if (progress < decDur) {\n"
 	"    return (decDur > 0.0) ? (decR * progress / decDur) : 0.0;\n"
 	"  }\n"
@@ -100,7 +102,8 @@ static const char* MTNOTEBOXINST_SHADER =
 	"VSOUT VSMain(VSIN i) {\n"
 	"  VSOUT o;\n"
 	"  float apass = g_Active.w;\n"
-	"  float active = ((i.vmin.x <= g_Active.x) && (g_Active.x <= i.vmax.x)) ? 1.0 : 0.0;\n"
+	"  float playMs = g_Opts.x;\n"
+	"  float active = ((i.startMs <= playMs) && (playMs <= i.endMs)) ? 1.0 : 0.0;\n"
 
 	// 2-pass visibility: pass 0 draws non-active, pass 1 draws active only
 	"  float hide = abs(apass - active);\n"
@@ -109,7 +112,7 @@ static const char* MTNOTEBOXINST_SHADER =
 	"  float keyDownRate = 0.0;\n"
 	"  float decayCoeff = 0.0;\n"
 	"  if (active > 0.5 && apass > 0.5) {\n"
-	"    keyDownRate = CalcEnvelope(g_Active.x, i.vmin.x, i.vmax.x,\n"
+	"    keyDownRate = CalcEnvelope(playMs, i.startMs, i.endMs,\n"
 	"                              g_Envelope.x, g_Envelope.y, g_Envelope.z, g_Envelope.w);\n"
 	"    decayCoeff = GetDecayCoeff(keyDownRate, 30.0);\n"
 	"  }\n"
@@ -172,7 +175,6 @@ MTNoteBoxInstanced11::MTNoteBoxInstanced11()
 	m_pIndexBuffer = nullptr;
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
-	m_isSkipping = false;
 	m_isLightEnable = true;
 	m_NoteCount = 0;
 	m_XPerTick = 1.0f;
@@ -226,6 +228,8 @@ int MTNoteBoxInstanced11::InitPipeline(ID3D11Device* pDevice)
 			{ "COLOR",    0, DXGI_FORMAT_B8G8R8A8_UNORM,  1, 24, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "TEXCOORD", 2, DXGI_FORMAT_R32_FLOAT,       1, 28, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "TEXCOORD", 3, DXGI_FORMAT_R32_FLOAT,       1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 4, DXGI_FORMAT_R32_FLOAT,       1, 36, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "TEXCOORD", 5, DXGI_FORMAT_R32_FLOAT,       1, 40, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		};
 		hr = pDevice->CreateInputLayout(layout, _countof(layout),
 		                                pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), &s_pLayout);
@@ -439,6 +443,8 @@ int MTNoteBoxInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
 
 			instances[i].pbIndex = (float)((note.portNo & 0x7) * 16 + note.chNo);
 			instances[i].alpha = c.A();
+			instances[i].startTimeMs = (float)note.startTimeMs;
+			instances[i].endTimeMs = (float)note.endTimeMs;
 
 			startTicks[i] = note.startTimeTick;
 			endTicks[i] = note.endTimeTick;
@@ -501,16 +507,8 @@ int MTNoteBoxInstanced11::Draw(
 		unsigned long loActive = 0, hiActive = 0;
 		GetVisibleRange(m_CurTickTime, m_CurTickTime, &loActive, &hiActive);
 
-		float decayDurX = 0.0f, releaseDurX = 0.0f;
-		{
-			float decayMs = (float)m_pNoteDesign->GetRippleDecayDuration();
-			float releaseMs = (float)m_pNoteDesign->GetRippleReleaseDuration();
-			float xPerMs = (m_PlayTimeMSec > 0 && m_CurTickTime > 0)
-			             ? (m_XPerTick * m_CurTickTime / (float)m_PlayTimeMSec)
-			             : m_XPerTick;
-			decayDurX = decayMs * xPerMs;
-			releaseDurX = releaseMs * xPerMs;
-		}
+		float decayDurMs = (float)m_pNoteDesign->GetRippleDecayDuration();
+		float releaseDurMs = (float)m_pNoteDesign->GetRippleReleaseDuration();
 
 		pContext->IASetInputLayout(s_pLayout);
 		pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -528,7 +526,6 @@ int MTNoteBoxInstanced11::Draw(
 
 		Matrix world = XMLoadFloat4x4(&m_World);
 		Matrix wvp = world * viewProj;
-		float nowX = m_XPerTick * m_CurTickTime;
 
 		Color emissive = m_pNoteDesign->GetActiveNoteEmissive();
 		float growFactor = m_pNoteDesign->GetActiveNoteBoxSizeRatio() - 1.0f;
@@ -542,11 +539,11 @@ int MTNoteBoxInstanced11::Draw(
 			CBuffer* cb = (CBuffer*)mapped.pData;
 			XMStoreFloat4x4(&cb->wvp, XMMatrixTranspose(wvp));
 			XMStoreFloat4x4(&cb->world, XMMatrixTranspose(world));
-			cb->active = XMFLOAT4(nowX, growFactor, whiteRate, (float)pass);
-			cb->opts = XMFLOAT4(0.0f, emissive.R(), emissive.G(), emissive.B());
+			cb->active = XMFLOAT4(0.0f, growFactor, whiteRate, (float)pass);
+			cb->opts = XMFLOAT4((float)m_PlayTimeMSec, emissive.R(), emissive.G(), emissive.B());
 			cb->light = XMFLOAT4(lightDir.x, lightDir.y, lightDir.z, 1.2f);
 			cb->lambient = XMFLOAT4(0.2f, 0.0f, 0.0f, m_isLightEnable ? 1.0f : 0.0f);
-			cb->envelope = XMFLOAT4(decayDurX, releaseDurX, 0.3f, 0.4f);
+			cb->envelope = XMFLOAT4(decayDurMs, releaseDurMs, 0.3f, 0.4f);
 
 			ZeroMemory(cb->pb, sizeof(cb->pb));
 			if (m_pNotePitchBend != nullptr) {

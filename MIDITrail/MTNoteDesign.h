@@ -163,7 +163,6 @@ public:
 	DirectX::SimpleMath::Color GetGridLineColor();
 	DirectX::SimpleMath::Color GetPlaybackSectionColor();
 
-	int GetActiveNoteDuration() const { return m_ActiveNoteDuration; }
 	float GetActiveNoteWhiteRate() const { return m_ActiveNoteWhiteRate; }
 	float GetActiveNoteBoxSizeRatio() const { return m_ActiveNoteBoxSizeRatio; }
 

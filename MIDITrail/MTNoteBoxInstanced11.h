@@ -31,6 +31,8 @@ struct MTNOTEBOX_INST_INSTANCE {
 	unsigned long color;    // D3DCOLOR 0xAARRGGBB
 	float pbIndex;          // pitch-bend cbuffer index (port*16 + ch), stored as float
 	float alpha;            // note opacity 0..1
+	float startTimeMs;      // note start time in ms (for envelope calculation)
+	float endTimeMs;        // note end time in ms (for envelope calculation)
 };
 
 //******************************************************************************
@@ -71,7 +73,8 @@ public:
 			);
 
 	void Reset() override;
-	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
+	// GPU instancing has no per-frame CPU work to skip
+	void SetSkipStatus(bool /*isSkipping*/) {}
 	void SetLightEnable(bool enable) { m_isLightEnable = enable; }
 	unsigned long GetNoteCount() const;
 
@@ -85,10 +88,10 @@ private:
 		DirectX::XMFLOAT4X4 wvp;
 		DirectX::XMFLOAT4X4 world;
 		DirectX::XMFLOAT4   active;    // x=nowLineX, y=growFactor, z=whiteRate, w=passIndex
-		DirectX::XMFLOAT4   opts;      // x=unused, y/z/w=emissiveRGB
+		DirectX::XMFLOAT4   opts;      // x=playTimeMSec, y/z/w=emissiveRGB
 		DirectX::XMFLOAT4   light;     // xyz=lightDir, w=diffuseLevel
 		DirectX::XMFLOAT4   lambient;  // x=ambientLevel, y=unused, z=unused, w=lightEnable
-		DirectX::XMFLOAT4   envelope;  // x=decayDurX, y=releaseDurX, z=decayRatio, w=sustainRatio
+		DirectX::XMFLOAT4   envelope;  // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio
 		DirectX::XMFLOAT4   pb[32];    // per-(port,ch) pitch-bend Y shift
 	};
 
@@ -103,7 +106,6 @@ private:
 
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
-	bool          m_isSkipping;
 	bool          m_isLightEnable;
 	unsigned long m_NoteCount;
 	float         m_XPerTick;
