@@ -1,31 +1,31 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
-// MIDITrail / MTPianoKeyboardMod11
+// MIDITrail / MTPianoKeyboardRoll11
 //
-// DX11 piano keyboard Mod renderer (1ch).
-// Overrides key rotation angle from MTPianoKeyboardDesignMod.
-// World matrix computation (orientation, scale) is CtrlMod's responsibility.
+// DX11 piano keyboard for PianoRoll scene (1ch).
+// Inherits flat key generation from MTPianoKeyboardFlat11.
+// Only Create differs (uses MTPianoKeyboardDesignMod).
 //
-// Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 #pragma once
 
-#include "MTPianoKeyboard11.h"
+#include "MTPianoKeyboardFlat11.h"
 #include "MTPianoKeyboardDesignMod.h"
 
 
 //******************************************************************************
-// DX11 piano keyboard Mod renderer (1ch)
+// DX11 piano keyboard for PianoRoll scene (1ch)
 //******************************************************************************
-class MTPianoKeyboardMod11 : public MTPianoKeyboard11
+class MTPianoKeyboardRoll11 : public MTPianoKeyboardFlat11
 {
 public:
 
-	MTPianoKeyboardMod11();
-	virtual ~MTPianoKeyboardMod11();
+	MTPianoKeyboardRoll11();
+	virtual ~MTPianoKeyboardRoll11();
 
 	int Create(
 				ID3D11Device* pDevice,
@@ -34,10 +34,6 @@ public:
 				SMSeqData* pSeqData,
 				ID3D11ShaderResourceView* pSRV
 			) override;
-
-protected:
-
-	float _GetKeyRotateAngle() override;
 
 private:
 

@@ -20,7 +20,7 @@
 #include "MTNoteRain11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
-#include "MTPianoKeyboardCtrl11.h"
+#include "MTPianoKeyboardCtrlRain11.h"
 
 
 //******************************************************************************
@@ -72,5 +72,5 @@ private:
 	MTNoteRain11        m_NoteRain;
 	MTNoteTracker       m_NoteTracker;
 	MTNotePitchBend     m_NotePitchBend;
-	MTPianoKeyboardCtrl11 m_KeyboardCtrl;
+	MTPianoKeyboardCtrlRain11 m_KeyboardCtrl;
 };

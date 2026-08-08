@@ -1,3 +1,23 @@
+//******************************************************************************
+//
+// MIDITrail / MTPianoKeyboard11 (vertex generation)
+//
+// Linear key vertex generation for Rain/Roll keyboard types.
+// Generates key geometry in Rain coordinate system (X=pitch, Y=height, Z=depth).
+// Shared by MTPianoKeyboardRain11 and MTPianoKeyboardRoll11.
+//
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
+#include "StdAfx.h"
+#include "MTPianoKeyboard11.h"
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
+
 int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 		unsigned char noteNo,
 		KbdVertex* pVertex,
@@ -7,21 +27,21 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 {
 	int result = 0;
 	unsigned long i = 0;
-	float centerX       = m_KeyboardDesign.GetKeyCenterPosX(noteNo);
-	float heightY       = m_KeyboardDesign.GetWhiteKeyHeight();
-	float whiteKeyWidth = m_KeyboardDesign.GetWhiteKeyWidth();
-	float whiteKeyLen   = m_KeyboardDesign.GetWhiteKeyLen();
-	float blackKeyWidth = m_KeyboardDesign.GetBlackKeyWidth();
-	float blackKeyLen   = m_KeyboardDesign.GetBlackKeyLen();
+	float centerX       = m_pKeyboardDesign->GetKeyCenterPosX(noteNo);
+	float heightY       = m_pKeyboardDesign->GetWhiteKeyHeight();
+	float whiteKeyWidth = m_pKeyboardDesign->GetWhiteKeyWidth();
+	float whiteKeyLen   = m_pKeyboardDesign->GetWhiteKeyLen();
+	float blackKeyWidth = m_pKeyboardDesign->GetBlackKeyWidth();
+	float blackKeyLen   = m_pKeyboardDesign->GetBlackKeyLen();
 	float deltaKeyLen   = whiteKeyLen - blackKeyLen;
-	float spc           = m_KeyboardDesign.GetKeySpaceSize();
-	float nextCenterX   = m_KeyboardDesign.GetKeyCenterPosX(noteNo+1);
+	float spc           = m_pKeyboardDesign->GetKeySpaceSize();
+	float nextCenterX   = m_pKeyboardDesign->GetKeyCenterPosX(noteNo+1);
 	Color keyColor;
 	Vector2 t0, t1, t2, t3, t4, t5, t6, t7, tsc;
 
 	//白鍵カラー
 	if (pColor == NULL) {
-		keyColor = m_KeyboardDesign.GetWhiteKeyColor();
+		keyColor = m_pKeyboardDesign->GetWhiteKeyColor();
 	}
 	else {
 		keyColor = *pColor;
@@ -51,7 +71,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	pVertex[5].p = Vector3(nextCenterX - (blackKeyWidth/2.0f) - spc, heightY, whiteKeyLen);
 	pVertex[6].p = Vector3(centerX - (whiteKeyWidth/2.0f),           heightY, whiteKeyLen);
 
-	if (m_KeyboardDesign.GetKeyDispRangeEnd() == noteNo) {
+	if (m_pKeyboardDesign->GetKeyDispRangeEnd() == noteNo) {
 		pVertex[4].p = pVertex[2].p;
 		pVertex[5].p = Vector3(centerX + (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
 	}
@@ -69,7 +89,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
 	pVertex[0].t = t0;
 	pVertex[1].t = t1;
 	pVertex[2].t = t2;
@@ -105,7 +125,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
 	pVertex[7].t  = t0;
 	pVertex[8].t  = t1;
 	pVertex[9].t  = t2;
@@ -278,7 +298,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite1(
 	//----------------------------------------------------------------
 	//単一色のテクスチャ座標
 	//----------------------------------------------------------------
-	m_KeyboardDesign.GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
 	for (i = 11; i < 38; i++) {
 		pVertex[i].t = tsc;
 	}
@@ -300,22 +320,22 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 {
 	int result = 0;
 	unsigned long i = 0;
-	float centerX       = m_KeyboardDesign.GetKeyCenterPosX(noteNo);
-	float heightY       = m_KeyboardDesign.GetWhiteKeyHeight();
-	float whiteKeyWidth = m_KeyboardDesign.GetWhiteKeyWidth();
-	float whiteKeyLen   = m_KeyboardDesign.GetWhiteKeyLen();
-	float blackKeyWidth = m_KeyboardDesign.GetBlackKeyWidth();
-	float blackKeyLen   = m_KeyboardDesign.GetBlackKeyLen();
+	float centerX       = m_pKeyboardDesign->GetKeyCenterPosX(noteNo);
+	float heightY       = m_pKeyboardDesign->GetWhiteKeyHeight();
+	float whiteKeyWidth = m_pKeyboardDesign->GetWhiteKeyWidth();
+	float whiteKeyLen   = m_pKeyboardDesign->GetWhiteKeyLen();
+	float blackKeyWidth = m_pKeyboardDesign->GetBlackKeyWidth();
+	float blackKeyLen   = m_pKeyboardDesign->GetBlackKeyLen();
 	float deltaKeyLen   = whiteKeyLen - blackKeyLen;
-	float spc           = m_KeyboardDesign.GetKeySpaceSize();
-	float prevCenterX   = m_KeyboardDesign.GetKeyCenterPosX(noteNo-1);
-	float nextCenterX   = m_KeyboardDesign.GetKeyCenterPosX(noteNo+1);
+	float spc           = m_pKeyboardDesign->GetKeySpaceSize();
+	float prevCenterX   = m_pKeyboardDesign->GetKeyCenterPosX(noteNo-1);
+	float nextCenterX   = m_pKeyboardDesign->GetKeyCenterPosX(noteNo+1);
 	Color keyColor;
 	Vector2 t0, t1, t2, t3, t4, t5, t6, t7, tsc;
 
 	//白鍵カラー
 	if (pColor == NULL) {
-		keyColor = m_KeyboardDesign.GetWhiteKeyColor();
+		keyColor = m_pKeyboardDesign->GetWhiteKeyColor();
 	}
 	else {
 		keyColor = *pColor;
@@ -346,11 +366,11 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	pVertex[6].p = Vector3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, whiteKeyLen);
 	pVertex[7].p = Vector3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, deltaKeyLen - spc);
 
-	if (m_KeyboardDesign.GetKeyDispRangeStart() == noteNo) {
+	if (m_pKeyboardDesign->GetKeyDispRangeStart() == noteNo) {
 		pVertex[7].p = pVertex[3].p;
 		pVertex[6].p = Vector3(centerX - (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
 	}
-	if (m_KeyboardDesign.GetKeyDispRangeEnd() == noteNo) {
+	if (m_pKeyboardDesign->GetKeyDispRangeEnd() == noteNo) {
 		pVertex[4].p = pVertex[2].p;
 		pVertex[5].p = Vector3(centerX + (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
 	}
@@ -368,7 +388,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
 	pVertex[0].t = t0;
 	pVertex[1].t = t1;
 	pVertex[2].t = t2;
@@ -405,7 +425,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
 	pVertex[8].t  = t0;
 	pVertex[9].t  = t1;
 	pVertex[10].t = t2;
@@ -605,7 +625,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite2(
 	//----------------------------------------------------------------
 	//単一色のテクスチャ座標
 	//----------------------------------------------------------------
-	m_KeyboardDesign.GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
 	for (i = 12; i < 44; i++) {
 		pVertex[i].t = tsc;
 	}
@@ -627,21 +647,21 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 {
 	int result = 0;
 	unsigned long i = 0;
-	float centerX       = m_KeyboardDesign.GetKeyCenterPosX(noteNo);
-	float heightY       = m_KeyboardDesign.GetWhiteKeyHeight();
-	float whiteKeyWidth = m_KeyboardDesign.GetWhiteKeyWidth();
-	float whiteKeyLen   = m_KeyboardDesign.GetWhiteKeyLen();
-	float blackKeyWidth = m_KeyboardDesign.GetBlackKeyWidth();
-	float blackKeyLen   = m_KeyboardDesign.GetBlackKeyLen();
+	float centerX       = m_pKeyboardDesign->GetKeyCenterPosX(noteNo);
+	float heightY       = m_pKeyboardDesign->GetWhiteKeyHeight();
+	float whiteKeyWidth = m_pKeyboardDesign->GetWhiteKeyWidth();
+	float whiteKeyLen   = m_pKeyboardDesign->GetWhiteKeyLen();
+	float blackKeyWidth = m_pKeyboardDesign->GetBlackKeyWidth();
+	float blackKeyLen   = m_pKeyboardDesign->GetBlackKeyLen();
 	float deltaKeyLen   = whiteKeyLen - blackKeyLen;
-	float spc           = m_KeyboardDesign.GetKeySpaceSize();
-	float prevCenterX   = m_KeyboardDesign.GetKeyCenterPosX(noteNo-1);
+	float spc           = m_pKeyboardDesign->GetKeySpaceSize();
+	float prevCenterX   = m_pKeyboardDesign->GetKeyCenterPosX(noteNo-1);
 	Color keyColor;
 	Vector2 t0, t1, t2, t3, t4, t5, t6, t7, tsc;
 
 	//白鍵カラー
 	if (pColor == NULL) {
-		keyColor = m_KeyboardDesign.GetWhiteKeyColor();
+		keyColor = m_pKeyboardDesign->GetWhiteKeyColor();
 	}
 	else {
 		keyColor = *pColor;
@@ -671,7 +691,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	pVertex[5].p = Vector3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, whiteKeyLen);
 	pVertex[6].p = Vector3(prevCenterX + (blackKeyWidth/2.0f) + spc, heightY, deltaKeyLen - spc);
 
-	if (m_KeyboardDesign.GetKeyDispRangeStart() == noteNo) {
+	if (m_pKeyboardDesign->GetKeyDispRangeStart() == noteNo) {
 		pVertex[5].p = Vector3(centerX - (whiteKeyWidth/2.0f), heightY, whiteKeyLen);
 		pVertex[6].p = pVertex[3].p;
 	}
@@ -689,7 +709,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosTop(noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7);
 	pVertex[0].t = t0;
 	pVertex[1].t = t1;
 	pVertex[2].t = t2;
@@ -725,7 +745,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosFront(noteNo, &t0, &t1, &t2, &t3);
 	pVertex[7].t  = t0;
 	pVertex[8].t  = t1;
 	pVertex[9].t  = t2;
@@ -898,7 +918,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyWhite3(
 	//----------------------------------------------------------------
 	//単一色のテクスチャ座標
 	//----------------------------------------------------------------
-	m_KeyboardDesign.GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
+	m_pKeyboardDesign->GetWhiteKeyTexturePosSingleColor(noteNo, &tsc);
 	for (i = 11; i < 38; i++) {
 		pVertex[i].t = tsc;
 	}
@@ -920,14 +940,14 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 {
 	int result = 0;
 	unsigned long i = 0;
-	float centerX        = m_KeyboardDesign.GetKeyCenterPosX(noteNo);
-	float heightY        = m_KeyboardDesign.GetWhiteKeyHeight();
-	float whiteKeyLen    = m_KeyboardDesign.GetWhiteKeyLen();
-	float blackKeyWidth  = m_KeyboardDesign.GetBlackKeyWidth();
-	float blackKeyHeight = m_KeyboardDesign.GetBlackKeyHeight();
-	float blackKeyLen    = m_KeyboardDesign.GetBlackKeyLen();
+	float centerX        = m_pKeyboardDesign->GetKeyCenterPosX(noteNo);
+	float heightY        = m_pKeyboardDesign->GetWhiteKeyHeight();
+	float whiteKeyLen    = m_pKeyboardDesign->GetWhiteKeyLen();
+	float blackKeyWidth  = m_pKeyboardDesign->GetBlackKeyWidth();
+	float blackKeyHeight = m_pKeyboardDesign->GetBlackKeyHeight();
+	float blackKeyLen    = m_pKeyboardDesign->GetBlackKeyLen();
 	float deltaKeyLen    = whiteKeyLen - blackKeyLen;
-	float blackKeySlope  = m_KeyboardDesign.GetBlackKeySlopeLen();
+	float blackKeySlope  = m_pKeyboardDesign->GetBlackKeySlopeLen();
 	Vector3 nVector;
 	Vector3 normalizedVector;
 	Color keyColor;
@@ -936,7 +956,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 
 	//黒鍵カラー取得
 	if (pColor == NULL) {
-		keyColor = m_KeyboardDesign.GetBlackKeyColor();
+		keyColor = m_pKeyboardDesign->GetBlackKeyColor();
 	}
 	else {
 		keyColor = *pColor;
@@ -988,7 +1008,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetBlackKeyTexturePos(
+	m_pKeyboardDesign->GetBlackKeyTexturePos(
 			noteNo, &t0, &t1, &t2, &t3, &t4, &t5, &t6, &t7, &t8, &t9, isColored
 		);
 	pVertex[0].t = t0;
@@ -1027,7 +1047,7 @@ int MTPianoKeyboard11::_CreateVertexOfKeyBlack(
 	}
 
 	//各頂点のテクスチャ座標
-	m_KeyboardDesign.GetBlackKeyTexturePosSingleColor(noteNo, &tsc, isColored);
+	m_pKeyboardDesign->GetBlackKeyTexturePosSingleColor(noteNo, &tsc, isColored);
 	for (i = 8; i < 12; i++) {
 		pVertex[i].t = tsc;
 	}

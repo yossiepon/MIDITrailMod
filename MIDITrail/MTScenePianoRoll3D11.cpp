@@ -354,6 +354,7 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 		m_Ripple.SetSkipStatus(false);
 		m_Lyrics.SetSkipStatus(false);
 		m_IsSkipping = false;
+		m_NoteTracker.Seek(m_PlayTimeMSec);
 	}
 
 	return result;

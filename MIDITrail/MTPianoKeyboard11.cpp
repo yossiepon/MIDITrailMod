@@ -1,8 +1,9 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboard11
 //
-// DX11 piano keyboard renderer (1ch).
+// DX11 piano keyboard base class (1ch).
+// Infrastructure: CPU mirror management, diff-based update, GPU flush, draw.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -11,37 +12,25 @@
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
-#include "DXH.h"
 #include "MTPianoKeyboard11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-// DX9 互換の読みやすい頂点構造体（メモリレイアウトは DXPRIMITIVE11_VERTEX と同一）
-struct KbdVertex {
-	Vector3 p;
-	Vector3 n;
-	unsigned long c;
-	Vector2 t;
-};
-static_assert(sizeof(KbdVertex) == sizeof(DXPRIMITIVE11_VERTEX), "KbdVertex layout mismatch");
-
 
 //******************************************************************************
-// Constants (per DX9 MTPianoKeyboard)
+// Constants
 //******************************************************************************
 #define KEY_WHITE_1_VERTEX_NUM  (38)
 #define KEY_WHITE_2_VERTEX_NUM  (44)
 #define KEY_WHITE_3_VERTEX_NUM  (38)
 #define KEY_BLACK_VERTEX_NUM    (30)
-#define KEY_VERTEX_NUM_MAX      KEY_WHITE_2_VERTEX_NUM
 
 #define KEY_WHITE_1_INDEX_NUM   (60)
 #define KEY_WHITE_2_INDEX_NUM   (66)
 #define KEY_WHITE_3_INDEX_NUM   (60)
 #define KEY_BLACK_INDEX_NUM     (48)
-#define KEY_INDEX_NUM_MAX       KEY_WHITE_2_INDEX_NUM
 
 
 //******************************************************************************
@@ -53,6 +42,7 @@ MTPianoKeyboard11::MTPianoKeyboard11()
 	m_pBaseVerts = NULL;
 	m_pWorkVerts = NULL;
 	m_VertexNum = 0;
+	m_pKeyboardDesign = NULL;
 	ZeroMemory(m_PrevRate, sizeof(m_PrevRate));
 	ZeroMemory(m_PrevColor, sizeof(m_PrevColor));
 	ZeroMemory(m_BufInfo, sizeof(m_BufInfo));
@@ -64,7 +54,7 @@ MTPianoKeyboard11::~MTPianoKeyboard11()
 }
 
 //******************************************************************************
-// Create
+// Create (template method: derived sets m_pKeyboardDesign before calling)
 //******************************************************************************
 int MTPianoKeyboard11::Create(
 		ID3D11Device* pDevice,
@@ -78,15 +68,15 @@ int MTPianoKeyboard11::Create(
 
 	Release();
 
-	if (pDevice == NULL || pSRV == NULL) {
+	ZeroMemory(m_PrevRate, sizeof(m_PrevRate));
+	ZeroMemory(m_PrevColor, sizeof(m_PrevColor));
+
+	if (pDevice == NULL || pSRV == NULL || m_pKeyboardDesign == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
 	m_pSRV = pSRV;
-
-	result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
 
 	_CreateBufInfo();
 
@@ -121,7 +111,7 @@ void MTPianoKeyboard11::_CreateBufInfo()
 
 	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		unsigned long vn = 0, in = 0;
-		switch (m_KeyboardDesign.GetKeyType(noteNo)) {
+		switch (m_pKeyboardDesign->GetKeyType(noteNo)) {
 			case MTPianoKeyboardDesign::KeyWhiteC:
 			case MTPianoKeyboardDesign::KeyWhiteF:
 				vn = KEY_WHITE_1_VERTEX_NUM; in = KEY_WHITE_1_INDEX_NUM; break;
@@ -145,126 +135,7 @@ void MTPianoKeyboard11::_CreateBufInfo()
 }
 
 //******************************************************************************
-// Vertex buffer creation
-//******************************************************************************
-int MTPianoKeyboard11::_CreateVertexOfKeyboard(
-		ID3D11Device* pDevice,
-		ID3D11DeviceContext* pContext
-	)
-{
-	int result = 0;
-	DXPRIMITIVE11_VERTEX* pVertex = NULL;
-	unsigned long* pIndex = NULL;
-
-	// Total counts
-	unsigned long totalVerts = 0, totalIndices = 0;
-	for (unsigned char n = 0; n < SM_MAX_NOTE_NUM; n++) {
-		totalVerts += m_BufInfo[n].vertexNum;
-		totalIndices += m_BufInfo[n].indexNum;
-	}
-	m_VertexNum = totalVerts;
-
-	// GPU buffers
-	result = m_Prim.CreateVertexBuffer(pDevice, totalVerts);
-	if (result != 0) goto EXIT;
-	result = m_Prim.CreateIndexBuffer(pDevice, totalIndices);
-	if (result != 0) goto EXIT;
-
-	result = m_Prim.LockVertex(pContext, &pVertex);
-	if (result != 0) goto EXIT;
-	result = m_Prim.LockIndex(pContext, &pIndex);
-	if (result != 0) goto EXIT;
-
-	ZeroMemory(pVertex, totalVerts * sizeof(DXPRIMITIVE11_VERTEX));
-	ZeroMemory(pIndex, totalIndices * sizeof(unsigned long));
-
-	// Generate each key
-	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-		result = _CreateVertexOfKey(
-			noteNo,
-			&pVertex[m_BufInfo[noteNo].vertexPos],
-			&pIndex[m_BufInfo[noteNo].indexPos]
-		);
-		if (result != 0) goto EXIT;
-
-		// Hide keys outside display range
-		if (!m_KeyboardDesign.IsKeyDisp(noteNo)) {
-			unsigned long idxOff = m_BufInfo[noteNo].indexPos;
-			for (unsigned long i = 0; i < m_BufInfo[noteNo].indexNum; i++) {
-				pIndex[idxOff + i] = 0;
-			}
-		}
-	}
-
-	// CPU mirror (copy before Unlock invalidates pVertex)
-	m_pBaseVerts = (DXPRIMITIVE11_VERTEX*)malloc(totalVerts * sizeof(DXPRIMITIVE11_VERTEX));
-	m_pWorkVerts = (DXPRIMITIVE11_VERTEX*)malloc(totalVerts * sizeof(DXPRIMITIVE11_VERTEX));
-	if (m_pBaseVerts == NULL || m_pWorkVerts == NULL) {
-		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
-		goto EXIT;
-	}
-	memcpy(m_pBaseVerts, pVertex, totalVerts * sizeof(DXPRIMITIVE11_VERTEX));
-	memcpy(m_pWorkVerts, pVertex, totalVerts * sizeof(DXPRIMITIVE11_VERTEX));
-
-	m_Prim.UnlockVertex(pContext);
-	m_Prim.UnlockIndex(pContext);
-
-	m_Prim.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	ZeroMemory(m_PrevRate, sizeof(m_PrevRate));
-	ZeroMemory(m_PrevColor, sizeof(m_PrevColor));
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// Single key vertex generation (dispatches to White1/2/3 or Black)
-//******************************************************************************
-int MTPianoKeyboard11::_CreateVertexOfKey(
-		unsigned char noteNo,
-		DXPRIMITIVE11_VERTEX* pVertex,
-		unsigned long* pIndex
-	)
-{
-	int result = 0;
-
-	KbdVertex* pKbdVertex = reinterpret_cast<KbdVertex*>(pVertex);
-
-	switch (m_KeyboardDesign.GetKeyType(noteNo)) {
-		case MTPianoKeyboardDesign::KeyWhiteC:
-		case MTPianoKeyboardDesign::KeyWhiteF:
-			result = _CreateVertexOfKeyWhite1(noteNo, pKbdVertex, pIndex);
-			break;
-		case MTPianoKeyboardDesign::KeyWhiteD:
-		case MTPianoKeyboardDesign::KeyWhiteG:
-		case MTPianoKeyboardDesign::KeyWhiteA:
-			result = _CreateVertexOfKeyWhite2(noteNo, pKbdVertex, pIndex);
-			break;
-		case MTPianoKeyboardDesign::KeyWhiteE:
-		case MTPianoKeyboardDesign::KeyWhiteB:
-			result = _CreateVertexOfKeyWhite3(noteNo, pKbdVertex, pIndex);
-			break;
-		case MTPianoKeyboardDesign::KeyBlack:
-			result = _CreateVertexOfKeyBlack(noteNo, pKbdVertex, pIndex);
-			break;
-	}
-
-	return result;
-}
-
-//******************************************************************************
-// White key type 1 (C, F) - stub: delegates to DX9 geometry via temp buffer
-// TODO: Full vertex generation to be ported from DX9 MTPianoKeyboard.cpp
-//******************************************************************************
-// Vertex generation methods are implemented via KbdVertex adapter.
-// KbdVertex has identical memory layout to DXPRIMITIVE11_VERTEX, so
-// reinterpret_cast is safe (verified by static_assert above).
-// The code preserves DX9's ASCII art comments for key geometry.
-#include "MTPianoKeyboard11_vertex.inc"
-
-//******************************************************************************
-// Update (called by Ctrl with key states)
+// Update (non-virtual template: diff detection -> _BuildKeyCPU/_ResetKeyCPU -> flush)
 //******************************************************************************
 int MTPianoKeyboard11::Update(
 		ID3D11DeviceContext* pContext,
@@ -309,69 +180,6 @@ int MTPianoKeyboard11::Update(
 	}
 
 	m_Prim.SetWorldMatrix(world);
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// BuildKeyCPU: generate rotated/colored key vertices in CPU work buffer
-//******************************************************************************
-int MTPianoKeyboard11::_BuildKeyCPU(
-		unsigned char noteNo,
-		float rate,
-		Color* pColor
-	)
-{
-	int result = 0;
-
-	if (noteNo >= SM_MAX_NOTE_NUM) {
-		result = YN_SET_ERR("Program error.", noteNo, 0);
-		goto EXIT;
-	}
-
-	if (!m_KeyboardDesign.IsKeyDisp(noteNo)) goto EXIT;
-
-	{
-		KbdVertex tempVertex[KEY_VERTEX_NUM_MAX];
-		unsigned long tempIndex[KEY_INDEX_NUM_MAX];
-
-		// Generate unrotated vertices with color
-		switch (m_KeyboardDesign.GetKeyType(noteNo)) {
-			case MTPianoKeyboardDesign::KeyWhiteC:
-			case MTPianoKeyboardDesign::KeyWhiteF:
-				result = _CreateVertexOfKeyWhite1(noteNo, tempVertex, tempIndex, pColor);
-				break;
-			case MTPianoKeyboardDesign::KeyWhiteD:
-			case MTPianoKeyboardDesign::KeyWhiteG:
-			case MTPianoKeyboardDesign::KeyWhiteA:
-				result = _CreateVertexOfKeyWhite2(noteNo, tempVertex, tempIndex, pColor);
-				break;
-			case MTPianoKeyboardDesign::KeyWhiteE:
-			case MTPianoKeyboardDesign::KeyWhiteB:
-				result = _CreateVertexOfKeyWhite3(noteNo, tempVertex, tempIndex, pColor);
-				break;
-			case MTPianoKeyboardDesign::KeyBlack:
-				result = _CreateVertexOfKeyBlack(noteNo, tempVertex, tempIndex, pColor);
-				break;
-		}
-		if (result != 0) goto EXIT;
-
-		// Rotate vertices around pivot
-		float angle = _GetKeyRotateAngle() * rate;
-		float centerY = 0.0f;
-		float centerZ = m_KeyboardDesign.GetKeyRotateAxisXPos();
-
-		for (unsigned long i = 0; i < m_BufInfo[noteNo].vertexNum; i++) {
-			tempVertex[i].p = DXH::RotateYZ(centerY, centerZ, tempVertex[i].p, angle);
-			tempVertex[i].n = DXH::RotateYZ(0.0f, 0.0f, tempVertex[i].n, angle);
-		}
-
-		// Copy to work buffer (KbdVertex and DXPRIMITIVE11_VERTEX have same layout)
-		unsigned long vpos = m_BufInfo[noteNo].vertexPos;
-		unsigned long vnum = m_BufInfo[noteNo].vertexNum;
-		memcpy(&m_pWorkVerts[vpos], tempVertex, vnum * sizeof(DXPRIMITIVE11_VERTEX));
-	}
 
 EXIT:;
 	return result;
@@ -438,9 +246,36 @@ EXIT:;
 }
 
 //******************************************************************************
-// Get key rotate angle (virtual - overridden by Mod11)
+// Single key vertex dispatch (calls White1/2/3 or Black based on key type)
 //******************************************************************************
-float MTPianoKeyboard11::_GetKeyRotateAngle()
+int MTPianoKeyboard11::_CreateVertexOfKey(
+		unsigned char noteNo,
+		DXPRIMITIVE11_VERTEX* pVertex,
+		unsigned long* pIndex
+	)
 {
-	return m_KeyboardDesign.GetKeyRotateAngle();
+	int result = 0;
+
+	KbdVertex* pKbdVertex = reinterpret_cast<KbdVertex*>(pVertex);
+
+	switch (m_pKeyboardDesign->GetKeyType(noteNo)) {
+		case MTPianoKeyboardDesign::KeyWhiteC:
+		case MTPianoKeyboardDesign::KeyWhiteF:
+			result = _CreateVertexOfKeyWhite1(noteNo, pKbdVertex, pIndex);
+			break;
+		case MTPianoKeyboardDesign::KeyWhiteD:
+		case MTPianoKeyboardDesign::KeyWhiteG:
+		case MTPianoKeyboardDesign::KeyWhiteA:
+			result = _CreateVertexOfKeyWhite2(noteNo, pKbdVertex, pIndex);
+			break;
+		case MTPianoKeyboardDesign::KeyWhiteE:
+		case MTPianoKeyboardDesign::KeyWhiteB:
+			result = _CreateVertexOfKeyWhite3(noteNo, pKbdVertex, pIndex);
+			break;
+		case MTPianoKeyboardDesign::KeyBlack:
+			result = _CreateVertexOfKeyBlack(noteNo, pKbdVertex, pIndex);
+			break;
+	}
+
+	return result;
 }

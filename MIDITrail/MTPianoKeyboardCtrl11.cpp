@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardCtrl11
 //
-// DX11 piano keyboard controller.
+// DX11 piano keyboard controller base class.
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -29,12 +29,12 @@ MTPianoKeyboardCtrl11::MTPianoKeyboardCtrl11()
 	m_pSRV = NULL;
 	m_pNoteTracker = NULL;
 	m_pNotePitchBend = NULL;
+	m_pNoteDesign = NULL;
 	m_NumKbd = 0;
 	m_KeyDownDurMs = 0;
 	m_KeyUpDurMs = 0;
 	m_isSingleKeyboard = false;
 	m_isSkipping = false;
-	m_isPlaybackPosTracking = true;
 	ZeroMemory(m_Subs, sizeof(m_Subs));
 }
 
@@ -44,7 +44,8 @@ MTPianoKeyboardCtrl11::~MTPianoKeyboardCtrl11()
 }
 
 //******************************************************************************
-// Create
+// Create (template method: derived sets m_pNoteDesign, m_KeyDownDurMs,
+//         m_KeyUpDurMs before calling)
 //******************************************************************************
 int MTPianoKeyboardCtrl11::Create(
 		ID3D11Device* pDevice,
@@ -60,7 +61,7 @@ int MTPianoKeyboardCtrl11::Create(
 
 	Release();
 
-	if (pSeqData == NULL || pNoteTracker == NULL) {
+	if (pSeqData == NULL || pNoteTracker == NULL || m_pNoteDesign == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
@@ -70,26 +71,16 @@ int MTPianoKeyboardCtrl11::Create(
 	m_pNotePitchBend = pNotePitchBend;
 	m_isSingleKeyboard = isSingleKeyboard;
 
-	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
-
-	result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
-
-	m_KeyDownDurMs = m_KeyboardDesign.GetKeyDownDuration();
-	m_KeyUpDurMs = m_KeyboardDesign.GetKeyUpDuration();
-
-	// Texture (shared across all keyboards)
 	result = _LoadTexture(pDevice, pSceneName);
 	if (result != 0) goto EXIT;
 
-	// Keyboards
 	result = _CreateKeyboards(pDevice, pContext, pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	// Build per-key index for each sub-keyboard (one per channel)
 	for (unsigned long k = 0; k < m_NumKbd; k++) {
-		result = _BuildPerKeyIndex(&m_Subs[k], -1, (int)k);
+		int portFilter, chFilter;
+		_GetPerKeyIndexParams(k, portFilter, chFilter);
+		result = _BuildPerKeyIndex(&m_Subs[k], portFilter, chFilter);
 		if (result != 0) goto EXIT;
 	}
 
@@ -116,34 +107,6 @@ void MTPianoKeyboardCtrl11::Release()
 }
 
 //******************************************************************************
-// Create keyboards (Rain: one per channel, non-Mod)
-//******************************************************************************
-int MTPianoKeyboardCtrl11::_CreateKeyboards(
-		ID3D11Device* pDevice,
-		ID3D11DeviceContext* pContext,
-		const TCHAR* pSceneName,
-		SMSeqData* pSeqData
-	)
-{
-	int result = 0;
-
-	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-		m_Subs[chNo].pKeyboard = new MTPianoKeyboard11();
-		if (m_Subs[chNo].pKeyboard == NULL) {
-			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
-			goto EXIT;
-		}
-
-		result = m_Subs[chNo].pKeyboard->Create(pDevice, pContext, pSceneName, pSeqData, m_pSRV);
-		if (result != 0) goto EXIT;
-	}
-	m_NumKbd = SM_MAX_CH_NUM;
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
 // Build per-key index from NoteTracker data
 //******************************************************************************
 int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
@@ -158,7 +121,6 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 
 	unsigned long totalNotes = m_pNoteTracker->GetNoteCount();
 
-	// Count notes per key
 	ZeroMemory(pSub->keyOffset, sizeof(pSub->keyOffset));
 	for (unsigned long i = 0; i < totalNotes; i++) {
 		const NoteData& nd = m_pNoteTracker->GetNote(i);
@@ -169,7 +131,6 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 		}
 	}
 
-	// Prefix sum to get offsets
 	for (int k = 1; k <= SM_MAX_NOTE_NUM; k++) {
 		pSub->keyOffset[k] += pSub->keyOffset[k - 1];
 	}
@@ -177,14 +138,12 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 
 	if (pSub->noteCount == 0) goto EXIT;
 
-	// Allocate
 	pSub->pNotes = (MTKbdNote*)malloc(pSub->noteCount * sizeof(MTKbdNote));
 	if (pSub->pNotes == NULL) {
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 		goto EXIT;
 	}
 
-	// Fill (using temp counters)
 	{
 		unsigned long tempOffset[SM_MAX_NOTE_NUM];
 		memcpy(tempOffset, pSub->keyOffset, SM_MAX_NOTE_NUM * sizeof(unsigned long));
@@ -198,7 +157,7 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 			unsigned long idx = tempOffset[nd.noteNo]++;
 			pSub->pNotes[idx].startTimeMs = nd.startTimeMs;
 			pSub->pNotes[idx].endTimeMs = nd.endTimeMs;
-			pSub->pNotes[idx].color = m_NoteDesign.GetNoteBoxColor(
+			pSub->pNotes[idx].color = m_pNoteDesign->GetNoteBoxColor(
 				nd.portNo, nd.chNo, nd.noteNo).BGRA();
 			pSub->pNotes[idx].chNo = nd.chNo;
 		}
@@ -229,7 +188,6 @@ void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 		unsigned long c = pSub->keyCursor[noteNo];
 		if (c < lo) c = lo;
 
-		// Advance cursor past fully released notes
 		while (c < hi && pSub->pNotes[c].endTimeMs + upMs < playTimeMSec) c++;
 		pSub->keyCursor[noteNo] = c;
 
@@ -245,7 +203,6 @@ void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 
 			float r;
 			if (playTimeMSec < s) {
-				// Anticipatory press-down
 				float d = (float)(s - playTimeMSec);
 				r = (d >= (float)downMs) ? 0.0f : (1.0f - d / (float)downMs);
 			}
@@ -253,7 +210,6 @@ void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 				r = 1.0f;
 			}
 			else {
-				// Release ramp
 				float d = (float)(playTimeMSec - e);
 				r = (d >= (float)upMs) ? 0.0f : (1.0f - d / (float)upMs);
 			}
@@ -272,7 +228,7 @@ void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 }
 
 //******************************************************************************
-// Update
+// Update (template method: evaluate -> color -> world -> dispatch)
 //******************************************************************************
 int MTPianoKeyboardCtrl11::Update(
 		const MTSceneUpdateContext& ctx
@@ -284,31 +240,12 @@ int MTPianoKeyboardCtrl11::Update(
 		if (m_Subs[k].pKeyboard == NULL) continue;
 
 		if (!m_isSkipping) {
-			// Evaluate key states from per-key index
 			_EvaluateKeyStates(&m_Subs[k], ctx.playTimeMSec);
-
-			// Apply active key color for fully pressed keys
-			for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-				MTKeyboardKeyState& ks = m_Subs[k].keyStates[noteNo];
-				if (ks.rate >= 1.0f) {
-					Color noteColor((unsigned int)ks.color);
-					Color activeColor = m_KeyboardDesign.GetActiveKeyColor(noteNo, 0, &noteColor);
-					ks.color = activeColor.BGRA();
-				}
-			}
+			_ApplyActiveKeyColor(&m_Subs[k], k);
 		}
 
-		// World matrix: base position + roll (+ playback tracking if enabled)
-		unsigned char chNo = (unsigned char)k;
-		unsigned char portNo = 0;
-		Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
-		if (m_isPlaybackPosTracking) {
-			moveVec.y += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
-		}
-		Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
-		             * Matrix::CreateTranslation(moveVec);
+		Matrix world = _ComputeWorldMatrix(k, ctx);
 
-		// Dispatch to keyboard
 		result = m_Subs[k].pKeyboard->Update(m_pContext, m_Subs[k].keyStates, world);
 		if (result != 0) goto EXIT;
 	}

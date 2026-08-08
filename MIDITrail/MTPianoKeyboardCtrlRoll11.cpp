@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
-// MIDITrail / MTPianoKeyboardCtrlMod11
+// MIDITrail / MTPianoKeyboardCtrlRoll11
 //
-// DX11 piano keyboard controller Mod.
+// DX11 piano keyboard controller for PianoRoll scene.
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -11,8 +11,8 @@
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
-#include "MTPianoKeyboardCtrlMod11.h"
-#include "MTPianoKeyboardMod11.h"
+#include "MTPianoKeyboardCtrlRoll11.h"
+#include "MTPianoKeyboardRoll11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -22,23 +22,24 @@ using namespace DirectX::SimpleMath;
 //******************************************************************************
 // Constructor / Destructor
 //******************************************************************************
-MTPianoKeyboardCtrlMod11::MTPianoKeyboardCtrlMod11()
+MTPianoKeyboardCtrlRoll11::MTPianoKeyboardCtrlRoll11()
 {
 	m_MaxKeyboardIndex = 0;
 	ZeroMemory(m_KeyboardIndex, sizeof(m_KeyboardIndex));
+	ZeroMemory(m_KbdPortNo, sizeof(m_KbdPortNo));
 	for (int i = 0; i < SM_MAX_PORT_NUM; i++) {
 		m_KeyboardIndex[i] = -1;
 	}
 }
 
-MTPianoKeyboardCtrlMod11::~MTPianoKeyboardCtrlMod11()
+MTPianoKeyboardCtrlRoll11::~MTPianoKeyboardCtrlRoll11()
 {
 }
 
 //******************************************************************************
 // Create
 //******************************************************************************
-int MTPianoKeyboardCtrlMod11::Create(
+int MTPianoKeyboardCtrlRoll11::Create(
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
 		const TCHAR* pSceneName,
@@ -58,26 +59,29 @@ int MTPianoKeyboardCtrlMod11::Create(
 		goto EXIT;
 	}
 
-	// Mod design initialization
+	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
+	if (result != 0) goto EXIT;
+
 	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 	result = m_DesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	// Port list
 	result = pSeqData->GetPortList(&m_PortList);
 	if (result != 0) goto EXIT;
 
-	// Port → keyboard index mapping
+	// Port -> keyboard index mapping
 	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
 		m_KeyboardIndex[index] = -1;
 	}
+	ZeroMemory(m_KbdPortNo, sizeof(m_KbdPortNo));
 
 	if (!isSingleKeyboard) {
 		for (index = 0; index < m_PortList.GetSize(); index++) {
 			m_PortList.GetPort(index, &portNo);
 			m_KeyboardIndex[portNo] = keyboardIndex;
+			m_KbdPortNo[keyboardIndex] = portNo;
 			keyboardIndex++;
 			if (keyboardIndex == m_DesignMod.GetKeyboardMaxDispNum()) break;
 		}
@@ -86,33 +90,26 @@ int MTPianoKeyboardCtrlMod11::Create(
 	else {
 		m_DesignMod.SetKeyboardSingle();
 		m_KeyboardIndex[0] = 0;
+		m_KbdPortNo[0] = 0;
 		m_MaxKeyboardIndex = 1;
 	}
 
-	// Base class Create (NoteDesign, KeyboardDesign, texture, keyboards, per-key index)
+	m_pNoteDesign = &m_NoteDesign;
+	m_KeyDownDurMs = m_DesignMod.GetKeyDownDuration();
+	m_KeyUpDurMs = m_DesignMod.GetKeyUpDuration();
+
 	result = MTPianoKeyboardCtrl11::Create(pDevice, pContext, pSceneName, pSeqData,
 		pNoteTracker, pNotePitchBend, isSingleKeyboard);
 	if (result != 0) goto EXIT;
-
-	// Rebuild per-key index per port
-	for (unsigned char k = 0; k < m_MaxKeyboardIndex; k++) {
-		// Find port number for this keyboard index
-		int port = -1;
-		for (int p = 0; p < SM_MAX_PORT_NUM; p++) {
-			if (m_KeyboardIndex[p] == (int)k) { port = p; break; }
-		}
-		result = _BuildPerKeyIndex(&m_Subs[k], port);
-		if (result != 0) goto EXIT;
-	}
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// Create keyboards (Mod11 per active port)
+// Create keyboards (one MTPianoKeyboardRoll11 per active port)
 //******************************************************************************
-int MTPianoKeyboardCtrlMod11::_CreateKeyboards(
+int MTPianoKeyboardCtrlRoll11::_CreateKeyboards(
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
 		const TCHAR* pSceneName,
@@ -122,7 +119,7 @@ int MTPianoKeyboardCtrlMod11::_CreateKeyboards(
 	int result = 0;
 
 	for (unsigned char index = 0; index < m_MaxKeyboardIndex; index++) {
-		m_Subs[index].pKeyboard = new MTPianoKeyboardMod11();
+		m_Subs[index].pKeyboard = new MTPianoKeyboardRoll11();
 		if (m_Subs[index].pKeyboard == NULL) {
 			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 			goto EXIT;
@@ -138,94 +135,80 @@ EXIT:;
 }
 
 //******************************************************************************
-// Update
+// Per-key index params (Roll: filter by port, no channel filter)
 //******************************************************************************
-int MTPianoKeyboardCtrlMod11::Update(
-		const MTSceneUpdateContext& ctx
+void MTPianoKeyboardCtrlRoll11::_GetPerKeyIndexParams(
+		unsigned long kbdIndex,
+		int& outPortFilter,
+		int& outChFilter
 	)
 {
-	int result = 0;
-
-	{
-		// Playback position vector
-		Vector3 playbackPos = m_NoteDesignMod.GetWorldMoveVector();
-		playbackPos.x += m_NoteDesignMod.GetPlayPosX(ctx.curTickTime);
-
-		unsigned char lastPortNo = 0;
-		if (!m_isSingleKeyboard) {
-			m_PortList.GetPort(m_PortList.GetSize() - 1, &lastPortNo);
-		}
-
-		for (unsigned char portNo = 0; portNo <= lastPortNo; portNo++) {
-			int keyboardIndex = !m_isSingleKeyboard ? m_KeyboardIndex[portNo] : 0;
-			if (keyboardIndex < 0) continue;
-
-			if (m_Subs[keyboardIndex].pKeyboard == NULL) continue;
-
-			if (!m_isSkipping) {
-				// Evaluate key states
-				_EvaluateKeyStates(&m_Subs[keyboardIndex], ctx.playTimeMSec);
-
-				// Apply active key color (DesignMod palette) for fully pressed keys
-				for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-					MTKeyboardKeyState& ks = m_Subs[keyboardIndex].keyStates[noteNo];
-					if (ks.rate >= 1.0f) {
-						Color noteColor((unsigned int)ks.color);
-						Color activeColor = m_DesignMod.GetActiveKeyColor(ks.chNo, noteNo, 0, &noteColor);
-						ks.color = activeColor.BGRA();
-					}
-				}
-			}
-
-			// Mod world matrix: scale → base position → orientation → rollAngle → playback
-			Vector3 basePos = m_DesignMod.GetKeyboardBasePos(keyboardIndex, ctx.rollAngle);
-			basePos.x += _GetMaxPitchBendShift(portNo);
-
-			float scale = m_DesignMod.GetKeyboardResizeRatio();
-
-			float rollAngle = ctx.rollAngle;
-			if (rollAngle < 0.0f) rollAngle += 360.0f;
-
-			Matrix rotateMatrix1, rotateMatrix2, rotateMatrix3;
-			if ((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-				rotateMatrix1 = Matrix::CreateRotationX(XM_PI / 2.0f);
-				rotateMatrix2 = Matrix::CreateRotationZ(XM_PI / 2.0f);
-			}
-			else {
-				rotateMatrix1 = Matrix::CreateRotationX(-XM_PI / 2.0f);
-				rotateMatrix2 = Matrix::CreateRotationZ(XM_PI / 2.0f);
-			}
-			rotateMatrix3 = Matrix::CreateRotationX(XMConvertToRadians(rollAngle));
-
-			Matrix world = Matrix::CreateScale(scale)
-			             * Matrix::CreateTranslation(basePos)
-			             * rotateMatrix1
-			             * rotateMatrix2
-			             * rotateMatrix3
-			             * Matrix::CreateTranslation(playbackPos);
-
-			// Dispatch to keyboard
-			result = m_Subs[keyboardIndex].pKeyboard->Update(m_pContext, m_Subs[keyboardIndex].keyStates, world);
-			if (result != 0) goto EXIT;
-		}
-	}
-
-EXIT:;
-	return result;
+	outPortFilter = (int)m_KbdPortNo[kbdIndex];
+	outChFilter = -1;
 }
 
 //******************************************************************************
-// Reset
+// Active key color (Roll: from DesignMod with channel parameter)
 //******************************************************************************
-void MTPianoKeyboardCtrlMod11::Reset()
+void MTPianoKeyboardCtrlRoll11::_ApplyActiveKeyColor(
+		MTKbdSub* pSub,
+		unsigned long kbdIndex
+	)
 {
-	MTPianoKeyboardCtrl11::Reset();
+	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
+		MTKeyboardKeyState& ks = pSub->keyStates[noteNo];
+		if (ks.rate >= 1.0f) {
+			Color noteColor((unsigned int)ks.color);
+			Color activeColor = m_DesignMod.GetActiveKeyColor(ks.chNo, noteNo, 0, &noteColor);
+			ks.color = activeColor.BGRA();
+		}
+	}
+}
+
+//******************************************************************************
+// World matrix (Roll: model orientation baked in keyboard, simplified)
+//******************************************************************************
+Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
+		unsigned long kbdIndex,
+		const MTSceneUpdateContext& ctx
+	)
+{
+	unsigned char portNo = m_KbdPortNo[kbdIndex];
+
+	Vector3 playbackPos = m_NoteDesignMod.GetWorldMoveVector();
+	playbackPos.x += m_NoteDesignMod.GetPlayPosX(ctx.curTickTime);
+
+	Vector3 basePos = m_DesignMod.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
+	basePos.x += _GetMaxPitchBendShift(portNo);
+
+	float scale = m_DesignMod.GetKeyboardResizeRatio();
+
+	float rollAngle = ctx.rollAngle;
+	if (rollAngle < 0.0f) rollAngle += 360.0f;
+
+	Matrix rotateMatrix1, rotateMatrix2, rotateMatrix3;
+	if ((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
+		rotateMatrix1 = Matrix::CreateRotationX(XM_PI / 2.0f);
+		rotateMatrix2 = Matrix::CreateRotationZ(XM_PI / 2.0f);
+	}
+	else {
+		rotateMatrix1 = Matrix::CreateRotationX(-XM_PI / 2.0f);
+		rotateMatrix2 = Matrix::CreateRotationZ(XM_PI / 2.0f);
+	}
+	rotateMatrix3 = Matrix::CreateRotationX(XMConvertToRadians(rollAngle));
+
+	return Matrix::CreateScale(scale)
+	     * Matrix::CreateTranslation(basePos)
+	     * rotateMatrix1
+	     * rotateMatrix2
+	     * rotateMatrix3
+	     * Matrix::CreateTranslation(playbackPos);
 }
 
 //******************************************************************************
 // Max pitch bend shift
 //******************************************************************************
-float MTPianoKeyboardCtrlMod11::_GetMaxPitchBendShift(
+float MTPianoKeyboardCtrlRoll11::_GetMaxPitchBendShift(
 		unsigned char portNo
 	)
 {
@@ -235,7 +218,7 @@ float MTPianoKeyboardCtrlMod11::_GetMaxPitchBendShift(
 	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		short pbValue = m_pNotePitchBend->GetValue(portNo, chNo);
 		unsigned char pbSensitivity = m_pNotePitchBend->GetSensitivity(portNo, chNo);
-		float shift = m_NoteDesign.GetNoteStep() * pbSensitivity * ((float)pbValue / 8192.0f);
+		float shift = m_pNoteDesign->GetNoteStep() * pbSensitivity * ((float)pbValue / 8192.0f);
 		if (fabsf(shift) > fabsf(maxShift)) {
 			maxShift = shift;
 		}

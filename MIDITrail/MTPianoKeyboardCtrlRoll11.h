@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
-// MIDITrail / MTPianoKeyboardCtrlMod11
+// MIDITrail / MTPianoKeyboardCtrlRoll11
 //
-// DX11 piano keyboard controller Mod.
-// Multi-port support: creates MTPianoKeyboardMod11 per active port.
-// World matrix includes Mod orientation (scale + rotation + playback tracking).
-// Used by PianoRoll3D / Ring scenes.
+// DX11 piano keyboard controller for PianoRoll scene.
+// Multi-port support: creates MTPianoKeyboardRoll11 per active port.
+// World matrix is simplified (model orientation baked into keyboard vertices).
+// Used by PianoRoll3D / 2D scenes.
 //
 // Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -20,14 +20,14 @@
 
 
 //******************************************************************************
-// DX11 piano keyboard controller Mod
+// DX11 piano keyboard controller for PianoRoll scene
 //******************************************************************************
-class MTPianoKeyboardCtrlMod11 : public MTPianoKeyboardCtrl11
+class MTPianoKeyboardCtrlRoll11 : public MTPianoKeyboardCtrl11
 {
 public:
 
-	MTPianoKeyboardCtrlMod11();
-	virtual ~MTPianoKeyboardCtrlMod11();
+	MTPianoKeyboardCtrlRoll11();
+	virtual ~MTPianoKeyboardCtrlRoll11();
 
 	int Create(
 				ID3D11Device* pDevice,
@@ -39,9 +39,6 @@ public:
 				bool isSingleKeyboard
 			) override;
 
-	int Update(const MTSceneUpdateContext& ctx) override;
-	void Reset() override;
-
 protected:
 
 	int _CreateKeyboards(
@@ -51,12 +48,30 @@ protected:
 				SMSeqData* pSeqData
 			) override;
 
+	void _GetPerKeyIndexParams(
+				unsigned long kbdIndex,
+				int& outPortFilter,
+				int& outChFilter
+			) override;
+
+	void _ApplyActiveKeyColor(
+				MTKbdSub* pSub,
+				unsigned long kbdIndex
+			) override;
+
+	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				unsigned long kbdIndex,
+				const MTSceneUpdateContext& ctx
+			) override;
+
 private:
 
+	MTNoteDesign m_NoteDesign;
 	MTPianoKeyboardDesignMod m_DesignMod;
 	MTNoteDesignMod m_NoteDesignMod;
 	SMPortList m_PortList;
 	int m_KeyboardIndex[SM_MAX_PORT_NUM];
+	unsigned char m_KbdPortNo[SM_MAX_CH_NUM];
 	unsigned char m_MaxKeyboardIndex;
 
 	float _GetMaxPitchBendShift(unsigned char portNo);

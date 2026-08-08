@@ -231,6 +231,7 @@ void MTSceneBase11::_Reset()
 {
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
+	m_IsSkipping = false;
 	m_Camera.Reset();
 
 	for (auto* pComp : m_ManagedComponents) {

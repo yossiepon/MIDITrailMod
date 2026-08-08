@@ -1,10 +1,13 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboard11
 //
-// DX11 piano keyboard renderer (1ch).
-// Generates 3D key geometry (white C/F, D/G/A, E/B + black), manages CPU
-// mirror buffers, and flushes to GPU on key state changes.
+// DX11 piano keyboard base class (1ch).
+// Provides CPU mirror buffer management, diff-based update, GPU flush, and
+// draw infrastructure. Derived classes implement vertex generation and key
+// press animation for each scene type (Rain, Roll, Ring).
+// Also provides linear key vertex generation helpers (White1/2/3, Black)
+// shared by Rain and Roll; Ring uses its own cylindrical generation.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -20,7 +23,17 @@
 
 using namespace SMIDILib;
 
-struct KbdVertex;  // cpp で定義（DXPRIMITIVE11_VERTEX と同一メモリレイアウト）
+
+//******************************************************************************
+// KbdVertex (DX9-compat readable vertex; same memory layout as DXPRIMITIVE11_VERTEX)
+//******************************************************************************
+struct KbdVertex {
+	DirectX::SimpleMath::Vector3 p;
+	DirectX::SimpleMath::Vector3 n;
+	unsigned long c;
+	DirectX::SimpleMath::Vector2 t;
+};
+static_assert(sizeof(KbdVertex) == sizeof(DXPRIMITIVE11_VERTEX), "KbdVertex layout mismatch");
 
 
 //******************************************************************************
@@ -33,7 +46,7 @@ struct MTKeyboardKeyState {
 };
 
 //******************************************************************************
-// DX11 piano keyboard renderer (1ch)
+// DX11 piano keyboard base class (1ch)
 //******************************************************************************
 class MTPianoKeyboard11
 {
@@ -51,13 +64,13 @@ public:
 			);
 	void Release();
 
-	virtual int Update(
+	int Update(
 				ID3D11DeviceContext* pContext,
 				const MTKeyboardKeyState keyStates[SM_MAX_NOTE_NUM],
 				const DirectX::SimpleMath::Matrix& world
 			);
 
-	virtual int Draw(
+	int Draw(
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
 				const DirectX::SimpleMath::Vector4& lightDir
@@ -65,19 +78,26 @@ public:
 
 protected:
 
-	virtual float _GetKeyRotateAngle();
+	// -- Pure virtual hooks (derived classes must implement) --
 
-private:
+	virtual int _CreateVertexOfKeyboard(
+				ID3D11Device* pDevice,
+				ID3D11DeviceContext* pContext
+			) = 0;
+
+	virtual int _BuildKeyCPU(unsigned char noteNo, float rate,
+				DirectX::SimpleMath::Color* pColor = NULL) = 0;
+
+	// -- Virtual with default implementation --
+
+	virtual int _ResetKeyCPU(unsigned char noteNo);
+
+	// -- Infrastructure (accessible to derived) --
 
 	DXPrimitive11 m_Prim;
-	MTPianoKeyboardDesign m_KeyboardDesign;
-	ID3D11ShaderResourceView* m_pSRV;
-
 	DXPRIMITIVE11_VERTEX* m_pBaseVerts;
 	DXPRIMITIVE11_VERTEX* m_pWorkVerts;
 	unsigned long m_VertexNum;
-	float m_PrevRate[SM_MAX_NOTE_NUM];
-	unsigned long m_PrevColor[SM_MAX_NOTE_NUM];
 
 	struct BufInfo {
 		unsigned long vertexPos;
@@ -87,8 +107,16 @@ private:
 	};
 	BufInfo m_BufInfo[SM_MAX_NOTE_NUM];
 
+	MTPianoKeyboardDesign* m_pKeyboardDesign;
+
 	void _CreateBufInfo();
-	int _CreateVertexOfKeyboard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	int _FlushToGPU(ID3D11DeviceContext* pContext);
+
+	// -- Linear key vertex generation (shared by Rain/Roll) --
+	// Implemented in MTPianoKeyboard11_vertex.cpp.
+	// Generates key geometry in Rain coordinate system (X=pitch, Y=height, Z=depth).
+	// Uses m_pKeyboardDesign for key positions and dimensions.
+
 	int _CreateVertexOfKey(
 				unsigned char noteNo,
 				DXPRIMITIVE11_VERTEX* pVertex,
@@ -107,8 +135,9 @@ private:
 				unsigned char noteNo, KbdVertex* pVertex,
 				unsigned long* pIndex, DirectX::SimpleMath::Color* pColor = NULL);
 
-	int _BuildKeyCPU(unsigned char noteNo, float rate,
-				DirectX::SimpleMath::Color* pColor = NULL);
-	int _ResetKeyCPU(unsigned char noteNo);
-	int _FlushToGPU(ID3D11DeviceContext* pContext);
+private:
+
+	float m_PrevRate[SM_MAX_NOTE_NUM];
+	unsigned long m_PrevColor[SM_MAX_NOTE_NUM];
+	ID3D11ShaderResourceView* m_pSRV;
 };
