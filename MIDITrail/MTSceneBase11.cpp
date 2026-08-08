@@ -98,10 +98,6 @@ EXIT:;
 //******************************************************************************
 void MTSceneBase11::Release()
 {
-	// Phase 2: Release shared components
-	// m_Dashboard.Release();
-	// m_Stars.Release();
-	// m_BackgroundImage.Release();
 	m_pDevice  = nullptr;
 	m_pContext = nullptr;
 }

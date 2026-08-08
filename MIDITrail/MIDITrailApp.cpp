@@ -3866,8 +3866,6 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//TODO: ノート数のカウンタ表示が復元できていない
-		//TODO: ピッチベンドが復元できていない
 	}
 
 	//一時停止した場合は演奏を再開させる
