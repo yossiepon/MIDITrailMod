@@ -289,7 +289,7 @@ int MTScenePianoRollRing11::_OnRecvSequencerMsg(
 		m_IsSkipping = true;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
-		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
+		// NoteTracker リスナーがカウントを管理するため SetNotesCount は不要
 		m_NoteBox.SetSkipStatus(false);
 		m_Ripple.SetSkipStatus(false);
 		m_Lyrics.SetSkipStatus(false);

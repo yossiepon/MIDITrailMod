@@ -88,9 +88,6 @@ public:
 	//演奏位置変更
 	int Skip(int relativeTimeInMsec);
 
-	//再生済みノート数取得
-	unsigned long GetNotesCount() { return m_NotesCount; }
-
 private:
 
 	//演奏状態
