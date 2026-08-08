@@ -23,6 +23,17 @@ enum MTKeyStatus {
 };
 
 //******************************************************************************
+// Decay curve saturation constants
+// max(pow(2, (0.5 - rate) * 8) + 14) = pow(2, 4) + 14 = 30
+//******************************************************************************
+#define MTNOTEDESIGN_DECAY_SATURATION_SMOOTH   30.0f   // full-range curve (active note)
+#define MTNOTEDESIGN_DECAY_SATURATION_HOLD     20.0f   // clamped plateau at onset (ripple)
+
+// Stringify helper for embedding constants in inline HLSL
+#define MTNOTEDESIGN_STRINGIFY_(x) #x
+#define MTNOTEDESIGN_STRINGIFY(x)  MTNOTEDESIGN_STRINGIFY_(x)
+
+//******************************************************************************
 // Note envelope result
 //******************************************************************************
 struct MTNoteEnvelopeResult {
@@ -76,7 +87,7 @@ public:
 	float GetRippleHeight(float rate);
 	float GetRippleWidth(float rate);
 	float GetRippleAlpha(float rate);
-	float GetDecayCoefficient(float rate, float saturation = 20.0f);
+	float GetDecayCoefficient(float rate, float saturation = MTNOTEDESIGN_DECAY_SATURATION_HOLD);
 
 	// Active note box vertex positions (with decay rate)
 	virtual void GetActiveNoteBoxVirtexPos(

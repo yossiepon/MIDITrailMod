@@ -33,8 +33,8 @@ static const char* MTNOTEBOXINST_SHADER =
 	"cbuffer Constants : register(b0) {\n"
 	"  float4x4 g_WVP;\n"
 	"  float4x4 g_World;\n"
-	"  float4 g_Active;\n"    // x=nowLineX, y=growFactor(sizeRatio-1), z=whiteRate, w=pass(0/1)
-	"  float4 g_Opts;\n"      // x=playTimeMSec, yzw=emissiveRGB
+	"  float4 g_Active;\n"    // x=playTimeMSec, y=growFactor(sizeRatio-1), z=whiteRate, w=pass(0/1)
+	"  float4 g_Opts;\n"      // x=unused, yzw=emissiveRGB
 	"  float4 g_Light;\n"     // xyz=lightDir, w=diffuseLevel
 	"  float4 g_LAmb;\n"      // x=ambientLevel, y=unused, z=unused, w=lightEnable(0/1)
 	"  float4 g_Envelope;\n"  // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio
@@ -60,13 +60,15 @@ static const char* MTNOTEBOXINST_SHADER =
 	"  float  aflag : TEXCOORD1;\n"
 	"};\n"
 
+	"static const float DECAY_SATURATION = " MTNOTEDESIGN_STRINGIFY(MTNOTEDESIGN_DECAY_SATURATION_SMOOTH) ";\n"
+
 	// S-curve decay (mirrors MTNoteDesignMod::GetDecayCoefficient)
-	"float GetDecayCoeff(float rate, float sat) {\n"
+	"float GetDecayCoeff(float rate) {\n"
 	"  float c;\n"
 	"  if (rate < 0.5) {\n"
-	"    c = (exp2((0.5 - rate) * 8.0) + 14.0) / sat;\n"
+	"    c = (exp2((0.5 - rate) * 8.0) + 14.0) / DECAY_SATURATION;\n"
 	"  } else {\n"
-	"    c = (16.0 - exp2((rate - 0.5) * 8.0)) / sat;\n"
+	"    c = (16.0 - exp2((rate - 0.5) * 8.0)) / DECAY_SATURATION;\n"
 	"  }\n"
 	"  return saturate(c);\n"
 	"}\n"
@@ -101,8 +103,8 @@ static const char* MTNOTEBOXINST_SHADER =
 
 	"VSOUT VSMain(VSIN i) {\n"
 	"  VSOUT o;\n"
+	"  float playMs = g_Active.x;\n"
 	"  float apass = g_Active.w;\n"
-	"  float playMs = g_Opts.x;\n"
 	"  float active = ((i.startMs <= playMs) && (playMs <= i.endMs)) ? 1.0 : 0.0;\n"
 
 	// 2-pass visibility: pass 0 draws non-active, pass 1 draws active only
@@ -114,7 +116,7 @@ static const char* MTNOTEBOXINST_SHADER =
 	"  if (active > 0.5 && apass > 0.5) {\n"
 	"    keyDownRate = CalcEnvelope(playMs, i.startMs, i.endMs,\n"
 	"                              g_Envelope.x, g_Envelope.y, g_Envelope.z, g_Envelope.w);\n"
-	"    decayCoeff = GetDecayCoeff(keyDownRate, 30.0);\n"
+	"    decayCoeff = GetDecayCoeff(keyDownRate);\n"
 	"  }\n"
 
 	// Size growth from envelope
@@ -538,8 +540,8 @@ int MTNoteBoxInstanced11::Draw(
 			CBuffer* cb = (CBuffer*)mapped.pData;
 			XMStoreFloat4x4(&cb->wvp, XMMatrixTranspose(wvp));
 			XMStoreFloat4x4(&cb->world, XMMatrixTranspose(world));
-			cb->active = XMFLOAT4(0.0f, growFactor, whiteRate, (float)pass);
-			cb->opts = XMFLOAT4((float)m_PlayTimeMSec, emissive.R(), emissive.G(), emissive.B());
+			cb->active = XMFLOAT4((float)m_PlayTimeMSec, growFactor, whiteRate, (float)pass);
+			cb->opts = XMFLOAT4(0.0f, emissive.R(), emissive.G(), emissive.B());
 			cb->light = XMFLOAT4(lightDir.x, lightDir.y, lightDir.z, 1.2f);
 			cb->lambient = XMFLOAT4(0.2f, 0.0f, 0.0f, m_isLightEnable ? 1.0f : 0.0f);
 			cb->envelope = XMFLOAT4(envConfig.decayDurationMs, envConfig.releaseDurationMs,

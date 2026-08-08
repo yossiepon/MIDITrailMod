@@ -228,7 +228,7 @@ void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
 	                                        pitchBendValue, pitchBendSensitivity);
 	float curSizeRatio = 1.0f;
 	if (rate > 0.0f) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, MTNOTEDESIGN_DECAY_SATURATION_SMOOTH);
 	}
 
 	float bh = GetNoteBoxHeight() * curSizeRatio;
@@ -250,7 +250,7 @@ Color MTNoteDesignMod::GetActiveNoteBoxColor(
 		float rate
 	)
 {
-	float alpha = GetDecayCoefficient(rate, 30.0f);
+	float alpha = GetDecayCoefficient(rate, MTNOTEDESIGN_DECAY_SATURATION_SMOOTH);
 	Color color = GetNoteBoxColor(portNo, chNo, noteNo);
 
 	float r = color.R() + ((1.0f - color.R()) * alpha * m_ActiveNoteWhiteRate);

@@ -87,8 +87,8 @@ private:
 	struct CBuffer {
 		DirectX::XMFLOAT4X4 wvp;
 		DirectX::XMFLOAT4X4 world;
-		DirectX::XMFLOAT4   active;    // x=nowLineX, y=growFactor, z=whiteRate, w=passIndex
-		DirectX::XMFLOAT4   opts;      // x=playTimeMSec, y/z/w=emissiveRGB
+		DirectX::XMFLOAT4   active;    // x=playTimeMSec, y=growFactor, z=whiteRate, w=passIndex
+		DirectX::XMFLOAT4   opts;      // x=unused, y/z/w=emissiveRGB
 		DirectX::XMFLOAT4   light;     // xyz=lightDir, w=diffuseLevel
 		DirectX::XMFLOAT4   lambient;  // x=ambientLevel, y=unused, z=unused, w=lightEnable
 		DirectX::XMFLOAT4   envelope;  // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio

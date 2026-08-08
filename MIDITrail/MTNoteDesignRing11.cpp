@@ -158,7 +158,7 @@ void MTNoteDesignRing11::GetActiveNoteBoxVirtexPos(
 {
 	float curSizeRatio = 1.0f;
 	if (rate > 0.0f) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, MTNOTEDESIGN_DECAY_SATURATION_SMOOTH);
 	}
 
 	Vector3 basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
