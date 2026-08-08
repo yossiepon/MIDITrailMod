@@ -561,6 +561,7 @@ int MTNoteBoxInstanced11::Draw(
 
 			pContext->Unmap(s_pConstBuf, 0);
 			pContext->VSSetConstantBuffers(0, 1, &s_pConstBuf);
+			pContext->PSSetConstantBuffers(0, 1, &s_pConstBuf);
 
 			if (pass == 0) {
 				pContext->DrawIndexedInstanced(36, hiNote - loNote, 0, 0, loNote);
