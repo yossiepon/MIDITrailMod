@@ -160,6 +160,44 @@ void MTNoteDesignRing11::_CalcRingActiveVertices(
 }
 
 //******************************************************************************
+// Live monitor note box vertex positions (cylindrical)
+//******************************************************************************
+void MTNoteDesignRing11::GetNoteBoxVirtexPosLive(
+		unsigned long elapsedTime,
+		unsigned char portNo,
+		unsigned char chNo,
+		unsigned char noteNo,
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
+	)
+{
+	float x = -(GetLivePosX(elapsedTime));
+
+	Vector3 basePos0;
+	basePos0.x = x;
+	basePos0.y = GetPortOriginY(portNo) + (GetChStep() * chNo);
+	basePos0.z = GetPortOriginZ(portNo);
+
+	Vector3 basePos1 = basePos0;
+	basePos1.y -= GetNoteBoxWidth() / 2.0f;
+	Vector3 basePos2 = basePos0;
+	basePos2.y += GetNoteBoxWidth() / 2.0f;
+
+	float angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
+	float angle1 = angle0 - (m_NoteAngleStep / 2.0f);
+	float angle2 = angle0 + (m_NoteAngleStep / 2.0f);
+
+	*pVector0 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle1);
+	*pVector1 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle2);
+	*pVector2 = DXH::RotateYZ(0.0f, 0.0f, basePos1, angle1);
+	*pVector3 = DXH::RotateYZ(0.0f, 0.0f, basePos1, angle2);
+}
+
+//******************************************************************************
 // Grid ring base position
 //******************************************************************************
 void MTNoteDesignRing11::GetGridRingBasePos(
