@@ -263,6 +263,20 @@ float MTNoteDesignRing11::_GetNoteAngle(
 }
 
 //******************************************************************************
+// Pitch-bend angle shift (for instancing cbuffer)
+//******************************************************************************
+float MTNoteDesignRing11::GetPitchBendAngleShift(
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
+	)
+{
+	float ratio = (pitchBendValue < 0)
+		? ((float)pitchBendValue / 8192.0f)
+		: ((float)pitchBendValue / 8191.0f);
+	return m_NoteAngleStep * pitchBendSensitivity * ratio;
+}
+
+//******************************************************************************
 // Load configuration
 //******************************************************************************
 int MTNoteDesignRing11::_LoadConfFile(const TCHAR* pSceneName)

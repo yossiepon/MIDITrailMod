@@ -21,7 +21,7 @@
 #include "MTGridRing11.h"
 #include "MTTimeIndicatorRing11.h"
 #include "MTPictBoardRing11.h"
-#include "MTNoteBox11.h"
+#include "MTNoteBoxRingInstanced11.h"
 #include "MTNoteRipple11.h"
 #include "MTNoteLyrics11.h"
 #include "MTNoteTracker.h"
@@ -77,7 +77,7 @@ private:
 	MTGridRing11        m_GridRing;
 	MTTimeIndicatorRing11 m_TimeIndicator;
 	MTPictBoardRing11   m_PictBoard;
-	MTNoteBox11         m_NoteBox;
+	MTNoteBoxRingInstanced11 m_NoteBox;
 	MTNoteRipple11      m_Ripple;
 	MTNoteLyrics11      m_Lyrics;
 	MTNoteTracker       m_NoteTracker;

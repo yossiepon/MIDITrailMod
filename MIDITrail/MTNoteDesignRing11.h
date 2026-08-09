@@ -90,6 +90,13 @@ public:
 
 	DirectX::SimpleMath::Vector3 GetWorldMoveVector() override;
 
+	float GetPitchBendAngleShift(
+				short pitchBendValue,
+				unsigned char pitchBendSensitivity
+			);
+
+	float GetNoteAngleStep() const { return m_NoteAngleStep; }
+
 protected:
 
 	float m_NoteAngleStep;
