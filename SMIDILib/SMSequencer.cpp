@@ -60,8 +60,10 @@ SMSequencer::SMSequencer(void)
 
 	//スキップ制御
 	m_isSkipping = false;
+	m_isInTimer = false;
 	m_SkipTargetTime = 0;
 	m_NotesCount = 0;
+	m_TotalPlayTimeNano = 0;
 	m_MovingTimeSpanInMsec = 0;
 
 	//小節番号制御系
@@ -124,6 +126,10 @@ int SMSequencer::Initialize(
 	result = m_EventWatcher.Initialize(&m_MsgTrans);
 	if (result != 0) goto EXIT;
 
+	//Playbackモード: NoteOn/NoteOff/AllNoteOffのMsgQueueポストを無効化
+	//DX11ではNoteTrackerが描画ノートを管理するため不要。Live用にはデフォルトtrue
+	m_EventWatcher.SetNoteEventPostEnabled(false);
+
 	//タイマデバイス初期化
 	result = _InitializeTimerDev();
 	if (result != 0) goto EXIT;
@@ -175,6 +181,10 @@ int SMSequencer::SetSeqData(
 	}
 
 	m_pSeqData = pSeqData;
+
+	//公称曲長（ナノ秒）を保持（暫定：ロード時イベントクリップ導入後に除去）
+	//GetTotalPlayTime はミリ秒を返す
+	m_TotalPlayTimeNano = (unsigned long long)m_pSeqData->GetTotalPlayTime() * 1000000ULL;
 
 	//マージ済みトラック取得
 	result = m_pSeqData->GetMergedTrack(&m_Track);
@@ -498,8 +508,23 @@ int SMSequencer::_IntervalProc(
 	result = _UpdatePlayPosition();
 	if (result != 0) goto EXIT;
 
+	//公称曲長＋マージンを超過したら演奏終了（暫定：ロード時イベントクリップ導入後に除去）
+	//通常MIDIでは全イベント処理完了（m_PlayIndex >= m_Track.GetSize()）が先に発火する
+	if (m_TotalPlayTimeNano > 0 && m_CurPlayTime >= m_TotalPlayTimeNano + 700000000ULL) {
+		if (!m_isSkipping) {
+			_AllTrackNoteOff();
+			m_MsgTrans.PostPlayTime(
+				(unsigned long)(m_TotalPlayTimeNano / 1000000), m_TotalTickTime);
+			m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
+			m_Status = StatusStop;
+		}
+		*pIsContinue = false;
+		goto EXIT;
+	}
+
 	//イベント処理時刻に到達していたら送信処理を行う
-	if ((unsigned long long)m_NextEventTime <= m_CurPlayTime) {
+	//whileループにより遅延が蓄積しても1コールバックで全キャッチアップする
+	while (((unsigned long long)m_NextEventTime <= m_CurPlayTime) && *pIsContinue) {
 
 		//チックタイム合計
 		m_TotalTickTime += m_PrevDeltaTime;
@@ -882,7 +907,13 @@ int SMSequencer::_ProcUserRequest(
 	//スキップを要求された場合
 	if (m_UserRequest == RequestSkip) {
 		*pIsContinue = true;
-		result = _ProcSkip(m_SkipTargetTime, pIsContinue);
+		//公称曲長＋マージンでクリップ（暫定：ロード時イベントクリップ導入後に除去）
+		unsigned long long skipTarget = m_SkipTargetTime;
+		unsigned long long endTimeWithMargin = m_TotalPlayTimeNano + 700000000ULL;
+		if (m_TotalPlayTimeNano > 0 && skipTarget > endTimeWithMargin) {
+			skipTarget = endTimeWithMargin;
+		}
+		result = _ProcSkip(skipTarget, pIsContinue);
 		if (result != 0) goto EXIT;
 	}
 
@@ -1382,6 +1413,12 @@ int SMSequencer::_OnTimer()
 
 	unsigned long deltaTime = 0;
 
+	//リエントラント防止（whileループで1ms超えた場合の並行コールバック排除）
+	if (m_isInTimer) {
+		return 0;
+	}
+	m_isInTimer = true;
+
 	//浮動小数点演算精度を倍精度に設定
 	//  タイマー開始直後に1回だけ実行する
 	if (!(m_FPUCtrl.IsLocked())) {
@@ -1406,6 +1443,7 @@ int SMSequencer::_OnTimer()
 	}
 
 EXIT:;
+	m_isInTimer = false;
 	return result;
 }
 

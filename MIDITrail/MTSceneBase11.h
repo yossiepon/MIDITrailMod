@@ -19,11 +19,6 @@
 #include "MTSceneComponent11.h"
 #include "MTFirstPersonCam.h"
 class MTConfFile;
-// Phase 2: DX11 component headers
-// #include "MTDashboard11.h"
-// #include "MTStars11.h"
-// #include "MTBackgroundImage11.h"
-// #include "MTNotePitchBend.h"
 
 //******************************************************************************
 // Camera progress direction
@@ -117,11 +112,6 @@ protected:
 	//----------------------------------------------------------------------
 
 	MTFirstPersonCam  m_Camera;
-	// Phase 2: DX11 components
-	// MTDashboard11     m_Dashboard;
-	// MTStars11         m_Stars;
-	// MTBackgroundImage11 m_BackgroundImage;
-	// MTNotePitchBend   m_PitchBend;
 
 	//----------------------------------------------------------------------
 	// Shared state

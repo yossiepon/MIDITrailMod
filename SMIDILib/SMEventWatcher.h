@@ -41,11 +41,14 @@ public:
 	
 	//イベント監視
 	int WatchEvent(unsigned char portNo, SMEvent* pEvent);
-	
+
 	//イベント監視：シーケンサ向け
 	int WatchEventMIDI(unsigned char portNo, SMEventMIDI* pMIDIEvent);
 	int WatchEventControlChange(unsigned char portNo, SMEventMIDI* pMIDIEvent);
-	
+
+	//ノートイベントポスト制御（Playback: false, Live: true）
+	void SetNoteEventPostEnabled(bool enabled) { m_isNoteEventPostEnabled = enabled; }
+
 private:
 	
 	//RPN/NRPN選択状態
@@ -65,6 +68,7 @@ private:
 	
 	//メッセージ送信制御
 	SMMsgTransmitter* m_pMsgTrans;
+	bool m_isNoteEventPostEnabled;
 	
 	//ピッチベンド制御
 	unsigned char m_PitchBendSensitivity[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];

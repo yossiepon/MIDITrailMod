@@ -304,11 +304,22 @@ void MTDashboard11::SetTempoBPM(unsigned long bpm)             { m_TempoBPM = bp
 void MTDashboard11::SetBarNo(unsigned long barNo)              { m_BarNo = barNo; }
 void MTDashboard11::SetBarNum(unsigned long barNum)            { m_BarNum = barNum; }
 void MTDashboard11::SetBeat(unsigned long n, unsigned long d)  { m_BeatNumerator = n; m_BeatDenominator = d; }
-void MTDashboard11::SetNoteOn()                                { m_NoteCount++; }
 void MTDashboard11::SetPlaySpeedRatio(unsigned long ratio)     { m_PlaySpeedRatio = ratio; }
 void MTDashboard11::SetNotesCount(unsigned long c)             { m_NoteCount = c; }
 unsigned long MTDashboard11::GetPlayTimeSec()                  { return m_PlayTimeMSec; }
 void MTDashboard11::SetEnableFileName(bool e)                  { m_isEnableFileName = e; }
+
+void MTDashboard11::OnNoteActivate(const NoteData& note, unsigned long index)
+{
+	if (index >= m_NoteCount) {
+		m_NoteCount = index + 1;
+	}
+}
+
+void MTDashboard11::OnReset()
+{
+	m_NoteCount = 0;
+}
 
 void MTDashboard11::Reset()
 {

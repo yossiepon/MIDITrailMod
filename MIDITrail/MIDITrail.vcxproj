@@ -230,7 +230,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ResourceCompile Include="MIDITrail.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MTNoteDesignRingMod.cpp" />
+    <!-- <ClCompile Include="MTNoteDesignRingMod.cpp" /> DX9 Ring only, excluded from build -->
     <ClCompile Include="DIKeyCtrl.cpp" />
     <ClCompile Include="DIMouseCtrl.cpp" />
     <ClCompile Include="DXCamera.cpp" />
@@ -260,6 +260,11 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTDynamicCaption11.cpp" />
     <ClCompile Include="MTDashboard11.cpp" />
     <ClCompile Include="MTNoteTracker.cpp" />
+    <ClCompile Include="MTNoteInstancedBase11.cpp" />
+    <ClCompile Include="MTNoteAABBInstanced11.cpp" />
+    <!-- <ClCompile Include="MTNoteBoxInstanced11.cpp" /> Replaced by MTNoteAABBInstanced11 -->
+    <ClCompile Include="MTNoteCylindricalInstanced11.cpp" />
+    <!-- <ClCompile Include="MTNoteRainInstanced11.cpp" /> Replaced by MTNoteAABBInstanced11 -->
     <ClCompile Include="MTNoteBox11.cpp" />
     <ClCompile Include="MTPianoKeyboard11.cpp" />
     <ClCompile Include="MTPianoKeyboard11_vertex.cpp" />
@@ -293,7 +298,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTMIDIOUTCfgDlg.cpp" />
     <ClCompile Include="MTNoteDesign.cpp" />
     <ClCompile Include="MTNoteDesignMod.cpp" />
-    <ClCompile Include="MTNoteDesignRing.cpp" />
+    <!-- <ClCompile Include="MTNoteDesignRing.cpp" /> DX9 Ring only, excluded from build -->
     <ClCompile Include="MTNotePitchBend.cpp" />
     <ClCompile Include="MTPianoKeyboardDesign.cpp" />
     <ClCompile Include="MTPianoKeyboardDesignMod.cpp" />
@@ -346,6 +351,11 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="IMTSceneManagedComponent.h" />
     <ClInclude Include="MTSceneUpdateContext.h" />
     <ClInclude Include="MTSceneComponent11.h" />
+    <ClInclude Include="MTNoteInstancedBase11.h" />
+    <ClInclude Include="MTNoteAABBInstanced11.h" />
+    <ClInclude Include="MTNoteBoxInstanced11.h" />
+    <ClInclude Include="MTNoteCylindricalInstanced11.h" />
+    <ClInclude Include="MTNoteRainInstanced11.h" />
     <ClInclude Include="MTNoteTracker.h" />
     <ClInclude Include="MTNoteBox11.h" />
     <ClInclude Include="MTPianoKeyboard11.h" />

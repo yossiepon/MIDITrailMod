@@ -107,12 +107,14 @@ int MTScenePianoRollRain11::Create(
 	m_KeyboardCtrl.SetPlaybackPosTracking(false);
 
 	// Note rain
-	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
+	                           MTAABBMode::Rain);
 	if (result != 0) goto EXIT;
 
 	// Dashboard
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
 	if (result != 0) goto EXIT;
+	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 	// Register components for auto Update/Reset
 	_RegisterComponent(&m_Stars);
@@ -240,9 +242,6 @@ int MTScenePianoRollRain11::_OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgBeat) {
 		m_Dashboard.SetBeat(parser.GetBeatNumerator(), parser.GetBeatDenominator());
 	}
-	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
-		m_Dashboard.SetNoteOn();
-	}
 	else if (parser.GetMsg() == SMMsgParser::MsgPitchBend) {
 		m_NotePitchBend.SetPitchBend(
 			parser.GetPortNo(), parser.GetChNo(),
@@ -259,7 +258,7 @@ int MTScenePianoRollRain11::_OnRecvSequencerMsg(
 		m_IsSkipping = true;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
-		m_Dashboard.SetNotesCount(parser.GetSkipEndNotesCount());
+		// NoteTracker リスナーがカウントを管理するため SetNotesCount は不要
 		m_KeyboardCtrl.SetSkipStatus(false);
 		m_NoteRain.SetSkipStatus(false);
 		m_IsSkipping = false;

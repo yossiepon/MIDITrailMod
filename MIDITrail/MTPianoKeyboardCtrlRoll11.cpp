@@ -218,7 +218,7 @@ float MTPianoKeyboardCtrlRoll11::_GetMaxPitchBendShift(
 	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 		short pbValue = m_pNotePitchBend->GetValue(portNo, chNo);
 		unsigned char pbSensitivity = m_pNotePitchBend->GetSensitivity(portNo, chNo);
-		float shift = m_pNoteDesign->GetNoteStep() * pbSensitivity * ((float)pbValue / 8192.0f);
+		float shift = m_pNoteDesign->GetPitchBendShift(pbValue, pbSensitivity);
 		if (fabsf(shift) > fabsf(maxShift)) {
 			maxShift = shift;
 		}

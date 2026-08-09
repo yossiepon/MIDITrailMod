@@ -112,14 +112,7 @@ Vector3 MTNoteDesign::GetNoteBoxCenterPosX(
 		unsigned char pitchBendSensitivity
 	)
 {
-	float pb = 0.0f;
-
-	if (pitchBendValue < 0) {
-		pb = GetNoteStep() * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
-	}
-	else {
-		pb = GetNoteStep() * pitchBendSensitivity * ((float)pitchBendValue / 8191.0f);
-	}
+	float pb = GetPitchBendShift(pitchBendValue, pitchBendSensitivity);
 
 	Vector3 v;
 	v.x = GetPlayPosX(curTickTime);
@@ -132,10 +125,30 @@ Vector3 MTNoteDesign::GetNoteBoxCenterPosX(
 //******************************************************************************
 // Note box dimensions
 //******************************************************************************
-float MTNoteDesign::GetNoteBoxHeight() { return m_NoteBoxHeight; }
-float MTNoteDesign::GetNoteBoxWidth()  { return m_NoteBoxWidth; }
-float MTNoteDesign::GetNoteStep()      { return m_NoteStep; }
-float MTNoteDesign::GetChStep()        { return m_ChStep; }
+float MTNoteDesign::GetNoteBoxHeight()       { return m_NoteBoxHeight; }
+float MTNoteDesign::GetNoteBoxWidth()        { return m_NoteBoxWidth; }
+float MTNoteDesign::GetNoteStep()            { return m_NoteStep; }
+float MTNoteDesign::GetChStep()              { return m_ChStep; }
+float MTNoteDesign::GetActiveNoteWhiteRate() { return m_ActiveNoteWhiteRate; }
+float MTNoteDesign::GetActiveNoteBoxSizeRatio() { return m_ActiveNoteBoxSizeRatio; }
+
+//******************************************************************************
+// Pitch bend Y shift in note-space coordinates
+//******************************************************************************
+float MTNoteDesign::GetPitchBendShift(
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
+	)
+{
+	if (pitchBendValue == 0) return 0.0f;
+
+	if (pitchBendValue < 0) {
+		return m_NoteStep * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
+	}
+	else {
+		return m_NoteStep * pitchBendSensitivity * ((float)pitchBendValue / 8191.0f);
+	}
+}
 
 unsigned long MTNoteDesign::GetLiveMonitorDisplayDuration()
 {

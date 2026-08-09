@@ -138,6 +138,8 @@ private:
 
 	//スキップ制御
 	bool m_isSkipping;
+	volatile bool m_isInTimer;
+	unsigned long long m_TotalPlayTimeNano;
 	unsigned long long m_SkipTargetTime;
 	unsigned long m_NotesCount;
 	unsigned long m_MovingTimeSpanInMsec;

@@ -122,21 +122,9 @@ void MTNoteDesignRing11::GetActiveNoteBoxVirtexPos(
 		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f)
 		             * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
 	}
-
-	Vector3 basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
-	Vector3 basePos1 = basePos0;
-	basePos1.y -= GetNoteBoxWidth() * curSizeRatio / 2.0f;
-	Vector3 basePos2 = basePos0;
-	basePos2.y += GetNoteBoxWidth() * curSizeRatio / 2.0f;
-
-	float angle0 = _GetNoteAngle(noteNo, pitchBendValue, pitchBendSensitivity);
-	float angle1 = angle0 - (m_NoteAngleStep * curSizeRatio / 2.0f);
-	float angle2 = angle0 + (m_NoteAngleStep * curSizeRatio / 2.0f);
-
-	*pVector0 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle1);
-	*pVector1 = DXH::RotateYZ(0.0f, 0.0f, basePos2, angle2);
-	*pVector2 = DXH::RotateYZ(0.0f, 0.0f, basePos1, angle1);
-	*pVector3 = DXH::RotateYZ(0.0f, 0.0f, basePos1, angle2);
+	_CalcRingActiveVertices(curTickTime, portNo, chNo, noteNo,
+		pVector0, pVector1, pVector2, pVector3,
+		pitchBendValue, pitchBendSensitivity, curSizeRatio);
 }
 
 //******************************************************************************
@@ -158,9 +146,30 @@ void MTNoteDesignRing11::GetActiveNoteBoxVirtexPos(
 {
 	float curSizeRatio = 1.0f;
 	if (rate > 0.0f) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, MTNOTEDESIGN_DECAY_SATURATION_SMOOTH);
 	}
+	_CalcRingActiveVertices(curTickTime, portNo, chNo, noteNo,
+		pVector0, pVector1, pVector2, pVector3,
+		pitchBendValue, pitchBendSensitivity, curSizeRatio);
+}
 
+//******************************************************************************
+// Ring active vertex calculation (shared by elapsedTime and rate variants)
+//******************************************************************************
+void MTNoteDesignRing11::_CalcRingActiveVertices(
+		unsigned long curTickTime,
+		unsigned char portNo,
+		unsigned char chNo,
+		unsigned char noteNo,
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity,
+		float curSizeRatio
+	)
+{
 	Vector3 basePos0 = _GetNoteBasePos(curTickTime, portNo, chNo);
 	Vector3 basePos1 = basePos0;
 	basePos1.y -= GetNoteBoxWidth() * curSizeRatio / 2.0f;
@@ -251,6 +260,20 @@ float MTNoteDesignRing11::_GetNoteAngle(
 	float angle = ((m_NoteAngleStep * noteNo) + (m_NoteAngleStep / 2.0f) + pb) * (-1.0f);
 
 	return angle;
+}
+
+//******************************************************************************
+// Pitch-bend angle shift (for instancing cbuffer)
+//******************************************************************************
+float MTNoteDesignRing11::GetPitchBendAngleShift(
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
+	)
+{
+	float ratio = (pitchBendValue < 0)
+		? ((float)pitchBendValue / 8192.0f)
+		: ((float)pitchBendValue / 8191.0f);
+	return m_NoteAngleStep * pitchBendSensitivity * ratio;
 }
 
 //******************************************************************************

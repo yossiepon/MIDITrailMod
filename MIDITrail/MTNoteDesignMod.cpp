@@ -81,6 +81,19 @@ float MTNoteDesignMod::GetRippleSpacing()
 }
 
 //******************************************************************************
+// Envelope configuration for GPU shader
+//******************************************************************************
+MTEnvelopeConfig MTNoteDesignMod::GetEnvelopeConfig()
+{
+	MTEnvelopeConfig config;
+	config.decayDurationMs = (float)m_RippleDecayDuration;
+	config.releaseDurationMs = (float)m_RippleReleaseDuration;
+	config.decayRatio = 0.3f;
+	config.sustainRatio = 0.4f;
+	return config;
+}
+
+//******************************************************************************
 // Note envelope (3-phase: Decay/Sustain/Release)
 //******************************************************************************
 MTNoteEnvelopeResult MTNoteDesignMod::CalcNoteEnvelope(
@@ -99,9 +112,10 @@ MTNoteEnvelopeResult MTNoteDesignMod::CalcNoteEnvelope(
 	unsigned long releaseDuration = (unsigned long)m_RippleReleaseDuration;
 	unsigned long noteLen = endTime - startTime;
 
-	float decayRatio = 0.3f;
-	float sustainRatio = 0.4f;
-	float releaseRatio = 0.3f;
+	MTEnvelopeConfig envConfig = GetEnvelopeConfig();
+	float decayRatio = envConfig.decayRatio;
+	float sustainRatio = envConfig.sustainRatio;
+	float releaseRatio = 1.0f - decayRatio - sustainRatio;
 
 	if (noteLen < decayDuration) {
 		// Case A: no adjustment (whole note stays in Decay)
@@ -215,7 +229,7 @@ void MTNoteDesignMod::GetActiveNoteBoxVirtexPos(
 	                                        pitchBendValue, pitchBendSensitivity);
 	float curSizeRatio = 1.0f;
 	if (rate > 0.0f) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, 30.0f);
+		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f) * GetDecayCoefficient(rate, MTNOTEDESIGN_DECAY_SATURATION_SMOOTH);
 	}
 
 	float bh = GetNoteBoxHeight() * curSizeRatio;
@@ -237,7 +251,7 @@ Color MTNoteDesignMod::GetActiveNoteBoxColor(
 		float rate
 	)
 {
-	float alpha = GetDecayCoefficient(rate, 30.0f);
+	float alpha = GetDecayCoefficient(rate, MTNOTEDESIGN_DECAY_SATURATION_SMOOTH);
 	Color color = GetNoteBoxColor(portNo, chNo, noteNo);
 
 	float r = color.R() + ((1.0f - color.R()) * alpha * m_ActiveNoteWhiteRate);

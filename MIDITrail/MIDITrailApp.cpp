@@ -21,6 +21,9 @@
 #include "MTScenePianoRollRain11.h"
 #include "MTScenePianoRollRing11.h"
 #include "DXPrimitive11.h"
+#include "MTNoteInstancedBase11.h"
+#include "MTNoteAABBInstanced11.h"
+#include "MTNoteCylindricalInstanced11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
 // <<< add 20190828 yossiepon end
@@ -277,6 +280,10 @@ int MIDITrailApp::Terminate()
 	_StopTimer();
 
 	m_Renderer.Terminate();
+
+	MTNoteAABBInstanced11::ReleasePipeline();
+	MTNoteCylindricalInstanced11::ReleasePipeline();
+	MTNoteInstancedBase11::ReleaseCommonStates();
 
 	if (m_pScene != NULL) {
 		m_pScene->Release();
@@ -3863,8 +3870,6 @@ int MIDITrailApp::_RebuildScene()
 						);
 			if (result != 0) goto EXIT;
 		}
-		//TODO: ノート数のカウンタ表示が復元できていない
-		//TODO: ピッチベンドが復元できていない
 	}
 
 	//一時停止した場合は演奏を再開させる
