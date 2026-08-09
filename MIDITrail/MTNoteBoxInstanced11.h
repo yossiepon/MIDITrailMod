@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "MTSceneInstanced11.h"
+#include "MTNoteInstancedBase11.h"
 #include "MTNoteDesignMod.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
@@ -47,7 +47,7 @@ struct MTNOTEBOX_INST_TEMPLATE_VERTEX {
 //******************************************************************************
 // GPU-instanced note box renderer
 //******************************************************************************
-class MTNoteBoxInstanced11 : public MTSceneInstanced11
+class MTNoteBoxInstanced11 : public MTNoteInstancedBase11
 {
 public:
 
@@ -116,9 +116,6 @@ private:
 	static ID3D11PixelShader*       s_pPS;
 	static ID3D11InputLayout*       s_pLayout;
 	static ID3D11Buffer*            s_pConstBuf;
-	static ID3D11RasterizerState*   s_pRasterNoCull;
-	static ID3D11BlendState*        s_pBlend;
-	static ID3D11DepthStencilState* s_pDepth;
 
 	int _CreateTemplateGeometry(ID3D11Device* pDevice);
 	int _CreateInstanceBuffer(ID3D11Device* pDevice);

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "MTSceneInstanced11.h"
+#include "MTNoteInstancedBase11.h"
 #include "MTNoteDesign.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
@@ -36,13 +36,14 @@ struct MTNOTERAIN_INST_INSTANCE {
 //******************************************************************************
 struct MTNOTERAIN_INST_TEMPLATE_VERTEX {
 	float corner[3];    // (x_mask, y_mask, 0): 0=vmin, 1=vmax per axis
+	float normal[3];    // face normal (dummy for Rain, enables shared InputLayout slot 0)
 };
 
 
 //******************************************************************************
 // GPU-instanced note rain renderer
 //******************************************************************************
-class MTNoteRainInstanced11 : public MTSceneInstanced11
+class MTNoteRainInstanced11 : public MTNoteInstancedBase11
 {
 public:
 
@@ -99,9 +100,6 @@ private:
 	static ID3D11PixelShader*       s_pPS;
 	static ID3D11InputLayout*       s_pLayout;
 	static ID3D11Buffer*            s_pConstBuf;
-	static ID3D11RasterizerState*   s_pRasterNoCull;
-	static ID3D11BlendState*        s_pBlend;
-	static ID3D11DepthStencilState* s_pDepth;
 
 	int _CreateTemplateGeometry(ID3D11Device* pDevice);
 	int _CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqData* pSeqData);

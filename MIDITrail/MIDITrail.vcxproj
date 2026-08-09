@@ -260,7 +260,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTDynamicCaption11.cpp" />
     <ClCompile Include="MTDashboard11.cpp" />
     <ClCompile Include="MTNoteTracker.cpp" />
-    <ClCompile Include="MTSceneInstanced11.cpp" />
+    <ClCompile Include="MTNoteInstancedBase11.cpp" />
     <ClCompile Include="MTNoteBoxInstanced11.cpp" />
     <ClCompile Include="MTNoteRainInstanced11.cpp" />
     <ClCompile Include="MTNoteBox11.cpp" />
@@ -349,7 +349,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="IMTSceneManagedComponent.h" />
     <ClInclude Include="MTSceneUpdateContext.h" />
     <ClInclude Include="MTSceneComponent11.h" />
-    <ClInclude Include="MTSceneInstanced11.h" />
+    <ClInclude Include="MTNoteInstancedBase11.h" />
     <ClInclude Include="MTNoteBoxInstanced11.h" />
     <ClInclude Include="MTNoteRainInstanced11.h" />
     <ClInclude Include="MTNoteTracker.h" />

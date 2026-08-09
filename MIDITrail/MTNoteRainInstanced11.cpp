@@ -37,6 +37,7 @@ static const char* MTNOTERAININST_SHADER =
 
 	"struct VSIN {\n"
 	"  float3 corner : POSITION;\n"
+	"  float3 nrm    : NORMAL;\n"
 	"  float3 vmin   : TEXCOORD0;\n"
 	"  float3 vmax   : TEXCOORD1;\n"
 	"  float4 color  : COLOR0;\n"
@@ -80,9 +81,6 @@ ID3D11VertexShader*      MTNoteRainInstanced11::s_pVS         = nullptr;
 ID3D11PixelShader*       MTNoteRainInstanced11::s_pPS         = nullptr;
 ID3D11InputLayout*       MTNoteRainInstanced11::s_pLayout     = nullptr;
 ID3D11Buffer*            MTNoteRainInstanced11::s_pConstBuf   = nullptr;
-ID3D11RasterizerState*   MTNoteRainInstanced11::s_pRasterNoCull  = nullptr;
-ID3D11BlendState*        MTNoteRainInstanced11::s_pBlend      = nullptr;
-ID3D11DepthStencilState* MTNoteRainInstanced11::s_pDepth      = nullptr;
 
 
 //******************************************************************************
@@ -142,6 +140,7 @@ int MTNoteRainInstanced11::InitPipeline(ID3D11Device* pDevice)
 	{
 		D3D11_INPUT_ELEMENT_DESC layout[] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA,   0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1,  0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, 12, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 			{ "COLOR",    0, DXGI_FORMAT_B8G8R8A8_UNORM,  1, 24, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
@@ -163,40 +162,8 @@ int MTNoteRainInstanced11::InitPipeline(ID3D11Device* pDevice)
 		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
 	}
 
-	// Rasterizer (no cull for flat quads)
-	{
-		D3D11_RASTERIZER_DESC rd = {};
-		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_NONE;
-		rd.DepthClipEnable = TRUE;
-		hr = pDevice->CreateRasterizerState(&rd, &s_pRasterNoCull);
-		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
-	}
-
-	// Blend (alpha blending for gradient)
-	{
-		D3D11_BLEND_DESC bd = {};
-		bd.RenderTarget[0].BlendEnable = TRUE;
-		bd.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-		bd.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-		bd.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		bd.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-		bd.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-		bd.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-		bd.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-		hr = pDevice->CreateBlendState(&bd, &s_pBlend);
-		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
-	}
-
-	// Depth stencil
-	{
-		D3D11_DEPTH_STENCIL_DESC dd = {};
-		dd.DepthEnable = TRUE;
-		dd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		dd.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-		hr = pDevice->CreateDepthStencilState(&dd, &s_pDepth);
-		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
-	}
+	result = InitCommonStates(pDevice);
+	if (result != 0) goto EXIT;
 
 EXIT:;
 	if (pVSBlob) pVSBlob->Release();
@@ -215,9 +182,6 @@ void MTNoteRainInstanced11::ReleasePipeline()
 	if (s_pPS)          { s_pPS->Release();          s_pPS = nullptr; }
 	if (s_pLayout)      { s_pLayout->Release();      s_pLayout = nullptr; }
 	if (s_pConstBuf)    { s_pConstBuf->Release();    s_pConstBuf = nullptr; }
-	if (s_pRasterNoCull){ s_pRasterNoCull->Release(); s_pRasterNoCull = nullptr; }
-	if (s_pBlend)       { s_pBlend->Release();       s_pBlend = nullptr; }
-	if (s_pDepth)       { s_pDepth->Release();       s_pDepth = nullptr; }
 }
 
 
@@ -272,12 +236,11 @@ int MTNoteRainInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
 {
 	int result = 0;
 
-	// corner.x selects vmin.x(0) or vmax.x(1), corner.y selects vmin.y(0) or vmax.y(1)
 	MTNOTERAIN_INST_TEMPLATE_VERTEX verts[4] = {
-		{{0, 0, 0}},   // bottom-left  (note-ON end, alpha=1.0)
-		{{1, 0, 0}},   // bottom-right (note-ON end, alpha=1.0)
-		{{1, 1, 0}},   // top-right    (note-OFF end, alpha=0.5)
-		{{0, 1, 0}},   // top-left     (note-OFF end, alpha=0.5)
+		{{0, 0, 0}, {0, 1, 0}},   // bottom-left  (note-ON end, alpha=1.0)
+		{{1, 0, 0}, {0, 1, 0}},   // bottom-right (note-ON end, alpha=1.0)
+		{{1, 1, 0}, {0, 1, 0}},   // top-right    (note-OFF end, alpha=0.5)
+		{{0, 1, 0}, {0, 1, 0}},   // top-left     (note-OFF end, alpha=0.5)
 	};
 
 	result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,
@@ -411,9 +374,7 @@ int MTNoteRainInstanced11::Draw(
 		pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		pContext->VSSetShader(s_pVS, nullptr, 0);
 		pContext->PSSetShader(s_pPS, nullptr, 0);
-		pContext->RSSetState(s_pRasterNoCull);
-		pContext->OMSetBlendState(s_pBlend, nullptr, 0xFFFFFFFF);
-		pContext->OMSetDepthStencilState(s_pDepth, 0);
+		BindCommonStates(pContext);
 
 		UINT strides[2] = { sizeof(MTNOTERAIN_INST_TEMPLATE_VERTEX), sizeof(MTNOTERAIN_INST_INSTANCE) };
 		UINT offsets[2] = { 0, 0 };
@@ -433,17 +394,8 @@ int MTNoteRainInstanced11::Draw(
 			CBuffer* cb = (CBuffer*)mapped.pData;
 			XMStoreFloat4x4(&cb->wvp, XMMatrixTranspose(wvp));
 
-			ZeroMemory(cb->pb, sizeof(cb->pb));
-			if (m_pNotePitchBend != nullptr) {
-				for (unsigned char port = 0; port < 8; port++) {
-					for (unsigned char ch = 0; ch < 16; ch++) {
-						short pbValue = m_pNotePitchBend->GetValue(port, ch);
-						unsigned char pbSens = m_pNotePitchBend->GetSensitivity(port, ch);
-						unsigned int idx = port * 16 + ch;
-						((float*)cb->pb)[idx] = m_KeyboardDesign.GetPitchBendShift(pbValue, pbSens);
-					}
-				}
-			}
+			FillPitchBendArray((float*)cb->pb, m_pNotePitchBend,
+				[this](short v, unsigned char s) { return m_KeyboardDesign.GetPitchBendShift(v, s); });
 
 			pContext->Unmap(s_pConstBuf, 0);
 			pContext->VSSetConstantBuffers(0, 1, &s_pConstBuf);
