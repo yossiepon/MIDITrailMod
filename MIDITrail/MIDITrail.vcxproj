@@ -243,6 +243,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTScenePianoRoll3D11.cpp" />
     <ClCompile Include="MTScenePianoRollRain11.cpp" />
     <ClCompile Include="MTNoteRain11.cpp" />
+    <ClCompile Include="MTNoteDesign11.cpp" />
     <ClCompile Include="MTNoteDesignRing11.cpp" />
     <ClCompile Include="MTGridRing11.cpp" />
     <ClCompile Include="MTTimeIndicatorRing11.cpp" />
@@ -296,12 +297,13 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTHowToViewDlg.cpp" />
     <ClCompile Include="MTMIDIINCfgDlg.cpp" />
     <ClCompile Include="MTMIDIOUTCfgDlg.cpp" />
-    <ClCompile Include="MTNoteDesign.cpp" />
-    <ClCompile Include="MTNoteDesignMod.cpp" />
+    <!-- <ClCompile Include="MTNoteDesign.cpp" /> DX9 only, replaced by MTNoteDesign11 -->
+    <!-- <ClCompile Include="MTNoteDesignMod.cpp" /> DX9 only, replaced by MTNoteDesign11 -->
     <!-- <ClCompile Include="MTNoteDesignRing.cpp" /> DX9 Ring only, excluded from build -->
     <ClCompile Include="MTNotePitchBend.cpp" />
-    <ClCompile Include="MTPianoKeyboardDesign.cpp" />
-    <ClCompile Include="MTPianoKeyboardDesignMod.cpp" />
+    <!-- <ClCompile Include="MTPianoKeyboardDesign.cpp" /> DX9 only, replaced by MTPianoKeyboardDesign11 -->
+    <!-- <ClCompile Include="MTPianoKeyboardDesignMod.cpp" /> DX9 only, replaced by MTPianoKeyboardDesign11 -->
+    <ClCompile Include="MTPianoKeyboardDesign11.cpp" />
     <ClCompile Include="MTWindowSizeCfgDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -332,6 +334,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTScenePianoRoll3D11.h" />
     <ClInclude Include="MTScenePianoRollRain11.h" />
     <ClInclude Include="MTNoteRain11.h" />
+    <ClInclude Include="MTNoteDesign11.h" />
     <ClInclude Include="MTNoteDesignRing11.h" />
     <ClInclude Include="MTGridRing11.h" />
     <ClInclude Include="MTTimeIndicatorRing11.h" />
@@ -425,6 +428,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTPianoKeyboardCtrlLive.h" />
     <ClInclude Include="MTPianoKeyboardCtrlMod.h" />
     <ClInclude Include="MTPianoKeyboardDesign.h" />
+    <ClInclude Include="MTPianoKeyboardDesign11.h" />
     <ClInclude Include="MTPianoKeyboardDesignMod.h" />
     <ClInclude Include="MTPianoKeyboardMod.h" />
     <ClInclude Include="MTPictBoard.h" />

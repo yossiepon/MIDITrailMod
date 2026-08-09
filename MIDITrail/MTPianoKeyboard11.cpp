@@ -112,17 +112,17 @@ void MTPianoKeyboard11::_CreateBufInfo()
 	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		unsigned long vn = 0, in = 0;
 		switch (m_pKeyboardDesign->GetKeyType(noteNo)) {
-			case MTPianoKeyboardDesign::KeyWhiteC:
-			case MTPianoKeyboardDesign::KeyWhiteF:
+			case MTPianoKeyboardDesign11::KeyWhiteC:
+			case MTPianoKeyboardDesign11::KeyWhiteF:
 				vn = KEY_WHITE_1_VERTEX_NUM; in = KEY_WHITE_1_INDEX_NUM; break;
-			case MTPianoKeyboardDesign::KeyWhiteD:
-			case MTPianoKeyboardDesign::KeyWhiteG:
-			case MTPianoKeyboardDesign::KeyWhiteA:
+			case MTPianoKeyboardDesign11::KeyWhiteD:
+			case MTPianoKeyboardDesign11::KeyWhiteG:
+			case MTPianoKeyboardDesign11::KeyWhiteA:
 				vn = KEY_WHITE_2_VERTEX_NUM; in = KEY_WHITE_2_INDEX_NUM; break;
-			case MTPianoKeyboardDesign::KeyWhiteE:
-			case MTPianoKeyboardDesign::KeyWhiteB:
+			case MTPianoKeyboardDesign11::KeyWhiteE:
+			case MTPianoKeyboardDesign11::KeyWhiteB:
 				vn = KEY_WHITE_3_VERTEX_NUM; in = KEY_WHITE_3_INDEX_NUM; break;
-			case MTPianoKeyboardDesign::KeyBlack:
+			case MTPianoKeyboardDesign11::KeyBlack:
 				vn = KEY_BLACK_VERTEX_NUM; in = KEY_BLACK_INDEX_NUM; break;
 		}
 		m_BufInfo[noteNo].vertexNum = vn;
@@ -259,20 +259,20 @@ int MTPianoKeyboard11::_CreateVertexOfKey(
 	KbdVertex* pKbdVertex = reinterpret_cast<KbdVertex*>(pVertex);
 
 	switch (m_pKeyboardDesign->GetKeyType(noteNo)) {
-		case MTPianoKeyboardDesign::KeyWhiteC:
-		case MTPianoKeyboardDesign::KeyWhiteF:
+		case MTPianoKeyboardDesign11::KeyWhiteC:
+		case MTPianoKeyboardDesign11::KeyWhiteF:
 			result = _CreateVertexOfKeyWhite1(noteNo, pKbdVertex, pIndex);
 			break;
-		case MTPianoKeyboardDesign::KeyWhiteD:
-		case MTPianoKeyboardDesign::KeyWhiteG:
-		case MTPianoKeyboardDesign::KeyWhiteA:
+		case MTPianoKeyboardDesign11::KeyWhiteD:
+		case MTPianoKeyboardDesign11::KeyWhiteG:
+		case MTPianoKeyboardDesign11::KeyWhiteA:
 			result = _CreateVertexOfKeyWhite2(noteNo, pKbdVertex, pIndex);
 			break;
-		case MTPianoKeyboardDesign::KeyWhiteE:
-		case MTPianoKeyboardDesign::KeyWhiteB:
+		case MTPianoKeyboardDesign11::KeyWhiteE:
+		case MTPianoKeyboardDesign11::KeyWhiteB:
 			result = _CreateVertexOfKeyWhite3(noteNo, pKbdVertex, pIndex);
 			break;
-		case MTPianoKeyboardDesign::KeyBlack:
+		case MTPianoKeyboardDesign11::KeyBlack:
 			result = _CreateVertexOfKeyBlack(noteNo, pKbdVertex, pIndex);
 			break;
 	}
