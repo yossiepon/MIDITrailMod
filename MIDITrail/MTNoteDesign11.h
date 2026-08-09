@@ -4,7 +4,7 @@
 //
 // Note design class for DX11.
 // Unified from MTNoteDesign + MTNoteDesignMod (ADR-0054 Mod standardization).
-// Rate-based decay only; elapsedTime-based methods and Live methods removed.
+// Playback uses rate-based decay; Live methods use elapsedTime-based positioning.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2012-2025 yossiepon Oniichan. All Rights Reserved.
@@ -71,6 +71,12 @@ public:
 	// Playback position
 	float GetPlayPosX(unsigned long curTickTime);
 
+	// Live monitor note position
+	float GetLivePosX(unsigned long elapsedTime);
+
+	// Live monitor display duration
+	unsigned long GetLiveMonitorDisplayDuration();
+
 	// Note box center position
 	virtual DirectX::SimpleMath::Vector3 GetNoteBoxCenterPosX(
 				unsigned long curTickTime,
@@ -121,9 +127,33 @@ public:
 				float rate = 0.0f
 			);
 
+	// Live monitor note box vertex positions
+	virtual void GetNoteBoxVirtexPosLive(
+				unsigned long elapsedTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
+			);
+
 	// Grid box vertex positions
 	void GetGridBoxVirtexPos(
 				unsigned long curTickTime,
+				unsigned char portNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3
+			);
+
+	// Live grid box vertex positions
+	void GetGridBoxVirtexPosLive(
+				unsigned long elapsedTime,
 				unsigned char portNo,
 				DirectX::SimpleMath::Vector3* pVector0,
 				DirectX::SimpleMath::Vector3* pVector1,
@@ -225,6 +255,9 @@ protected:
 
 	float m_ActiveNoteWhiteRate;
 	float m_ActiveNoteBoxSizeRatio;
+
+	int m_LiveMonitorDisplayDuration;
+	float m_LiveNoteLengthPerSecond;
 
 	int m_RippleDecayDuration;
 	int m_RippleReleaseDuration;
