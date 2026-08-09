@@ -14,7 +14,7 @@
 
 #include "MTSceneComponent11.h"
 #include "DXPrimitive11.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesign11.h"
 #include "SMIDILib.h"
 #include <directxtk/SimpleMath.h>
 
@@ -55,7 +55,7 @@ private:
 	unsigned long m_CurTickTime;
 	bool m_isPlay;
 	bool m_isReady;
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign11 m_NoteDesign;
 
 	int _CreateVertices(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	int _LoadTexture(ID3D11Device* pDevice, const TCHAR* pSceneName);

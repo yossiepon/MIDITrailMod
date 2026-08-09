@@ -3,7 +3,7 @@
 // MIDITrail / MTNoteDesignRing11
 //
 // Ring note design class (DX11).
-// Extends MTNoteDesignMod with cylindrical coordinate transformation.
+// Extends MTNoteDesign11 with cylindrical coordinate transformation.
 // Replaces DX9's diamond inheritance (MTNoteDesignRingMod).
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "MTNoteDesignMod.h"
+#include "MTNoteDesign11.h"
 
 using namespace SMIDILib;
 
@@ -21,7 +21,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // Ring note design class
 //******************************************************************************
-class MTNoteDesignRing11 : public MTNoteDesignMod
+class MTNoteDesignRing11 : public MTNoteDesign11
 {
 public:
 
@@ -63,22 +63,8 @@ public:
 				DirectX::SimpleMath::Vector3* pVector3,
 				short pitchBendValue = 0,
 				unsigned char pitchBendSensitivity = 0,
-				unsigned long elapsedTime = 0
+				float rate = 0.0f
 			) override;
-
-	void GetActiveNoteBoxVirtexPos(
-				unsigned long curTickTime,
-				unsigned char portNo,
-				unsigned char chNo,
-				unsigned char noteNo,
-				DirectX::SimpleMath::Vector3* pVector0,
-				DirectX::SimpleMath::Vector3* pVector1,
-				DirectX::SimpleMath::Vector3* pVector2,
-				DirectX::SimpleMath::Vector3* pVector3,
-				short pitchBendValue,
-				unsigned char pitchBendSensitivity,
-				float rate
-			);
 
 	void GetGridRingBasePos(
 				unsigned long tickTime,

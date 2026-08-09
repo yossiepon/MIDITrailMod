@@ -62,9 +62,6 @@ int MTPianoKeyboardCtrlRoll11::Create(
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	result = m_NoteDesignMod.Initialize(pSceneName, pSeqData);
-	if (result != 0) goto EXIT;
-
 	result = m_DesignMod.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
@@ -175,8 +172,8 @@ Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
 {
 	unsigned char portNo = m_KbdPortNo[kbdIndex];
 
-	Vector3 playbackPos = m_NoteDesignMod.GetWorldMoveVector();
-	playbackPos.x += m_NoteDesignMod.GetPlayPosX(ctx.curTickTime);
+	Vector3 playbackPos = m_NoteDesign.GetWorldMoveVector();
+	playbackPos.x += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
 
 	Vector3 basePos = m_DesignMod.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
 	basePos.x += _GetMaxPitchBendShift(portNo);

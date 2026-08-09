@@ -36,7 +36,7 @@ MTNoteEffect::~MTNoteEffect()
 int MTNoteEffect::Create(
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
-		MTNoteDesignMod* pNoteDesign
+		MTNoteDesign11* pNoteDesign
 	)
 {
 	int result = 0;

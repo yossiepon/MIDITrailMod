@@ -14,9 +14,9 @@
 
 #include "MTSceneComponent11.h"
 #include "DXPrimitive11.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesign11.h"
 #include "MTNotePitchBend.h"
-#include "MTPianoKeyboardDesign.h"
+#include "MTPianoKeyboardDesign11.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -63,8 +63,8 @@ private:
 		unsigned long index;
 	};
 
-	MTNoteDesign m_NoteDesign;
-	MTPianoKeyboardDesign m_KeyboardDesign;
+	MTNoteDesign11 m_NoteDesign;
+	MTPianoKeyboardDesign11 m_KeyboardDesign;
 	SMNoteList m_NoteList;
 
 	DXPrimitive11 m_Primitive;

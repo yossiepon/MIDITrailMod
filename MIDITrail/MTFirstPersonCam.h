@@ -20,7 +20,7 @@
 #include "DIMouseCtrl.h"
 #include "DXCamera.h"
 #include "SMIDILib.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesign11.h"
 #include "MTGamePadCtrl.h"
 
 using namespace SMIDILib;
@@ -114,7 +114,7 @@ private:
 	bool m_IsMouseCamMode;
 	bool m_IsAutoRollMode;
 	HWND m_hWnd;
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign11 m_NoteDesign;
 
 	float m_VelocityFB;
 	float m_VelocityLR;
