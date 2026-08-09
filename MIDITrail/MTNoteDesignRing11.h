@@ -107,5 +107,19 @@ protected:
 				unsigned char pitchBendSensitivity
 			);
 
+	void _CalcRingActiveVertices(
+				unsigned long curTickTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue,
+				unsigned char pitchBendSensitivity,
+				float curSizeRatio
+			);
+
 	int _LoadConfFile(const TCHAR* pSceneName) override;
 };
