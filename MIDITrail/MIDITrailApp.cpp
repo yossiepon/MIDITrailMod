@@ -22,8 +22,7 @@
 #include "MTScenePianoRollRing11.h"
 #include "DXPrimitive11.h"
 #include "MTNoteInstancedBase11.h"
-#include "MTNoteBoxInstanced11.h"
-#include "MTNoteRainInstanced11.h"
+#include "MTNoteAABBInstanced11.h"
 #include "MTNoteCylindricalInstanced11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
@@ -282,8 +281,7 @@ int MIDITrailApp::Terminate()
 
 	m_Renderer.Terminate();
 
-	MTNoteBoxInstanced11::ReleasePipeline();
-	MTNoteRainInstanced11::ReleasePipeline();
+	MTNoteAABBInstanced11::ReleasePipeline();
 	MTNoteCylindricalInstanced11::ReleasePipeline();
 	MTNoteInstancedBase11::ReleaseCommonStates();
 

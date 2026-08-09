@@ -107,7 +107,8 @@ int MTScenePianoRollRain11::Create(
 	m_KeyboardCtrl.SetPlaybackPosTracking(false);
 
 	// Note rain
-	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
+	                           MTAABBMode::Rain);
 	if (result != 0) goto EXIT;
 
 	// Dashboard

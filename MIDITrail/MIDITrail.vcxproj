@@ -261,9 +261,10 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTDashboard11.cpp" />
     <ClCompile Include="MTNoteTracker.cpp" />
     <ClCompile Include="MTNoteInstancedBase11.cpp" />
-    <ClCompile Include="MTNoteBoxInstanced11.cpp" />
+    <ClCompile Include="MTNoteAABBInstanced11.cpp" />
+    <!-- <ClCompile Include="MTNoteBoxInstanced11.cpp" /> Replaced by MTNoteAABBInstanced11 -->
     <ClCompile Include="MTNoteCylindricalInstanced11.cpp" />
-    <ClCompile Include="MTNoteRainInstanced11.cpp" />
+    <!-- <ClCompile Include="MTNoteRainInstanced11.cpp" /> Replaced by MTNoteAABBInstanced11 -->
     <ClCompile Include="MTNoteBox11.cpp" />
     <ClCompile Include="MTPianoKeyboard11.cpp" />
     <ClCompile Include="MTPianoKeyboard11_vertex.cpp" />
@@ -351,6 +352,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTSceneUpdateContext.h" />
     <ClInclude Include="MTSceneComponent11.h" />
     <ClInclude Include="MTNoteInstancedBase11.h" />
+    <ClInclude Include="MTNoteAABBInstanced11.h" />
     <ClInclude Include="MTNoteBoxInstanced11.h" />
     <ClInclude Include="MTNoteCylindricalInstanced11.h" />
     <ClInclude Include="MTNoteRainInstanced11.h" />
