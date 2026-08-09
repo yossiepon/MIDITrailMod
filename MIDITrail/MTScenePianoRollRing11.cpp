@@ -27,6 +27,7 @@ MTScenePianoRollRing11::MTScenePianoRollRing11(bool isLive)
 {
 	m_hWnd = NULL;
 	m_IsLive = isLive;
+	m_pNoteBoxLive = NULL;
 
 	m_Traits.viewpointCompensation = true;
 }
@@ -41,7 +42,7 @@ MTScenePianoRollRing11::~MTScenePianoRollRing11()
 //******************************************************************************
 const TCHAR* MTScenePianoRollRing11::GetName() const
 {
-	return _T("PianoRollRing");
+	return m_IsLive ? _T("PianoRollRingLive") : _T("PianoRollRing");
 }
 
 //******************************************************************************
@@ -82,14 +83,30 @@ int MTScenePianoRollRing11::Create(
 	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
 	if (result != 0) goto EXIT;
 
+	// PitchBend（Live/Playback 共通で必要）
+	result = m_NotePitchBend.Initialize();
+	if (result != 0) goto EXIT;
+
+	// Live モード
+	if (m_IsLive) {
+		try {
+			m_pNoteBoxLive = new MTNoteCylindricalLive11();
+		}
+		catch (std::bad_alloc) {
+			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+			goto EXIT;
+		}
+		result = m_pNoteBoxLive->Create(pDevice, pContext, GetName(), &m_NotePitchBend);
+		if (result != 0) goto EXIT;
+		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(m_pNoteBoxLive);
+		goto EXIT;
+	}
+
 	if (pSeqData == NULL) goto EXIT;
 
 	// Ring NoteDesign (shared by NoteBox, Ripple, Lyrics)
 	result = m_NoteDesignRing.Initialize(GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-
-	// PitchBend
-	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
 	// Grid ring
@@ -156,11 +173,15 @@ void MTScenePianoRollRing11::Release()
 	m_TimeIndicator.Release();
 	m_PictBoard.Release();
 	m_NoteBox.Release();
+	delete m_pNoteBoxLive;
+	m_pNoteBoxLive = NULL;
 	m_Ripple.Release();
 	m_Lyrics.Release();
 	m_Dashboard.Release();
 	m_Stars.Release();
 	m_BackgroundImage.Release();
+
+	MTSceneBase11::Release();
 }
 
 //******************************************************************************
@@ -195,7 +216,12 @@ int MTScenePianoRollRing11::_DrawSceneComponents(
 	if (result != 0) goto EXIT;
 
 	// NoteBox
-	result = m_NoteBox.Draw(pContext, viewProj, lightDir);
+	if (m_pNoteBoxLive != NULL) {
+		result = m_pNoteBoxLive->Draw(pContext, viewProj, lightDir);
+	}
+	else {
+		result = m_NoteBox.Draw(pContext, viewProj, lightDir);
+	}
 	if (result != 0) goto EXIT;
 
 	// PictBoard ring
@@ -355,6 +381,42 @@ void MTScenePianoRollRing11::SetPlaySpeedRatio(unsigned long ratio)
 unsigned long MTScenePianoRollRing11::GetNoteCount() const
 {
 	return m_NoteBox.GetNoteCount();
+}
+
+//******************************************************************************
+// Live note events
+//******************************************************************************
+void MTScenePianoRollRing11::SetNoteOnLive(
+		unsigned char portNo, unsigned char chNo,
+		unsigned char noteNo, unsigned char velocity)
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->SetNoteOn(portNo, chNo, noteNo, velocity);
+	}
+}
+
+void MTScenePianoRollRing11::SetNoteOffLive(
+		unsigned char portNo, unsigned char chNo,
+		unsigned char noteNo)
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->SetNoteOff(portNo, chNo, noteNo);
+	}
+}
+
+void MTScenePianoRollRing11::AllNoteOffLive()
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->AllNoteOff();
+	}
+}
+
+void MTScenePianoRollRing11::AllNoteOffOnChLive(
+		unsigned char portNo, unsigned char chNo)
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->AllNoteOffOnCh(portNo, chNo);
+	}
 }
 
 //******************************************************************************
