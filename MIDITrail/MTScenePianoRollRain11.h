@@ -17,7 +17,7 @@
 #include "MTStars11.h"
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
-#include "MTNoteRain11.h"
+#include "MTNoteRainInstanced11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
 #include "MTPianoKeyboardCtrlRain11.h"
@@ -69,7 +69,7 @@ private:
 	MTStars11           m_Stars;
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11       m_Dashboard;
-	MTNoteRain11        m_NoteRain;
+	MTNoteRainInstanced11 m_NoteRain;
 	MTNoteTracker       m_NoteTracker;
 	MTNotePitchBend     m_NotePitchBend;
 	MTPianoKeyboardCtrlRain11 m_KeyboardCtrl;
