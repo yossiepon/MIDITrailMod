@@ -1,6 +1,6 @@
 //******************************************************************************
 //
-// MIDITrail / MTNoteBoxRingInstanced11
+// MIDITrail / MTNoteCylindricalInstanced11
 //
 // GPU-instanced note renderer for PianoRoll Ring scenes.
 //
@@ -11,7 +11,7 @@
 #include "StdAfx.h"
 #include <d3dcompiler.h>
 #include "YNBaseLib.h"
-#include "MTNoteBoxRingInstanced11.h"
+#include "MTNoteCylindricalInstanced11.h"
 #include "MTNoteDesignMod.h"
 
 using namespace YNBaseLib;
@@ -24,13 +24,13 @@ using namespace DirectX::SimpleMath;
 //******************************************************************************
 // Culling distance
 //******************************************************************************
-#define MTNOTEBOXRINGINST_CULL_DISTANCE  (2200.0f)
+#define MTNOTECYLINDRICAL_CULL_DISTANCE  (2200.0f)
 
 
 //******************************************************************************
 // Inline HLSL shader (cylindrical corner mask)
 //******************************************************************************
-static const char* MTNOTEBOXRINGINST_SHADER =
+static const char* MTNOTECYLINDRICAL_SHADER =
 	"cbuffer Constants : register(b0) {\n"
 	"  float4x4 g_WVP;\n"
 	"  float4 g_PB[32];\n"
@@ -161,16 +161,16 @@ static const char* MTNOTEBOXRINGINST_SHADER =
 //******************************************************************************
 // Static pipeline members
 //******************************************************************************
-ID3D11VertexShader*      MTNoteBoxRingInstanced11::s_pVS       = nullptr;
-ID3D11PixelShader*       MTNoteBoxRingInstanced11::s_pPS       = nullptr;
-ID3D11InputLayout*       MTNoteBoxRingInstanced11::s_pLayout   = nullptr;
-ID3D11Buffer*            MTNoteBoxRingInstanced11::s_pConstBuf = nullptr;
+ID3D11VertexShader*      MTNoteCylindricalInstanced11::s_pVS       = nullptr;
+ID3D11PixelShader*       MTNoteCylindricalInstanced11::s_pPS       = nullptr;
+ID3D11InputLayout*       MTNoteCylindricalInstanced11::s_pLayout   = nullptr;
+ID3D11Buffer*            MTNoteCylindricalInstanced11::s_pConstBuf = nullptr;
 
 
 //******************************************************************************
 // Constructor / Destructor
 //******************************************************************************
-MTNoteBoxRingInstanced11::MTNoteBoxRingInstanced11()
+MTNoteCylindricalInstanced11::MTNoteCylindricalInstanced11()
 {
 	m_pNoteDesign = nullptr;
 	m_pNoteTracker = nullptr;
@@ -186,7 +186,7 @@ MTNoteBoxRingInstanced11::MTNoteBoxRingInstanced11()
 	XMStoreFloat4x4(&m_World, XMMatrixIdentity());
 }
 
-MTNoteBoxRingInstanced11::~MTNoteBoxRingInstanced11()
+MTNoteCylindricalInstanced11::~MTNoteCylindricalInstanced11()
 {
 	Release();
 }
@@ -195,7 +195,7 @@ MTNoteBoxRingInstanced11::~MTNoteBoxRingInstanced11()
 //******************************************************************************
 // Initialize static pipeline
 //******************************************************************************
-int MTNoteBoxRingInstanced11::InitPipeline(ID3D11Device* pDevice)
+int MTNoteCylindricalInstanced11::InitPipeline(ID3D11Device* pDevice)
 {
 	int result = 0;
 	HRESULT hr = S_OK;
@@ -205,13 +205,13 @@ int MTNoteBoxRingInstanced11::InitPipeline(ID3D11Device* pDevice)
 
 	if (s_pVS != nullptr) return 0;
 
-	hr = D3DCompile(MTNOTEBOXRINGINST_SHADER, strlen(MTNOTEBOXRINGINST_SHADER), "MTNoteBoxRingInstanced11",
+	hr = D3DCompile(MTNOTECYLINDRICAL_SHADER, strlen(MTNOTECYLINDRICAL_SHADER), "MTNoteCylindricalInstanced11",
 	                nullptr, nullptr, "VSMain", "vs_5_0", 0, 0, &pVSBlob, &pErrors);
 	if (FAILED(hr)) {
 		result = YN_SET_ERR("Shader compile error (VS).", hr, 0);
 		goto EXIT;
 	}
-	hr = D3DCompile(MTNOTEBOXRINGINST_SHADER, strlen(MTNOTEBOXRINGINST_SHADER), "MTNoteBoxRingInstanced11",
+	hr = D3DCompile(MTNOTECYLINDRICAL_SHADER, strlen(MTNOTECYLINDRICAL_SHADER), "MTNoteCylindricalInstanced11",
 	                nullptr, nullptr, "PSMain", "ps_5_0", 0, 0, &pPSBlob, &pErrors);
 	if (FAILED(hr)) {
 		result = YN_SET_ERR("Shader compile error (PS).", hr, 0);
@@ -268,7 +268,7 @@ EXIT:;
 //******************************************************************************
 // Release static pipeline
 //******************************************************************************
-void MTNoteBoxRingInstanced11::ReleasePipeline()
+void MTNoteCylindricalInstanced11::ReleasePipeline()
 {
 	if (s_pVS)       { s_pVS->Release();       s_pVS = nullptr; }
 	if (s_pPS)       { s_pPS->Release();       s_pPS = nullptr; }
@@ -280,7 +280,7 @@ void MTNoteBoxRingInstanced11::ReleasePipeline()
 //******************************************************************************
 // Create
 //******************************************************************************
-int MTNoteBoxRingInstanced11::Create(
+int MTNoteCylindricalInstanced11::Create(
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
 		const TCHAR* pSceneName,
@@ -331,7 +331,7 @@ EXIT:;
 //******************************************************************************
 // Create template geometry (4-vertex quad in cylindrical space)
 //******************************************************************************
-int MTNoteBoxRingInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
+int MTNoteCylindricalInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
 {
 	int result = 0;
 
@@ -340,7 +340,7 @@ int MTNoteBoxRingInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
 	// r_mask: 0=inner(0), 1=outer(1)
 	// angle_mask: 0=left(0), 1=right(1)
 	// Ring flat quad: spans time (corner.x) × angle (corner.z) at outer radius (corner.y=1)
-	MTNOTEBOXRING_INST_TEMPLATE_VERTEX verts[4] = {
+	MTNOTECYLINDRICAL_INST_TEMPLATE_VERTEX verts[4] = {
 		{{0, 1, 0}, {0, 1, 0}},   // xStart, outer, leftAngle
 		{{1, 1, 0}, {0, 1, 0}},   // xEnd, outer, leftAngle
 		{{1, 1, 1}, {0, 1, 0}},   // xEnd, outer, rightAngle
@@ -368,14 +368,14 @@ EXIT:;
 //******************************************************************************
 // Create instance buffer
 //******************************************************************************
-int MTNoteBoxRingInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
+int MTNoteCylindricalInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
 {
 	int result = 0;
 
 	if (m_NoteCount == 0) goto EXIT;
 
 	{
-		std::vector<MTNOTEBOXRING_INST_INSTANCE> instances(m_NoteCount);
+		std::vector<MTNOTECYLINDRICAL_INST_INSTANCE> instances(m_NoteCount);
 		std::vector<unsigned long> startTicks(m_NoteCount);
 		std::vector<unsigned long> endTicks(m_NoteCount);
 
@@ -411,7 +411,7 @@ int MTNoteBoxRingInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
 
 		result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,
 		                               instances.data(),
-		                               (unsigned long)(m_NoteCount * sizeof(MTNOTEBOXRING_INST_INSTANCE)),
+		                               (unsigned long)(m_NoteCount * sizeof(MTNOTECYLINDRICAL_INST_INSTANCE)),
 		                               &m_pInstanceVB);
 		if (result != 0) goto EXIT;
 
@@ -426,7 +426,7 @@ EXIT:;
 //******************************************************************************
 // Update
 //******************************************************************************
-int MTNoteBoxRingInstanced11::Update(const MTSceneUpdateContext& ctx)
+int MTNoteCylindricalInstanced11::Update(const MTSceneUpdateContext& ctx)
 {
 	m_CurTickTime = ctx.curTickTime;
 	m_PlayTimeMSec = ctx.playTimeMSec;
@@ -444,7 +444,7 @@ int MTNoteBoxRingInstanced11::Update(const MTSceneUpdateContext& ctx)
 //******************************************************************************
 // Draw
 //******************************************************************************
-int MTNoteBoxRingInstanced11::Draw(
+int MTNoteCylindricalInstanced11::Draw(
 		ID3D11DeviceContext* pContext,
 		const Matrix& viewProj,
 		const Vector4& lightDir
@@ -455,7 +455,7 @@ int MTNoteBoxRingInstanced11::Draw(
 	if (!IsEnable() || m_NoteCount == 0) goto EXIT;
 
 	{
-		unsigned long tickWindow = (unsigned long)(MTNOTEBOXRINGINST_CULL_DISTANCE / m_XPerTick);
+		unsigned long tickWindow = (unsigned long)(MTNOTECYLINDRICAL_CULL_DISTANCE / m_XPerTick);
 		unsigned long tickLow = (m_CurTickTime > tickWindow) ? (m_CurTickTime - tickWindow) : 0;
 		unsigned long tickHigh = m_CurTickTime + tickWindow;
 
@@ -474,7 +474,7 @@ int MTNoteBoxRingInstanced11::Draw(
 		pContext->PSSetShader(s_pPS, nullptr, 0);
 		BindCommonStates(pContext);
 
-		UINT strides[2] = { sizeof(MTNOTEBOXRING_INST_TEMPLATE_VERTEX), sizeof(MTNOTEBOXRING_INST_INSTANCE) };
+		UINT strides[2] = { sizeof(MTNOTECYLINDRICAL_INST_TEMPLATE_VERTEX), sizeof(MTNOTECYLINDRICAL_INST_INSTANCE) };
 		UINT offsets[2] = { 0, 0 };
 		ID3D11Buffer* buffers[2] = { m_pTemplateVB, m_pInstanceVB };
 		pContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
@@ -531,7 +531,7 @@ EXIT:;
 //******************************************************************************
 // Release
 //******************************************************************************
-void MTNoteBoxRingInstanced11::Release()
+void MTNoteCylindricalInstanced11::Release()
 {
 	if (m_pTemplateVB)  { m_pTemplateVB->Release();  m_pTemplateVB = nullptr; }
 	if (m_pInstanceVB)  { m_pInstanceVB->Release();  m_pInstanceVB = nullptr; }
@@ -547,7 +547,7 @@ void MTNoteBoxRingInstanced11::Release()
 //******************************************************************************
 // Reset
 //******************************************************************************
-void MTNoteBoxRingInstanced11::Reset()
+void MTNoteCylindricalInstanced11::Reset()
 {
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
@@ -557,7 +557,7 @@ void MTNoteBoxRingInstanced11::Reset()
 //******************************************************************************
 // Note count
 //******************************************************************************
-unsigned long MTNoteBoxRingInstanced11::GetNoteCount() const
+unsigned long MTNoteCylindricalInstanced11::GetNoteCount() const
 {
 	return m_NoteCount;
 }

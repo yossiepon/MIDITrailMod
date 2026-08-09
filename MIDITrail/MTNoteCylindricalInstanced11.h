@@ -1,6 +1,6 @@
 //******************************************************************************
 //
-// MIDITrail / MTNoteBoxRingInstanced11
+// MIDITrail / MTNoteCylindricalInstanced11
 //
 // GPU-instanced note renderer for PianoRoll Ring scenes.
 // Uses cylindrical coordinate corner mask: instance data stores
@@ -22,7 +22,7 @@
 //******************************************************************************
 // Instance data per note (GPU layout, cylindrical coordinates)
 //******************************************************************************
-struct MTNOTEBOXRING_INST_INSTANCE {
+struct MTNOTECYLINDRICAL_INST_INSTANCE {
 	float xStart;           // time axis start position
 	float xEnd;             // time axis end position
 	float radius;           // cylinder radius (port/ch offset)
@@ -37,7 +37,7 @@ struct MTNOTEBOXRING_INST_INSTANCE {
 //******************************************************************************
 // Template vertex (shared quad geometry, corner[3] + normal[3])
 //******************************************************************************
-struct MTNOTEBOXRING_INST_TEMPLATE_VERTEX {
+struct MTNOTECYLINDRICAL_INST_TEMPLATE_VERTEX {
 	float corner[3];    // (x_mask, r_mask, angle_mask): cylindrical corner
 	float normal[3];    // dummy normal (actual normal computed in VS from angle)
 };
@@ -46,12 +46,12 @@ struct MTNOTEBOXRING_INST_TEMPLATE_VERTEX {
 //******************************************************************************
 // GPU-instanced note ring renderer
 //******************************************************************************
-class MTNoteBoxRingInstanced11 : public MTNoteInstancedBase11
+class MTNoteCylindricalInstanced11 : public MTNoteInstancedBase11
 {
 public:
 
-	MTNoteBoxRingInstanced11();
-	virtual ~MTNoteBoxRingInstanced11();
+	MTNoteCylindricalInstanced11();
+	virtual ~MTNoteCylindricalInstanced11();
 
 	int Create(
 				ID3D11Device* pDevice,
@@ -88,7 +88,7 @@ private:
 		DirectX::XMFLOAT4   active;        // x=playTimeMSec, y=growFactor, z=whiteRate, w=pass
 		DirectX::XMFLOAT4   opts;          // x=unused, yzw=emissiveRGB
 		DirectX::XMFLOAT4   light;         // xyz=lightDir, w=diffuseLevel
-		DirectX::XMFLOAT4   lambient;      // x=ambientLevel, yzw=unused, w=lightEnable
+		DirectX::XMFLOAT4   lambient;      // x=ambientLevel, yz=unused, w=lightEnable
 		DirectX::XMFLOAT4   envelope;      // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio
 		DirectX::XMFLOAT4   ringParams;    // x=halfNoteWidth, y=halfAngleStep (degrees), z/w=unused
 	};

@@ -24,7 +24,7 @@
 #include "MTNoteInstancedBase11.h"
 #include "MTNoteBoxInstanced11.h"
 #include "MTNoteRainInstanced11.h"
-#include "MTNoteBoxRingInstanced11.h"
+#include "MTNoteCylindricalInstanced11.h"
 // >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
 // <<< add 20190828 yossiepon end
@@ -284,7 +284,7 @@ int MIDITrailApp::Terminate()
 
 	MTNoteBoxInstanced11::ReleasePipeline();
 	MTNoteRainInstanced11::ReleasePipeline();
-	MTNoteBoxRingInstanced11::ReleasePipeline();
+	MTNoteCylindricalInstanced11::ReleasePipeline();
 	MTNoteInstancedBase11::ReleaseCommonStates();
 
 	if (m_pScene != NULL) {
