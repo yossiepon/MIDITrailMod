@@ -508,9 +508,9 @@ int SMSequencer::_IntervalProc(
 	result = _UpdatePlayPosition();
 	if (result != 0) goto EXIT;
 
-	//公称曲長＋マージンを超過したら演奏終了（暫定：ロード時イベントクリップ導入後に除去）
+	//公称曲長＋マージンを超過したら演奏終了（安全弁）
 	//通常MIDIでは全イベント処理完了（m_PlayIndex >= m_Track.GetSize()）が先に発火する
-	if (m_TotalPlayTimeNano > 0 && m_CurPlayTime >= m_TotalPlayTimeNano + 700000000ULL) {
+	if (m_TotalPlayTimeNano > 0 && m_CurPlayTime >= m_TotalPlayTimeNano + 100000000ULL) {
 		if (!m_isSkipping) {
 			_AllTrackNoteOff();
 			m_MsgTrans.PostPlayTime(
@@ -908,9 +908,9 @@ int SMSequencer::_ProcUserRequest(
 	//スキップを要求された場合
 	if (m_UserRequest == RequestSkip) {
 		*pIsContinue = true;
-		//公称曲長＋マージンでクリップ（暫定：ロード時イベントクリップ導入後に除去）
+		//公称曲長＋マージンでクリップ（安全弁）
 		unsigned long long skipTarget = m_SkipTargetTime;
-		unsigned long long endTimeWithMargin = m_TotalPlayTimeNano + 700000000ULL;
+		unsigned long long endTimeWithMargin = m_TotalPlayTimeNano + 100000000ULL;
 		if (m_TotalPlayTimeNano > 0 && skipTarget > endTimeWithMargin) {
 			skipTarget = endTimeWithMargin;
 		}
