@@ -22,6 +22,7 @@
 #include "MTTimeIndicatorRing11.h"
 #include "MTPictBoardRing11.h"
 #include "MTNoteCylindricalInstanced11.h"
+#include "MTNoteCylindricalLive11.h"
 #include "MTNoteRipple11.h"
 #include "MTNoteLyrics11.h"
 #include "MTNoteTracker.h"
@@ -55,6 +56,13 @@ public:
 	void SetPlaySpeedRatio(unsigned long ratio) override;
 	unsigned long GetNoteCount() const override;
 
+	void SetNoteOnLive(unsigned char portNo, unsigned char chNo,
+	                   unsigned char noteNo, unsigned char velocity) override;
+	void SetNoteOffLive(unsigned char portNo, unsigned char chNo,
+	                    unsigned char noteNo) override;
+	void AllNoteOffLive() override;
+	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
+
 protected:
 
 	void _ComputeDefaultViewParam(MTViewParamMap* pParamMap) override;
@@ -78,6 +86,7 @@ private:
 	MTTimeIndicatorRing11 m_TimeIndicator;
 	MTPictBoardRing11   m_PictBoard;
 	MTNoteCylindricalInstanced11 m_NoteBox;
+	MTNoteCylindricalLive11* m_pNoteBoxLive;
 	MTNoteRipple11      m_Ripple;
 	MTNoteLyrics11      m_Lyrics;
 	MTNoteTracker       m_NoteTracker;

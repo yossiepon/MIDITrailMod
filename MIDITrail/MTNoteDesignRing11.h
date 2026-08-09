@@ -66,6 +66,19 @@ public:
 				float rate = 0.0f
 			) override;
 
+	void GetNoteBoxVirtexPosLive(
+				unsigned long elapsedTime,
+				unsigned char portNo,
+				unsigned char chNo,
+				unsigned char noteNo,
+				DirectX::SimpleMath::Vector3* pVector0,
+				DirectX::SimpleMath::Vector3* pVector1,
+				DirectX::SimpleMath::Vector3* pVector2,
+				DirectX::SimpleMath::Vector3* pVector3,
+				short pitchBendValue = 0,
+				unsigned char pitchBendSensitivity = 0
+			) override;
+
 	void GetGridRingBasePos(
 				unsigned long tickTime,
 				DirectX::SimpleMath::Vector3* pBasePos

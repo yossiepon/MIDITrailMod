@@ -10,6 +10,7 @@
 //******************************************************************************
 
 #include "stdafx.h"
+#include <mmsystem.h>
 #include "YNBaseLib.h"
 #include "MTSceneBase11.h"
 #include "MTConfFile.h"
@@ -50,6 +51,17 @@ int MTSceneBase11::OnRecvSequencerMsg(
 		m_CurTickTime = parser.GetPlayTickTime();
 		m_PlayTimeMSec = parser.GetPlayTimeMSec();
 	}
+	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
+		SetNoteOnLive(parser.GetPortNo(), parser.GetChNo(),
+		              parser.GetNoteNo(), parser.GetVelocity());
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgNoteOff) {
+		SetNoteOffLive(parser.GetPortNo(), parser.GetChNo(),
+		               parser.GetNoteNo());
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgAllNoteOff) {
+		AllNoteOffOnChLive(parser.GetPortNo(), parser.GetChNo());
+	}
 
 	// シーン固有処理
 	result = _OnRecvSequencerMsg(param1, param2);
@@ -70,6 +82,7 @@ int MTSceneBase11::Update()
 	MTSceneUpdateContext ctx;
 	ctx.curTickTime = m_CurTickTime;
 	ctx.playTimeMSec = m_PlayTimeMSec;
+	ctx.liveTimeMSec = m_IsLive ? timeGetTime() : 0;
 
 	// カメラ更新
 	result = m_Camera.Update(ctx);

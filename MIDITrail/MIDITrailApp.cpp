@@ -3232,8 +3232,7 @@ int MIDITrailApp::_CreateScene(
 			//ライブモニタ用シーン生成 (DX11: isLive=true)
 			else {
 				if (type == PianoRoll3D) {
-					// Live シーン未実装: 暫定的に Playback 用を使用
-					m_pScene = new MTScenePianoRoll3D11();
+					m_pScene = new MTScenePianoRoll3D11(true);
 				}
 				else if (type == PianoRoll2D) {
 					m_pScene = new MTScenePianoRoll3D11(true, true);

@@ -21,4 +21,5 @@ struct MTSceneUpdateContext {
 	unsigned long playTimeMSec;
 	float rollAngle;
 	DirectX::SimpleMath::Vector3 camPos;
+	unsigned long liveTimeMSec;
 };

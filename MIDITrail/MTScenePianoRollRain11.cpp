@@ -28,6 +28,7 @@ MTScenePianoRollRain11::MTScenePianoRollRain11(bool isLive, bool is2D)
 	m_Is2D = is2D;
 	m_hWnd = NULL;
 	m_IsLive = isLive;
+	m_pNoteRainLive = NULL;
 }
 
 MTScenePianoRollRain11::~MTScenePianoRollRain11()
@@ -40,10 +41,10 @@ MTScenePianoRollRain11::~MTScenePianoRollRain11()
 //******************************************************************************
 const TCHAR* MTScenePianoRollRain11::GetName() const
 {
-	if (m_Is2D) {
-		return _T("PianoRollRain2D");
+	if (m_IsLive) {
+		return m_Is2D ? _T("PianoRollRain2DLive") : _T("PianoRollRainLive");
 	}
-	return _T("PianoRollRain");
+	return m_Is2D ? _T("PianoRollRain2D") : _T("PianoRollRain");
 }
 
 //******************************************************************************
@@ -84,15 +85,33 @@ int MTScenePianoRollRain11::Create(
 	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
 	if (result != 0) goto EXIT;
 
-	if (pSeqData == NULL) goto EXIT;
-
-	// PitchBend
+	// PitchBend（Live/Playback 共通で必要）
 	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
 	if (m_Is2D) {
 		m_NotePitchBend.SetEnable(false);
 	}
+
+	// Live モード
+	if (m_IsLive) {
+		try {
+			m_pNoteRainLive = new MTNoteAABBLive11();
+		}
+		catch (std::bad_alloc) {
+			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+			goto EXIT;
+		}
+		result = m_pNoteRainLive->Create(pDevice, pContext, GetName(), &m_NotePitchBend,
+		                                 MTAABBLiveMode::Rain);
+		if (result != 0) goto EXIT;
+		m_pNoteRainLive->SetLightEnable(false);
+		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(m_pNoteRainLive);
+		goto EXIT;
+	}
+
+	if (pSeqData == NULL) goto EXIT;
 
 	// NoteTracker (for keyboard per-key index)
 	result = m_NoteTracker.Create(pSeqData);
@@ -136,9 +155,13 @@ void MTScenePianoRollRain11::Release()
 {
 	m_KeyboardCtrl.Release();
 	m_NoteRain.Release();
+	delete m_pNoteRainLive;
+	m_pNoteRainLive = NULL;
 	m_Dashboard.Release();
 	m_Stars.Release();
 	m_BackgroundImage.Release();
+
+	MTSceneBase11::Release();
 }
 
 //******************************************************************************
@@ -180,7 +203,12 @@ int MTScenePianoRollRain11::_DrawSceneComponents(
 	if (result != 0) goto EXIT;
 
 	// Note rain
-	result = m_NoteRain.Draw(pContext, viewProj, lightDir);
+	if (m_pNoteRainLive != NULL) {
+		result = m_pNoteRainLive->Draw(pContext, viewProj, lightDir);
+	}
+	else {
+		result = m_NoteRain.Draw(pContext, viewProj, lightDir);
+	}
 	if (result != 0) goto EXIT;
 
 	// Stars
@@ -310,6 +338,42 @@ void MTScenePianoRollRain11::SetPlaySpeedRatio(unsigned long ratio)
 unsigned long MTScenePianoRollRain11::GetNoteCount() const
 {
 	return m_NoteRain.GetNoteCount();
+}
+
+//******************************************************************************
+// Live note events
+//******************************************************************************
+void MTScenePianoRollRain11::SetNoteOnLive(
+		unsigned char portNo, unsigned char chNo,
+		unsigned char noteNo, unsigned char velocity)
+{
+	if (m_pNoteRainLive != NULL) {
+		m_pNoteRainLive->SetNoteOn(portNo, chNo, noteNo, velocity);
+	}
+}
+
+void MTScenePianoRollRain11::SetNoteOffLive(
+		unsigned char portNo, unsigned char chNo,
+		unsigned char noteNo)
+{
+	if (m_pNoteRainLive != NULL) {
+		m_pNoteRainLive->SetNoteOff(portNo, chNo, noteNo);
+	}
+}
+
+void MTScenePianoRollRain11::AllNoteOffLive()
+{
+	if (m_pNoteRainLive != NULL) {
+		m_pNoteRainLive->AllNoteOff();
+	}
+}
+
+void MTScenePianoRollRain11::AllNoteOffOnChLive(
+		unsigned char portNo, unsigned char chNo)
+{
+	if (m_pNoteRainLive != NULL) {
+		m_pNoteRainLive->AllNoteOffOnCh(portNo, chNo);
+	}
 }
 
 //******************************************************************************

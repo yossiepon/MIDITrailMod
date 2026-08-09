@@ -18,6 +18,7 @@
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
 #include "MTNoteAABBInstanced11.h"
+#include "MTNoteAABBLive11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
 #include "MTPianoKeyboardCtrlRain11.h"
@@ -50,6 +51,13 @@ public:
 	void SetPlaySpeedRatio(unsigned long ratio) override;
 	unsigned long GetNoteCount() const override;
 
+	void SetNoteOnLive(unsigned char portNo, unsigned char chNo,
+	                   unsigned char noteNo, unsigned char velocity) override;
+	void SetNoteOffLive(unsigned char portNo, unsigned char chNo,
+	                    unsigned char noteNo) override;
+	void AllNoteOffLive() override;
+	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
+
 protected:
 
 	void _ComputeDefaultViewParam(MTViewParamMap* pParamMap) override;
@@ -70,6 +78,7 @@ private:
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11       m_Dashboard;
 	MTNoteAABBInstanced11 m_NoteRain;
+	MTNoteAABBLive11*   m_pNoteRainLive;
 	MTNoteTracker       m_NoteTracker;
 	MTNotePitchBend     m_NotePitchBend;
 	MTPianoKeyboardCtrlRain11 m_KeyboardCtrl;

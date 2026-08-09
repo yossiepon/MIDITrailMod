@@ -4,6 +4,7 @@
 //
 // Note design class for DX11.
 // Unified from MTNoteDesign + MTNoteDesignMod (ADR-0054 Mod standardization).
+// Playback uses rate-based decay; Live methods use elapsedTime-based positioning.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2012-2025 yossiepon Oniichan. All Rights Reserved.
@@ -88,6 +89,22 @@ EXIT:;
 float MTNoteDesign11::GetPlayPosX(unsigned long curTickTime)
 {
 	return ((float)curTickTime * m_QuarterNoteLength / (float)m_TimeDivision);
+}
+
+//******************************************************************************
+// Live monitor note position
+//******************************************************************************
+float MTNoteDesign11::GetLivePosX(unsigned long elapsedTime)
+{
+	return (((float)elapsedTime / 1000.0f) * m_LiveNoteLengthPerSecond);
+}
+
+//******************************************************************************
+// Live monitor display duration
+//******************************************************************************
+unsigned long MTNoteDesign11::GetLiveMonitorDisplayDuration()
+{
+	return (unsigned long)m_LiveMonitorDisplayDuration;
 }
 
 //******************************************************************************
@@ -201,6 +218,35 @@ void MTNoteDesign11::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
+// Live monitor note box vertex positions
+//******************************************************************************
+void MTNoteDesign11::GetNoteBoxVirtexPosLive(
+		unsigned long elapsedTime,
+		unsigned char portNo,
+		unsigned char chNo,
+		unsigned char noteNo,
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3,
+		short pitchBendValue,
+		unsigned char pitchBendSensitivity
+	)
+{
+	unsigned long tickTimeDummy = 0;
+	Vector3 center = GetNoteBoxCenterPosX(tickTimeDummy, portNo, chNo, noteNo,
+	                                        pitchBendValue, pitchBendSensitivity);
+	float x = -(GetLivePosX(elapsedTime));
+	float bh = GetNoteBoxHeight();
+	float bw = GetNoteBoxWidth();
+
+	*pVector0 = Vector3(x, center.y + bh / 2.0f, center.z + bw / 2.0f);
+	*pVector1 = Vector3(x, center.y + bh / 2.0f, center.z - bw / 2.0f);
+	*pVector2 = Vector3(x, center.y - bh / 2.0f, center.z + bw / 2.0f);
+	*pVector3 = Vector3(x, center.y - bh / 2.0f, center.z - bw / 2.0f);
+}
+
+//******************************************************************************
 // Grid box vertex positions
 //******************************************************************************
 void MTNoteDesign11::GetGridBoxVirtexPos(
@@ -213,6 +259,32 @@ void MTNoteDesign11::GetGridBoxVirtexPos(
 	)
 {
 	float x = GetPlayPosX(curTickTime);
+	float bh = GetNoteBoxHeight();
+	float bw = GetNoteBoxWidth();
+	float gridHeight = GetNoteStep() * 127;
+	float gridWidth  = GetChStep() * 15;
+	float oy = GetPortOriginY(portNo);
+	float oz = GetPortOriginZ(portNo);
+
+	*pVector0 = Vector3(x, oy + gridHeight + bh / 2.0f, oz + gridWidth + bw / 2.0f);
+	*pVector1 = Vector3(x, oy + gridHeight + bh / 2.0f, oz             - bw / 2.0f);
+	*pVector2 = Vector3(x, oy              - bh / 2.0f, oz + gridWidth + bw / 2.0f);
+	*pVector3 = Vector3(x, oy              - bh / 2.0f, oz             - bw / 2.0f);
+}
+
+//******************************************************************************
+// Live grid box vertex positions
+//******************************************************************************
+void MTNoteDesign11::GetGridBoxVirtexPosLive(
+		unsigned long elapsedTime,
+		unsigned char portNo,
+		Vector3* pVector0,
+		Vector3* pVector1,
+		Vector3* pVector2,
+		Vector3* pVector3
+	)
+{
+	float x = -(GetLivePosX(elapsedTime));
 	float bh = GetNoteBoxHeight();
 	float bw = GetNoteBoxWidth();
 	float gridHeight = GetNoteStep() * 127;
@@ -526,6 +598,9 @@ void MTNoteDesign11::_Clear()
 	m_ActiveNoteWhiteRate = 1.0f;
 	m_ActiveNoteBoxSizeRatio = 1.0f;
 
+	m_LiveMonitorDisplayDuration = 30000;
+	m_LiveNoteLengthPerSecond = 2.0f;
+
 	m_RippleDecayDuration = 100;
 	m_RippleReleaseDuration = 250;
 	m_RippleSrcBlend = D3D11_BLEND_SRC_ALPHA;
@@ -565,6 +640,8 @@ int MTNoteDesign11::_LoadConfFile(const TCHAR* pSceneName)
 	confFile.GetFloat(_T("RippleHeight"), &m_RippleHeight, 1.0f);
 	confFile.GetFloat(_T("RippleWidth"), &m_RippleWidth, 1.0f);
 	confFile.GetFloat(_T("PictBoardRelativePos"), &m_PictBoardRelativePos, 1.0f);
+	confFile.GetFloat(_T("LiveNoteLengthPerSecond"), &m_LiveNoteLengthPerSecond, 2.0f);
+	confFile.GetInt(_T("LiveMonitorDisplayDuration"), &m_LiveMonitorDisplayDuration, 30000);
 
 	// Color parameters
 	result = confFile.SetCurSection(_T("Color"));

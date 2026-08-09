@@ -27,6 +27,7 @@ MTScenePianoRoll3D11::MTScenePianoRoll3D11(bool isLive, bool is2D)
 	m_IsLive = isLive;
 	m_Is2D = is2D;
 	m_hWnd = NULL;
+	m_pNoteBoxLive = NULL;
 
 	// シーン固有のプロパティ
 	m_Traits.cameraDir = MTCameraDirX;
@@ -41,6 +42,7 @@ MTScenePianoRoll3D11::MTScenePianoRoll3D11(bool isLive, bool is2D)
 //******************************************************************************
 MTScenePianoRoll3D11::~MTScenePianoRoll3D11()
 {
+	Release();
 }
 
 //******************************************************************************
@@ -94,6 +96,28 @@ int MTScenePianoRoll3D11::Create(
 	result = m_BackgroundImage.Create(pDevice, pContext, hWnd);
 	if (result != 0) goto EXIT;
 
+	// ピッチベンド（Live/Playback 共通で必要）
+	result = m_NotePitchBend.Initialize();
+	if (result != 0) goto EXIT;
+
+	// Live モード: Live レンダラーを生成してスキップ
+	if (m_IsLive) {
+		try {
+			m_pNoteBoxLive = new MTNoteAABBLive11();
+		}
+		catch (std::bad_alloc) {
+			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+			goto EXIT;
+		}
+		result = m_pNoteBoxLive->Create(pDevice, pContext, GetName(), &m_NotePitchBend,
+		                                m_Is2D ? MTAABBLiveMode::Roll2D : MTAABBLiveMode::Roll3D);
+		if (result != 0) goto EXIT;
+		m_pNoteBoxLive->SetLightEnable(!m_Is2D);
+		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(m_pNoteBoxLive);
+		goto EXIT;
+	}
+
 	// データ依存コンポーネント: pSeqData が NULL の場合はスキップ
 	if (pSeqData == NULL) goto EXIT;
 
@@ -111,10 +135,6 @@ int MTScenePianoRoll3D11::Create(
 
 	// ダッシュボード
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
-	if (result != 0) goto EXIT;
-
-	// ピッチベンド
-	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
 	// ノートトラッカー
@@ -168,6 +188,8 @@ void MTScenePianoRoll3D11::Release()
 	m_NoteTracker.RemoveListener(&m_Lyrics);
 	m_KeyboardCtrl.Release();
 	m_NoteBox.Release();
+	delete m_pNoteBoxLive;
+	m_pNoteBoxLive = NULL;
 	m_Ripple.Release();
 	m_Lyrics.Release();
 	m_NoteTracker.Release();
@@ -243,7 +265,12 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 	if (result != 0) goto EXIT;
 
 	// ノートボックス
-	result = m_NoteBox.Draw(pContext, viewProj, lightDir);
+	if (m_pNoteBoxLive != NULL) {
+		result = m_pNoteBoxLive->Draw(pContext, viewProj, lightDir);
+	}
+	else {
+		result = m_NoteBox.Draw(pContext, viewProj, lightDir);
+	}
 	if (result != 0) goto EXIT;
 
 	// カメラ位置と再生位置の前後関係で描画順を切り替え（奥から手前へ）
@@ -410,6 +437,42 @@ void MTScenePianoRoll3D11::SetPlaySpeedRatio(unsigned long ratio)
 unsigned long MTScenePianoRoll3D11::GetNoteCount() const
 {
 	return m_NoteBox.GetNoteCount();
+}
+
+//******************************************************************************
+// Live note events
+//******************************************************************************
+void MTScenePianoRoll3D11::SetNoteOnLive(
+		unsigned char portNo, unsigned char chNo,
+		unsigned char noteNo, unsigned char velocity)
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->SetNoteOn(portNo, chNo, noteNo, velocity);
+	}
+}
+
+void MTScenePianoRoll3D11::SetNoteOffLive(
+		unsigned char portNo, unsigned char chNo,
+		unsigned char noteNo)
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->SetNoteOff(portNo, chNo, noteNo);
+	}
+}
+
+void MTScenePianoRoll3D11::AllNoteOffLive()
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->AllNoteOff();
+	}
+}
+
+void MTScenePianoRoll3D11::AllNoteOffOnChLive(
+		unsigned char portNo, unsigned char chNo)
+{
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->AllNoteOffOnCh(portNo, chNo);
+	}
 }
 
 //******************************************************************************
