@@ -14,7 +14,7 @@
 
 #include "DXPrimitive11.h"
 #include "MTSceneComponent11.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesign11.h"
 #include "SMIDILib.h"
 #include <directxtk/SimpleMath.h>
 
@@ -51,7 +51,7 @@ private:
 
 	DXPrimitive11 m_Primitive;
 	DXPrimitive11 m_PrimitiveLine;
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign11 m_NoteDesign;
 	float m_CurPos;
 	unsigned long m_CurTickTime;
 	bool m_isEnableLine;

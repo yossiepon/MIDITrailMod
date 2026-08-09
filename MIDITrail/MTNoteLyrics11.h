@@ -34,7 +34,7 @@ public:
 				const TCHAR* pSceneName,
 				SMSeqData* pSeqData,
 				MTNotePitchBend* pNotePitchBend,
-				MTNoteDesignMod* pNoteDesign = NULL
+				MTNoteDesign11* pNoteDesign = NULL
 			);
 
 	void Release();

@@ -45,7 +45,7 @@ int MTNoteLyrics11::Create(
 		const TCHAR* pSceneName,
 		SMSeqData* pSeqData,
 		MTNotePitchBend* pNotePitchBend,
-		MTNoteDesignMod* pNoteDesign
+		MTNoteDesign11* pNoteDesign
 	)
 {
 	int result = 0;

@@ -15,8 +15,8 @@
 #pragma once
 
 #include "MTPianoKeyboardCtrl11.h"
-#include "MTPianoKeyboardDesignMod.h"
-#include "MTNoteDesignMod.h"
+#include "MTPianoKeyboardDesign11.h"
+#include "MTNoteDesign11.h"
 
 
 //******************************************************************************
@@ -66,9 +66,8 @@ protected:
 
 private:
 
-	MTNoteDesign m_NoteDesign;
-	MTPianoKeyboardDesignMod m_DesignMod;
-	MTNoteDesignMod m_NoteDesignMod;
+	MTNoteDesign11 m_NoteDesign;
+	MTPianoKeyboardDesign11 m_DesignMod;
 	SMPortList m_PortList;
 	int m_KeyboardIndex[SM_MAX_PORT_NUM];
 	unsigned char m_KbdPortNo[SM_MAX_CH_NUM];

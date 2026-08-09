@@ -395,7 +395,7 @@ int MTNoteAABBInstanced11::Create(
 		MTNoteTracker* pNoteTracker,
 		MTNotePitchBend* pNotePitchBend,
 		MTAABBMode mode,
-		MTNoteDesignMod* pNoteDesign
+		MTNoteDesign11* pNoteDesign
 	)
 {
 	int result = 0;

@@ -4,7 +4,7 @@
 //
 // Note effect base class.
 // Common base for Ripple and Lyrics: slot-based active note management,
-// envelope calculation via MTNoteDesignMod, m_KeyDownRate dedup array.
+// envelope calculation via MTNoteDesign11, m_KeyDownRate dedup array.
 // Derived classes implement OnActivate/OnDeactivate/BuildVertices.
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -15,7 +15,7 @@
 
 #include "MTSceneComponent11.h"
 #include "MTNoteTracker.h"
-#include "MTNoteDesignMod.h"
+#include "MTNoteDesign11.h"
 
 //******************************************************************************
 // Constants
@@ -52,7 +52,7 @@ public:
 	virtual ~MTNoteEffect();
 
 	virtual int Create(const TCHAR* pSceneName, SMSeqData* pSeqData,
-	                   MTNoteDesignMod* pNoteDesign = NULL);
+	                   MTNoteDesign11* pNoteDesign = NULL);
 	virtual void Release();
 
 	// IMTNoteTrackerListener
@@ -72,8 +72,8 @@ protected:
 
 	NoteEffectStatus m_Status[NOTEEFFECT_MAX_SLOTS];
 	float m_KeyDownRate[NOTEEFFECT_MAX_PORT][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
-	MTNoteDesignMod m_NoteDesignLocal;
-	MTNoteDesignMod* m_pNoteDesign;
+	MTNoteDesign11 m_NoteDesignLocal;
+	MTNoteDesign11* m_pNoteDesign;
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
 	float m_RollAngle;

@@ -529,6 +529,7 @@ int SMSequencer::_IntervalProc(
 		//チックタイム合計
 		m_TotalTickTime += m_PrevDeltaTime;
 
+		deltaTime = 0;
 		while (deltaTime == 0) {
 			//イベント送信
 			result = _OutputMIDIEvent(m_PortNo, &m_Event);

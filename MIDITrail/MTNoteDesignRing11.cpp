@@ -44,7 +44,7 @@ int MTNoteDesignRing11::Initialize(
 {
 	int result = 0;
 
-	result = MTNoteDesignMod::Initialize(pSceneName, pSeqData);
+	result = MTNoteDesign11::Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -101,34 +101,7 @@ void MTNoteDesignRing11::GetNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// Active note box vertex positions (elapsed time variant)
-//******************************************************************************
-void MTNoteDesignRing11::GetActiveNoteBoxVirtexPos(
-		unsigned long curTickTime,
-		unsigned char portNo,
-		unsigned char chNo,
-		unsigned char noteNo,
-		Vector3* pVector0,
-		Vector3* pVector1,
-		Vector3* pVector2,
-		Vector3* pVector3,
-		short pitchBendValue,
-		unsigned char pitchBendSensitivity,
-		unsigned long elapsedTime
-	)
-{
-	float curSizeRatio = 1.0f;
-	if (elapsedTime < (unsigned long)m_ActiveNoteDuration) {
-		curSizeRatio = 1.0f + (m_ActiveNoteBoxSizeRatio - 1.0f)
-		             * (1.0f - (float)elapsedTime / (float)m_ActiveNoteDuration);
-	}
-	_CalcRingActiveVertices(curTickTime, portNo, chNo, noteNo,
-		pVector0, pVector1, pVector2, pVector3,
-		pitchBendValue, pitchBendSensitivity, curSizeRatio);
-}
-
-//******************************************************************************
-// Active note box vertex positions (rate variant, Mod-specific)
+// Active note box vertex positions (rate-based decay)
 //******************************************************************************
 void MTNoteDesignRing11::GetActiveNoteBoxVirtexPos(
 		unsigned long curTickTime,
@@ -154,7 +127,7 @@ void MTNoteDesignRing11::GetActiveNoteBoxVirtexPos(
 }
 
 //******************************************************************************
-// Ring active vertex calculation (shared by elapsedTime and rate variants)
+// Ring active vertex calculation
 //******************************************************************************
 void MTNoteDesignRing11::_CalcRingActiveVertices(
 		unsigned long curTickTime,
@@ -284,7 +257,7 @@ int MTNoteDesignRing11::_LoadConfFile(const TCHAR* pSceneName)
 	int result = 0;
 	MTConfFile confFile;
 
-	result = MTNoteDesignMod::_LoadConfFile(pSceneName);
+	result = MTNoteDesign11::_LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
 	result = confFile.Initialize(pSceneName);

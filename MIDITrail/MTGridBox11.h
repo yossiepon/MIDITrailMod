@@ -14,7 +14,7 @@
 
 #include "DXPrimitive11.h"
 #include "MTSceneComponent11.h"
-#include "MTNoteDesign.h"
+#include "MTNoteDesign11.h"
 #include "SMIDILib.h"
 #include <directxtk/SimpleMath.h>
 
@@ -46,7 +46,7 @@ public:
 private:
 
 	DXPrimitive11 m_Primitive;
-	MTNoteDesign m_NoteDesign;
+	MTNoteDesign11 m_NoteDesign;
 	bool m_isReady;
 
 	int _CreateVertices(

@@ -123,20 +123,20 @@ int MTPianoKeyboardFlat11::_BuildKeyCPU(
 		unsigned long tempIndex[KEY_INDEX_NUM_MAX];
 
 		switch (m_pKeyboardDesign->GetKeyType(noteNo)) {
-			case MTPianoKeyboardDesign::KeyWhiteC:
-			case MTPianoKeyboardDesign::KeyWhiteF:
+			case MTPianoKeyboardDesign11::KeyWhiteC:
+			case MTPianoKeyboardDesign11::KeyWhiteF:
 				result = _CreateVertexOfKeyWhite1(noteNo, tempVertex, tempIndex, pColor);
 				break;
-			case MTPianoKeyboardDesign::KeyWhiteD:
-			case MTPianoKeyboardDesign::KeyWhiteG:
-			case MTPianoKeyboardDesign::KeyWhiteA:
+			case MTPianoKeyboardDesign11::KeyWhiteD:
+			case MTPianoKeyboardDesign11::KeyWhiteG:
+			case MTPianoKeyboardDesign11::KeyWhiteA:
 				result = _CreateVertexOfKeyWhite2(noteNo, tempVertex, tempIndex, pColor);
 				break;
-			case MTPianoKeyboardDesign::KeyWhiteE:
-			case MTPianoKeyboardDesign::KeyWhiteB:
+			case MTPianoKeyboardDesign11::KeyWhiteE:
+			case MTPianoKeyboardDesign11::KeyWhiteB:
 				result = _CreateVertexOfKeyWhite3(noteNo, tempVertex, tempIndex, pColor);
 				break;
-			case MTPianoKeyboardDesign::KeyBlack:
+			case MTPianoKeyboardDesign11::KeyBlack:
 				result = _CreateVertexOfKeyBlack(noteNo, tempVertex, tempIndex, pColor);
 				break;
 		}

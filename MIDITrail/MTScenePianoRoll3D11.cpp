@@ -388,6 +388,9 @@ void MTScenePianoRoll3D11::SetEffect(MTEffectType type, bool isEnable)
 	case MTEffectFileName:
 		m_Dashboard.SetEnableFileName(isEnable);
 		break;
+	case MTEffectPitchBend:
+		m_NotePitchBend.SetEnable(isEnable);
+		break;
 	default:
 		break;
 	}

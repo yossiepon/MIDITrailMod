@@ -4,7 +4,7 @@
 //
 // DX11 piano keyboard for Rain scene (1ch).
 // Inherits flat key generation from MTPianoKeyboardFlat11.
-// Only Create differs (uses MTPianoKeyboardDesign).
+// Only Create differs (uses MTPianoKeyboardDesign11).
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -14,7 +14,7 @@
 #pragma once
 
 #include "MTPianoKeyboardFlat11.h"
-#include "MTPianoKeyboardDesign.h"
+#include "MTPianoKeyboardDesign11.h"
 
 
 //******************************************************************************
@@ -37,5 +37,5 @@ public:
 
 private:
 
-	MTPianoKeyboardDesign m_KeyboardDesign;
+	MTPianoKeyboardDesign11 m_KeyboardDesign;
 };

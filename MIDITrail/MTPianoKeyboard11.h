@@ -17,7 +17,7 @@
 #pragma once
 
 #include "DXPrimitive11.h"
-#include "MTPianoKeyboardDesign.h"
+#include "MTPianoKeyboardDesign11.h"
 #include "SMIDILib.h"
 #include <directxtk/SimpleMath.h>
 
@@ -107,7 +107,7 @@ protected:
 	};
 	BufInfo m_BufInfo[SM_MAX_NOTE_NUM];
 
-	MTPianoKeyboardDesign* m_pKeyboardDesign;
+	MTPianoKeyboardDesign11* m_pKeyboardDesign;
 
 	void _CreateBufInfo();
 	int _FlushToGPU(ID3D11DeviceContext* pContext);

@@ -54,7 +54,7 @@ int MTNoteBox11::Create(
 		SMSeqData* pSeqData,
 		MTNoteTracker* pNoteTracker,
 		MTNotePitchBend* pNotePitchBend,
-		MTNoteDesignMod* pNoteDesign,
+		MTNoteDesign11* pNoteDesign,
 		bool isFlatMode
 	)
 {

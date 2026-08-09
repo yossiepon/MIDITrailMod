@@ -16,10 +16,10 @@
 #pragma once
 
 #include "MTNoteInstancedBase11.h"
-#include "MTNoteDesignMod.h"
+#include "MTNoteDesign11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
-#include "MTPianoKeyboardDesign.h"
+#include "MTPianoKeyboardDesign11.h"
 
 
 //******************************************************************************
@@ -79,7 +79,7 @@ public:
 				MTNoteTracker* pNoteTracker,
 				MTNotePitchBend* pNotePitchBend,
 				MTAABBMode mode,
-				MTNoteDesignMod* pNoteDesign = NULL
+				MTNoteDesign11* pNoteDesign = NULL
 			);
 	void Release();
 
@@ -132,9 +132,9 @@ private:
 	};
 
 	MTAABBMode           m_Mode;
-	MTNoteDesignMod      m_NoteDesignLocal;
-	MTNoteDesignMod*     m_pNoteDesign;
-	MTPianoKeyboardDesign m_KeyboardDesign;
+	MTNoteDesign11      m_NoteDesignLocal;
+	MTNoteDesign11*     m_pNoteDesign;
+	MTPianoKeyboardDesign11 m_KeyboardDesign;
 	MTNoteTracker*       m_pNoteTracker;
 	MTNotePitchBend*     m_pNotePitchBend;
 

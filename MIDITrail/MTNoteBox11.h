@@ -15,7 +15,7 @@
 
 #include "MTSceneComponent11.h"
 #include "DXPrimitive11.h"
-#include "MTNoteDesignMod.h"
+#include "MTNoteDesign11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
 
@@ -48,7 +48,7 @@ public:
 				SMSeqData* pSeqData,
 				MTNoteTracker* pNoteTracker,
 				MTNotePitchBend* pNotePitchBend,
-				MTNoteDesignMod* pNoteDesign = NULL,
+				MTNoteDesign11* pNoteDesign = NULL,
 				bool isFlatMode = false
 			);
 	void Release();
@@ -78,8 +78,8 @@ private:
 	DXPrimitive11 m_PrimActiveNotes;
 	ID3D11DeviceContext* m_pContext;
 
-	MTNoteDesignMod m_NoteDesignLocal;
-	MTNoteDesignMod* m_pNoteDesign;
+	MTNoteDesign11 m_NoteDesignLocal;
+	MTNoteDesign11* m_pNoteDesign;
 	MTNoteTracker* m_pNoteTracker;
 	MTNotePitchBend* m_pNotePitchBend;
 

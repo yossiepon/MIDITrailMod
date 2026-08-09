@@ -12,7 +12,7 @@
 #include <d3dcompiler.h>
 #include "YNBaseLib.h"
 #include "MTNoteCylindricalInstanced11.h"
-#include "MTNoteDesignMod.h"
+#include "MTNoteDesign11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
