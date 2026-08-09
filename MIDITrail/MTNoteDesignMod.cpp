@@ -112,9 +112,10 @@ MTNoteEnvelopeResult MTNoteDesignMod::CalcNoteEnvelope(
 	unsigned long releaseDuration = (unsigned long)m_RippleReleaseDuration;
 	unsigned long noteLen = endTime - startTime;
 
-	float decayRatio = 0.3f;
-	float sustainRatio = 0.4f;
-	float releaseRatio = 0.3f;
+	MTEnvelopeConfig envConfig = GetEnvelopeConfig();
+	float decayRatio = envConfig.decayRatio;
+	float sustainRatio = envConfig.sustainRatio;
+	float releaseRatio = 1.0f - decayRatio - sustainRatio;
 
 	if (noteLen < decayDuration) {
 		// Case A: no adjustment (whole note stays in Decay)
