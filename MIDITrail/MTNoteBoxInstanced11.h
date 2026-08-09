@@ -61,7 +61,8 @@ public:
 				SMSeqData* pSeqData,
 				MTNoteTracker* pNoteTracker,
 				MTNotePitchBend* pNotePitchBend,
-				MTNoteDesignMod* pNoteDesign = NULL
+				MTNoteDesignMod* pNoteDesign = NULL,
+				bool is2D = false
 			);
 	void Release();
 
@@ -107,7 +108,9 @@ private:
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
 	bool          m_isLightEnable;
+	bool          m_is2D;
 	unsigned long m_NoteCount;
+	unsigned long m_IndexCountPerInstance;
 	float         m_XPerTick;
 
 	DirectX::XMFLOAT4X4 m_World;

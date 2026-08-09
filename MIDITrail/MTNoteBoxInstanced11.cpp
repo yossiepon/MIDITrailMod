@@ -176,7 +176,9 @@ MTNoteBoxInstanced11::MTNoteBoxInstanced11()
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
 	m_isLightEnable = true;
+	m_is2D = false;
 	m_NoteCount = 0;
+	m_IndexCountPerInstance = 36;
 	m_XPerTick = 1.0f;
 	XMStoreFloat4x4(&m_World, XMMatrixIdentity());
 }
@@ -280,7 +282,8 @@ int MTNoteBoxInstanced11::Create(
 		SMSeqData* pSeqData,
 		MTNoteTracker* pNoteTracker,
 		MTNotePitchBend* pNotePitchBend,
-		MTNoteDesignMod* pNoteDesign
+		MTNoteDesignMod* pNoteDesign,
+		bool is2D
 	)
 {
 	int result = 0;
@@ -294,6 +297,7 @@ int MTNoteBoxInstanced11::Create(
 
 	m_pNoteTracker = pNoteTracker;
 	m_pNotePitchBend = pNotePitchBend;
+	m_is2D = is2D;
 
 	if (pNoteDesign != NULL) {
 		m_pNoteDesign = pNoteDesign;
@@ -328,37 +332,61 @@ int MTNoteBoxInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
 {
 	int result = 0;
 
-	MTNOTEBOX_INST_TEMPLATE_VERTEX verts[24] = {
-		// Top face (normal 0,+1,0)
-		{{0,1,1}, {0, 1, 0}}, {{1,1,1}, {0, 1, 0}}, {{0,1,0}, {0, 1, 0}}, {{1,1,0}, {0, 1, 0}},
-		// Bottom face (normal 0,-1,0)
-		{{0,0,0}, {0,-1, 0}}, {{1,0,0}, {0,-1, 0}}, {{0,0,1}, {0,-1, 0}}, {{1,0,1}, {0,-1, 0}},
-		// Right face (z=0, normal 0,0,-1)
-		{{0,1,0}, {0, 0,-1}}, {{1,1,0}, {0, 0,-1}}, {{0,0,0}, {0, 0,-1}}, {{1,0,0}, {0, 0,-1}},
-		// Left face (z=1, normal 0,0,+1)
-		{{0,0,1}, {0, 0, 1}}, {{1,0,1}, {0, 0, 1}}, {{0,1,1}, {0, 0, 1}}, {{1,1,1}, {0, 0, 1}},
-		// Front face (x=0, normal -1,0,0)
-		{{0,1,1}, {-1, 0, 0}}, {{0,1,0}, {-1, 0, 0}}, {{0,0,1}, {-1, 0, 0}}, {{0,0,0}, {-1, 0, 0}},
-		// Back face (x=1, normal +1,0,0)
-		{{1,1,0}, { 1, 0, 0}}, {{1,1,1}, { 1, 0, 0}}, {{1,0,0}, { 1, 0, 0}}, {{1,0,1}, { 1, 0, 0}},
-	};
+	if (m_is2D) {
+		// 2D mode: Z-facing face (4 vertices, 6 indices)
+		// Spans X (time) × Y (pitch) at fixed Z=vmin.z
+		// NoteBoxWidth=0.0 でも Y 方向（NoteBoxHeight）で展開されるため退化しない
+		MTNOTEBOX_INST_TEMPLATE_VERTEX verts[4] = {
+			{{0,1,0}, {0, 0, -1}},   // startX, topY, Z
+			{{1,1,0}, {0, 0, -1}},   // endX, topY, Z
+			{{0,0,0}, {0, 0, -1}},   // startX, bottomY, Z
+			{{1,0,0}, {0, 0, -1}},   // endX, bottomY, Z
+		};
+		result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,
+		                               verts, sizeof(verts), &m_pTemplateVB);
+		if (result != 0) goto EXIT;
 
-	result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,
-	                               verts, sizeof(verts), &m_pTemplateVB);
-	if (result != 0) goto EXIT;
+		unsigned long indices[6] = { 0, 1, 2, 2, 1, 3 };
+		result = CreateImmutableBuffer(pDevice, D3D11_BIND_INDEX_BUFFER,
+		                               indices, sizeof(indices), &m_pIndexBuffer);
+		if (result != 0) goto EXIT;
 
-	unsigned long indices[36] = {
-		 0, 1, 2,  2, 1, 3,
-		 4, 5, 6,  6, 5, 7,
-		 8, 9,10, 10, 9,11,
-		12,13,14, 14,13,15,
-		16,17,18, 18,17,19,
-		20,21,22, 22,21,23,
-	};
+		m_IndexCountPerInstance = 6;
+	}
+	else {
+		// 3D mode: full box (24 vertices, 36 indices)
+		MTNOTEBOX_INST_TEMPLATE_VERTEX verts[24] = {
+			// Top face (normal 0,+1,0)
+			{{0,1,1}, {0, 1, 0}}, {{1,1,1}, {0, 1, 0}}, {{0,1,0}, {0, 1, 0}}, {{1,1,0}, {0, 1, 0}},
+			// Bottom face (normal 0,-1,0)
+			{{0,0,0}, {0,-1, 0}}, {{1,0,0}, {0,-1, 0}}, {{0,0,1}, {0,-1, 0}}, {{1,0,1}, {0,-1, 0}},
+			// Right face (z=0, normal 0,0,-1)
+			{{0,1,0}, {0, 0,-1}}, {{1,1,0}, {0, 0,-1}}, {{0,0,0}, {0, 0,-1}}, {{1,0,0}, {0, 0,-1}},
+			// Left face (z=1, normal 0,0,+1)
+			{{0,0,1}, {0, 0, 1}}, {{1,0,1}, {0, 0, 1}}, {{0,1,1}, {0, 0, 1}}, {{1,1,1}, {0, 0, 1}},
+			// Front face (x=0, normal -1,0,0)
+			{{0,1,1}, {-1, 0, 0}}, {{0,1,0}, {-1, 0, 0}}, {{0,0,1}, {-1, 0, 0}}, {{0,0,0}, {-1, 0, 0}},
+			// Back face (x=1, normal +1,0,0)
+			{{1,1,0}, { 1, 0, 0}}, {{1,1,1}, { 1, 0, 0}}, {{1,0,0}, { 1, 0, 0}}, {{1,0,1}, { 1, 0, 0}},
+		};
+		result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,
+		                               verts, sizeof(verts), &m_pTemplateVB);
+		if (result != 0) goto EXIT;
 
-	result = CreateImmutableBuffer(pDevice, D3D11_BIND_INDEX_BUFFER,
-	                               indices, sizeof(indices), &m_pIndexBuffer);
-	if (result != 0) goto EXIT;
+		unsigned long indices[36] = {
+			 0, 1, 2,  2, 1, 3,
+			 4, 5, 6,  6, 5, 7,
+			 8, 9,10, 10, 9,11,
+			12,13,14, 14,13,15,
+			16,17,18, 18,17,19,
+			20,21,22, 22,21,23,
+		};
+		result = CreateImmutableBuffer(pDevice, D3D11_BIND_INDEX_BUFFER,
+		                               indices, sizeof(indices), &m_pIndexBuffer);
+		if (result != 0) goto EXIT;
+
+		m_IndexCountPerInstance = 36;
+	}
 
 EXIT:;
 	return result;
@@ -516,11 +544,11 @@ int MTNoteBoxInstanced11::Draw(
 			pContext->PSSetConstantBuffers(0, 1, &s_pConstBuf);
 
 			if (pass == 0) {
-				pContext->DrawIndexedInstanced(36, hiNote - loNote, 0, 0, loNote);
+				pContext->DrawIndexedInstanced(m_IndexCountPerInstance, hiNote - loNote, 0, 0, loNote);
 			}
 			else {
 				if (loActive < hiActive) {
-					pContext->DrawIndexedInstanced(36, hiActive - loActive, 0, 0, loActive);
+					pContext->DrawIndexedInstanced(m_IndexCountPerInstance, hiActive - loActive, 0, 0, loActive);
 				}
 			}
 		}

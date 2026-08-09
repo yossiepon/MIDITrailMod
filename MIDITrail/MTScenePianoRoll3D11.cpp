@@ -133,7 +133,8 @@ int MTScenePianoRoll3D11::Create(
 	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 	// ノートボックス
-	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend);
+	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
+	                          nullptr, m_Is2D);
 	if (result != 0) goto EXIT;
 	if (m_Is2D) {
 		m_NoteBox.SetLightEnable(false);
