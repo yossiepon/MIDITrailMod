@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTNoteTracker
 //
-// Note tracker class.
+// Note tracker class (Playback mode).
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
@@ -21,8 +21,8 @@ using namespace YNBaseLib;
 MTNoteTracker::MTNoteTracker()
 {
 	m_CurNoteIndex = 0;
+	m_DeactivationCursor = 0;
 	m_PlayTimeMSec = 0;
-	m_MaxPreMargin = 0;
 }
 
 MTNoteTracker::~MTNoteTracker()
@@ -50,18 +50,15 @@ int MTNoteTracker::Create(
 		goto EXIT;
 	}
 
-	// Get merged track
 	result = pSeqData->GetMergedTrack(&mergedTrack);
 	if (result != 0) goto EXIT;
 
-	// Get tick-based and ms-based note lists (same index = same note)
 	result = mergedTrack.GetNoteList(&noteListTick);
 	if (result != 0) goto EXIT;
 
 	result = mergedTrack.GetNoteListWithRealTime(&noteListMs, pSeqData->GetTimeDivision());
 	if (result != 0) goto EXIT;
 
-	// Build unified note data
 	noteCount = noteListTick.GetSize();
 	m_Notes.resize(noteCount);
 
@@ -86,7 +83,10 @@ int MTNoteTracker::Create(
 		memcpy(nd.lyric, noteTick.lyric, sizeof(nd.lyric));
 	}
 
+	_BuildMaxEndTimeMs();
+
 	m_CurNoteIndex = 0;
+	m_DeactivationCursor = 0;
 	m_PlayTimeMSec = 0;
 
 EXIT:;
@@ -100,10 +100,12 @@ void MTNoteTracker::Release()
 {
 	m_Notes.clear();
 	m_Notes.shrink_to_fit();
+	m_MaxEndTimeMs.clear();
+	m_MaxEndTimeMs.shrink_to_fit();
 	m_Listeners.clear();
 	m_CurNoteIndex = 0;
+	m_DeactivationCursor = 0;
 	m_PlayTimeMSec = 0;
-	m_MaxPreMargin = 0;
 }
 
 //******************************************************************************
@@ -124,7 +126,7 @@ void MTNoteTracker::Reset()
 }
 
 //******************************************************************************
-// Advance (per-frame forward scan)
+// Advance (per-frame forward scan + deactivation check)
 //******************************************************************************
 void MTNoteTracker::Advance(
 		unsigned long playTimeMSec
@@ -134,40 +136,27 @@ void MTNoteTracker::Advance(
 
 	unsigned long noteCount = (unsigned long)m_Notes.size();
 
+	// Activation: forward scan from cursor
 	while (m_CurNoteIndex < noteCount) {
 		const NoteData& note = m_Notes[m_CurNoteIndex];
 
-		// Stop when beyond the pre-margin lookahead range
-		if (playTimeMSec < note.startTimeMs - m_MaxPreMargin) {
-			// Guard against unsigned underflow
-			if (note.startTimeMs > m_MaxPreMargin) {
-				break;
-			}
-		}
-
-		// Notify matching listeners
-		NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
-
-		for (const auto& entry : m_Listeners) {
-			if (entry.filter != eventType) continue;
-
-			unsigned long marginStart = (note.startTimeMs > entry.preMarginMs)
-				? (note.startTimeMs - entry.preMarginMs) : 0;
-			unsigned long marginEnd = note.endTimeMs + entry.postMarginMs;
-
-			if (playTimeMSec >= marginStart && playTimeMSec <= marginEnd) {
-				entry.pListener->OnNoteActivate(note, m_CurNoteIndex);
-			}
-		}
-
-		// Advance cursor only when past startTimeMs
-		if (playTimeMSec >= note.startTimeMs) {
-			m_CurNoteIndex++;
-		}
-		else {
+		if (playTimeMSec < note.startTimeMs) {
 			break;
 		}
+
+		if (playTimeMSec >= note.startTimeMs && playTimeMSec <= note.endTimeMs) {
+			DispatchActivate(note, m_CurNoteIndex);
+		}
+
+		m_CurNoteIndex++;
 	}
+
+	// Deactivation: prefix-max binary search for boundary
+	unsigned long newBoundary = _FindDeactivationBoundary(playTimeMSec);
+	for (unsigned long i = m_DeactivationCursor; i < newBoundary; i++) {
+		DispatchDeactivate(m_Notes[i], i);
+	}
+	m_DeactivationCursor = newBoundary;
 }
 
 //******************************************************************************
@@ -177,12 +166,10 @@ void MTNoteTracker::Seek(
 		unsigned long playTimeMSec
 	)
 {
-	// Reset all listeners
-	for (const auto& entry : m_Listeners) {
-		entry.pListener->OnReset();
-	}
+	DispatchReset();
 
 	m_CurNoteIndex = 0;
+	m_DeactivationCursor = 0;
 	m_PlayTimeMSec = playTimeMSec;
 
 	unsigned long noteCount = (unsigned long)m_Notes.size();
@@ -191,33 +178,23 @@ void MTNoteTracker::Seek(
 	for (unsigned long i = 0; i < noteCount; i++) {
 		const NoteData& note = m_Notes[i];
 
-		NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
-
-		for (const auto& entry : m_Listeners) {
-			if (entry.filter != eventType) continue;
-
-			unsigned long marginStart = (note.startTimeMs > entry.preMarginMs)
-				? (note.startTimeMs - entry.preMarginMs) : 0;
-			unsigned long marginEnd = note.endTimeMs + entry.postMarginMs;
-
-			if (playTimeMSec >= marginStart && playTimeMSec <= marginEnd) {
-				entry.pListener->OnNoteActivate(note, i);
-			}
+		if (playTimeMSec >= note.startTimeMs && playTimeMSec <= note.endTimeMs) {
+			DispatchActivate(note, i);
 		}
 	}
 
-	// Set cursor to the first note whose startTimeMs > playTimeMSec - m_MaxPreMargin
-	unsigned long targetTime = (playTimeMSec > m_MaxPreMargin)
-		? (playTimeMSec - m_MaxPreMargin) : 0;
-
+	// Set cursor to the first note whose startTimeMs > playTimeMSec
 	m_CurNoteIndex = 0;
 	for (unsigned long i = 0; i < noteCount; i++) {
-		if (m_Notes[i].startTimeMs > targetTime) {
+		if (m_Notes[i].startTimeMs > playTimeMSec) {
 			m_CurNoteIndex = i;
 			break;
 		}
 		m_CurNoteIndex = i + 1;
 	}
+
+	// Set deactivation cursor
+	m_DeactivationCursor = _FindDeactivationBoundary(playTimeMSec);
 }
 
 //******************************************************************************
@@ -236,47 +213,46 @@ const NoteData& MTNoteTracker::GetNote(
 }
 
 //******************************************************************************
-// Listener management
+// Build prefix-max array of endTimeMs
 //******************************************************************************
-void MTNoteTracker::AddListener(
-		IMTNoteTrackerListener* pListener,
-		NoteEventType filter,
-		unsigned long preMarginMs,
-		unsigned long postMarginMs
-	)
+void MTNoteTracker::_BuildMaxEndTimeMs()
 {
-	ListenerEntry entry;
-	entry.pListener = pListener;
-	entry.filter = filter;
-	entry.preMarginMs = preMarginMs;
-	entry.postMarginMs = postMarginMs;
+	unsigned long noteCount = (unsigned long)m_Notes.size();
+	m_MaxEndTimeMs.resize(noteCount);
 
-	m_Listeners.push_back(entry);
-	_UpdateMaxPreMargin();
-}
+	if (noteCount == 0) return;
 
-void MTNoteTracker::RemoveListener(
-		IMTNoteTrackerListener* pListener
-	)
-{
-	for (auto it = m_Listeners.begin(); it != m_Listeners.end(); ++it) {
-		if (it->pListener == pListener) {
-			m_Listeners.erase(it);
-			break;
-		}
+	m_MaxEndTimeMs[0] = m_Notes[0].endTimeMs;
+	for (unsigned long i = 1; i < noteCount; i++) {
+		m_MaxEndTimeMs[i] = (m_Notes[i].endTimeMs > m_MaxEndTimeMs[i - 1])
+			? m_Notes[i].endTimeMs : m_MaxEndTimeMs[i - 1];
 	}
-	_UpdateMaxPreMargin();
 }
 
 //******************************************************************************
-// Update max pre-margin
+// Binary search for deactivation boundary
+// Returns the first index where m_MaxEndTimeMs[index] >= playTimeMSec,
+// meaning all notes before this index have ended.
 //******************************************************************************
-void MTNoteTracker::_UpdateMaxPreMargin()
+unsigned long MTNoteTracker::_FindDeactivationBoundary(
+		unsigned long playTimeMSec
+	) const
 {
-	m_MaxPreMargin = 0;
-	for (const auto& entry : m_Listeners) {
-		if (entry.preMarginMs > m_MaxPreMargin) {
-			m_MaxPreMargin = entry.preMarginMs;
+	unsigned long noteCount = (unsigned long)m_MaxEndTimeMs.size();
+	if (noteCount == 0) return 0;
+
+	unsigned long lo = 0;
+	unsigned long hi = noteCount;
+
+	while (lo < hi) {
+		unsigned long mid = lo + (hi - lo) / 2;
+		if (m_MaxEndTimeMs[mid] < playTimeMSec) {
+			lo = mid + 1;
+		}
+		else {
+			hi = mid;
 		}
 	}
+
+	return lo;
 }

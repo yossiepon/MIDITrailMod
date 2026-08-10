@@ -213,6 +213,27 @@ void MTNoteDesignRing11::GetGridRingBasePos(
 }
 
 //******************************************************************************
+// Grid ring base position (Live mode)
+//******************************************************************************
+void MTNoteDesignRing11::GetGridRingBasePosLive(
+		Vector3* pBasePosStart,
+		Vector3* pBasePosEnd
+	)
+{
+	unsigned long elapsedTime = GetLiveMonitorDisplayDuration();
+	float chStep = GetChStep();
+
+	*pBasePosStart = Vector3(
+					GetPlayPosX(0),
+					GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
+					GetPortOriginZ(0));
+	*pBasePosEnd = Vector3(
+					-(GetLivePosX(elapsedTime)),
+					GetPortOriginY(0) + (chStep * (float)(SM_MAX_CH_NUM + 2)),
+					GetPortOriginZ(0));
+}
+
+//******************************************************************************
 // Port origin coordinates
 //******************************************************************************
 float MTNoteDesignRing11::GetPortOriginY(unsigned char portNo)

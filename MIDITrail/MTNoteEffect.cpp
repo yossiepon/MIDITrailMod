@@ -112,6 +112,23 @@ void MTNoteEffect::OnNoteActivate(
 }
 
 //******************************************************************************
+// OnNoteDeactivate (callback from NoteTracker on note end)
+//******************************************************************************
+void MTNoteEffect::OnNoteDeactivate(
+		const NoteData& note,
+		unsigned long index
+	)
+{
+	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
+		if (m_Status[i].isActive && m_Status[i].index == index) {
+			OnDeactivate(m_Status[i]);
+			m_Status[i].isActive = false;
+			return;
+		}
+	}
+}
+
+//******************************************************************************
 // OnReset (callback from NoteTracker on seek)
 //******************************************************************************
 void MTNoteEffect::OnReset()
@@ -144,17 +161,10 @@ int MTNoteEffect::Update(
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (!m_Status[i].isActive) continue;
 
-		if (m_PlayTimeMSec > m_Status[i].endTimeMs) {
-			result = OnDeactivate(m_Status[i]);
-			if (result != 0) goto EXIT;
-			m_Status[i].isActive = false;
-		}
-		else {
-			MTNoteEnvelopeResult env = m_pNoteDesign->CalcNoteEnvelope(
-				m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
-			m_Status[i].keyDownRate = env.keyDownRate;
-			m_Status[i].keyStatus = env.keyStatus;
-		}
+		MTNoteEnvelopeResult env = m_pNoteDesign->CalcNoteEnvelope(
+			m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
+		m_Status[i].keyDownRate = env.keyDownRate;
+		m_Status[i].keyStatus = env.keyStatus;
 	}
 
 	result = BuildVertices(m_PlayTimeMSec);

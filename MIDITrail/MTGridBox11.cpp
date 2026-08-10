@@ -20,19 +20,6 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
-//******************************************************************************
-MTGridBox11::MTGridBox11()
-{
-	m_isReady = false;
-}
-
-MTGridBox11::~MTGridBox11()
-{
-	Release();
-}
-
-//******************************************************************************
 // 生成
 //******************************************************************************
 int MTGridBox11::Create(
@@ -57,49 +44,11 @@ int MTGridBox11::Create(
 	result = _CreateVertices(pDevice, pContext, pSeqData);
 	if (result != 0) goto EXIT;
 
-	m_Primitive.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	m_Primitive.SetLightEnable(false);
-	m_Primitive.SetDepthWrite(false);
-
+	_SetupPrimitive();
 	m_isReady = true;
 
 EXIT:;
 	return result;
-}
-
-//******************************************************************************
-// 解放
-//******************************************************************************
-void MTGridBox11::Release()
-{
-	m_Primitive.Release();
-	m_isReady = false;
-}
-
-//******************************************************************************
-// 更新
-//******************************************************************************
-int MTGridBox11::Update(const MTSceneUpdateContext& ctx)
-{
-	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
-	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
-	             * Matrix::CreateTranslation(moveVec);
-	m_Primitive.SetWorldMatrix(world);
-	return 0;
-}
-
-//******************************************************************************
-// 描画
-//******************************************************************************
-int MTGridBox11::Draw(
-		ID3D11DeviceContext* pContext,
-		const Matrix& viewProj,
-		const Vector4& lightDir,
-		float rollAngle
-	)
-{
-	if (!m_isEnable || !m_isReady) return 0;
-	return m_Primitive.Draw(pContext, viewProj, lightDir);
 }
 
 //******************************************************************************

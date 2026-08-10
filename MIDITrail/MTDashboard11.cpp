@@ -49,6 +49,8 @@ MTDashboard11::MTDashboard11()
 
 	m_CaptionColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	m_isEnableFileName = false;
+	m_isMonitorMode = false;
+	m_isMonitoring = false;
 }
 
 MTDashboard11::~MTDashboard11()
@@ -76,21 +78,44 @@ int MTDashboard11::Create(
 
 	Release();
 
-	if (pSeqData == NULL) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
-	}
-
 	m_hWnd = hWnd;
 
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	// タイトルキャプション
-	title = pSeqData->GetTitle();
-	if (title.size() == 0) {
-		title += L" ";
+	if (pSeqData != NULL) {
+		// Playback mode: read title, filename, totals from sequence data
+		title = pSeqData->GetTitle();
+		if (title.size() == 0) {
+			title += L" ";
+		}
+		fileName = pSeqData->GetFileName();
+		if (fileName.size() == 0) {
+			fileName += L" ";
+		}
+
+		SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
+		SetTempoBPM(pSeqData->GetTempoBPM());
+		m_TempoBPMOnStart = pSeqData->GetTempoBPM();
+		SetBeat(pSeqData->GetBeatNumerator(), pSeqData->GetBeatDenominator());
+		m_BeatNumeratorOnStart = pSeqData->GetBeatNumerator();
+		m_BeatDenominatorOnStart = pSeqData->GetBeatDenominator();
+		SetBarNo(1);
+		SetBarNum(pSeqData->GetBarNum());
+
+		result = pSeqData->GetMergedTrack(&track);
+		if (result != 0) goto EXIT;
+		result = track.GetNoteList(&noteList);
+		if (result != 0) goto EXIT;
+		m_NoteNum = noteList.GetSize();
 	}
+	else {
+		// Live mode: default captions
+		title = L" ";
+		fileName = L" ";
+	}
+
+	// タイトルキャプション
 	result = m_Title.Create(pDevice, pContext,
 				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
 				title.c_str());
@@ -98,10 +123,6 @@ int MTDashboard11::Create(
 	m_Title.SetColor(m_CaptionColor);
 
 	// ファイル名キャプション
-	fileName = pSeqData->GetFileName();
-	if (fileName.size() == 0) {
-		fileName += L" ";
-	}
 	result = m_FileName.Create(pDevice, pContext,
 				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
 				fileName.c_str());
@@ -114,22 +135,6 @@ int MTDashboard11::Create(
 				MTDASHBOARD11_COUNTER_CHARS, MTDASHBOARD11_COUNTER_SIZE);
 	if (result != 0) goto EXIT;
 	m_Counter.SetColor(m_CaptionColor);
-
-	// 初期値設定
-	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
-	SetTempoBPM(pSeqData->GetTempoBPM());
-	m_TempoBPMOnStart = pSeqData->GetTempoBPM();
-	SetBeat(pSeqData->GetBeatNumerator(), pSeqData->GetBeatDenominator());
-	m_BeatNumeratorOnStart = pSeqData->GetBeatNumerator();
-	m_BeatDenominatorOnStart = pSeqData->GetBeatDenominator();
-	SetBarNo(1);
-	SetBarNum(pSeqData->GetBarNum());
-
-	result = pSeqData->GetMergedTrack(&track);
-	if (result != 0) goto EXIT;
-	result = track.GetNoteList(&noteList);
-	if (result != 0) goto EXIT;
-	m_NoteNum = noteList.GetSize();
 
 	result = _GetCounterStr(counter, 100);
 	if (result != 0) goto EXIT;
@@ -242,6 +247,15 @@ int MTDashboard11::_GetCounterStr(WCHAR* pStr, unsigned long bufSize)
 	int eresult = 0;
 	WCHAR spdstr[16] = {0};
 
+	if (m_isMonitorMode) {
+		const WCHAR* statusStr = m_isMonitoring ? L"" : L" [MONITORING OFF]";
+		eresult = swprintf_s(pStr, bufSize, L"NOTES:%08lu%s", m_NoteCount, statusStr);
+		if (eresult < 0) {
+			return YN_SET_ERR("Program error.", 0, 0);
+		}
+		return 0;
+	}
+
 	eresult = swprintf_s(
 				pStr, bufSize,
 				L"TIME:%02lu:%02lu.%03lu/%02lu:%02lu.%03lu BPM:%03lu BEAT:%lu/%lu BAR:%03lu/%03lu NOTES:%05lu/%05lu",
@@ -316,6 +330,10 @@ void MTDashboard11::OnNoteActivate(const NoteData& note, unsigned long index)
 	}
 }
 
+void MTDashboard11::OnNoteDeactivate(const NoteData& note, unsigned long index)
+{
+}
+
 void MTDashboard11::OnReset()
 {
 	m_NoteCount = 0;
@@ -329,4 +347,22 @@ void MTDashboard11::Reset()
 	m_BeatDenominator = m_BeatDenominatorOnStart;
 	m_BarNo = 1;
 	m_NoteCount = 0;
+}
+
+//******************************************************************************
+// Live monitor mode
+//******************************************************************************
+void MTDashboard11::SetMonitorMode(
+		bool isMonitor,
+		const TCHAR* pMIDIINDevName
+	)
+{
+	m_isMonitorMode = isMonitor;
+	m_isMonitoring = isMonitor;
+	m_NoteCount = 0;
+}
+
+void MTDashboard11::SetMonitoringStatus(bool isMonitoring)
+{
+	m_isMonitoring = isMonitoring;
 }

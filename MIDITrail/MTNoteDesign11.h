@@ -184,7 +184,7 @@ public:
 	MTEnvelopeConfig GetEnvelopeConfig();
 
 	// Note envelope (3-phase: Decay/Sustain/Release)
-	MTNoteEnvelopeResult CalcNoteEnvelope(
+	virtual MTNoteEnvelopeResult CalcNoteEnvelope(
 				unsigned long playTimeMSec,
 				unsigned long startTime,
 				unsigned long endTime

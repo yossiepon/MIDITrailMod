@@ -84,6 +84,11 @@ public:
 				DirectX::SimpleMath::Vector3* pBasePos
 			);
 
+	void GetGridRingBasePosLive(
+				DirectX::SimpleMath::Vector3* pBasePosStart,
+				DirectX::SimpleMath::Vector3* pBasePosEnd
+			);
+
 	float GetPortOriginY(unsigned char portNo) override;
 	float GetPortOriginZ(unsigned char portNo) override;
 
