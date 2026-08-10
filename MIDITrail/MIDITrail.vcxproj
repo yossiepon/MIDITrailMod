@@ -283,6 +283,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTPianoKeyboardFlat11.cpp" />
     <ClCompile Include="MTPianoKeyboardRain11.cpp" />
     <ClCompile Include="MTPianoKeyboardRoll11.cpp" />
+    <ClCompile Include="MTPianoKeyboardCtrlBase11.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrl11.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrlRain11.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrlRoll11.cpp" />
@@ -387,6 +388,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTPianoKeyboardFlat11.h" />
     <ClInclude Include="MTPianoKeyboardRain11.h" />
     <ClInclude Include="MTPianoKeyboardRoll11.h" />
+    <ClInclude Include="MTPianoKeyboardCtrlBase11.h" />
     <ClInclude Include="MTPianoKeyboardCtrl11.h" />
     <ClInclude Include="MTPianoKeyboardCtrlRain11.h" />
     <ClInclude Include="MTPianoKeyboardCtrlRoll11.h" />
