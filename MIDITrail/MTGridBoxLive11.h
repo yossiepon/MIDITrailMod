@@ -1,11 +1,10 @@
 //******************************************************************************
 //
-// MIDITrail / MTGridBox11
+// MIDITrail / MTGridBoxLive11
 //
-// DX11 grid box renderer (Playback mode).
-// Draws wireframe grid, bar lines, and port separators from SMSeqData.
+// Live monitor grid box renderer (DX11).
+// Fixed time-window wireframe cuboid (no bar lines, no port separators).
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
@@ -13,25 +12,19 @@
 #pragma once
 
 #include "MTGridBox11Base.h"
-#include "SMIDILib.h"
-
-using namespace SMIDILib;
 
 
 //******************************************************************************
-// DX11 grid box renderer (Playback)
+// Live grid box renderer
 //******************************************************************************
-class MTGridBox11 : public MTGridBox11Base
+class MTGridBoxLive11 : public MTGridBox11Base
 {
 public:
 
 	int Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-	           const TCHAR* pSceneName, SMSeqData* pSeqData);
+	           const TCHAR* pSceneName);
 
 private:
 
-	int _CreateVertices(
-			ID3D11Device* pDevice,
-			ID3D11DeviceContext* pContext,
-			SMSeqData* pSeqData);
+	int _CreateVertices(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 };
