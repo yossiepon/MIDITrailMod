@@ -240,6 +240,9 @@ int MTScenePianoRollRain11::OnPlayStart()
 
 int MTScenePianoRollRain11::OnPlayEnd()
 {
+	if (m_pNoteRainLive != NULL) {
+		m_pNoteRainLive->AllNoteOff();
+	}
 	return 0;
 }
 
