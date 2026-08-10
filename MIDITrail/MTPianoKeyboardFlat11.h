@@ -14,6 +14,7 @@
 #pragma once
 
 #include "MTPianoKeyboard11.h"
+#include "MTPianoKeyboardDesign11.h"
 
 
 //******************************************************************************
@@ -27,6 +28,8 @@ public:
 	virtual ~MTPianoKeyboardFlat11();
 
 protected:
+
+	MTPianoKeyboardDesign11 m_KeyboardDesign;
 
 	int _CreateVertexOfKeyboard(
 				ID3D11Device* pDevice,

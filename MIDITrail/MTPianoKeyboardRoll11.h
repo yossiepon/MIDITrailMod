@@ -14,7 +14,6 @@
 #pragma once
 
 #include "MTPianoKeyboardFlat11.h"
-#include "MTPianoKeyboardDesign11.h"
 
 
 //******************************************************************************
@@ -35,7 +34,4 @@ public:
 				ID3D11ShaderResourceView* pSRV
 			) override;
 
-private:
-
-	MTPianoKeyboardDesign11 m_DesignMod;
 };

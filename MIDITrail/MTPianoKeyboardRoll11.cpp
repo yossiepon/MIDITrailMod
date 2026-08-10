@@ -37,10 +37,10 @@ int MTPianoKeyboardRoll11::Create(
 {
 	int result = 0;
 
-	result = m_DesignMod.Initialize(pSceneName, pSeqData);
+	result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	m_pKeyboardDesign = &m_DesignMod;
+	m_pKeyboardDesign = &m_KeyboardDesign;
 
 	result = MTPianoKeyboard11::Create(pDevice, pContext, pSceneName, pSeqData, pSRV);
 	if (result != 0) goto EXIT;

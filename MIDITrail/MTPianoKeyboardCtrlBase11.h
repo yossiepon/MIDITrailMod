@@ -15,6 +15,7 @@
 #include "MTSceneComponent11.h"
 #include "MTPianoKeyboard11.h"
 #include "MTNoteDesign11.h"
+#include "MTPianoKeyboardDesign11.h"
 #include "MTNotePitchBend.h"
 #include "DXTexture11.h"
 
@@ -77,7 +78,9 @@ protected:
 	ID3D11DeviceContext* m_pContext;
 	ID3D11ShaderResourceView* m_pSRV;
 	MTNotePitchBend* m_pNotePitchBend;
+	MTNoteDesign11 m_NoteDesign;
 	MTNoteDesign11* m_pNoteDesign;
+	MTPianoKeyboardDesign11 m_KeyboardDesign;
 	unsigned long m_KeyDownDurMs;
 	unsigned long m_KeyUpDurMs;
 	bool m_isSingleKeyboard;

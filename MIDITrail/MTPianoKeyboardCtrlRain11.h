@@ -14,8 +14,6 @@
 #pragma once
 
 #include "MTPianoKeyboardCtrl11.h"
-#include "MTPianoKeyboardDesign11.h"
-#include "MTNoteDesign11.h"
 
 
 //******************************************************************************
@@ -67,7 +65,5 @@ protected:
 
 private:
 
-	MTPianoKeyboardDesign11 m_KeyboardDesign;
-	MTNoteDesign11 m_NoteDesign;
 	bool m_isPlaybackPosTracking;
 };

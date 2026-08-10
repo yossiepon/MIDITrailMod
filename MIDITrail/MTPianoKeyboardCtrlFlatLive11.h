@@ -15,7 +15,6 @@
 
 #include "MTPianoKeyboardCtrlBase11.h"
 #include "MTNoteTrackerBase.h"
-#include "MTPianoKeyboardDesign11.h"
 
 
 //******************************************************************************
@@ -48,7 +47,7 @@ public:
 
 	void SetPlaybackPosTracking(bool enable) { m_isPlaybackPosTracking = enable; }
 
-private:
+protected:
 
 	struct LiveKeyState {
 		bool isDown;
@@ -58,8 +57,6 @@ private:
 		unsigned char chNo;
 	};
 
-	MTPianoKeyboardDesign11 m_KeyboardDesign;
-	MTNoteDesign11 m_NoteDesign;
 	LiveKeyState m_LiveKeys[SM_MAX_NOTE_NUM];
 	unsigned long m_LiveTimeMSec;
 	bool m_isPlaybackPosTracking;
@@ -67,5 +64,5 @@ private:
 	int _CreateKeyboard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	                    const TCHAR* pSceneName);
 	void _EvaluateLiveKeyStates();
-	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(const MTSceneUpdateContext& ctx);
+	virtual DirectX::SimpleMath::Matrix _ComputeWorldMatrix(const MTSceneUpdateContext& ctx);
 };
