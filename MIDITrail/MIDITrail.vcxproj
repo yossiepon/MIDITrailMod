@@ -245,7 +245,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTNoteRain11.cpp" />
     <ClCompile Include="MTNoteDesign11.cpp" />
     <ClCompile Include="MTNoteDesignRing11.cpp" />
-    <ClCompile Include="MTGridRing11Base.cpp" />
+    <ClCompile Include="MTGridRingBase11.cpp" />
     <ClCompile Include="MTGridRing11.cpp" />
     <ClCompile Include="MTGridRingLive11.cpp" />
     <ClCompile Include="MTTimeIndicatorRing11.cpp" />
@@ -254,7 +254,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTSceneTitle11.cpp" />
     <ClCompile Include="MTLogo11.cpp" />
     <ClCompile Include="MTStars11.cpp" />
-    <ClCompile Include="MTGridBox11Base.cpp" />
+    <ClCompile Include="MTGridBoxBase11.cpp" />
     <ClCompile Include="MTGridBox11.cpp" />
     <ClCompile Include="MTGridBoxLive11.cpp" />
     <ClCompile Include="MTTimeIndicator11.cpp" />
@@ -347,7 +347,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTNoteRain11.h" />
     <ClInclude Include="MTNoteDesign11.h" />
     <ClInclude Include="MTNoteDesignRing11.h" />
-    <ClInclude Include="MTGridRing11Base.h" />
+    <ClInclude Include="MTGridRingBase11.h" />
     <ClInclude Include="MTGridRing11.h" />
     <ClInclude Include="MTGridRingLive11.h" />
     <ClInclude Include="MTTimeIndicatorRing11.h" />
@@ -356,7 +356,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTSceneTitle11.h" />
     <ClInclude Include="MTLogo11.h" />
     <ClInclude Include="MTStars11.h" />
-    <ClInclude Include="MTGridBox11Base.h" />
+    <ClInclude Include="MTGridBoxBase11.h" />
     <ClInclude Include="MTGridBox11.h" />
     <ClInclude Include="MTGridBoxLive11.h" />
     <ClInclude Include="MTTimeIndicator11.h" />

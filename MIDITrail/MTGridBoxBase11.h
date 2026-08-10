@@ -1,9 +1,10 @@
 //******************************************************************************
 //
-// MIDITrail / MTGridRing11Base
+// MIDITrail / MTGridBoxBase11
 //
-// Grid ring base class (DX11).
-// Common: DXPrimitive11 management, Update, Draw, Release, ring vertex helper.
+// Grid box base class (DX11).
+// Common: DXPrimitive11 management, Update (world matrix), Draw, Release.
+// Derived classes provide vertex generation in their Create methods.
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
@@ -13,39 +14,35 @@
 
 #include "DXPrimitive11.h"
 #include "MTSceneComponent11.h"
-#include "MTNoteDesignRing11.h"
-
-#define GRID_RING_SEGMENTS  (128)
+#include "MTNoteDesign11.h"
+#include <directxtk/SimpleMath.h>
 
 
 //******************************************************************************
-// Grid ring base class
+// Grid box base class
 //******************************************************************************
-class MTGridRing11Base : public MTSceneComponent11
+class MTGridBoxBase11 : public MTSceneComponent11
 {
 public:
 
-	MTGridRing11Base();
-	virtual ~MTGridRing11Base();
+	MTGridBoxBase11();
+	virtual ~MTGridBoxBase11();
 
 	virtual void Release();
 
 	int Update(const MTSceneUpdateContext& ctx) override;
 	int Draw(ID3D11DeviceContext* pContext,
 	         const DirectX::SimpleMath::Matrix& viewProj,
-	         const DirectX::SimpleMath::Vector4& lightDir);
+	         const DirectX::SimpleMath::Vector4& lightDir,
+	         float rollAngle = 0.0f);
+
+	bool IsReady() const { return m_isReady; }
 
 protected:
 
 	DXPrimitive11 m_Primitive;
-	MTNoteDesignRing11 m_NoteDesign;
-	bool m_isVisible;
+	MTNoteDesign11 m_NoteDesign;
+	bool m_isReady;
 
 	void _SetupPrimitive();
-	void _CreateVertexOfRing(
-			DXPRIMITIVE11_VERTEX* pVertex,
-			unsigned long* pVertexIndex,
-			unsigned long* pIndex,
-			DirectX::SimpleMath::Vector3 basePos,
-			unsigned long color);
 };

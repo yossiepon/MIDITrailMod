@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include "MTGridRing11Base.h"
+#include "MTGridRingBase11.h"
 
 
 //******************************************************************************
 // Live grid ring renderer
 //******************************************************************************
-class MTGridRingLive11 : public MTGridRing11Base
+class MTGridRingLive11 : public MTGridRingBase11
 {
 public:
 

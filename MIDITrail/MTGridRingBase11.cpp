@@ -1,6 +1,6 @@
 //******************************************************************************
 //
-// MIDITrail / MTGridRing11Base
+// MIDITrail / MTGridRingBase11
 //
 // Grid ring base class (DX11).
 //
@@ -9,7 +9,7 @@
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "MTGridRing11Base.h"
+#include "MTGridRingBase11.h"
 #include "DXH.h"
 
 using namespace DirectX;
@@ -19,12 +19,12 @@ using namespace DirectX::SimpleMath;
 //******************************************************************************
 // Constructor / Destructor
 //******************************************************************************
-MTGridRing11Base::MTGridRing11Base()
+MTGridRingBase11::MTGridRingBase11()
 {
 	m_isVisible = true;
 }
 
-MTGridRing11Base::~MTGridRing11Base()
+MTGridRingBase11::~MTGridRingBase11()
 {
 	Release();
 }
@@ -32,7 +32,7 @@ MTGridRing11Base::~MTGridRing11Base()
 //******************************************************************************
 // Release
 //******************************************************************************
-void MTGridRing11Base::Release()
+void MTGridRingBase11::Release()
 {
 	m_Primitive.Release();
 }
@@ -40,7 +40,7 @@ void MTGridRing11Base::Release()
 //******************************************************************************
 // Setup primitive state
 //******************************************************************************
-void MTGridRing11Base::_SetupPrimitive()
+void MTGridRingBase11::_SetupPrimitive()
 {
 	m_Primitive.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	m_Primitive.SetLightEnable(false);
@@ -49,7 +49,7 @@ void MTGridRing11Base::_SetupPrimitive()
 //******************************************************************************
 // Update
 //******************************************************************************
-int MTGridRing11Base::Update(const MTSceneUpdateContext& ctx)
+int MTGridRingBase11::Update(const MTSceneUpdateContext& ctx)
 {
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
 	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(ctx.rollAngle))
@@ -61,7 +61,7 @@ int MTGridRing11Base::Update(const MTSceneUpdateContext& ctx)
 //******************************************************************************
 // Draw
 //******************************************************************************
-int MTGridRing11Base::Draw(
+int MTGridRingBase11::Draw(
 		ID3D11DeviceContext* pContext,
 		const Matrix& viewProj,
 		const Vector4& lightDir
@@ -74,7 +74,7 @@ int MTGridRing11Base::Draw(
 //******************************************************************************
 // Ring vertex creation (128-segment circle)
 //******************************************************************************
-void MTGridRing11Base::_CreateVertexOfRing(
+void MTGridRingBase11::_CreateVertexOfRing(
 		DXPRIMITIVE11_VERTEX* pVertex,
 		unsigned long* pVertexIndex,
 		unsigned long* pIndex,

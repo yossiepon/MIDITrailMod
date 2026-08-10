@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include "MTGridBox11Base.h"
+#include "MTGridBoxBase11.h"
 
 
 //******************************************************************************
 // Live grid box renderer
 //******************************************************************************
-class MTGridBoxLive11 : public MTGridBox11Base
+class MTGridBoxLive11 : public MTGridBoxBase11
 {
 public:
 

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "MTGridBox11Base.h"
+#include "MTGridBoxBase11.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -21,7 +21,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 grid box renderer (Playback)
 //******************************************************************************
-class MTGridBox11 : public MTGridBox11Base
+class MTGridBox11 : public MTGridBoxBase11
 {
 public:
 

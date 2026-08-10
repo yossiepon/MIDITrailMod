@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "MTGridRing11Base.h"
+#include "MTGridRingBase11.h"
 #include "SMIDILib.h"
 
 using namespace SMIDILib;
@@ -21,7 +21,7 @@ using namespace SMIDILib;
 //******************************************************************************
 // DX11 grid ring renderer (Playback)
 //******************************************************************************
-class MTGridRing11 : public MTGridRing11Base
+class MTGridRing11 : public MTGridRingBase11
 {
 public:
 
