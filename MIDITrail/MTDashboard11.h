@@ -64,6 +64,9 @@ public:
 	unsigned long GetPlayTimeSec();
 	void SetEnableFileName(bool isEnable);
 
+	void SetMonitorMode(bool isMonitor, const TCHAR* pMIDIINDevName);
+	void SetMonitoringStatus(bool isMonitoring);
+
 private:
 
 	HWND m_hWnd;
@@ -92,6 +95,8 @@ private:
 
 	DirectX::SimpleMath::Color m_CaptionColor;
 	bool m_isEnableFileName;
+	bool m_isMonitorMode;
+	bool m_isMonitoring;
 
 	int _GetCounterPos(float* pX, float* pY);
 	int _GetCounterStr(WCHAR* pStr, unsigned long bufSize);

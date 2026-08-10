@@ -270,6 +270,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <!-- <ClCompile Include="MTNoteRainInstanced11.cpp" /> Replaced by MTNoteAABBInstanced11 -->
     <ClCompile Include="MTNoteAABBLive11.cpp" />
     <ClCompile Include="MTNoteCylindricalLive11.cpp" />
+    <ClCompile Include="MTNoteDesignLive11.cpp" />
+    <ClCompile Include="MTNoteDesignRingLive11.cpp" />
     <ClCompile Include="MTNoteLiveBase11.cpp" />
     <ClCompile Include="MTNoteBox11.cpp" />
     <ClCompile Include="MTPianoKeyboard11.cpp" />
@@ -370,6 +372,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTNoteLiveBase11.h" />
     <ClInclude Include="MTNoteAABBLive11.h" />
     <ClInclude Include="MTNoteCylindricalLive11.h" />
+    <ClInclude Include="MTNoteDesignLive11.h" />
+    <ClInclude Include="MTNoteDesignRingLive11.h" />
     <ClInclude Include="MTNoteBox11.h" />
     <ClInclude Include="MTPianoKeyboard11.h" />
     <ClInclude Include="MTPianoKeyboardFlat11.h" />
