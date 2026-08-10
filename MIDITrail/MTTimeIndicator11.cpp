@@ -48,11 +48,6 @@ int MTTimeIndicator11::Create(
 
 	Release();
 
-	if (pSeqData == NULL) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
-	}
-
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
