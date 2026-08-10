@@ -37,8 +37,10 @@ static const char* MTNOTECYLINDRICAL_SHADER =
 	"  float4x4 g_World;\n"
 	"  float4 g_Active;\n"     // x=playTimeMSec, y=growFactor, z=whiteRate, w=pass(0/1)
 	"  float4 g_Opts;\n"       // x=unused, yzw=emissiveRGB
+	"#ifdef HAS_LIGHTING\n"
 	"  float4 g_Light;\n"      // xyz=lightDir, w=diffuseLevel
 	"  float4 g_LAmb;\n"       // x=ambientLevel, y=unused, z=unused, w=lightEnable(0/1)
+	"#endif\n"
 	"  float4 g_Envelope;\n"   // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio
 	"  float4 g_Ring;\n"       // x=halfNoteWidth, y=halfAngleStep(deg), z/w=unused
 	"};\n"
@@ -139,13 +141,17 @@ static const char* MTNOTECYLINDRICAL_SHADER =
 	"  wp = lerp(wp, center, hide);\n"
 	"  o.pos = mul(float4(wp, 1.0), g_WVP);\n"
 
-	// Lighting (radial normal)
+	// Lighting (radial normal) -- only when HAS_LIGHTING is defined
+	"#ifdef HAS_LIGHTING\n"
 	"  float3 n = normalize(float3(0, cos(theta), -sin(theta)));\n"
 	"  n = normalize(mul(float4(n, 0.0), g_World).xyz);\n"
 	"  float3 L = normalize(g_Light.xyz);\n"
 	"  float ndl = saturate(dot(n, -L)) + saturate(dot(n, L));\n"
 	"  float3 lit = saturate(i.color.rgb * (g_LAmb.x + g_Light.w * ndl));\n"
 	"  o.col = float4(lerp(i.color.rgb, lit, g_LAmb.w), i.alpha);\n"
+	"#else\n"
+	"  o.col = float4(i.color.rgb, i.alpha);\n"
+	"#endif\n"
 	"  o.emph = decayCoeff * g_Active.z;\n"
 	"  o.aflag = (apass > 0.5) ? active : 0.0;\n"
 	"  return o;\n"
@@ -180,7 +186,6 @@ MTNoteCylindricalInstanced11::MTNoteCylindricalInstanced11()
 	m_pIndexBuffer = nullptr;
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
-	m_isLightEnable = true;
 	m_NoteCount = 0;
 	m_XPerTick = 1.0f;
 	XMStoreFloat4x4(&m_World, XMMatrixIdentity());
@@ -205,14 +210,17 @@ int MTNoteCylindricalInstanced11::InitPipeline(ID3D11Device* pDevice)
 
 	if (s_pVS != nullptr) return 0;
 
+	D3D_SHADER_MACRO defines[] = {
+		{ nullptr, nullptr }
+	};
 	hr = D3DCompile(MTNOTECYLINDRICAL_SHADER, strlen(MTNOTECYLINDRICAL_SHADER), "MTNoteCylindricalInstanced11",
-	                nullptr, nullptr, "VSMain", "vs_5_0", 0, 0, &pVSBlob, &pErrors);
+	                defines, nullptr, "VSMain", "vs_5_0", 0, 0, &pVSBlob, &pErrors);
 	if (FAILED(hr)) {
 		result = YN_SET_ERR("Shader compile error (VS).", hr, 0);
 		goto EXIT;
 	}
 	hr = D3DCompile(MTNOTECYLINDRICAL_SHADER, strlen(MTNOTECYLINDRICAL_SHADER), "MTNoteCylindricalInstanced11",
-	                nullptr, nullptr, "PSMain", "ps_5_0", 0, 0, &pPSBlob, &pErrors);
+	                defines, nullptr, "PSMain", "ps_5_0", 0, 0, &pPSBlob, &pErrors);
 	if (FAILED(hr)) {
 		result = YN_SET_ERR("Shader compile error (PS).", hr, 0);
 		goto EXIT;
@@ -499,8 +507,6 @@ int MTNoteCylindricalInstanced11::Draw(
 			XMStoreFloat4x4(&cb->world, XMMatrixTranspose(world));
 			cb->active = XMFLOAT4((float)m_PlayTimeMSec, growFactor, whiteRate, (float)pass);
 			cb->opts = XMFLOAT4(0.0f, emissive.R(), emissive.G(), emissive.B());
-			cb->light = XMFLOAT4(lightDir.x, lightDir.y, lightDir.z, 1.2f);
-			cb->lambient = XMFLOAT4(0.2f, 0.0f, 0.0f, m_isLightEnable ? 1.0f : 0.0f);
 			cb->envelope = XMFLOAT4(envConfig.decayDurationMs, envConfig.releaseDurationMs,
 			                       envConfig.decayRatio, envConfig.sustainRatio);
 			cb->ringParams = XMFLOAT4(halfWidth, halfAngle, 0.0f, 0.0f);
