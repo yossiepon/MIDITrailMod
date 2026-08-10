@@ -1,0 +1,81 @@
+//******************************************************************************
+//
+// MIDITrail / MTNoteTrackerBase
+//
+// Note tracker base class.
+// Provides listener registration and dispatch for both Playback and Live.
+// Also defines shared types: NoteEventType, NoteData, IMTNoteTrackerListener.
+//
+// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
+#pragma once
+
+#include <vector>
+#include "SMIDILib.h"
+#include "IMTSceneManagedComponent.h"
+
+using namespace SMIDILib;
+
+
+//******************************************************************************
+// Note event type
+//******************************************************************************
+enum class NoteEventType {
+	Note,
+	Lyric
+};
+
+//******************************************************************************
+// Unified note data (tick + ms)
+//******************************************************************************
+struct NoteData {
+	unsigned char portNo;
+	unsigned char chNo;
+	unsigned char noteNo;
+	unsigned char velocity;
+	unsigned long startTimeTick;
+	unsigned long endTimeTick;
+	unsigned long startTimeMs;
+	unsigned long endTimeMs;
+	WCHAR lyric[17];
+};
+
+//******************************************************************************
+// Note tracker listener interface
+//******************************************************************************
+class IMTNoteTrackerListener {
+public:
+	virtual ~IMTNoteTrackerListener() = default;
+	virtual void OnNoteActivate(const NoteData& note, unsigned long index) = 0;
+	virtual void OnNoteDeactivate(const NoteData& note, unsigned long index) = 0;
+	virtual void OnReset() = 0;
+};
+
+//******************************************************************************
+// Note tracker base class
+//******************************************************************************
+class MTNoteTrackerBase : public IMTSceneManagedComponent
+{
+public:
+
+	MTNoteTrackerBase();
+	virtual ~MTNoteTrackerBase();
+
+	void AddListener(IMTNoteTrackerListener* pListener, NoteEventType filter);
+	void RemoveListener(IMTNoteTrackerListener* pListener);
+
+protected:
+
+	struct ListenerEntry {
+		IMTNoteTrackerListener* pListener;
+		NoteEventType filter;
+	};
+
+	void DispatchActivate(const NoteData& note, unsigned long index);
+	void DispatchDeactivate(const NoteData& note, unsigned long index);
+	void DispatchReset();
+
+	std::vector<ListenerEntry> m_Listeners;
+};

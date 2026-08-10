@@ -14,7 +14,7 @@
 #pragma once
 
 #include "MTSceneComponent11.h"
-#include "MTNoteTracker.h"
+#include "MTNoteTrackerBase.h"
 #include "MTNoteDesign11.h"
 
 //******************************************************************************
@@ -57,6 +57,7 @@ public:
 
 	// IMTNoteTrackerListener
 	void OnNoteActivate(const NoteData& note, unsigned long index) override;
+	void OnNoteDeactivate(const NoteData& note, unsigned long index) override;
 	void OnReset() override;
 
 	int Update(const MTSceneUpdateContext& ctx) override;

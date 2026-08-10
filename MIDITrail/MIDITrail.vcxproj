@@ -260,7 +260,9 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTStaticCaption11.cpp" />
     <ClCompile Include="MTDynamicCaption11.cpp" />
     <ClCompile Include="MTDashboard11.cpp" />
+    <ClCompile Include="MTNoteTrackerBase.cpp" />
     <ClCompile Include="MTNoteTracker.cpp" />
+    <ClCompile Include="MTNoteTrackerLive.cpp" />
     <ClCompile Include="MTNoteInstancedBase11.cpp" />
     <ClCompile Include="MTNoteAABBInstanced11.cpp" />
     <!-- <ClCompile Include="MTNoteBoxInstanced11.cpp" /> Replaced by MTNoteAABBInstanced11 -->
@@ -362,7 +364,9 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTNoteBoxInstanced11.h" />
     <ClInclude Include="MTNoteCylindricalInstanced11.h" />
     <ClInclude Include="MTNoteRainInstanced11.h" />
+    <ClInclude Include="MTNoteTrackerBase.h" />
     <ClInclude Include="MTNoteTracker.h" />
+    <ClInclude Include="MTNoteTrackerLive.h" />
     <ClInclude Include="MTNoteLiveBase11.h" />
     <ClInclude Include="MTNoteAABBLive11.h" />
     <ClInclude Include="MTNoteCylindricalLive11.h" />

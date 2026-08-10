@@ -58,6 +58,7 @@ public:
 
 	// IMTNoteTrackerListener
 	void OnNoteActivate(const NoteData& note, unsigned long index) override;
+	void OnNoteDeactivate(const NoteData& note, unsigned long index) override;
 	void OnReset() override;
 
 	unsigned long GetPlayTimeSec();

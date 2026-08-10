@@ -316,6 +316,10 @@ void MTDashboard11::OnNoteActivate(const NoteData& note, unsigned long index)
 	}
 }
 
+void MTDashboard11::OnNoteDeactivate(const NoteData& note, unsigned long index)
+{
+}
+
 void MTDashboard11::OnReset()
 {
 	m_NoteCount = 0;
