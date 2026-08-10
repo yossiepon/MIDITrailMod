@@ -98,6 +98,7 @@ int MTScenePianoRollRing11::Create(
 		}
 		result = m_pNoteBoxLive->Create(pDevice, pContext, GetName(), &m_NotePitchBend);
 		if (result != 0) goto EXIT;
+		m_pNoteBoxLive->SetLightEnable(false);
 		_RegisterComponent(&m_NotePitchBend);
 		_RegisterComponent(m_pNoteBoxLive);
 		goto EXIT;
@@ -269,6 +270,9 @@ int MTScenePianoRollRing11::OnPlayStart()
 
 int MTScenePianoRollRing11::OnPlayEnd()
 {
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->AllNoteOff();
+	}
 	return 0;
 }
 

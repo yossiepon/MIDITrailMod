@@ -320,6 +320,9 @@ int MTScenePianoRoll3D11::OnPlayStart()
 //******************************************************************************
 int MTScenePianoRoll3D11::OnPlayEnd()
 {
+	if (m_pNoteBoxLive != NULL) {
+		m_pNoteBoxLive->AllNoteOff();
+	}
 	return 0;
 }
 

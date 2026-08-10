@@ -73,7 +73,6 @@ public:
 
 	void Reset() override;
 	void SetSkipStatus(bool /*isSkipping*/) {}
-	void SetLightEnable(bool enable) { m_isLightEnable = enable; }
 	unsigned long GetNoteCount() const;
 
 	static int  InitPipeline(ID3D11Device* pDevice);
@@ -87,8 +86,6 @@ private:
 		DirectX::XMFLOAT4X4 world;
 		DirectX::XMFLOAT4   active;        // x=playTimeMSec, y=growFactor, z=whiteRate, w=pass
 		DirectX::XMFLOAT4   opts;          // x=unused, yzw=emissiveRGB
-		DirectX::XMFLOAT4   light;         // xyz=lightDir, w=diffuseLevel
-		DirectX::XMFLOAT4   lambient;      // x=ambientLevel, yz=unused, w=lightEnable
 		DirectX::XMFLOAT4   envelope;      // x=decayDurMs, y=releaseDurMs, z=decayRatio, w=sustainRatio
 		DirectX::XMFLOAT4   ringParams;    // x=halfNoteWidth, y=halfAngleStep (degrees), z/w=unused
 	};
@@ -104,7 +101,6 @@ private:
 
 	unsigned long m_CurTickTime;
 	unsigned long m_PlayTimeMSec;
-	bool          m_isLightEnable;
 	unsigned long m_NoteCount;
 	float         m_XPerTick;
 
