@@ -23,6 +23,6 @@ Matrix MTPianoKeyboardCtrlRainLive11::_ComputeWorldMatrix(
 	)
 {
 	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(0, 0);
-	return Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle))
-	     * Matrix::CreateTranslation(moveVec);
+	return Matrix::CreateTranslation(moveVec)
+	     * Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle));
 }

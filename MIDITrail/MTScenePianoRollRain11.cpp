@@ -13,6 +13,9 @@
 #include "YNBaseLib.h"
 #include "SMIDILib.h"
 #include "MTScenePianoRollRain11.h"
+#include "MTPianoKeyboardCtrlRain11.h"
+#include "MTPianoKeyboardCtrlRainLive11.h"
+#include "SMMsgParser.h"
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
@@ -29,6 +32,7 @@ MTScenePianoRollRain11::MTScenePianoRollRain11(bool isLive, bool is2D)
 	m_hWnd = NULL;
 	m_IsLive = isLive;
 	m_pNoteRainLive = NULL;
+	m_pKeyboardCtrl = NULL;
 }
 
 MTScenePianoRollRain11::~MTScenePianoRollRain11()
@@ -93,56 +97,80 @@ int MTScenePianoRollRain11::Create(
 		m_NotePitchBend.SetEnable(false);
 	}
 
-	// Live モード
 	if (m_IsLive) {
-		try {
-			m_pNoteRainLive = new MTNoteAABBLive11();
-		}
-		catch (std::bad_alloc) {
-			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
-			goto EXIT;
-		}
+		// === Live モード ===
+
+		// Live Notes
+		try { m_pNoteRainLive = new MTNoteAABBLive11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 		result = m_pNoteRainLive->Create(pDevice, pContext, GetName(), &m_NotePitchBend,
 		                                 MTAABBLiveMode::Rain);
 		if (result != 0) goto EXIT;
 		m_pNoteRainLive->SetLightEnable(false);
+
+		// NoteTrackerLive
+		result = m_NoteTrackerLive.Create();
+		if (result != 0) goto EXIT;
+
+		// Keyboard (Live)
+		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRainLive11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTPianoKeyboardCtrlRainLive11*)m_pKeyboardCtrl)->Create(
+			pDevice, pContext, GetName(), &m_NotePitchBend, m_Is2D);
+		if (result != 0) goto EXIT;
+		m_NoteTrackerLive.AddListener((MTPianoKeyboardCtrlRainLive11*)m_pKeyboardCtrl, NoteEventType::Note);
+
+		// Dashboard (Live monitor mode)
+		result = m_Dashboard.Create(pDevice, pContext, GetName(), NULL, hWnd);
+		if (result != 0) goto EXIT;
+		m_Dashboard.SetMonitorMode(true, _T(""));
+		m_NoteTrackerLive.AddListener(&m_Dashboard, NoteEventType::Note);
+
+		// コンポーネント登録
+		_RegisterComponent(&m_Stars);
+		_RegisterComponent(&m_BackgroundImage);
+		_RegisterComponent(&m_Dashboard);
 		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(&m_NoteTrackerLive);
 		_RegisterComponent(m_pNoteRainLive);
-		goto EXIT;
+		_RegisterComponent(m_pKeyboardCtrl);
 	}
+	else {
+		// === Playback モード ===
 
-	if (pSeqData == NULL) goto EXIT;
+		if (pSeqData == NULL) goto EXIT;
 
-	// NoteTracker (for keyboard per-key index)
-	result = m_NoteTracker.Create(pSeqData);
-	if (result != 0) goto EXIT;
+		// NoteTracker
+		result = m_NoteTracker.Create(pSeqData);
+		if (result != 0) goto EXIT;
 
-	// Keyboard (non-Mod, single keyboard for 2D)
-	result = m_KeyboardCtrl.Create(pDevice, pContext, GetName(), pSeqData,
-	                               &m_NoteTracker, &m_NotePitchBend, m_Is2D);
-	if (result != 0) goto EXIT;
+		// Keyboard (Playback)
+		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRain11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTPianoKeyboardCtrlRain11*)m_pKeyboardCtrl)->Create(
+			pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, m_Is2D);
+		if (result != 0) goto EXIT;
+		((MTPianoKeyboardCtrlRain11*)m_pKeyboardCtrl)->SetPlaybackPosTracking(false);
 
-	// Rain: keyboard stays at fixed position (camera tracks via DirY)
-	m_KeyboardCtrl.SetPlaybackPosTracking(false);
+		// Note rain
+		result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
+		                           MTAABBMode::Rain);
+		if (result != 0) goto EXIT;
 
-	// Note rain
-	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
-	                           MTAABBMode::Rain);
-	if (result != 0) goto EXIT;
+		// Dashboard
+		result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
+		if (result != 0) goto EXIT;
+		m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
-	// Dashboard
-	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
-	if (result != 0) goto EXIT;
-	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
-
-	// Register components for auto Update/Reset
-	_RegisterComponent(&m_Stars);
-	_RegisterComponent(&m_BackgroundImage);
-	_RegisterComponent(&m_NotePitchBend);
-	_RegisterComponent(&m_NoteTracker);
-	_RegisterComponent(&m_KeyboardCtrl);
-	_RegisterComponent(&m_NoteRain);
-	_RegisterComponent(&m_Dashboard);
+		// コンポーネント登録
+		_RegisterComponent(&m_Stars);
+		_RegisterComponent(&m_BackgroundImage);
+		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(&m_NoteTracker);
+		_RegisterComponent(m_pKeyboardCtrl);
+		_RegisterComponent(&m_NoteRain);
+		_RegisterComponent(&m_Dashboard);
+	}
 
 EXIT:;
 	return result;
@@ -153,7 +181,8 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRollRain11::Release()
 {
-	m_KeyboardCtrl.Release();
+	delete m_pKeyboardCtrl;
+	m_pKeyboardCtrl = NULL;
 	m_NoteRain.Release();
 	delete m_pNoteRainLive;
 	m_pNoteRainLive = NULL;
@@ -199,8 +228,10 @@ int MTScenePianoRollRain11::_DrawSceneComponents(
 	if (result != 0) goto EXIT;
 
 	// Keyboard
-	result = m_KeyboardCtrl.Draw(pContext, viewProj, lightDir);
-	if (result != 0) goto EXIT;
+	if (m_pKeyboardCtrl != NULL) {
+		result = m_pKeyboardCtrl->Draw(pContext, viewProj, lightDir);
+		if (result != 0) goto EXIT;
+	}
 
 	// Note rain
 	if (m_pNoteRainLive != NULL) {
@@ -235,6 +266,9 @@ EXIT:;
 int MTScenePianoRollRain11::OnPlayStart()
 {
 	_Reset();
+	if (m_IsLive) {
+		m_Dashboard.SetMonitoringStatus(true);
+	}
 	return 0;
 }
 
@@ -242,6 +276,8 @@ int MTScenePianoRollRain11::OnPlayEnd()
 {
 	if (m_pNoteRainLive != NULL) {
 		m_pNoteRainLive->AllNoteOff();
+		m_NoteTrackerLive.AllNoteOff();
+		m_Dashboard.SetMonitoringStatus(false);
 	}
 	return 0;
 }
@@ -282,16 +318,15 @@ int MTScenePianoRollRain11::_OnRecvSequencerMsg(
 		if (parser.GetSkipStartDirection() == SMMsgParser::SkipBack) {
 			m_NotePitchBend.Reset();
 		}
-		m_KeyboardCtrl.Reset();
-		m_KeyboardCtrl.SetSkipStatus(true);
 		m_NoteRain.Reset();
 		m_NoteRain.SetSkipStatus(true);
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->Reset();
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->SetSkipStatus(true);
 		m_IsSkipping = true;
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
-		// NoteTracker リスナーがカウントを管理するため SetNotesCount は不要
-		m_KeyboardCtrl.SetSkipStatus(false);
 		m_NoteRain.SetSkipStatus(false);
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->SetSkipStatus(false);
 		m_IsSkipping = false;
 		m_NoteTracker.Seek(m_PlayTimeMSec);
 	}
@@ -309,7 +344,7 @@ void MTScenePianoRollRain11::SetEffect(
 {
 	switch (type) {
 		case MTEffectPianoKeyboard:
-			m_KeyboardCtrl.SetEnable(isEnable);
+			if (m_pKeyboardCtrl) m_pKeyboardCtrl->SetEnable(isEnable);
 			break;
 		case MTEffectPitchBend:
 			if (!m_Is2D) {
@@ -352,6 +387,7 @@ void MTScenePianoRollRain11::SetNoteOnLive(
 {
 	if (m_pNoteRainLive != NULL) {
 		m_pNoteRainLive->SetNoteOn(portNo, chNo, noteNo, velocity);
+		m_NoteTrackerLive.SetNoteOn(portNo, chNo, noteNo, velocity);
 	}
 }
 
@@ -361,6 +397,7 @@ void MTScenePianoRollRain11::SetNoteOffLive(
 {
 	if (m_pNoteRainLive != NULL) {
 		m_pNoteRainLive->SetNoteOff(portNo, chNo, noteNo);
+		m_NoteTrackerLive.SetNoteOff(portNo, chNo, noteNo);
 	}
 }
 
@@ -368,6 +405,7 @@ void MTScenePianoRollRain11::AllNoteOffLive()
 {
 	if (m_pNoteRainLive != NULL) {
 		m_pNoteRainLive->AllNoteOff();
+		m_NoteTrackerLive.AllNoteOff();
 	}
 }
 
@@ -376,6 +414,7 @@ void MTScenePianoRollRain11::AllNoteOffOnChLive(
 {
 	if (m_pNoteRainLive != NULL) {
 		m_pNoteRainLive->AllNoteOffOnCh(portNo, chNo);
+		m_NoteTrackerLive.AllNoteOffOnCh(portNo, chNo);
 	}
 }
 

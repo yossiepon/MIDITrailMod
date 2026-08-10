@@ -153,7 +153,7 @@ int MTNoteEffect::Update(
 	int result = 0;
 
 	m_CurTickTime = ctx.curTickTime;
-	m_PlayTimeMSec = ctx.playTimeMSec;
+	m_PlayTimeMSec = (ctx.liveTimeMSec != 0) ? ctx.liveTimeMSec : ctx.playTimeMSec;
 	m_RollAngle = ctx.rollAngle;
 
 	if (m_isSkipping) goto EXIT;

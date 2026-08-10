@@ -21,7 +21,8 @@
 #include "MTNoteAABBLive11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
-#include "MTPianoKeyboardCtrlRain11.h"
+#include "MTPianoKeyboardCtrlBase11.h"
+#include "MTNoteTrackerLive.h"
 
 
 //******************************************************************************
@@ -80,6 +81,7 @@ private:
 	MTNoteAABBInstanced11 m_NoteRain;
 	MTNoteAABBLive11*   m_pNoteRainLive;
 	MTNoteTracker       m_NoteTracker;
+	MTNoteTrackerLive   m_NoteTrackerLive;
 	MTNotePitchBend     m_NotePitchBend;
-	MTPianoKeyboardCtrlRain11 m_KeyboardCtrl;
+	MTPianoKeyboardCtrlBase11* m_pKeyboardCtrl;
 };

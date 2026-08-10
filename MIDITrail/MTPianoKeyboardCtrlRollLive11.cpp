@@ -16,7 +16,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// Compute world matrix (Roll-style)
+// Compute world matrix (Roll-style, same rotation as Playback Roll)
 //******************************************************************************
 Matrix MTPianoKeyboardCtrlRollLive11::_ComputeWorldMatrix(
 		const MTSceneUpdateContext& ctx
@@ -29,13 +29,22 @@ Matrix MTPianoKeyboardCtrlRollLive11::_ComputeWorldMatrix(
 
 	float rollAngle = ctx.rollAngle;
 	if (rollAngle < 0.0f) rollAngle += 360.0f;
-	float effectiveRoll = XMConvertToRadians(rollAngle);
+
+	Matrix rotateMatrix1, rotateMatrix2, rotateMatrix3;
 	if ((rollAngle > 120.0f) && (rollAngle < 300.0f)) {
-		effectiveRoll += XM_PI;
+		rotateMatrix1 = Matrix::CreateRotationX(XM_PI / 2.0f);
+		rotateMatrix2 = Matrix::CreateRotationZ(XM_PI / 2.0f);
 	}
+	else {
+		rotateMatrix1 = Matrix::CreateRotationX(-XM_PI / 2.0f);
+		rotateMatrix2 = Matrix::CreateRotationZ(XM_PI / 2.0f);
+	}
+	rotateMatrix3 = Matrix::CreateRotationX(XMConvertToRadians(rollAngle));
 
 	return Matrix::CreateScale(scale)
 	     * Matrix::CreateTranslation(basePos)
-	     * Matrix::CreateRotationX(effectiveRoll)
+	     * rotateMatrix1
+	     * rotateMatrix2
+	     * rotateMatrix3
 	     * Matrix::CreateTranslation(moveVec);
 }
