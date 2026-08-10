@@ -374,6 +374,7 @@ int MTScenePianoRoll3D11::OnPlayStart()
 	_Reset();
 	if (m_IsLive) {
 		m_Dashboard.SetMonitoringStatus(true);
+		m_Dashboard.SetMIDIINDeviceName(GetParam("MIDI_IN_DEVICE_NAME"));
 	}
 	return 0;
 }

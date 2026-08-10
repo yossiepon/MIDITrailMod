@@ -51,6 +51,7 @@ MTDashboard11::MTDashboard11()
 	m_isEnableFileName = false;
 	m_isMonitorMode = false;
 	m_isMonitoring = false;
+	m_MIDIINDevName[0] = L'\0';
 }
 
 MTDashboard11::~MTDashboard11()
@@ -249,7 +250,13 @@ int MTDashboard11::_GetCounterStr(WCHAR* pStr, unsigned long bufSize)
 
 	if (m_isMonitorMode) {
 		const WCHAR* statusStr = m_isMonitoring ? L"" : L" [MONITORING OFF]";
-		eresult = swprintf_s(pStr, bufSize, L"NOTES:%08lu%s", m_NoteCount, statusStr);
+		if (m_MIDIINDevName[0] != L'\0') {
+			eresult = swprintf_s(pStr, bufSize, L"MIDI IN: %s NOTES:%08lu%s",
+				m_MIDIINDevName, m_NoteCount, statusStr);
+		}
+		else {
+			eresult = swprintf_s(pStr, bufSize, L"NOTES:%08lu%s", m_NoteCount, statusStr);
+		}
 		if (eresult < 0) {
 			return YN_SET_ERR("Program error.", 0, 0);
 		}
@@ -360,9 +367,21 @@ void MTDashboard11::SetMonitorMode(
 	m_isMonitorMode = isMonitor;
 	m_isMonitoring = isMonitor;
 	m_NoteCount = 0;
+	SetMIDIINDeviceName(pMIDIINDevName);
 }
 
 void MTDashboard11::SetMonitoringStatus(bool isMonitoring)
 {
 	m_isMonitoring = isMonitoring;
+}
+
+void MTDashboard11::SetMIDIINDeviceName(const TCHAR* pName)
+{
+	if (pName != NULL && _tcslen(pName) > 0) {
+		size_t converted = 0;
+		mbstowcs_s(&converted, m_MIDIINDevName, 256, pName, _TRUNCATE);
+	}
+	else {
+		m_MIDIINDevName[0] = L'\0';
+	}
 }
