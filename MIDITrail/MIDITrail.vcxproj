@@ -377,6 +377,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTNoteTracker.h" />
     <ClInclude Include="MTNoteTrackerLive.h" />
     <ClInclude Include="MTNoteLiveBase11.h" />
+    <ClInclude Include="MTNoteInstancedShaderSnippets.h" />
     <ClInclude Include="MTNoteAABBLive11.h" />
     <ClInclude Include="MTNoteCylindricalLive11.h" />
     <ClInclude Include="MTNoteDesignLive11.h" />
