@@ -66,10 +66,13 @@ public:
 
 	void SetMonitorMode(bool isMonitor, const TCHAR* pMIDIINDevName);
 	void SetMonitoringStatus(bool isMonitoring);
+	int SetMIDIINDeviceName(const TCHAR* pName);
 
 private:
 
 	HWND m_hWnd;
+	ID3D11Device* m_pDevice;
+	ID3D11DeviceContext* m_pContext;
 	MTStaticCaption11 m_Title;
 	MTStaticCaption11 m_FileName;
 	MTDynamicCaption11 m_Counter;
@@ -97,6 +100,7 @@ private:
 	bool m_isEnableFileName;
 	bool m_isMonitorMode;
 	bool m_isMonitoring;
+	WCHAR m_MIDIINDevName[256];
 
 	int _GetCounterPos(float* pX, float* pY);
 	int _GetCounterStr(WCHAR* pStr, unsigned long bufSize);

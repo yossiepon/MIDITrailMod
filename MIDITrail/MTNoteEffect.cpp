@@ -122,7 +122,12 @@ void MTNoteEffect::OnNoteDeactivate(
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (m_Status[i].isActive && m_Status[i].index == index) {
 			OnDeactivate(m_Status[i]);
-			m_Status[i].isActive = false;
+			if (m_Status[i].endTimeMs == 0) {
+				m_Status[i].endTimeMs = note.endTimeMs;
+			}
+			else {
+				m_Status[i].isActive = false;
+			}
 			return;
 		}
 	}
@@ -153,7 +158,7 @@ int MTNoteEffect::Update(
 	int result = 0;
 
 	m_CurTickTime = ctx.curTickTime;
-	m_PlayTimeMSec = ctx.playTimeMSec;
+	m_PlayTimeMSec = (ctx.liveTimeMSec != 0) ? ctx.liveTimeMSec : ctx.playTimeMSec;
 	m_RollAngle = ctx.rollAngle;
 
 	if (m_isSkipping) goto EXIT;
@@ -165,6 +170,10 @@ int MTNoteEffect::Update(
 			m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
 		m_Status[i].keyDownRate = env.keyDownRate;
 		m_Status[i].keyStatus = env.keyStatus;
+
+		if (env.keyDownRate == 0.0f && env.keyStatus == AfterNoteOFF) {
+			m_Status[i].isActive = false;
+		}
 	}
 
 	result = BuildVertices(m_PlayTimeMSec);

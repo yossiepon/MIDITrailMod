@@ -12,7 +12,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTPianoKeyboardCtrlRoll11.h"
-#include "MTPianoKeyboardRoll11.h"
+#include "MTPianoKeyboardFlat11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -62,7 +62,7 @@ int MTPianoKeyboardCtrlRoll11::Create(
 	result = m_NoteDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
-	result = m_DesignMod.Initialize(pSceneName, pSeqData);
+	result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
 	if (result != 0) goto EXIT;
 
 	result = pSeqData->GetPortList(&m_PortList);
@@ -80,20 +80,20 @@ int MTPianoKeyboardCtrlRoll11::Create(
 			m_KeyboardIndex[portNo] = keyboardIndex;
 			m_KbdPortNo[keyboardIndex] = portNo;
 			keyboardIndex++;
-			if (keyboardIndex == m_DesignMod.GetKeyboardMaxDispNum()) break;
+			if (keyboardIndex == m_KeyboardDesign.GetKeyboardMaxDispNum()) break;
 		}
 		m_MaxKeyboardIndex = (unsigned char)keyboardIndex;
 	}
 	else {
-		m_DesignMod.SetKeyboardSingle();
+		m_KeyboardDesign.SetKeyboardSingle();
 		m_KeyboardIndex[0] = 0;
 		m_KbdPortNo[0] = 0;
 		m_MaxKeyboardIndex = 1;
 	}
 
 	m_pNoteDesign = &m_NoteDesign;
-	m_KeyDownDurMs = m_DesignMod.GetKeyDownDuration();
-	m_KeyUpDurMs = m_DesignMod.GetKeyUpDuration();
+	m_KeyDownDurMs = m_KeyboardDesign.GetKeyDownDuration();
+	m_KeyUpDurMs = m_KeyboardDesign.GetKeyUpDuration();
 
 	result = MTPianoKeyboardCtrl11::Create(pDevice, pContext, pSceneName, pSeqData,
 		pNoteTracker, pNotePitchBend, isSingleKeyboard);
@@ -104,7 +104,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Create keyboards (one MTPianoKeyboardRoll11 per active port)
+// Create keyboards (one MTPianoKeyboardFlat11 per active port)
 //******************************************************************************
 int MTPianoKeyboardCtrlRoll11::_CreateKeyboards(
 		ID3D11Device* pDevice,
@@ -116,7 +116,7 @@ int MTPianoKeyboardCtrlRoll11::_CreateKeyboards(
 	int result = 0;
 
 	for (unsigned char index = 0; index < m_MaxKeyboardIndex; index++) {
-		m_Subs[index].pKeyboard = new MTPianoKeyboardRoll11();
+		m_Subs[index].pKeyboard = new MTPianoKeyboardFlat11();
 		if (m_Subs[index].pKeyboard == NULL) {
 			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 			goto EXIT;
@@ -156,7 +156,7 @@ void MTPianoKeyboardCtrlRoll11::_ApplyActiveKeyColor(
 		MTKeyboardKeyState& ks = pSub->keyStates[noteNo];
 		if (ks.rate >= 1.0f) {
 			Color noteColor((unsigned int)ks.color);
-			Color activeColor = m_DesignMod.GetActiveKeyColor(ks.chNo, noteNo, 0, &noteColor);
+			Color activeColor = m_KeyboardDesign.GetActiveKeyColor(ks.chNo, noteNo, 0, &noteColor);
 			ks.color = activeColor.BGRA();
 		}
 	}
@@ -175,10 +175,10 @@ Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
 	Vector3 playbackPos = m_NoteDesign.GetWorldMoveVector();
 	playbackPos.x += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
 
-	Vector3 basePos = m_DesignMod.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
+	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
 	basePos.x += _GetMaxPitchBendShift(portNo);
 
-	float scale = m_DesignMod.GetKeyboardResizeRatio();
+	float scale = m_KeyboardDesign.GetKeyboardResizeRatio();
 
 	float rollAngle = ctx.rollAngle;
 	if (rollAngle < 0.0f) rollAngle += 360.0f;

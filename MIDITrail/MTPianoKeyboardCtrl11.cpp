@@ -214,28 +214,13 @@ void MTPianoKeyboardCtrl11::_EvaluateKeyStates(
 }
 
 //******************************************************************************
-// Update (template method: evaluate -> color -> world -> dispatch)
+// _UpdateKeyStates (Playback: cursor scan + active color)
 //******************************************************************************
-int MTPianoKeyboardCtrl11::Update(
+void MTPianoKeyboardCtrl11::_UpdateKeyStates(
+		unsigned long kbdIndex,
 		const MTSceneUpdateContext& ctx
 	)
 {
-	int result = 0;
-
-	for (unsigned long k = 0; k < m_NumKbd; k++) {
-		if (m_Subs[k].pKeyboard == NULL) continue;
-
-		if (!m_isSkipping) {
-			_EvaluateKeyStates(&m_Subs[k], ctx.playTimeMSec);
-			_ApplyActiveKeyColor(&m_Subs[k], k);
-		}
-
-		Matrix world = _ComputeWorldMatrix(k, ctx);
-
-		result = m_Subs[k].pKeyboard->Update(m_pContext, m_Subs[k].keyStates, world);
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
+	_EvaluateKeyStates(&m_Subs[kbdIndex], ctx.playTimeMSec);
+	_ApplyActiveKeyColor(&m_Subs[kbdIndex], kbdIndex);
 }

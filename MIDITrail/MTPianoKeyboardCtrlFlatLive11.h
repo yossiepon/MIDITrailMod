@@ -5,6 +5,7 @@
 // Piano keyboard controller for Live mode (Flat, DX11).
 // Receives note events from NoteTrackerLive via listener interface.
 // Manages per-note key states directly (no per-key index, no NoteTracker data).
+// Creates one keyboard per channel (SM_MAX_CH_NUM) when !isSingleKeyboard.
 // Serves both Roll and Rain Live scenes.
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -15,7 +16,6 @@
 
 #include "MTPianoKeyboardCtrlBase11.h"
 #include "MTNoteTrackerBase.h"
-#include "MTPianoKeyboardDesign11.h"
 
 
 //******************************************************************************
@@ -37,8 +37,6 @@ public:
 				bool isSingleKeyboard
 			);
 	void Release();
-
-	int Update(const MTSceneUpdateContext& ctx) override;
 	void Reset() override;
 
 	// IMTNoteTrackerListener
@@ -48,7 +46,13 @@ public:
 
 	void SetPlaybackPosTracking(bool enable) { m_isPlaybackPosTracking = enable; }
 
-private:
+protected:
+
+	// Base11 hooks
+	void _UpdateKeyStates(unsigned long kbdIndex, const MTSceneUpdateContext& ctx) override;
+	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				unsigned long kbdIndex,
+				const MTSceneUpdateContext& ctx) override;
 
 	struct LiveKeyState {
 		bool isDown;
@@ -58,14 +62,11 @@ private:
 		unsigned char chNo;
 	};
 
-	MTPianoKeyboardDesign11 m_KeyboardDesign;
-	MTNoteDesign11 m_NoteDesign;
-	LiveKeyState m_LiveKeys[SM_MAX_NOTE_NUM];
+	LiveKeyState m_LiveKeys[SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 	unsigned long m_LiveTimeMSec;
 	bool m_isPlaybackPosTracking;
 
-	int _CreateKeyboard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-	                    const TCHAR* pSceneName);
-	void _EvaluateLiveKeyStates();
-	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(const MTSceneUpdateContext& ctx);
+	int _CreateKeyboards(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	                     const TCHAR* pSceneName);
+	void _EvaluateLiveKeyStates(unsigned long kbdIndex);
 };

@@ -23,7 +23,10 @@ int MTNoteDesignLive11::Initialize(
 }
 
 //******************************************************************************
-// CalcNoteEnvelope (linear decay for Live mode)
+// CalcNoteEnvelope (3-phase for Live mode)
+// Decay: 0 → decayRatio over DecayDuration (fixed time)
+// Sustain: hold at midpoint while note is held
+// Release: fade from sustain level to 0 over ReleaseDuration (after NoteOff)
 //******************************************************************************
 MTNoteEnvelopeResult MTNoteDesignLive11::CalcNoteEnvelope(
 		unsigned long playTimeMSec,
@@ -39,30 +42,39 @@ MTNoteEnvelopeResult MTNoteDesignLive11::CalcNoteEnvelope(
 		return result;
 	}
 
+	MTEnvelopeConfig envConfig = GetEnvelopeConfig();
+	float decayRatio = envConfig.decayRatio;
+	float sustainRatio = envConfig.sustainRatio;
+	float sustainMid = decayRatio + sustainRatio * 0.5f;
+
+	unsigned long decayDuration = GetRippleDecayDuration();
+	unsigned long releaseDuration = GetRippleReleaseDuration();
 	unsigned long elapsed = playTimeMSec - startTime;
 
 	if (endTime == 0 || playTimeMSec <= endTime) {
-		// Note is still sounding
-		unsigned long decayDuration = GetRippleDecayDuration();
+		// Phase 1: Decay
 		if (decayDuration > 0 && elapsed < decayDuration) {
-			result.keyDownRate = (float)elapsed / (float)decayDuration;
+			result.keyDownRate = decayRatio * (float)elapsed / (float)decayDuration;
+			result.keyStatus = BeforeNoteON;
 		}
+		// Phase 2: Sustain (hold at midpoint)
 		else {
-			result.keyDownRate = 1.0f;
+			result.keyDownRate = sustainMid;
+			result.keyStatus = NoteON;
 		}
-		result.keyStatus = NoteON;
 	}
 	else {
-		// Note has ended — linear fade from keyDownRate at release to 1.0
-		unsigned long releaseDuration = GetRippleDecayDuration();
+		// Phase 3: Release (expand from sustain level to 1.0, then done)
 		unsigned long releaseElapsed = playTimeMSec - endTime;
+		float releaseRatio = 1.0f - sustainMid;
 		if (releaseDuration > 0 && releaseElapsed < releaseDuration) {
-			result.keyDownRate = 1.0f - ((float)releaseElapsed / (float)releaseDuration);
+			result.keyDownRate = sustainMid + releaseRatio * (float)releaseElapsed / (float)releaseDuration;
+			result.keyStatus = AfterNoteOFF;
 		}
 		else {
 			result.keyDownRate = 0.0f;
+			result.keyStatus = AfterNoteOFF;
 		}
-		result.keyStatus = AfterNoteOFF;
 	}
 
 	return result;

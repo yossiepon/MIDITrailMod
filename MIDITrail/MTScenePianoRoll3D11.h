@@ -17,18 +17,19 @@
 
 #include "MTSceneBase11.h"
 #include "MTStars11.h"
-#include "MTGridBox11.h"
+#include "MTGridBoxBase11.h"
 #include "MTTimeIndicator11.h"
-#include "MTPictBoard11.h"
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
 #include "MTNoteTracker.h"
+#include "MTNoteTrackerLive.h"
 #include "MTNoteAABBInstanced11.h"
 #include "MTNoteAABBLive11.h"
 #include "MTNoteRipple11.h"
 #include "MTNoteLyrics11.h"
 #include "MTNotePitchBend.h"
-#include "MTPianoKeyboardCtrlRoll11.h"
+#include "MTPianoKeyboardCtrlBase11.h"
+#include "MTNoteDesignLive11.h"
 
 
 //******************************************************************************
@@ -83,16 +84,17 @@ private:
 	HWND m_hWnd;
 
 	MTStars11          m_Stars;
-	MTGridBox11        m_Grid;
+	MTGridBoxBase11*   m_pGrid;
 	MTTimeIndicator11  m_TimeIndicator;
-	MTPictBoard11      m_PictBoard;
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11      m_Dashboard;
 	MTNoteTracker      m_NoteTracker;
+	MTNoteTrackerLive  m_NoteTrackerLive;
 	MTNoteAABBInstanced11 m_NoteBox;
 	MTNoteAABBLive11*  m_pNoteBoxLive;
 	MTNoteRipple11     m_Ripple;
 	MTNoteLyrics11     m_Lyrics;
 	MTNotePitchBend    m_NotePitchBend;
-	MTPianoKeyboardCtrlRoll11 m_KeyboardCtrl;
+	MTPianoKeyboardCtrlBase11* m_pKeyboardCtrl;
+	MTNoteDesignLive11 m_NoteDesignLive;
 };

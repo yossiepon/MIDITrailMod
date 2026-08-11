@@ -18,7 +18,7 @@
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
 #include "MTNoteDesignRing11.h"
-#include "MTGridRing11.h"
+#include "MTGridRingBase11.h"
 #include "MTTimeIndicatorRing11.h"
 #include "MTPictBoardRing11.h"
 #include "MTNoteCylindricalInstanced11.h"
@@ -27,6 +27,8 @@
 #include "MTNoteLyrics11.h"
 #include "MTNoteTracker.h"
 #include "MTNotePitchBend.h"
+#include "MTNoteTrackerLive.h"
+#include "MTNoteDesignRingLive11.h"
 
 
 //******************************************************************************
@@ -82,7 +84,7 @@ private:
 	MTStars11           m_Stars;
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11       m_Dashboard;
-	MTGridRing11        m_GridRing;
+	MTGridRingBase11*   m_pGridRing;
 	MTTimeIndicatorRing11 m_TimeIndicator;
 	MTPictBoardRing11   m_PictBoard;
 	MTNoteCylindricalInstanced11 m_NoteBox;
@@ -90,5 +92,7 @@ private:
 	MTNoteRipple11      m_Ripple;
 	MTNoteLyrics11      m_Lyrics;
 	MTNoteTracker       m_NoteTracker;
+	MTNoteTrackerLive   m_NoteTrackerLive;
 	MTNotePitchBend     m_NotePitchBend;
+	MTNoteDesignRingLive11 m_NoteDesignRingLive;
 };

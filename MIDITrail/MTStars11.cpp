@@ -134,7 +134,9 @@ int MTStars11::_CreateVertices(ID3D11DeviceContext* pContext)
 		pVertex[i].uv[0] = 0.0f;
 		pVertex[i].uv[1] = 0.0f;
 
-		unsigned char c = (unsigned char)(brightness * 255.0f);
+		float boosted = brightness + 0.5f;
+		if (boosted > 1.0f) boosted = 1.0f;
+		unsigned char c = (unsigned char)(boosted * 255.0f);
 		pVertex[i].color = 0xFF000000 | (c << 16) | (c << 8) | c;
 	}
 

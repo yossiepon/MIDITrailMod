@@ -2,9 +2,9 @@
 //
 // MIDITrail / MTPianoKeyboard11 (vertex generation)
 //
-// Linear key vertex generation for Rain/Roll keyboard types.
+// Linear key vertex generation for flat keyboard types.
 // Generates key geometry in Rain coordinate system (X=pitch, Y=height, Z=depth).
-// Shared by MTPianoKeyboardRain11 and MTPianoKeyboardRoll11.
+// Used by MTPianoKeyboardFlat11 (Rain/Roll/Live shared).
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.

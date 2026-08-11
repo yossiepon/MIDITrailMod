@@ -28,6 +28,8 @@ using namespace DirectX::SimpleMath;
 MTDashboard11::MTDashboard11()
 {
 	m_hWnd = NULL;
+	m_pDevice = NULL;
+	m_pContext = NULL;
 	m_PosCounterX = 0.0f;
 	m_PosCounterY = 0.0f;
 	m_CounterMag = MTDASHBOARD11_DEFAULT_MAGRATE;
@@ -51,6 +53,7 @@ MTDashboard11::MTDashboard11()
 	m_isEnableFileName = false;
 	m_isMonitorMode = false;
 	m_isMonitoring = false;
+	m_MIDIINDevName[0] = L'\0';
 }
 
 MTDashboard11::~MTDashboard11()
@@ -72,6 +75,9 @@ int MTDashboard11::Create(
 	int result = 0;
 	std::wstring title;
 	std::wstring fileName;
+
+	m_pDevice = pDevice;
+	m_pContext = pContext;
 	SMTrack track;
 	SMNoteList noteList;
 	WCHAR counter[100];
@@ -360,9 +366,44 @@ void MTDashboard11::SetMonitorMode(
 	m_isMonitorMode = isMonitor;
 	m_isMonitoring = isMonitor;
 	m_NoteCount = 0;
+	SetMIDIINDeviceName(pMIDIINDevName);
 }
 
 void MTDashboard11::SetMonitoringStatus(bool isMonitoring)
 {
 	m_isMonitoring = isMonitoring;
+}
+
+int MTDashboard11::SetMIDIINDeviceName(const TCHAR* pName)
+{
+	int result = 0;
+
+	if (pName != NULL && _tcslen(pName) > 0) {
+		size_t converted = 0;
+		mbstowcs_s(&converted, m_MIDIINDevName, 256, pName, _TRUNCATE);
+	}
+	else {
+		m_MIDIINDevName[0] = L'\0';
+	}
+
+	m_Title.Release();
+
+	WCHAR titleStr[300];
+	if (m_MIDIINDevName[0] != L'\0') {
+		swprintf_s(titleStr, 300, L"MIDI IN: %s", m_MIDIINDevName);
+	}
+	else {
+		swprintf_s(titleStr, 300, L" ");
+	}
+
+	if (m_pDevice != NULL && m_pContext != NULL) {
+		result = m_Title.Create(m_pDevice, m_pContext,
+					MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+					titleStr);
+		if (result != 0) goto EXIT;
+		m_Title.SetColor(m_CaptionColor);
+	}
+
+EXIT:;
+	return result;
 }

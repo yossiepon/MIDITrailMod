@@ -12,7 +12,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTPianoKeyboardCtrlRain11.h"
-#include "MTPianoKeyboardRain11.h"
+#include "MTPianoKeyboardFlat11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -65,7 +65,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Create keyboards (Rain: one MTPianoKeyboardRain11 per channel)
+// Create keyboards (Rain: one MTPianoKeyboardFlat11 per channel)
 //******************************************************************************
 int MTPianoKeyboardCtrlRain11::_CreateKeyboards(
 		ID3D11Device* pDevice,
@@ -78,7 +78,7 @@ int MTPianoKeyboardCtrlRain11::_CreateKeyboards(
 
 	unsigned long numKbd = m_isSingleKeyboard ? 1 : SM_MAX_CH_NUM;
 	for (unsigned char chNo = 0; chNo < numKbd; chNo++) {
-		m_Subs[chNo].pKeyboard = new MTPianoKeyboardRain11();
+		m_Subs[chNo].pKeyboard = new MTPianoKeyboardFlat11();
 		if (m_Subs[chNo].pKeyboard == NULL) {
 			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 			goto EXIT;

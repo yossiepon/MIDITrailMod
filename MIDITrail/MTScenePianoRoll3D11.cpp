@@ -14,6 +14,10 @@
 
 #include "StdAfx.h"
 #include "MTScenePianoRoll3D11.h"
+#include "MTGridBox11.h"
+#include "MTGridBoxLive11.h"
+#include "MTPianoKeyboardCtrlRoll11.h"
+#include "MTPianoKeyboardCtrlRollLive11.h"
 #include "SMMsgParser.h"
 
 using namespace DirectX::SimpleMath;
@@ -27,7 +31,9 @@ MTScenePianoRoll3D11::MTScenePianoRoll3D11(bool isLive, bool is2D)
 	m_IsLive = isLive;
 	m_Is2D = is2D;
 	m_hWnd = NULL;
+	m_pGrid = NULL;
 	m_pNoteBoxLive = NULL;
+	m_pKeyboardCtrl = NULL;
 
 	// シーン固有のプロパティ
 	m_Traits.cameraDir = MTCameraDirX;
@@ -100,80 +106,121 @@ int MTScenePianoRoll3D11::Create(
 	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
-	// Live モード: Live レンダラーを生成してスキップ
 	if (m_IsLive) {
-		try {
-			m_pNoteBoxLive = new MTNoteAABBLive11();
-		}
-		catch (std::bad_alloc) {
-			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
-			goto EXIT;
-		}
+		// === Live モード ===
+
+		// Live Notes
+		try { m_pNoteBoxLive = new MTNoteAABBLive11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 		result = m_pNoteBoxLive->Create(pDevice, pContext, GetName(), &m_NotePitchBend,
 		                                m_Is2D ? MTAABBLiveMode::Roll2D : MTAABBLiveMode::Roll3D);
 		if (result != 0) goto EXIT;
 		m_pNoteBoxLive->SetLightEnable(!m_Is2D);
+
+		// NoteTrackerLive
+		result = m_NoteTrackerLive.Create();
+		if (result != 0) goto EXIT;
+
+		// Grid (Live)
+		try { m_pGrid = new MTGridBoxLive11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTGridBoxLive11*)m_pGrid)->Create(pDevice, pContext, GetName());
+		if (result != 0) goto EXIT;
+
+		// TimeIndicator (pSeqData=NULL OK)
+		result = m_TimeIndicator.Create(pDevice, pContext, GetName(), NULL);
+		if (result != 0) goto EXIT;
+
+		// Ripple (NoteDesignLive11 injection)
+		result = m_NoteDesignLive.Initialize(GetName());
+		if (result != 0) goto EXIT;
+		result = m_Ripple.Create(pDevice, pContext, GetName(), NULL, &m_NotePitchBend, &m_NoteDesignLive);
+		if (result != 0) goto EXIT;
+		m_NoteTrackerLive.AddListener(&m_Ripple, NoteEventType::Note);
+
+		// Dashboard (Live monitor mode)
+		result = m_Dashboard.Create(pDevice, pContext, GetName(), NULL, hWnd);
+		if (result != 0) goto EXIT;
+		m_Dashboard.SetMonitorMode(true, _T(""));
+		m_NoteTrackerLive.AddListener(&m_Dashboard, NoteEventType::Note);
+
+		// Keyboard (Live)
+		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRollLive11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTPianoKeyboardCtrlRollLive11*)m_pKeyboardCtrl)->Create(
+			pDevice, pContext, GetName(), &m_NotePitchBend, true);
+		if (result != 0) goto EXIT;
+		m_NoteTrackerLive.AddListener((MTPianoKeyboardCtrlRollLive11*)m_pKeyboardCtrl, NoteEventType::Note);
+
+		// コンポーネント登録
+		_RegisterComponent(&m_Stars);
+		_RegisterComponent(&m_BackgroundImage);
+		_RegisterComponent(m_pGrid);
+		_RegisterComponent(&m_TimeIndicator);
+		_RegisterComponent(&m_Dashboard);
 		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(&m_NoteTrackerLive);
+		_RegisterComponent(&m_Ripple);
 		_RegisterComponent(m_pNoteBoxLive);
-		goto EXIT;
+		_RegisterComponent(m_pKeyboardCtrl);
 	}
+	else {
+		// === Playback モード ===
 
-	// データ依存コンポーネント: pSeqData が NULL の場合はスキップ
-	if (pSeqData == NULL) goto EXIT;
+		if (pSeqData == NULL) goto EXIT;
 
-	// グリッド
-	result = m_Grid.Create(pDevice, pContext, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
+		// Grid (Playback)
+		try { m_pGrid = new MTGridBox11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTGridBox11*)m_pGrid)->Create(pDevice, pContext, GetName(), pSeqData);
+		if (result != 0) goto EXIT;
 
-	// タイムインジケータ
-	result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
+		// TimeIndicator
+		result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
+		if (result != 0) goto EXIT;
 
-	// ピクチャボード
-	result = m_PictBoard.Create(pDevice, pContext, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
+		// Dashboard
+		result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
+		if (result != 0) goto EXIT;
 
-	// ダッシュボード
-	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, hWnd);
-	if (result != 0) goto EXIT;
+		// NoteTracker
+		result = m_NoteTracker.Create(pSeqData);
+		if (result != 0) goto EXIT;
 
-	// ノートトラッカー
-	result = m_NoteTracker.Create(pSeqData);
-	if (result != 0) goto EXIT;
+		// Ripple / Lyrics
+		result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+		if (result != 0) goto EXIT;
+		m_NoteTracker.AddListener(&m_Ripple, NoteEventType::Note);
+		result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+		if (result != 0) goto EXIT;
+		m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
+		m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
-	// 波紋
-	result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-	m_NoteTracker.AddListener(&m_Ripple, NoteEventType::Note);
+		// NoteBox (Instanced)
+		result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
+		                          m_Is2D ? MTAABBMode::Roll2D : MTAABBMode::Roll3D);
+		if (result != 0) goto EXIT;
 
-	// 歌詞
-	result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
-	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
+		// Keyboard (Playback)
+		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRoll11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTPianoKeyboardCtrlRoll11*)m_pKeyboardCtrl)->Create(
+			pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, false);
+		if (result != 0) goto EXIT;
 
-	// ノートボックス
-	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
-	                          m_Is2D ? MTAABBMode::Roll2D : MTAABBMode::Roll3D);
-	if (result != 0) goto EXIT;
-
-	// キーボード
-	result = m_KeyboardCtrl.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, false);
-	if (result != 0) goto EXIT;
-
-	// コンポーネント登録（Update/Reset 自動ディスパッチ）
-	_RegisterComponent(&m_Stars);
-	_RegisterComponent(&m_BackgroundImage);
-	_RegisterComponent(&m_Grid);
-	_RegisterComponent(&m_TimeIndicator);
-	_RegisterComponent(&m_PictBoard);
-	_RegisterComponent(&m_Dashboard);
-	_RegisterComponent(&m_NotePitchBend);
-	_RegisterComponent(&m_NoteTracker);
-	_RegisterComponent(&m_Ripple);
-	_RegisterComponent(&m_Lyrics);
-	_RegisterComponent(&m_NoteBox);
-	_RegisterComponent(&m_KeyboardCtrl);
+		// コンポーネント登録
+		_RegisterComponent(&m_Stars);
+		_RegisterComponent(&m_BackgroundImage);
+		_RegisterComponent(m_pGrid);
+		_RegisterComponent(&m_TimeIndicator);
+		_RegisterComponent(&m_Dashboard);
+		_RegisterComponent(&m_NotePitchBend);
+		_RegisterComponent(&m_NoteTracker);
+		_RegisterComponent(&m_Ripple);
+		_RegisterComponent(&m_Lyrics);
+		_RegisterComponent(&m_NoteBox);
+		_RegisterComponent(m_pKeyboardCtrl);
+	}
 
 EXIT:;
 	return result;
@@ -186,7 +233,8 @@ void MTScenePianoRoll3D11::Release()
 {
 	m_NoteTracker.RemoveListener(&m_Ripple);
 	m_NoteTracker.RemoveListener(&m_Lyrics);
-	m_KeyboardCtrl.Release();
+	delete m_pKeyboardCtrl;
+	m_pKeyboardCtrl = NULL;
 	m_NoteBox.Release();
 	delete m_pNoteBoxLive;
 	m_pNoteBoxLive = NULL;
@@ -194,9 +242,9 @@ void MTScenePianoRoll3D11::Release()
 	m_Lyrics.Release();
 	m_NoteTracker.Release();
 	m_Stars.Release();
-	m_Grid.Release();
+	delete m_pGrid;
+	m_pGrid = NULL;
 	m_TimeIndicator.Release();
-	m_PictBoard.Release();
 	m_BackgroundImage.Release();
 	m_Dashboard.Release();
 
@@ -260,11 +308,13 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 	int result = 0;
 	Vector4 lightDir(1.0f, -1.0f, 2.0f, 0.0f);
 
-	// グリッド
-	result = m_Grid.Draw(pContext, viewProj, lightDir, rollAngle);
-	if (result != 0) goto EXIT;
+	// Grid
+	if (m_pGrid != NULL) {
+		result = m_pGrid->Draw(pContext, viewProj, lightDir);
+		if (result != 0) goto EXIT;
+	}
 
-	// ノートボックス
+	// Notes
 	if (m_pNoteBoxLive != NULL) {
 		result = m_pNoteBoxLive->Draw(pContext, viewProj, lightDir);
 	}
@@ -274,22 +324,23 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 	if (result != 0) goto EXIT;
 
 	// カメラ位置と再生位置の前後関係で描画順を切り替え（奥から手前へ）
-	// PictBoard は Keyboard 実装後に置き換え（現状は無効化）
 	if (m_TimeIndicator.GetPos() > camPos.x) {
-		// カメラが再生位置より手前: Indicator → Lyrics → Ripple → Keyboard
 		result = m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
 		if (result != 0) goto EXIT;
 		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
 		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
-		result = m_KeyboardCtrl.Draw(pContext, viewProj, lightDir);
-		if (result != 0) goto EXIT;
+		if (m_pKeyboardCtrl != NULL) {
+			result = m_pKeyboardCtrl->Draw(pContext, viewProj, lightDir);
+			if (result != 0) goto EXIT;
+		}
 	}
 	else {
-		// カメラが再生位置より奥: Keyboard → Ripple → Lyrics → Indicator
-		result = m_KeyboardCtrl.Draw(pContext, viewProj, lightDir);
-		if (result != 0) goto EXIT;
+		if (m_pKeyboardCtrl != NULL) {
+			result = m_pKeyboardCtrl->Draw(pContext, viewProj, lightDir);
+			if (result != 0) goto EXIT;
+		}
 		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
 		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
@@ -312,6 +363,10 @@ EXIT:;
 int MTScenePianoRoll3D11::OnPlayStart()
 {
 	_Reset();
+	if (m_IsLive) {
+		m_Dashboard.SetMonitoringStatus(true);
+		m_Dashboard.SetMIDIINDeviceName(GetParam("MIDI_IN_DEVICE_NAME"));
+	}
 	return 0;
 }
 
@@ -322,6 +377,8 @@ int MTScenePianoRoll3D11::OnPlayEnd()
 {
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->AllNoteOff();
+		m_NoteTrackerLive.AllNoteOff();
+		m_Dashboard.SetMonitoringStatus(false);
 	}
 	return 0;
 }
@@ -364,8 +421,8 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 		}
 		m_NoteBox.Reset();
 		m_NoteBox.SetSkipStatus(true);
-		m_KeyboardCtrl.Reset();
-		m_KeyboardCtrl.SetSkipStatus(true);
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->Reset();
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->SetSkipStatus(true);
 		m_Ripple.SetSkipStatus(true);
 		m_Lyrics.SetSkipStatus(true);
 		m_NoteTracker.Seek(0);
@@ -375,7 +432,7 @@ int MTScenePianoRoll3D11::_OnRecvSequencerMsg(
 	else if (parser.GetMsg() == SMMsgParser::MsgSkipEnd) {
 		// NoteTracker リスナーがカウントを管理するため SetNotesCount は不要
 		m_NoteBox.SetSkipStatus(false);
-		m_KeyboardCtrl.SetSkipStatus(false);
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->SetSkipStatus(false);
 		m_Ripple.SetSkipStatus(false);
 		m_Lyrics.SetSkipStatus(false);
 		m_IsSkipping = false;
@@ -392,7 +449,7 @@ void MTScenePianoRoll3D11::SetEffect(MTEffectType type, bool isEnable)
 {
 	switch (type) {
 	case MTEffectPianoKeyboard:
-		m_KeyboardCtrl.SetEnable(isEnable);
+		if (m_pKeyboardCtrl) m_pKeyboardCtrl->SetEnable(isEnable);
 		break;
 	case MTEffectRipple:
 		m_Ripple.SetEnable(isEnable);
@@ -404,7 +461,7 @@ void MTScenePianoRoll3D11::SetEffect(MTEffectType type, bool isEnable)
 		m_Stars.SetEnable(isEnable);
 		break;
 	case MTEffectGridBox:
-		m_Grid.SetEnable(isEnable);
+		if (m_pGrid) m_pGrid->SetEnable(isEnable);
 		break;
 	case MTEffectTimeIndicator:
 		m_TimeIndicator.SetEnable(isEnable);
@@ -451,6 +508,7 @@ void MTScenePianoRoll3D11::SetNoteOnLive(
 {
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->SetNoteOn(portNo, chNo, noteNo, velocity);
+		m_NoteTrackerLive.SetNoteOn(portNo, chNo, noteNo, velocity);
 	}
 }
 
@@ -460,6 +518,7 @@ void MTScenePianoRoll3D11::SetNoteOffLive(
 {
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->SetNoteOff(portNo, chNo, noteNo);
+		m_NoteTrackerLive.SetNoteOff(portNo, chNo, noteNo);
 	}
 }
 
@@ -467,6 +526,7 @@ void MTScenePianoRoll3D11::AllNoteOffLive()
 {
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->AllNoteOff();
+		m_NoteTrackerLive.AllNoteOff();
 	}
 }
 
@@ -475,6 +535,7 @@ void MTScenePianoRoll3D11::AllNoteOffOnChLive(
 {
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->AllNoteOffOnCh(portNo, chNo);
+		m_NoteTrackerLive.AllNoteOffOnCh(portNo, chNo);
 	}
 }
 
