@@ -369,6 +369,9 @@ int SMTrack::_GetNoteList(
 				tempo = metaEvent.GetTempo();
 			} else if (metaEvent.GetType() == 0x05) {
 
+				//ノート未追加の場合は歌詞をスキップ（紐づけ先なし）
+				if (pNoteList->GetSize() == 0) continue;
+
 				//最後のノートを取得
 				result = pNoteList->GetNote(pNoteList->GetSize() - 1, &note);
 				if (result != 0) goto EXIT;
