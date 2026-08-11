@@ -240,8 +240,12 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="DXTexture11.cpp" />
     <ClCompile Include="DXRenderer11.cpp" />
     <ClCompile Include="MTSceneBase11.cpp" />
+    <ClCompile Include="MTScenePianoRoll3DBase11.cpp" />
     <ClCompile Include="MTScenePianoRoll3D11.cpp" />
+    <ClCompile Include="MTScenePianoRoll3DLive11.cpp" />
+    <ClCompile Include="MTScenePianoRollRainBase11.cpp" />
     <ClCompile Include="MTScenePianoRollRain11.cpp" />
+    <ClCompile Include="MTScenePianoRollRainLive11.cpp" />
     <ClCompile Include="MTNoteDesign11.cpp" />
     <ClCompile Include="MTNoteDesignRing11.cpp" />
     <ClCompile Include="MTGridRingBase11.cpp" />
@@ -249,7 +253,9 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTGridRingLive11.cpp" />
     <ClCompile Include="MTTimeIndicatorRing11.cpp" />
     <ClCompile Include="MTPictBoardRing11.cpp" />
+    <ClCompile Include="MTScenePianoRollRingBase11.cpp" />
     <ClCompile Include="MTScenePianoRollRing11.cpp" />
+    <ClCompile Include="MTScenePianoRollRingLive11.cpp" />
     <ClCompile Include="MTSceneTitle11.cpp" />
     <ClCompile Include="MTLogo11.cpp" />
     <ClCompile Include="MTStars11.cpp" />
@@ -342,8 +348,12 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="DXRenderer11.h" />
     <ClInclude Include="IMTScene11.h" />
     <ClInclude Include="MTSceneBase11.h" />
+    <ClInclude Include="MTScenePianoRoll3DBase11.h" />
     <ClInclude Include="MTScenePianoRoll3D11.h" />
+    <ClInclude Include="MTScenePianoRoll3DLive11.h" />
+    <ClInclude Include="MTScenePianoRollRainBase11.h" />
     <ClInclude Include="MTScenePianoRollRain11.h" />
+    <ClInclude Include="MTScenePianoRollRainLive11.h" />
     <ClInclude Include="MTNoteDesign11.h" />
     <ClInclude Include="MTNoteDesignRing11.h" />
     <ClInclude Include="MTGridRingBase11.h" />
@@ -351,7 +361,9 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTGridRingLive11.h" />
     <ClInclude Include="MTTimeIndicatorRing11.h" />
     <ClInclude Include="MTPictBoardRing11.h" />
+    <ClInclude Include="MTScenePianoRollRingBase11.h" />
     <ClInclude Include="MTScenePianoRollRing11.h" />
+    <ClInclude Include="MTScenePianoRollRingLive11.h" />
     <ClInclude Include="MTSceneTitle11.h" />
     <ClInclude Include="MTLogo11.h" />
     <ClInclude Include="MTStars11.h" />

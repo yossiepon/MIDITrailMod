@@ -3,7 +3,7 @@
 // MIDITrail / MTPianoKeyboardCtrlRainLive11
 //
 // Rain Live keyboard controller (DX11).
-// Overrides world matrix for Rain scene positioning.
+// Uses FlatLive11 base positioning (translation + Y rotation + PB shift).
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //
@@ -19,9 +19,4 @@
 //******************************************************************************
 class MTPianoKeyboardCtrlRainLive11 : public MTPianoKeyboardCtrlFlatLive11
 {
-protected:
-
-	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
-				unsigned long kbdIndex,
-				const MTSceneUpdateContext& ctx) override;
 };

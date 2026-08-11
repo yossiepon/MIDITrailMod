@@ -174,6 +174,16 @@ Matrix MTPianoKeyboardCtrlFlatLive11::_ComputeWorldMatrix(
 	unsigned char portNo = 0;
 	unsigned char chNo = (unsigned char)kbdIndex;
 	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
+
+	if (m_isSingleKeyboard) {
+		moveVec.x += m_KeyboardDesign.GetMaxPitchBendShift(m_pNotePitchBend, portNo);
+	}
+	else if (m_pNotePitchBend != NULL) {
+		short v = m_pNotePitchBend->GetValue(portNo, chNo);
+		unsigned char s = m_pNotePitchBend->GetSensitivity(portNo, chNo);
+		moveVec.x += m_KeyboardDesign.GetPitchBendShift(v, s);
+	}
+
 	return Matrix::CreateTranslation(moveVec)
 	     * Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle));
 }

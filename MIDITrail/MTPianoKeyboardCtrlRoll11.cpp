@@ -176,7 +176,7 @@ Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
 	playbackPos.x += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
 
 	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
-	basePos.x += _GetMaxPitchBendShift(portNo);
+	basePos.x += m_pNoteDesign->GetMaxPitchBendShift(m_pNotePitchBend, portNo);
 
 	float scale = m_KeyboardDesign.GetKeyboardResizeRatio();
 
@@ -202,23 +202,4 @@ Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
 	     * Matrix::CreateTranslation(playbackPos);
 }
 
-//******************************************************************************
-// Max pitch bend shift
-//******************************************************************************
-float MTPianoKeyboardCtrlRoll11::_GetMaxPitchBendShift(
-		unsigned char portNo
-	)
-{
-	if (m_pNotePitchBend == NULL) return 0.0f;
 
-	float maxShift = 0.0f;
-	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-		short pbValue = m_pNotePitchBend->GetValue(portNo, chNo);
-		unsigned char pbSensitivity = m_pNotePitchBend->GetSensitivity(portNo, chNo);
-		float shift = m_pNoteDesign->GetPitchBendShift(pbValue, pbSensitivity);
-		if (fabsf(shift) > fabsf(maxShift)) {
-			maxShift = shift;
-		}
-	}
-	return maxShift;
-}

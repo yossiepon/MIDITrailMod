@@ -15,6 +15,7 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MTPianoKeyboardDesign11.h"
+#include "MTNotePitchBend.h"
 #include "MTSceneConst.h"
 
 using namespace YNBaseLib;
@@ -622,6 +623,23 @@ float MTPianoKeyboardDesign11::GetPitchBendShift(
 	}
 
 	return shift;
+}
+
+float MTPianoKeyboardDesign11::GetMaxPitchBendShift(
+		MTNotePitchBend* pNotePitchBend,
+		unsigned char portNo
+	)
+{
+	if (pNotePitchBend == NULL) return 0.0f;
+
+	float maxShift = 0.0f;
+	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+		short v = pNotePitchBend->GetValue(portNo, chNo);
+		unsigned char s = pNotePitchBend->GetSensitivity(portNo, chNo);
+		float shift = GetPitchBendShift(v, s);
+		if (fabsf(shift) > fabsf(maxShift)) maxShift = shift;
+	}
+	return maxShift;
 }
 
 //******************************************************************************

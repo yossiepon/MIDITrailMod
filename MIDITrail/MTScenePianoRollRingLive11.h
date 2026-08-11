@@ -1,9 +1,8 @@
 //******************************************************************************
 //
-// MIDITrail / MTScenePianoRollRing11
+// MIDITrail / MTScenePianoRollRingLive11
 //
-// DX11 PianoRoll Ring Playback scene.
-// Mod features integrated (ADR-0054).
+// DX11 PianoRoll Ring Live scene.
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -13,27 +12,33 @@
 #pragma once
 
 #include "MTScenePianoRollRingBase11.h"
-#include "MTNoteDesignRing11.h"
-#include "MTNoteCylindricalInstanced11.h"
-#include "MTNoteLyrics11.h"
-#include "MTNoteTracker.h"
+#include "MTNoteTrackerLive.h"
+#include "MTNoteCylindricalLive11.h"
+#include "MTNoteDesignRingLive11.h"
 
 
 //******************************************************************************
-// PianoRoll Ring Playback scene (DX11)
+// PianoRoll Ring Live scene (DX11)
 //******************************************************************************
-class MTScenePianoRollRing11 : public MTScenePianoRollRingBase11
+class MTScenePianoRollRingLive11 : public MTScenePianoRollRingBase11
 {
 public:
 
-	MTScenePianoRollRing11();
-	virtual ~MTScenePianoRollRing11();
+	MTScenePianoRollRingLive11();
+	virtual ~MTScenePianoRollRingLive11();
 
 	// IMTScene11
 	const TCHAR* GetName() const override;
 	void Release() override;
-	int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
-	unsigned long GetNoteCount() const override;
+	int  OnPlayStart() override;
+	int  OnPlayEnd() override;
+
+	void SetNoteOnLive(unsigned char portNo, unsigned char chNo,
+	                   unsigned char noteNo, unsigned char velocity) override;
+	void SetNoteOffLive(unsigned char portNo, unsigned char chNo,
+	                    unsigned char noteNo) override;
+	void AllNoteOffLive() override;
+	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
 
 protected:
 
@@ -46,16 +51,10 @@ protected:
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
 				const DirectX::SimpleMath::Vector4& lightDir) override;
-	int _DrawLyrics(
-				ID3D11DeviceContext* pContext,
-				const DirectX::SimpleMath::Matrix& viewProj,
-				const DirectX::SimpleMath::Vector4& lightDir,
-				const DirectX::SimpleMath::Vector3& camPos) override;
 
 private:
 
-	MTNoteDesignRing11           m_NoteDesignRing;
-	MTNoteCylindricalInstanced11 m_NoteBox;
-	MTNoteLyrics11               m_Lyrics;
-	MTNoteTracker                m_NoteTracker;
+	MTNoteTrackerLive      m_NoteTrackerLive;
+	MTNoteCylindricalLive11* m_pNoteBoxLive;
+	MTNoteDesignRingLive11 m_NoteDesignRingLive;
 };

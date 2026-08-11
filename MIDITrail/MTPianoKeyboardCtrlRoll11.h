@@ -69,5 +69,4 @@ private:
 	unsigned char m_KbdPortNo[SM_MAX_CH_NUM];
 	unsigned char m_MaxKeyboardIndex;
 
-	float _GetMaxPitchBendShift(unsigned char portNo);
 };

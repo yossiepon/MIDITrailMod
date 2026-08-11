@@ -1,9 +1,9 @@
 //******************************************************************************
 //
-// MIDITrail / MTScenePianoRoll3D11
+// MIDITrail / MTScenePianoRoll3DLive11
 //
-// DX11 PianoRoll 3D/2D Playback scene.
-// Mod features (NoteBoxMod, RippleMod, Lyrics, KeyboardCtrl) are standard.
+// DX11 PianoRoll 3D/2D Live scene.
+// Real-time MIDI input visualization with monitoring support.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -13,26 +13,33 @@
 #pragma once
 
 #include "MTScenePianoRoll3DBase11.h"
-#include "MTNoteTracker.h"
-#include "MTNoteAABBInstanced11.h"
-#include "MTNoteLyrics11.h"
+#include "MTNoteTrackerLive.h"
+#include "MTNoteAABBLive11.h"
+#include "MTNoteDesignLive11.h"
 
 
 //******************************************************************************
-// PianoRoll 3D/2D Playback scene (DX11)
+// PianoRoll 3D/2D Live scene (DX11)
 //******************************************************************************
-class MTScenePianoRoll3D11 : public MTScenePianoRoll3DBase11
+class MTScenePianoRoll3DLive11 : public MTScenePianoRoll3DBase11
 {
 public:
 
-	MTScenePianoRoll3D11(bool is2D = false);
-	virtual ~MTScenePianoRoll3D11();
+	MTScenePianoRoll3DLive11(bool is2D = false);
+	virtual ~MTScenePianoRoll3DLive11();
 
 	// IMTScene11
 	const TCHAR* GetName() const override;
 	void Release() override;
-	int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
-	unsigned long GetNoteCount() const override;
+	int  OnPlayStart() override;
+	int  OnPlayEnd() override;
+
+	void SetNoteOnLive(unsigned char portNo, unsigned char chNo,
+	                   unsigned char noteNo, unsigned char velocity) override;
+	void SetNoteOffLive(unsigned char portNo, unsigned char chNo,
+	                    unsigned char noteNo) override;
+	void AllNoteOffLive() override;
+	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
 
 protected:
 
@@ -45,15 +52,10 @@ protected:
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
 				const DirectX::SimpleMath::Vector4& lightDir) override;
-	int _DrawLyrics(
-				ID3D11DeviceContext* pContext,
-				const DirectX::SimpleMath::Matrix& viewProj,
-				const DirectX::SimpleMath::Vector4& lightDir,
-				const DirectX::SimpleMath::Vector3& camPos) override;
 
 private:
 
-	MTNoteTracker         m_NoteTracker;
-	MTNoteAABBInstanced11 m_NoteBox;
-	MTNoteLyrics11        m_Lyrics;
+	MTNoteTrackerLive  m_NoteTrackerLive;
+	MTNoteAABBLive11*  m_pNoteBoxLive;
+	MTNoteDesignLive11 m_NoteDesignLive;
 };
