@@ -24,7 +24,6 @@ int MTNoteDesignRingLive11::Initialize(
 
 //******************************************************************************
 // CalcNoteEnvelope (3-phase for Live mode)
-// Same logic as MTNoteDesignLive11.
 //******************************************************************************
 MTNoteEnvelopeResult MTNoteDesignRingLive11::CalcNoteEnvelope(
 		unsigned long playTimeMSec,
@@ -32,48 +31,7 @@ MTNoteEnvelopeResult MTNoteDesignRingLive11::CalcNoteEnvelope(
 		unsigned long endTime
 	)
 {
-	MTNoteEnvelopeResult result;
-	result.keyDownRate = 0.0f;
-	result.keyStatus = BeforeNoteON;
-
-	if (playTimeMSec < startTime) {
-		return result;
-	}
-
-	MTEnvelopeConfig envConfig = GetEnvelopeConfig();
-	float decayRatio = envConfig.decayRatio;
-	float sustainRatio = envConfig.sustainRatio;
-	float sustainMid = decayRatio + sustainRatio * 0.5f;
-
-	unsigned long decayDuration = GetRippleDecayDuration();
-	unsigned long releaseDuration = GetRippleReleaseDuration();
-	unsigned long elapsed = playTimeMSec - startTime;
-
-	if (endTime == 0 || playTimeMSec <= endTime) {
-		// Phase 1: Decay
-		if (decayDuration > 0 && elapsed < decayDuration) {
-			result.keyDownRate = decayRatio * (float)elapsed / (float)decayDuration;
-			result.keyStatus = BeforeNoteON;
-		}
-		// Phase 2: Sustain (hold at midpoint)
-		else {
-			result.keyDownRate = sustainMid;
-			result.keyStatus = NoteON;
-		}
-	}
-	else {
-		// Phase 3: Release (expand from sustain level to 1.0, then done)
-		unsigned long releaseElapsed = playTimeMSec - endTime;
-		float releaseRatio = 1.0f - sustainMid;
-		if (releaseDuration > 0 && releaseElapsed < releaseDuration) {
-			result.keyDownRate = sustainMid + releaseRatio * (float)releaseElapsed / (float)releaseDuration;
-			result.keyStatus = AfterNoteOFF;
-		}
-		else {
-			result.keyDownRate = 0.0f;
-			result.keyStatus = AfterNoteOFF;
-		}
-	}
-
-	return result;
+	return _CalcLiveEnvelope(
+		playTimeMSec, startTime, endTime,
+		GetEnvelopeConfig(), GetRippleDecayDuration(), GetRippleReleaseDuration());
 }
