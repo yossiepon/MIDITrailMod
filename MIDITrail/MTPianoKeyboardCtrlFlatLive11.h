@@ -50,9 +50,6 @@ protected:
 
 	// Base11 hooks
 	void _UpdateKeyStates(unsigned long kbdIndex, const MTSceneUpdateContext& ctx) override;
-	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
-				unsigned long kbdIndex,
-				const MTSceneUpdateContext& ctx) override;
 
 	struct LiveKeyState {
 		bool isDown;
