@@ -252,7 +252,6 @@ int MTNoteCylindricalLive11::Draw(
 
 	if (m_NoteNum > 0) {
 		m_PrimNotes.SetLightEnable(m_isLightEnable);
-		m_PrimNotes.SetMaterialAmbient(0.2f, 0.2f, 0.2f);
 		result = m_PrimNotes.Draw(pContext, viewProj, lightDir,
 			(int)(m_NoteNum * NOTE_INDEX_NUM / 3));
 		if (result != 0) goto EXIT;
