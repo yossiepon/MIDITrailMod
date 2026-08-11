@@ -53,7 +53,7 @@ MTNoteEnvelopeResult MTNoteDesignRingLive11::CalcNoteEnvelope(
 		result.keyStatus = NoteON;
 	}
 	else {
-		unsigned long releaseDuration = GetRippleDecayDuration();
+		unsigned long releaseDuration = GetRippleReleaseDuration();
 		unsigned long releaseElapsed = playTimeMSec - endTime;
 		if (releaseDuration > 0 && releaseElapsed < releaseDuration) {
 			result.keyDownRate = 1.0f - ((float)releaseElapsed / (float)releaseDuration);
