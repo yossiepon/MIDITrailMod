@@ -23,8 +23,7 @@ int MTNoteDesignRingLive11::Initialize(
 }
 
 //******************************************************************************
-// CalcNoteEnvelope (linear decay for Live mode)
-// Same logic as MTNoteDesignLive11 — uses RippleDecayDuration for timing.
+// CalcNoteEnvelope (3-phase for Live mode)
 //******************************************************************************
 MTNoteEnvelopeResult MTNoteDesignRingLive11::CalcNoteEnvelope(
 		unsigned long playTimeMSec,
@@ -32,37 +31,7 @@ MTNoteEnvelopeResult MTNoteDesignRingLive11::CalcNoteEnvelope(
 		unsigned long endTime
 	)
 {
-	MTNoteEnvelopeResult result;
-	result.keyDownRate = 0.0f;
-	result.keyStatus = BeforeNoteON;
-
-	if (playTimeMSec < startTime) {
-		return result;
-	}
-
-	unsigned long elapsed = playTimeMSec - startTime;
-
-	if (endTime == 0 || playTimeMSec <= endTime) {
-		unsigned long decayDuration = GetRippleDecayDuration();
-		if (decayDuration > 0 && elapsed < decayDuration) {
-			result.keyDownRate = (float)elapsed / (float)decayDuration;
-		}
-		else {
-			result.keyDownRate = 1.0f;
-		}
-		result.keyStatus = NoteON;
-	}
-	else {
-		unsigned long releaseDuration = GetRippleDecayDuration();
-		unsigned long releaseElapsed = playTimeMSec - endTime;
-		if (releaseDuration > 0 && releaseElapsed < releaseDuration) {
-			result.keyDownRate = 1.0f - ((float)releaseElapsed / (float)releaseDuration);
-		}
-		else {
-			result.keyDownRate = 0.0f;
-		}
-		result.keyStatus = AfterNoteOFF;
-	}
-
-	return result;
+	return _CalcLiveEnvelope(
+		playTimeMSec, startTime, endTime,
+		GetEnvelopeConfig(), GetRippleDecayDuration(), GetRippleReleaseDuration());
 }

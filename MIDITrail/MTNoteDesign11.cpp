@@ -488,6 +488,61 @@ MTNoteEnvelopeResult MTNoteDesign11::CalcNoteEnvelope(
 }
 
 //******************************************************************************
+// Live note envelope (3-phase, shared by Live11 and RingLive11)
+// Decay: 0 → decayRatio over decayDuration (fixed time)
+// Sustain: hold at midpoint while note is held (endTime == 0)
+// Release: sustainMid → 1.0 over releaseDuration (after NoteOff)
+//******************************************************************************
+MTNoteEnvelopeResult MTNoteDesign11::_CalcLiveEnvelope(
+		unsigned long playTimeMSec,
+		unsigned long startTime,
+		unsigned long endTime,
+		const MTEnvelopeConfig& envConfig,
+		unsigned long decayDuration,
+		unsigned long releaseDuration
+	)
+{
+	MTNoteEnvelopeResult result;
+	result.keyDownRate = 0.0f;
+	result.keyStatus = BeforeNoteON;
+
+	if (playTimeMSec < startTime) {
+		return result;
+	}
+
+	float decayRatio = envConfig.decayRatio;
+	float sustainRatio = envConfig.sustainRatio;
+	float sustainMid = decayRatio + sustainRatio * 0.5f;
+
+	unsigned long elapsed = playTimeMSec - startTime;
+
+	if (endTime == 0 || playTimeMSec <= endTime) {
+		if (decayDuration > 0 && elapsed < decayDuration) {
+			result.keyDownRate = decayRatio * (float)elapsed / (float)decayDuration;
+			result.keyStatus = BeforeNoteON;
+		}
+		else {
+			result.keyDownRate = sustainMid;
+			result.keyStatus = NoteON;
+		}
+	}
+	else {
+		unsigned long releaseElapsed = playTimeMSec - endTime;
+		float releaseRatio = 1.0f - sustainMid;
+		if (releaseDuration > 0 && releaseElapsed < releaseDuration) {
+			result.keyDownRate = sustainMid + releaseRatio * (float)releaseElapsed / (float)releaseDuration;
+			result.keyStatus = AfterNoteOFF;
+		}
+		else {
+			result.keyDownRate = 0.0f;
+			result.keyStatus = AfterNoteOFF;
+		}
+	}
+
+	return result;
+}
+
+//******************************************************************************
 // Picture board relative position
 //******************************************************************************
 float MTNoteDesign11::GetPictBoardRelativePos()

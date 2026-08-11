@@ -83,7 +83,7 @@ int MTPictBoardRing11::Create(
 	m_Primitive.UnlockVertex(pContext);
 	m_Primitive.UnlockIndex(pContext);
 
-	m_Primitive.SetMaterialAmbient(0.5f, 0.5f, 0.5f);
+	m_Primitive.SetLightEnable(false);
 
 EXIT:;
 	return result;
@@ -121,9 +121,7 @@ int MTPictBoardRing11::Draw(
 	if (!m_isEnable) goto EXIT;
 
 	m_Primitive.SetTexture(m_pSRV);
-	m_Primitive.SetDepthWrite(false);
 	result = m_Primitive.Draw(pContext, viewProj, lightDir);
-	m_Primitive.SetDepthWrite(true);
 	if (result != 0) goto EXIT;
 
 EXIT:;

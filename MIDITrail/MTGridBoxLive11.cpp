@@ -33,6 +33,13 @@ int MTGridBoxLive11::Create(
 	result = m_NoteDesign.Initialize(pSceneName, NULL);
 	if (result != 0) goto EXIT;
 
+	{
+		Color lineColor = m_NoteDesign.GetGridLineColor();
+		if (lineColor.A() < 0.01f) {
+			m_isVisible = false;
+		}
+	}
+
 	result = _CreateVertices(pDevice, pContext);
 	if (result != 0) goto EXIT;
 

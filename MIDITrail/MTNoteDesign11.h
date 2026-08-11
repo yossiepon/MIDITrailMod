@@ -190,6 +190,19 @@ public:
 				unsigned long endTime
 			);
 
+protected:
+
+	static MTNoteEnvelopeResult _CalcLiveEnvelope(
+				unsigned long playTimeMSec,
+				unsigned long startTime,
+				unsigned long endTime,
+				const MTEnvelopeConfig& envConfig,
+				unsigned long decayDuration,
+				unsigned long releaseDuration
+			);
+
+public:
+
 	// Ripple blend settings
 	D3D11_BLEND GetRippleSrcBlend();
 	D3D11_BLEND GetRippleDestBlend();

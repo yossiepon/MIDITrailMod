@@ -242,7 +242,6 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTSceneBase11.cpp" />
     <ClCompile Include="MTScenePianoRoll3D11.cpp" />
     <ClCompile Include="MTScenePianoRollRain11.cpp" />
-    <ClCompile Include="MTNoteRain11.cpp" />
     <ClCompile Include="MTNoteDesign11.cpp" />
     <ClCompile Include="MTNoteDesignRing11.cpp" />
     <ClCompile Include="MTGridRingBase11.cpp" />
@@ -277,7 +276,6 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClCompile Include="MTNoteDesignLive11.cpp" />
     <ClCompile Include="MTNoteDesignRingLive11.cpp" />
     <ClCompile Include="MTNoteLiveBase11.cpp" />
-    <ClCompile Include="MTNoteBox11.cpp" />
     <ClCompile Include="MTPianoKeyboard11.cpp" />
     <ClCompile Include="MTPianoKeyboard11_vertex.cpp" />
     <ClCompile Include="MTPianoKeyboardFlat11.cpp" />
@@ -346,7 +344,6 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTSceneBase11.h" />
     <ClInclude Include="MTScenePianoRoll3D11.h" />
     <ClInclude Include="MTScenePianoRollRain11.h" />
-    <ClInclude Include="MTNoteRain11.h" />
     <ClInclude Include="MTNoteDesign11.h" />
     <ClInclude Include="MTNoteDesignRing11.h" />
     <ClInclude Include="MTGridRingBase11.h" />
@@ -380,11 +377,11 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     <ClInclude Include="MTNoteTracker.h" />
     <ClInclude Include="MTNoteTrackerLive.h" />
     <ClInclude Include="MTNoteLiveBase11.h" />
+    <ClInclude Include="MTNoteInstancedShaderSnippets.h" />
     <ClInclude Include="MTNoteAABBLive11.h" />
     <ClInclude Include="MTNoteCylindricalLive11.h" />
     <ClInclude Include="MTNoteDesignLive11.h" />
     <ClInclude Include="MTNoteDesignRingLive11.h" />
-    <ClInclude Include="MTNoteBox11.h" />
     <ClInclude Include="MTPianoKeyboard11.h" />
     <ClInclude Include="MTPianoKeyboardFlat11.h" />
     <ClInclude Include="MTPianoKeyboardCtrlBase11.h" />

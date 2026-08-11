@@ -12,9 +12,7 @@
 
 #pragma once
 
-#include "DXPrimitive11.h"
 #include "MTNoteLiveBase11.h"
-#include "MTNoteDesign11.h"
 #include "MTPianoKeyboardDesign11.h"
 
 //******************************************************************************
@@ -45,39 +43,20 @@ public:
 			MTAABBLiveMode mode = MTAABBLiveMode::Roll3D
 		);
 
-	int Update(const MTSceneUpdateContext& ctx) override;
+protected:
 
-	int Draw(
-			ID3D11DeviceContext* pContext,
-			const DirectX::SimpleMath::Matrix& viewProj,
-			const DirectX::SimpleMath::Vector4& lightDir
-		);
-
-	void Release();
-	void Reset() override;
-
-	void SetLightEnable(bool enable) { m_isLightEnable = enable; }
+	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				const MTSceneUpdateContext& ctx) override;
+	int _CreateVertexOfNote(
+				const NoteStatus& note,
+				DXPRIMITIVE11_VERTEX* pVertex,
+				unsigned long vertexOffset,
+				unsigned long* pIndex,
+				unsigned long curTimeMs) override;
 
 private:
 
-	MTNoteDesign11 m_NoteDesign;
+	MTNoteDesign11 m_NoteDesignLocal;
 	MTPianoKeyboardDesign11 m_KeyboardDesign;
-	DXPrimitive11 m_PrimNotes;
-	ID3D11DeviceContext* m_pContext;
-
 	MTAABBLiveMode m_Mode;
-	bool m_isLightEnable;
-	unsigned long m_NoteVertexNum;
-	unsigned long m_NoteIndexNum;
-
-	int _CreateNoteBuffer(ID3D11Device* pDevice);
-	int _UpdateVertexOfNotes(unsigned long curTimeMs);
-
-	int _CreateVertexOfNote(
-			const NoteStatus& note,
-			DXPRIMITIVE11_VERTEX* pVertex,
-			unsigned long vertexOffset,
-			unsigned long* pIndex,
-			unsigned long curTimeMs
-		);
 };
