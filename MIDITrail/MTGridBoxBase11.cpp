@@ -21,6 +21,7 @@ using namespace DirectX::SimpleMath;
 MTGridBoxBase11::MTGridBoxBase11()
 {
 	m_isReady = false;
+	m_isVisible = true;
 }
 
 MTGridBoxBase11::~MTGridBoxBase11()
@@ -65,10 +66,9 @@ int MTGridBoxBase11::Update(const MTSceneUpdateContext& ctx)
 int MTGridBoxBase11::Draw(
 		ID3D11DeviceContext* pContext,
 		const Matrix& viewProj,
-		const Vector4& lightDir,
-		float rollAngle
+		const Vector4& lightDir
 	)
 {
-	if (!m_isEnable || !m_isReady) return 0;
+	if (!m_isEnable || !m_isReady || !m_isVisible) return 0;
 	return m_Primitive.Draw(pContext, viewProj, lightDir);
 }

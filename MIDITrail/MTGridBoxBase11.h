@@ -33,8 +33,7 @@ public:
 	int Update(const MTSceneUpdateContext& ctx) override;
 	int Draw(ID3D11DeviceContext* pContext,
 	         const DirectX::SimpleMath::Matrix& viewProj,
-	         const DirectX::SimpleMath::Vector4& lightDir,
-	         float rollAngle = 0.0f);
+	         const DirectX::SimpleMath::Vector4& lightDir);
 
 	bool IsReady() const { return m_isReady; }
 
@@ -43,6 +42,7 @@ protected:
 	DXPrimitive11 m_Primitive;
 	MTNoteDesign11 m_NoteDesign;
 	bool m_isReady;
+	bool m_isVisible;
 
 	void _SetupPrimitive();
 };
