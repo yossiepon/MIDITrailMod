@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include "DXPrimitive11.h"
 #include "MTNoteLiveBase11.h"
 #include "MTNoteDesignRing11.h"
 
@@ -34,34 +33,18 @@ public:
 			MTNotePitchBend* pNotePitchBend
 		);
 
-	int Update(const MTSceneUpdateContext& ctx) override;
+protected:
 
-	int Draw(
-			ID3D11DeviceContext* pContext,
-			const DirectX::SimpleMath::Matrix& viewProj,
-			const DirectX::SimpleMath::Vector4& lightDir
-		);
-
-	void Release();
-	void Reset() override;
-
-	void SetLightEnable(bool enable) { m_isLightEnable = enable; }
+	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				const MTSceneUpdateContext& ctx) override;
+	int _CreateVertexOfNote(
+				const NoteStatus& note,
+				DXPRIMITIVE11_VERTEX* pVertex,
+				unsigned long vertexOffset,
+				unsigned long* pIndex,
+				unsigned long curTimeMs) override;
 
 private:
 
-	MTNoteDesignRing11 m_NoteDesign;
-	DXPrimitive11 m_PrimNotes;
-	ID3D11DeviceContext* m_pContext;
-	bool m_isLightEnable;
-
-	int _CreateNoteBuffer(ID3D11Device* pDevice);
-	int _UpdateVertexOfNotes(unsigned long curTimeMs);
-
-	int _CreateVertexOfNote(
-			const NoteStatus& note,
-			DXPRIMITIVE11_VERTEX* pVertex,
-			unsigned long vertexOffset,
-			unsigned long* pIndex,
-			unsigned long curTimeMs
-		);
+	MTNoteDesignRing11 m_NoteDesignLocal;
 };

@@ -20,7 +20,12 @@ MTNoteLiveBase11::MTNoteLiveBase11()
 	m_NoteNum = 0;
 	m_LiveMonitorDisplayDuration = 30000;
 	m_LiveTimeMSec = 0;
+	m_pContext = NULL;
 	m_pNotePitchBend = NULL;
+	m_pNoteDesign = NULL;
+	m_isLightEnable = true;
+	m_NoteVertexNum = 0;
+	m_NoteIndexNum = 0;
 	_ResetNoteStatus();
 }
 
@@ -35,6 +40,101 @@ void MTNoteLiveBase11::Reset()
 {
 	m_NoteNum = 0;
 	_ResetNoteStatus();
+}
+
+//******************************************************************************
+// Update (template method)
+//******************************************************************************
+int MTNoteLiveBase11::Update(const MTSceneUpdateContext& ctx)
+{
+	int result = 0;
+
+	m_LiveTimeMSec = ctx.liveTimeMSec;
+
+	_UpdateStatusOfNotes(m_LiveTimeMSec);
+
+	result = _UpdateVertexOfNotes(m_LiveTimeMSec);
+	if (result != 0) goto EXIT;
+
+	{
+		DirectX::SimpleMath::Matrix world = _ComputeWorldMatrix(ctx);
+		m_PrimNotes.SetWorldMatrix(world);
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// Draw
+//******************************************************************************
+int MTNoteLiveBase11::Draw(
+		ID3D11DeviceContext* pContext,
+		const DirectX::SimpleMath::Matrix& viewProj,
+		const DirectX::SimpleMath::Vector4& lightDir
+	)
+{
+	int result = 0;
+
+	if (!m_isEnable) goto EXIT;
+
+	if (m_NoteNum > 0) {
+		m_PrimNotes.SetLightEnable(m_isLightEnable);
+		result = m_PrimNotes.Draw(pContext, viewProj, lightDir,
+			(int)(m_NoteNum * m_NoteIndexNum / 3));
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// Release
+//******************************************************************************
+void MTNoteLiveBase11::Release()
+{
+	m_PrimNotes.Release();
+	m_pContext = NULL;
+	m_pNotePitchBend = NULL;
+	m_pNoteDesign = NULL;
+}
+
+//******************************************************************************
+// Update vertex of notes
+//******************************************************************************
+int MTNoteLiveBase11::_UpdateVertexOfNotes(unsigned long curTimeMs)
+{
+	int result = 0;
+	DXPRIMITIVE11_VERTEX* pVertex = NULL;
+	unsigned long* pIndex = NULL;
+	unsigned long noteNum = 0;
+
+	result = m_PrimNotes.LockVertex(m_pContext, &pVertex);
+	if (result != 0) goto EXIT;
+	result = m_PrimNotes.LockIndex(m_pContext, &pIndex);
+	if (result != 0) goto EXIT;
+
+	for (unsigned long i = 0; i < MTNOTELIVENOTE_MAX_NUM; i++) {
+		if (m_NoteStatus[i].isActive) {
+			result = _CreateVertexOfNote(
+				m_NoteStatus[i],
+				&pVertex[m_NoteVertexNum * noteNum],
+				m_NoteVertexNum * noteNum,
+				&pIndex[m_NoteIndexNum * noteNum],
+				curTimeMs
+			);
+			if (result != 0) goto EXIT;
+			noteNum++;
+		}
+	}
+	m_NoteNum = noteNum;
+
+	m_PrimNotes.UnlockVertex(m_pContext);
+	m_PrimNotes.UnlockIndex(m_pContext);
+
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
