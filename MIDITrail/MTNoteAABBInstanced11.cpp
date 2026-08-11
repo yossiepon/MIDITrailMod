@@ -657,7 +657,8 @@ int MTNoteAABBInstanced11::_DrawRoll(
 	{
 		unsigned long tickWindow = (unsigned long)(MTNOTEAABB_CULL_DISTANCE / m_TickToPos);
 		unsigned long tickLow = (m_CurTickTime > tickWindow) ? (m_CurTickTime - tickWindow) : 0;
-		unsigned long tickHigh = m_CurTickTime + tickWindow;
+		unsigned long tickHigh = ((0xFFFFFFFF - m_CurTickTime) < tickWindow)
+		                         ? 0xFFFFFFFF : (m_CurTickTime + tickWindow);
 
 		unsigned long loNote = 0, hiNote = 0;
 		GetVisibleRange(tickLow, tickHigh, &loNote, &hiNote);
@@ -753,7 +754,8 @@ int MTNoteAABBInstanced11::_DrawRain(
 	{
 		unsigned long tickWindow = (unsigned long)(MTNOTEAABB_CULL_DISTANCE / m_TickToPos);
 		unsigned long tickLow = (m_CurTickTime > tickWindow) ? (m_CurTickTime - tickWindow) : 0;
-		unsigned long tickHigh = m_CurTickTime + tickWindow;
+		unsigned long tickHigh = ((0xFFFFFFFF - m_CurTickTime) < tickWindow)
+		                         ? 0xFFFFFFFF : (m_CurTickTime + tickWindow);
 
 		unsigned long loNote = 0, hiNote = 0;
 		GetVisibleRange(tickLow, tickHigh, &loNote, &hiNote);
