@@ -1,8 +1,8 @@
 //******************************************************************************
 //
-// MIDITrail / MTScenePianoRollRain11
+// MIDITrail / MTScenePianoRollRainLive11
 //
-// DX11 PianoRoll Rain Playback scene.
+// DX11 PianoRoll Rain Live scene.
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -12,25 +12,32 @@
 #pragma once
 
 #include "MTScenePianoRollRainBase11.h"
-#include "MTNoteAABBInstanced11.h"
-#include "MTNoteTracker.h"
+#include "MTNoteTrackerLive.h"
+#include "MTNoteAABBLive11.h"
 
 
 //******************************************************************************
-// PianoRoll Rain Playback scene (DX11)
+// PianoRoll Rain Live scene (DX11)
 //******************************************************************************
-class MTScenePianoRollRain11 : public MTScenePianoRollRainBase11
+class MTScenePianoRollRainLive11 : public MTScenePianoRollRainBase11
 {
 public:
 
-	MTScenePianoRollRain11(bool is2D = false);
-	virtual ~MTScenePianoRollRain11();
+	MTScenePianoRollRainLive11(bool is2D = false);
+	virtual ~MTScenePianoRollRainLive11();
 
 	// IMTScene11
 	const TCHAR* GetName() const override;
 	void Release() override;
-	int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
-	unsigned long GetNoteCount() const override;
+	int  OnPlayStart() override;
+	int  OnPlayEnd() override;
+
+	void SetNoteOnLive(unsigned char portNo, unsigned char chNo,
+	                   unsigned char noteNo, unsigned char velocity) override;
+	void SetNoteOffLive(unsigned char portNo, unsigned char chNo,
+	                    unsigned char noteNo) override;
+	void AllNoteOffLive() override;
+	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
 
 protected:
 
@@ -46,6 +53,6 @@ protected:
 
 private:
 
-	MTNoteTracker         m_NoteTracker;
-	MTNoteAABBInstanced11 m_NoteRain;
+	MTNoteTrackerLive  m_NoteTrackerLive;
+	MTNoteAABBLive11*  m_pNoteRainLive;
 };

@@ -17,6 +17,8 @@
 #include <directxtk/SimpleMath.h>
 #include "SMIDILib.h"
 
+class MTNotePitchBend;
+
 using namespace SMIDILib;
 
 
@@ -97,6 +99,7 @@ public:
 
 	// Pitch bend Y shift in note-space coordinates
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
+	float GetMaxPitchBendShift(MTNotePitchBend* pNotePitchBend, unsigned char portNo);
 
 	// Note box vertex positions (4 corners of the front face)
 	virtual void GetNoteBoxVirtexPos(

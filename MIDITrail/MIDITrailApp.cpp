@@ -18,8 +18,11 @@
 #include "MIDITrailApp.h"
 #include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
+#include "MTScenePianoRoll3DLive11.h"
 #include "MTScenePianoRollRain11.h"
+#include "MTScenePianoRollRainLive11.h"
 #include "MTScenePianoRollRing11.h"
+#include "MTScenePianoRollRingLive11.h"
 #include "DXPrimitive11.h"
 #include "MTNoteInstancedBase11.h"
 #include "MTNoteAABBInstanced11.h"
@@ -3217,13 +3220,13 @@ int MIDITrailApp::_CreateScene(
 					m_pScene = new MTScenePianoRoll3D11();
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll3D11(false, true);
+					m_pScene = new MTScenePianoRoll3D11(true);
 				}
 				else if (type == PianoRollRain) {
 					m_pScene = new MTScenePianoRollRain11();
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain11(false, true);
+					m_pScene = new MTScenePianoRollRain11(true);
 				}
 				else if (type == PianoRollRing) {
 					m_pScene = new MTScenePianoRollRing11();
@@ -3232,19 +3235,19 @@ int MIDITrailApp::_CreateScene(
 			//ライブモニタ用シーン生成 (DX11: isLive=true)
 			else {
 				if (type == PianoRoll3D) {
-					m_pScene = new MTScenePianoRoll3D11(true);
+					m_pScene = new MTScenePianoRoll3DLive11();
 				}
 				else if (type == PianoRoll2D) {
-					m_pScene = new MTScenePianoRoll3D11(true, true);
+					m_pScene = new MTScenePianoRoll3DLive11(true);
 				}
 				else if (type == PianoRollRain) {
-					m_pScene = new MTScenePianoRollRain11(true);
+					m_pScene = new MTScenePianoRollRainLive11();
 				}
 				else if (type == PianoRollRain2D) {
-					m_pScene = new MTScenePianoRollRain11(true, true);
+					m_pScene = new MTScenePianoRollRainLive11(true);
 				}
 				else if (type == PianoRollRing) {
-					m_pScene = new MTScenePianoRollRing11(true);
+					m_pScene = new MTScenePianoRollRingLive11();
 				}
 			}
 		}

@@ -3,7 +3,6 @@
 // MIDITrail / MTPianoKeyboardCtrlRainLive11
 //
 // Rain Live keyboard controller (DX11).
-// Overrides world matrix for Rain scene positioning.
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
 //

@@ -53,8 +53,6 @@ public:
 	// IMTScene11: common implementations
 	//----------------------------------------------------------------------
 
-	bool IsLive() const override { return m_IsLive; }
-
 	// Per-frame update: camera + context + components
 	int Update() override;
 

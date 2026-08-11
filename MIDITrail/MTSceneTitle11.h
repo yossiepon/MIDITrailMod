@@ -32,7 +32,6 @@ public:
 	virtual ~MTSceneTitle11();
 
 	const TCHAR* GetName() const override;
-	bool IsLive() const override { return false; }
 
 	int  Create(HWND hWnd, ID3D11Device* pDevice,
 	            ID3D11DeviceContext* pContext,

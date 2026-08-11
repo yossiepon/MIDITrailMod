@@ -18,6 +18,7 @@
 #include "MTConfFile.h"
 #include "MTColorConf.h"
 #include "MTNoteDesign11.h"
+#include "MTNotePitchBend.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -155,6 +156,23 @@ float MTNoteDesign11::GetPitchBendShift(
 	else {
 		return m_NoteStep * pitchBendSensitivity * ((float)pitchBendValue / 8191.0f);
 	}
+}
+
+float MTNoteDesign11::GetMaxPitchBendShift(
+		MTNotePitchBend* pNotePitchBend,
+		unsigned char portNo
+	)
+{
+	if (pNotePitchBend == NULL) return 0.0f;
+
+	float maxShift = 0.0f;
+	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+		short v = pNotePitchBend->GetValue(portNo, chNo);
+		unsigned char s = pNotePitchBend->GetSensitivity(portNo, chNo);
+		float shift = GetPitchBendShift(v, s);
+		if (fabsf(shift) > fabsf(maxShift)) maxShift = shift;
+	}
+	return maxShift;
 }
 
 //******************************************************************************

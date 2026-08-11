@@ -26,6 +26,9 @@ Matrix MTPianoKeyboardCtrlRollLive11::_ComputeWorldMatrix(
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
 
 	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos(kbdIndex, ctx.rollAngle);
+
+	basePos.x += m_pNoteDesign->GetMaxPitchBendShift(m_pNotePitchBend, 0);
+
 	float scale = m_KeyboardDesign.GetKeyboardResizeRatio();
 
 	float rollAngle = ctx.rollAngle;

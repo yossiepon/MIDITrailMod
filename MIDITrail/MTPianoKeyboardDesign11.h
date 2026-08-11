@@ -17,6 +17,8 @@
 #include <directxtk/SimpleMath.h>
 #include "SMIDILib.h"
 
+class MTNotePitchBend;
+
 using namespace SMIDILib;
 
 
@@ -87,6 +89,7 @@ public:
 
 	// Pitch bend
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
+	float GetMaxPitchBendShift(MTNotePitchBend* pNotePitchBend, unsigned char portNo);
 
 	// Note drop position
 	float GetNoteDropPosZ(unsigned char noteNo);

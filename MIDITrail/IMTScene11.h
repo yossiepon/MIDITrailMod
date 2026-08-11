@@ -50,7 +50,6 @@ public:
 	// Identification
 	//----------------------------------------------------------------------
 	virtual const TCHAR* GetName() const = 0;
-	virtual bool IsLive() const = 0;
 
 	//----------------------------------------------------------------------
 	// Lifecycle
