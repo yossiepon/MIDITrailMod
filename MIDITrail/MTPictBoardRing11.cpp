@@ -14,6 +14,7 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MTPictBoardRing11.h"
+#include "MTSceneConst.h"
 #include "DXH.h"
 
 using namespace YNBaseLib;
@@ -170,6 +171,7 @@ int MTPictBoardRing11::_CreateVertexOfBoard(
 	float boardHeight = 2.0f * 3.1415926f * basePos.y;
 	float boardWidth = boardHeight * ((float)m_ImgWidth / (float)m_ImgHeight);
 	basePos.x -= (boardWidth * m_NoteDesign.GetPictBoardRelativePos());
+	basePos.x -= _GetRippleMargin();
 
 	float nrm[3] = { -1.0f, 0.0f, 0.0f };
 	unsigned long color = 0xFFFFFFFF;
@@ -241,6 +243,15 @@ int MTPictBoardRing11::_CreateVertexOfBoard(
 	pIndex[(i-1)*6 + 5] = (i-1)*2 + 2;
 
 	return result;
+}
+
+//******************************************************************************
+// Ripple margin (spacing for ripple + lyrics display area)
+//******************************************************************************
+float MTPictBoardRing11::_GetRippleMargin()
+{
+	return m_NoteDesign.GetRippleSpacing()
+	     * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM);
 }
 
 //******************************************************************************

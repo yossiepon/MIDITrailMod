@@ -11,7 +11,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTPianoKeyboardCtrlFlatLive11.h"
-#include "MTPianoKeyboardRain11.h"
+#include "MTPianoKeyboardFlat11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -65,7 +65,7 @@ int MTPianoKeyboardCtrlFlatLive11::Create(
 	result = _LoadTexture(pDevice, pSceneName);
 	if (result != 0) goto EXIT;
 
-	result = _CreateKeyboard(pDevice, pContext, pSceneName);
+	result = _CreateKeyboards(pDevice, pContext, pSceneName);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -73,9 +73,9 @@ EXIT:;
 }
 
 //******************************************************************************
-// Create keyboard (single Rain-style keyboard for Live)
+// Create keyboards (one per channel, or single)
 //******************************************************************************
-int MTPianoKeyboardCtrlFlatLive11::_CreateKeyboard(
+int MTPianoKeyboardCtrlFlatLive11::_CreateKeyboards(
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
 		const TCHAR* pSceneName
@@ -83,16 +83,17 @@ int MTPianoKeyboardCtrlFlatLive11::_CreateKeyboard(
 {
 	int result = 0;
 
-	m_Subs[0].pKeyboard = new MTPianoKeyboardRain11();
-	if (m_Subs[0].pKeyboard == NULL) {
-		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
-		goto EXIT;
+	unsigned long numKbd = m_isSingleKeyboard ? 1 : SM_MAX_CH_NUM;
+	for (unsigned long k = 0; k < numKbd; k++) {
+		m_Subs[k].pKeyboard = new MTPianoKeyboardFlat11();
+		if (m_Subs[k].pKeyboard == NULL) {
+			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
+			goto EXIT;
+		}
+		result = m_Subs[k].pKeyboard->Create(pDevice, pContext, pSceneName, NULL, m_pSRV);
+		if (result != 0) goto EXIT;
 	}
-
-	result = m_Subs[0].pKeyboard->Create(pDevice, pContext, pSceneName, NULL, m_pSRV);
-	if (result != 0) goto EXIT;
-
-	m_NumKbd = 1;
+	m_NumKbd = numKbd;
 
 EXIT:;
 	return result;
@@ -107,42 +108,27 @@ void MTPianoKeyboardCtrlFlatLive11::Release()
 }
 
 //******************************************************************************
-// Update
+// _UpdateKeyStates (Live: evaluate live key states + update timestamp)
 //******************************************************************************
-int MTPianoKeyboardCtrlFlatLive11::Update(
+void MTPianoKeyboardCtrlFlatLive11::_UpdateKeyStates(
+		unsigned long kbdIndex,
 		const MTSceneUpdateContext& ctx
 	)
 {
-	int result = 0;
-
 	m_LiveTimeMSec = ctx.liveTimeMSec;
-
-	if (m_Subs[0].pKeyboard == NULL) goto EXIT;
-
-	if (!m_isSkipping) {
-		_EvaluateLiveKeyStates();
-	}
-
-	{
-		Matrix world = _ComputeWorldMatrix(ctx);
-		result = m_Subs[0].pKeyboard->Update(m_pContext, m_Subs[0].keyStates, world);
-		if (result != 0) goto EXIT;
-	}
-
-EXIT:;
-	return result;
+	_EvaluateLiveKeyStates(kbdIndex);
 }
 
 //******************************************************************************
-// Evaluate live key states from LiveKeyState array
+// Evaluate live key states for a specific keyboard
 //******************************************************************************
-void MTPianoKeyboardCtrlFlatLive11::_EvaluateLiveKeyStates()
+void MTPianoKeyboardCtrlFlatLive11::_EvaluateLiveKeyStates(unsigned long kbdIndex)
 {
 	unsigned long upMs = m_KeyUpDurMs;
 
 	for (unsigned char noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-		LiveKeyState& lk = m_LiveKeys[noteNo];
-		MTKeyboardKeyState& ks = m_Subs[0].keyStates[noteNo];
+		LiveKeyState& lk = m_LiveKeys[kbdIndex][noteNo];
+		MTKeyboardKeyState& ks = m_Subs[kbdIndex].keyStates[noteNo];
 
 		if (!lk.isDown && lk.endTimeMs == 0) {
 			ks.rate = 0.0f;
@@ -170,22 +156,26 @@ void MTPianoKeyboardCtrlFlatLive11::_EvaluateLiveKeyStates()
 
 		if (rate >= 1.0f) {
 			Color noteColor((unsigned int)lk.color);
-			Color activeColor = m_KeyboardDesign.GetActiveKeyColor(noteNo, 0, &noteColor);
+			Color activeColor = m_KeyboardDesign.GetActiveKeyColor(
+				lk.chNo, noteNo, 0, &noteColor);
 			ks.color = activeColor.BGRA();
 		}
 	}
 }
 
 //******************************************************************************
-// Compute world matrix (Rain-style: translation + rotation)
+// Compute world matrix (default: per-channel positioning)
 //******************************************************************************
 Matrix MTPianoKeyboardCtrlFlatLive11::_ComputeWorldMatrix(
+		unsigned long kbdIndex,
 		const MTSceneUpdateContext& ctx
 	)
 {
-	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(0, 0);
-	return Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle))
-	     * Matrix::CreateTranslation(moveVec);
+	unsigned char portNo = 0;
+	unsigned char chNo = (unsigned char)kbdIndex;
+	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
+	return Matrix::CreateTranslation(moveVec)
+	     * Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle));
 }
 
 //******************************************************************************
@@ -207,7 +197,8 @@ void MTPianoKeyboardCtrlFlatLive11::OnNoteActivate(
 {
 	if (note.noteNo >= SM_MAX_NOTE_NUM) return;
 
-	LiveKeyState& lk = m_LiveKeys[note.noteNo];
+	unsigned long kbdIndex = m_isSingleKeyboard ? 0 : (note.chNo % m_NumKbd);
+	LiveKeyState& lk = m_LiveKeys[kbdIndex][note.noteNo];
 	lk.isDown = true;
 	lk.startTimeMs = m_LiveTimeMSec;
 	lk.endTimeMs = 0;
@@ -225,7 +216,8 @@ void MTPianoKeyboardCtrlFlatLive11::OnNoteDeactivate(
 {
 	if (note.noteNo >= SM_MAX_NOTE_NUM) return;
 
-	LiveKeyState& lk = m_LiveKeys[note.noteNo];
+	unsigned long kbdIndex = m_isSingleKeyboard ? 0 : (note.chNo % m_NumKbd);
+	LiveKeyState& lk = m_LiveKeys[kbdIndex][note.noteNo];
 	if (lk.isDown) {
 		lk.isDown = false;
 		lk.endTimeMs = m_LiveTimeMSec;
@@ -238,5 +230,7 @@ void MTPianoKeyboardCtrlFlatLive11::OnNoteDeactivate(
 void MTPianoKeyboardCtrlFlatLive11::OnReset()
 {
 	ZeroMemory(m_LiveKeys, sizeof(m_LiveKeys));
-	ZeroMemory(m_Subs[0].keyStates, sizeof(m_Subs[0].keyStates));
+	for (unsigned long k = 0; k < m_NumKbd; k++) {
+		ZeroMemory(m_Subs[k].keyStates, sizeof(m_Subs[k].keyStates));
+	}
 }

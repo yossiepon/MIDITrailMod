@@ -19,12 +19,13 @@ using namespace DirectX::SimpleMath;
 // Compute world matrix (Roll-style, same rotation as Playback Roll)
 //******************************************************************************
 Matrix MTPianoKeyboardCtrlRollLive11::_ComputeWorldMatrix(
+		unsigned long kbdIndex,
 		const MTSceneUpdateContext& ctx
 	)
 {
 	Vector3 moveVec = m_NoteDesign.GetWorldMoveVector();
 
-	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos(0, ctx.rollAngle);
+	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos(kbdIndex, ctx.rollAngle);
 	float scale = m_KeyboardDesign.GetKeyboardResizeRatio();
 
 	float rollAngle = ctx.rollAngle;

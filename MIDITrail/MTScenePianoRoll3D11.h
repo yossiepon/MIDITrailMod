@@ -19,7 +19,6 @@
 #include "MTStars11.h"
 #include "MTGridBoxBase11.h"
 #include "MTTimeIndicator11.h"
-#include "MTPictBoard11.h"
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
 #include "MTNoteTracker.h"
@@ -87,7 +86,6 @@ private:
 	MTStars11          m_Stars;
 	MTGridBoxBase11*   m_pGrid;
 	MTTimeIndicator11  m_TimeIndicator;
-	MTPictBoard11      m_PictBoard;
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11      m_Dashboard;
 	MTNoteTracker      m_NoteTracker;

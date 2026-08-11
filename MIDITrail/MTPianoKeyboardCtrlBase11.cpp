@@ -59,6 +59,31 @@ void MTPianoKeyboardCtrlBase11::Release()
 }
 
 //******************************************************************************
+// Update (template method)
+//******************************************************************************
+int MTPianoKeyboardCtrlBase11::Update(
+		const MTSceneUpdateContext& ctx
+	)
+{
+	int result = 0;
+
+	for (unsigned long k = 0; k < m_NumKbd; k++) {
+		if (m_Subs[k].pKeyboard == NULL) continue;
+
+		if (!m_isSkipping) {
+			_UpdateKeyStates(k, ctx);
+		}
+
+		Matrix world = _ComputeWorldMatrix(k, ctx);
+		result = m_Subs[k].pKeyboard->Update(m_pContext, m_Subs[k].keyStates, world);
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // Draw
 //******************************************************************************
 int MTPianoKeyboardCtrlBase11::Draw(

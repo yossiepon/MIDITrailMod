@@ -58,6 +58,7 @@ private:
 	ID3D11DeviceContext* m_pContext;
 	ID3D11ShaderResourceView* m_pTextureSRV;
 	MTNotePitchBend* m_pNotePitchBend;
+	ID3D11BlendState* m_pBlendState;
 
 	unsigned long m_ActiveNoteNum;
 

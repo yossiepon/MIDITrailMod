@@ -27,6 +27,14 @@ public:
 	MTPianoKeyboardFlat11();
 	virtual ~MTPianoKeyboardFlat11();
 
+	int Create(
+				ID3D11Device* pDevice,
+				ID3D11DeviceContext* pContext,
+				const TCHAR* pSceneName,
+				SMSeqData* pSeqData,
+				ID3D11ShaderResourceView* pSRV
+			) override;
+
 protected:
 
 	MTPianoKeyboardDesign11 m_KeyboardDesign;

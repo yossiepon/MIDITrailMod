@@ -3,7 +3,8 @@
 // MIDITrail / MTPianoKeyboardCtrlBase11
 //
 // Piano keyboard controller base class (DX11).
-// Shared: texture loading, keyboard sub management, Draw, Release.
+// Shared: texture loading, keyboard sub management, Update template, Draw, Release.
+// Update loops over m_NumKbd keyboards, delegating key evaluation and world matrix to derived.
 // Derived: Flat (Playback/Live), Ring (future).
 //
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
@@ -59,6 +60,7 @@ public:
 
 	void Release();
 
+	int Update(const MTSceneUpdateContext& ctx) override;
 	int Draw(
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
@@ -69,6 +71,11 @@ public:
 	void SetSkipStatus(bool isSkipping) { m_isSkipping = isSkipping; }
 
 protected:
+
+	virtual void _UpdateKeyStates(unsigned long kbdIndex, const MTSceneUpdateContext& ctx) = 0;
+	virtual DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				unsigned long kbdIndex,
+				const MTSceneUpdateContext& ctx) = 0;
 
 	int _LoadTexture(ID3D11Device* pDevice, const TCHAR* pSceneName);
 	void _ReleaseSub(MTKbdSub* pSub);

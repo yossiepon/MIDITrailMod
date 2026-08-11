@@ -29,6 +29,7 @@ MTNoteRipple11::MTNoteRipple11()
 	m_pContext = NULL;
 	m_pTextureSRV = NULL;
 	m_pNotePitchBend = NULL;
+	m_pBlendState = NULL;
 	m_ActiveNoteNum = 0;
 	m_CamPos = Vector3(0.0f, 0.0f, 0.0f);
 }
@@ -74,6 +75,24 @@ int MTNoteRipple11::Create(
 
 	m_Prim.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	// Create blend state from conf (SrcBlend/DestBlend)
+	{
+		D3D11_BLEND_DESC blendDesc = {};
+		blendDesc.RenderTarget[0].BlendEnable    = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend       = (D3D11_BLEND)m_pNoteDesign->GetRippleSrcBlend();
+		blendDesc.RenderTarget[0].DestBlend      = (D3D11_BLEND)m_pNoteDesign->GetRippleDestBlend();
+		blendDesc.RenderTarget[0].BlendOp        = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha  = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha   = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		HRESULT hr = pDevice->CreateBlendState(&blendDesc, &m_pBlendState);
+		if (FAILED(hr)) {
+			result = YN_SET_ERR("CreateBlendState failed.", hr, 0);
+			goto EXIT;
+		}
+	}
+
 EXIT:;
 	return result;
 }
@@ -86,6 +105,10 @@ void MTNoteRipple11::Release()
 	if (m_pTextureSRV != NULL) {
 		m_pTextureSRV->Release();
 		m_pTextureSRV = NULL;
+	}
+	if (m_pBlendState != NULL) {
+		m_pBlendState->Release();
+		m_pBlendState = NULL;
 	}
 	m_Prim.Release();
 	m_pNotePitchBend = NULL;
@@ -231,7 +254,7 @@ int MTNoteRipple11::Draw(
 	m_CamPos = camPos;
 
 	m_Prim.SetTexture(m_pTextureSRV);
-	m_Prim.SetAdditiveBlend(true);
+	m_Prim.SetCustomBlendState(m_pBlendState);
 	m_Prim.SetDepthWrite(false);
 	m_Prim.SetLightEnable(false);
 
@@ -239,7 +262,7 @@ int MTNoteRipple11::Draw(
 		2 * (int)m_ActiveNoteNum);
 	if (result != 0) goto EXIT;
 
-	m_Prim.SetAdditiveBlend(false);
+	m_Prim.SetCustomBlendState(NULL);
 	m_Prim.SetDepthWrite(true);
 
 EXIT:;

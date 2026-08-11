@@ -66,11 +66,13 @@ public:
 
 	void SetMonitorMode(bool isMonitor, const TCHAR* pMIDIINDevName);
 	void SetMonitoringStatus(bool isMonitoring);
-	void SetMIDIINDeviceName(const TCHAR* pName);
+	int SetMIDIINDeviceName(const TCHAR* pName);
 
 private:
 
 	HWND m_hWnd;
+	ID3D11Device* m_pDevice;
+	ID3D11DeviceContext* m_pContext;
 	MTStaticCaption11 m_Title;
 	MTStaticCaption11 m_FileName;
 	MTDynamicCaption11 m_Counter;

@@ -148,7 +148,7 @@ int MTScenePianoRoll3D11::Create(
 		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRollLive11(); }
 		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 		result = ((MTPianoKeyboardCtrlRollLive11*)m_pKeyboardCtrl)->Create(
-			pDevice, pContext, GetName(), &m_NotePitchBend, false);
+			pDevice, pContext, GetName(), &m_NotePitchBend, true);
 		if (result != 0) goto EXIT;
 		m_NoteTrackerLive.AddListener((MTPianoKeyboardCtrlRollLive11*)m_pKeyboardCtrl, NoteEventType::Note);
 
@@ -157,7 +157,6 @@ int MTScenePianoRoll3D11::Create(
 		_RegisterComponent(&m_BackgroundImage);
 		_RegisterComponent(m_pGrid);
 		_RegisterComponent(&m_TimeIndicator);
-		_RegisterComponent(&m_PictBoard);
 		_RegisterComponent(&m_Dashboard);
 		_RegisterComponent(&m_NotePitchBend);
 		_RegisterComponent(&m_NoteTrackerLive);
@@ -176,10 +175,8 @@ int MTScenePianoRoll3D11::Create(
 		result = ((MTGridBox11*)m_pGrid)->Create(pDevice, pContext, GetName(), pSeqData);
 		if (result != 0) goto EXIT;
 
-		// TimeIndicator / PictBoard
+		// TimeIndicator
 		result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
-		if (result != 0) goto EXIT;
-		result = m_PictBoard.Create(pDevice, pContext, GetName(), pSeqData);
 		if (result != 0) goto EXIT;
 
 		// Dashboard
@@ -216,7 +213,6 @@ int MTScenePianoRoll3D11::Create(
 		_RegisterComponent(&m_BackgroundImage);
 		_RegisterComponent(m_pGrid);
 		_RegisterComponent(&m_TimeIndicator);
-		_RegisterComponent(&m_PictBoard);
 		_RegisterComponent(&m_Dashboard);
 		_RegisterComponent(&m_NotePitchBend);
 		_RegisterComponent(&m_NoteTracker);
@@ -249,7 +245,6 @@ void MTScenePianoRoll3D11::Release()
 	delete m_pGrid;
 	m_pGrid = NULL;
 	m_TimeIndicator.Release();
-	m_PictBoard.Release();
 	m_BackgroundImage.Release();
 	m_Dashboard.Release();
 
@@ -332,8 +327,6 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 	if (m_TimeIndicator.GetPos() > camPos.x) {
 		result = m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
 		if (result != 0) goto EXIT;
-		result = m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
-		if (result != 0) goto EXIT;
 		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
 		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
@@ -351,8 +344,6 @@ int MTScenePianoRoll3D11::_DrawSceneComponents(
 		result = m_Ripple.Draw(pContext, viewProj, lightDir, camPos);
 		if (result != 0) goto EXIT;
 		result = m_Lyrics.Draw(pContext, viewProj, lightDir, camPos);
-		if (result != 0) goto EXIT;
-		result = m_PictBoard.Draw(pContext, viewProj, lightDir, rollAngle);
 		if (result != 0) goto EXIT;
 		result = m_TimeIndicator.Draw(pContext, viewProj, lightDir, rollAngle);
 		if (result != 0) goto EXIT;

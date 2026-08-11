@@ -80,6 +80,7 @@ public:
 	void SetLightEnable(bool enable);
 	void SetTexture(ID3D11ShaderResourceView* pSRV);
 	void SetAdditiveBlend(bool additive);
+	void SetCustomBlendState(ID3D11BlendState* pBlend);
 	void SetDepthWrite(bool write);
 	void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology);
 
@@ -106,6 +107,7 @@ private:
 	bool                      m_LightEnable;
 	ID3D11ShaderResourceView* m_pSRV;
 	bool                      m_Additive;
+	ID3D11BlendState*         m_pCustomBlend;
 	bool                      m_DepthWrite;
 	D3D11_PRIMITIVE_TOPOLOGY  m_Topology;
 

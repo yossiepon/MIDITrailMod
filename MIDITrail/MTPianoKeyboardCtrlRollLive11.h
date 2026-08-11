@@ -22,5 +22,6 @@ class MTPianoKeyboardCtrlRollLive11 : public MTPianoKeyboardCtrlFlatLive11
 protected:
 
 	DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
+				unsigned long kbdIndex,
 				const MTSceneUpdateContext& ctx) override;
 };

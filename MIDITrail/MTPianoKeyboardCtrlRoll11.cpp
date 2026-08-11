@@ -12,7 +12,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTPianoKeyboardCtrlRoll11.h"
-#include "MTPianoKeyboardRoll11.h"
+#include "MTPianoKeyboardFlat11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -104,7 +104,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Create keyboards (one MTPianoKeyboardRoll11 per active port)
+// Create keyboards (one MTPianoKeyboardFlat11 per active port)
 //******************************************************************************
 int MTPianoKeyboardCtrlRoll11::_CreateKeyboards(
 		ID3D11Device* pDevice,
@@ -116,7 +116,7 @@ int MTPianoKeyboardCtrlRoll11::_CreateKeyboards(
 	int result = 0;
 
 	for (unsigned char index = 0; index < m_MaxKeyboardIndex; index++) {
-		m_Subs[index].pKeyboard = new MTPianoKeyboardRoll11();
+		m_Subs[index].pKeyboard = new MTPianoKeyboardFlat11();
 		if (m_Subs[index].pKeyboard == NULL) {
 			result = YN_SET_ERR("Could not allocate memory.", 0, 0);
 			goto EXIT;

@@ -110,6 +110,7 @@ DXPrimitive11::DXPrimitive11()
 	m_LightEnable   = true;
 	m_pSRV          = nullptr;
 	m_Additive      = false;
+	m_pCustomBlend  = nullptr;
 	m_DepthWrite    = true;
 	m_Topology      = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
@@ -438,6 +439,12 @@ void DXPrimitive11::SetTexture(ID3D11ShaderResourceView* pSRV)
 void DXPrimitive11::SetAdditiveBlend(bool additive)
 {
 	m_Additive = additive;
+	m_pCustomBlend = nullptr;
+}
+
+void DXPrimitive11::SetCustomBlendState(ID3D11BlendState* pBlend)
+{
+	m_pCustomBlend = pBlend;
 }
 
 void DXPrimitive11::SetDepthWrite(bool write)
@@ -519,8 +526,9 @@ int DXPrimitive11::Draw(
 	pContext->RSSetState(s_pRasterNoCull);
 
 	float blendFactor[4] = { 0, 0, 0, 0 };
-	pContext->OMSetBlendState(m_Additive ? s_pBlendAdd : s_pBlend,
-	                          blendFactor, 0xFFFFFFFF);
+	ID3D11BlendState* pBlend = m_pCustomBlend ? m_pCustomBlend
+	                         : (m_Additive ? s_pBlendAdd : s_pBlend);
+	pContext->OMSetBlendState(pBlend, blendFactor, 0xFFFFFFFF);
 	pContext->OMSetDepthStencilState(m_DepthWrite ? s_pDepth : s_pDepthNoWrite, 0);
 
 	// Determine draw count

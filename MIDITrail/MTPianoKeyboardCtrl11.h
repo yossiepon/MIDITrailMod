@@ -37,11 +37,14 @@ public:
 				bool isSingleKeyboard
 			);
 
-	int Update(const MTSceneUpdateContext& ctx) override;
 	void Release();
 	void Reset() override;
 
 protected:
+
+	// -- Base11 hooks --
+
+	void _UpdateKeyStates(unsigned long kbdIndex, const MTSceneUpdateContext& ctx) override;
 
 	// -- Pure virtual hooks (derived classes must implement) --
 
@@ -61,11 +64,6 @@ protected:
 	virtual void _ApplyActiveKeyColor(
 				MTKbdSub* pSub,
 				unsigned long kbdIndex
-			) = 0;
-
-	virtual DirectX::SimpleMath::Matrix _ComputeWorldMatrix(
-				unsigned long kbdIndex,
-				const MTSceneUpdateContext& ctx
 			) = 0;
 
 	// -- Shared Playback logic --

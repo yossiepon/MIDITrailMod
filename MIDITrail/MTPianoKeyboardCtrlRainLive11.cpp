@@ -19,10 +19,13 @@ using namespace DirectX::SimpleMath;
 // Compute world matrix (Rain-style: translation + Y rotation)
 //******************************************************************************
 Matrix MTPianoKeyboardCtrlRainLive11::_ComputeWorldMatrix(
+		unsigned long kbdIndex,
 		const MTSceneUpdateContext& ctx
 	)
 {
-	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(0, 0);
+	unsigned char portNo = 0;
+	unsigned char chNo = (unsigned char)kbdIndex;
+	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
 	return Matrix::CreateTranslation(moveVec)
 	     * Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle));
 }

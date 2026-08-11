@@ -4,7 +4,7 @@
 //
 // DX11 piano keyboard controller for Rain scene.
 // One keyboard per channel (16 total). Simple world matrix (roll + position).
-// Uses non-Mod keyboard (MTPianoKeyboardRain11).
+// Uses MTPianoKeyboardFlat11.
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.

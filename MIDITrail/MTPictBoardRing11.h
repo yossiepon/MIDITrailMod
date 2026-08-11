@@ -63,5 +63,6 @@ private:
 			unsigned long* pIndex
 		);
 
+	float _GetRippleMargin();
 	int _LoadTexture(ID3D11Device* pDevice, const TCHAR* pSceneName);
 };
