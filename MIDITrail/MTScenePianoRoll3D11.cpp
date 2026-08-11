@@ -364,6 +364,7 @@ int MTScenePianoRoll3D11::OnPlayStart()
 {
 	_Reset();
 	if (m_IsLive) {
+		m_isMonitoringActive = true;
 		m_Dashboard.SetMonitoringStatus(true);
 		m_Dashboard.SetMIDIINDeviceName(GetParam("MIDI_IN_DEVICE_NAME"));
 	}
@@ -375,6 +376,7 @@ int MTScenePianoRoll3D11::OnPlayStart()
 //******************************************************************************
 int MTScenePianoRoll3D11::OnPlayEnd()
 {
+	m_isMonitoringActive = false;
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->AllNoteOff();
 		m_NoteTrackerLive.AllNoteOff();
@@ -506,6 +508,7 @@ void MTScenePianoRoll3D11::SetNoteOnLive(
 		unsigned char portNo, unsigned char chNo,
 		unsigned char noteNo, unsigned char velocity)
 {
+	if (!m_isMonitoringActive) return;
 	if (m_pNoteBoxLive != NULL) {
 		m_pNoteBoxLive->SetNoteOn(portNo, chNo, noteNo, velocity);
 		m_NoteTrackerLive.SetNoteOn(portNo, chNo, noteNo, velocity);

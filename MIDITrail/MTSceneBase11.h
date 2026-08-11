@@ -106,6 +106,7 @@ protected:
 
 	MTSceneTraits m_Traits;
 	bool          m_IsLive = false;
+	bool          m_isMonitoringActive = false;
 
 	//----------------------------------------------------------------------
 	// Shared components
