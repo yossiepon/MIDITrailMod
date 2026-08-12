@@ -284,10 +284,6 @@ int MIDITrailApp::Terminate()
 
 	m_Renderer.Terminate();
 
-	MTNoteAABBInstanced11::ReleasePipeline();
-	MTNoteCylindricalInstanced11::ReleasePipeline();
-	MTNoteInstancedBase11::ReleaseCommonStates();
-
 	if (m_pScene != NULL) {
 		m_pScene->Release();
 		delete m_pScene;

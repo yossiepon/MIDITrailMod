@@ -13,6 +13,7 @@
 #include "YNBaseLib.h"
 #include "MTNoteAABBInstanced11.h"
 #include "MTNoteInstancedShaderSnippets.h"
+#include "DXPrimitive11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -339,6 +340,8 @@ int MTNoteAABBInstanced11::InitPipeline(ID3D11Device* pDevice)
 
 	result = InitCommonStates(pDevice);
 	if (result != 0) goto EXIT;
+
+	DXPrimitive11::RegisterDeviceCleanup([]{ MTNoteAABBInstanced11::ReleasePipeline(); });
 
 EXIT:;
 	return result;

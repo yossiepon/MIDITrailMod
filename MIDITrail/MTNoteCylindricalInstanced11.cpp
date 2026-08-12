@@ -13,6 +13,7 @@
 #include "YNBaseLib.h"
 #include "MTNoteCylindricalInstanced11.h"
 #include "MTNoteInstancedShaderSnippets.h"
+#include "DXPrimitive11.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -227,6 +228,8 @@ int MTNoteCylindricalInstanced11::InitPipeline(ID3D11Device* pDevice)
 
 	result = InitCommonStates(pDevice);
 	if (result != 0) goto EXIT;
+
+	DXPrimitive11::RegisterDeviceCleanup([]{ MTNoteCylindricalInstanced11::ReleasePipeline(); });
 
 EXIT:;
 	if (pVSBlob) pVSBlob->Release();
