@@ -398,7 +398,7 @@ int MTNoteAABBInstanced11::Create(
 		m_pNoteDesign = &m_NoteDesignLocal;
 	}
 
-	if (mode == MTAABBMode::Rain) {
+	if (mode == MTAABBMode::Rain || mode == MTAABBMode::Rain2D) {
 		result = m_KeyboardDesign.Initialize(pSceneName, pSeqData);
 		if (result != 0) goto EXIT;
 	}
@@ -496,9 +496,9 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 {
 	int result = 0;
 
-	if (m_Mode != MTAABBMode::Rain && m_NoteCount == 0) goto EXIT;
+	if (m_Mode != MTAABBMode::Rain && m_Mode != MTAABBMode::Rain2D && m_NoteCount == 0) goto EXIT;
 
-	if (m_Mode == MTAABBMode::Rain) {
+	if (m_Mode == MTAABBMode::Rain || m_Mode == MTAABBMode::Rain2D) {
 		// Rain: 32B instances from merged note list
 		SMTrack track;
 		SMNoteList noteList;
@@ -523,7 +523,14 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 			float startY = m_pNoteDesign->GetPlayPosX(note.startTime);
 			float endY   = m_pNoteDesign->GetPlayPosX(note.endTime);
 
-			Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(note.portNo, note.chNo);
+			// Rain 2D: all ports at port 0 position
+			// Rain 3D: sawtooth layout (Y from ch only, Z from port)
+			unsigned char port0 = 0, ch0 = 0;
+			Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(port0, note.chNo);
+			if (m_Mode == MTAABBMode::Rain && note.portNo != 0) {
+				moveVec.z += m_KeyboardDesign.GetKeyboardBasePos(note.portNo, ch0).z
+				           - m_KeyboardDesign.GetKeyboardBasePos(port0, ch0).z;
+			}
 			float posX = moveVec.x + m_KeyboardDesign.GetKeyCenterPosX(note.noteNo);
 			float posY = moveVec.y + m_KeyboardDesign.GetWhiteKeyHeight() / 2.0f;
 			float posZ = moveVec.z + m_KeyboardDesign.GetNoteDropPosZ(note.noteNo);
@@ -622,7 +629,7 @@ int MTNoteAABBInstanced11::Update(const MTSceneUpdateContext& ctx)
 	m_PlayTimeMSec = ctx.playTimeMSec;
 	m_CurPos = m_pNoteDesign->GetPlayPosX(m_CurTickTime);
 
-	if (m_Mode == MTAABBMode::Rain) {
+	if (m_Mode == MTAABBMode::Rain || m_Mode == MTAABBMode::Rain2D) {
 		Matrix world = Matrix::CreateTranslation(0.0f, -m_CurPos, 0.0f)
 		             * Matrix::CreateRotationY(XMConvertToRadians(ctx.rollAngle));
 		XMStoreFloat4x4(&m_World, world);
@@ -648,7 +655,7 @@ int MTNoteAABBInstanced11::Draw(
 		const Vector4& lightDir
 	)
 {
-	if (m_Mode == MTAABBMode::Rain) {
+	if (m_Mode == MTAABBMode::Rain || m_Mode == MTAABBMode::Rain2D) {
 		return _DrawRain(pContext, viewProj, lightDir);
 	}
 	else {

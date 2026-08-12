@@ -29,6 +29,7 @@ enum class MTAABBMode {
 	Roll3D,     // HAS_LIGHTING + HAS_ENVELOPE, 24 vertices, 2-pass
 	Roll2D,     // HAS_ENVELOPE, 4 vertices, 2-pass
 	Rain,       // HAS_ALPHA_GRADIENT, 4 vertices, 1-pass
+	Rain2D,     // HAS_ALPHA_GRADIENT, 4 vertices, 1-pass (ports aggregated to port 0)
 };
 
 
