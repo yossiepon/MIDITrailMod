@@ -2941,72 +2941,18 @@ EXIT:;
 int MIDITrailApp::_ChangeWindowSize()
 {
 	int result = 0;
-	bool isMonitor = false;
-	MTViewParamMap viewParamMap;
 
-	//モニタ状態の確認
-	if ((m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON)) {
-		isMonitor = true;
-	}
-
-	//現在の視点を退避
-	if (m_pScene != NULL) {
-		m_pScene->GetViewParam(&viewParamMap);
-	}
-
-	//シーン破棄
-	if (m_pScene != NULL) {
-		m_pScene->Release();
-		delete m_pScene;
-		m_pScene = NULL;
-	}
-
-	//レンダラ終了
-	m_Renderer.Terminate();
-
-	//ユーザー設定ウィンドウサイズ変更
+	//ウィンドウスタイル・位置変更（OnResize の前にウィンドウを変形）
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
 
-	//レンダラ初期化
-	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
+	//ResizeBuffers（Device 再作成なし）
+	result = m_Renderer.OnResize();
 	if (result != 0) goto EXIT;
 
-	//共有パイプライン初期化
-	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
-	if (result != 0) goto EXIT;
-
-	//シーンオブジェクト生成
-	if (!isMonitor) {
-		//プレイヤのシーン生成
-		result = _CreateScene(m_SceneType, &m_SeqData);
-		if (result != 0) goto EXIT;
-	}
-	else {
-		//ライブモニタのシーン生成
-		result = _CreateScene(m_SceneType, NULL);
-		if (result != 0) goto EXIT;
-
-		//MIDI IN デバイス名を設定
-		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-		if (result != 0) goto EXIT;
-
-		//MIDI IN デバイス名を画面に反映
-		if (m_PlayStatus == MonitorON) {
-			//シーンに演奏開始（ライブモニタ開始）を通知
-			result = m_pScene->OnPlayStart();
-			if (result != 0) goto EXIT;
-		}
-		else {
-			//シーンに演奏終了（ライブモニタ停止）を通知
-			result = m_pScene->OnPlayEnd();
-			if (result != 0) goto EXIT;
-		}
-	}
-
-	//視点を復帰
+	//サイズ依存コンポーネントに通知
 	if (m_pScene != NULL) {
-		m_pScene->SetViewParam(&viewParamMap);
+		m_pScene->OnWindowResize();
 	}
 
 EXIT:;

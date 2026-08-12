@@ -55,6 +55,7 @@ public:
 	void SetPlaySpeedRatio(unsigned long ratio);
 	void SetNotesCount(unsigned long notesCount);
 	void Reset() override;
+	void OnWindowResize();
 
 	// IMTNoteTrackerListener
 	void OnNoteActivate(const NoteData& note, unsigned long index) override;

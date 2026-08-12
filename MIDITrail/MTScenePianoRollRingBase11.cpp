@@ -282,6 +282,15 @@ void MTScenePianoRollRingBase11::SetPlaySpeedRatio(unsigned long ratio)
 }
 
 //******************************************************************************
+// ウィンドウリサイズ通知
+//******************************************************************************
+void MTScenePianoRollRingBase11::OnWindowResize()
+{
+	m_BackgroundImage.OnWindowResize();
+	m_Dashboard.OnWindowResize();
+}
+
+//******************************************************************************
 // デフォルト視点計算
 //******************************************************************************
 void MTScenePianoRollRingBase11::_ComputeDefaultViewParam(MTViewParamMap* pParamMap)
