@@ -140,7 +140,7 @@ void MTPianoKeyboardCtrlRoll11::_GetPerKeyIndexParams(
 		int& outChFilter
 	)
 {
-	outPortFilter = (int)m_KbdPortNo[kbdIndex];
+	outPortFilter = m_isSingleKeyboard ? -1 : (int)m_KbdPortNo[kbdIndex];
 	outChFilter = -1;
 }
 
@@ -176,8 +176,13 @@ Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
 	playbackPos.x += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
 
 	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
-	basePos.x += m_pNoteDesign->GetMaxPitchBendShift(m_pNotePitchBend, portNo,
-	             m_pNoteTracker->GetActiveChannelMask(portNo));
+	if (m_isSingleKeyboard) {
+		basePos.x += _GetMaxPitchBendShiftAllPorts(&m_PortList);
+	}
+	else {
+		basePos.x += m_pNoteDesign->GetMaxPitchBendShift(m_pNotePitchBend, portNo,
+		             m_pNoteTracker->GetActiveChannelMask(portNo));
+	}
 
 	float scale = m_KeyboardDesign.GetKeyboardResizeRatio();
 

@@ -70,6 +70,7 @@ protected:
 
 	int _BuildPerKeyIndex(MTKbdSub* pSub, int portFilter, int chFilter = -1);
 	void _EvaluateKeyStates(MTKbdSub* pSub, unsigned long playTimeMSec);
+	float _GetMaxPitchBendShiftAllPorts(SMPortList* pPortList);
 
 	MTNoteTracker* m_pNoteTracker;
 };

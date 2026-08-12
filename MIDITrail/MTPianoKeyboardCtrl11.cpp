@@ -224,3 +224,22 @@ void MTPianoKeyboardCtrl11::_UpdateKeyStates(
 	_EvaluateKeyStates(&m_Subs[kbdIndex], ctx.playTimeMSec);
 	_ApplyActiveKeyColor(&m_Subs[kbdIndex], kbdIndex);
 }
+
+//******************************************************************************
+// Max pitch bend shift across all ports (for single keyboard mode)
+//******************************************************************************
+float MTPianoKeyboardCtrl11::_GetMaxPitchBendShiftAllPorts(
+		SMPortList* pPortList
+	)
+{
+	float maxShift = 0.0f;
+	for (unsigned long i = 0; i < pPortList->GetSize(); i++) {
+		unsigned char portNo = 0;
+		pPortList->GetPort(i, &portNo);
+		float shift = m_pNoteDesign->GetMaxPitchBendShift(
+			m_pNotePitchBend, portNo,
+			m_pNoteTracker->GetActiveChannelMask(portNo));
+		if (fabsf(shift) > fabsf(maxShift)) maxShift = shift;
+	}
+	return maxShift;
+}
