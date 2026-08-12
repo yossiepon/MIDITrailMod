@@ -61,6 +61,10 @@ int MTScenePianoRoll3DLive11::_CreateModeComponents(
 	                                m_Is2D ? MTAABBLiveMode::Roll2D : MTAABBLiveMode::Roll3D);
 	if (result != 0) goto EXIT;
 	m_pNoteBoxLive->SetLightEnable(!m_Is2D);
+	if (!m_Is2D) {
+		m_pNoteBoxLive->SetBilateralLighting(true, 1.2f);
+		m_pNoteBoxLive->SetMaterialAmbient(0.2f, 0.2f, 0.2f);
+	}
 
 	// NoteTrackerLive
 	result = m_NoteTrackerLive.Create();

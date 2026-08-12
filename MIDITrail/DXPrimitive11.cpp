@@ -81,13 +81,20 @@ Texture2D    tex0 : register(t0);
 SamplerState sam0 : register(s0);
 
 float4 PS(VS_OUT p) : SV_TARGET {
-    // Directional light: diffuse = max(dot(N, -L), 0)
     float3 n = normalize(p.normal);
     float ndl = saturate(dot(n, -lightDir.xyz));
-    float3 lighting = ambient.rgb + ndl;
 
     float4 c = p.color;
-    c.rgb *= lighting;
+
+    if (options.y > 0.5) {
+        // Bilateral (2-light): DX9 opposing directional lights
+        ndl += saturate(dot(n, lightDir.xyz));
+        c.rgb = saturate(c.rgb * (ambient.x + options.z * ndl));
+    } else {
+        // Standard (1-light)
+        float3 lighting = ambient.rgb + ndl;
+        c.rgb *= lighting;
+    }
 
     if (options.x > 0.5) {
         c *= tex0.Sample(sam0, p.uv);
@@ -108,6 +115,8 @@ DXPrimitive11::DXPrimitive11()
 	m_VertexNum     = 0;
 	m_IndexNum      = 0;
 	m_LightEnable   = true;
+	m_BilateralLighting = false;
+	m_DiffuseLevel  = 1.0f;
 	m_pSRV          = nullptr;
 	m_Additive      = false;
 	m_pCustomBlend  = nullptr;
@@ -431,6 +440,12 @@ void DXPrimitive11::SetLightEnable(bool enable)
 	m_LightEnable = enable;
 }
 
+void DXPrimitive11::SetBilateralLighting(bool enable, float diffuseLevel)
+{
+	m_BilateralLighting = enable;
+	m_DiffuseLevel = diffuseLevel;
+}
+
 void DXPrimitive11::SetTexture(ID3D11ShaderResourceView* pSRV)
 {
 	m_pSRV = pSRV;
@@ -482,7 +497,9 @@ int DXPrimitive11::Draw(
 	XMStoreFloat4x4(&cb.wvp,   XMMatrixTranspose(wvpMat));
 	XMStoreFloat4x4(&cb.world, XMMatrixTranspose(worldMat));
 	cb.lightDir = static_cast<XMFLOAT4>(lightDir);
-	cb.options  = XMFLOAT4(m_pSRV ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+	cb.options  = XMFLOAT4(m_pSRV ? 1.0f : 0.0f,
+	                       (m_BilateralLighting && m_LightEnable) ? 1.0f : 0.0f,
+	                       m_DiffuseLevel, 0.0f);
 
 	if (m_LightEnable) {
 		cb.ambient = m_Ambient;

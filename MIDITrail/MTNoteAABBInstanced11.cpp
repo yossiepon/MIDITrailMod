@@ -34,14 +34,16 @@ static const char* MTNOTEAABB_SHADER_SOURCE =
 	"cbuffer Constants : register(b0) {\n"
 	"  float4x4 g_WVP;\n"
 	"  float4 g_PB[32];\n"
-	"#ifdef HAS_ENVELOPE\n"
+	"#if defined(HAS_ENVELOPE) || defined(HAS_LIGHTING_BILATERAL) || defined(HAS_LIGHTING_UNILATERAL)\n"
 	"  float4x4 g_World;\n"
-	"  float4 g_Active;\n"
-	"  float4 g_Opts;\n"
-	"#ifdef HAS_LIGHTING\n"
+	"#endif\n"
+	"#if defined(HAS_LIGHTING_BILATERAL) || defined(HAS_LIGHTING_UNILATERAL)\n"
 	"  float4 g_Light;\n"
 	"  float4 g_LAmb;\n"
 	"#endif\n"
+	"#ifdef HAS_ENVELOPE\n"
+	"  float4 g_Active;\n"
+	"  float4 g_Opts;\n"
 	"  float4 g_Envelope;\n"
 	"#endif\n"
 	"};\n"
@@ -121,11 +123,19 @@ static const char* MTNOTEAABB_SHADER_SOURCE =
 	// Color output
 	"  float3 rgb = i.color.rgb;\n"
 
-	// Lighting
-	"#ifdef HAS_LIGHTING\n"
+	// Lighting (bilateral: 2-light for Roll3D)
+	"#ifdef HAS_LIGHTING_BILATERAL\n"
 	"  float3 n = normalize(mul(float4(i.nrm, 0.0), g_World).xyz);\n"
 	"  float3 L = normalize(g_Light.xyz);\n"
 	"  float ndl = saturate(dot(n, -L)) + saturate(dot(n, L));\n"
+	"  rgb = lerp(rgb, saturate(rgb * (g_LAmb.x + g_Light.w * ndl)), g_LAmb.w);\n"
+	"#endif\n"
+
+	// Lighting (unilateral: 1-light for Rain)
+	"#ifdef HAS_LIGHTING_UNILATERAL\n"
+	"  float3 n = normalize(mul(float4(i.nrm, 0.0), g_World).xyz);\n"
+	"  float3 L = normalize(g_Light.xyz);\n"
+	"  float ndl = saturate(dot(n, -L));\n"
 	"  rgb = lerp(rgb, saturate(rgb * (g_LAmb.x + g_Light.w * ndl)), g_LAmb.w);\n"
 	"#endif\n"
 
@@ -292,10 +302,10 @@ int MTNoteAABBInstanced11::InitPipeline(ID3D11Device* pDevice)
 
 	if (s_pVS[0] != nullptr) return 0;
 
-	// Roll3D: HAS_LIGHTING + HAS_ENVELOPE
+	// Roll3D: HAS_LIGHTING_BILATERAL + HAS_ENVELOPE
 	{
 		D3D_SHADER_MACRO defines[] = {
-			{ "HAS_LIGHTING", "1" },
+			{ "HAS_LIGHTING_BILATERAL", "1" },
 			{ "HAS_ENVELOPE", "1" },
 			{ nullptr, nullptr }
 		};
@@ -315,9 +325,10 @@ int MTNoteAABBInstanced11::InitPipeline(ID3D11Device* pDevice)
 		if (result != 0) goto EXIT;
 	}
 
-	// Rain: HAS_ALPHA_GRADIENT only
+	// Rain: HAS_LIGHTING_UNILATERAL + HAS_ALPHA_GRADIENT
 	{
 		D3D_SHADER_MACRO defines[] = {
+			{ "HAS_LIGHTING_UNILATERAL", "1" },
 			{ "HAS_ALPHA_GRADIENT", "1" },
 			{ nullptr, nullptr }
 		};
@@ -632,7 +643,7 @@ int MTNoteAABBInstanced11::Draw(
 	)
 {
 	if (m_Mode == MTAABBMode::Rain) {
-		return _DrawRain(pContext, viewProj);
+		return _DrawRain(pContext, viewProj, lightDir);
 	}
 	else {
 		return _DrawRoll(pContext, viewProj, lightDir);
@@ -697,10 +708,10 @@ int MTNoteAABBInstanced11::_DrawRoll(
 				CBufferRoll3D* cb = (CBufferRoll3D*)mapped.pData;
 				XMStoreFloat4x4(&cb->wvp, XMMatrixTranspose(wvp));
 				XMStoreFloat4x4(&cb->world, XMMatrixTranspose(world));
-				cb->active = XMFLOAT4((float)m_PlayTimeMSec, growFactor, whiteRate, (float)pass);
-				cb->opts = XMFLOAT4(0.0f, emissive.R(), emissive.G(), emissive.B());
 				cb->light = XMFLOAT4(lightDir.x, lightDir.y, lightDir.z, 1.2f);
 				cb->lambient = XMFLOAT4(0.2f, 0.0f, 0.0f, m_isLightEnable ? 1.0f : 0.0f);
+				cb->active = XMFLOAT4((float)m_PlayTimeMSec, growFactor, whiteRate, (float)pass);
+				cb->opts = XMFLOAT4(0.0f, emissive.R(), emissive.G(), emissive.B());
 				cb->envelope = XMFLOAT4(envConfig.decayDurationMs, envConfig.releaseDurationMs,
 				                       envConfig.decayRatio, envConfig.sustainRatio);
 				FillPitchBendArray((float*)cb->pb, m_pNotePitchBend,
@@ -743,7 +754,8 @@ EXIT:;
 //******************************************************************************
 int MTNoteAABBInstanced11::_DrawRain(
 		ID3D11DeviceContext* pContext,
-		const Matrix& viewProj
+		const Matrix& viewProj,
+		const Vector4& lightDir
 	)
 {
 	int result = 0;
@@ -783,6 +795,9 @@ int MTNoteAABBInstanced11::_DrawRain(
 
 			CBufferRain* cb = (CBufferRain*)mapped.pData;
 			XMStoreFloat4x4(&cb->wvp, XMMatrixTranspose(wvp));
+			XMStoreFloat4x4(&cb->world, XMMatrixTranspose(world));
+			cb->light = XMFLOAT4(lightDir.x, lightDir.y, lightDir.z, 1.0f);
+			cb->lambient = XMFLOAT4(0.5f, 0.0f, 0.0f, 1.0f);
 
 			FillPitchBendArray((float*)cb->pb, m_pNotePitchBend,
 				[this](short v, unsigned char s) { return m_KeyboardDesign.GetPitchBendShift(v, s); });

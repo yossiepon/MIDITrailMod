@@ -62,6 +62,12 @@ public:
 	void Reset() override;
 
 	void SetLightEnable(bool enable) { m_isLightEnable = enable; }
+	void SetBilateralLighting(bool enable, float diffuseLevel = 1.2f) {
+		m_PrimNotes.SetBilateralLighting(enable, diffuseLevel);
+	}
+	void SetMaterialAmbient(float r, float g, float b) {
+		m_PrimNotes.SetMaterialAmbient(r, g, b);
+	}
 
 protected:
 
