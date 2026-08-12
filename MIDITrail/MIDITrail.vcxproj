@@ -109,11 +109,13 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <GenerateManifest>false</GenerateManifest>
+      <AdditionalOptions>/MANIFEST:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
@@ -140,11 +142,13 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
+      <GenerateManifest>false</GenerateManifest>
+      <AdditionalOptions>/MANIFEST:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
@@ -169,7 +173,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -177,6 +181,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <GenerateManifest>false</GenerateManifest>
+      <AdditionalOptions>/MANIFEST:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
@@ -204,7 +210,7 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -212,6 +218,8 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <GenerateManifest>false</GenerateManifest>
+      <AdditionalOptions>/MANIFEST:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
@@ -225,6 +233,9 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
   <ItemGroup>
     <Image Include="MIDITrail.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MIDITrail.rc" />

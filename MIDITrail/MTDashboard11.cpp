@@ -360,7 +360,7 @@ void MTDashboard11::Reset()
 //******************************************************************************
 void MTDashboard11::OnWindowResize()
 {
-	m_CounterMag = 1.0f;
+	m_CounterMag = MTDASHBOARD11_DEFAULT_MAGRATE;
 	_GetCounterPos(&m_PosCounterX, &m_PosCounterY);
 }
 
