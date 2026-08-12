@@ -19,6 +19,8 @@
 
 #include <d3d11.h>
 #include <directxtk/SimpleMath.h>
+#include <vector>
+#include <functional>
 
 
 //******************************************************************************
@@ -62,7 +64,8 @@ public:
 	// Shared pipeline state: shaders, input layout, sampler, rasterizer,
 	// blend, and depth-stencil states. Created once per device lifetime.
 	static int  InitPipeline(ID3D11Device* pDevice);
-	static void ReleasePipeline();
+	static void RegisterDeviceCleanup(std::function<void()> cleanup);
+	static void ReleaseAllDeviceResources();
 
 	// Geometry buffers (DYNAMIC + DISCARD for per-frame updates)
 	int CreateVertexBuffer(ID3D11Device* pDevice, unsigned long vertexNum);
@@ -96,6 +99,8 @@ public:
 
 private:
 
+	static void ReleasePipeline();
+
 	// Per-instance geometry
 	ID3D11Buffer*  m_pVertexBuffer;
 	ID3D11Buffer*  m_pIndexBuffer;
@@ -125,6 +130,7 @@ private:
 	static ID3D11BlendState*       s_pBlendAdd;
 	static ID3D11DepthStencilState* s_pDepth;
 	static ID3D11DepthStencilState* s_pDepthNoWrite;
+	static std::vector<std::function<void()>> s_DeviceCleanups;
 
 	void operator=(const DXPrimitive11&);
 	DXPrimitive11(const DXPrimitive11&);

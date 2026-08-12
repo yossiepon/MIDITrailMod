@@ -27,6 +27,7 @@ using namespace DirectX::SimpleMath;
 MTBackgroundImage11::MTBackgroundImage11()
 {
 	m_hWnd = NULL;
+	m_pContext = NULL;
 	m_pSRV = NULL;
 	m_ImgWidth = 0;
 	m_ImgHeight = 0;
@@ -52,6 +53,7 @@ int MTBackgroundImage11::Create(
 	Release();
 
 	m_hWnd = hWnd;
+	m_pContext = pContext;
 
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
@@ -269,4 +271,49 @@ EXIT:;
 //******************************************************************************
 void MTBackgroundImage11::Reset()
 {
+}
+
+//******************************************************************************
+// ウィンドウリサイズ通知
+//******************************************************************************
+void MTBackgroundImage11::OnWindowResize()
+{
+	if (!m_isReady || m_pContext == NULL) return;
+
+	DXPRIMITIVE11_VERTEX* pVertex = NULL;
+	if (m_Primitive.LockVertex(m_pContext, &pVertex) != 0) return;
+
+	RECT rect;
+	if (!GetClientRect(m_hWnd, &rect)) {
+		m_Primitive.UnlockVertex(m_pContext);
+		return;
+	}
+	float cw = (float)(rect.right - rect.left);
+	float ch = (float)(rect.bottom - rect.top);
+
+	float ratio_cwh = cw / ch;
+	float ratio_iwh = (float)m_ImgWidth / (float)m_ImgHeight;
+
+	float u0 = 0.0f, u1 = 1.0f;
+	float v0 = 0.0f, v1 = 1.0f;
+
+	if (ratio_cwh < ratio_iwh) {
+		float visibleFraction = ratio_cwh / ratio_iwh;
+		float margin = (1.0f - visibleFraction) / 2.0f;
+		u0 = margin;
+		u1 = 1.0f - margin;
+	}
+	else if (ratio_cwh > ratio_iwh) {
+		float visibleFraction = ratio_iwh / ratio_cwh;
+		float margin = (1.0f - visibleFraction) / 2.0f;
+		v0 = margin;
+		v1 = 1.0f - margin;
+	}
+
+	pVertex[0].uv[0] = u0; pVertex[0].uv[1] = v0;
+	pVertex[1].uv[0] = u1; pVertex[1].uv[1] = v0;
+	pVertex[2].uv[0] = u0; pVertex[2].uv[1] = v1;
+	pVertex[3].uv[0] = u1; pVertex[3].uv[1] = v1;
+
+	m_Primitive.UnlockVertex(m_pContext);
 }

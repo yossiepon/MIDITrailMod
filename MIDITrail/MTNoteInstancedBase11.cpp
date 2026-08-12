@@ -11,6 +11,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTNoteInstancedBase11.h"
+#include "DXPrimitive11.h"
 
 using namespace YNBaseLib;
 
@@ -203,6 +204,8 @@ int MTNoteInstancedBase11::InitCommonStates(ID3D11Device* pDevice)
 		hr = pDevice->CreateDepthStencilState(&dd, &s_pDepth);
 		if (FAILED(hr)) { result = YN_SET_ERR("DirectX API error.", hr, 0); goto EXIT; }
 	}
+
+	DXPrimitive11::RegisterDeviceCleanup([]{ MTNoteInstancedBase11::ReleaseCommonStates(); });
 
 EXIT:;
 	return result;

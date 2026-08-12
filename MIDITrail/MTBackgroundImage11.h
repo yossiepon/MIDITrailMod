@@ -37,11 +37,13 @@ public:
 	int Draw(ID3D11DeviceContext* pContext);
 
 	void Reset() override;
+	void OnWindowResize();
 	bool IsReady() const { return m_isReady; }
 
 private:
 
 	HWND m_hWnd;
+	ID3D11DeviceContext* m_pContext;
 	DXPrimitive11 m_Primitive;
 	ID3D11ShaderResourceView* m_pSRV;
 	unsigned int m_ImgWidth;

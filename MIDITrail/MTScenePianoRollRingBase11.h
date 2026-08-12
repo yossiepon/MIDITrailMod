@@ -47,6 +47,7 @@ public:
 	int _OnRecvSequencerMsg(unsigned long param1, unsigned long param2) override;
 	void SetEffect(MTEffectType type, bool isEnable) override;
 	void SetPlaySpeedRatio(unsigned long ratio) override;
+	void OnWindowResize() override;
 	unsigned long GetNoteCount() const override { return 0; }
 
 protected:

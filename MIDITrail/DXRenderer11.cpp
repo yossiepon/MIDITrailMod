@@ -15,6 +15,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "DXRenderer11.h"
+#include "DXPrimitive11.h"
 #include "MTFirstPersonCam.h"
 
 using namespace YNBaseLib;
@@ -358,6 +359,7 @@ int DXRenderer11::IsSupportAntialias(
 //******************************************************************************
 void DXRenderer11::Terminate()
 {
+	DXPrimitive11::ReleaseAllDeviceResources();
 	_ReleaseRenderTarget();
 
 	if (m_pSwapChain) { m_pSwapChain->Release(); m_pSwapChain = nullptr; }

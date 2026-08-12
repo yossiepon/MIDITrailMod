@@ -37,6 +37,7 @@ ID3D11BlendState*        DXPrimitive11::s_pBlend         = nullptr;
 ID3D11BlendState*        DXPrimitive11::s_pBlendAdd      = nullptr;
 ID3D11DepthStencilState* DXPrimitive11::s_pDepth         = nullptr;
 ID3D11DepthStencilState* DXPrimitive11::s_pDepthNoWrite  = nullptr;
+std::vector<std::function<void()>> DXPrimitive11::s_DeviceCleanups;
 
 
 //******************************************************************************
@@ -276,6 +277,8 @@ int DXPrimitive11::InitPipeline(ID3D11Device* pDevice)
 		return YN_SET_ERR("CreateDepthStencilState (no write) failed.", hr, 0);
 	}
 
+	RegisterDeviceCleanup([]{ DXPrimitive11::ReleasePipeline(); });
+
 	return 0;
 }
 
@@ -294,6 +297,25 @@ void DXPrimitive11::ReleasePipeline()
 	if (s_pBlendAdd)     { s_pBlendAdd->Release();     s_pBlendAdd = nullptr; }
 	if (s_pDepth)        { s_pDepth->Release();        s_pDepth = nullptr; }
 	if (s_pDepthNoWrite) { s_pDepthNoWrite->Release(); s_pDepthNoWrite = nullptr; }
+}
+
+//******************************************************************************
+// Register pipeline cleanup (called from other Pipeline owners' InitPipeline)
+//******************************************************************************
+void DXPrimitive11::RegisterDeviceCleanup(std::function<void()> cleanup)
+{
+	s_DeviceCleanups.push_back(cleanup);
+}
+
+//******************************************************************************
+// Release all registered pipelines
+//******************************************************************************
+void DXPrimitive11::ReleaseAllDeviceResources()
+{
+	for (auto& cleanup : s_DeviceCleanups) {
+		cleanup();
+	}
+	s_DeviceCleanups.clear();
 }
 
 //******************************************************************************

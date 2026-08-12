@@ -12,6 +12,7 @@
 #include "imagehlp.h"
 #include "shellapi.h"
 #include "shlwapi.h"
+#include <ShellScalingApi.h>
 #include "YNBaseLib.h"
 #include "MTParam.h"
 #include "MTConfFile.h"
@@ -283,10 +284,6 @@ int MIDITrailApp::Terminate()
 	_StopTimer();
 
 	m_Renderer.Terminate();
-
-	MTNoteAABBInstanced11::ReleasePipeline();
-	MTNoteCylindricalInstanced11::ReleasePipeline();
-	MTNoteInstancedBase11::ReleaseCommonStates();
 
 	if (m_pScene != NULL) {
 		m_pScene->Release();
@@ -613,8 +610,12 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 	POINT mouseCursorPoint;
 	HMONITOR hMonitor = NULL;
 	MONITORINFOEX monitorInfo;
-	int width = 0;
-	int height = 0;
+	DEVMODE dm = {};
+	UINT dpiX = 96, dpiY = 96;
+	int physicalWidth = 0;
+	int physicalHeight = 0;
+	int physicalLeft = 0;
+	int physicalTop = 0;
 
 	//マウスカーソル位置を取得
 	bresult = GetCursorPos(&mouseCursorPoint);
@@ -634,9 +635,19 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 		goto EXIT;
 	}
 
-	//ウィンドウ縦横サイズ
-	width  = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
-	height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+	//物理解像度を取得（EnumDisplaySettings は常に物理ピクセルを返す）
+	dm.dmSize = sizeof(DEVMODE);
+	if (!EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &dm)) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+	physicalWidth  = dm.dmPelsWidth;
+	physicalHeight = dm.dmPelsHeight;
+
+	//DPI スケールを取得し論理座標→物理座標に変換（PMv2: SetWindowPos は物理ピクセル）
+	GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
+	physicalLeft = (int)(monitorInfo.rcMonitor.left * (dpiX / 96.0f));
+	physicalTop  = (int)(monitorInfo.rcMonitor.top  * (dpiY / 96.0f));
 
 	//ウィンドウスタイル設定
 	apiresult = SetWindowLong(m_hWnd, GWL_STYLE, WS_POPUP);
@@ -649,14 +660,14 @@ int MIDITrailApp::_SetWindowSizeFullScreen()
 	result = _HideMenu();
 	if (result != 0) goto EXIT;
 
-	//ウィンドウサイズ変更
+	//ウィンドウサイズ変更（物理ピクセル）
 	bresult = SetWindowPos(
-					m_hWnd,						//ウィンドウハンドル
-					HWND_TOP,					//配置順序：Zオーダー先頭
-					monitorInfo.rcMonitor.left,	//横方向の位置
-					monitorInfo.rcMonitor.top,	//縦方向の位置
-					width,						//幅
-					height,						//高さ
+					m_hWnd,				//ウィンドウハンドル
+					HWND_TOP,			//配置順序：Zオーダー先頭
+					physicalLeft,		//横方向の位置（物理ピクセル）
+					physicalTop,		//縦方向の位置（物理ピクセル）
+					physicalWidth,		//幅（物理ピクセル）
+					physicalHeight,		//高さ（物理ピクセル）
 					SWP_FRAMECHANGED | SWP_SHOWWINDOW	//ウィンドウ位置指定
 				);
 	if (!bresult) {
@@ -1043,13 +1054,53 @@ LRESULT MIDITrailApp::_WndProcImpl(
 			if (result != 0) goto EXIT;
 			break;
 		case WM_SIZE:
+		{
 			//ウィンドウサイズ変更
 			if (wParam == SIZE_MAXIMIZED) {
 				//最大化：フルスクリーン
 				result = _OnMenuFullScreen();
 				if (result != 0) goto EXIT;
 			}
+			else if (wParam != SIZE_MINIMIZED) {
+				//通常リサイズ（DPI変更後のフレーム確定を含む）
+				result = m_Renderer.OnResize();
+				if (result != 0) goto EXIT;
+				if (m_pScene != NULL) {
+					m_pScene->OnWindowResize();
+				}
+			}
 			break;
+		}
+		case WM_GETDPISCALEDSIZE:
+		{
+			//DPI変更前に OS が新サイズを問い合わせる（PMv2）
+			//現在のウィンドウサイズを返して物理ピクセル数を維持する
+			SIZE* pNewSize = reinterpret_cast<SIZE*>(lParam);
+			if (pNewSize != NULL && !m_isFullScreen) {
+				RECT windowRect;
+				GetWindowRect(m_hWnd, &windowRect);
+				pNewSize->cx = windowRect.right  - windowRect.left;
+				pNewSize->cy = windowRect.bottom - windowRect.top;
+				lresult = TRUE;
+			}
+			break;
+		}
+		case WM_DPICHANGED:
+		{
+			//DPI変更（モニタ間移動時）
+			//suggestedRect をそのまま適用（標準 PMv2 パターン）
+			//OnResize/OnWindowResize は WM_SIZE で実行（フレームサイズ確定後）
+			RECT* pSuggested = reinterpret_cast<RECT*>(lParam);
+			if (!m_isFullScreen && pSuggested != NULL) {
+				SetWindowPos(m_hWnd, NULL,
+					pSuggested->left,
+					pSuggested->top,
+					pSuggested->right  - pSuggested->left,
+					pSuggested->bottom - pSuggested->top,
+					SWP_NOZORDER | SWP_NOACTIVATE);
+			}
+			break;
+		}
 		case WM_SETTEXT:
 			//Unicode版SetWindowTextW呼び出しに対応
 			lresult = DefWindowProcW(hWnd, message, wParam, lParam);
@@ -1893,11 +1944,62 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	if (result != 0) goto EXIT;
 
 	//変更された場合はレンダラとシーンオブジェクトを再生成
+	//MSAA 設定は SwapChain 作成時に決定されるため ResizeBuffers では変更できない
 	if (m_GraphicCfgDlg.IsChanged()) {
+		bool isMonitor = (m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON);
+		MTViewParamMap viewParamMap;
+
 		result = _LoadGraphicConf();
 		if (result != 0) goto EXIT;
-		result = _ChangeWindowSize();
+
+		//現在の視点を退避
+		if (m_pScene != NULL) {
+			m_pScene->GetViewParam(&viewParamMap);
+		}
+
+		//シーン破棄
+		if (m_pScene != NULL) {
+			m_pScene->Release();
+			delete m_pScene;
+			m_pScene = NULL;
+		}
+
+		//レンダラ終了・再初期化（新 MSAA 設定で SwapChain 再作成）
+		m_Renderer.Terminate();
+
+		result = _SetWindowSize();
 		if (result != 0) goto EXIT;
+
+		result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
+		if (result != 0) goto EXIT;
+
+		result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
+		if (result != 0) goto EXIT;
+
+		//シーン再生成
+		if (!isMonitor) {
+			result = _CreateScene(m_SceneType, &m_SeqData);
+			if (result != 0) goto EXIT;
+		}
+		else {
+			result = _CreateScene(m_SceneType, NULL);
+			if (result != 0) goto EXIT;
+			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+			if (result != 0) goto EXIT;
+			if (m_PlayStatus == MonitorON) {
+				result = m_pScene->OnPlayStart();
+				if (result != 0) goto EXIT;
+			}
+			else {
+				result = m_pScene->OnPlayEnd();
+				if (result != 0) goto EXIT;
+			}
+		}
+
+		//視点を復帰
+		if (m_pScene != NULL) {
+			m_pScene->SetViewParam(&viewParamMap);
+		}
 	}
 
 EXIT:;
@@ -2941,72 +3043,19 @@ EXIT:;
 int MIDITrailApp::_ChangeWindowSize()
 {
 	int result = 0;
-	bool isMonitor = false;
-	MTViewParamMap viewParamMap;
 
-	//モニタ状態の確認
-	if ((m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON)) {
-		isMonitor = true;
-	}
-
-	//現在の視点を退避
-	if (m_pScene != NULL) {
-		m_pScene->GetViewParam(&viewParamMap);
-	}
-
-	//シーン破棄
-	if (m_pScene != NULL) {
-		m_pScene->Release();
-		delete m_pScene;
-		m_pScene = NULL;
-	}
-
-	//レンダラ終了
-	m_Renderer.Terminate();
-
-	//ユーザー設定ウィンドウサイズ変更
+	//ウィンドウスタイル・位置変更（OnResize の前にウィンドウを変形）
+	//キャッシュ更新は _SetWindowSize 内で行われる
 	result = _SetWindowSize();
 	if (result != 0) goto EXIT;
 
-	//レンダラ初期化
-	result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
+	//ResizeBuffers（Device 再作成なし）
+	result = m_Renderer.OnResize();
 	if (result != 0) goto EXIT;
 
-	//共有パイプライン初期化
-	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
-	if (result != 0) goto EXIT;
-
-	//シーンオブジェクト生成
-	if (!isMonitor) {
-		//プレイヤのシーン生成
-		result = _CreateScene(m_SceneType, &m_SeqData);
-		if (result != 0) goto EXIT;
-	}
-	else {
-		//ライブモニタのシーン生成
-		result = _CreateScene(m_SceneType, NULL);
-		if (result != 0) goto EXIT;
-
-		//MIDI IN デバイス名を設定
-		result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-		if (result != 0) goto EXIT;
-
-		//MIDI IN デバイス名を画面に反映
-		if (m_PlayStatus == MonitorON) {
-			//シーンに演奏開始（ライブモニタ開始）を通知
-			result = m_pScene->OnPlayStart();
-			if (result != 0) goto EXIT;
-		}
-		else {
-			//シーンに演奏終了（ライブモニタ停止）を通知
-			result = m_pScene->OnPlayEnd();
-			if (result != 0) goto EXIT;
-		}
-	}
-
-	//視点を復帰
+	//サイズ依存コンポーネントに通知
 	if (m_pScene != NULL) {
-		m_pScene->SetViewParam(&viewParamMap);
+		m_pScene->OnWindowResize();
 	}
 
 EXIT:;
