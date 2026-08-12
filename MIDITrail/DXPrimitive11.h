@@ -78,6 +78,7 @@ public:
 	void SetWorldMatrix(const DirectX::SimpleMath::Matrix& world);
 	void SetMaterialAmbient(float r, float g, float b);
 	void SetLightEnable(bool enable);
+	void SetBilateralLighting(bool enable, float diffuseLevel = 1.2f);
 	void SetTexture(ID3D11ShaderResourceView* pSRV);
 	void SetAdditiveBlend(bool additive);
 	void SetCustomBlendState(ID3D11BlendState* pBlend);
@@ -105,6 +106,8 @@ private:
 	DirectX::XMFLOAT4X4       m_World;
 	DirectX::XMFLOAT4         m_Ambient;
 	bool                      m_LightEnable;
+	bool                      m_BilateralLighting;
+	float                     m_DiffuseLevel;
 	ID3D11ShaderResourceView* m_pSRV;
 	bool                      m_Additive;
 	ID3D11BlendState*         m_pCustomBlend;

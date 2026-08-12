@@ -103,15 +103,15 @@ private:
 
 	static const int MODE_COUNT = 3;
 
-	// CBuffer for Roll3D (HAS_LIGHTING + HAS_ENVELOPE)
+	// CBuffer for Roll3D (HAS_LIGHTING_BILATERAL + HAS_ENVELOPE)
 	struct CBufferRoll3D {
 		DirectX::XMFLOAT4X4 wvp;
 		DirectX::XMFLOAT4   pb[32];
 		DirectX::XMFLOAT4X4 world;
-		DirectX::XMFLOAT4   active;
-		DirectX::XMFLOAT4   opts;
 		DirectX::XMFLOAT4   light;
 		DirectX::XMFLOAT4   lambient;
+		DirectX::XMFLOAT4   active;
+		DirectX::XMFLOAT4   opts;
 		DirectX::XMFLOAT4   envelope;
 	};
 
@@ -125,10 +125,13 @@ private:
 		DirectX::XMFLOAT4   envelope;
 	};
 
-	// CBuffer for Rain (minimal)
+	// CBuffer for Rain (HAS_LIGHTING_UNILATERAL + HAS_ALPHA_GRADIENT)
 	struct CBufferRain {
 		DirectX::XMFLOAT4X4 wvp;
 		DirectX::XMFLOAT4   pb[32];
+		DirectX::XMFLOAT4X4 world;
+		DirectX::XMFLOAT4   light;
+		DirectX::XMFLOAT4   lambient;
 	};
 
 	MTAABBMode           m_Mode;
@@ -162,5 +165,6 @@ private:
 	int _CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqData* pSeqData);
 	int _DrawRoll(ID3D11DeviceContext* pContext, const DirectX::SimpleMath::Matrix& viewProj,
 	              const DirectX::SimpleMath::Vector4& lightDir);
-	int _DrawRain(ID3D11DeviceContext* pContext, const DirectX::SimpleMath::Matrix& viewProj);
+	int _DrawRain(ID3D11DeviceContext* pContext, const DirectX::SimpleMath::Matrix& viewProj,
+	              const DirectX::SimpleMath::Vector4& lightDir);
 };
