@@ -66,6 +66,10 @@ public:
 	void AddListener(IMTNoteTrackerListener* pListener, NoteEventType filter);
 	void RemoveListener(IMTNoteTrackerListener* pListener);
 
+	bool HasActiveNotesOnPort(unsigned char portNo) const;
+	bool HasActiveNotesOnChannel(unsigned char portNo, unsigned char chNo) const;
+	unsigned short GetActiveChannelMask(unsigned char portNo) const;
+
 protected:
 
 	struct ListenerEntry {
@@ -78,4 +82,5 @@ protected:
 	void DispatchReset();
 
 	std::vector<ListenerEntry> m_Listeners;
+	unsigned long m_ActiveNotesPerCh[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 };

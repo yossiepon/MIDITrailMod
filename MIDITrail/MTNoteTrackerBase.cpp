@@ -17,6 +17,7 @@
 //******************************************************************************
 MTNoteTrackerBase::MTNoteTrackerBase()
 {
+	memset(m_ActiveNotesPerCh, 0, sizeof(m_ActiveNotesPerCh));
 }
 
 MTNoteTrackerBase::~MTNoteTrackerBase()
@@ -55,11 +56,36 @@ void MTNoteTrackerBase::RemoveListener(
 //******************************************************************************
 // Dispatch helpers
 //******************************************************************************
+bool MTNoteTrackerBase::HasActiveNotesOnPort(unsigned char portNo) const
+{
+	for (unsigned char ch = 0; ch < SM_MAX_CH_NUM; ch++) {
+		if (m_ActiveNotesPerCh[portNo][ch] > 0) return true;
+	}
+	return false;
+}
+
+bool MTNoteTrackerBase::HasActiveNotesOnChannel(unsigned char portNo, unsigned char chNo) const
+{
+	return m_ActiveNotesPerCh[portNo][chNo] > 0;
+}
+
+unsigned short MTNoteTrackerBase::GetActiveChannelMask(unsigned char portNo) const
+{
+	unsigned short mask = 0;
+	for (unsigned char ch = 0; ch < SM_MAX_CH_NUM; ch++) {
+		if (m_ActiveNotesPerCh[portNo][ch] > 0) mask |= (1 << ch);
+	}
+	return mask;
+}
+
 void MTNoteTrackerBase::DispatchActivate(
 		const NoteData& note,
 		unsigned long index
 	)
 {
+	if (note.lyric[0] == L'\0') {
+		m_ActiveNotesPerCh[note.portNo][note.chNo]++;
+	}
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
 	for (const auto& entry : m_Listeners) {
@@ -74,6 +100,9 @@ void MTNoteTrackerBase::DispatchDeactivate(
 		unsigned long index
 	)
 {
+	if (note.lyric[0] == L'\0' && m_ActiveNotesPerCh[note.portNo][note.chNo] > 0) {
+		m_ActiveNotesPerCh[note.portNo][note.chNo]--;
+	}
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
 	for (const auto& entry : m_Listeners) {
@@ -85,6 +114,7 @@ void MTNoteTrackerBase::DispatchDeactivate(
 
 void MTNoteTrackerBase::DispatchReset()
 {
+	memset(m_ActiveNotesPerCh, 0, sizeof(m_ActiveNotesPerCh));
 	for (const auto& entry : m_Listeners) {
 		entry.pListener->OnReset();
 	}

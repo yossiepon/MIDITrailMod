@@ -176,7 +176,8 @@ Matrix MTPianoKeyboardCtrlRoll11::_ComputeWorldMatrix(
 	playbackPos.x += m_NoteDesign.GetPlayPosX(ctx.curTickTime);
 
 	Vector3 basePos = m_KeyboardDesign.GetKeyboardBasePos((int)kbdIndex, ctx.rollAngle);
-	basePos.x += m_pNoteDesign->GetMaxPitchBendShift(m_pNotePitchBend, portNo);
+	basePos.x += m_pNoteDesign->GetMaxPitchBendShift(m_pNotePitchBend, portNo,
+	             m_pNoteTracker->GetActiveChannelMask(portNo));
 
 	float scale = m_KeyboardDesign.GetKeyboardResizeRatio();
 

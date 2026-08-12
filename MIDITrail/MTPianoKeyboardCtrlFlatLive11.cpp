@@ -24,6 +24,8 @@ using namespace DirectX::SimpleMath;
 MTPianoKeyboardCtrlFlatLive11::MTPianoKeyboardCtrlFlatLive11()
 {
 	m_LiveTimeMSec = 0;
+	ZeroMemory(m_ActiveNoteCountPerKbd, sizeof(m_ActiveNoteCountPerKbd));
+	ZeroMemory(m_ActiveNoteCountPerPortCh, sizeof(m_ActiveNoteCountPerPortCh));
 	m_isPlaybackPosTracking = false;
 	ZeroMemory(m_LiveKeys, sizeof(m_LiveKeys));
 }
@@ -184,6 +186,10 @@ void MTPianoKeyboardCtrlFlatLive11::OnNoteActivate(
 
 	unsigned long kbdIndex = m_isSingleKeyboard ? 0 : (note.chNo % m_NumKbd);
 	LiveKeyState& lk = m_LiveKeys[kbdIndex][note.noteNo];
+	if (!lk.isDown) {
+		m_ActiveNoteCountPerKbd[kbdIndex]++;
+		if (note.chNo < SM_MAX_CH_NUM) m_ActiveNoteCountPerPortCh[note.portNo][note.chNo]++;
+	}
 	lk.isDown = true;
 	lk.startTimeMs = m_LiveTimeMSec;
 	lk.endTimeMs = 0;
@@ -206,6 +212,8 @@ void MTPianoKeyboardCtrlFlatLive11::OnNoteDeactivate(
 	if (lk.isDown) {
 		lk.isDown = false;
 		lk.endTimeMs = m_LiveTimeMSec;
+		if (m_ActiveNoteCountPerKbd[kbdIndex] > 0) m_ActiveNoteCountPerKbd[kbdIndex]--;
+		if (note.chNo < SM_MAX_CH_NUM && m_ActiveNoteCountPerPortCh[note.portNo][note.chNo] > 0) m_ActiveNoteCountPerPortCh[note.portNo][note.chNo]--;
 	}
 }
 
@@ -215,7 +223,21 @@ void MTPianoKeyboardCtrlFlatLive11::OnNoteDeactivate(
 void MTPianoKeyboardCtrlFlatLive11::OnReset()
 {
 	ZeroMemory(m_LiveKeys, sizeof(m_LiveKeys));
+	ZeroMemory(m_ActiveNoteCountPerKbd, sizeof(m_ActiveNoteCountPerKbd));
+	ZeroMemory(m_ActiveNoteCountPerPortCh, sizeof(m_ActiveNoteCountPerPortCh));
 	for (unsigned long k = 0; k < m_NumKbd; k++) {
 		ZeroMemory(m_Subs[k].keyStates, sizeof(m_Subs[k].keyStates));
 	}
+}
+
+//******************************************************************************
+// GetActiveChannelMask
+//******************************************************************************
+unsigned short MTPianoKeyboardCtrlFlatLive11::GetActiveChannelMask(unsigned char portNo) const
+{
+	unsigned short mask = 0;
+	for (unsigned char ch = 0; ch < SM_MAX_CH_NUM; ch++) {
+		if (m_ActiveNoteCountPerPortCh[portNo][ch] > 0) mask |= (1 << ch);
+	}
+	return mask;
 }

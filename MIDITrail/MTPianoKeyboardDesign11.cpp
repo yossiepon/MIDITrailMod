@@ -627,13 +627,15 @@ float MTPianoKeyboardDesign11::GetPitchBendShift(
 
 float MTPianoKeyboardDesign11::GetMaxPitchBendShift(
 		MTNotePitchBend* pNotePitchBend,
-		unsigned char portNo
+		unsigned char portNo,
+		unsigned short activeChMask
 	)
 {
 	if (pNotePitchBend == NULL) return 0.0f;
 
 	float maxShift = 0.0f;
 	for (unsigned char chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
+		if (!(activeChMask & (1 << chNo))) continue;
 		short v = pNotePitchBend->GetValue(portNo, chNo);
 		unsigned char s = pNotePitchBend->GetSensitivity(portNo, chNo);
 		float shift = GetPitchBendShift(v, s);

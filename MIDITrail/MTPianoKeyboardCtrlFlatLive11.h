@@ -45,6 +45,7 @@ public:
 	void OnReset() override;
 
 	void SetPlaybackPosTracking(bool enable) { m_isPlaybackPosTracking = enable; }
+	unsigned short GetActiveChannelMask(unsigned char portNo) const;
 
 protected:
 
@@ -61,6 +62,8 @@ protected:
 
 	LiveKeyState m_LiveKeys[SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
 	unsigned long m_LiveTimeMSec;
+	unsigned long m_ActiveNoteCountPerKbd[SM_MAX_CH_NUM];
+	unsigned long m_ActiveNoteCountPerPortCh[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	bool m_isPlaybackPosTracking;
 
 	int _CreateKeyboards(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
