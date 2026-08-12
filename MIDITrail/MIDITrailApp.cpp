@@ -1944,11 +1944,62 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	if (result != 0) goto EXIT;
 
 	//変更された場合はレンダラとシーンオブジェクトを再生成
+	//MSAA 設定は SwapChain 作成時に決定されるため ResizeBuffers では変更できない
 	if (m_GraphicCfgDlg.IsChanged()) {
+		bool isMonitor = (m_PlayStatus == MonitorOFF) || (m_PlayStatus == MonitorON);
+		MTViewParamMap viewParamMap;
+
 		result = _LoadGraphicConf();
 		if (result != 0) goto EXIT;
-		result = _ChangeWindowSize();
+
+		//現在の視点を退避
+		if (m_pScene != NULL) {
+			m_pScene->GetViewParam(&viewParamMap);
+		}
+
+		//シーン破棄
+		if (m_pScene != NULL) {
+			m_pScene->Release();
+			delete m_pScene;
+			m_pScene = NULL;
+		}
+
+		//レンダラ終了・再初期化（新 MSAA 設定で SwapChain 再作成）
+		m_Renderer.Terminate();
+
+		result = _SetWindowSize();
 		if (result != 0) goto EXIT;
+
+		result = m_Renderer.Initialize(m_hWnd, m_MultiSampleType);
+		if (result != 0) goto EXIT;
+
+		result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
+		if (result != 0) goto EXIT;
+
+		//シーン再生成
+		if (!isMonitor) {
+			result = _CreateScene(m_SceneType, &m_SeqData);
+			if (result != 0) goto EXIT;
+		}
+		else {
+			result = _CreateScene(m_SceneType, NULL);
+			if (result != 0) goto EXIT;
+			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+			if (result != 0) goto EXIT;
+			if (m_PlayStatus == MonitorON) {
+				result = m_pScene->OnPlayStart();
+				if (result != 0) goto EXIT;
+			}
+			else {
+				result = m_pScene->OnPlayEnd();
+				if (result != 0) goto EXIT;
+			}
+		}
+
+		//視点を復帰
+		if (m_pScene != NULL) {
+			m_pScene->SetViewParam(&viewParamMap);
+		}
 	}
 
 EXIT:;
