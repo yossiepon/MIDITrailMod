@@ -65,5 +65,8 @@ protected:
 
 private:
 
+	SMPortList m_PortList;
+	unsigned char m_KbdPortNo[MT_KBD_MAX_SUBS];
+	unsigned char m_KbdChNo[MT_KBD_MAX_SUBS];
 	bool m_isPlaybackPosTracking;
 };

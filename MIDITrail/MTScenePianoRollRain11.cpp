@@ -68,7 +68,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 
 	// Note rain
 	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
-	                           MTAABBMode::Rain);
+	                           m_Is2D ? MTAABBMode::Rain2D : MTAABBMode::Rain);
 	if (result != 0) goto EXIT;
 
 	// Dashboard

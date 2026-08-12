@@ -80,7 +80,8 @@ protected:
 	int _LoadTexture(ID3D11Device* pDevice, const TCHAR* pSceneName);
 	void _ReleaseSub(MTKbdSub* pSub);
 
-	MTKbdSub m_Subs[SM_MAX_CH_NUM];
+	static const unsigned long MT_KBD_MAX_SUBS = 128;
+	MTKbdSub m_Subs[MT_KBD_MAX_SUBS];
 	unsigned long m_NumKbd;
 	ID3D11DeviceContext* m_pContext;
 	ID3D11ShaderResourceView* m_pSRV;
