@@ -565,12 +565,15 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 		for (unsigned long i = 0; i < m_NoteCount; i++) {
 			const NoteData& note = m_pNoteTracker->GetNote(i);
 
+			// Roll 2D: 全ポートのノートをポート 0 の位置に集約
+			unsigned char posPortNo = (m_Mode == MTAABBMode::Roll2D) ? 0 : note.portNo;
+
 			Vector3 startCorners[4], endCorners[4];
 			m_pNoteDesign->GetNoteBoxVirtexPos(
-				note.startTimeTick, note.portNo, note.chNo, note.noteNo,
+				note.startTimeTick, posPortNo, note.chNo, note.noteNo,
 				&startCorners[0], &startCorners[1], &startCorners[2], &startCorners[3]);
 			m_pNoteDesign->GetNoteBoxVirtexPos(
-				note.endTimeTick, note.portNo, note.chNo, note.noteNo,
+				note.endTimeTick, posPortNo, note.chNo, note.noteNo,
 				&endCorners[0], &endCorners[1], &endCorners[2], &endCorners[3]);
 
 			instances[i].vmin[0] = startCorners[3].x;

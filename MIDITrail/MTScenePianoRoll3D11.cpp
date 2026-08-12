@@ -91,7 +91,7 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 	try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRoll11(); }
 	catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 	result = ((MTPianoKeyboardCtrlRoll11*)m_pKeyboardCtrl)->Create(
-		pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, false);
+		pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, m_Is2D);
 	if (result != 0) goto EXIT;
 
 EXIT:;
