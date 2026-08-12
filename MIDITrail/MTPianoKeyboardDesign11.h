@@ -89,7 +89,8 @@ public:
 
 	// Pitch bend
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
-	float GetMaxPitchBendShift(MTNotePitchBend* pNotePitchBend, unsigned char portNo);
+	float GetMaxPitchBendShift(MTNotePitchBend* pNotePitchBend, unsigned char portNo,
+	                          unsigned short activeChMask = 0xFFFF);
 
 	// Note drop position
 	float GetNoteDropPosZ(unsigned char noteNo);

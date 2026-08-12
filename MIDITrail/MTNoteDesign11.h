@@ -99,7 +99,8 @@ public:
 
 	// Pitch bend Y shift in note-space coordinates
 	float GetPitchBendShift(short pitchBendValue, unsigned char pitchBendSensitivity);
-	float GetMaxPitchBendShift(MTNotePitchBend* pNotePitchBend, unsigned char portNo);
+	float GetMaxPitchBendShift(MTNotePitchBend* pNotePitchBend, unsigned char portNo,
+	                          unsigned short activeChMask = 0xFFFF);
 
 	// Note box vertex positions (4 corners of the front face)
 	virtual void GetNoteBoxVirtexPos(

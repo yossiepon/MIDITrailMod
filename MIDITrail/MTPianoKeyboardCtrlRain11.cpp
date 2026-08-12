@@ -137,9 +137,10 @@ Matrix MTPianoKeyboardCtrlRain11::_ComputeWorldMatrix(
 	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(portNo, chNo);
 
 	if (m_isSingleKeyboard) {
-		moveVec.x += m_KeyboardDesign.GetMaxPitchBendShift(m_pNotePitchBend, portNo);
+		moveVec.x += m_KeyboardDesign.GetMaxPitchBendShift(m_pNotePitchBend, portNo,
+		             m_pNoteTracker->GetActiveChannelMask(portNo));
 	}
-	else if (m_pNotePitchBend != NULL) {
+	else if (m_pNotePitchBend != NULL && m_pNoteTracker->HasActiveNotesOnChannel(portNo, chNo)) {
 		short v = m_pNotePitchBend->GetValue(portNo, chNo);
 		unsigned char s = m_pNotePitchBend->GetSensitivity(portNo, chNo);
 		moveVec.x += m_KeyboardDesign.GetPitchBendShift(v, s);
