@@ -119,7 +119,11 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
-xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
+xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
+xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\CHANGELOG.md $(TargetDir) /Y
+xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -152,7 +156,11 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
-xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
+xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
+xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\CHANGELOG.md $(TargetDir) /Y
+xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -186,7 +194,11 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
-xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
+xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
+xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\CHANGELOG.md $(TargetDir) /Y
+xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
@@ -223,7 +235,11 @@ xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
-xcopy ..\readme_mod_yossiepon.md $(TargetDir) /Y
+xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
+xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\CHANGELOG.md $(TargetDir) /Y
+xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>

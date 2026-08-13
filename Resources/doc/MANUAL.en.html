@@ -18,9 +18,10 @@ English / <a href="MANUAL.ja.html">Japanese</a>
 <h1>MIDITrail Ver.1.4.1 for Windows User Manual</h1>
 
 <p>
-Copyright (c) 2010-2025, WADA Masashi All rights reserved.<br>
-Web: <a href="https://www.yknk.org/miditrail/">https://www.yknk.org/miditrail/</a><br>
-Mail: <img src="Files/mail.png" align="top"><br>
+Please refer to COPYRIGHT.TXT for the copyright notice.<br>
+MIDITrail: <a href="https://www.yknk.org/miditrail/">https://www.yknk.org/miditrail/</a> (<img src="Files/mail.png" align="top">)<br>
+MIDITrail Mod: <a href="https://github.com/yossiepon/MIDITrailMod">https://github.com/yossiepon/MIDITrailMod</a><br>
+MIDITrail Mod Mod: <a href="https://github.com/Zel9278/MIDITrailModMod">https://github.com/Zel9278/MIDITrailModMod</a><br>
 </p>
 
 <!-- ************************************************************* -->
@@ -62,17 +63,13 @@ Screenshot: PianoRollRain<br>
 <h2><a name="system"></a>2. System requirement</h2>
 
 <p>
-OS: Windows 7 / 8 / 10 / 11<br>
-VIDEO: Support for DirectX 9.0c graphics
+OS: Windows 10 / 11<br>
+VIDEO: Support for DirectX 11 graphics
 </p>
 <p>
 It is recommended that your PC has high performance graphics for smooth animation.<br>
 If the MIDI datasets contains a lot of notes, the software needs more performance graphics.<br>
 As long as the performance of your PC allows, please enjoy MIDITrail with large window.
-</p>
-<p>
-MIDITrail Ver.1.2.5 or later does not support Windows 2000 / XP / Vista.<br>
-Please use MIDITrail Ver.1.2.4 on Windows 2000 / XP / Vista.
 </p>
 
 <!-- ************************************************************* -->
@@ -524,14 +521,10 @@ MIDITrail can't open the MIDI file whose delta time represents actual time.
 <!-- ************************************************************* -->
 <h2><a name="faq"></a>6. FAQ</h2>
 
-<h3>(1) Q. I got "d3dx9_**.dll was not found" error. I can't start MIDITrail.</h3>
+<h3>(1) Q. I got "D3D11CreateDeviceAndSwapChain failed" error. I can't start MIDITrail.</h3>
 <p>
-The error occurs when the version of DirectX in your PC is old.
-Please install the latest version of "DirectX End-User Runtime".
-</p>
-<p>
-Microsoft: DirectX End-User Runtimes (June 2010)<br>
-<a href="https://www.microsoft.com/en-us/download/details.aspx?id=8109">https://www.microsoft.com/en-us/download/details.aspx?id=8109</a>
+This error occurs when your PC does not support DirectX 11.<br>
+Please make sure your graphics driver is up to date and your GPU supports DirectX 11 Feature Level 10.0 or later.
 </p>
 
 <h3>(2) Q. The animation is not smooth.</h3>
@@ -550,7 +543,7 @@ You can customize the window size.
 Please open following file by text editor, and edit "Width" and "Height".
 </p>
 <pre>
-Windows 7 / 8 / 10 / 11
+Windows 10 / 11
 C:\Users\(user name)\AppData\Roaming\yknk\MIDITrail\View.ini
 </pre>
 <pre>
@@ -564,13 +557,11 @@ Height=600
 Sorry, it is a specification.
 </p>
 
-<h3>(5) Q. I got "DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A" error.</h3>
+<h3>(5) Q. I got "DirectX API error. / FUNC: DXRenderer11::Initialize" error.</h3>
 <p>
-If your PC does not support Direct3D, this error occurs.<br>
-Please execute "DirectX Diagnostic Tool"(dxdiag.exe), and select "Display" tab.
-Is the "Direct3D Acceleration" enabled?<br>
-If you can't change "Direct3D Acceleration" to "Enabled", your PC does not support Direct3D.
-Please use the PC which supports DirectX 9.0c graphics.
+This error occurs when the DirectX 11 device cannot be created.<br>
+Please make sure your graphics driver is up to date.<br>
+You can check DirectX support by executing "DirectX Diagnostic Tool" (dxdiag.exe) and selecting the "Display" tab.
 </p>
 
 <h3>(6) Q. I want to change the ripple more showily.</h3>
@@ -873,218 +864,15 @@ However piano roll bars of all ports will be displayed.
 <h2><a name="license"></a>9. Copyright and license</h2>
 
 <p>
-WADA Masashi holds the copyright of MIDITrail.<br>
-MIDITrail is released under the BSD license.
+MIDITrail is released under the BSD 3-Clause License.<br>
+Please refer to COPYRIGHT.TXT and LICENSE.TXT for details.
 </p>
-
-<pre>
-Copyright (c) 2010-2022, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions 
-are met:
-
-* Redistributions of source code must retain the above copyright 
-  notice, this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright 
-  notice, this list of conditions and the following disclaimer in the 
-  documentation and/or other materials provided with the distribution.
-* Neither the name of the author nor the names of its contributors 
-  may be used to endorse or promote products derived from this 
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN 
-ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-POSSIBILITY OF SUCH DAMAGE.
-</pre>
 
 <!-- ************************************************************* -->
 <h2><a name="history"></a>10. History</h2>
 
 <p>
-osdn#&lt;id&gt; ... <a href="https://www.yknk.org/miditrail/osdn/ticket/index.html">OSDN Ticket Archive</a><br>
-ghwin#&lt;id&gt; ... <a href="https://github.com/wdmss/MIDITrail-Windows/issues">GitHub MIDITrail-Windows</a><br>
-</p>
-<p>
-<table>
-  <tr><th>yyyy/mm/dd</th><th>Version</th><th>Changelog</th></tr>
-  <tr><td>2010/03/08</td><td>Ver.0.0.0</td><td>Development start</td></tr>
-  <tr><td>2010/05/18</td><td>Ver.1.0.0 beta</td><td>Beta release</td></tr>
-  <tr><td>2010/06/02</td><td>Ver.1.0.0</td><td>First formal release</td></tr>
-  <tr><td>2010/06/05</td><td>Ver.1.0.1</td><td>
-osdn#22102 Fixed bug (execution fails by missing Visual C++ runtime library)<br>
-osdn#22106 Fixed bug (size of about dialog is big on Windows English version)<br>
-  </td></tr>
-  <tr><td>2010/06/20</td><td>Ver.1.0.2</td><td>
-osdn#22218 Added English manual<br>
-osdn#22108 Fixed bug (crash when opening the MIDI file exported from VOCALOID)<br>
-osdn#22217 Fixed bug (overlapped ripples flicker)<br>
-  </td></tr>
-  <tr><td>2010/07/11</td><td>Ver.1.0.3</td><td>
-osdn#22319 Added color effect to active piano roll bar<br>
-osdn#22412 Added pitch bend effect to piano roll bar<br>
-osdn#22425 Added view mode of piano roll 2D<br>
-osdn#22442 Added switch interface of display and effect<br>
-osdn#22413 Fixed bug (rendering performance has declined by specular effect)<br>
-osdn#22414 Fixed bug (total count of notes is incorrect)<br>
-osdn#22424 Fixed bug (duration of a ripple is not constant)<br>
-  </td></tr>
-  <tr><td>2010/07/25</td><td>Ver.1.0.4</td><td>
-osdn#22320 Added application icon<br>
-osdn#22522 Added support for Recomposer data file<br>
-osdn#22523 Added command line interface<br>
-osdn#22582 Added double speed playback mode<br>
-osdn#22585 Added function of piano roll rotation by a mouse wheel<br>
-osdn#22566 Fixed bug (Playback time was slightly short)<br>
-osdn#22506 Fixed bug (Note may continue sounding after the end of playback)<br>
-  </td></tr>
-  <tr><td>2010/08/06</td><td>Ver.1.0.5</td><td>
-osdn#22633 Fixed bug (Piano roll rotation status is not saved by "Save viewpoint")<br>
-osdn#22652 Fixed bug (Parse error when opening 55MCMDL1.MID "WATANABE Michiaki MEDLEY")<br>
-osdn#22709 Fixed bug (MIDITrail sends redundant "F7" to MIDI-OUT with multi-packet system exclusive message)<br>
-osdn#22710 Fixed bug (Auto rotation speed of piano roll is not constant)<br>
-  </td></tr>
-  <tr><td>2010/08/29</td><td>Ver.1.1.0 beta</td><td>Beta release (Added "Piano Roll Rain")</td></tr>
-  <tr><td>2010/09/19</td><td>Ver.1.1.0</td><td>
-osdn#23174 Added view mode "Piano Roll Rain"<br>
-osdn#23175 Fixed bug (File open dialog is not modal)<br>
-  </td></tr>
-  <tr><td>2010/10/17</td><td>Ver.1.1.1</td><td>
-osdn#23439 Added Anti-aliasing support<br>
-osdn#23347 Fixed bug (Key down timing and a piano roll don't synchronize in PianoRollRain)<br>
-osdn#23348 Fixed bug (Spelling error in file open dialog)<br>
-osdn#23422 Fixed bug (Position of black is not correct in PianoRollRain)<br>
-  </td></tr>
-  <tr><td>2010/12/26</td><td>Ver.1.1.2</td><td>
-This version was released with MIDITrail for Mac OS X<br>
-osdn#23970 Added eye direction control by key operation<br>
-osdn#23971 Updated texture images<br>
-osdn#23972 Updated application icon<br>
-osdn#23497 Fixed bug ("Piano Roll Rain" item in "View" menu is always enable)<br>
-osdn#23968 Fixed bug (Time signature was always 4/4 after loading file)<br>
-osdn#23969 Fixed bug (Space charactor in the title string has been ignored)<br>
-  </td></tr>
-  <tr><td>2012/01/15</td><td>Ver.1.1.3</td><td>
-osdn#27006 Merged features of MIDITrail Ver.1.1.3 for Mac OS X<br>
-osdn#25454 Added grid line display control<br>
-osdn#26987 Added playback speed control<br>
-osdn#26988 Added skip control<br>
-osdn#26989 Added stars and counter display control<br>
-osdn#27005 Added figure of player operations guide to "How to view dialog"<br>
-osdn#27091 Added check of DirectX feature support (Index Buffer)<br>
-osdn#26990 Fixed bug (Typographical errors on the license)<br>
-osdn#27139 Fixed bug (The color of note boxes are whitish in Piano Roll 3D)<br>
-osdn#27140 Fixed bug (The color of stars are dark in Piano Roll Rain)<br>
-  </td></tr>
-  <tr><td>2012/03/04</td><td>Ver.1.2.0</td><td>
-osdn#27711 Merged features of MIDITrail Ver.1.2.0 for Mac OS X<br>
-osdn#27458 Added MIDI IN monitoring<br>
-osdn#27459 Added MIDI OUT auto configuration<br>
-osdn#27712 Added shortcut key of File Open<br>
-osdn#27725 Fixed bug (Error occurs when the MIDI data contains the track with 6 or more port numbers)<br>
-  </td></tr>
-  <tr><td>2013/12/04</td><td>Ver.1.2.1</td><td>
-osdn#30545 Added key display range control<br>
-osdn#30546 Added back ground color control<br>
-osdn#30547 Added scale color assignment to the piano roll bar<br>
-osdn#30553 Added ability to render the user-specified 3D model<br>
-osdn#32360 Added menu item "Auto save viewpoint"<br>
-osdn#32361 Added ability to save viewpoint in MIDI IN monitoring<br>
-osdn#32362 Added ability to playback automatically after opening file<br>
-osdn#32363 Added ability to open the file while playing<br>
-osdn#32364 Added ability to inhibit multiple instances of MIDITrail<br>
-osdn#32366 Added ability to display the file name<br>
-osdn#32367 Added view mode "Piano Roll Rain 2D"<br>
-osdn#32427 Added note color assignment to active key<br>
-osdn#32365 Changed title caption ("TITLE:" string was removed)<br>
-osdn#30552 Improved event message queue mechanism<br>
-osdn#30548 Fixed bug (At the start of playback, MIDI data transmission is blocked)<br>
-osdn#32359 Fixed bug (MIDITrail does not send some CC events at skip processing)<br>
-  </td></tr>
-  <tr><td>2014/02/23</td><td>Ver.1.2.1a</td><td>
-osdn#33252 Added support for Windows 64bit<br>
-  </td></tr>
-  <tr><td>2014/04/20</td><td>Ver.1.2.1b</td><td>
-osdn#33674 Fixed bug (When NSX-39 was selected as MIDI OUT device, error occurs at the start of playback)<br>
-osdn#33695 Fixed bug (Program error occurs in MTFont2Bmp::_writeGlyphToBmpBuf)<br>
-  </td></tr>
-  <tr><td>2016/12/05</td><td>Ver.1.2.2</td><td>
-osdn#35775 Changed URL and mail address in user's manual<br>
-osdn#36844 Added supports window size customization<br>
-osdn#36845 Added supports background image customization<br>
-osdn#36846 Changed version information string<br>
-  </td></tr>
-  <tr><td>2017/10/09</td><td>Ver.1.2.3</td><td>
-osdn#37561 Added increase of the size of active note<br>
-osdn#37562 Changed brightness the ripple color<br>
-  </td></tr>
-  <tr><td>2019/02/10</td><td>Ver.1.2.4</td><td>
-osdn#38953 Added viewpoint selection menu<br>
-osdn#38954 Fixed bug (Piano roll bar flickers in Piano Roll 2D mode)<br>
-osdn#38955 Fixed bug (Time indicator becomes opaque in Piano Roll 3D mode)<br>
-  </td></tr>
-  <tr><td>2019/05/12</td><td>Ver.1.2.5</td><td>
-osdn#39227 Added quarter note length configuration<br>
-osdn#39226 Changed development environment to Visual Studio 2017<br>
-osdn#39228 Changed appendix of user's manual<br>
-osdn#39229 Fixed bug (Code analysis found some mistakes)<br>
-  </td></tr>
-  <tr><td>2019/06/02</td><td>Ver.1.2.6</td><td>
-osdn#39274 Added full screen mode<br>
-osdn#39275 Added support for game controller<br>
-  </td></tr>
-  <tr><td>2019/10/14</td><td>Ver.1.3.0</td><td>
-osdn#39675 Added view mode "Piano Roll Ring"<br>
-  </td></tr>
-  <tr><td>2019/11/09</td><td>Ver.1.3.1</td><td>
-osdn#39733 Changed keyboard display direction on Piano Roll Ring<br>
-osdn#39734 Changed processing to keep viewpoint when window size changed<br>
-osdn#39735 Fixed bug (Assertion occurs in _controlfp_s when x64 debug configuration)<br>
-osdn#39736 Fixed bug (Exception occurs in "How to view" dialog when x64 debug configuration)<br>
-  </td></tr>
-  <tr><td>2021/05/16</td><td>Ver.1.3.3</td><td>
-osdn#42233 Added Folder Playback feature<br>
-osdn#42234 Added support for Standard MIDI File with illegal chunk size<br>
-osdn#42235 Added support for RIFF-based MIDI File<br>
-osdn#42236 Added sending "All Sound Off" messeage when pause/stop/skip<br>
-osdn#42237 Fixed bug (The color of the ripples becomes dark in Piano Roll 3D)<br>
-  </td></tr>
-  <tr><td>2021/09/13</td><td>Ver.1.3.4</td><td>
-osdn#42859 Added setting of delay between songs<br>
-  </td></tr>
-  <tr><td>2022/07/14</td><td>Ver.1.3.6</td><td>
-osdn#45088 Added menu bar display switch<br>
-osdn#45089 Added feature of saving my viewpoint<br>
-osdn#45090 Added display switch of grid line and time indicator<br>
-osdn#45091 Added feature of saving display switch status<br>
-osdn#45092 Added 2nd light for Piano Roll 3D<br>
-osdn#45093 Added MIDI system message parsing<br>
-  </td></tr>
-  <tr><td>2022/10/20</td><td>Ver.1.4.0</td><td>
-osdn#45896 Added feature of color configuration<br>
-osdn#45897 Added bar ring for Piano Roll Ring<br>
-osdn#45898 Added Unicode support for reading MIDI files<br>
-osdn#45899 Changed key color of Piano Roll Rain<br>
-osdn#45900 fixed bug. (Counter displays monitering stop when toggle full screen)<br>
-osdn#45901 fixed bug. (Window size is smaller than user setting)<br>
-osdn#45931 fixed bug. (MIDITrail is not reading tempo data correctly)<br>
-  </td></tr>
-  <tr><td>2025/10/30</td><td>Ver.1.4.1</td><td>
-ghwin#7 fixed bug. (Piano roll is black on AMD Radeon Graphics)<br>
-ghwin#8 Added function to send note off when paused or stopped and note on when resumed<br>
-ghwin#9 Changed documents due to the migration of the project website<br>
-  </td></tr>
-</table>
+Please refer to CHANGELOG.md for the full version history.
 </p>
 
 </div>
