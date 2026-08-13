@@ -194,10 +194,10 @@ int MTFirstPersonCam::Update(const MTSceneUpdateContext& ctx)
 	m_DIMouseCtrl.Acquire();
 
 	result = m_DIKeyCtrl.GetKeyStatus();
-	result = 0;
+	if (result != 0) goto EXIT;
 
 	result = m_DIMouseCtrl.GetMouseStatus();
-	result = 0;
+	if (result != 0) goto EXIT;
 
 	result = m_GamePadCtrl.UpdateState();
 	if (result != 0) goto EXIT;

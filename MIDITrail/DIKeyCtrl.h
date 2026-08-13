@@ -40,8 +40,6 @@ public:
 	//現時点の状態を取得
 	//  GetKeyStatusを一回呼び出してから
 	//  状態を取得したいキーの数だけIsKeyDownを呼び出す
-	//  BUG: ウィンドウが非アクティブ状態の場合にデバイスへアクセスできず
-	//       GetKeyStatus()がエラーになる
 	int GetKeyStatus();
 	bool IsKeyDown(unsigned char key);
 

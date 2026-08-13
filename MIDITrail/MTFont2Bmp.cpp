@@ -492,7 +492,6 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 			//コピー元グリフBMPの座標は4の倍数制限があるBMPサイズを意識せず
 			//実データの範囲でスキャンする
 			for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
-				//Ticket #33695 対策
 				//コピー先の領域外になる場合はスキップする
 				if (y >= m_BmpHeight) continue;
 
@@ -514,7 +513,6 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 					if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
 						//result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
 						//goto EXIT;
-						//Ticket #33695 対策
 						//エラーとせずスキップする
 						continue;
 					}

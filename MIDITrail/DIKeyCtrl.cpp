@@ -187,12 +187,14 @@ int DIKeyCtrl::GetKeyStatus()
 
 	hresult = m_pDIDevice->GetDeviceState(256, m_KeyStatus);
 	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
-		goto EXIT;
+		if (hresult == DIERR_INPUTLOST || hresult == DIERR_NOTACQUIRED) {
+			ZeroMemory(m_KeyStatus, 256);
+		}
+		else {
+			result = YN_SET_ERR("DirectInput API error.", hresult, 0);
+			goto EXIT;
+		}
 	}
-
-	//ウィンドウが非アクティブ状態であるとGetDeviceState()はエラーになる(0x8007000c)
-	//どうしよう・・・
 
 EXIT:;
 	return result;

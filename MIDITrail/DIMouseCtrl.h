@@ -12,7 +12,7 @@
 // DirectInputを用いてマウスの状態を取得する。
 // 状態参照とイベントバッファ参照の機能を持つ。
 
-// BUG:
+// NOTE:
 // バッファサイズを指定するインターフェースがない。
 
 #pragma once
@@ -72,8 +72,6 @@ public:
 	//現時点の状態を取得
 	//  GetMouseStatusを一回呼び出してから
 	//  状態を取得したいボタンと軸の数だけIsBtnDown,GetDeltaを呼び出す
-	//  BUG: ウィンドウが非アクティブ状態の場合にデバイスへアクセスできず
-	//       GetMouseStatus()がエラーになる
 	int GetMouseStatus();
 	bool IsBtnDown(MouseButton);
 	int GetDelta(MouseAxis);
