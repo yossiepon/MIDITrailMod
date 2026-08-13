@@ -2,9 +2,9 @@
 //
 // MIDITrail / MTNoteTrackerLive
 //
-// Note tracker class (Live mode).
+// Note tracker (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

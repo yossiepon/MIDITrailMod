@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTGridBoxBase11
 //
-// Grid box base class (DX11).
-// Common: DXPrimitive11 management, Update (world matrix), Draw, Release.
-// Derived classes provide vertex generation in their Create methods.
+// Grid box base class.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

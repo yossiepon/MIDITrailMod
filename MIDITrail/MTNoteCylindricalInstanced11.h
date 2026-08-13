@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTNoteCylindricalInstanced11
 //
-// GPU-instanced note renderer for PianoRoll Ring scenes.
-// Uses cylindrical coordinate corner mask: instance data stores
-// (xStart, xEnd, radius, angle0) and the vertex shader converts
-// to Cartesian via cos/sin.
+// GPU-instanced note renderer for Ring scenes.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 Ced (MIDITrail Mod Mod). All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

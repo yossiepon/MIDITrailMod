@@ -2,11 +2,9 @@
 //
 // MIDITrail / MTNoteDesignRingLive11
 //
-// Ring note design class for Live mode.
-// Wraps MTNoteDesignRing11 with pSeqData=NULL initialization,
-// overrides CalcNoteEnvelope with linear decay for Live.
+// Note design class for Ring (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

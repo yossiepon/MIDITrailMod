@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTFileList
 //
-// ファイルリストクラス
+// File list manager.
 //
 // Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //

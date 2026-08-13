@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTBackgroundImage11
 //
-// DX11 background image renderer.
-// Draws a full-screen textured quad using an orthographic projection
-// (NDC coordinates) to bypass the scene's perspective camera.
+// Background image renderer.
 //
 // Copyright (C) 2016-2025 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

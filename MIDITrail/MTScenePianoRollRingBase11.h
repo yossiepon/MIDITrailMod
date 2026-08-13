@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTScenePianoRollRingBase11
 //
-// DX11 PianoRoll Ring scene intermediate base.
-// Shared logic between Playback and Live concrete classes.
+// PianoRoll Ring scene base class.
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2019-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

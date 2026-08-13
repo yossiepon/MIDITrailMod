@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTWindowSizeCfgDlg
 //
-// ウィンドウサイズ設定ダイアログクラス
+// Window size configuration dialog.
 //
 // Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //

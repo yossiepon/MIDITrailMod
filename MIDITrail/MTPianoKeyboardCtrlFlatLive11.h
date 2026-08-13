@@ -2,13 +2,9 @@
 //
 // MIDITrail / MTPianoKeyboardCtrlFlatLive11
 //
-// Piano keyboard controller for Live mode (Flat, DX11).
-// Receives note events from NoteTrackerLive via listener interface.
-// Manages per-note key states directly (no per-key index, no NoteTracker data).
-// Creates one keyboard per channel (SM_MAX_CH_NUM) when !isSingleKeyboard.
-// Serves both Roll and Rain Live scenes.
+// Piano keyboard controller (Flat, Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

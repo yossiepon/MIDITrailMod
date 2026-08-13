@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTMIDIOUTCfgDlg
 //
-// MIDI OUT 設定ダイアログクラス
+// MIDI OUT configuration dialog.
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //

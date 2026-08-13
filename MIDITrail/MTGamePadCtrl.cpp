@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTGamePadCtrl
 //
-// ゲームパッド制御クラス
+// Gamepad input controller.
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //

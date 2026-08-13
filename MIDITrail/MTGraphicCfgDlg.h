@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTGraphicCfgDlg
 //
-// グラフィック設定ダイアログクラス
+// Graphics configuration dialog.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

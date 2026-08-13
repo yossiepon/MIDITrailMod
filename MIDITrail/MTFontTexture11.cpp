@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTFontTexture11
 //
-// DX11 font texture class.
+// Font texture class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

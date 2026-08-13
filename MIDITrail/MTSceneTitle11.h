@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTSceneTitle11
 //
-// DX11 title scene.
-// Displays the MIDITrail logo with gradation animation.
-// Standalone IMTScene11 implementation (no MTSceneBase11 dependency).
+// Title scene.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

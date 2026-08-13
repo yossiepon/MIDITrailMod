@@ -3,11 +3,9 @@
 // MIDITrail / IMTScene11
 //
 // DX11 scene interface.
-// Replaces the DX9-coupled MTScene with a DX11-native pure virtual interface.
-// Designed for future DLL plugin extensibility (COM-style ABI).
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

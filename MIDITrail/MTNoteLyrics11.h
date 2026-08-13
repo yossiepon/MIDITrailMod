@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTNoteLyrics11
 //
-// DX11 note lyrics renderer.
-// Draws per-lyric font textures at active note positions.
-// Derives from MTNoteEffect for slot management and envelope.
+// Note lyrics renderer.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

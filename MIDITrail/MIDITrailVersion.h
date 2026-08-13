@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTVersion
 //
-// MIDITrail バージョン定義
+// Version definitions.
 //
 // Copyright (C) 2014-2025 WADA Masashi. All Rights Reserved.
 //

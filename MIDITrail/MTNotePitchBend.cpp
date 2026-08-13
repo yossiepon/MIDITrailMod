@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTNotePitchBend
 //
-// ピッチベンド情報クラス
+// Pitch bend data manager.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

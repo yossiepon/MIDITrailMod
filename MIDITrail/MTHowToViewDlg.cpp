@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTHowToViewDlg
 //
-// 操作方法ダイアログ
+// How-to-view dialog.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //

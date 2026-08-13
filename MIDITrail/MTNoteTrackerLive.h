@@ -2,11 +2,9 @@
 //
 // MIDITrail / MTNoteTrackerLive
 //
-// Note tracker class (Live mode).
-// Event-driven: SetNoteOn/Off dispatches Activate/Deactivate immediately.
-// No pre-loaded note list. No forward scan.
+// Note tracker (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

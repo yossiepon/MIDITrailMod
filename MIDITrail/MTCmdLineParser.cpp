@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTCmdLineParser
 //
-// コマンドライン解析クラス
+// Command-line argument parser.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

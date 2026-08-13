@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTPictBoardRing11
 //
-// DX11 picture board ring renderer.
-// Wraps the keyboard texture around a cylinder at the playback position.
+// Picture board ring renderer.
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2025-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

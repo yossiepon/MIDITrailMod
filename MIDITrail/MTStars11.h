@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTStars11
 //
-// DX11 star particle renderer.
-// Randomly distributes points on a sphere and renders them as a point list.
-// Follows the camera position so stars appear infinitely distant.
+// Star particle renderer.
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

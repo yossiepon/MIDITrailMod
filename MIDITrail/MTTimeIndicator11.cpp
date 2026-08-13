@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTTimeIndicator11
 //
-// DX11 time indicator renderer.
+// Time indicator renderer.
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

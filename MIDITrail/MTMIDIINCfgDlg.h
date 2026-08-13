@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTMIDIINCfgDlg
 //
-// MIDI IN 設定ダイアログ
+// MIDI IN configuration dialog.
 //
 // Copyright (C) 2012 WADA Masashi. All Rights Reserved.
 //

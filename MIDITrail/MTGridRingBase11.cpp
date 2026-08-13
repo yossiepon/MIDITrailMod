@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTGridRingBase11
 //
-// Grid ring base class (DX11).
+// Grid ring base class.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2019-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

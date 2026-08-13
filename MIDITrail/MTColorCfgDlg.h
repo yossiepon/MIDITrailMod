@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTColorCfgDlg
 //
-// カラー設定ダイアログ
+// Color configuration dialog.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //

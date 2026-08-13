@@ -3,10 +3,8 @@
 // MIDITrail / MTSceneConst
 //
 // Scene component constants.
-// Separated from DX9 scene component headers so that design classes can
-// reference them without pulling in d3dx9.h.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

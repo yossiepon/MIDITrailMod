@@ -2,7 +2,7 @@
 //
 // MIDITrail / DIKeyCtrl
 //
-// DirectInput キー入力制御クラス
+// DirectInput keyboard input controller.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

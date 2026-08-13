@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTFont2Bmp
 //
-// フォント＞ビットマップ変換クラス
+// Font-to-bitmap rasterizer.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

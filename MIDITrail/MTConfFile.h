@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTConfFile
 //
-// 設定ファイルクラス
+// Configuration file accessor.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

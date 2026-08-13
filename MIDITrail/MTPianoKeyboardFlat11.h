@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTPianoKeyboardFlat11
 //
-// DX11 piano keyboard for flat (linear) scenes (1ch).
-// Provides _CreateVertexOfKeyboard and _BuildKeyCPU implementations shared
-// by Rain and Roll keyboards. Ring uses its own cylindrical generation.
+// Piano keyboard renderer for flat scenes (single channel).
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

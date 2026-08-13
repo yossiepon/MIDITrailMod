@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTColorConf
 //
-// カラー設定クラス
+// Color configuration class.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //

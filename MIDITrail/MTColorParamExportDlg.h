@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTColorParamExportDlg
 //
-// カラーパラメータ出力ダイアログ
+// Color parameter export dialog.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //

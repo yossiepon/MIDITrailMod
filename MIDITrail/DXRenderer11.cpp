@@ -5,7 +5,7 @@
 // Direct3D 11 renderer.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 // Based on the DX11 migration design by ced (Zel9278)
 // https://github.com/Zel9278/MIDITrailModMod

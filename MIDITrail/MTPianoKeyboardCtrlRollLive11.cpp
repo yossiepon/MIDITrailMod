@@ -2,9 +2,9 @@
 //
 // MIDITrail / MTPianoKeyboardCtrlRollLive11
 //
-// Roll Live keyboard controller (DX11).
+// Piano keyboard controller for PianoRoll (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

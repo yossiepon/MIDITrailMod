@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTNoteRipple11
 //
-// DX11 note ripple renderer.
-// Draws textured quads at active note positions with additive blending.
-// Derives from MTNoteEffect for slot management and envelope.
+// Note ripple renderer (additive blending).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

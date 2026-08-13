@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTNoteTracker
 //
-// Note tracker class (Playback mode).
-// Holds unified note list, performs ms-based forward scan,
-// and notifies listeners of note activation/deactivation events.
-// Deactivation uses prefix-max binary search for O(log n) efficiency.
+// Note tracker (Playback).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

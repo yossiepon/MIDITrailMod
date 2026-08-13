@@ -2,11 +2,13 @@
 //
 // MIDITrail / MTPianoKeyboard11
 //
-// DX11 piano keyboard base class (1ch).
-// Infrastructure: CPU mirror management, diff-based update, GPU flush, draw.
+// Piano keyboard renderer base class (single channel, Rain/Roll shared).
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
+//
+// Based on the DX11 migration design by ced (Zel9278)
+// https://github.com/Zel9278/MIDITrailModMod
 //
 //******************************************************************************
 

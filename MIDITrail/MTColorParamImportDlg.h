@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTColorParamImportDlg
 //
-// カラーパラメータ入力ダイアログ
+// Color parameter import dialog.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //

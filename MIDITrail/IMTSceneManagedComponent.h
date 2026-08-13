@@ -3,12 +3,8 @@
 // MIDITrail / IMTSceneManagedComponent
 //
 // Registration interface for scene-managed objects.
-// Any object that implements this interface can be registered with
-// MTSceneBase11 for automatic Update and Reset dispatch.
-// Visual components (MTSceneComponent11) add enable/disable on top of this.
-// Data managers (NoteTracker, NotePitchBend) implement this directly.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

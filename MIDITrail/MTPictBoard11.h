@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTPictBoard11
 //
-// DX11 picture board renderer.
-// Draws a textured quad (keyboard image) alongside the playback position.
+// Picture board renderer.
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

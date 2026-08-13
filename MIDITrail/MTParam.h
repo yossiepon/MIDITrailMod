@@ -2,7 +2,7 @@
 //
 // MIDITrail / MTParam.h
 //
-// パラメータ定義ファイル
+// Shared parameter definitions.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTNoteInstancedBase11
 //
-// Base class for GPU-instanced note renderers.
-// Provides: IMMUTABLE buffer management, binary-search culling with prefix-max,
-// shared pipeline states, and pitch-bend helpers.
-// Subclasses define their own shaders, InputLayout, and instance data format.
+// GPU-instanced note renderer base class.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 Ced (MIDITrail Mod Mod). All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

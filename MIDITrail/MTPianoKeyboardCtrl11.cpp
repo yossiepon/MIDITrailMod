@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTPianoKeyboardCtrl11
 //
-// DX11 piano keyboard controller (Flat, Playback).
+// Piano keyboard controller (Flat, Playback).
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

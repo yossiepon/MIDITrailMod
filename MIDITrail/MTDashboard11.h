@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTDashboard11
 //
-// DX11 dashboard renderer.
-// Displays title, filename, and playback counter (time, tempo, bar, notes).
+// Dashboard renderer.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
