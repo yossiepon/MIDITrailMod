@@ -1,4 +1,4 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MIDITrailApp
 //
@@ -29,9 +29,7 @@
 #include "MTNoteInstancedBase11.h"
 #include "MTNoteAABBInstanced11.h"
 #include "MTNoteCylindricalInstanced11.h"
-// >>> add 20190828 yossiepon begin
 #include "MIDITrailVersion.h"
-// <<< add 20190828 yossiepon end
 #include <ShObjIdl.h>
 #include <mbctype.h>
 #include <dwmapi.h>
@@ -150,7 +148,6 @@ int MIDITrailApp::Initialize(
 	LoadStringW(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
 
-//>>> add yossiepon 20190828
 	WCHAR* pVersion = NULL;
 
 	//Version string
@@ -164,7 +161,6 @@ int MIDITrailApp::Initialize(
 	wcscat_s(m_TitleBase, MAX_LOADSTRING, L" ");
 	wcscat_s(m_TitleBase, MAX_LOADSTRING, (LPCWSTR)pVersion);
 	wcscpy_s(m_Title, MAX_LOADSTRING, m_TitleBase);
-	//<<< add yossiepon 20190828
 
 	//Initialize config file
 	result = _InitConfFile();
@@ -777,13 +773,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuNextFile();
 					if (result != 0) goto EXIT;
 					break;
-// >>> add 20120728 yossiepon begin
 				case IDM_ADD_FILE:
 					//Add file
 					result = _OnMenuAddFile();
 					if (result != 0) goto EXIT;
 					break;
-// <<< add 20120728 yossiepon end
 				case IDM_EXIT:
 					//Quit
 					DestroyWindow(hWnd);
@@ -1258,7 +1252,6 @@ EXIT:;
 	return result;
 }
 
-// >>> add 20120728 yossiepon begin
 
 //******************************************************************************
 // Add file
@@ -1293,7 +1286,6 @@ EXIT:;
 	return result;
 }
 
-// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // Menu selection: play / pause / resume
@@ -2757,7 +2749,6 @@ EXIT:;
 	return result;
 }
 
-// >>> add 20120728 yossiepon begin
 
 //******************************************************************************
 // Additional MIDI file loading
@@ -2857,20 +2848,16 @@ EXIT:;
 	return result;
 }
 
-// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // Update window title
 //******************************************************************************
 void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 {
-//>>> add yossiepon 20250616 begin
 	WCHAR format[MAX_LOADSTRING];
 
 	wcscpy_s(format, MAX_LOADSTRING, m_TitleBase);
-//<<< add yossiepon 20250616 end
 
-//>>> modify yossiepon 20250616 begin
 	//If there is no file name
 	if (pFileName == NULL) {
 		swprintf_s(
@@ -2913,7 +2900,6 @@ void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 			);
 		}
 	}
-//<<< modify yossiepon 20250616 end
 
 	//Set window title
 	SetWindowTextW(m_hWnd, m_Title);
@@ -3108,9 +3094,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 	//TAG: add scene
 	unsigned long menuID[MT_MENU_NUM] = {
 		IDM_OPEN_FILE,
-// >>> add 20120728 yossiepon begin
 		IDM_ADD_FILE,
-// <<< add 20120728 yossiepon end
 		IDM_OPEN_FOLDER,
 		IDM_PREVIOUS_FILE,
 		IDM_NEXT_FILE,
@@ -3163,9 +3147,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long menuStyle[MT_MENU_NUM][MT_PLAYSTATUS_NUM] = {
 		//NoData,       Stop,       Playing,    Paused,     MonitorOFF, MonitorON
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FILE
-// >>> add 20120728 yossiepon begin
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_ADD_FILE
-// <<< add 20120728 yossiepon end
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPEN_FOLDER
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PREVIOUS_FILE
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_NEXT_FILE

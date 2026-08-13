@@ -196,7 +196,6 @@ unsigned char SMEvent::GetStatus()
 	return m_Status;
 }
 
-// >>> add 20120728 yossiepon begin
 
 //******************************************************************************
 // ステータス設定
@@ -206,7 +205,6 @@ void SMEvent::SetStatus(unsigned char status)
 	m_Status = status;
 }
 
-// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // メタイベント種別取得
@@ -256,7 +254,6 @@ void SMEvent::Clear()
 	m_pExData = NULL;
 }
 
-// >>> add 20251101 yossiepon begin
 //******************************************************************************
 // ダンプ出力
 //******************************************************************************
@@ -287,6 +284,5 @@ void SMEvent::Dump()
 	OutputDebugStringA(buf);
 #endif
 }
-// <<< add 20251101 yossiepon end
 
 } // end of namespace

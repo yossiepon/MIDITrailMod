@@ -61,12 +61,10 @@ public:
 	//クリア
 	void Clear();
 
-// >>> add 20120728 yossiepon begin
 
 	//シーケンス追加
 	void AddSequence(SMSeqData &other, short portNo = -1, short chNo = -1);
 
-// <<< add 20120728 yossiepon end
 
 	//----------------------------------------------------------------
 	//データ取得系
@@ -120,9 +118,7 @@ public:
 	//ファイル名取得
 	const WCHAR* GetFileName();
 
-// >>> add 20250616 yossiepon begin
 	static int StringToWstring(std::string* pStr, std::wstring* pWstr);
-// <<< add 20250616 yossiepon end
 
 private:
 
@@ -160,9 +156,7 @@ private:
 	int _GetBarNum(unsigned long* pBarNum);
 	int _CalcTotalTime();
 	int _SearchText();
-// >>> modify 20250616 yossiepon begin
 	static int _StringToWstring(std::string* pStr, std::wstring* pWstr);
-// <<< modify 20250616 yossiepon end
 
 	//代入とコピーコンストラクタの禁止
 	void operator=(const SMSeqData&);

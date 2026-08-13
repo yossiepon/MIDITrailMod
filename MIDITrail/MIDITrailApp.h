@@ -1,4 +1,4 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MIDITrailApp
 //
@@ -47,9 +47,7 @@ using namespace SMIDILib;
 
 //Menu style control
 //TAG: add scene
-// >>> modify 20250615 yossiepon begin
 #define MT_MENU_NUM        (47+1)
-// <<< modify 20250615 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
 //Device lost warning message
@@ -70,14 +68,12 @@ using namespace SMIDILib;
 #define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
 
 //Window title  ex.: "MIDITrail - file_name.mid - FPS:60.0"
-// >>> modify 20250615 yossiepon begin
 //#define MIDITRAIL_WINDOW_TITLE			L"MIDITrail"
 //#define MIDITRAIL_WINDOW_TITLE_FILE		L"MIDITrail - %s"
 //#define MIDITRAIL_WINDOW_TITLE_FILES		L"MIDITrail - [%d/%d] %s"
 
 #define MIDITRAIL_WINDOW_TITLE_FILE			L" - %s"
 #define MIDITRAIL_WINDOW_TITLE_FILES		L" - [%d/%d] %s"
-// <<< modify 20250615 yossiepon end
 #define MIDITRAIL_WINDOW_TITLE_FPS			L"%s - FPS:%.1f"
 
 
@@ -168,9 +164,7 @@ private:
 	HWND m_hWnd;
 	HACCEL m_Accel;
 	WCHAR m_Title[MAX_LOADSTRING];
-// >>> add 20250615 yossiepon begin
 	WCHAR m_TitleBase[MAX_LOADSTRING];
-// <<< add 20250615 yossiepon end
 	WCHAR m_WndClassName[MAX_LOADSTRING];
 	bool m_isFullScreen;
 	bool m_isEnableMenuBar;
@@ -291,9 +285,7 @@ private:
 
 	//Menu event processing
 	int _OnMenuOpenFile();
-// >>> add 20120728 yossiepon begin
 	int _OnMenuAddFile();
-// <<< add 20120728 yossiepon end
 	int _OnMenuOpenFolder();
 	int _OnMenuPreviousFile();
 	int _OnMenuNextFile();
@@ -336,9 +328,7 @@ private:
 	int _SelectMIDIFile(WCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
 	int _SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const WCHAR* pFilePath);
-// >>> add 20120728 yossiepon begin
 	int _AddMIDIFile(const WCHAR* pFilePath);
-// <<< add 20120728 yossiepon end
 	void _UpdateWindowTitle(const WCHAR* pFileName);
 	void _UpdateFPS();
 	int _SetPortDev(SMSequencer* pSequencer);

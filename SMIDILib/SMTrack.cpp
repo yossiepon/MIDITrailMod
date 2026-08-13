@@ -20,9 +20,7 @@
 #include "SMEventMeta.h"
 #include "SMFPUCtrl.h"
 
-// >>> add 20250616 yossiepon begin
 #include "SMSeqData.h"
-// <<< add 20250616 yossiepon end
 
 using namespace YNBaseLib;
 
@@ -33,11 +31,7 @@ namespace SMIDILib {
 // コンストラクタ
 //******************************************************************************
 SMTrack::SMTrack(void)
-// >>> modify 20120728 yossiepon begin
-// >>> modify 20251101 yossiepon begin
 	: m_List(sizeof(SMDataSet), 1000), m_OverwritePortNo(-1), m_OverwriteChNo(-1)
-// <<< modify 20251101 yossiepon end
-// <<< modify 20120728 yossiepon end
 {
 }
 
@@ -63,9 +57,7 @@ void SMTrack::Clear()
 	}
 	m_ExDataMap.clear();
 
-// >>> add 20120728 yossiepon begin
 	m_OverwritePortNo = -1;
-// <<< add 20120728 yossiepon end
 
 	return;
 }
@@ -168,7 +160,6 @@ int SMTrack::GetDataSet(
 					);
 		if (result != 0) goto EXIT;
 
-// >>> add 20251101 yossiepon begin
 		//チャンネル番号の上書き指定あり、かつMIDIイベントの場合
 		if ((m_OverwriteChNo != -1) && (pEvent->GetType() == SMEvent::EventMIDI)) {
 			//チャンネル番号を上書きする
@@ -176,18 +167,15 @@ int SMTrack::GetDataSet(
 			status = (status & 0xf0) | (m_OverwriteChNo & 0x0f);
 			pEvent->SetStatus(status);
 		}
-// <<< add 20251101 yossiepon end	
 	}
 
 	//ポート番号
 	if (pPortNo != NULL) {
-// >>> modify 20120728 yossiepon begin
 		if(m_OverwritePortNo == -1) {
 			*pPortNo = dataSet.portNo;
 		} else {
 			*pPortNo = (unsigned char)m_OverwritePortNo;
 		}
-// <<< modify 20120728 yossiepon end	
 	}
 
 EXIT:;
@@ -195,9 +183,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// >>> modify 20120728 yossiepon begin
 // サイズ取得
-// <<< modify 20120728 yossiepon end
 //******************************************************************************
 unsigned long SMTrack::GetSize()
 {
@@ -243,7 +229,6 @@ EXIT:;
 	return result;
 }
 
-// >>> add 20120728 yossiepon begin
 
 //******************************************************************************
 // ポート番号上書き指定
@@ -257,7 +242,6 @@ int SMTrack::OverwritePortNo(short portNo)
 	return result;
 }
 
-// >>> modify 20251101 yossiepon begin
 
 //******************************************************************************
 // チャンネル番号上書き指定
@@ -271,9 +255,7 @@ int SMTrack::OverwriteChNo(short chNo)
 	return result;
 }
 
-// <<< modify 20251101 yossiepon end
 
-// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // ノートリスト取得
@@ -361,7 +343,6 @@ int SMTrack::_GetNoteList(
 		totalTime += deltaTime;
 		totalRealtime += _ConvTick2TimeMsec(deltaTime, tempo, timeDivision);
 
-// >>> modify 20120728 yossiepon begin
 
 		//METAイベント
 		if (event.GetType() == SMEvent::EventMeta) {
@@ -394,9 +375,7 @@ int SMTrack::_GetNoteList(
 					result = SMSeqData::StringToWstring(&lyric, &lyricW);
 					if (result != 0) goto EXIT;
 
-					// >>> fix 20251101 yossiepon begin runtime heap corrutpion
 					::wcsncpy_s(&note.lyric[0], std::size(note.lyric), lyricW.c_str(), _TRUNCATE);
-					// <<< fix 20251101 yossiepon end
 
 					result = pNoteList->SetNote(pNoteList->GetSize() - 1, &note);
 					if (result != 0) goto EXIT;
@@ -405,7 +384,6 @@ int SMTrack::_GetNoteList(
 			}
 		}
 
-// <<< modify 20120728 yossiepon end
 
 		//MIDIイベント以外はスキップ
 		if (event.GetType() != SMEvent::EventMIDI) continue;
@@ -426,9 +404,7 @@ int SMTrack::_GetNoteList(
 				note.velocity = midiEvent.GetVelocity();
 				note.startTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
 				note.endTime = 0;
-// >>> add 20120728 yossiepon begin
 				note.lyric[0] = L'\0';
-// <<< add 20120728 yossiepon end
 			}
 			//登録済みの場合
 			else {
@@ -529,11 +505,9 @@ unsigned long SMTrack::_GetNoteKey(
 		unsigned char noteNo
 	)
 {
-// >>> add 20120728 yossiepon begin
 	if(m_OverwritePortNo != -1) {
 		portNo = (unsigned char)m_OverwritePortNo;
 	}
-// <<< add 20120728 yossiepon end
 
 	return ((portNo << 16) | (chNo << 8) | noteNo);
 }

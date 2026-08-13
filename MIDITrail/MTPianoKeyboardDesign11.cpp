@@ -1,4 +1,4 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesign11
 //
@@ -955,7 +955,6 @@ unsigned long MTPianoKeyboardDesign11::GetKeyboardMaxDispNum()
 	return (unsigned long)m_KeyboardMaxDispNum;
 }
 
-// >>> add 20180404 yossiepon begin
 //******************************************************************************
 // Set keyboard display count
 //******************************************************************************
@@ -963,7 +962,6 @@ void MTPianoKeyboardDesign11::SetKeyboardSingle()
 {
 	m_KeyboardMaxDispNum = 1;
 }
-// <<< add 20180404 yossiepon end
 
 //******************************************************************************
 // Key display range: start

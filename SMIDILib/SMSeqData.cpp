@@ -252,7 +252,6 @@ void SMSeqData::Clear()
 	return;
 }
 
-// >>> add 20120728 yossiepon begin
 
 //******************************************************************************
 // シーケンス追加
@@ -277,7 +276,6 @@ void SMSeqData::AddSequence(SMSeqData &other, short portNo, short chNo)
 	return;
 }
 
-// <<< add 20120728 yossiepon end
 
 //******************************************************************************
 // SMFフォーマット取得
@@ -429,11 +427,9 @@ const WCHAR* SMSeqData::GetCopyRight()
 //******************************************************************************
 const WCHAR* SMSeqData::GetTitle()
 {
-// >>> add 20170528 yossiepon begin
 	if (m_Title.length() == 0) {
 		return m_FileName.c_str();
 	}
-// <<< add 20170528 yossiepon end
 
 	return m_Title.c_str();
 }
