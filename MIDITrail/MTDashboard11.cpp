@@ -23,7 +23,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTDashboard11::MTDashboard11()
 {
@@ -62,7 +62,7 @@ MTDashboard11::~MTDashboard11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTDashboard11::Create(
 		ID3D11Device* pDevice,
@@ -121,21 +121,21 @@ int MTDashboard11::Create(
 		fileName = L" ";
 	}
 
-	// タイトルキャプション
+	// Title caption
 	result = m_Title.Create(pDevice, pContext,
 				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
 				title.c_str());
 	if (result != 0) goto EXIT;
 	m_Title.SetColor(m_CaptionColor);
 
-	// ファイル名キャプション
+	// File name caption
 	result = m_FileName.Create(pDevice, pContext,
 				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
 				fileName.c_str());
 	if (result != 0) goto EXIT;
 	m_FileName.SetColor(m_CaptionColor);
 
-	// カウンタキャプション
+	// Counter caption
 	result = m_Counter.Create(pDevice, pContext,
 				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
 				MTDASHBOARD11_COUNTER_CHARS, MTDASHBOARD11_COUNTER_SIZE);
@@ -155,7 +155,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTDashboard11::Release()
 {
@@ -165,7 +165,7 @@ void MTDashboard11::Release()
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTDashboard11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -207,7 +207,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// カウンタ表示位置取得
+// Get counter display position
 //******************************************************************************
 int MTDashboard11::_GetCounterPos(float* pX, float* pY)
 {
@@ -246,7 +246,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// カウンタ文字列取得
+// Get counter string
 //******************************************************************************
 int MTDashboard11::_GetCounterStr(WCHAR* pStr, unsigned long bufSize)
 {
@@ -295,7 +295,7 @@ int MTDashboard11::_GetCounterStr(WCHAR* pStr, unsigned long bufSize)
 }
 
 //******************************************************************************
-// 設定読み込み
+// Load configuration
 //******************************************************************************
 int MTDashboard11::_LoadConfFile(const TCHAR* pSceneName)
 {
@@ -316,7 +316,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 各種設定
+// Various setters
 //******************************************************************************
 int MTDashboard11::Update(const MTSceneUpdateContext& ctx) { m_PlayTimeMSec = ctx.playTimeMSec; return 0; }
 void MTDashboard11::SetTotalPlayTimeSec(unsigned long t)       { m_TotalPlayTimeMSec = t; }
@@ -356,7 +356,7 @@ void MTDashboard11::Reset()
 }
 
 //******************************************************************************
-// ウィンドウリサイズ通知
+// Window resize notification
 //******************************************************************************
 void MTDashboard11::OnWindowResize()
 {

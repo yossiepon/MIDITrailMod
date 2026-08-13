@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTFont2Bmp::MTFont2Bmp(void)
 {
@@ -30,7 +30,7 @@ MTFont2Bmp::MTFont2Bmp(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTFont2Bmp::~MTFont2Bmp(void)
 {
@@ -38,7 +38,7 @@ MTFont2Bmp::~MTFont2Bmp(void)
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void MTFont2Bmp::Clear()
 {
@@ -85,7 +85,7 @@ void MTFont2Bmp::Clear()
 }
 
 //******************************************************************************
-// フォント設定
+// Set font
 //******************************************************************************
 int MTFont2Bmp::SetFont(
 		const WCHAR* pFontName,
@@ -110,7 +110,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// BMP作成
+// Create bitmap
 //******************************************************************************
 int MTFont2Bmp::CreateBmp(
 		const WCHAR* pStr
@@ -120,19 +120,19 @@ int MTFont2Bmp::CreateBmp(
 
 	Clear();
 
-	//論理フォント作成
+	//Create logical font
 	result = _CreateLogFont();
 	if (result != 0) goto EXIT;
 
-	//グリフBMPリストを作成
+	//Create the glyph BMP list
 	result = _CreateGlyphBmpList(pStr);
 	if (result != 0) goto EXIT;
 
-	//文字列全体のバッファを作成
+	//Create the buffer for the entire string
 	result = _CreateBmpBuf();
 	if (result != 0) goto EXIT;
 
-	//バッファにグリフBMPを書き込む
+	//Write the glyph BMP into the buffer
 	result = _WriteGlyphToBmpBuf();
 	if (result != 0) goto EXIT;
 
@@ -141,7 +141,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// BMPサイズ取得
+// Get bitmap size
 //******************************************************************************
 void MTFont2Bmp::GetBmpSize(
 		unsigned long* pHeight,
@@ -153,7 +153,7 @@ void MTFont2Bmp::GetBmpSize(
 }
 
 //******************************************************************************
-// BMPピクセル値取得
+// Get bitmap pixel value
 //******************************************************************************
 BYTE MTFont2Bmp::GetBmpPixcel(
 		unsigned long x,
@@ -173,36 +173,36 @@ EXIT:;
 }
 
 //******************************************************************************
-// 論理フォント作成
+// Create logical font
 //******************************************************************************
 int MTFont2Bmp::_CreateLogFont()
 {
 	int result = 0;
 	LOGFONTW logfont;
 
-	//論理フォント情報を生成
+	//Build the logical font info
 	ZeroMemory(&logfont, sizeof(LOGFONTW));
-	logfont.lfHeight         = m_FontSize;			//高さ
-	logfont.lfWidth          = 0;					//幅
-	logfont.lfEscapement     = 0;					//角度
-	logfont.lfOrientation    = 0;					//角度
-	logfont.lfWeight         = 0;					//ウェイト
-	logfont.lfItalic         = FALSE;				//イタリック
-	logfont.lfUnderline      = FALSE;				//アンダーライン
-	logfont.lfStrikeOut      = FALSE;				//ストライクアウト
-	logfont.lfCharSet        = DEFAULT_CHARSET;		//キャラクタセット
-	logfont.lfOutPrecision   = OUT_TT_ONLY_PRECIS;	//出力精度：TrueTypeフォントを使用（存在しなければデフォルトの動作）
-	logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS;	//クリッピング精度：デフォルト指定
-	logfont.lfQuality        = PROOF_QUALITY;		//品質：フォント属性より描画品質を優先
-	logfont.lfPitchAndFamily = DEFAULT_PITCH		//ピッチ：デフォルト
-								| FF_DONTCARE;		//ファミリ：一般的なファミリ
+	logfont.lfHeight         = m_FontSize;			//Height
+	logfont.lfWidth          = 0;					//Width
+	logfont.lfEscapement     = 0;					//Angle
+	logfont.lfOrientation    = 0;					//Angle
+	logfont.lfWeight         = 0;					//Weight
+	logfont.lfItalic         = FALSE;				//Italic
+	logfont.lfUnderline      = FALSE;				//Underline
+	logfont.lfStrikeOut      = FALSE;				//Strikeout
+	logfont.lfCharSet        = DEFAULT_CHARSET;		//Character set
+	logfont.lfOutPrecision   = OUT_TT_ONLY_PRECIS;	//Output precision: use TrueType fonts (falls back to default behavior if unavailable)
+	logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS;	//Clipping precision: default
+	logfont.lfQuality        = PROOF_QUALITY;		//Quality: prioritize rendering quality over font attributes
+	logfont.lfPitchAndFamily = DEFAULT_PITCH		//Pitch: default
+								| FF_DONTCARE;		//Family: generic family
 	wcscpy_s(logfont.lfFaceName, LF_FACESIZE, m_FontName);
 
 	if (m_isForceFixedPitch) {
 		logfont.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
 	}
 
-	//論理フォント生成
+	//Create the logical font
 	m_hFont = CreateFontIndirectW(&logfont);
 	if (m_hFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -214,7 +214,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// グリフBMP作成
+// Create glyph bitmap
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmp(
 		WCHAR char1,
@@ -238,28 +238,28 @@ int MTFont2Bmp::_CreateGlyphBmp(
 	DWORD flag = 0;
 	char32_t code = 0;
 
-	//デバイスコンテキスト取得
+	//Get the device context
 	hDC = GetDC(NULL);
 	if (hDC == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//デバイスコンテキストに論理フォントを設定
+	//Set the logical font into the device context
 	hOldFont = (HFONT)SelectObject(hDC, m_hFont);
 	if (hOldFont == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
-	//テキストメトリクス取得
+	//Get the text metrics
 	bresult = GetTextMetrics(hDC, &m_TextMetric);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 
-	//サロゲートペアの場合はグリフインデックスを取得
+	//For a surrogate pair, get the glyph index
 	if (isSurrogatePair) {
 		str[0] = char1;
 		str[1] = char2;
@@ -268,12 +268,12 @@ int MTFont2Bmp::_CreateGlyphBmp(
 		gcp.lpGlyphs = buff;
 		gcp.nGlyphs = 2;
 		dwresult = GetCharacterPlacementW(
-							hDC,			//デバイスコンテキスト
-							str,			//処理対象文字列（0終端である必要はない）
-							gcp.nGlyphs,	//文字列の長さ
-							0,				//文字列が処理される最大範囲（論理単位）
-							&gcp,			//処理結果格納先
-							GCP_GLYPHSHAPE	//フラグ
+							hDC,			//Device context
+							str,			//The string to process (need not be null-terminated)
+							gcp.nGlyphs,	//String length
+							0,				//Maximum extent over which the string is processed (logical units)
+							&gcp,			//Destination for the result
+							GCP_GLYPHSHAPE	//Flags
 						);
 		if (dwresult == 0) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -288,33 +288,33 @@ int MTFont2Bmp::_CreateGlyphBmp(
 		flag = 0;
 	}
 
-	//ビットマップ作成に必要なバッファサイズを取得
+	//Get the buffer size needed to create the bitmap
 	size = GetGlyphOutlineW(
-					hDC,				//デバイスコンテキスト
-					code,				//文字
-					GGO_GRAY4_BITMAP | flag,	//フォーマット：ビットマップ（グレイレベル17段）
-					&glyphMetric,		//グラフメトリクス：作成された文字セルの情報が入る
-					0,					//バッファサイズ：ゼロを指定して必要なサイズを得る
-					NULL,				//バッファ位置
-					&mat				//変換行列
+					hDC,				//Device context
+					code,				//Character
+					GGO_GRAY4_BITMAP | flag,	//Format: bitmap (17 gray levels)
+					&glyphMetric,		//Glyph metrics: receives info about the created character cell
+					0,					//Buffer size: pass zero to obtain the required size
+					NULL,				//Buffer address
+					&mat				//Transform matrix
 				);
 	if (size == GDI_ERROR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hDC);
 		goto EXIT;
 	}
 	
-	//空白文字の場合はビットマップを作成しない
+	//Do not create a bitmap for whitespace characters
 	if (size == 0) {
-		//グリフBMP情報
+		//Glyph bitmap info
 		pGlyphBmp->glyphMetric = glyphMetric;
 		pGlyphBmp->bmpHeight   = 0;
 		pGlyphBmp->bmpWidth    = 0;
 		pGlyphBmp->pBmp        = NULL;
 	}
-	//空白文字以外はビットマップを作成する
+	//Create a bitmap for non-whitespace characters
 	else {
 
-		//ビットマップ作成に必要なメモリ領域を確保する
+		//Allocate the memory needed to create the bitmap
 		try {
 			pBuf = new BYTE[size];
 		}
@@ -323,21 +323,21 @@ int MTFont2Bmp::_CreateGlyphBmp(
 			goto EXIT;
 		}
 
-		//TrueTypeフォントビットマップ作成
+		//Create the TrueType font bitmap
 		size = GetGlyphOutlineW(
-						hDC,				//デバイスコンテキスト
-						code,				//文字
-						GGO_GRAY4_BITMAP | flag,	//フォーマット：ビットマップ（グレイレベル17段）
-						&glyphMetric,		//グラフメトリクス：作成された文字セルの情報が入る
-						size,				//バッファサイズ
-						pBuf,				//バッファ位置
-						&mat				//変換行列
+						hDC,				//Device context
+						code,				//Character
+						GGO_GRAY4_BITMAP | flag,	//Format: bitmap (17 gray levels)
+						&glyphMetric,		//Glyph metrics: receives info about the created character cell
+						size,				//Buffer size
+						pBuf,				//Buffer address
+						&mat				//Transform matrix
 					);
 		if (size == GDI_ERROR) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 			goto EXIT;
 		}
-		//グリフBMP情報：BMP幅は4の倍数であることを意識する
+		//Glyph bitmap info: keep in mind the bitmap width must be a multiple of 4
 		pGlyphBmp->glyphMetric = glyphMetric;
 		pGlyphBmp->bmpHeight   = glyphMetric.gmBlackBoxY;
 		pGlyphBmp->bmpWidth    = glyphMetric.gmBlackBoxX + (4 - (glyphMetric.gmBlackBoxX % 4)) % 4;
@@ -357,7 +357,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// グリフBMPリスト作成
+// Create glyph bitmap list
 //******************************************************************************
 int MTFont2Bmp::_CreateGlyphBmpList(
 		const WCHAR* pStr
@@ -371,12 +371,12 @@ int MTFont2Bmp::_CreateGlyphBmpList(
 
 	WCHAR* ptr = (WCHAR*)pStr;
 	
-	//1文字ごとにグリフBMPを作成
+	//Create a glyph bitmap for each character
 	while (ptr[0] != L'\0') {
 		char1 = ptr[0];
 		char2 = ptr[1];
 		if (IS_HIGH_SURROGATE(char1) && IS_LOW_SURROGATE(char2)) {
-			//サロゲートペアの場合
+			//For a surrogate pair
 			isSurrogatePair = true;
 			ptr += 2;
 		}
@@ -385,11 +385,11 @@ int MTFont2Bmp::_CreateGlyphBmpList(
 			ptr += 1;
 		}
 
-		//グリフBMP作成
+		//Create glyph bitmap
 		result = _CreateGlyphBmp(char1, char2, isSurrogatePair, &glyphBmp);
 		if (result != 0) goto EXIT;
 
-		//文字列リストに登録
+		//Register into the string list
 		m_GlyphBmpList.push_back(glyphBmp);
 	}
 
@@ -398,7 +398,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 文字列バッファ作成
+// Create string buffer
 //******************************************************************************
 int MTFont2Bmp::_CreateBmpBuf()
 {
@@ -423,10 +423,10 @@ int MTFont2Bmp::_CreateBmpBuf()
 	//            v
 	//            y
 
-	//高さ
+	//Height
 	m_BmpHeight = m_TextMetric.tmHeight;
 
-	//幅
+	//Width
 	m_BmpWidth = 0;
 
 // >>> add 20120728 yossiepon begin
@@ -441,15 +441,15 @@ int MTFont2Bmp::_CreateBmpBuf()
 	}
 // <<< add 20120728 yossiepon end
 
-	//幅を4の倍数にする
+	//Round the width up to a multiple of 4
 	m_BmpWidth = m_BmpWidth + ((4 - (m_BmpWidth % 4)) % 4);
 
-	//テクスチャとして許容される一般的なサイズを超える場合はクリップする
+	//Clip if it exceeds the typical size allowed for a texture
 	if (m_BmpWidth > MTFONT2BMP_MAX_BMP_WIDTH) {
 		m_BmpWidth = MTFONT2BMP_MAX_BMP_WIDTH;
 	}
 
-	//BMPバッファ生成
+	//Create the bitmap buffer
 	try {
 		m_pBmpBuf = new BYTE[(m_BmpHeight * m_BmpWidth)];
 	}
@@ -464,7 +464,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// グリフBMPをBMPバッファに書き込む
+// Write glyph bitmaps into the bitmap buffer
 //******************************************************************************
 int MTFont2Bmp::_WriteGlyphToBmpBuf()
 {
@@ -483,41 +483,41 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 
-			//空文字はスキップ
+			//Skip empty characters
 			if (itr->pBmp == NULL) {
 				offsetX += (itr->glyphMetric.gmCellIncX);
 				continue;
 			}
 
-			//コピー元グリフBMPの座標は4の倍数制限があるBMPサイズを意識せず
-			//実データの範囲でスキャンする
+			//The source glyph bitmap coordinates disregard the 4-multiple size constraint of the bitmap
+			//and scan within the actual data range
 			for (y = 0; y < (itr->glyphMetric.gmBlackBoxY); y++) {
-				//コピー先の領域外になる場合はスキップする
+				//Skip if outside the destination area
 				if (y >= m_BmpHeight) continue;
 
 				for (x = 0; x < (itr->glyphMetric.gmBlackBoxX); x++) {
 
-					//コピー先の領域外になる場合はスキップする
+					//Skip if outside the destination area
 					destX = offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x;
 					if (destX >= (m_BmpWidth-1)) continue;
 
-					//コピー元ピクセルポインタ：BMPサイズの4の倍数制限を意識して算出する
+					//Source pixel pointer: computed accounting for the bitmap's 4-multiple size constraint
 					pSrc = itr->pBmp + (itr->bmpWidth * y) + x;
 
-					//コピー先ピクセルポインタ
+					//Destination pixel pointer
 					pDest = m_pBmpBuf
 								+ (m_TextMetric.tmAscent - (itr->glyphMetric.gmptGlyphOrigin.y) + y) * m_BmpWidth
 								+ (offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x);
 
-					//確保したバッファを越えて書き込もうとしていないかチェックする
+					//Check whether the write would go past the allocated buffer
 					if (pDest > (m_pBmpBuf + (m_BmpHeight * m_BmpWidth) - 1)) {
 						//result = YN_SET_ERR("Program error.", itr->glyphMetric.gmBlackBoxY, itr->glyphMetric.gmBlackBoxX);
 						//goto EXIT;
-						//エラーとせずスキップする
+						//Skip instead of treating it as an error
 						continue;
 					}
 
-					//ピクセルコピー
+					//Copy pixel
 					*pDest = *pSrc;
 				}
 			}

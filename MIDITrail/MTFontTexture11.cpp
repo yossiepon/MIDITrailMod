@@ -18,7 +18,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTFontTexture11::MTFontTexture11()
 {
@@ -34,7 +34,7 @@ MTFontTexture11::~MTFontTexture11()
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void MTFontTexture11::Clear()
 {
@@ -48,7 +48,7 @@ void MTFontTexture11::Clear()
 }
 
 //******************************************************************************
-// フォント設定
+// Set font
 //******************************************************************************
 int MTFontTexture11::SetFont(
 		const WCHAR* pFontName,
@@ -69,7 +69,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テクスチャ生成
+// Create texture
 //******************************************************************************
 int MTFontTexture11::CreateTexture(
 		ID3D11Device* pDevice,
@@ -80,14 +80,14 @@ int MTFontTexture11::CreateTexture(
 	DWORD bmpHeight = 0;
 	DWORD bmpWidth = 0;
 	unsigned char* pPixels = NULL;
-	int grayLevelNum = 17;  // GGO_GRAY4_BITMAP: 17 段階
+	int grayLevelNum = 17;  // GGO_GRAY4_BITMAP: 17 levels
 
 	if (m_pSRV != NULL) {
 		m_pSRV->Release();
 		m_pSRV = NULL;
 	}
 
-	// フォントビットマップ作成
+	// Create font bitmap
 	result = m_Font2Bmp.CreateBmp(pStr);
 	if (result != 0) goto EXIT;
 
@@ -95,7 +95,7 @@ int MTFontTexture11::CreateTexture(
 
 	if (bmpWidth == 0 || bmpHeight == 0) goto EXIT;
 
-	// RGBA8 ピクセルバッファ構築
+	// Build RGBA8 pixel buffer
 	try {
 		pPixels = new unsigned char[(size_t)bmpWidth * bmpHeight * 4];
 	}
@@ -132,7 +132,7 @@ int MTFontTexture11::CreateTexture(
 		}
 	}
 
-	// SRV 作成
+	// Build SRV 
 	result = DXTexture11::CreateFromRGBA(pDevice, pPixels, bmpWidth, bmpHeight, &m_pSRV);
 	if (result != 0) goto EXIT;
 
@@ -146,7 +146,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テクスチャ取得
+// Get texture
 //******************************************************************************
 ID3D11ShaderResourceView* MTFontTexture11::GetTexture()
 {
@@ -154,7 +154,7 @@ ID3D11ShaderResourceView* MTFontTexture11::GetTexture()
 }
 
 //******************************************************************************
-// テクスチャサイズ取得
+// Get texture size
 //******************************************************************************
 void MTFontTexture11::GetTextureSize(
 		unsigned long* pHeight,

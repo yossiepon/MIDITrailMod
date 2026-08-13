@@ -17,123 +17,123 @@
 
 
 //******************************************************************************
-// カラー設定ダイアログクラス
+// Color configuration dialog class
 //******************************************************************************
 class MTColorPaletteCfgDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTColorPaletteCfgDlg(void);
 	virtual ~MTColorPaletteCfgDlg(void);
 
-	//カラーパレット設定
+	//Set color palette
 	void SetColorPalette(
 				MTColorPalette* pColorPalette, 
 				MTColorPalette* pDefaultColorPalette,
 			 	unsigned long colorPaletteNo
 			 );
 
-	//カラーパレット取得
+	//Get color palette
 	void GetColorPalette(MTColorPalette* pColorPalette);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
-	//パラメータ変更確認
+	//Check for parameter changes
 	bool IsChanged();
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTColorPaletteCfgDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//ウィンドウハンドル
+	//Window handle
 	HWND m_hWnd;
 
-	//カラーボタンリスト：Ch.1-16, BG/GL/CT, Start/End
+	//Color button list: Ch.1-16, BG/GL/CT, Start/End
 	HWND m_hColorButtonList[SM_MAX_CH_NUM + 3 + 2];
 
-	//カラーテキストリスト：Ch.1-16, BG/GL/CT, Start/End
+	//Color text list: Ch.1-16, BG/GL/CT, Start/End
 	HWND m_hColorTextList[SM_MAX_CH_NUM + 3 + 2];
 
-	//カラーパレット
+	//Color palette
 	MTColorPalette m_ColorPalette;
 	MTColorPalette m_DefaultColorPalette;
 	unsigned long m_ColorPaletteNo;
 	DirectX::SimpleMath::Color m_ColorStart;
 	DirectX::SimpleMath::Color m_ColorEnd;
 
-	//色選択ダイアログ用パラメータ
+	//Parameters for the color selection dialog
 	COLORREF m_CustColors[16];
 
-	//変更フラグ
+	//Change flag
 	bool m_isChanged;
 
-	//カラーパラメータマップ
+	//Color parameter map
 	typedef std::map<std::string, std::string> MTColorParamDictionary;
 	typedef std::pair<std::string, std::string> MTColorParamDictionaryPair;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//カラーボタンリスト初期化
+	//Initialize color button list
 	void _InitColorButtonList();
 
-	//カラーボタン初期化
+	//Initialize color buttons
 	int _InitColorButtons();
 
-	//カラーテキスト初期化
+	//Initialize color text
 	int _InitColorText();
 
-	//コンボボックス初期化
+	//Initialize combo box
 	int _InitCombobox(HWND hCombobox, int selectedIndex);
 
-	//カラーボタン押下
+	//Color button pressed
 	int _OnBtnColor(unsigned long targetNo);
 
-	//グラデーションツール：Set Gradation Colors ボタン押下
+	//Gradation tool: Set Gradation Colors button pressed
 	int _OnBtnSetGradationColors();
 
-	//パラメータセットアップツール：Set Default Colors ボタン押下
+	//Parameter setup tool: Set Default Colors button pressed
 	int _OnBtnSetDefaultColors();
 
-	//パラメータセットアップツール：Export Color Parameters ボタン押下
+	//Parameter setup tool: Export Color Parameters button pressed
 	int _OonBtnExportColorParameters();
 
-	//パラメータセットアップツール：Import Color Parameters ボタン押下
+	//Parameter setup tool: Import Color Parameters button pressed
 	int _OnBtnImportColorParameters();
 
-	//カラーボタン更新
+	//Update color buttons
 	int _UpdateColorButtons();
 
-	//カラーボタン描画
+	//Draw color button
 	int _DrawColorButton(DRAWITEMSTRUCT* pDrawItem);
 
-	//カラーテキスト更新
+	//Update color text
 	int _UpdateColorText();
 
-	//カラー取得
+	//Get color
 	int _GetCurColor(unsigned long targetNo, DirectX::SimpleMath::Color* pColor);
 
-	//カラー設定
+	//Set color
 	int _SetCurColor(unsigned long targetNo, DirectX::SimpleMath::Color color);
 
-	//カラー選択ダイアログ表示
+	//Show the color selection dialog
 	int _ShowChooseColorDlg(
 				DirectX::SimpleMath::Color color,
 				DirectX::SimpleMath::Color* pNewColor,
 				bool* pIsChoosed
 			);
 
-	//グラデーションカラー設定
+	//Set gradation colors
 	int _SetGradationColor(
 				unsigned long chNoStart,
 				unsigned long chNoEnd,
@@ -141,16 +141,16 @@ private:
 				DirectX::SimpleMath::Color colorEnd
 			);
 
-	//出力用パラメータ文字列生成
+	//Generate the export parameter string
 	int _MakeColorParamForExport(TCHAR* pTextBuf, unsigned long bufSize);
 
-	//パラメータ入力処理
+	//Process parameter import
 	int _ImportColorParam(TCHAR* pParamString);
 
-	//パラメータマップ作成
+	//Build the parameter map
 	int _MakeImportKeyValueMap(TCHAR* pParamString, MTColorParamDictionary* pParamDictionary);
 
-	//パラメータ読み込み
+	//Load parameters
 	int _LoadParam(MTColorParamDictionary* pParamDictionary);
 
 };

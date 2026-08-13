@@ -20,7 +20,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTBackgroundImage11::MTBackgroundImage11()
 {
@@ -38,7 +38,7 @@ MTBackgroundImage11::~MTBackgroundImage11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTBackgroundImage11::Create(
 		ID3D11Device* pDevice,
@@ -73,7 +73,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTBackgroundImage11::Release()
 {
@@ -86,9 +86,9 @@ void MTBackgroundImage11::Release()
 }
 
 //******************************************************************************
-// 頂点生成
-// NDC 座標で画面全体をカバーするクワッドを作成。
-// アスペクト比の違いは UV 座標で吸収（画像の中央をクロップ表示）。
+// Vertex generation
+// Creates a quad covering the whole screen in NDC coordinates.
+// Aspect-ratio differences are absorbed via UV coordinates (center-crop display of the image).
 //******************************************************************************
 int MTBackgroundImage11::_CreateVertices(
 		ID3D11Device* pDevice,
@@ -112,7 +112,7 @@ int MTBackgroundImage11::_CreateVertices(
 	if (result != 0) goto EXIT;
 
 	{
-		// クライアント領域のサイズ
+		// Client area size
 		bresult = GetClientRect(m_hWnd, &rect);
 		if (!bresult) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -121,7 +121,7 @@ int MTBackgroundImage11::_CreateVertices(
 		float cw = (float)(rect.right - rect.left);
 		float ch = (float)(rect.bottom - rect.top);
 
-		// アスペクト比に応じた UV 座標計算
+		// UV coordinate calculation based on aspect ratio
 		float ratio_cwh = cw / ch;
 		float ratio_iwh = (float)m_ImgWidth / (float)m_ImgHeight;
 
@@ -129,21 +129,21 @@ int MTBackgroundImage11::_CreateVertices(
 		float v0 = 0.0f, v1 = 1.0f;
 
 		if (ratio_cwh < ratio_iwh) {
-			// 画像の方が横長 → 左右をクロップ
+			// Image is wider -> crop left and right
 			float visibleFraction = ratio_cwh / ratio_iwh;
 			float margin = (1.0f - visibleFraction) / 2.0f;
 			u0 = margin;
 			u1 = 1.0f - margin;
 		}
 		else if (ratio_cwh > ratio_iwh) {
-			// 画像の方が縦長 → 上下をクロップ
+			// Image is taller -> crop top and bottom
 			float visibleFraction = ratio_iwh / ratio_cwh;
 			float margin = (1.0f - visibleFraction) / 2.0f;
 			v0 = margin;
 			v1 = 1.0f - margin;
 		}
 
-		// NDC 座標で画面全体のクワッド (-1〜+1)
+		// Full-screen quad in NDC coordinates (-1 to +1)
 		//  0(-1,+1)----1(+1,+1)
 		//   |                |
 		//  2(-1,-1)----3(+1,-1)
@@ -177,14 +177,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// 描画
-// WVP を単位行列にして NDC 座標のクワッドをそのまま描画する。
+// Draw
+// Draws the NDC quad as-is by setting WVP to the identity matrix.
 //******************************************************************************
 int MTBackgroundImage11::Draw(ID3D11DeviceContext* pContext)
 {
 	if (!m_isEnable || !m_isReady) return 0;
 
-	// WVP = 単位行列 → NDC 座標がそのまま出力される
+	// WVP = identity matrix -> NDC coordinates are output unchanged
 	Matrix identity;
 	m_Primitive.SetWorldMatrix(identity);
 	m_Primitive.SetTexture(m_pSRV);
@@ -194,7 +194,7 @@ int MTBackgroundImage11::Draw(ID3D11DeviceContext* pContext)
 }
 
 //******************************************************************************
-// 設定ファイル初期化
+// Initialize config file
 //******************************************************************************
 int MTBackgroundImage11::_InitConfFile()
 {
@@ -215,7 +215,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テクスチャ読み込み
+// Load texture
 //******************************************************************************
 int MTBackgroundImage11::_LoadTexture(ID3D11Device* pDevice)
 {
@@ -252,7 +252,7 @@ int MTBackgroundImage11::_LoadTexture(ID3D11Device* pDevice)
 	if (wcslen(imageFilePathW) == 0) goto EXIT;
 	if (!PathFileExistsW(imageFilePathW)) goto EXIT;
 
-	// MBCS パスに変換して DXTexture11 で読み込み
+	// Convert to an MBCS path and load via DXTexture11
 	{
 		TCHAR imgPathA[_MAX_PATH] = {_T('\0')};
 		WideCharToMultiByte(CP_ACP, 0, imageFilePathW, -1, imgPathA, _MAX_PATH, NULL, NULL);
@@ -265,14 +265,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// リセット
+// Reset
 //******************************************************************************
 void MTBackgroundImage11::Reset()
 {
 }
 
 //******************************************************************************
-// ウィンドウリサイズ通知
+// Window resize notification
 //******************************************************************************
 void MTBackgroundImage11::OnWindowResize()
 {

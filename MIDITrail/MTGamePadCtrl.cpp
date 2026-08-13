@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTGamePadCtrl::MTGamePadCtrl(void)
 {
@@ -30,14 +30,14 @@ MTGamePadCtrl::MTGamePadCtrl(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTGamePadCtrl::~MTGamePadCtrl(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int MTGamePadCtrl::Initialize(int userIndex)
 {
@@ -50,18 +50,18 @@ int MTGamePadCtrl::Initialize(int userIndex)
 		goto EXIT;
 	}
 	
-	//ユーザインデックス
+	//User index
 	m_UserIndex = userIndex;
 	
-	//ゲームパッド状態取得
+	//Get gamepad state
 	m_isConnected = false;
 	dwResult = XInputGetState(m_UserIndex, &xInputState);
 	if (dwResult == ERROR_DEVICE_NOT_CONNECTED) {
-		//ゲームパッド未接続
-		//何もしない
+		//Gamepad not connected
+		//Do nothing
 	}
 	else if (dwResult == ERROR_SUCCESS) {
-		//ゲームパッド状態取得成功
+		//Gamepad state retrieved successfully
 		m_isConnected = true;
 		m_CurGamePadState = xInputState.Gamepad;
 	}
@@ -75,7 +75,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ゲームパッド状態更新
+// Update gamepad state
 //******************************************************************************
 int MTGamePadCtrl::UpdateState()
 {
@@ -86,15 +86,15 @@ int MTGamePadCtrl::UpdateState()
 	m_PrevGamePadState = m_CurGamePadState;
 	ZeroMemory(&m_CurGamePadState, sizeof(XINPUT_GAMEPAD));
 	
-	//ゲームパッド状態取得
+	//Get gamepad state
 	m_isConnected = false;
 	dwResult = XInputGetState(m_UserIndex, &xInputState);
 	if (dwResult == ERROR_DEVICE_NOT_CONNECTED) {
-		//ゲームパッド未接続
-		//何もしない
+		//Gamepad not connected
+		//Do nothing
 	}
 	else if (dwResult == ERROR_SUCCESS) {
-		//ゲームパッド状態取得成功
+		//Gamepad state retrieved successfully
 		m_isConnected = true;
 		m_CurGamePadState = xInputState.Gamepad;
 	}
@@ -103,7 +103,7 @@ int MTGamePadCtrl::UpdateState()
 		goto EXIT;
 	}
 	
-	//スティック状態正規化
+	//Normalize stick state
 	if (m_isConnected) {
 		_NormalizeLStickState();
 		_NormalizeRStickState();
@@ -120,7 +120,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 左スティック状態正規化
+// Normalize left stick state
 //******************************************************************************
 void MTGamePadCtrl::_NormalizeLStickState()
 {
@@ -156,7 +156,7 @@ void MTGamePadCtrl::_NormalizeLStickState()
 }
 
 //******************************************************************************
-// 右スティック状態正規化
+// Normalize right stick state
 //******************************************************************************
 void MTGamePadCtrl::_NormalizeRStickState()
 {
@@ -192,7 +192,7 @@ void MTGamePadCtrl::_NormalizeRStickState()
 }
 
 //******************************************************************************
-// ボタン状態取得：上
+// Get button state: Up
 //******************************************************************************
 bool MTGamePadCtrl::GetState_DPadUp()
 {
@@ -206,7 +206,7 @@ bool MTGamePadCtrl::GetState_DPadUp()
 }
 
 //******************************************************************************
-// ボタン状態取得：下
+// Get button state: Down
 //******************************************************************************
 bool MTGamePadCtrl::GetState_DPadDown()
 {
@@ -220,7 +220,7 @@ bool MTGamePadCtrl::GetState_DPadDown()
 }
 
 //******************************************************************************
-// ボタン状態取得：左
+// Get button state: Left
 //******************************************************************************
 bool MTGamePadCtrl::GetState_DPadLeft()
 {
@@ -234,7 +234,7 @@ bool MTGamePadCtrl::GetState_DPadLeft()
 }
 
 //******************************************************************************
-// ボタン状態取得：右
+// Get button state: Right
 //******************************************************************************
 bool MTGamePadCtrl::GetState_DPadRight()
 {
@@ -248,7 +248,7 @@ bool MTGamePadCtrl::GetState_DPadRight()
 }
 
 //******************************************************************************
-// ボタン状態取得：A
+// Get button state: A
 //******************************************************************************
 bool MTGamePadCtrl::GetState_A()
 {
@@ -262,7 +262,7 @@ bool MTGamePadCtrl::GetState_A()
 }
 
 //******************************************************************************
-// ボタン状態取得：B
+// Get button state: B
 //******************************************************************************
 bool MTGamePadCtrl::GetState_B()
 {
@@ -276,7 +276,7 @@ bool MTGamePadCtrl::GetState_B()
 }
 
 //******************************************************************************
-// ボタン状態取得：X
+// Get button state: X
 //******************************************************************************
 bool MTGamePadCtrl::GetState_X()
 {
@@ -290,7 +290,7 @@ bool MTGamePadCtrl::GetState_X()
 }
 
 //******************************************************************************
-// ボタン状態取得：Y
+// Get button state: Y
 //******************************************************************************
 bool MTGamePadCtrl::GetState_Y()
 {
@@ -304,7 +304,7 @@ bool MTGamePadCtrl::GetState_Y()
 }
 
 //******************************************************************************
-// ボタン状態取得：左ショルダー
+// Get button state: Left shoulder
 //******************************************************************************
 bool MTGamePadCtrl::GetState_LShoulder()
 {
@@ -318,7 +318,7 @@ bool MTGamePadCtrl::GetState_LShoulder()
 }
 
 //******************************************************************************
-// ボタン状態取得：右ショルダー
+// Get button state: Right shoulder
 //******************************************************************************
 bool MTGamePadCtrl::GetState_RShoulder()
 {
@@ -332,7 +332,7 @@ bool MTGamePadCtrl::GetState_RShoulder()
 }
 
 //******************************************************************************
-// ボタン状態取得：左トリガー
+// Get button state: Left trigger
 //******************************************************************************
 bool MTGamePadCtrl::GetState_LTrigger()
 {
@@ -346,7 +346,7 @@ bool MTGamePadCtrl::GetState_LTrigger()
 }
 
 //******************************************************************************
-// ボタン状態取得：右トリガー
+// Get button state: Right trigger
 //******************************************************************************
 bool MTGamePadCtrl::GetState_RTrigger()
 {
@@ -360,7 +360,7 @@ bool MTGamePadCtrl::GetState_RTrigger()
 }
 
 //******************************************************************************
-// ボタン状態取得：スタート
+// Get button state: Start
 //******************************************************************************
 bool MTGamePadCtrl::GetState_Start()
 {
@@ -374,7 +374,7 @@ bool MTGamePadCtrl::GetState_Start()
 }
 
 //******************************************************************************
-// ボタン状態取得：バック
+// Get button state: Back
 //******************************************************************************
 bool MTGamePadCtrl::GetState_Back()
 {
@@ -388,7 +388,7 @@ bool MTGamePadCtrl::GetState_Back()
 }
 
 //******************************************************************************
-// スティック状態取得：左スティックX
+// Get stick state: Left stick X
 //******************************************************************************
 float MTGamePadCtrl::GetState_ThumbLX()
 {
@@ -402,7 +402,7 @@ float MTGamePadCtrl::GetState_ThumbLX()
 }
 
 //******************************************************************************
-// スティック状態取得：左スティックY
+// Get stick state: Left stick Y
 //******************************************************************************
 float MTGamePadCtrl::GetState_ThumbLY()
 {
@@ -416,7 +416,7 @@ float MTGamePadCtrl::GetState_ThumbLY()
 }
 
 //******************************************************************************
-// スティック状態取得：右スティックX
+// Get stick state: Right stick X
 //******************************************************************************
 float MTGamePadCtrl::GetState_ThumbRX()
 {
@@ -430,7 +430,7 @@ float MTGamePadCtrl::GetState_ThumbRX()
 }
 
 //******************************************************************************
-// スティック状態取得：右スティックY
+// Get stick state: Right stick Y
 //******************************************************************************
 float MTGamePadCtrl::GetState_ThumbRY()
 {
@@ -444,7 +444,7 @@ float MTGamePadCtrl::GetState_ThumbRY()
 }
 
 //******************************************************************************
-// ボタン押下確認：A
+// Check button press: A
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_A()
 {
@@ -461,7 +461,7 @@ bool MTGamePadCtrl::DidPressNow_A()
 }
 
 //******************************************************************************
-// ボタン押下確認：B
+// Check button press: B
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_B()
 {
@@ -478,7 +478,7 @@ bool MTGamePadCtrl::DidPressNow_B()
 }
 
 //******************************************************************************
-// ボタン押下確認：X
+// Check button press: X
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_X()
 {
@@ -495,7 +495,7 @@ bool MTGamePadCtrl::DidPressNow_X()
 }
 
 //******************************************************************************
-// ボタン押下確認：Y
+// Check button press: Y
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_Y()
 {
@@ -512,7 +512,7 @@ bool MTGamePadCtrl::DidPressNow_Y()
 }
 
 //******************************************************************************
-// ボタン押下確認：左ショルダー
+// Check button press: Left shoulder
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_LShoulder()
 {
@@ -529,7 +529,7 @@ bool MTGamePadCtrl::DidPressNow_LShoulder()
 }
 
 //******************************************************************************
-// ボタン押下確認：右ショルダー
+// Check button press: Right shoulder
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_RShoulder()
 {
@@ -546,7 +546,7 @@ bool MTGamePadCtrl::DidPressNow_RShoulder()
 }
 
 //******************************************************************************
-// ボタン押下確認：左トリガー
+// Check button press: Left trigger
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_LTrigger()
 {
@@ -563,7 +563,7 @@ bool MTGamePadCtrl::DidPressNow_LTrigger()
 }
 
 //******************************************************************************
-// ボタン押下確認：右トリガー
+// Check button press: Right trigger
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_RTrigger()
 {
@@ -580,7 +580,7 @@ bool MTGamePadCtrl::DidPressNow_RTrigger()
 }
 
 //******************************************************************************
-// ボタン押下確認：スタート
+// Check button press: Start
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_Start()
 {
@@ -597,7 +597,7 @@ bool MTGamePadCtrl::DidPressNow_Start()
 }
 
 //******************************************************************************
-// ボタン押下確認：バック
+// Check button press: Back
 //******************************************************************************
 bool MTGamePadCtrl::DidPressNow_Back()
 {

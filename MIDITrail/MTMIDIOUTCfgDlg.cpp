@@ -16,12 +16,12 @@
 
 
 //******************************************************************************
-// ウィンドウプロシージャ制御用パラメータ設定
+// Window procedure control parameter setup
 //******************************************************************************
 MTMIDIOUTCfgDlg* MTMIDIOUTCfgDlg::m_pThis = NULL;
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTMIDIOUTCfgDlg::MTMIDIOUTCfgDlg(void)
 {
@@ -29,7 +29,7 @@ MTMIDIOUTCfgDlg::MTMIDIOUTCfgDlg(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTMIDIOUTCfgDlg::~MTMIDIOUTCfgDlg(void)
 {
@@ -42,7 +42,7 @@ MTMIDIOUTCfgDlg::~MTMIDIOUTCfgDlg(void)
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ
+// Window procedure
 //******************************************************************************
 INT_PTR CALLBACK MTMIDIOUTCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -50,7 +50,7 @@ INT_PTR CALLBACK MTMIDIOUTCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wPara
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ：実装
+// Window procedure: implementation
 //******************************************************************************
 INT_PTR MTMIDIOUTCfgDlg::_WndProcImpl(
 		HWND hDlg,
@@ -92,7 +92,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 表示
+// Show
 //******************************************************************************
 int MTMIDIOUTCfgDlg::Show(
 		HWND hParentWnd
@@ -102,19 +102,19 @@ int MTMIDIOUTCfgDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//アプリケーションインスタンスハンドルを取得
+	//Get the application instance handle
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ダイアログ表示
+	//Show the dialog
 	dresult = DialogBox(
-					hInstance,							//インスタンスハンドル
-					MAKEINTRESOURCE(IDD_MIDIOUT_CFG),	//ダイアログボックステンプレート
-					hParentWnd,							//親ウィンドウハンドル
-					_WndProc							//ダイアログボックスプロシージャ
+					hInstance,							//Instance handle
+					MAKEINTRESOURCE(IDD_MIDIOUT_CFG),	//Dialog box template
+					hParentWnd,							//Parent window handle
+					_WndProc							//Dialog box procedure
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -126,7 +126,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ダイアログ表示直前初期化
+// Pre-display dialog initialization
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_OnInitDlg(
 		HWND hDlg
@@ -134,14 +134,14 @@ int MTMIDIOUTCfgDlg::_OnInitDlg(
 {
 	int result = 0;
 
-	//設定ファイル初期化
+	//Initialize config file
 	result = _InitConfFile();
 
-	//MIDI出力デバイス制御初期化
+	//Initialize MIDI output device control
 	result = m_MIDIOutDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
 
-	//MIDI出力デバイス選択コンボボックス初期化
+	//Initialize the MIDI output device selection combo box
 	m_hComboDevA = GetDlgItem(hDlg, IDC_COMBO_PORT_A);
 	m_hComboDevB = GetDlgItem(hDlg, IDC_COMBO_PORT_B);
 	m_hComboDevC = GetDlgItem(hDlg, IDC_COMBO_PORT_C);
@@ -167,7 +167,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定ファイル初期化
+// Initialize config file
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_InitConfFile()
 {
@@ -191,7 +191,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイス選択コンボボックス初期化
+// Initialize the device selection combo box
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_InitComboDev(
 		HWND hComboDev,
@@ -208,17 +208,17 @@ int MTMIDIOUTCfgDlg::_InitComboDev(
 	std::string selectedProductName;
 	std::string productName;
 
-	//ユーザ選択デバイス名取得
+	//Get the user-selected device name
 	result = m_ConfFile.GetStr(pPortName, devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 	selectedProductName = devName;
 
-	//ユーザ選択デバイスがない場合は「選択なし」を選択状態にする
+	//If there is no user-selected device, select "(none)"
 	if (selectedProductName == _T("")) {
 		selectedIndex = 0;
 	}
 
-	//「選択なし」をコンボボックスに追加
+	//Add "(none)" to the combo box
 	lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)_T("(none)"));
 	if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -226,15 +226,15 @@ int MTMIDIOUTCfgDlg::_InitComboDev(
 	}
 	comboIndex++;
 
-	//MIDIデバイスの数
+	//Number of MIDI devices
 	devNum = m_MIDIOutDevCtrl.GetDevNum();
 
 	for (index = 0; index < devNum; index++) {
-		//MIDI OUTデバイス名取得
+		//Get the MIDI OUT device name
 		result = m_MIDIOutDevCtrl.GetDevProductName(index, productName);
 		if (result != 0) goto EXIT;
 
-		//デバイス名をコンボボックスに追加
+		//Add the device name to the combo box
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)productName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -247,10 +247,10 @@ int MTMIDIOUTCfgDlg::_InitComboDev(
 		comboIndex++;
 	}
 
-	//USBデバイスを考慮する
-	//ユーザ選択デバイスが現在接続されていない場合はコンボボックスの末尾に追加する
+	//Account for USB devices
+	//If the user-selected device is not currently connected, append it to the end of the combo box
 	if (selectedIndex < 0) {
-		//デバイス名をコンボボックスに追加
+		//Add the device name to the combo box
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)selectedProductName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -260,7 +260,7 @@ int MTMIDIOUTCfgDlg::_InitComboDev(
 		comboIndex++;
 	}
 
-	//選択状態設定
+	//Set the selection state
 	lresult = SendMessage(hComboDev, CB_SETCURSEL, selectedIndex, 0);
 	if (lresult == CB_ERR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
@@ -272,7 +272,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイス選択情報保存
+// Save device selection information
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_Save()
 {
@@ -296,7 +296,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポート設定保存
+// Save port settings
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_SavePortCfg(
 		HWND hComboDev,
@@ -311,10 +311,10 @@ int MTMIDIOUTCfgDlg::_SavePortCfg(
 	unsigned long devNum = 0;
 	bool isUpdate = true;
 
-	//MIDIデバイスの数
+	//Number of MIDI devices
 	devNum = m_MIDIOutDevCtrl.GetDevNum();
 
-	//選択項目のインデックスを取得
+	//Get the index of the selected item
 	lresult = SendMessage(hComboDev, CB_GETCURSEL, 0, 0);
 	if ((lresult == CB_ERR) || (lresult < 0)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);
@@ -322,7 +322,7 @@ int MTMIDIOUTCfgDlg::_SavePortCfg(
 	}
 	selectedIndex = (unsigned long)lresult;
 
-	//選択項目のデバイス名を取得
+	//Get the device name of the selected item
 	if (selectedIndex == 0) {
 		selectedProductName = _T("");
 	}
@@ -331,11 +331,11 @@ int MTMIDIOUTCfgDlg::_SavePortCfg(
 		if (result != 0) goto EXIT;
 	}
 	else {
-		//末尾に追加した現在接続されていないユーザ選択デバイスが選択されたまま
+		//The currently-disconnected user-selected device appended at the end remains selected
 		isUpdate = false;
 	}
 
-	//設定保存
+	//Save the setting
 	if (isUpdate) {
 		result = m_ConfFile.SetStr(pPortName, selectedProductName.c_str());
 		if (result != 0) goto EXIT;

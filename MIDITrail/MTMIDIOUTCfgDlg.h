@@ -18,34 +18,34 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// MIDI OUT 設定ダイアログクラス
+// MIDI OUT configuration dialog class
 //******************************************************************************
 class MTMIDIOUTCfgDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTMIDIOUTCfgDlg(void);
 	virtual ~MTMIDIOUTCfgDlg(void);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTMIDIOUTCfgDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//設定ファイル
+	//Configuration file
 	YNConfFile m_ConfFile;
 
-	//MIDI出力デバイス制御オブジェクト
+	//MIDI output device control object
 	SMOutDevCtrl m_MIDIOutDevCtrl;
 
-	//コンボボックスのウィンドウハンドル
+	//Combo box window handle
 	HWND m_hComboDevA;
 	HWND m_hComboDevB;
 	HWND m_hComboDevC;
@@ -53,20 +53,20 @@ private:
 	HWND m_hComboDevE;
 	HWND m_hComboDevF;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//設定ファイル初期化
+	//Initialize config file
 	int _InitConfFile();
 
-	//デバイス選択コンボボックス初期化
+	//Initialize the device selection combo box
 	int _InitComboDev(HWND hComboDev, TCHAR* pPortName);
 
-	//保存処理
+	//Save processing
 	int _Save();
 	int _SavePortCfg(HWND hComboDev, TCHAR* pPortName);
 

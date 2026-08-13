@@ -17,7 +17,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTScenePianoRollRingLive11::MTScenePianoRollRingLive11()
 	: MTScenePianoRollRingBase11()
@@ -27,7 +27,7 @@ MTScenePianoRollRingLive11::MTScenePianoRollRingLive11()
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTScenePianoRollRingLive11::~MTScenePianoRollRingLive11()
 {
@@ -35,7 +35,7 @@ MTScenePianoRollRingLive11::~MTScenePianoRollRingLive11()
 }
 
 //******************************************************************************
-// シーン名取得
+// Get scene name
 //******************************************************************************
 const TCHAR* MTScenePianoRollRingLive11::GetName() const
 {
@@ -43,7 +43,7 @@ const TCHAR* MTScenePianoRollRingLive11::GetName() const
 }
 
 //******************************************************************************
-// モード固有コンポーネント生成
+// Mode-specific component creation
 //******************************************************************************
 int MTScenePianoRollRingLive11::_CreateModeComponents(
 		ID3D11Device* pDevice,
@@ -96,7 +96,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// モード固有コンポーネント登録
+// Mode-specific component registration
 //******************************************************************************
 void MTScenePianoRollRingLive11::_RegisterModeComponents()
 {
@@ -106,7 +106,7 @@ void MTScenePianoRollRingLive11::_RegisterModeComponents()
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTScenePianoRollRingLive11::Release()
 {
@@ -117,7 +117,7 @@ void MTScenePianoRollRingLive11::Release()
 }
 
 //******************************************************************************
-// ノート描画
+// Draw notes
 //******************************************************************************
 int MTScenePianoRollRingLive11::_DrawNotes(
 		ID3D11DeviceContext* pContext,
@@ -132,7 +132,7 @@ int MTScenePianoRollRingLive11::_DrawNotes(
 }
 
 //******************************************************************************
-// 再生開始
+// Playback start
 //******************************************************************************
 int MTScenePianoRollRingLive11::OnPlayStart()
 {
@@ -144,7 +144,7 @@ int MTScenePianoRollRingLive11::OnPlayStart()
 }
 
 //******************************************************************************
-// 再生終了
+// Playback end
 //******************************************************************************
 int MTScenePianoRollRingLive11::OnPlayEnd()
 {

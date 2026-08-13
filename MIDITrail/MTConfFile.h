@@ -16,17 +16,17 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// 設定ファイルクラス
+// Configuration file class
 //******************************************************************************
 class MTConfFile : public YNConfFile
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTConfFile(void);
 	virtual ~MTConfFile(void);
 
-	//初期化
+	//Initialize
 	int Initialize(const TCHAR* pCategory);
 
 };

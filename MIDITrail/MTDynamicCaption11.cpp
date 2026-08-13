@@ -19,7 +19,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTDynamicCaption11::MTDynamicCaption11()
 {
@@ -39,7 +39,7 @@ MTDynamicCaption11::~MTDynamicCaption11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTDynamicCaption11::Create(
 		ID3D11Device* pDevice,
@@ -60,13 +60,13 @@ int MTDynamicCaption11::Create(
 	wcscpy_s(m_Chars, MTDYNAMICCAPTION11_MAX_CHARS, pCharacters);
 	m_CharCount = (unsigned long)wcslen(m_Chars);
 
-	// 各文字の UV 範囲を事前計算
+	// Precompute the UV range for each character
 	for (unsigned long i = 0; i < m_CharCount; i++) {
 		m_CharUV[i].u0 = (float)i / (float)m_CharCount;
 		m_CharUV[i].u1 = (float)(i + 1) / (float)m_CharCount;
 	}
 
-	// フォントテクスチャ生成（固定ピッチ強制）
+	// Create font texture (force fixed pitch)
 	unsigned long rgb = 0x00FFFFFF;
 	result = m_FontTexture.SetFont(pFontName, fontSize, rgb, true);
 	if (result != 0) goto EXIT;
@@ -74,15 +74,15 @@ int MTDynamicCaption11::Create(
 	result = m_FontTexture.CreateTexture(pDevice, pCharacters);
 	if (result != 0) goto EXIT;
 
-	// 頂点バッファ生成（1 文字 = 4 頂点）
+	// Create vertex buffer (1 character = 4 vertices)
 	result = m_Primitive.CreateVertexBuffer(pDevice, 4 * m_CaptionSize);
 	if (result != 0) goto EXIT;
 
-	// インデックスバッファ生成（1 文字 = 6 インデックス）
+	// Create index buffer (1 character = 6 indices)
 	result = m_Primitive.CreateIndexBuffer(pDevice, 6 * m_CaptionSize);
 	if (result != 0) goto EXIT;
 
-	// インデックスは固定なので Create 時に書き込む
+	// Indices are fixed, so write them at Create time
 	{
 		unsigned long* pIndex = NULL;
 		ID3D11DeviceContext* pCtx = NULL;
@@ -116,7 +116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTDynamicCaption11::Release()
 {
@@ -126,7 +126,7 @@ void MTDynamicCaption11::Release()
 }
 
 //******************************************************************************
-// 文字列設定（UV 座標のみ更新）
+// Set string (updates only the UV coordinates)
 //******************************************************************************
 int MTDynamicCaption11::SetString(const WCHAR* pStr)
 {
@@ -139,7 +139,7 @@ int MTDynamicCaption11::SetString(const WCHAR* pStr)
 }
 
 //******************************************************************************
-// 色設定
+// Set color
 //******************************************************************************
 void MTDynamicCaption11::SetColor(Color color)
 {
@@ -148,7 +148,7 @@ void MTDynamicCaption11::SetColor(Color color)
 }
 
 //******************************************************************************
-// テクスチャサイズ取得
+// Get texture size
 //******************************************************************************
 void MTDynamicCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pWidth)
 {
@@ -156,7 +156,7 @@ void MTDynamicCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* p
 }
 
 //******************************************************************************
-// 文字の UV 座標を検索
+// Look up the UV coordinates for a character
 //******************************************************************************
 static bool _FindCharUV(
 		WCHAR target,
@@ -178,7 +178,7 @@ static bool _FindCharUV(
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTDynamicCaption11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -193,7 +193,7 @@ int MTDynamicCaption11::Draw(
 	if (!m_isReady) return 0;
 	if (screenWidth == 0 || screenHeight == 0) return 0;
 
-	// 頂点データ更新
+	// Update vertex data
 	{
 		DXPRIMITIVE11_VERTEX* pVertex = NULL;
 		result = m_Primitive.LockVertex(pContext, &pVertex);
@@ -241,7 +241,7 @@ int MTDynamicCaption11::Draw(
 				_FindCharUV(m_CurrentStr[i], m_Chars, m_CharCount, &u0, &u1);
 			}
 
-			// 4 頂点（インデックスバッファで 2 三角形に展開）
+			// 4 vertices (expanded into 2 triangles via the index buffer)
 			unsigned long base = i * 4;
 			setVtx(base + 0, nx0, ny0, u0, 0.0f);
 			setVtx(base + 1, nx1, ny0, u1, 0.0f);
@@ -252,7 +252,7 @@ int MTDynamicCaption11::Draw(
 		m_Primitive.UnlockVertex(pContext);
 	}
 
-	// 描画
+	// Draw
 	m_Primitive.SetTexture(m_FontTexture.GetTexture());
 
 	{

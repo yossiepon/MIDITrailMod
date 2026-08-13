@@ -18,56 +18,56 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// MIDI IN 設定ダイアログクラス
+// MIDI IN configuration dialog class
 //******************************************************************************
 class MTMIDIINCfgDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTMIDIINCfgDlg(void);
 	virtual ~MTMIDIINCfgDlg(void);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTMIDIINCfgDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//設定ファイル
+	//Configuration file
 	YNConfFile m_ConfFile;
 
-	//MIDI入力デバイス制御オブジェクト
+	//MIDI input device control object
 	SMInDevCtrl m_MIDIInDevCtrl;
 
-	//コンボボックスのウィンドウハンドル
+	//Combo box window handle
 	HWND m_hComboDevA;
 
-	//MIDITHRUチェックボックスのウィンドウハンドル
+	//MIDITHRU checkbox window handle
 	HWND m_hMIDITHRU;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//設定ファイル初期化
+	//Initialize config file
 	int _InitConfFile();
 
-	//デバイス選択コンボボックス初期化
+	//Initialize the device selection combo box
 	int _InitComboDev(HWND hComboDev, TCHAR* pPortName);
 
-	//MIDITHRUチェックボタン初期化
+	//Initialize the MIDITHRU checkbox
 	int _InitCheckBtnMIDITHRU();
 
-	//保存処理
+	//Save processing
 	int _Save();
 	int _SavePortCfg(HWND hComboDev, TCHAR* pPortName);
 	int _SaveMIDITHRU();

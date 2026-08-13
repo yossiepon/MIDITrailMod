@@ -573,7 +573,7 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 		for (unsigned long i = 0; i < m_NoteCount; i++) {
 			const NoteData& note = m_pNoteTracker->GetNote(i);
 
-			// Roll 2D: 全ポートのノートをポート 0 の位置に集約
+			// Roll 2D: consolidate notes from all ports into the port-0 position
 			unsigned char posPortNo = (m_Mode == MTAABBMode::Roll2D) ? 0 : note.portNo;
 
 			Vector3 startCorners[4], endCorners[4];

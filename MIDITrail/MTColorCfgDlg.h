@@ -18,86 +18,86 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// カラー設定ダイアログクラス
+// Color configuration dialog class
 //******************************************************************************
 class MTColorCfgDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTColorCfgDlg(void);
 	virtual ~MTColorCfgDlg(void);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
-	//パラメータ変更確認
+	//Check for parameter changes
 	bool IsChanged();
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTColorCfgDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//ウィンドウハンドル
+	//Window handle
 	HWND m_hWnd;
 
-	//ラジオボタンリスト
+	//Radio button list
 	HWND m_hBtnRadioPaletteList[MT_COLOR_PALETTE_NUM_MAX];
 
-	//カラーボタンリスト
+	//Color button list
 	HWND m_hBtnColorList[MT_COLOR_PALETTE_NUM_MAX][SM_MAX_CH_NUM + 3];
 
-	//カラー情報
+	//Color information
 	MTColorConf m_ColorConf;
 
-	//選択カラーパレット番号
+	//Selected color palette number
 	int m_SelectedColorPaletteNo;
 
-	//変更フラグ
+	//Change flag
 	bool m_isChanged;
 
-	//カラーパレット設定ダイアログ
+	//Color palette configuration dialog
 	MTColorPaletteCfgDlg m_ColorPaletteCfgDlg;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//ラジオボタンリスト初期化
+	//Initialize radio buttonlist
 	void _InitRadioButtonList();
 
-	//カラーボタンリスト初期化
+	//Initialize color button list
 	void _InitColorButtonList();
 
-	//ラジオボタン初期化
+	//Initialize radio button
 	int _InitRadioButtons();
 
-	//カラーボタン初期化
+	//Initialize color buttons
 	int _InitColorButtons();
 
-	//ラジオボタン押下
+	//radio button pressed
 	int _OnBtnRadio(unsigned long buttonNo);
 
-	//編集ボタン押下
+	//Edit button pressed
 	int _OnBtnEdit(unsigned long paletteNo);
 
-	//カラーパレット設定ダイアログ表示
+	//Show the color palette configuration dialog
 	int _ShowColorPaletteCfgDlg(unsigned long colorPaletteNo);
 
-	//カラーボタン更新
+	//Update color buttons
 	int _UpdateColorButtons(unsigned long colorPaletteNo);
 
-	//カラーボタン描画
+	//Draw color button
 	int _DrawColorButton(DRAWITEMSTRUCT* pDrawItem);
 
-	//カラー設定保存
+	//Save color settings
 	int _Save();
 
 };

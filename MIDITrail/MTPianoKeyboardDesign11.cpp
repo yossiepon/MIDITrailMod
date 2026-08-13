@@ -24,13 +24,13 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// �p�����[�^��`
+// Parameter definitions
 //******************************************************************************
-//�e�N�X�`�����W�Z�o�F�r�b�g�}�b�v�T�C�Y = 562 x 562
+//Texture coordinate calculation: bitmap size = 562 x 562
 #define TEXTURE_POINT(x, y)  (Vector2((float)x/561.0f, (float)y/561.0f))
 
 //******************************************************************************
-// �R���X�g���N�^
+// Constructor
 //******************************************************************************
 MTPianoKeyboardDesign11::MTPianoKeyboardDesign11(void)
 {
@@ -38,14 +38,14 @@ MTPianoKeyboardDesign11::MTPianoKeyboardDesign11(void)
 }
 
 //******************************************************************************
-// �f�X�g���N�^
+// Destructor
 //******************************************************************************
 MTPianoKeyboardDesign11::~MTPianoKeyboardDesign11(void)
 {
 }
 
 //******************************************************************************
-// ������
+// Initialize
 //******************************************************************************
 int MTPianoKeyboardDesign11::Initialize(
 		const TCHAR* pSceneName,
@@ -57,25 +57,25 @@ int MTPianoKeyboardDesign11::Initialize(
 	unsigned long portIndex = 0;
 	unsigned char portNo = 0;
 
-	//���C�u���j�^�����ݒ�
+	//Settings for live monitor
 	if (pSeqData == NULL) {
-		//�|�[�g���X�g
+		//Port list
 		m_PortList.Clear();
 		m_PortList.AddPort(0);
 	}
-	//�ʏ�ݒ�
+	//Normal settings
 	else {
-		//�|�[�g���X�g�擾
+		//Get port list
 		result = pSeqData->GetPortList(&m_PortList);
 		if (result != 0) goto EXIT;
 	}
 
-	//�ݒ�t�@�C���ǂݍ���
+	//Load config file
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	//�|�[�g�ԍ��ɏ����̃C���f�b�N�X��U��
-	//�|�[�g 0�� 3�� 5�� �ɏo�͂���ꍇ�̃C���f�b�N�X�͂��ꂼ�� 0, 1, 2
+	//Assign ascending indices to port numbers
+	//E.g., when outputting to ports 0, 3, 5, the indices are 0, 1, 2 respectively
 	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
 		m_PortIndex[index] = 0;
 	}
@@ -85,10 +85,10 @@ int MTPianoKeyboardDesign11::Initialize(
 		portIndex++;
 	}
 
-	//�L�[��ʏ�����
+	//Initialize key types
 	_InitKeyType();
 
-	//�L�[���W�ݒ�
+	//Set key coordinates
 	_InitKeyPos();
 
 EXIT:;
@@ -96,7 +96,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ������
+// Initialize
 //******************************************************************************
 void MTPianoKeyboardDesign11::_Initialize()
 {
@@ -108,8 +108,8 @@ void MTPianoKeyboardDesign11::_Initialize()
 		m_PortIndex[i] = 0;
 	}
 
-	//�L�[�̃|���S�����W�̓x�^�ɍ�肱��ł��邽��
-	//����Ɋւ���p�����[�^�͐ݒ�t�@�C���ɋL�ڂ��Ȃ�
+	//Key polygon coordinates are hardcoded directly,
+	//so these parameters are not listed in the config file
 
 	m_WhiteKeyStep      = 0.236f;
 	m_WhiteKeyWidth     = 0.226f;
@@ -122,21 +122,21 @@ void MTPianoKeyboardDesign11::_Initialize()
 	m_KeySpaceSize      = 0.01f;
 	m_KeyRotateAxisXPos = 2.36f;
 	m_KeyRotateAngle    = 3.00f;
-	m_KeyDownDuration   = 40;         //�ݒ�t�@�C��
-	m_KeyUpDuration     = 40;         //�ݒ�t�@�C��
-	m_KeyboardStepY     = 0.34f;      //�ݒ�t�@�C��
-	m_KeyboardStepZ     = 1.50f;      //�ݒ�t�@�C��
+	m_KeyDownDuration   = 40;         //Config file
+	m_KeyUpDuration     = 40;         //Config file
+	m_KeyboardStepY     = 0.34f;      //Config file
+	m_KeyboardStepZ     = 1.50f;      //Config file
 	m_NoteDropPosZ4WhiteKey = 0.25f;
 	m_NoteDropPosZ4BlackKey = 0.75f;
-	m_BlackKeyShiftCDE  = 0.0216f;    //�e�N�X�`���摜 7�h�b�g����
-	m_BlackKeyShiftFGAB = 0.0340f;    //�e�N�X�`���摜11�h�b�g����
-	m_KeyboardMaxDispNum = 16;        //�ݒ�t�@�C��
-	m_WhiteKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //�ݒ�t�@�C��
-	m_BlackKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //�ݒ�t�@�C��
-	m_ActiveKeyColorType = DefaultColor;  //�ݒ�t�@�C��
-	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //�ݒ�t�@�C��
-	m_ActiveKeyColorDuration = 400;   //�ݒ�t�@�C��
-	m_ActiveKeyColorTailRate = 0.5f;  //�ݒ�t�@�C��
+	m_BlackKeyShiftCDE  = 0.0216f;    //Texture image: 7 dots' worth
+	m_BlackKeyShiftFGAB = 0.0340f;    //Texture image: 11 dots' worth
+	m_KeyboardMaxDispNum = 16;        //Config file
+	m_WhiteKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //Config file
+	m_BlackKeyColor =  DXColorUtil::MakeColorFromHexRGBA(_T("FFFFFFFF")); //Config file
+	m_ActiveKeyColorType = DefaultColor;  //Config file
+	m_ActiveKeyColor = DXColorUtil::MakeColorFromHexRGBA(_T("FF0000FF")); //Config file
+	m_ActiveKeyColorDuration = 400;   //Config file
+	m_ActiveKeyColorTailRate = 0.5f;  //Config file
 	m_KeyDispRangeStart = 0;
 	m_KeyDispRangeEnd   = 127;
 
@@ -154,7 +154,7 @@ void MTPianoKeyboardDesign11::_Initialize()
 }
 
 //******************************************************************************
-// �L�[��ʏ�����
+// Initialize key types
 //******************************************************************************
 void MTPianoKeyboardDesign11::_InitKeyType()
 {
@@ -162,8 +162,8 @@ void MTPianoKeyboardDesign11::_InitKeyType()
 	unsigned char noteNo = 0;
 	KeyType type = KeyWhiteC;
 
-	//���ۂ̌��Ղł͍����������ɂ���Ĕz�u����Ă��邽��
-	//�����ɂ�(C,F)(D,G,A)(E,B)�̌`�͂��ׂĈقȂ�
+	//On a real keyboard, black keys are slightly offset,
+	//so strictly speaking the shapes of (C,F), (D,G,A), (E,B) all differ
 
 	for (i = 0; i < 10; i++) {
 		noteNo = (unsigned char)i * 12;				//  ________ 
@@ -188,29 +188,29 @@ void MTPianoKeyboardDesign11::_InitKeyType()
 	m_KeyInfo[noteNo + 4].keyType = KeyWhiteE;		// |________|E
 	m_KeyInfo[noteNo + 5].keyType = KeyWhiteF;		// |        |F
 	m_KeyInfo[noteNo + 6].keyType = KeyBlack;		// |----####|
-	m_KeyInfo[noteNo + 7].keyType = KeyWhiteB;		// |________|G <= �`���B
+	m_KeyInfo[noteNo + 7].keyType = KeyWhiteB;		// |________|G <= same shape as B
 
-	//�L�[�\���͈́F�J�n�L�[�̒���
+	//Key display range: adjust start key
 	type = m_KeyInfo[m_KeyDispRangeStart].keyType;
 	switch (type) {
 		case KeyWhiteC: type = KeyWhiteC; break;
 		case KeyWhiteD: type = KeyWhiteC; break;
-		case KeyWhiteE: type = KeyWhiteE; break; //�ύX�ΏۂȂ�
+		case KeyWhiteE: type = KeyWhiteE; break; //No change target
 		case KeyWhiteF: type = KeyWhiteF; break;
 		case KeyWhiteG: type = KeyWhiteF; break;
 		case KeyWhiteA: type = KeyWhiteF; break;
-		case KeyWhiteB: type = KeyWhiteB; break; //�ύX�ΏۂȂ�
+		case KeyWhiteB: type = KeyWhiteB; break; //No change target
 		default: break;
 	}
 	m_KeyInfo[m_KeyDispRangeStart].keyType = type;
 
-	//�L�[�\���͈́F�I���L�[�̒���
+	//Key display range: adjust end key
 	type = m_KeyInfo[m_KeyDispRangeEnd].keyType;
 	switch (type) {
-		case KeyWhiteC: type = KeyWhiteC; break; //�ύX�ΏۂȂ�
+		case KeyWhiteC: type = KeyWhiteC; break; //No change target
 		case KeyWhiteD: type = KeyWhiteE; break;
 		case KeyWhiteE: type = KeyWhiteE; break;
-		case KeyWhiteF: type = KeyWhiteF; break; //�ύX�ΏۂȂ�
+		case KeyWhiteF: type = KeyWhiteF; break; //No change target
 		case KeyWhiteG: type = KeyWhiteB; break;
 		case KeyWhiteA: type = KeyWhiteB; break;
 		case KeyWhiteB: type = KeyWhiteB; break;
@@ -222,7 +222,7 @@ void MTPianoKeyboardDesign11::_InitKeyType()
 }
 
 //******************************************************************************
-// �L�[���W�ݒ�
+// Set key coordinates
 //******************************************************************************
 void MTPianoKeyboardDesign11::_InitKeyPos()
 {
@@ -231,28 +231,28 @@ void MTPianoKeyboardDesign11::_InitKeyPos()
 	float posX = 0.0f;
 	float shift = 0.0f;
 
-	//�擪�m�[�g�̈ʒu
+	//Position of the first note
 	//posX = GetWhiteKeyStep() / 2.0f;
 	m_KeyInfo[noteNo].keyCenterPosX = posX;
 	prevKeyType = m_KeyInfo[noteNo].keyType;
 
-	//���ۂ̌��Ղł͍����������ɂ���Ĕz�u����Ă���
-	//�܂������Ɣ����̒��_�ɍ�����z�u���Čォ��␳����
+	//Black keys are slightly offset on a real keyboard,
+	//so first place the black key at the midpoint between white keys, then correct it
 
-	//2�Ԗڈȍ~�̃m�[�g�̈ʒu
+	//Position of the second and subsequent notes
 	for (noteNo = 1; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
-		//���O�̃L�[������
+		//Previous key is black
 		if (prevKeyType == KeyBlack) {
 			if (m_KeyInfo[noteNo].keyType == KeyBlack) {
-				//�����̌�ɍ����͂��肦�Ȃ�
+				//A black key cannot immediately follow another black key
 			}
 			else {
-				//�����Ɣ����̒����ɍ�����z�u����
-				//���ۂ̌��ՂƈقȂ邪�H���팸�̂��ߖڂ��Ԃ�
+				//Place the black key at the center between the white keys
+				//Differs from a real keyboard, but overlooked to save effort
 				posX += (GetWhiteKeyStep() / 2.0f);
 			}
 		}
-		//���O�̃L�[������
+		//Previous key is white
 		else {
 			if (m_KeyInfo[noteNo].keyType == KeyBlack) {
 				posX += (GetWhiteKeyStep() / 2.0f);
@@ -265,11 +265,11 @@ void MTPianoKeyboardDesign11::_InitKeyPos()
 		prevKeyType = m_KeyInfo[noteNo].keyType;
 	}
 
-	//�����̔z�u��␳����
+	//Correct the black key placement
 	prevKeyType = KeyWhiteC;
 	for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
 		if (m_KeyInfo[noteNo].keyType == KeyBlack) {
-			//�����̈ʒu�␳�ʂ��擾
+			//Get the black key position correction amount
 			switch (prevKeyType) {
 				case KeyWhiteC: shift = -m_BlackKeyShiftCDE;  break;
 				case KeyWhiteD: shift = +m_BlackKeyShiftCDE;  break;
@@ -278,12 +278,12 @@ void MTPianoKeyboardDesign11::_InitKeyPos()
 				case KeyWhiteA: shift = +m_BlackKeyShiftFGAB; break;
 				default:        shift =  0.00f;               break;
 			}
-			//�Ō�̍����͒��_�ɔz�u
+			//Place the last black key at the midpoint
 			if (noteNo == 126) {
 				shift = 0.00f;
 			}
 			
-			//�\���͈͂̐擪�����łЂƂ������c����鍕���͒����ɔz�u����
+			//A black key left isolated at the start or end of the display range is centered
 			if ((noteNo - 1) == m_KeyDispRangeStart) {
 				if ((m_KeyInfo[noteNo + 1].keyType == KeyWhiteE) 
 				 || (m_KeyInfo[noteNo + 1].keyType == KeyWhiteB)) {
@@ -297,7 +297,7 @@ void MTPianoKeyboardDesign11::_InitKeyPos()
 				}
 			}
 			
-			//�ʒu�␳
+			//Position correction
 			m_KeyInfo[noteNo].keyCenterPosX += shift;
 		}
 		prevKeyType = m_KeyInfo[noteNo].keyType;
@@ -307,7 +307,7 @@ void MTPianoKeyboardDesign11::_InitKeyPos()
 }
 
 //******************************************************************************
-// �|�[�g���_X���W�擾
+// Get port origin X coordinate
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetPortOriginX(
 		unsigned char portNo
@@ -347,7 +347,7 @@ float MTPianoKeyboardDesign11::GetPortOriginX(
 }
 
 //******************************************************************************
-// �|�[�g���_Y���W�擾
+// Get port origin Y coordinate
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetPortOriginY(
 		unsigned char portNo
@@ -379,7 +379,7 @@ float MTPianoKeyboardDesign11::GetPortOriginY(
 	portIndex = (float)(m_PortIndex[portNo]);
 	portHeight =(m_KeyboardStepY * (float)(SM_MAX_CH_NUM -1)) + GetBlackKeyHeight();
 
-	//�\���`�����l����
+	//Number of displayed channels
 	chNum = m_PortList.GetSize() * SM_MAX_CH_NUM;
 	if ((unsigned long)m_KeyboardMaxDispNum < chNum) {
 		chNum = m_KeyboardMaxDispNum;
@@ -392,7 +392,7 @@ float MTPianoKeyboardDesign11::GetPortOriginY(
 }
 
 //******************************************************************************
-// �|�[�g���_Z���W�擾
+// Get port origin Z coordinate
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetPortOriginZ(
 		unsigned char portNo
@@ -431,7 +431,7 @@ float MTPianoKeyboardDesign11::GetPortOriginZ(
 	portIndex = (float)(m_PortIndex[portNo]);
 	portLen =(m_KeyboardStepZ * (float)(SM_MAX_CH_NUM -1)) + GetWhiteKeyLen();
 
-	//�\���`�����l����
+	//Number of displayed channels
 	chNum = m_PortList.GetSize() * SM_MAX_CH_NUM;
 	if ((unsigned long)m_KeyboardMaxDispNum < chNum) {
 		chNum = m_KeyboardMaxDispNum;
@@ -444,7 +444,7 @@ float MTPianoKeyboardDesign11::GetPortOriginZ(
 }
 
 //******************************************************************************
-// �L�[��ʎ擾
+// Get key type
 //******************************************************************************
 MTPianoKeyboardDesign11::KeyType MTPianoKeyboardDesign11::GetKeyType(
 		unsigned char noteNo
@@ -460,7 +460,7 @@ MTPianoKeyboardDesign11::KeyType MTPianoKeyboardDesign11::GetKeyType(
 }
 
 //******************************************************************************
-// �L�[���SX���W�擾
+// Get key center X coordinate
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetKeyCenterPosX(
 		unsigned char noteNo
@@ -476,7 +476,7 @@ float MTPianoKeyboardDesign11::GetKeyCenterPosX(
 }
 
 //******************************************************************************
-// �����z�u�Ԋu�擾
+// Get white key placement interval
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetWhiteKeyStep()
 {
@@ -484,7 +484,7 @@ float MTPianoKeyboardDesign11::GetWhiteKeyStep()
 }
 
 //******************************************************************************
-// �������T�C�Y�擾
+// Get white key width
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetWhiteKeyWidth()
 {
@@ -492,7 +492,7 @@ float MTPianoKeyboardDesign11::GetWhiteKeyWidth()
 }
 
 //******************************************************************************
-// ���������擾
+// Get white key height
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetWhiteKeyHeight()
 {
@@ -500,7 +500,7 @@ float MTPianoKeyboardDesign11::GetWhiteKeyHeight()
 }
 
 //******************************************************************************
-// ���������擾
+// Get white key length
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetWhiteKeyLen()
 {
@@ -508,7 +508,7 @@ float MTPianoKeyboardDesign11::GetWhiteKeyLen()
 }
 
 //******************************************************************************
-// �������T�C�Y�擾
+// Get black key width
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetBlackKeyWidth()
 {
@@ -516,7 +516,7 @@ float MTPianoKeyboardDesign11::GetBlackKeyWidth()
 }
 
 //******************************************************************************
-// ���������擾
+// Get black key height
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetBlackKeyHeight()
 {
@@ -524,7 +524,7 @@ float MTPianoKeyboardDesign11::GetBlackKeyHeight()
 }
 
 //******************************************************************************
-// �����X�Β����擾
+// Get black key slope length
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetBlackKeySlopeLen()
 {
@@ -532,7 +532,7 @@ float MTPianoKeyboardDesign11::GetBlackKeySlopeLen()
 }
 
 //******************************************************************************
-// ���������擾
+// Get black key length
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetBlackKeyLen()
 {
@@ -540,7 +540,7 @@ float MTPianoKeyboardDesign11::GetBlackKeyLen()
 }
 
 //******************************************************************************
-// �L�[�Ԋu�T�C�Y�擾
+// Get key spacing size
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetKeySpaceSize()
 {
@@ -548,7 +548,7 @@ float MTPianoKeyboardDesign11::GetKeySpaceSize()
 }
 
 //******************************************************************************
-// �L�[������]���SY�����W�擾
+// Get key-press rotation center Y coordinate
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetKeyRotateAxisXPos()
 {
@@ -556,7 +556,7 @@ float MTPianoKeyboardDesign11::GetKeyRotateAxisXPos()
 }
 
 //******************************************************************************
-// �L�[������]�p�x
+// Key-press rotation angle
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetKeyRotateAngle()
 {
@@ -564,7 +564,7 @@ float MTPianoKeyboardDesign11::GetKeyRotateAngle()
 }
 
 //******************************************************************************
-// �L�[���~���Ԏ擾(msec)
+// Get key-down duration (msec)
 //******************************************************************************
 unsigned long MTPianoKeyboardDesign11::GetKeyDownDuration()
 {
@@ -572,7 +572,7 @@ unsigned long MTPianoKeyboardDesign11::GetKeyDownDuration()
 }
 
 //******************************************************************************
-// �L�[�㏸���Ԏ擾(msec)
+// Get key-up duration (msec)
 //******************************************************************************
 unsigned long MTPianoKeyboardDesign11::GetKeyUpDuration()
 {
@@ -580,7 +580,7 @@ unsigned long MTPianoKeyboardDesign11::GetKeyUpDuration()
 }
 
 //******************************************************************************
-// �m�[�g�h���b�v���W�擾
+// Get note drop coordinate
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetNoteDropPosZ(
 		unsigned char noteNo
@@ -599,22 +599,22 @@ float MTPianoKeyboardDesign11::GetNoteDropPosZ(
 }
 
 //******************************************************************************
-// �s�b�`�x���h�L�[�{�[�h�V�t�g�ʎ擾
+// Get pitch bend keyboard shift amount
 //******************************************************************************
 float MTPianoKeyboardDesign11::GetPitchBendShift(
-		short pitchBendValue,				//�s�b�`�x���h
-		unsigned char pitchBendSensitivity	//�s�b�`�x���h���x
+		short pitchBendValue,				//Pitch bend
+		unsigned char pitchBendSensitivity	//Pitch bend sensitivity
 	)
 {
 	float shift = 0.0f;
 	float noteStep = 0.0f;
 
-	//�����̈ړ���
-	//  �L�[�̔z�u�Ԋu�� B->C, E->F �̊Ԃɍ��������݂��Ȃ����ߋψ�ł͂Ȃ�
-	//  1�I�N�^�[�u�ł��܂������悤�ɔ����̃V�t�g�ʂ����߂�
+	//Semitone shift amount
+	//  Key spacing is not uniform because there is no black key between B->C or E->F
+	//  Determine the semitone shift amount so it balances out over one octave
 	noteStep = GetWhiteKeyStep() * 7.0f / 12.0f;
 
-	//�s�b�`�x���h�ɂ��L�[�{�[�h�ړ���
+	//Keyboard shift amount due to pitch bend
 	if (pitchBendValue < 0) {
 		shift = noteStep * pitchBendSensitivity * ((float)pitchBendValue / 8192.0f);
 	}
@@ -645,7 +645,7 @@ float MTPianoKeyboardDesign11::GetMaxPitchBendShift(
 }
 
 //******************************************************************************
-// �����J���[�擾
+// Get white key color
 //******************************************************************************
 Color MTPianoKeyboardDesign11::GetWhiteKeyColor()
 {
@@ -653,7 +653,7 @@ Color MTPianoKeyboardDesign11::GetWhiteKeyColor()
 }
 
 //******************************************************************************
-// �����J���[�擾
+// Get black key color
 //******************************************************************************
 Color MTPianoKeyboardDesign11::GetBlackKeyColor()
 {
@@ -661,7 +661,7 @@ Color MTPianoKeyboardDesign11::GetBlackKeyColor()
 }
 
 //******************************************************************************
-// �������L�[�J���[�擾
+// Get active (sounding) key color
 //******************************************************************************
 Color MTPianoKeyboardDesign11::GetActiveKeyColor(
 		unsigned char noteNo,
@@ -678,27 +678,27 @@ Color MTPianoKeyboardDesign11::GetActiveKeyColor(
 	unsigned long duration = 0;
 
 	//          on     off
-	//   �� |---+......+---- ��off�ɂȂ����甒���̐F�ɖ߂�
+	//   White |---+......+---- <- returns to the white key color when off
 	//      |   :      :
-	//      |   :  +---+     ��off�ɂȂ�܂Œ��ԐF�̂܂�
+	//      |   :  +---+     <- stays the intermediate color until off
 	//      |   : /:   :
 	//      |   :/ :   :
-	//   �� |   +  :   :     ���L�[��������̐F�i�ԁj
+	//   Red  |   +  :   :     <- color immediately after key press (red)
 	//      |   :\ :   :
 	//      |   : \:   :
-	//      |   :  +---+     ��off�ɂȂ�܂Œ��ԐF�̂܂�
+	//      |   :  +---+     <- stays the intermediate color until off
 	//      |   :  :   :
-	//   �� |---+  :   +---- ��off�ɂȂ����獕���̐F�ɖ߂�
+	//   Black |---+  :   +---- <- returns to the black key color when off
 	//   ---+---*------*-------> +t
 	//      |   on :   off
 	//          <-->duration
 
 	if ((pNoteColor != NULL) && (m_ActiveKeyColorType == NoteColor)) {
-		//�m�[�g�F���w�肳��Ă���ꍇ
+		//When a note color is specified
 		color = *pNoteColor;
 	}
 	else {
-		//����ȊO�̓f�t�H���g�F�Ƃ���
+		//Otherwise use the default color
 		color = m_ActiveKeyColor;
 	}
 
@@ -727,7 +727,7 @@ Color MTPianoKeyboardDesign11::GetActiveKeyColor(
 }
 
 //******************************************************************************
-// �����e�N�X�`�����W�擾�F���
+// Get white key texture coordinates: top face
 //******************************************************************************
 void MTPianoKeyboardDesign11::GetWhiteKeyTexturePosTop(
 		unsigned char noteNo,
@@ -789,7 +789,7 @@ void MTPianoKeyboardDesign11::GetWhiteKeyTexturePosTop(
 }
 
 //******************************************************************************
-// �����e�N�X�`�����W�擾�F�O��
+// Get white key texture coordinates: front face
 //******************************************************************************
 void MTPianoKeyboardDesign11::GetWhiteKeyTexturePosFront(
 		unsigned char noteNo,
@@ -837,7 +837,7 @@ void MTPianoKeyboardDesign11::GetWhiteKeyTexturePosFront(
 }
 
 //******************************************************************************
-// �����e�N�X�`�����W�擾�F�P��F
+// Get white key texture coordinates: solid color
 //******************************************************************************
 void MTPianoKeyboardDesign11::GetWhiteKeyTexturePosSingleColor(
 		unsigned char noteNo,
@@ -848,7 +848,7 @@ void MTPianoKeyboardDesign11::GetWhiteKeyTexturePosSingleColor(
 }
 
 //******************************************************************************
-// �����e�N�X�`�����W�擾�F��ʁ{����
+// Get black key texture coordinates: top + side faces
 //******************************************************************************
 void MTPianoKeyboardDesign11::GetBlackKeyTexturePos(
 		unsigned char noteNo,
@@ -878,12 +878,12 @@ void MTPianoKeyboardDesign11::GetBlackKeyTexturePos(
 
 	unsigned long pos[2][10][2] = {
 		// 0              1              2              3              4              5              6              7              8              9
-		{ { 63- 7, 324}, { 92- 7, 324}, { 92- 7, 305}, { 63- 7, 305}, { 92- 7,   3}, { 63- 7,   3}, { 97- 7, 324}, { 97- 7,   3}, { 58- 7, 324}, { 58- 7,   3} }, // �ʏ�
-		{ {447+11, 324}, {476+11, 324}, {476+11, 305}, {447+11, 305}, {476+11,   3}, {447+11,   3}, {481+11, 324}, {481+11,   3}, {442+11, 324}, {442+11,   3} }  // ���F��
+		{ { 63- 7, 324}, { 92- 7, 324}, { 92- 7, 305}, { 63- 7, 305}, { 92- 7,   3}, { 63- 7,   3}, { 97- 7, 324}, { 97- 7,   3}, { 58- 7, 324}, { 58- 7,   3} }, // Normal
+		{ {447+11, 324}, {476+11, 324}, {476+11, 305}, {447+11, 305}, {476+11,   3}, {447+11,   3}, {481+11, 324}, {481+11,   3}, {442+11, 324}, {442+11,   3} }  // Whitened
 	};
 
-	//�����|���S���ɐF��t����ꍇ��
-	//���F�������e�N�X�`����\��t����
+	//When coloring a black key polygon,
+	//use the whitened texture
 	if (isColored) {
 		index = 1;
 	}
@@ -903,7 +903,7 @@ void MTPianoKeyboardDesign11::GetBlackKeyTexturePos(
 }
 
 //******************************************************************************
-// �����e�N�X�`�����W�擾�F�P��F
+// Get black key texture coordinates: solid color
 //******************************************************************************
 void MTPianoKeyboardDesign11::GetBlackKeyTexturePosSingleColor(
 		unsigned char noteNo,
@@ -922,7 +922,7 @@ void MTPianoKeyboardDesign11::GetBlackKeyTexturePosSingleColor(
 }
 
 //******************************************************************************
-// �L�[�{�[�h����W�擾
+// Get keyboard reference coordinate
 //******************************************************************************
 Vector3 MTPianoKeyboardDesign11::GetKeyboardBasePos(
 		unsigned char portNo,
@@ -934,12 +934,12 @@ Vector3 MTPianoKeyboardDesign11::GetKeyboardBasePos(
 	float oz = 0.0f;
 	Vector3 moveVector;
 
-	//�|�[�g�P�ʂ̌��_���W
+	//Per-port origin coordinate
 	ox = GetPortOriginX(portNo);
 	oy = GetPortOriginY(portNo);
 	oz = GetPortOriginZ(portNo);
 
-	//�`�����l�����l�������z�u���W
+	//Placement coordinate accounting for channel
 	moveVector.x = ox + 0.0f;
 	moveVector.y = oy + ((float)chNo * m_KeyboardStepY);
 	moveVector.z = oz + ((float)chNo * m_KeyboardStepZ);
@@ -948,7 +948,7 @@ Vector3 MTPianoKeyboardDesign11::GetKeyboardBasePos(
 }
 
 //******************************************************************************
-// �L�[�{�[�h�\�����擾
+// Get keyboard display count
 //******************************************************************************
 unsigned long MTPianoKeyboardDesign11::GetKeyboardMaxDispNum()
 {
@@ -957,7 +957,7 @@ unsigned long MTPianoKeyboardDesign11::GetKeyboardMaxDispNum()
 
 // >>> add 20180404 yossiepon begin
 //******************************************************************************
-// �L�[�{�[�h�\�����ݒ�
+// Set keyboard display count
 //******************************************************************************
 void MTPianoKeyboardDesign11::SetKeyboardSingle()
 {
@@ -966,7 +966,7 @@ void MTPianoKeyboardDesign11::SetKeyboardSingle()
 // <<< add 20180404 yossiepon end
 
 //******************************************************************************
-// �L�[�\���͈́F�J�n
+// Key display range: start
 //******************************************************************************
 unsigned char MTPianoKeyboardDesign11::GetKeyDispRangeStart()
 {
@@ -974,7 +974,7 @@ unsigned char MTPianoKeyboardDesign11::GetKeyDispRangeStart()
 }
 
 //******************************************************************************
-// �L�[�\���͈́F�I��
+// Key display range: end
 //******************************************************************************
 unsigned char MTPianoKeyboardDesign11::GetKeyDispRangeEnd()
 {
@@ -982,7 +982,7 @@ unsigned char MTPianoKeyboardDesign11::GetKeyDispRangeEnd()
 }
 
 //******************************************************************************
-// �L�[�\������
+// Key display check
 //******************************************************************************
 bool MTPianoKeyboardDesign11::IsKeyDisp(
 		unsigned char noteNo
@@ -998,7 +998,7 @@ bool MTPianoKeyboardDesign11::IsKeyDisp(
 }
 
 //******************************************************************************
-// �ݒ�t�@�C���ǂݍ���
+// Load config file
 //******************************************************************************
 int MTPianoKeyboardDesign11::_LoadConfFile(
 		const TCHAR* pSceneName
@@ -1013,7 +1013,7 @@ int MTPianoKeyboardDesign11::_LoadConfFile(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
-	//�s�A�m�L�[�{�[�h���
+	//Piano keyboard information
 	//----------------------------------
 	result = confFile.SetCurSection(_T("PianoKeyboard"));
 	if (result != 0) goto EXIT;
@@ -1057,7 +1057,7 @@ int MTPianoKeyboardDesign11::_LoadConfFile(
 	result = confFile.GetInt(_T("KeyDispRangeEnd"), &m_KeyDispRangeEnd, 127);
 	if (result != 0) goto EXIT;
 
-	//�L�[�{�[�h�ő�\������1�|�[�g���i16ch�j�ɐ�������
+	//Limit the max keyboard display count to one port's worth (16 ch)
 	if (m_KeyboardMaxDispNum > SM_MAX_CH_NUM) {
 		m_KeyboardMaxDispNum = SM_MAX_CH_NUM;
 	}
@@ -1065,7 +1065,7 @@ int MTPianoKeyboardDesign11::_LoadConfFile(
 		m_KeyboardMaxDispNum = 0;
 	}
 
-	//�L�[�\���͈͂̃N���b�s���O
+	//Clip the key display range
 	if (m_KeyDispRangeStart < 0) {
 		m_KeyDispRangeStart = 0;
 	}

@@ -33,43 +33,43 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
 #define MAX_LOADSTRING  (256)
 
-//ウィンドウスタイル
-//  WS_OVERLAPPEDWINDOW から次のスタイルを削ったもの
-//    WS_THICKFRAME   サイズ変更可
+//Window style
+//  WS_OVERLAPPEDWINDOW with the following style removed
+//    WS_THICKFRAME   Resizable
 #define MIDITRAIL_WINDOW_STYLE  (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
 
-//後続起動プロセスのファイルパスポスト通知
+//File path post notification from a subsequently launched process
 #define WM_FILEPATH_POSTED  (WM_USER + 100)
 
-//メニュースタイル制御
-//TAG:シーン追加
+//Menu style control
+//TAG: add scene
 // >>> modify 20250615 yossiepon begin
 #define MT_MENU_NUM        (47+1)
 // <<< modify 20250615 yossiepon end
 #define MT_PLAYSTATUS_NUM  (6)
 
-//デバイスロスト警告メッセージ
+//Device lost warning message
 #define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device has been removed.\nThe graphics driver may have crashed or been updated.\nMIDITrail will attempt to recover.")
 
-//ファイルなし警告メッセージ
+//No-file warning message
 #define MIDITRAIL_MSG_FILE_NOT_FOUND  _T("MIDI file (*.mid) not found.")
 
-//タイマーID
+//Timer IDs
 #define MIDITRAIL_TIMER_CHECK_KEY           (1)
 #define MIDITRAIL_TIMER_PLAY                (2)
 #define MIDITRAIL_TIMER_OPEN_FILE_AND_PLAY  (3)
 
-//二重起動抑止用ミューテクス名称
+//Mutex name for duplicate-launch prevention
 #define MIDITRAIL_MUTEX     _T("yknk.MIDITrail")
 
-//メールスロット名称
+//Mailslot name
 #define MIDITRAIL_MAILSLOT  _T("\\\\.\\mailslot\\yknk\\MIDITrail")
 
-//ウィンドウタイトル  ex.: "MIDITrail - file_name.mid - FPS:60.0"
+//Window title  ex.: "MIDITrail - file_name.mid - FPS:60.0"
 // >>> modify 20250615 yossiepon begin
 //#define MIDITRAIL_WINDOW_TITLE			L"MIDITrail"
 //#define MIDITRAIL_WINDOW_TITLE_FILE		L"MIDITrail - %s"
@@ -82,58 +82,58 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// MIDITrail アプリケーションクラス
+// MIDITrail application class
 //******************************************************************************
 class MIDITrailApp
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MIDITrailApp(void);
 	virtual ~MIDITrailApp(void);
 
-	//初期化
+	//Initialize
 	int Initialize(HINSTANCE hInstance, LPTSTR pCmdLine, int nCmdShow);
 
-	//実行
+	//Run
 	int Run();
 
-	//停止
+	//Terminate
 	int Terminate();
 
 private:
 
 	//----------------------------------------------------------------
-	//パラメータ定義
+	//Parameter definitions
 	//----------------------------------------------------------------
-	//演奏状態
+	//Playback status
 	enum PlayStatus {
-		NoData,			//データなし
-		Stop,			//停止状態
-		Play,			//再生中
-		Pause,			//一時停止
-		MonitorOFF,		//モニタ停止
-		MonitorON		//モニタ中
+		NoData,			//No data
+		Stop,			//Stopped
+		Play,			//Playing
+		Pause,			//Paused
+		MonitorOFF,		//Monitor off
+		MonitorON		//Monitor on
 	};
 
-	//シーン種別
-	//TAG:シーン追加
+	//Scene type
+	//TAG: add scene
 	enum SceneType {
-		Title,				//タイトル
-		PianoRoll3D,		//ピアノロール3D
-		PianoRoll2D,		//ピアノロール2D
-		PianoRollRain,		//ピアノロールレイン
-		PianoRollRain2D,	//ピアノロールレイン2D
-		PianoRollRing		//ピアノロールリング
+		Title,				//Title
+		PianoRoll3D,		//Piano roll 3D
+		PianoRoll2D,		//Piano roll 2D
+		PianoRollRain,		//Piano roll rain
+		PianoRollRain2D,	//Piano roll rain 2D
+		PianoRollRing		//Piano roll ring
 	};
 
-	//シーケンサメッセージ
+	//Sequencer message
 	typedef struct {
 		unsigned long param1;
 		unsigned long param2;
 	} MTSequencerMsg;
 
-	//最新シーケンサメッセージ
+	//Latest sequencer message
 	typedef struct {
 		bool isRecvPlayTime;
 		bool isRecvTempo;
@@ -148,23 +148,23 @@ private:
 private:
 
 	//----------------------------------------------------------------
-	//メンバ定義
+	//Member definitions
 	//----------------------------------------------------------------
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MIDITrailApp* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//アプリケーション二重起動抑止制御
+	//Duplicate-launch prevention control
 	HANDLE m_hAppMutex;
 	HANDLE m_hMailSlot;
 	bool m_isExitApp;
 
-	//コマンドラインパーサ
+	//Command line parser
 	MTCmdLineParser m_CmdLineParser;
 
-	//ウィンドウ系
+	//Window-related
 	HWND m_hWnd;
 	HACCEL m_Accel;
 	WCHAR m_Title[MAX_LOADSTRING];
@@ -176,16 +176,16 @@ private:
 	bool m_isEnableMenuBar;
 	HMENU m_hMenu;
 
-	//レンダリング系
+	//Rendering-related
 	DXRenderer11 m_Renderer;
 	IMTScene11* m_pScene;
 	unsigned long m_MultiSampleType;
 
-	//FPS表示系
+	//FPS display-related
 	DWORD m_PrevTime;
 	DWORD m_FPSCount;
 
-	//MIDI制御系
+	//MIDI control-related
 	SMSeqData m_SeqData;
 	SMSequencer m_Sequencer;
 	SMRcpConv m_RcpConv;
@@ -193,7 +193,7 @@ private:
 	SMLiveMonitor m_LiveMonitor;
 	TCHAR m_MIDIINDevName[MAXPNAMELEN];
 
-	//演奏状態
+	//Playback status
 	PlayStatus m_PlayStatus;
 	bool m_isRepeat;
 	bool m_isFolderPlayback;
@@ -202,7 +202,7 @@ private:
 	MTSequencerLastMsg m_SequencerLastMsg;
 	unsigned long m_PlaySpeedRatio;
 
-	//表示効果
+	//Display effects
 	bool m_isEnablePianoKeyboard;
 	bool m_isEnableRipple;
 	bool m_isEnablePitchBend;
@@ -213,83 +213,83 @@ private:
 	bool m_isEnableGridLine;
 	bool m_isEnableTimeIndicator;
 
-	//シーン種別
+	//Scene type
 	SceneType m_SceneType;
 	SceneType m_SelectedSceneType;
 
-	//ウィンドウサイズ設定ダイアログ
+	//Window size settings dialog
 	MTWindowSizeCfgDlg m_WindowSizeCfgDlg;
 
-	//MIDI OUT設定ダイアログ
+	//MIDI OUT settings dialog
 	MTMIDIOUTCfgDlg m_MIDIOUTCfgDlg;
 
-	//MIDI IN設定ダイアログ
+	//MIDI IN settings dialog
 	MTMIDIINCfgDlg m_MIDIINCfgDlg;
 
-	//グラフィック設定ダイアログ
+	//Graphics settings dialog
 	MTGraphicCfgDlg m_GraphicCfgDlg;
 
-	//カラー設定ダイアログ
+	//Color settings dialog
 	MTColorCfgDlg m_ColorCfgDlg;
 
-	//操作方法ダイアログ
+	//How-to-view dialog
 	MTHowToViewDlg m_HowToViewDlg;
 
-	//バージョン情報ダイアログ
+	//About dialog
 	MTAboutDlg m_AboutDlg;
 
-	//設定ファイル
+	//Configuration file
 	YNConfFile m_MIDIConf;
 	YNConfFile m_ViewConf;
 	YNConfFile m_GraphicConf;
 
-	//プレーヤー制御
+	//Player control
 	int m_AllowMultipleInstances;
 	int m_AutoPlaybackAfterOpenFile;
 
-	//スキップ制御
+	//Skip control
 	int m_SkipBackTimeSpanInMsec;
 	int m_SkipForwardTimeSpanInMsec;
 
-	//演奏スピード制御
+	//Playback speed control
 	unsigned long m_SpeedStepInPercent;
 	unsigned long m_MaxSpeedInPercent;
 
-	//演奏制御
+	//Playback control
 	int m_DelayBetweenSongsInMsec;
 
-	//自動視点保存
+	//Auto-save viewpoint
 	bool m_isAutoSaveViewpoint;
 
-	//次回オープン対象ファイルパス
+	//File path to open next
 	WCHAR m_NextFilePath[_MAX_PATH];
 
-	//ゲームパッド制御
+	//Gamepad control
 	MTGamePadCtrl m_GamePadCtrl;
 
-	//ゲームパッド用視点番号
+	//Viewpoint number for gamepad
 	int m_GamePadViewPointNo;
 
-	//MIDIデータファイルリスト
+	//MIDI data file list
 	MTFileList m_MIDIFileList;
 
 	//----------------------------------------------------------------
-	//メソッド定義
+	//Method definitions
 	//----------------------------------------------------------------
-	//ウィンドウ制御
+	//Window control
 	int _RegisterClass(HINSTANCE hInstance);
 	int _CreateWindow(HINSTANCE hInstance, int nCmdShow);
 	int _SetWindowSize();
 	int _SetWindowSizeFullScreen();
 
-	//設定ファイル初期化
+	//Initialize config file
 	int _InitConfFile();
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static LRESULT CALLBACK _WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//メニューイベント処理
+	//Menu event processing
 	int _OnMenuOpenFile();
 // >>> add 20120728 yossiepon begin
 	int _OnMenuAddFile();
@@ -325,7 +325,7 @@ private:
 	int _OnMenuSelectSceneType(SceneType type);
 	int _OnFilePathPosted();
 
-	//その他イベント処理
+	//Other event processing
 	int _SequencerMsgProc();
 	int _OnRecvSequencerMsg(unsigned long wParam, unsigned long lParam);
 	int _OnMouseButtonDown(UINT button, WPARAM wParam, LPARAM lParam);

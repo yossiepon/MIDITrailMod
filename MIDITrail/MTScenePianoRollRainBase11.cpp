@@ -17,7 +17,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTScenePianoRollRainBase11::MTScenePianoRollRainBase11(bool is2D)
 {
@@ -27,7 +27,7 @@ MTScenePianoRollRainBase11::MTScenePianoRollRainBase11(bool is2D)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTScenePianoRollRainBase11::~MTScenePianoRollRainBase11()
 {
@@ -35,7 +35,7 @@ MTScenePianoRollRainBase11::~MTScenePianoRollRainBase11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTScenePianoRollRainBase11::Create(
 		HWND hWnd,
@@ -86,7 +86,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTScenePianoRollRainBase11::Release()
 {
@@ -100,7 +100,7 @@ void MTScenePianoRollRainBase11::Release()
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTScenePianoRollRainBase11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -150,7 +150,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// シーケンサメッセージ受信（共通: PitchBend + Dashboard）
+// Sequencer message reception (common: PitchBend + Dashboard)
 //******************************************************************************
 int MTScenePianoRollRainBase11::_OnRecvSequencerMsg(
 		unsigned long param1,
@@ -186,7 +186,7 @@ int MTScenePianoRollRainBase11::_OnRecvSequencerMsg(
 }
 
 //******************************************************************************
-// 再生開始 / 再生終了
+// Playback start / end
 //******************************************************************************
 int MTScenePianoRollRainBase11::OnPlayStart()
 {
@@ -201,7 +201,7 @@ int MTScenePianoRollRainBase11::OnPlayEnd()
 }
 
 //******************************************************************************
-// 表示トグル
+// Display toggle
 //******************************************************************************
 void MTScenePianoRollRainBase11::SetEffect(MTEffectType type, bool isEnable)
 {
@@ -227,7 +227,7 @@ void MTScenePianoRollRainBase11::SetEffect(MTEffectType type, bool isEnable)
 }
 
 //******************************************************************************
-// 再生速度設定
+// Set playback speed
 //******************************************************************************
 void MTScenePianoRollRainBase11::SetPlaySpeedRatio(unsigned long ratio)
 {
@@ -235,7 +235,7 @@ void MTScenePianoRollRainBase11::SetPlaySpeedRatio(unsigned long ratio)
 }
 
 //******************************************************************************
-// ウィンドウリサイズ通知
+// Window resize notification
 //******************************************************************************
 void MTScenePianoRollRainBase11::OnWindowResize()
 {
@@ -244,7 +244,7 @@ void MTScenePianoRollRainBase11::OnWindowResize()
 }
 
 //******************************************************************************
-// デフォルト視点計算
+// Compute default viewpoint
 //******************************************************************************
 void MTScenePianoRollRainBase11::_ComputeDefaultViewParam(MTViewParamMap* pParamMap)
 {
@@ -259,7 +259,7 @@ void MTScenePianoRollRainBase11::_ComputeDefaultViewParam(MTViewParamMap* pParam
 }
 
 //******************************************************************************
-// 視点補正量
+// Viewpoint compensation amount
 //******************************************************************************
 float MTScenePianoRollRainBase11::_GetViewpointCompensation() const
 {
@@ -267,7 +267,7 @@ float MTScenePianoRollRainBase11::_GetViewpointCompensation() const
 }
 
 //******************************************************************************
-// リセット
+// Reset
 //******************************************************************************
 void MTScenePianoRollRainBase11::_Reset()
 {

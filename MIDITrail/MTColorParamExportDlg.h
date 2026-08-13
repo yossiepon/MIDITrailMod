@@ -12,52 +12,52 @@
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
 
-//パラメータ文字列最大長
+//Maximum parameter string length
 #define MT_COLOR_PARAM_EXPORT_STRING_LENGTH_MAX		(2048)
 
 
 //******************************************************************************
-// カラーパラメータ出力ダイアログ
+// Color parameter export dialog
 //******************************************************************************
 class MTColorParamExportDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTColorParamExportDlg(void);
 	virtual ~MTColorParamExportDlg(void);
 
-	//パラメータ文字列登録
+	//Register the parameter string
 	void SetParamString(TCHAR* pString);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTColorParamExportDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//ウィンドウハンドル
+	//Window handle
 	HWND m_hWnd;
 
-	//パラメータ文字列
+	//Parameter string
 	TCHAR m_ParamString[2048];
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//コピーボタン押下
+	//Copy button pressed
 	int _OnBtnCopy();
 
 };

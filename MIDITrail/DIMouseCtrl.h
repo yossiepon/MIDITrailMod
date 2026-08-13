@@ -9,11 +9,11 @@
 //******************************************************************************
 
 // MEMO:
-// DirectInputを用いてマウスの状態を取得する。
-// 状態参照とイベントバッファ参照の機能を持つ。
+// Uses DirectInput to retrieve the mouse state.
+// Provides both state polling and event buffer access.
 
 // NOTE:
-// バッファサイズを指定するインターフェースがない。
+// No interface to specify the buffer size.
 
 #pragma once
 
@@ -22,27 +22,27 @@
 
 
 //******************************************************************************
-// DirectInput マウス制御クラス
+// DirectInput mouse controller class
 //******************************************************************************
 class DIMouseCtrl
 {
 public:
 
-	//マウスボタン種別
+	//Mouse button type
 	enum MouseButton {
 		LeftButton,
 		RightButton,
 		CenterButton
 	};
 
-	//マウス軸種別
+	//Mouse axis type
 	enum MouseAxis {
 		AxisX,
 		AxisY,
 		AxisWheel
 	};
 
-	//マウスイベント種別
+	//Mouse event type
 	enum MouseEvent {
 		LeftButtonDown,
 		LeftButtonUp,
@@ -57,28 +57,28 @@ public:
 
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	DIMouseCtrl(void);
 	virtual ~DIMouseCtrl(void);
 
-	//初期化／終了
+	//Initialize / Terminate
 	int Initialize(HWND hWnd);
 	void Terminate();
 
-	//アクセス権取得／解放
+	//Acquire / release access
 	int Acquire();
 	int Unacquire();
 
-	//現時点の状態を取得
-	//  GetMouseStatusを一回呼び出してから
-	//  状態を取得したいボタンと軸の数だけIsBtnDown,GetDeltaを呼び出す
+	//Get the current state
+	//  Call GetMouseStatus once, then
+	//  call IsBtnDown/GetDelta as many times as needed for the buttons and axes whose state you want
 	int GetMouseStatus();
 	bool IsBtnDown(MouseButton);
 	int GetDelta(MouseAxis);
 
-	//バッファデータを取得
-	//  pIsExistがfalseになるまで繰り返し呼び出す
-	//  呼び出すたびに取得したバッファが削除される
+	//Get buffer data
+	//  Call repeatedly until pIsExist becomes false
+	//  Each call removes the retrieved buffer entry
 	int GetBuffer(bool* pIsExist, MouseEvent* pEvent, int* pDeltaAxis = NULL);
 
 private:

@@ -9,47 +9,47 @@
 //******************************************************************************
 
 // MEMO:
-// 指定文字列が書き込まれたビットマップを作成する。
-// 1行の文字列にのみ対応する。複数行は対応していない。
-// ビットマップのサイズは横幅が4の倍数になるように調整する。
+// Creates a bitmap with the specified string rendered into it.
+// Supports only a single line of text; multiple lines are not supported.
+// The bitmap size is adjusted so its width is a multiple of 4.
 
 #pragma once
 
 #include <list>
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//最大ビットマップサイズ：テクスチャ画像で許容される一般的な最大サイズ
+//Maximum bitmap size: the typical maximum size allowed for a texture image
 #define MTFONT2BMP_MAX_BMP_WIDTH  (2048)
 
 //******************************************************************************
-// フォント＞ビットマップ変換クラス
+// Font-to-bitmap conversion class
 //******************************************************************************
 class MTFont2Bmp
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTFont2Bmp(void);
 	virtual ~MTFont2Bmp(void);
 
-	//クリア
+	//Clear
 	void Clear();
 	
-	//フォント設定
-	//  強制的に固定ピッチにする場合はisForceFixedPitchにtrueを指定する
+	//Set font
+	//  Pass true for isForceFixedPitch to force a fixed pitch
 	int SetFont(const WCHAR* pFontName, unsigned long fontSize, bool isForceFixedPitch = false);
 
-	//ビットマップ作成
+	//Create bitmap
 	int CreateBmp(const WCHAR* pStr);
 	
-	//ビットマップサイズ取得
+	//Get bitmap size
 	void GetBmpSize(unsigned long* pHeight, unsigned long* pWidth);
 	
-	//ビットマップピクセル取得
-	//  階調数17段(0x00～0x10)のピクセル値を返す
-	//  範囲外を指定すると0xFFを返す
+	//Get bitmap pixel
+	//  Returns a pixel value with 17 gray levels (0x00-0x10)
+	//  Returns 0xFF if out of range
 	BYTE GetBmpPixcel(unsigned long x, unsigned long y);
 
 private:

@@ -18,7 +18,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTScenePianoRoll3DLive11::MTScenePianoRoll3DLive11(bool is2D)
 	: MTScenePianoRoll3DBase11(is2D)
@@ -28,7 +28,7 @@ MTScenePianoRoll3DLive11::MTScenePianoRoll3DLive11(bool is2D)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTScenePianoRoll3DLive11::~MTScenePianoRoll3DLive11()
 {
@@ -36,7 +36,7 @@ MTScenePianoRoll3DLive11::~MTScenePianoRoll3DLive11()
 }
 
 //******************************************************************************
-// シーン名取得
+// Get scene name
 //******************************************************************************
 const TCHAR* MTScenePianoRoll3DLive11::GetName() const
 {
@@ -44,7 +44,7 @@ const TCHAR* MTScenePianoRoll3DLive11::GetName() const
 }
 
 //******************************************************************************
-// モード固有コンポーネント生成
+// Mode-specific component creation
 //******************************************************************************
 int MTScenePianoRoll3DLive11::_CreateModeComponents(
 		ID3D11Device* pDevice,
@@ -106,7 +106,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// モード固有コンポーネント登録
+// Mode-specific component registration
 //******************************************************************************
 void MTScenePianoRoll3DLive11::_RegisterModeComponents()
 {
@@ -117,7 +117,7 @@ void MTScenePianoRoll3DLive11::_RegisterModeComponents()
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTScenePianoRoll3DLive11::Release()
 {
@@ -128,7 +128,7 @@ void MTScenePianoRoll3DLive11::Release()
 }
 
 //******************************************************************************
-// ノート描画
+// Draw notes
 //******************************************************************************
 int MTScenePianoRoll3DLive11::_DrawNotes(
 		ID3D11DeviceContext* pContext,
@@ -143,7 +143,7 @@ int MTScenePianoRoll3DLive11::_DrawNotes(
 }
 
 //******************************************************************************
-// 再生開始
+// Playback start
 //******************************************************************************
 int MTScenePianoRoll3DLive11::OnPlayStart()
 {
@@ -155,7 +155,7 @@ int MTScenePianoRoll3DLive11::OnPlayStart()
 }
 
 //******************************************************************************
-// 再生終了
+// Playback end
 //******************************************************************************
 int MTScenePianoRoll3DLive11::OnPlayEnd()
 {
