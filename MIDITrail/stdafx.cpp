@@ -1,4 +1,4 @@
-﻿// stdafx.cpp : source file that includes only the standard includes
+// stdafx.cpp : source file that includes only the standard includes
 // MenuWindow.pch will be the pre-compiled header.
 // stdafx.obj will contain the pre-compiled type information.
 
