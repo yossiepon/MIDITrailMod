@@ -9,7 +9,7 @@
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "resource.h"
+#include "Resource.h"
 #include "Commdlg.h"
 #include "MTParam.h"
 #include "MTGraphicCfgDlg.h"

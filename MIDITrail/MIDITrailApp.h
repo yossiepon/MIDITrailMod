@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "resource.h"
+#include "Resource.h"
 #include "Commdlg.h"
 #include "YNBaseLib.h"
 #include "SMIDILib.h"

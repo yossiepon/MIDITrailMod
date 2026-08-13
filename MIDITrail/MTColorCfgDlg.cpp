@@ -10,7 +10,7 @@
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "resource.h"
+#include "Resource.h"
 #include "MTColorCfgDlg.h"
 
 

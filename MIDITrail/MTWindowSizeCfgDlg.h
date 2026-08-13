@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "resource.h"
+#include "Resource.h"
 #include "YNBaseLib.h"
 #include <list>
 
