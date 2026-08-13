@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTHowToViewDlg
 //
-// 操作方法ダイアログ
+// How-to-view dialog.
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //
@@ -12,17 +12,17 @@
 
 
 //******************************************************************************
-// 操作方法ダイアログ
+// How-to-view dialog
 //******************************************************************************
 class MTHowToViewDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTHowToViewDlg(void);
 	virtual ~MTHowToViewDlg(void);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
 private:
@@ -34,38 +34,38 @@ private:
 	unsigned long m_PageNo;
 	HWND m_hWnd;
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTHowToViewDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//HowToビットマップ読み込み
+	//Load the How-To bitmap
 	int _LoadHowToBmp();
 
-	//HowToビットマップ描画
+	//Draw the How-To bitmap
 	int _DrawHowToBmp();
 
-	//クリア
+	//Clear
 	void _Clear();
 
-	//Previousボタン
+	//Previous button
 	int _OnPreviousButton();
 
-	//Nextボタン
+	//Next button
 	int _OnNextButton();
 
-	//画像表示
+	//Display image
 	int _DrawHowToImage();
 
-	//ボタン状態更新
+	//Update button state
 	void _UpdateButtonStatus();
 
 };

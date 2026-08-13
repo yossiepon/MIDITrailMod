@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTSceneBase11
 //
 // DX11 scene common base class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -63,7 +63,7 @@ int MTSceneBase11::OnRecvSequencerMsg(
 		AllNoteOffOnChLive(parser.GetPortNo(), parser.GetChNo());
 	}
 
-	// シーン固有処理
+	// Scene-specific handling
 	result = _OnRecvSequencerMsg(param1, param2);
 	if (result != 0) goto EXIT;
 
@@ -78,27 +78,27 @@ int MTSceneBase11::Update()
 {
 	int result = 0;
 
-	// コンテキスト生成（保存済みメンバから）
+	// Build the context (from saved members)
 	MTSceneUpdateContext ctx;
 	ctx.curTickTime = m_CurTickTime;
 	ctx.playTimeMSec = m_PlayTimeMSec;
 	ctx.liveTimeMSec = m_IsLive ? timeGetTime() : 0;
 
-	// カメラ更新
+	// Update camera
 	result = m_Camera.Update(ctx);
 	if (result != 0) goto EXIT;
 
-	// カメラ位置・回転をコンテキストに反映
+	// Reflect camera position/rotation into the context
 	m_Camera.GetPosition(&ctx.camPos);
 	ctx.rollAngle = m_Camera.GetRollAngle();
 
-	// 登録済みコンポーネント更新
+	// Update registered components
 	for (auto* pComp : m_ManagedComponents) {
 		result = pComp->Update(ctx);
 		if (result != 0) goto EXIT;
 	}
 
-	// シーン固有の追加更新
+	// Additional scene-specific update
 	result = _UpdateComponents(ctx);
 	if (result != 0) goto EXIT;
 
@@ -288,7 +288,7 @@ void MTSceneBase11::_LoadConf()
 	_LoadConfViewpoint(&confFile, 2, &m_Viewpoint2);
 	_LoadConfViewpoint(&confFile, 3, &m_Viewpoint3);
 
-	// 背景色読み込み
+	// Load background color
 	{
 		MTColorConf colorConf;
 		MTColorPalette colorPalette;

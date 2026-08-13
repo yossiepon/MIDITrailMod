@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTNoteCylindricalInstanced11
 //
-// GPU-instanced note renderer for PianoRoll Ring scenes.
+// GPU-instanced note renderer for Ring scenes.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 Ced (MIDITrail Mod Mod). All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

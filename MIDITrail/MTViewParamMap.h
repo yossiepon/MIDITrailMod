@@ -1,12 +1,10 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTViewParamMap
 //
 // View parameter map type definition.
-// Separated from IMTScene11.h so that camera and other classes can use it
-// without pulling in the full scene interface.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

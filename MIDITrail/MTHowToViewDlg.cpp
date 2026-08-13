@@ -1,15 +1,15 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTHowToViewDlg
 //
-// 操作方法ダイアログ
+// How-to-view dialog.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "resource.h"
+#include "Resource.h"
 #include "YNBaseLib.h"
 #include "MTParam.h"
 #include "MTHowToViewDlg.h"
@@ -17,18 +17,18 @@
 using namespace YNBaseLib;
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//表示画像数
+//Number of images to display
 #define MT_HOWTOVIEW_IMAGE_NUM  (3)
 
 //******************************************************************************
-// ウィンドウプロシージャ制御用パラメータ設定
+// Window procedure control parameter setup
 //******************************************************************************
 MTHowToViewDlg* MTHowToViewDlg::m_pThis = NULL;
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTHowToViewDlg::MTHowToViewDlg(void)
 {
@@ -40,7 +40,7 @@ MTHowToViewDlg::MTHowToViewDlg(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTHowToViewDlg::~MTHowToViewDlg(void)
 {
@@ -48,7 +48,7 @@ MTHowToViewDlg::~MTHowToViewDlg(void)
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ
+// Window procedure
 //******************************************************************************
 INT_PTR CALLBACK MTHowToViewDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -56,7 +56,7 @@ INT_PTR CALLBACK MTHowToViewDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ：実装
+// Window procedure: implementation
 //******************************************************************************
 INT_PTR MTHowToViewDlg::_WndProcImpl(
 		HWND hDlg,
@@ -115,7 +115,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 表示
+// Show
 //******************************************************************************
 int MTHowToViewDlg::Show(
 		HWND hParentWnd
@@ -127,19 +127,19 @@ int MTHowToViewDlg::Show(
 
 	m_PageNo = 0;
 
-	//アプリケーションインスタンスハンドルを取得
+	//Get the application instance handle
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ダイアログ表示
+	//Show the dialog
 	dresult = DialogBox(
-					hInstance,							//インスタンスハンドル
-					MAKEINTRESOURCE(IDD_HOWTOVIEW),		//ダイアログボックステンプレート
-					hParentWnd,							//親ウィンドウハンドル
-					_WndProc							//ダイアログボックスプロシージャ
+					hInstance,							//Instance handle
+					MAKEINTRESOURCE(IDD_HOWTOVIEW),		//Dialog box template
+					hParentWnd,							//Parent window handle
+					_WndProc							//Dialog box procedure
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -151,7 +151,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ダイアログ表示直前初期化
+// Pre-display dialog initialization
 //******************************************************************************
 int MTHowToViewDlg::_OnInitDlg(
 		HWND hDlg
@@ -161,11 +161,11 @@ int MTHowToViewDlg::_OnInitDlg(
 
 	m_hWnd = hDlg;
 
-	//HowToビットマップ読み込み
+	//Load the How-To bitmap
 	result = _LoadHowToBmp();
 	if (result != 0) goto EXIT;
 
-	//ボタン状態更新
+	//Update button state
 	_UpdateButtonStatus();
 
 EXIT:;
@@ -173,7 +173,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// HowToビットマップ読み込み
+// Load the How-To bitmap
 //******************************************************************************
 int MTHowToViewDlg::_LoadHowToBmp()
 {
@@ -191,9 +191,9 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	_Clear();
 
 	//----------------------------------------------------------------
-	//ファイルオープン
+	//Open file
 	//----------------------------------------------------------------
-	//プロセス実行ファイルディレクトリパス取得
+	//Get the process executable directory path
 	result = YNPathUtil::GetModuleDirPath(bmpFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
@@ -202,18 +202,18 @@ int MTHowToViewDlg::_LoadHowToBmp()
 		goto EXIT;
 	}
 
-	//BMPファイルパス作成
+	//Build the BMP file path
 	_tcscat_s(bmpFilePath, _MAX_PATH, pBmpFileName[m_PageNo]);
 
-	//BMPファイルを開く
+	//Open the BMP file
 	hFile = CreateFile(
-				bmpFilePath,			//ファイルパス
-				GENERIC_READ,			//アクセスタイプ
-				0,						//共有方法
-				NULL,					//セキュリティ属性
-				OPEN_EXISTING,			//生成指定
-				FILE_ATTRIBUTE_NORMAL,	//ファイル属性とフラグ
-				NULL					//テンプレートファイルハンドル
+				bmpFilePath,			//File path
+				GENERIC_READ,			//Access type
+				0,						//Share mode
+				NULL,					//Security attributes
+				OPEN_EXISTING,			//Creation disposition
+				FILE_ATTRIBUTE_NORMAL,	//File attributes and flags
+				NULL					//Template file handle
 			);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		result = YN_SET_ERR("File open error.", GetLastError(), 0);
@@ -221,70 +221,70 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	}
 
 	//----------------------------------------------------------------
-	//BMPファイルヘッダ
+	//BMP file header
 	//----------------------------------------------------------------
-	//BMPファイルヘッダ読み込み
+	//Read the BMP file header
 	bresult = ReadFile(
-					hFile,							//ファイルハンドル
-					&m_BmpHead,						//バッファ位置
-					sizeof(BITMAPFILEHEADER),		//読み取りサイズ
-					&numOfBytesRead,				//読み取ったサイズ
-					NULL							//オーバーラップ構造体バッファ
+					hFile,							//File handle
+					&m_BmpHead,						//Buffer address
+					sizeof(BITMAPFILEHEADER),		//Read size
+					&numOfBytesRead,				//Number of bytes read
+					NULL							//Overlapped structure buffer
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("File read error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ファイルタイプの確認 "BM"
+	//Verify the file type is "BM"
 	if (m_BmpHead.bfType != 0x4D42) {
 		result = YN_SET_ERR("Invalid data found.", m_BmpHead.bfType, 0);
 		goto EXIT;
 	}
 
 	//----------------------------------------------------------------
-	//BMP情報ヘッダ
+	//BMP info header
 	//----------------------------------------------------------------
-	//BMP情報ヘッダ読み込み
+	//Read the BMP info header
 	bresult = ReadFile(
-					hFile,							//ファイルハンドル
-					&m_BmpInfo,						//バッファ位置
-					sizeof(BITMAPINFOHEADER),		//読み取りサイズ
-					&numOfBytesRead,				//読み取ったサイズ
-					NULL							//オーバーラップ構造体バッファ
+					hFile,							//File handle
+					&m_BmpInfo,						//Buffer address
+					sizeof(BITMAPINFOHEADER),		//Read size
+					&numOfBytesRead,				//Number of bytes read
+					NULL							//Overlapped structure buffer
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("File read error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//24bit画像以外は読みません
-	//カラーテーブルが存在しないことを前提とする
+	//Only 24-bit images are read
+	//Assumes no color table is present
 	if ((m_BmpInfo.biBitCount != 24) || (m_BmpInfo.biClrUsed != 0)) {
 		result = YN_SET_ERR("Invalid BMP file.", m_BmpInfo.biBitCount, m_BmpInfo.biClrUsed);
 		goto EXIT;
 	}
 
 	//----------------------------------------------------------------
-	//BMPピクセルデータ
+	//BMP pixel data
 	//----------------------------------------------------------------
-	//ピクセルデータ開始位置にファイルポインタを設定
+	//Set the file pointer to the start of the pixel data
 	fp = SetFilePointer(
-				hFile,					//ファイルハンドル
-				m_BmpHead.bfOffBits,	//ファイルポインタ移動バイト数：下位32bit
-				0,						//ファイルポインタ移動バイト数：上位32bit
-				FILE_BEGIN				//開始点
+				hFile,					//File handle
+				m_BmpHead.bfOffBits,	//File pointer move distance: low 32 bits
+				0,						//File pointer move distance: high 32 bits
+				FILE_BEGIN				//Starting point
 			);
 	if (fp == INVALID_SET_FILE_POINTER) {
 		result = YN_SET_ERR("File access error.", GetLastError(), m_BmpHead.bfOffBits);
 		goto EXIT;
 	}
 
-	//BMPピクセルデータサイズ
-	//カラーテーブルが存在しないことを前提とする
+	//BMP pixel data size
+	//Assumes no color table is present
 	bmpPixelDataSize = m_BmpHead.bfSize - sizeof(BITMAPFILEHEADER) - sizeof(BITMAPINFOHEADER);
 
-	//ピクセルデータ読み込み用メモリ確保
+	//Allocate memory for reading pixel data
 	hMemBmpPixel = GlobalAlloc(GHND, bmpPixelDataSize);
 	if (hMemBmpPixel == NULL) {
 		result = YN_SET_ERR("Could not allocate memory.", 0, 0);
@@ -296,13 +296,13 @@ int MTHowToViewDlg::_LoadHowToBmp()
 		goto EXIT;
 	}
 
-	//BMPピクセルデータ読み込み
+	//Read the BMP pixel data
 	bresult = ReadFile(
-					hFile,				//ファイルハンドル
-					pBmpPixcel,			//バッファ位置
-					bmpPixelDataSize,	//読み取りサイズ
-					&numOfBytesRead,	//読み取ったサイズ
-					NULL				//オーバーラップ構造体バッファ
+					hFile,				//File handle
+					pBmpPixcel,			//Buffer address
+					bmpPixelDataSize,	//Read size
+					&numOfBytesRead,	//Number of bytes read
+					NULL				//Overlapped structure buffer
 				);
 	if (!bresult) {
 		result = YN_SET_ERR("File read error.", GetLastError(), 0);
@@ -326,7 +326,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// HowToビットマップ描画
+// Draw the How-To bitmap
 //******************************************************************************
 int MTHowToViewDlg::_DrawHowToBmp()
 {
@@ -338,32 +338,32 @@ int MTHowToViewDlg::_DrawHowToBmp()
 
 	if (m_pBmpPixcel == NULL) goto EXIT;
 
-	//描画対象ウィンドウハンドル取得
+	//Get the window handle to draw into
 	hWndPicture = GetDlgItem(m_hWnd, IDC_HOWTO_PICTURE);
 
-	//描画準備
+	//Prepare to draw
 	hdc = BeginPaint(hWndPicture, &ps);
 
 	apiresult = SetDIBitsToDevice(
-					hdc,					//デバイスコンテキストハンドル
-					0,						//転送先左上隅の座標：x
-					0,						//転送先左上隅の座標：y
-					m_BmpInfo.biWidth,		//転送元サイズ：幅
-					m_BmpInfo.biHeight,		//転送元サイズ：高さ
-					0,						//転送元座標左下隅の座標：x
-					0,						//転送元座標左下隅の座標：y
-					0,						//走査開始行
-					m_BmpInfo.biHeight,		//走査行数
-					m_pBmpPixcel,			//ビットマップデータ開始のアドレス
-					(BITMAPINFO*)&m_BmpInfo,//BMP情報ヘッダ
-					DIB_RGB_COLORS			//色指定
+					hdc,					//Device context handle
+					0,						//Destination top-left coordinate: x
+					0,						//Destination top-left coordinate: y
+					m_BmpInfo.biWidth,		//Source size: width
+					m_BmpInfo.biHeight,		//Source size: height
+					0,						//Source bottom-left coordinate: x
+					0,						//Source bottom-left coordinate: y
+					0,						//Starting scan line
+					m_BmpInfo.biHeight,		//Number of scan lines
+					m_pBmpPixcel,			//Address of the start of the bitmap data
+					(BITMAPINFO*)&m_BmpInfo,//BMP info header
+					DIB_RGB_COLORS			//Color usage specification
 				);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//描画終了
+	//Finish drawing
 	EndPaint(hWndPicture, &ps);
 
 EXIT:;
@@ -371,7 +371,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void MTHowToViewDlg::_Clear()
 {
@@ -387,24 +387,24 @@ void MTHowToViewDlg::_Clear()
 }
 
 //******************************************************************************
-// 前ボタン押下
+// Previous button pressed
 //******************************************************************************
 int MTHowToViewDlg::_OnPreviousButton()
 {
 	int result = 0;
 
-	//前の画像へ移動
+	//Move to the previous image
 	m_PageNo--;
 
-	//念のためガードする
+	//Guard just in case
 	if (m_PageNo < 0) {
 		m_PageNo = 0;
 	}
 
-	//ボタン状態更新
+	//Update button state
 	_UpdateButtonStatus();
 
-	//画像表示
+	//Display image
 	result = _DrawHowToImage();
 	if (result != 0) goto EXIT;
 
@@ -413,24 +413,24 @@ EXIT:;
 }
 
 //******************************************************************************
-// 次ボタン押下
+// Next button pressed
 //******************************************************************************
 int MTHowToViewDlg::_OnNextButton()
 {
 	int result = 0;
 
-	//次の画像へ移動
+	//Move to the next image
 	m_PageNo++;
 
-	//念のためガードする
+	//Guard just in case
 	if (m_PageNo >= MT_HOWTOVIEW_IMAGE_NUM) {
 		m_PageNo = MT_HOWTOVIEW_IMAGE_NUM - 1;
 	}
 
-	//ボタン状態更新
+	//Update button state
 	_UpdateButtonStatus();
 
-	//画像表示
+	//Display image
 	result = _DrawHowToImage();
 	if (result != 0) goto EXIT;
 
@@ -439,21 +439,21 @@ EXIT:;
 }
 
 //******************************************************************************
-// 画像表示
+// Display image
 //******************************************************************************
 int MTHowToViewDlg::_DrawHowToImage()
 {
 	int result = 0;
 
-	//HowToビットマップ読み込み
+	//Load the How-To bitmap
 	result = _LoadHowToBmp();
 	if (result != 0) goto EXIT;
 
-	//再描画
+	//Redraw
 	InvalidateRect(
-			m_hWnd,	//ウィンドウハンドル
-			NULL,	//更新リージョン指定：全体
-			FALSE	//背景消去：なし
+			m_hWnd,	//Window handle
+			NULL,	//Update region: entire client area
+			FALSE	//Erase background: none
 		);
 	UpdateWindow(m_hWnd);
 
@@ -462,7 +462,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ボタン状態更新
+// Update button state
 //******************************************************************************
 void MTHowToViewDlg::_UpdateButtonStatus()
 {
@@ -475,11 +475,11 @@ void MTHowToViewDlg::_UpdateButtonStatus()
 	EnableWindow(hPreviousButton, TRUE);
 	EnableWindow(hNextButton, TRUE);
 
-	//先頭画像表示：前ボタン不活性
+	//First image is displayed: disable the Previous button
 	if (m_PageNo == 0) {
 		EnableWindow(hPreviousButton, FALSE);
 	}
-	//最終画像表示：次ボタン不活性
+	//Last image is displayed: disable the Next button
 	if (m_PageNo == (MT_HOWTOVIEW_IMAGE_NUM - 1)) {
 		EnableWindow(hNextButton, FALSE);
 	}

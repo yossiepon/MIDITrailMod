@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTScenePianoRoll3DBase11
 //
-// DX11 PianoRoll 3D/2D scene intermediate base.
+// PianoRoll 3D/2D scene base class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,7 +17,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTScenePianoRoll3DBase11::MTScenePianoRoll3DBase11(bool is2D)
 {
@@ -34,7 +34,7 @@ MTScenePianoRoll3DBase11::MTScenePianoRoll3DBase11(bool is2D)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTScenePianoRoll3DBase11::~MTScenePianoRoll3DBase11()
 {
@@ -42,7 +42,7 @@ MTScenePianoRoll3DBase11::~MTScenePianoRoll3DBase11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTScenePianoRoll3DBase11::Create(
 		HWND hWnd,
@@ -95,7 +95,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTScenePianoRoll3DBase11::Release()
 {
@@ -113,7 +113,7 @@ void MTScenePianoRoll3DBase11::Release()
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTScenePianoRoll3DBase11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -144,7 +144,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// シーン固有コンポーネント描画
+// Draw scene-specific components
 //******************************************************************************
 int MTScenePianoRoll3DBase11::_DrawSceneComponents(
 		ID3D11DeviceContext* pContext,
@@ -197,7 +197,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// シーケンサメッセージ受信（共通: PitchBend + Dashboard）
+// Sequencer message reception (common: PitchBend + Dashboard)
 //******************************************************************************
 int MTScenePianoRoll3DBase11::_OnRecvSequencerMsg(
 		unsigned long param1,
@@ -228,7 +228,7 @@ int MTScenePianoRoll3DBase11::_OnRecvSequencerMsg(
 }
 
 //******************************************************************************
-// 再生開始
+// Playback start
 //******************************************************************************
 int MTScenePianoRoll3DBase11::OnPlayStart()
 {
@@ -237,7 +237,7 @@ int MTScenePianoRoll3DBase11::OnPlayStart()
 }
 
 //******************************************************************************
-// 再生終了
+// Playback end
 //******************************************************************************
 int MTScenePianoRoll3DBase11::OnPlayEnd()
 {
@@ -246,7 +246,7 @@ int MTScenePianoRoll3DBase11::OnPlayEnd()
 }
 
 //******************************************************************************
-// 表示トグル
+// Display toggle
 //******************************************************************************
 void MTScenePianoRoll3DBase11::SetEffect(MTEffectType type, bool isEnable)
 {
@@ -286,7 +286,7 @@ void MTScenePianoRoll3DBase11::SetEffect(MTEffectType type, bool isEnable)
 }
 
 //******************************************************************************
-// 再生速度設定
+// Set playback speed
 //******************************************************************************
 void MTScenePianoRoll3DBase11::SetPlaySpeedRatio(unsigned long ratio)
 {
@@ -294,7 +294,7 @@ void MTScenePianoRoll3DBase11::SetPlaySpeedRatio(unsigned long ratio)
 }
 
 //******************************************************************************
-// ウィンドウリサイズ通知
+// Window resize notification
 //******************************************************************************
 void MTScenePianoRoll3DBase11::OnWindowResize()
 {
@@ -303,7 +303,7 @@ void MTScenePianoRoll3DBase11::OnWindowResize()
 }
 
 //******************************************************************************
-// デフォルト視点計算
+// Compute default viewpoint
 //******************************************************************************
 void MTScenePianoRoll3DBase11::_ComputeDefaultViewParam(MTViewParamMap* pParamMap)
 {
@@ -321,7 +321,7 @@ void MTScenePianoRoll3DBase11::_ComputeDefaultViewParam(MTViewParamMap* pParamMa
 }
 
 //******************************************************************************
-// 視点補正量
+// Viewpoint compensation amount
 //******************************************************************************
 float MTScenePianoRoll3DBase11::_GetViewpointCompensation() const
 {
@@ -329,7 +329,7 @@ float MTScenePianoRoll3DBase11::_GetViewpointCompensation() const
 }
 
 //******************************************************************************
-// リセット
+// Reset
 //******************************************************************************
 void MTScenePianoRoll3DBase11::_Reset()
 {

@@ -1,15 +1,15 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTColorParamImportDlg
 //
-// カラーパラメータ入力ダイアログ
+// Color parameter import dialog.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "resource.h"
+#include "Resource.h"
 #include "YNBaseLib.h"
 #include "MTColorParamImportDlg.h"
 
@@ -17,12 +17,12 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ウィンドウプロシージャ制御用パラメータ設定
+// Window procedure control parameter setup
 //******************************************************************************
 MTColorParamImportDlg* MTColorParamImportDlg::m_pThis = NULL;
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTColorParamImportDlg::MTColorParamImportDlg(void)
 {
@@ -37,7 +37,7 @@ MTColorParamImportDlg::MTColorParamImportDlg(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTColorParamImportDlg::~MTColorParamImportDlg(void)
 {
@@ -45,7 +45,7 @@ MTColorParamImportDlg::~MTColorParamImportDlg(void)
 }
 
 //******************************************************************************
-// 表示
+// Show
 //******************************************************************************
 int MTColorParamImportDlg::Show(
 		HWND hParentWnd
@@ -55,19 +55,19 @@ int MTColorParamImportDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//アプリケーションインスタンスハンドルを取得
+	//Get the application instance handle
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ダイアログ表示
+	//Show the dialog
 	dresult = DialogBox(
-					hInstance,							//インスタンスハンドル
-					MAKEINTRESOURCE(IDD_COLOR_PARAM_IMPORT),	//ダイアログボックステンプレート
-					hParentWnd,							//親ウィンドウハンドル
-					_WndProc							//ダイアログボックスプロシージャ
+					hInstance,							//Instance handle
+					MAKEINTRESOURCE(IDD_COLOR_PARAM_IMPORT),	//Dialog box template
+					hParentWnd,							//Parent window handle
+					_WndProc							//Dialog box procedure
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -79,7 +79,7 @@ EXIT:;
 }
 
 //******************************************************************************
-//インポート実行フラグ取得
+//Get the import-execute flag
 //******************************************************************************
 bool MTColorParamImportDlg::IsExecImport()
 {
@@ -87,7 +87,7 @@ bool MTColorParamImportDlg::IsExecImport()
 }
 
 //******************************************************************************
-//パラメータ文字列取得
+//Get the parameter string
 //******************************************************************************
 TCHAR* MTColorParamImportDlg::GetParamString()
 {
@@ -95,7 +95,7 @@ TCHAR* MTColorParamImportDlg::GetParamString()
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ
+// Window procedure
 //******************************************************************************
 INT_PTR CALLBACK MTColorParamImportDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -103,7 +103,7 @@ INT_PTR CALLBACK MTColorParamImportDlg::_WndProc(HWND hWnd, UINT message, WPARAM
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ：実装
+// Window procedure: implementation
 //******************************************************************************
 INT_PTR MTColorParamImportDlg::_WndProcImpl(
 		HWND hDlg,
@@ -138,7 +138,7 @@ INT_PTR MTColorParamImportDlg::_WndProcImpl(
 			}
 			break;
 		default:
-			//処理しないメッセージ
+			//Message not handled
 			break;
 	}
 
@@ -150,7 +150,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ダイアログ表示直前初期化
+// Pre-display dialog initialization
 //******************************************************************************
 int MTColorParamImportDlg::_OnInitDlg(HWND hDlg)
 {
@@ -160,7 +160,7 @@ int MTColorParamImportDlg::_OnInitDlg(HWND hDlg)
 	m_isExecImport = false;
 	m_hEditBox = GetDlgItem(m_hWnd, IDC_EDIT_TEXT_IMPORT);
 
-	//エディットボックスの最大入力文字数を制限する
+	//Limit the maximum input length of the edit box
 	SendMessage(m_hEditBox, EM_SETLIMITTEXT, (WPARAM)(MT_COLOR_PARAM_IMPORT_STRING_LENGTH_MAX - 1), 0);
 
 //EXIT:;
@@ -168,7 +168,7 @@ int MTColorParamImportDlg::_OnInitDlg(HWND hDlg)
 }
 
 //******************************************************************************
-// ペーストボタン押下
+// Paste button pressed
 //******************************************************************************
 int MTColorParamImportDlg::_OnBtnPaste()
 {
@@ -178,21 +178,21 @@ int MTColorParamImportDlg::_OnBtnPaste()
 	TCHAR* pGlobalMemory = NULL;
 	size_t length = 0;
 
-	///クリップボードのデータ存在確認
+	///Check whether clipboard data exists
 	bresult = IsClipboardFormatAvailable(CF_TEXT);
 	if (!bresult) {
-		//テキストデータがなければ何もしない
+		//Do nothing if there is no text data
 		goto EXIT;
 	}
 
-	//クリップボードを開く
+	//Open the clipboard
 	bresult = OpenClipboard(m_hWnd);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//クリップボードのデータを取得
+	//Get the clipboard data
 	hGlobalMemory = (HGLOBAL)GetClipboardData(CF_TEXT);
 	if (hGlobalMemory == NULL) {
 		CloseClipboard();
@@ -200,7 +200,7 @@ int MTColorParamImportDlg::_OnBtnPaste()
 		goto EXIT;
 	}
 
-	//メモリロック
+	//Lock memory
 	pGlobalMemory = (LPSTR)GlobalLock(hGlobalMemory);
 	if (pGlobalMemory == NULL) {
 		CloseClipboard();
@@ -208,19 +208,19 @@ int MTColorParamImportDlg::_OnBtnPaste()
 		goto EXIT;
 	}
 
-	//文字列サイズを確認
+	//Check the string size
 	length = _tcslen(pGlobalMemory);
 	if (length >= MT_COLOR_PARAM_IMPORT_STRING_LENGTH_MAX) {
-		//クリップボードのデータが大きすぎるため
+		//Because the clipboard data is too large
 		CloseClipboard();
 		result = YN_SET_ERR("The clipboad data is too long.", length, 0);
 		goto EXIT;
 	}
 
-	//メモリにパラメータ文字列を書き込む
+	//Write the parameter string into memory
 	_tcscpy_s(m_ParamString, MT_COLOR_PARAM_IMPORT_STRING_LENGTH_MAX, pGlobalMemory);
 
-	//メモリロック解除
+	//Unlock memory
 	bresult = GlobalUnlock(hGlobalMemory);
 	if ((!bresult) && (GetLastError() != NO_ERROR)) {
 		CloseClipboard();
@@ -228,14 +228,14 @@ int MTColorParamImportDlg::_OnBtnPaste()
 		goto EXIT;
 	}
 
-	//クリップボードを閉じる
+	//Close the clipboard
 	bresult = CloseClipboard();
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//パラメータ文字列表示
+	//Display the parameter string
 	bresult = SetWindowText(m_hEditBox, m_ParamString);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

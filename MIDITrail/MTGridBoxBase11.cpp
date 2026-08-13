@@ -2,9 +2,10 @@
 //
 // MIDITrail / MTGridBoxBase11
 //
-// Grid box base class (DX11).
+// Grid box base class.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

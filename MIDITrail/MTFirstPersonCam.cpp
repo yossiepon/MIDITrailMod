@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTFirstPersonCam
 //
 // First-person camera class.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -194,10 +194,10 @@ int MTFirstPersonCam::Update(const MTSceneUpdateContext& ctx)
 	m_DIMouseCtrl.Acquire();
 
 	result = m_DIKeyCtrl.GetKeyStatus();
-	result = 0;
+	if (result != 0) goto EXIT;
 
 	result = m_DIMouseCtrl.GetMouseStatus();
-	result = 0;
+	if (result != 0) goto EXIT;
 
 	result = m_GamePadCtrl.UpdateState();
 	if (result != 0) goto EXIT;

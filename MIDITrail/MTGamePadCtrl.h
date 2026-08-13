@@ -1,15 +1,15 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTGamePadCtrl
 //
-// ゲームパッド制御クラス
+// Gamepad input controller.
 //
 // Copyright (C) 2019 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// XInputを用いてゲームパッドの状態を取得する。
+// Uses XInput to retrieve the gamepad state.
 
 #pragma once
 
@@ -17,31 +17,31 @@
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
 
-//トリガーON閾値(0-255)
+//Trigger ON threshold (0-255)
 #define MT_GAME_PAD_TRRIGER_ON_THRESHOLD		(250)
 
 
 //******************************************************************************
-// ゲームパッド制御クラス
+// Gamepad controller class
 //******************************************************************************
 class MTGamePadCtrl
 {
 public:
 	
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTGamePadCtrl(void);
 	virtual ~MTGamePadCtrl();
 	
-	//初期化
+	//Initialize
 	int Initialize(int userIndex);
 	
-	//状態更新
+	//Update state
 	int UpdateState();
 	
-	//ボタン状態取得
+	//Get button state
 	bool GetState_DPadUp();
 	bool GetState_DPadDown();
 	bool GetState_DPadLeft();
@@ -57,13 +57,13 @@ public:
 	bool GetState_Start();
 	bool GetState_Back();
 	
-	//スティック状態取得(0.0 - 1.0)
+	//Get stick state (0.0 - 1.0)
 	float GetState_ThumbLX();
 	float GetState_ThumbLY();
 	float GetState_ThumbRX();
 	float GetState_ThumbRY();
 	
-	//ボタン押下確認
+	//Check button press
 	bool DidPressNow_A();
 	bool DidPressNow_B();
 	bool DidPressNow_X();
@@ -77,17 +77,17 @@ public:
 	
 private:
 	
-	//ユーザインデックス
+	//User index
 	int m_UserIndex;
 	
-	//ゲームパッド接続状態
+	//Gamepad connection state
 	bool m_isConnected;
 	
-	//ゲームパッド状態
+	//Gamepad state
 	XINPUT_GAMEPAD m_PrevGamePadState;
 	XINPUT_GAMEPAD m_CurGamePadState;
 
-	//スティック状態
+	//Stick state
 	float m_ThumbLX;
 	float m_ThumbLY;
 	float m_ThumbRX;

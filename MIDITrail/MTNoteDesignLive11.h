@@ -2,11 +2,9 @@
 //
 // MIDITrail / MTNoteDesignLive11
 //
-// Note design class for Live mode.
-// Wraps MTNoteDesign11 with pSeqData=NULL initialization,
-// overrides CalcNoteEnvelope with linear decay for Live.
+// Note design class (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

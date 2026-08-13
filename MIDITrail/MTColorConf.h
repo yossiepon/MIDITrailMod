@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTColorConf
 //
-// カラー設定クラス
+// Color configuration class.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
 //
@@ -16,47 +16,47 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//カラーパレット数最大値（デフォルト設定を含む）
+//Maximum number of color palettes (including the default)
 #define MT_COLOR_PALETTE_NUM_MAX	(7)
 
 
 //******************************************************************************
-// カラー設定クラス
+// Color configuration class
 //******************************************************************************
 class MTColorConf
 {
 public:
 	
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTColorConf(void);
 	virtual ~MTColorConf(void);
 	
-	//初期化
+	//Initialize
 	int Initialize(const TCHAR* pDefaultSceneName);
 	
-	//選択カラーパレット番号取得：0 デフォルト、1-6 パレット番号
+	//Get selected color palette number: 0 = default, 1-6 = palette number
 	unsigned long GetSelectedColorPaletteNo();
 	
-	//選択カラーパレット番号登録：0 デフォルト、1-6 パレット番号
+	//Set selected color palette number: 0 = default, 1-6 = palette number
 	int SetSelectedColorPaletteNo(unsigned long paletteNo);
 	
-	//カラーパレット取得：0 デフォルト、1-6 パレット番号
+	//Get color palette: 0 = default, 1-6 = palette number
 	int GetColorPalette(unsigned long paletteNo, MTColorPalette* pColorPalette);
 	
-	//選択カラーパレット取得
+	//Get selected color palette
 	void GetSelectedColorPalette(MTColorPalette* pColorPalette);
 	
-	//カラーパレット登録：1-6 パレット番号、0 デフォルトは登録不可
+	//Set color palette: 1-6 = palette number; 0 (default) cannot be set
 	int SetColorPalette(unsigned long paletteNo, MTColorPalette* pColorPalette);
 	
-	//設定保存
+	//Save the setting
 	int Save();
 	
 private:
 	
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const MTColorConf&);
 	MTColorConf(const MTColorConf&);
 	

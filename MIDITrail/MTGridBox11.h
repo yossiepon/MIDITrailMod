@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTGridBox11
 //
-// DX11 grid box renderer (Playback mode).
-// Draws wireframe grid, bar lines, and port separators from SMSeqData.
+// Grid box renderer (Playback).
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

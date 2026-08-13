@@ -1,16 +1,16 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / DIKeyCtrl
 //
-// DirectInput キー入力制御クラス
+// DirectInput keyboard input controller.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// DirectInputを用いてキーボードの状態を取得する。
-// 現状はイベントバッファ参照機能を持たない。
+// Uses DirectInput to retrieve the keyboard state.
+// Currently does not support event buffer access.
 
 #pragma once
 
@@ -19,29 +19,27 @@
 
 
 //******************************************************************************
-// DirectInput キー入力制御クラス
+// DirectInput keyboard input controller class
 //******************************************************************************
 class DIKeyCtrl
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	DIKeyCtrl(void);
 	virtual ~DIKeyCtrl(void);
 
-	//初期化／終了
+	//Initialize / Terminate
 	int Initialize(HWND hWnd);
 	void Terminate();
 
-	//アクセス権取得／解放
+	//Acquire / release access
 	int Acquire();
 	int Unacquire();
 
-	//現時点の状態を取得
-	//  GetKeyStatusを一回呼び出してから
-	//  状態を取得したいキーの数だけIsKeyDownを呼び出す
-	//  BUG: ウィンドウが非アクティブ状態の場合にデバイスへアクセスできず
-	//       GetKeyStatus()がエラーになる
+	//Get the current state
+	//  Call GetKeyStatus once, then
+	//  call IsKeyDown as many times as needed for the keys whose state you want
 	int GetKeyStatus();
 	bool IsKeyDown(unsigned char key);
 

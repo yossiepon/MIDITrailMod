@@ -2,9 +2,9 @@
 //
 // MIDITrail / MTGridBoxLive11
 //
-// Live monitor grid box renderer (DX11).
+// Grid box renderer (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

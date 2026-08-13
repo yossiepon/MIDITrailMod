@@ -2,11 +2,9 @@
 //
 // MIDITrail / MTNoteCylindricalLive11
 //
-// Cylindrical (Ring) live note renderer (DX11).
-// Handles ring-mode live MIDI input with cylindrical coordinate placement.
-// Parallel to MTNoteCylindricalInstanced11 (Playback).
+// Cylindrical note renderer (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

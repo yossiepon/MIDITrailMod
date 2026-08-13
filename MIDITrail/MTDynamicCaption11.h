@@ -1,14 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTDynamicCaption11
 //
-// DX11 dynamic caption renderer.
-// Pre-renders all possible characters to a tile texture, then updates
-// UV coordinates per frame to display changing text (counter, timer, etc.)
-// without regenerating the texture.
+// Dynamic caption renderer (tile texture, UV update only).
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

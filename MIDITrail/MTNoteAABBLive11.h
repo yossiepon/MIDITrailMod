@@ -2,11 +2,9 @@
 //
 // MIDITrail / MTNoteAABBLive11
 //
-// AABB live note renderer (DX11).
-// Handles Roll3D, Roll2D, and Rain modes for live MIDI input.
-// Parallel to MTNoteAABBInstanced11 (Playback).
+// AABB note renderer (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

@@ -2,10 +2,9 @@
 //
 // MIDITrail / MTNoteInstancedShaderSnippets
 //
-// Shared HLSL function snippets for instanced note renderers.
-// Used by MTNoteAABBInstanced11 and MTNoteCylindricalInstanced11.
+// Shader snippet definitions for instanced rendering.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

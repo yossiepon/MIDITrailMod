@@ -2,10 +2,9 @@
 //
 // MIDITrail / MTGridRingLive11
 //
-// Live monitor grid ring renderer (DX11).
-// Fixed 2-ring wireframe (start + end of display window).
+// Grid ring renderer (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

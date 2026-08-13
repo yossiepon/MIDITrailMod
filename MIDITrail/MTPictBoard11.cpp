@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTPictBoard11
 //
-// DX11 picture board renderer.
+// Picture board renderer.
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,7 +22,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTPictBoard11::MTPictBoard11()
 {
@@ -40,7 +40,7 @@ MTPictBoard11::~MTPictBoard11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTPictBoard11::Create(
 		ID3D11Device* pDevice,
@@ -70,7 +70,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTPictBoard11::Release()
 {
@@ -83,7 +83,7 @@ void MTPictBoard11::Release()
 }
 
 //******************************************************************************
-// 頂点生成
+// Vertex generation
 //******************************************************************************
 int MTPictBoard11::_CreateVertices(
 		ID3D11Device* pDevice,
@@ -94,7 +94,7 @@ int MTPictBoard11::_CreateVertices(
 	DXPRIMITIVE11_VERTEX* pVertex = NULL;
 	unsigned long* pIndex = NULL;
 
-	// 4 頂点 6 インデックス（TRIANGLELIST で 2 三角形）
+	// 4 vertices, 6 indices (2 triangles via TRIANGLELIST)
 	result = m_Primitive.CreateVertexBuffer(pDevice, 4);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.CreateIndexBuffer(pDevice, 6);
@@ -106,7 +106,7 @@ int MTPictBoard11::_CreateVertices(
 	if (result != 0) goto EXIT;
 
 	{
-		// 再生面の頂点座標を取得してボードの位置を決定
+		// Get the playback section's vertex coordinates to determine the board position
 		Vector3 vectorLU, vectorRU, vectorLD, vectorRD;
 		m_NoteDesign.GetPlaybackSectionVirtexPos(
 				0, &vectorLU, &vectorRU, &vectorLD, &vectorRD);
@@ -118,7 +118,7 @@ int MTPictBoard11::_CreateVertices(
 		}
 		float chStep = m_NoteDesign.GetChStep();
 
-		// 頂点座標（左面、chStep 分ずらす）
+		// Vertex coordinates (left face, offset by chStep)
 		//  0+----+1
 		//   |    |
 		//  2+----+3
@@ -140,7 +140,7 @@ int MTPictBoard11::_CreateVertices(
 		setVtx(2, vectorLD.x,             vectorLD.y, vectorLD.z + chStep + 0.01f, 0.0f, 1.0f);
 		setVtx(3, vectorLD.x + boardWidth, vectorLD.y, vectorLD.z + chStep + 0.01f, 1.0f, 1.0f);
 
-		// 再生面との相対位置にずらす
+		// Offset to a position relative to the playback section
 		float offset = -(boardWidth * m_NoteDesign.GetPictBoardRelativePos());
 		for (int i = 0; i < 4; i++) {
 			pVertex[i].pos[0] += offset;
@@ -159,7 +159,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テクスチャ読み込み
+// Load texture
 //******************************************************************************
 int MTPictBoard11::_LoadTexture(
 		ID3D11Device* pDevice,
@@ -192,11 +192,11 @@ EXIT:;
 }
 
 //******************************************************************************
-// 更新
+// Update
 //******************************************************************************
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTPictBoard11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -210,7 +210,7 @@ int MTPictBoard11::Draw(
 }
 
 //******************************************************************************
-// チックタイム / リセット / 再生制御
+// Tick time / reset / playback control
 //******************************************************************************
 int MTPictBoard11::Update(const MTSceneUpdateContext& ctx)
 {

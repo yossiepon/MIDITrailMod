@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTTimeIndicatorRing11
 //
-// DX11 time indicator ring renderer.
-// Draws a 128-segment ring at the current playback position.
+// Time indicator ring renderer.
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

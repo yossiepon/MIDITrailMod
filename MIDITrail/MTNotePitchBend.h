@@ -1,15 +1,16 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTNotePitchBend
 //
-// ピッチベンド情報クラス
+// Pitch bend data manager.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ポート／チャンネル単位のピッチベンド情報を保持する。
+// Holds pitch bend information per port/channel.
 
 #pragma once
 
@@ -18,20 +19,20 @@
 
 
 //******************************************************************************
-// ピッチベンド情報クラス
+// Pitch bend info class
 //******************************************************************************
 class MTNotePitchBend : public IMTSceneManagedComponent
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTNotePitchBend(void);
 	virtual ~MTNotePitchBend(void);
 
-	//初期化
+	//Initialize
 	int Initialize();
 
-	//ピッチベンド登録
+	//Register pitch bend
 	int SetPitchBend(
 			unsigned char portNo,
 			unsigned char chNo,
@@ -39,21 +40,21 @@ public:
 			unsigned char sensitivity
 		);
 
-	//ピッチベンド値取得
+	//Get pitch bend value
 	short GetValue(unsigned long portNo, unsigned long chNo);
 
-	//ピッチベンド感度取得
+	//Get pitch bend sensitivity
 	unsigned char GetSensitivity(unsigned long portNo, unsigned long chNo);
 
-	//リセット
+	//Reset
 	void Reset() override;
 
-	//ピッチベンド表示効果設定
+	//Set pitch bend display effect
 	void SetEnable(bool isEnable);
 
 private:
 
-	//ピッチベンド情報
+	//Pitch bend info
 	struct MTNOTEPITCHBEND_PITCHBEND_INFO {
 		short value;
 		unsigned char sensitivity;
@@ -61,10 +62,10 @@ private:
 
 private:
 
-	//ピッチベンド表示効果
+	//Pitch bend display effect
 	bool m_isEnable;
 
-	//ピッチベンド情報
+	//Pitch bend info
 	MTNOTEPITCHBEND_PITCHBEND_INFO m_PitchBend[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 
 };

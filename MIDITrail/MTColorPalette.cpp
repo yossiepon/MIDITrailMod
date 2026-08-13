@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTColorPalette
 //
 // Color palette class.
 //
 // Copyright (C) 2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2025-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

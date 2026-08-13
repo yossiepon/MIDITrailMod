@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTStars11
 //
-// DX11 star particle renderer.
+// Star particle renderer.
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,7 +23,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTStars11::MTStars11()
 {
@@ -37,7 +37,7 @@ MTStars11::~MTStars11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTStars11::Create(
 		ID3D11Device* pDevice,
@@ -52,14 +52,14 @@ int MTStars11::Create(
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	// 頂点バッファ生成（ポイントリスト）
+	// Create vertex buffer (point list)
 	result = m_Primitive.CreateVertexBuffer(pDevice, m_NumOfStars);
 	if (result != 0) goto EXIT;
 
 	m_Primitive.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 	m_Primitive.SetLightEnable(false);
 
-	// 頂点データ書き込み
+	// Write vertex data
 	result = _CreateVertices(pContext);
 	if (result != 0) goto EXIT;
 
@@ -70,7 +70,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTStars11::Release()
 {
@@ -79,7 +79,7 @@ void MTStars11::Release()
 }
 
 //******************************************************************************
-// 更新：カメラ位置に追従（星は無限遠を擬似的に表現）
+// Update: follow the camera position (stars simulate being at infinite distance)
 //******************************************************************************
 int MTStars11::Update(const MTSceneUpdateContext& ctx)
 {
@@ -89,7 +89,7 @@ int MTStars11::Update(const MTSceneUpdateContext& ctx)
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTStars11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -104,7 +104,7 @@ int MTStars11::Draw(
 }
 
 //******************************************************************************
-// 頂点生成：球面上に一様分布
+// Vertex generation: uniformly distributed on a sphere surface
 //******************************************************************************
 int MTStars11::_CreateVertices(ID3D11DeviceContext* pContext)
 {
@@ -122,7 +122,7 @@ int MTStars11::_CreateVertices(ID3D11DeviceContext* pContext)
 		float x   = xzr * cosf(phi);
 		float z   = xzr * sinf(phi);
 
-		// グレースケールの明るさ
+		// Grayscale brightness
 		float brightness = ((float)rand() / RAND_MAX);
 
 		pVertex[i].pos[0] = x;
@@ -147,7 +147,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定読み込み
+// Load configuration
 //******************************************************************************
 int MTStars11::_LoadConfFile(const TCHAR* pSceneName)
 {

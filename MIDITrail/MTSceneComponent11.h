@@ -2,11 +2,9 @@
 //
 // MIDITrail / MTSceneComponent11
 //
-// Common base for DX11 visual scene components.
-// Extends IMTSceneManagedComponent with enable/disable state for
-// visibility toggling (SetEffect).
+// Visual scene component base class.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

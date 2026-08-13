@@ -1,12 +1,10 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / DXTexture11
 //
-// Direct3D 11 texture loader.
-// Replaces the scattered D3DXCreateTextureFromFile calls in each DX9
-// component with a single WIC-based utility class. No DXSDK dependency.
+// Direct3D 11 texture loader (WIC-based).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 // Based on the DX11 migration design by ced (Zel9278)
 // https://github.com/Zel9278/MIDITrailModMod

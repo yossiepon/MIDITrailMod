@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTStaticCaption11
 //
-// DX11 static caption renderer.
+// Static caption renderer.
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -19,7 +19,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTStaticCaption11::MTStaticCaption11()
 {
@@ -33,7 +33,7 @@ MTStaticCaption11::~MTStaticCaption11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTStaticCaption11::Create(
 		ID3D11Device* pDevice,
@@ -54,13 +54,13 @@ int MTStaticCaption11::Create(
 	result = m_FontTexture.CreateTexture(pDevice, pText);
 	if (result != 0) goto EXIT;
 
-	// 4 頂点 + 6 インデックスのクワッド
+	// Quad: 4 vertices + 6 indices
 	result = m_Primitive.CreateVertexBuffer(pDevice, 4);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.CreateIndexBuffer(pDevice, 6);
 	if (result != 0) goto EXIT;
 
-	// インデックスは固定
+	// Indices are fixed
 	{
 		unsigned long* pIndex = NULL;
 		result = m_Primitive.LockIndex(pContext, &pIndex);
@@ -82,7 +82,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTStaticCaption11::Release()
 {
@@ -92,7 +92,7 @@ void MTStaticCaption11::Release()
 }
 
 //******************************************************************************
-// 色設定
+// Set color
 //******************************************************************************
 void MTStaticCaption11::SetColor(Color color)
 {
@@ -100,7 +100,7 @@ void MTStaticCaption11::SetColor(Color color)
 }
 
 //******************************************************************************
-// テクスチャサイズ取得
+// Get texture size
 //******************************************************************************
 void MTStaticCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pWidth)
 {
@@ -108,7 +108,7 @@ void MTStaticCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pW
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTStaticCaption11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -143,7 +143,7 @@ int MTStaticCaption11::Draw(
 	unsigned char ca = (unsigned char)(m_Color.A() * 255.0f);
 	DWORD color = (ca << 24) | (cr << 16) | (cg << 8) | cb;
 
-	// 頂点更新（Map/Unmap のみ、バッファ再生成しない）
+	// Update vertices (Map/Unmap only, no buffer recreation)
 	{
 		DXPRIMITIVE11_VERTEX* pVertex = NULL;
 		result = m_Primitive.LockVertex(pContext, &pVertex);

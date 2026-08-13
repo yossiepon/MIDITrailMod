@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTAboutDlg
 //
-// バージョン情報ダイアログクラス
+// About dialog.
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -17,12 +17,12 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// ウィンドウプロシージャ制御用パラメータ設定
+// Window procedure control parameter setup
 //******************************************************************************
 MTAboutDlg* MTAboutDlg::m_pThis = NULL;
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTAboutDlg::MTAboutDlg(void)
 {
@@ -30,14 +30,14 @@ MTAboutDlg::MTAboutDlg(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTAboutDlg::~MTAboutDlg(void)
 {
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ
+// Window procedure
 //******************************************************************************
 INT_PTR CALLBACK MTAboutDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -45,7 +45,7 @@ INT_PTR CALLBACK MTAboutDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ：実装
+// Window procedure: implementation
 //******************************************************************************
 INT_PTR MTAboutDlg::_WndProcImpl(
 		HWND hDlg,
@@ -78,7 +78,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 表示
+// Show
 //******************************************************************************
 int MTAboutDlg::Show(
 		HWND hParentWnd
@@ -88,19 +88,19 @@ int MTAboutDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//アプリケーションインスタンスハンドルを取得
+	//Get the application instance handle
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//ダイアログ表示
+	//Show the dialog
 	dresult = DialogBox(
-					hInstance,						//インスタンスハンドル
-					MAKEINTRESOURCE(IDD_ABOUTBOX),	//ダイアログボックステンプレート
-					hParentWnd,						//親ウィンドウハンドル
-					_WndProc						//ダイアログボックスプロシージャ
+					hInstance,						//Instance handle
+					MAKEINTRESOURCE(IDD_ABOUTBOX),	//Dialog box template
+					hParentWnd,						//Parent window handle
+					_WndProc						//Dialog box procedure
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -112,7 +112,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ダイアログ表示直前初期化
+// Pre-display dialog initialization
 //******************************************************************************
 int MTAboutDlg::_OnInitDlg(
 		HWND hDlg
@@ -123,7 +123,7 @@ int MTAboutDlg::_OnInitDlg(
 	WCHAR* pVersion = NULL;
 	WCHAR* pCopyright = NULL;
 
-	//バージョン文字列
+	//Version string
 #ifdef _WIN64
 	//64bit
 	pVersion = MIDITRAIL_VERSION_STRING_X64;
@@ -132,17 +132,17 @@ int MTAboutDlg::_OnInitDlg(
 	pVersion = MIDITRAIL_VERSION_STRING_X86;
 #endif
 
-	//コピーライト文字列
+	//Copyright string
 	pCopyright = MIDITRAIL_COPYRIGHT;
 
-	//バージョン文字列設定
+	//Set the version string
 	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_VERSION), pVersion);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//コピーライト文字列設定
+	//Set the copyright string
 	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT), pCopyright);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

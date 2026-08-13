@@ -1,13 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTStaticCaption11
 //
-// DX11 static caption renderer.
-// Draws a fixed text string as a textured quad at screen coordinates.
-// Text cannot be changed after creation.
+// Static caption renderer.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

@@ -2,11 +2,10 @@
 //
 // MIDITrail / MTScenePianoRollRing11
 //
-// DX11 PianoRoll Ring Playback scene.
-// Mod features integrated (ADR-0054).
+// PianoRoll Ring scene (Playback).
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2019-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

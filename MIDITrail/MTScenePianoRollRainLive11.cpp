@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTScenePianoRollRainLive11
 //
-// DX11 PianoRoll Rain Live scene.
+// PianoRoll Rain scene (Live).
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,7 +17,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTScenePianoRollRainLive11::MTScenePianoRollRainLive11(bool is2D)
 	: MTScenePianoRollRainBase11(is2D)
@@ -27,7 +27,7 @@ MTScenePianoRollRainLive11::MTScenePianoRollRainLive11(bool is2D)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTScenePianoRollRainLive11::~MTScenePianoRollRainLive11()
 {
@@ -35,7 +35,7 @@ MTScenePianoRollRainLive11::~MTScenePianoRollRainLive11()
 }
 
 //******************************************************************************
-// シーン名取得
+// Get scene name
 //******************************************************************************
 const TCHAR* MTScenePianoRollRainLive11::GetName() const
 {
@@ -43,7 +43,7 @@ const TCHAR* MTScenePianoRollRainLive11::GetName() const
 }
 
 //******************************************************************************
-// モード固有コンポーネント生成
+// Mode-specific component creation
 //******************************************************************************
 int MTScenePianoRollRainLive11::_CreateModeComponents(
 		ID3D11Device* pDevice,
@@ -84,7 +84,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// モード固有コンポーネント登録
+// Mode-specific component registration
 //******************************************************************************
 void MTScenePianoRollRainLive11::_RegisterModeComponents()
 {
@@ -94,7 +94,7 @@ void MTScenePianoRollRainLive11::_RegisterModeComponents()
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTScenePianoRollRainLive11::Release()
 {
@@ -105,7 +105,7 @@ void MTScenePianoRollRainLive11::Release()
 }
 
 //******************************************************************************
-// ノート描画
+// Draw notes
 //******************************************************************************
 int MTScenePianoRollRainLive11::_DrawNotes(
 		ID3D11DeviceContext* pContext,
@@ -120,7 +120,7 @@ int MTScenePianoRollRainLive11::_DrawNotes(
 }
 
 //******************************************************************************
-// 再生開始
+// Playback start
 //******************************************************************************
 int MTScenePianoRollRainLive11::OnPlayStart()
 {
@@ -132,7 +132,7 @@ int MTScenePianoRollRainLive11::OnPlayStart()
 }
 
 //******************************************************************************
-// 再生終了
+// Playback end
 //******************************************************************************
 int MTScenePianoRollRainLive11::OnPlayEnd()
 {

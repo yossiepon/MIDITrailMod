@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTFileList
 //
-// ファイルリストクラス
+// File list manager.
 //
 // Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //
@@ -17,7 +17,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTFileList::MTFileList(void)
 {
@@ -27,7 +27,7 @@ MTFileList::MTFileList(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTFileList::~MTFileList(void)
 {
@@ -35,7 +35,7 @@ MTFileList::~MTFileList(void)
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void MTFileList::Clear()
 {
@@ -46,7 +46,7 @@ void MTFileList::Clear()
 }
 
 //******************************************************************************
-// ディレクトリ配下ファイルリスト作成
+// Create the file list under the directory
 //******************************************************************************
 int MTFileList::MakeFileListWithDirectory(
 		const WCHAR* pTargetDirPath,
@@ -72,31 +72,31 @@ int MTFileList::MakeFileListWithDirectory(
 	
 	Clear();
 	
-	//ディレクトリパスを保持する
+	//Store the directory path
 	wcscpy_s(m_TargetDirPath, _MAX_PATH, pTargetDirPath);
 	if (pTargetDirPath[wcslen(pTargetDirPath) - 1] != L'\\') {
 		wcscat_s(m_TargetDirPath, _MAX_PATH, L"\\");
 	}
 	
-	//ファイル検索用パス作成
+	//Build the search path
 	findPath[0] = L'\0';
 	wcscat_s(findPath, _MAX_PATH, m_TargetDirPath);
 	wcscat_s(findPath, _MAX_PATH, L"*.*");
 
-	//ファイル検索
+	//Search for files
 	hFind = FindFirstFileW(findPath, &findData);
 	if (hFind == INVALID_HANDLE_VALUE) {
-		//ファイルが見つからない
+		//No file found
 		goto EXIT;
 	}
 
-	//ファイル名リストを作成
+	//Build the file name list
 	while (isFind) {
 		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-			//ディレクトリは無視する
+			//Ignore directories
 		}
 		else {
-			//ファイル拡張子を確認
+			//Check the file extension
 			isMIDIDataFile = false;
 			if (YNPathUtil::IsFileExtMatch(findData.cFileName, L".mid")) {
 				isMIDIDataFile = true;
@@ -105,15 +105,15 @@ int MTFileList::MakeFileListWithDirectory(
 				isMIDIDataFile = true;
 			}
 			if (isMIDIDataFile) {
-				//ファイル名をリストに追加
+				//Add the file name to the list
 				m_FileNameList.push_back(findData.cFileName);
 			}
 		}
-		//次のファイルを検索
+		//Search for the next file
 		isFind = FindNextFileW(hFind, &findData);
 	}
 
-	//ファイル名ソート
+	//Sort the file names
 	m_FileNameList.sort();
 
 EXIT:;
@@ -122,7 +122,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ファイル数取得
+// Get file count
 //******************************************************************************
 size_t MTFileList::GetFileCount()
 {
@@ -130,7 +130,7 @@ size_t MTFileList::GetFileCount()
 }
 
 //******************************************************************************
-// ファイルパス取得
+// Get file path
 //******************************************************************************
 const WCHAR* MTFileList::GetFilePath(unsigned long index)
 {
@@ -153,7 +153,7 @@ const WCHAR* MTFileList::GetFilePath(unsigned long index)
 }
 
 //******************************************************************************
-// ファイル名取得
+// Get file name
 //******************************************************************************
 const WCHAR* MTFileList::GetFileName(unsigned long index)
 {
@@ -169,7 +169,7 @@ const WCHAR* MTFileList::GetFileName(unsigned long index)
 }
 
 //******************************************************************************
-// 選択ファイル登録
+// Register selected file
 //******************************************************************************
 int MTFileList::SetSelectedFileName(const WCHAR* pFileName)
 {
@@ -184,7 +184,7 @@ int MTFileList::SetSelectedFileName(const WCHAR* pFileName)
 
 	m_SelectedFileIndex = 0;
 
-	//ファイル名リストから検索（大文字小文字を区別しない）
+	//Search the file name list (case-insensitive)
 	for (itr = m_FileNameList.begin(); itr != m_FileNameList.end(); itr++) {
 		if (_wcsicmp((*itr).c_str(), pFileName) == 0) {
 			m_SelectedFileIndex = index;
@@ -198,7 +198,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 先頭ファイル選択
+// Select first file
 //******************************************************************************
 void MTFileList::SelectFirstFile()
 {
@@ -206,22 +206,22 @@ void MTFileList::SelectFirstFile()
 }
 
 //******************************************************************************
-// 前ファイル選択
+// Select previous file
 //******************************************************************************
 void MTFileList::SelectPreviousFile(bool* pIsExist)
 {
 	bool isExist = false;
 
-	//ファイルが存在しない場合
+	//When there are no files
 	if (m_FileNameList.size() == 0) {
-		//前ファイルなしで終了
+		//Exit with no previous file
 	}
-	//ファイルリスト先頭を選択中の場合
+	//When the first file in the list is currently selected
 	else if (m_SelectedFileIndex == 0) {
-		//前ファイルなしで終了
+		//Exit with no previous file
 	}
 	else {
-		//前ファイルを選択
+		//Select the previous file
 		m_SelectedFileIndex -= 1;
 		isExist = true;
 	}
@@ -234,22 +234,22 @@ void MTFileList::SelectPreviousFile(bool* pIsExist)
 }
 
 //******************************************************************************
-// 次ファイル選択
+// Select next file
 //******************************************************************************
 void MTFileList::SelectNextFile(bool* pIsExist)
 {
 	bool isExist = false;
 
-	//ファイルが存在しない場合
+	//When there are no files
 	if (m_FileNameList.size() == 0) {
-		//次ファイルなしで終了
+		//Exit with no next file
 	}
-	//ファイルリスト末尾を選択中の場合
+	//When the last file in the list is currently selected
 	else if (m_SelectedFileIndex >= (m_FileNameList.size() - 1)) {
-		//次ファイルなしで終了
+		//Exit with no next file
 	}
 	else {
-		//次ファイルを選択
+		//Select the next file
 		m_SelectedFileIndex += 1;
 		isExist = true;
 	}
@@ -262,7 +262,7 @@ void MTFileList::SelectNextFile(bool* pIsExist)
 }
 
 //******************************************************************************
-// 先頭ファイル選択
+// Select first file
 //******************************************************************************
 unsigned long MTFileList::GetSelectedFileIndex()
 {

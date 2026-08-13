@@ -2,13 +2,10 @@
 //
 // MIDITrail / MTScenePianoRoll3DBase11
 //
-// DX11 PianoRoll 3D/2D scene intermediate base.
-// Shared logic between Playback and Live concrete classes.
-// Owns common components: Stars, BackgroundImage, Dashboard, PitchBend,
-// Grid, TimeIndicator, Ripple, Keyboard.
+// PianoRoll 3D/2D scene base class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

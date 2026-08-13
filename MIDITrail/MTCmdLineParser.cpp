@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTCmdLineParser
 //
-// コマンドライン解析クラス
+// Command-line argument parser.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTCmdLineParser::MTCmdLineParser(void)
 {
@@ -30,20 +30,20 @@ MTCmdLineParser::MTCmdLineParser(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTCmdLineParser::~MTCmdLineParser(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int MTCmdLineParser::Initialize()
 {
 	int result = 0;
 
-	//コマンドライン解析
+	//Parse command line
 	result = _AnalyzeCmdLine();
 	if (result != 0) goto EXIT;
 
@@ -52,7 +52,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// コマンドライン解析
+// Parse command line
 //******************************************************************************
 int MTCmdLineParser::_AnalyzeCmdLine()
 {
@@ -63,56 +63,56 @@ int MTCmdLineParser::_AnalyzeCmdLine()
 	WCHAR* pArg = NULL;
 	SMRcpConv rcpConv;
 
-	//RCP読み込み可否確認のためRCPファイル変換オブジェクトを用意する
+	//Prepare an RCP file conversion object to check whether RCP loading is available
 	result = rcpConv.Initialize();
 	if (result != 0) goto EXIT;
 
-	//引数リスト取得
+	//Get the argument list
 	pArgList = CommandLineToArgvW(GetCommandLineW(), &argc);
 	if (pArgList == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//引数の解析
+	//Parse the arguments
 	for (i = 1; i < argc; i++) {
 		pArg = pArgList[i];
 
-		//ファイルパス
-		//  ファイルパスが複数指定された場合は先頭のみを採用する
+		//File path
+		//  If multiple file paths are specified, only the first one is used
 		if ((wcslen(m_pFilePath) == 0) && (wcslen(pArg) > 4)) {
 			if (YNPathUtil::IsFileExtMatch(pArg, L".mid")) {
 				m_pFilePath = pArg;
 				m_CmdSwitchStatus[CMDSW_FILE_PATH] = CMDSW_ON;
 			}
-			//rcpcv.dllが有効ならサポート対象ファイルであるか追加確認する
+			//If rcpcv.dll is available, additionally check whether the file is a supported type
 			else if (rcpConv.IsAvailable() && rcpConv.IsSupportFileExt(pArg)) {
 				m_pFilePath = pArg;
 				m_CmdSwitchStatus[CMDSW_FILE_PATH] = CMDSW_ON;
 			}
 		}
-		//起動後に再生開始
+		//Start playback after launch
 		if (wcscmp(pArg, L"-p") == 0) {
 			m_CmdSwitchStatus[CMDSW_PLAY] = CMDSW_ON;
 		}
-		//再生終了時にアプリ終了
+		//Exit the app when playback ends
 		if (wcscmp(pArg, L"-q") == 0) {
 			m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_ON;
 		}
-		//デバッグモード
+		//Debug mode
 		if (wcscmp(pArg, L"-d") == 0) {
 			m_CmdSwitchStatus[CMDSW_DEBUG] = CMDSW_ON;
 		}
 	}
 
-	//ファイルパスが未指定の場合
+	//When no file path is specified
 	if (m_CmdSwitchStatus[CMDSW_FILE_PATH] != CMDSW_ON) {
-		//再生／終了フラグは共に無効
+		//Both the play and quit flags are disabled
 		m_CmdSwitchStatus[CMDSW_PLAY] = CMDSW_NONE;
 		m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_NONE;
 	}
 
-	//再生フラグONでなければ終了フラグは無効
+	//If the play flag is not ON, the quit flag is disabled
 	if (m_CmdSwitchStatus[CMDSW_PLAY] != CMDSW_ON) {
 		m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_NONE;
 	}
@@ -125,7 +125,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// スイッチ状態取得
+// Get switch state
 //******************************************************************************
 int MTCmdLineParser::GetSwitch(
 		unsigned long switchType
@@ -141,7 +141,7 @@ int MTCmdLineParser::GetSwitch(
 }
 
 //******************************************************************************
-// ファイルパス取得
+// Get file path
 //******************************************************************************
 const WCHAR* MTCmdLineParser::GetFilePath()
 {

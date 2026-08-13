@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTFileList
 //
-// ファイルリストクラス
+// File list manager.
 //
 // Copyright (C) 2021-2022 WADA Masashi. All Rights Reserved.
 //
@@ -19,49 +19,49 @@ using namespace SMIDILib;
 
 
 //******************************************************************************
-// ファイルリストクラス
+// File list class
 //******************************************************************************
 class MTFileList
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTFileList(void);
 	virtual ~MTFileList(void);
 
-	//ディレクトリ配下ファイルリスト作成
+	//Create the file list under the directory
 	int MakeFileListWithDirectory(const WCHAR* pTargetDirPath, SMRcpConv* pRcpConv);
 
-	//ファイル数
+	//File count
 	size_t GetFileCount();
 
-	//ファイルパス取得
+	//Get file path
 	const WCHAR* GetFilePath(unsigned long index);
 
-	//ファイル名取得
+	//Get file name
 	const WCHAR* GetFileName(unsigned long index);
 
-	//クリア
+	//Clear
 	void Clear();
 
-	//選択ファイル登録
+	//Register selected file
 	int SetSelectedFileName(const WCHAR* pFileName);
 
-	//先頭ファイル選択
+	//Select first file
 	void SelectFirstFile();
 
-	//前ファイル選択
+	//Select previous file
 	void SelectPreviousFile(bool* pExist);
 
-	//次ファイル選択
+	//Select next file
 	void SelectNextFile(bool* pExist);
 
-	//選択ファイルインデックス取得
+	//Get selected file index
 	unsigned long GetSelectedFileIndex();
 
 private:
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const MTFileList&);
 	MTFileList(const MTFileList&);
 

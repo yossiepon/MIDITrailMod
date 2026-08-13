@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTConfFile
 //
-// 設定ファイルクラス
+// Configuration file accessor.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -14,21 +14,21 @@
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTConfFile::MTConfFile(void)
 {
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTConfFile::~MTConfFile(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int MTConfFile::Initialize(
 		const TCHAR* pCategory
@@ -38,16 +38,16 @@ int MTConfFile::Initialize(
 	TCHAR confFilePath[_MAX_PATH] = {_T('\0')};
 	YNConfFile confFile;
 
-	//プロセス実行ファイルディレクトリパス取得
+	//Get the process executable directory path
 	result = YNPathUtil::GetModuleDirPath(confFilePath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
-	//設定ファイルパス登録
+	//Build the config file path
 	_tcscat_s(confFilePath, _MAX_PATH, MT_CONFFILE_DIR);
 	_tcscat_s(confFilePath, _MAX_PATH, pCategory);
 	_tcscat_s(confFilePath, _MAX_PATH, _T(".ini"));
 
-	//初期化
+	//Initialize
 	result = YNConfFile::Initialize(confFilePath);
 	if (result != 0) goto EXIT;
 

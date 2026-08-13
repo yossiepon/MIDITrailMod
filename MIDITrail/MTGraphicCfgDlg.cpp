@@ -1,15 +1,15 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTGraphicCfgDlg
 //
-// グラフィック設定ダイアログクラス
+// Graphics configuration dialog.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "resource.h"
+#include "Resource.h"
 #include "Commdlg.h"
 #include "MTParam.h"
 #include "MTGraphicCfgDlg.h"
@@ -17,19 +17,19 @@
 
 
 //******************************************************************************
-// グラフィック設定ダイアログクラス パラメタ定義
+// Graphics configuration dialog class parameter definitions
 //******************************************************************************
-//ノート長拡大率 最小値/最大値
+//Note-length magnification: min/max
 #define MT_QNOTE_LENGTH_MAG_MIN		(0)
 #define MT_QNOTE_LENGTH_MAG_MAX		(1000)
 
 //******************************************************************************
-// ウィンドウプロシージャ制御用パラメータ設定
+// Window procedure control parameter setup
 //******************************************************************************
 MTGraphicCfgDlg* MTGraphicCfgDlg::m_pThis = NULL;
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 {
@@ -53,14 +53,14 @@ MTGraphicCfgDlg::MTGraphicCfgDlg(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTGraphicCfgDlg::~MTGraphicCfgDlg(void)
 {
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ
+// Window procedure
 //******************************************************************************
 INT_PTR CALLBACK MTGraphicCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -68,7 +68,7 @@ INT_PTR CALLBACK MTGraphicCfgDlg::_WndProc(HWND hWnd, UINT message, WPARAM wPara
 }
 
 //******************************************************************************
-// ウィンドウプロシージャ：実装
+// Window procedure: implementation
 //******************************************************************************
 INT_PTR MTGraphicCfgDlg::_WndProcImpl(
 		HWND hDlg,
@@ -102,7 +102,7 @@ INT_PTR MTGraphicCfgDlg::_WndProcImpl(
 			}
 			break;
 		default:
-			//処理しないメッセージ
+			//Message not handled
 			break;
 	}
 
@@ -114,7 +114,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// アンチエイリアシングサポート情報設定
+// Set antialiasing support information
 //******************************************************************************
 void MTGraphicCfgDlg::SetAntialiasSupport(
 		unsigned long multiSampleType,	//2-16
@@ -129,7 +129,7 @@ void MTGraphicCfgDlg::SetAntialiasSupport(
 }
 
 //******************************************************************************
-// 表示
+// Show
 //******************************************************************************
 int MTGraphicCfgDlg::Show(
 		HWND hParentWnd
@@ -139,21 +139,21 @@ int MTGraphicCfgDlg::Show(
 	INT_PTR dresult = 0;
 	HINSTANCE hInstance = NULL;
 
-	//アプリケーションインスタンスハンドルを取得
+	//Get the application instance handle
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hParentWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hParentWnd);
 		goto EXIT;
 	}
 
-	//ダイアログ表示
-	//  ファイルパスのエディットボックスでUNICODE文字を表示可能とするため
-	//  ワイド文字列版のAPIを用いて表示する
+	//Show the dialog
+	//  Display using the wide-string API so that UNICODE characters
+	//  can be shown in the file path edit box
 	dresult = DialogBoxW(
-					hInstance,							//インスタンスハンドル
-					MAKEINTRESOURCEW(IDD_GRAPHIC_CFG),	//ダイアログボックステンプレート
-					hParentWnd,							//親ウィンドウハンドル
-					_WndProc							//ダイアログボックスプロシージャ
+					hInstance,							//Instance handle
+					MAKEINTRESOURCEW(IDD_GRAPHIC_CFG),	//Dialog box template
+					hParentWnd,							//Parent window handle
+					_WndProc							//Dialog box procedure
 				);
 	if ((dresult == 0) || (dresult == -1)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hInstance);
@@ -165,7 +165,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ダイアログ表示直前初期化
+// Pre-display dialog initialization
 //******************************************************************************
 int MTGraphicCfgDlg::_OnInitDlg(
 		HWND hDlg
@@ -176,25 +176,25 @@ int MTGraphicCfgDlg::_OnInitDlg(
 	m_hWnd = hDlg;
 	m_isChanged = false;
 
-	//設定ファイル初期化
+	//Initialize config file
 	result = _InitConfFile();
 	if (result != 0) goto EXIT;
 
-	//設定ファイル読み込み
+	//Load config file
 	result = _LoadConf();
 	if (result != 0) goto EXIT;
 
-	//マルチサンプル種別選択コンボボックス初期化
+	//Initialize the multisample type selection combo box
 	m_hComboMultiSampleType = GetDlgItem(hDlg, IDC_COMBO_MULTISAMPLETYPE);
 	result = _InitComboMultiSampleType(m_hComboMultiSampleType, m_MultiSampleType);
 	if (result != 0) goto EXIT;
 
-	//背景画像ファイルパス初期化
+	//Initialize the background image file path
 	m_hEditImageFilePath = GetDlgItem(hDlg, IDC_EDIT_IMAGE_FILE_PATH);
 	result = _InitBackgroundImageFilePath();
 	if (result != 0) goto EXIT;
 
-	//四分音符長拡大率初期化
+	//Initialize the quarter-note length magnification
 	m_hEditQuarterNoteLengthMag = GetDlgItem(hDlg, IDC_EDIT_QUARTER_NOTE_LENGTH_MAG);
 	result = _InitQuarterNote();
 	if (result != 0) goto EXIT;
@@ -204,7 +204,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定ファイル初期化
+// Initialize config file
 //******************************************************************************
 int MTGraphicCfgDlg::_InitConfFile()
 {
@@ -225,7 +225,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定ファイル読み込み
+// Load config file
 //******************************************************************************
 int MTGraphicCfgDlg::_LoadConf()
 {
@@ -234,7 +234,7 @@ int MTGraphicCfgDlg::_LoadConf()
 	int multiSampleType = 0;
 	TCHAR imageFilePathA[_MAX_PATH] = { _T('\0') };
 
-	//アンチエイリアス設定値取得
+	//Get the antialiasing setting value
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
 
@@ -245,7 +245,7 @@ int MTGraphicCfgDlg::_LoadConf()
 				);
 	if (result != 0) goto EXIT;
 
-	//無効値はアンチエイリアスOFFにする
+	//An invalid value turns antialiasing OFF
 	if ((DX_MULTI_SAMPLE_TYPE_MIN <= multiSampleType)
 	 && (multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX)) {
 		m_MultiSampleType = multiSampleType;
@@ -254,27 +254,27 @@ int MTGraphicCfgDlg::_LoadConf()
 		m_MultiSampleType = 0;
 	}
 
-	//背景画像ファイルパス設定値取得
+	//Get the background image file path setting value
 	result = m_ConfFile.SetCurSection(_T("Background-image"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.GetWStr(_T("ImageFilePath_W"), m_ImageFilePath, _MAX_PATH, L"*** NO DATA ***");
 	if (result != 0) goto EXIT;
 	
-	//ワイド文字列ファイルパス未設定の場合
+	//If the wide-string file path is not set
 	if (wcscmp(m_ImageFilePath, L"*** NO DATA ***") == 0) {
-		//Ver.1.4.0以降でワイド文字列ファイルパスを保存するように変更したため
-		//マルチバイト文字列ファイルパスの取得を試みる
+		//Since Ver.1.4.0, the wide-string file path is saved instead,
+		//so try to get the multibyte-string file path
 		memset(m_ImageFilePath, 0, sizeof(WCHAR) * _MAX_PATH);
 		result = m_ConfFile.GetStr(_T("ImageFilePath"), imageFilePathA, _MAX_PATH, _T(""));
 		if (result != 0) goto EXIT;
 		if (_tcslen(imageFilePathA) > 0) {
 			apiresult = MultiByteToWideChar(
-								_getmbcp(),			//コードページ
-								MB_PRECOMPOSED,		//フラグ：
-								imageFilePathA,	//変換元マルチバイト文字列
-								(int)_tcslen(imageFilePathA),	//変換元マルチバイト文字列バイト数
-								m_ImageFilePath,	//変換先ワイド文字列バッファ
-								_MAX_PATH - 1		//バッファサイズ（ワイド文字数単位）
+								_getmbcp(),			//Code page
+								MB_PRECOMPOSED,		//Flags:
+								imageFilePathA,	//Source multibyte string
+								(int)_tcslen(imageFilePathA),	//Source multibyte string byte count
+								m_ImageFilePath,	//Destination wide-string buffer
+								_MAX_PATH - 1		//Buffer size (in wide characters)
 							);
 			if (apiresult == 0) {
 				result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -283,7 +283,7 @@ int MTGraphicCfgDlg::_LoadConf()
 		}
 	}
 
-	//四分音符長拡大率設定値取得
+	//Get the quarter-note length magnification setting value
 	result = m_ConfFile.SetCurSection(_T("QuarterNote"));
 	if (result != 0) goto EXIT;
 	
@@ -295,7 +295,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイス選択コンボボックス初期化
+// Initialize the device selection combo box
 //******************************************************************************
 int MTGraphicCfgDlg::_InitComboMultiSampleType(
 		HWND hCombo,
@@ -310,14 +310,14 @@ int MTGraphicCfgDlg::_InitComboMultiSampleType(
 	bool isSupportAA = false;
 	TCHAR itemStr[256];
 
-	//アンチエイリアシングサポート確認
+	//Check antialiasing support
 	for (type = DX_MULTI_SAMPLE_TYPE_MIN; type <= DX_MULTI_SAMPLE_TYPE_MAX; type++) {
 		if (m_MultSampleTypeSupport[type]) {
 			isSupportAA = true;
 		}
 	}
 
-	//先頭項目を登録
+	//Register the first item
 	if (isSupportAA) {
 		_stprintf_s(itemStr, 256, _T("OFF"));
 	}
@@ -337,10 +337,10 @@ int MTGraphicCfgDlg::_InitComboMultiSampleType(
 	selectedIndex = comboIndex;
 	comboIndex++;
 
-	//マルチサンプル種別を追加登録
+	//Register the multisample types
 	for (type = DX_MULTI_SAMPLE_TYPE_MIN; type <= DX_MULTI_SAMPLE_TYPE_MAX; type++) {
 		if (m_MultSampleTypeSupport[type]) {
-			//マルチサンプリング種別をコンボボックスに追加
+			//Add the multisample type to the combo box
 			_stprintf_s(itemStr, 256, _T("%dx"), type);
 			lresult = SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)itemStr);
 			if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
@@ -359,14 +359,14 @@ int MTGraphicCfgDlg::_InitComboMultiSampleType(
 		}
 	}
 
-	//選択状態設定
+	//Set the selection state
 	lresult = SendMessage(hCombo, CB_SETCURSEL, selectedIndex, 0);
 	if (lresult == CB_ERR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
 		goto EXIT;
 	}
 
-	//アンチエイリアシングをサポートしていなければ不活性にする
+	//Disable if antialiasing is not supported
 	if (!isSupportAA) {
 		EnableWindow(hCombo, FALSE);
 	}
@@ -376,17 +376,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// 背景画像ファイルパス初期化
+// Initialize the background image file path
 //******************************************************************************
 int MTGraphicCfgDlg::_InitBackgroundImageFilePath()
 {
 	int result = 0;
 	BOOL bresult = FALSE;
 
-	//エディットボックスに入力可能最大文字数を設定
+	//Set the maximum input length for the edit box
 	SendMessage(m_hEditImageFilePath, EM_SETLIMITTEXT, (WPARAM)_MAX_PATH, 0);
 
-	//エディットボックスにファイルパスを設定
+	//Set the file path into the edit box
 	bresult = SetWindowTextW(m_hEditImageFilePath, m_ImageFilePath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -398,7 +398,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 四分音符設定初期化
+// Initialize quarter-note settings
 //******************************************************************************
 int MTGraphicCfgDlg::_InitQuarterNote()
 {
@@ -406,10 +406,10 @@ int MTGraphicCfgDlg::_InitQuarterNote()
 	BOOL bresult = FALSE;
 	TCHAR str[32] = { _T('\0') };
 
-	//エディットボックスに入力可能最大文字数を設定：最大4文字("1000")
+	//Set the maximum number of input characters for the edit box: max 4 characters ("1000")
 	SendMessage(m_hEditQuarterNoteLengthMag, EM_SETLIMITTEXT, (WPARAM)4, 0);
-	
-	//エディットボックスに四分音符長拡大率の数値文字列を設定
+
+	//Set the quarter-note length magnification numeric string into the edit box
 	_stprintf_s(str, 32, _T("%d"), m_QuarterNoteLengthMag);
 	bresult = SetWindowText(m_hEditQuarterNoteLengthMag, str);
 	if (!bresult) {
@@ -422,7 +422,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 設定情報保存
+// Save configuration information
 //******************************************************************************
 int MTGraphicCfgDlg::_Save()
 {
@@ -436,9 +436,9 @@ int MTGraphicCfgDlg::_Save()
 	int mag = 0;
 
 	//------------------------------
-	//アンチエイリアシング
+	//Antialiasing
 	//------------------------------
-	//選択項目のインデックスを取得
+	//Get the index of the selected item
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETCURSEL, 0, 0);
 	if ((lresult == CB_ERR) || (lresult < 0)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -446,7 +446,7 @@ int MTGraphicCfgDlg::_Save()
 	}
 	selectedIndex = (unsigned long)lresult;
 
-	//選択項目のユーザデータを取得：マルチサンプル種別
+	//Get the user data of the selected item: multisample type
 	lresult = SendMessage(m_hComboMultiSampleType, CB_GETITEMDATA, selectedIndex, 0);
 	if (lresult == CB_ERR) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), selectedIndex);
@@ -454,54 +454,54 @@ int MTGraphicCfgDlg::_Save()
 	}
 	selectedMultiSampleType = (unsigned long)lresult;
 
-	//アンチエイリアス設定保存
+	//Save the antialiasing setting
 	result = m_ConfFile.SetCurSection(_T("Anti-aliasing"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("MultiSampleType"), selectedMultiSampleType);
 	if (result != 0) goto EXIT;
 
-	//変更確認
+	//Check for changes
 	if (m_MultiSampleType != selectedMultiSampleType) {
 		m_isChanged = true;
 	}
 	m_MultiSampleType = selectedMultiSampleType;
 
 	//------------------------------
-	//背景画像ファイルパス
+	//Background image file path
 	//------------------------------
-	//背景画像ファイルパスをエディットボックスから取得
+	//Get the background image file path from the edit box
 	apiresult = GetWindowTextW(m_hEditImageFilePath, filePath, _MAX_PATH);
 	if (apiresult == 0) {
-		//テキスト無しまたはウィンドウハンドル無効の場合
+		//If there is no text or the window handle is invalid
 		filePath[0] = L'\0';
 	}
 
-	//背景画像ファイルパス設定保存
+	//Save the background image file path setting
 	result = m_ConfFile.SetCurSection(_T("Background-image"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetWStr(_T("ImageFilePath_W"), filePath);
 	if (result != 0) goto EXIT;
 
-	//変更確認
+	//Check for changes
 	if (wcscmp(m_ImageFilePath, filePath) != 0) {
 		m_isChanged = true;
 	}
 	wcscpy_s(m_ImageFilePath, _MAX_PATH, filePath);
 	
 	//------------------------------
-	//四分音符長拡大率
+	//Quarter-note length magnification
 	//------------------------------
-	//四分音符長拡大率を取得
+	//Get the quarter-note length magnification
 	apiresult = GetWindowText(m_hEditQuarterNoteLengthMag, strMag, 32);
 	if (apiresult == 0) {
-		//テキスト無しまたはウィンドウハンドル無効の場合
+		//If there is no text or the window handle is invalid
 		mag = 100;
 	}
 	else {
 		mag = _tstoi(strMag);
 	}
 
-	//クリッピング
+	//Clipping
 	if (mag < MT_QNOTE_LENGTH_MAG_MIN) {
 		mag = MT_QNOTE_LENGTH_MAG_MIN;
 	}
@@ -509,13 +509,13 @@ int MTGraphicCfgDlg::_Save()
 		mag = MT_QNOTE_LENGTH_MAG_MAX;
 	}
 	
-	//四分音符長拡大率保存
+	//Save the quarter-note length magnification
 	result = m_ConfFile.SetCurSection(_T("QuarterNote"));
 	if (result != 0) goto EXIT;
 	result = m_ConfFile.SetInt(_T("LengthMagnification"), mag);
 	if (result != 0) goto EXIT;
 
-	//変更確認
+	//Check for changes
 	if (m_QuarterNoteLengthMag != mag) {
 		m_isChanged = true;
 	}
@@ -526,7 +526,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// パラメータ変更確認
+// Check for parameter changes
 //******************************************************************************
 bool MTGraphicCfgDlg::IsChanged()
 {
@@ -534,7 +534,7 @@ bool MTGraphicCfgDlg::IsChanged()
 }
 
 //******************************************************************************
-// 背景画像ファイルパス ブラウズボタン押下
+// Background image file path browse button pressed
 //******************************************************************************
 int MTGraphicCfgDlg::_OnBtnBrowse()
 {
@@ -543,14 +543,14 @@ int MTGraphicCfgDlg::_OnBtnBrowse()
 	WCHAR filePath[_MAX_PATH] = { L'\0' };
 	bool isSelected = false;
 
-	//ファイル選択ダイアログ表示
+	//Show the file selection dialog
 	result = _SelectImageFile(filePath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
 
-	//ファイル未選択の場合は何もしない
+	//Do nothing if no file was selected
 	if (!isSelected) goto EXIT;
 
-	//エディットボックスにファイルパスを設定
+	//Set the file path into the edit box
 	bresult = SetWindowTextW(m_hEditImageFilePath, filePath);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -562,7 +562,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 画像ファイル選択
+// Select image file
 //******************************************************************************
 int MTGraphicCfgDlg::_SelectImageFile(
 		WCHAR* pFilePath,
@@ -589,10 +589,10 @@ int MTGraphicCfgDlg::_SelectImageFile(
 	ofn.lpstrTitle  = L"Select image file.";
 	ofn.Flags       = OFN_FILEMUSTEXIST;  //OFN_HIDEREADONLY
 
-	//ファイル選択ダイアログ表示
+	//Show the file selection dialog
 	apiresult = GetOpenFileNameW(&ofn);
 	if (!apiresult) {
-		//キャンセルまたはエラー発生：エラーはチェックしない
+		//Canceled or an error occurred: the error is not checked
 		*pIsSelected = false;
 		goto EXIT;
 	}

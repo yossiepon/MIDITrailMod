@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTScenePianoRollRing11
 //
-// DX11 PianoRoll Ring Playback scene.
+// PianoRoll Ring scene (Playback).
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2019-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,7 +23,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 MTScenePianoRollRing11::MTScenePianoRollRing11()
 	: MTScenePianoRollRingBase11()
@@ -31,7 +31,7 @@ MTScenePianoRollRing11::MTScenePianoRollRing11()
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 MTScenePianoRollRing11::~MTScenePianoRollRing11()
 {
@@ -39,7 +39,7 @@ MTScenePianoRollRing11::~MTScenePianoRollRing11()
 }
 
 //******************************************************************************
-// シーン名取得
+// Get scene name
 //******************************************************************************
 const TCHAR* MTScenePianoRollRing11::GetName() const
 {
@@ -47,7 +47,7 @@ const TCHAR* MTScenePianoRollRing11::GetName() const
 }
 
 //******************************************************************************
-// モード固有コンポーネント生成
+// Mode-specific component creation
 //******************************************************************************
 int MTScenePianoRollRing11::_CreateModeComponents(
 		ID3D11Device* pDevice,
@@ -108,7 +108,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// モード固有コンポーネント登録
+// Mode-specific component registration
 //******************************************************************************
 void MTScenePianoRollRing11::_RegisterModeComponents()
 {
@@ -119,7 +119,7 @@ void MTScenePianoRollRing11::_RegisterModeComponents()
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTScenePianoRollRing11::Release()
 {
@@ -133,7 +133,7 @@ void MTScenePianoRollRing11::Release()
 }
 
 //******************************************************************************
-// ノート描画
+// Draw notes
 //******************************************************************************
 int MTScenePianoRollRing11::_DrawNotes(
 		ID3D11DeviceContext* pContext,
@@ -145,7 +145,7 @@ int MTScenePianoRollRing11::_DrawNotes(
 }
 
 //******************************************************************************
-// 歌詞描画
+// Draw lyrics
 //******************************************************************************
 int MTScenePianoRollRing11::_DrawLyrics(
 		ID3D11DeviceContext* pContext,
@@ -158,7 +158,7 @@ int MTScenePianoRollRing11::_DrawLyrics(
 }
 
 //******************************************************************************
-// シーケンサメッセージ受信
+// Sequencer message reception
 //******************************************************************************
 int MTScenePianoRollRing11::_OnRecvSequencerMsg(
 		unsigned long param1,
@@ -196,7 +196,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ノート数取得
+// Get note count
 //******************************************************************************
 unsigned long MTScenePianoRollRing11::GetNoteCount() const
 {

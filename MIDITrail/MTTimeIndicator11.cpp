@@ -1,11 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTTimeIndicator11
 //
-// DX11 time indicator renderer.
+// Time indicator renderer.
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -19,7 +19,7 @@ using namespace DirectX::SimpleMath;
 
 
 //******************************************************************************
-// コンストラクタ / デストラクタ
+// Constructor / Destructor
 //******************************************************************************
 MTTimeIndicator11::MTTimeIndicator11()
 {
@@ -35,7 +35,7 @@ MTTimeIndicator11::~MTTimeIndicator11()
 }
 
 //******************************************************************************
-// 生成
+// Create
 //******************************************************************************
 int MTTimeIndicator11::Create(
 		ID3D11Device* pDevice,
@@ -64,7 +64,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 解放
+// Release
 //******************************************************************************
 void MTTimeIndicator11::Release()
 {
@@ -74,7 +74,7 @@ void MTTimeIndicator11::Release()
 }
 
 //******************************************************************************
-// 面プリミティブ生成
+// Create face primitive
 //******************************************************************************
 int MTTimeIndicator11::_CreatePrimitive(
 		ID3D11Device* pDevice,
@@ -85,8 +85,8 @@ int MTTimeIndicator11::_CreatePrimitive(
 	DXPRIMITIVE11_VERTEX* pVertex = NULL;
 	unsigned long* pIndex = NULL;
 
-	// DX9 版は TRIANGLESTRIP(4頂点4インデックス) だが
-	// DXPrimitive11 は TRIANGLELIST なので 4 頂点 6 インデックスで 2 三角形
+	// The DX9 version uses TRIANGLESTRIP (4 vertices, 4 indices), but
+	// DXPrimitive11 uses TRIANGLELIST, so 2 triangles with 4 vertices and 6 indices
 	result = m_Primitive.CreateVertexBuffer(pDevice, 4);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.CreateIndexBuffer(pDevice, 6);
@@ -99,7 +99,7 @@ int MTTimeIndicator11::_CreatePrimitive(
 	result = m_Primitive.LockIndex(pContext, &pIndex);
 	if (result != 0) goto EXIT;
 
-	// 再生面の頂点座標取得
+	// Get the vertex coordinates of the playback section
 	{
 		Vector3 vectorLU, vectorRU, vectorLD, vectorRD;
 		m_NoteDesign.GetPlaybackSectionVirtexPos(
@@ -137,14 +137,14 @@ int MTTimeIndicator11::_CreatePrimitive(
 			pVertex[i].color = color;
 		}
 
-		// 再生面の幅がゼロに近い場合はラインを描画する
+		// Draw a line if the playback section width is close to zero
 		float delta = vectorLU.z - vectorRU.z;
 		if (delta < 0) delta = -delta;
 		if (delta < 0.1f) {
 			m_isEnableLine = true;
 		}
 
-		// TRIANGLELIST (2 三角形)
+		// TRIANGLELIST (2 triangles)
 		pIndex[0] = 0; pIndex[1] = 1; pIndex[2] = 2;
 		pIndex[3] = 2; pIndex[4] = 1; pIndex[5] = 3;
 	}
@@ -157,7 +157,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ラインプリミティブ生成
+// Create line primitive
 //******************************************************************************
 int MTTimeIndicator11::_CreatePrimitiveLine(
 		ID3D11Device* pDevice,
@@ -216,7 +216,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 描画
+// Draw
 //******************************************************************************
 int MTTimeIndicator11::Draw(
 		ID3D11DeviceContext* pContext,
@@ -236,7 +236,7 @@ int MTTimeIndicator11::Draw(
 }
 
 //******************************************************************************
-// 更新
+// Update
 //******************************************************************************
 int MTTimeIndicator11::Update(const MTSceneUpdateContext& ctx)
 {
@@ -252,7 +252,7 @@ int MTTimeIndicator11::Update(const MTSceneUpdateContext& ctx)
 }
 
 //******************************************************************************
-// リセット
+// Reset
 //******************************************************************************
 void MTTimeIndicator11::Reset()
 {
@@ -261,7 +261,7 @@ void MTTimeIndicator11::Reset()
 }
 
 //******************************************************************************
-// 現在位置取得
+// Get current position
 //******************************************************************************
 float MTTimeIndicator11::GetPos() const
 {
@@ -269,7 +269,7 @@ float MTTimeIndicator11::GetPos() const
 }
 
 //******************************************************************************
-// 移動ベクトル取得
+// Get movement vector
 //******************************************************************************
 Vector3 MTTimeIndicator11::GetMoveVector() const
 {

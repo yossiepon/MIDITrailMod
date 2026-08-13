@@ -1,13 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTNoteEffect
 //
 // Note effect base class.
-// Common base for Ripple and Lyrics: slot-based active note management,
-// envelope calculation via MTNoteDesign11, m_KeyDownRate dedup array.
-// Derived classes implement OnActivate/OnDeactivate/BuildVertices.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

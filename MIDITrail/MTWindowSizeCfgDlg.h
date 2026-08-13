@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTWindowSizeCfgDlg
 //
-// ウィンドウサイズ設定ダイアログクラス
+// Window size configuration dialog.
 //
 // Copyright (C) 2010-2016 WADA Masashi. All Rights Reserved.
 //
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "resource.h"
+#include "Resource.h"
 #include "YNBaseLib.h"
 #include <list>
 
@@ -18,34 +18,34 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-//ウィンドウサイズ設定ダイアログクラス パラメタ定義
+//Window size configuration dialog class parameter definitions
 //******************************************************************************
 
-//ウィンドウサイズ設定最小値
+//Minimum window size setting
 #define MT_WINDOW_SIZE_MIN			200
 
-//ウィンドウサイズ設定最大値
+//Maximum window size setting
 #define MT_WINDOW_SIZE_MAX			99999
 
-//ウィンドウサイズ文字数最大値：99999→5桁
+//Maximum window size character count: 99999 -> 5 digits
 #define MT_WINDOW_SIZE_CHAR_MAX		5
 
 
 //******************************************************************************
-//ウィンドウサイズ設定ダイアログクラス
+//Window size configuration dialog class
 //******************************************************************************
 class MTWindowSizeCfgDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTWindowSizeCfgDlg(void);
 	virtual ~MTWindowSizeCfgDlg(void);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
-	//変更確認
+	//Check for changes
 	bool IsChanged();
 
 private:
@@ -59,57 +59,57 @@ private:
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTWindowSizeCfgDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//ウィンドウサイズ選択リストボックスウィンドウハンドル
+	//Window size selection list box window handle
 	HWND m_hSizeList;
 
-	//ウィンドウサイズリスト
+	//Window size list
 	MTWindowSizeList m_SizeList;
 
-	//ウィンドウサイズエディットボックスウィンドウハンドル
+	//Window size edit box window handles
 	HWND m_hEditWidth;
 	HWND m_hEditHeight;
 
-	//ビュー領域適用チェックボックスウィンドウハンドル
+	//"Apply to view area" checkbox window handle
 	HWND m_hCheckApplyToView;
 
-	//設定ファイル
+	//Configuration file
 	YNConfFile m_ConfFile;
 
-	//保存実施フラグ
+	//Save-executed flag
 	bool m_isSaved;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//設定ファイル初期化
+	//Initialize config file
 	int _InitConfFile();
 
-	//ウィンドウサイズ選択リストボックス初期化
+	//Initialize the window size selection list box
 	int _InitSizeList();
 
-	//ウィンドウサイズエディットボックス初期化
+	//Initialize the window size edit boxes
 	int _InitSizeEditbox();
 
-	//ウィンドウサイズ取得
+	//Get window size
 	int _GetConfWindowSize(int* pWidth, int* pHeight);
 
-	//保存処理
+	//Save processing
 	int _Save();
 
-	//ウィンドウサイズリストボックス選択状態変化
+	//Window size list box selection state changed
 	int _OnSizeListChanged();
 
-	//ウィンドウサイズエディットボックス更新
+	//Update the window size edit boxes
 	int _UpdateSizeEditBox(int width, int height);
 
 };

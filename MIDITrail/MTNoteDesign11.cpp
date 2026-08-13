@@ -2,12 +2,10 @@
 //
 // MIDITrail / MTNoteDesign11
 //
-// Note design class for DX11.
-// Unified from MTNoteDesign + MTNoteDesignMod (ADR-0054 Mod standardization).
-// Playback uses rate-based decay; Live methods use elapsedTime-based positioning.
+// Note design class for AABB scenes.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2012-2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

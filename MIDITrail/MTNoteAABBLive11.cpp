@@ -2,9 +2,9 @@
 //
 // MIDITrail / MTNoteAABBLive11
 //
-// AABB live note renderer (DX11).
+// AABB note renderer (Live).
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

@@ -2,13 +2,10 @@
 //
 // MIDITrail / MTPianoKeyboardDesign11
 //
-// Piano keyboard design class for DX11.
-// Unified from MTPianoKeyboardDesign + MTPianoKeyboardDesignMod
-// (ADR-0054 Mod standardization).
-// Provides both portNo-based API (Rain) and keyboardIndex/angle API (Roll).
+// Piano keyboard design class.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2012-2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

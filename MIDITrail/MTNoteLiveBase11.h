@@ -2,13 +2,9 @@
 //
 // MIDITrail / MTNoteLiveBase11
 //
-// Live note renderer base class (DX11).
-// Manages NoteStatus array, SetNoteOn/Off events, expiry logic,
-// and shared Update/Draw/Release infrastructure.
-// Subclasses provide vertex generation (_CreateVertexOfNote)
-// and world matrix (_ComputeWorldMatrix).
+// Live note renderer base class.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

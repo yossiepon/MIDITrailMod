@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTCmdLineParser
 //
-// コマンドライン解析クラス
+// Command-line argument parser.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -11,38 +11,38 @@
 #pragma once
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//スイッチ状態
-#define CMDSW_NONE		(0)	//未定義
+//Switch state
+#define CMDSW_NONE		(0)	//Undefined
 #define CMDSW_ON		(1)	//ON
 
-//スイッチ種別
-#define CMDSW_FILE_PATH	(0)	//ファイルパス
-#define CMDSW_PLAY		(1)	//再生
-#define CMDSW_QUIET		(2)	//終了
-#define CMDSW_DEBUG		(3)	//デバッグモード
-#define CMDSW_MAX		(4)	//終端フラグ：必ず末尾に定義する
+//Switch type
+#define CMDSW_FILE_PATH	(0)	//File path
+#define CMDSW_PLAY		(1)	//Play
+#define CMDSW_QUIET		(2)	//Quit
+#define CMDSW_DEBUG		(3)	//Debug mode
+#define CMDSW_MAX		(4)	//Terminator flag: must always be defined last
 
 
 //******************************************************************************
-// コマンドライン解析クラス
+// Command-line parser class
 //******************************************************************************
 class MTCmdLineParser
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTCmdLineParser(void);
 	virtual ~MTCmdLineParser(void);
 
-	//初期化
+	//Initialize
 	int Initialize();
 
-	//スイッチ状態取得
+	//Get switch state
 	int GetSwitch(unsigned long switchType);
 
-	//ファイルパス取得
+	//Get file path
 	const WCHAR* GetFilePath();
 
 private:

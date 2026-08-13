@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTPianoKeyboardCtrlRain11
 //
-// DX11 piano keyboard controller for Rain scene.
+// Piano keyboard controller for Rain scenes.
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -174,7 +174,7 @@ Matrix MTPianoKeyboardCtrlRain11::_ComputeWorldMatrix(
 	unsigned char portNo = m_KbdPortNo[kbdIndex];
 	unsigned char chNo = m_KbdChNo[kbdIndex];
 
-	// のこぎり形配置: Y は chNo のみ（同一 ch は同じ高さ）、Z は portNo で奥行き分離
+	// Sawtooth layout: Y depends only on chNo (same ch = same height); Z separates depth by portNo
 	unsigned char port0 = 0, ch0 = 0;
 	Vector3 moveVec = m_KeyboardDesign.GetKeyboardBasePos(port0, chNo);
 	if (portNo != 0) {

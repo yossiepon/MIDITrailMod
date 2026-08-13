@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / DIKeyCtrl
 //
-// DirectInput キー入力制御クラス
+// DirectInput keyboard input controller.
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //
@@ -16,7 +16,7 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 DIKeyCtrl::DIKeyCtrl(void)
 {
@@ -26,7 +26,7 @@ DIKeyCtrl::DIKeyCtrl(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 DIKeyCtrl::~DIKeyCtrl(void)
 {
@@ -34,7 +34,7 @@ DIKeyCtrl::~DIKeyCtrl(void)
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int DIKeyCtrl::Initialize(
 		HWND hWnd
@@ -46,66 +46,66 @@ int DIKeyCtrl::Initialize(
 
 	Terminate();
 
-	//アプリケーションインスタンスハンドルを取得
+	//Get the application instance handle
 	hInstance = (HINSTANCE)(LONG_PTR)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 	if (hInstance == NULL) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hWnd);
 		goto EXIT;
 	}
 
-	//DirectInputオブジェクトの生成
+	//Create the DirectInput object
 	hresult = DirectInput8Create(
-				hInstance,				//アプリケーションインスタンスハンドル
-				DIRECTINPUT_VERSION,	//DirectInputバージョン番号
-				IID_IDirectInput8,		//インターフェース識別子
-				(void**)&m_pDI,			//作成されたインターフェースポインタ
-				NULL					//IUnknownインターフェイスポインタ
+				hInstance,				//Application instance handle
+				DIRECTINPUT_VERSION,	//DirectInput version number
+				IID_IDirectInput8,		//Interface identifier
+				(void**)&m_pDI,			//Pointer to the created interface
+				NULL					//IUnknown interface pointer
 			);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hInstance);
 		goto EXIT;
 	}
 
-	//デバイスオブジェクトの生成
+	//Create the device object
 	hresult = m_pDI->CreateDevice(
-					GUID_SysKeyboard,	//入力デバイスのインスタンスGUID
-					&m_pDIDevice,		//作成されたインターフェースポインタ
-					NULL				//IUnknownインターフェイスポインタ
+					GUID_SysKeyboard,	//Instance GUID of the input device
+					&m_pDIDevice,		//Pointer to the created interface
+					NULL				//IUnknown interface pointer
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//デバイスのデータフォーマットを設定：定義済みグローバル変数を指定
+	//Set the device data format: specify the predefined global variable
 	hresult = m_pDIDevice->SetDataFormat(&c_dfDIKeyboard);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}
 
-	//デバイスの協調レベルを設定
+	//Set the device cooperative level
 	hresult = m_pDIDevice->SetCooperativeLevel(
-					hWnd,					//デバイスに関連付けられているウィンドウハンドル
-					DISCL_FOREGROUND		//協調レベル：フォアグランドアクセス権
-					| DISCL_NONEXCLUSIVE	//協調レベル：非排他的アクセス権
+					hWnd,					//Window handle associated with the device
+					DISCL_FOREGROUND		//Cooperative level: foreground access
+					| DISCL_NONEXCLUSIVE	//Cooperative level: non-exclusive access
 				);
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, (DWORD64)hWnd);
 		goto EXIT;
 	}
 
-	//デバイスのプロパティを設定
+	//Set the device property
 	DIPROPDWORD diprop;
 	diprop.diph.dwSize       = sizeof(DIPROPDWORD);
 	diprop.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-	diprop.diph.dwObj        = 0;			//DIPH_DEVICEの場合はゼロ
-	diprop.diph.dwHow        = DIPH_DEVICE;	//dwObjの解釈方法：デバイス全体
-	diprop.dwData            = 8;			//設定するプロパティ：バッファサイズ
+	diprop.diph.dwObj        = 0;			//Zero when using DIPH_DEVICE
+	diprop.diph.dwHow        = DIPH_DEVICE;	//How dwObj is interpreted: entire device
+	diprop.dwData            = 8;			//Property to set: buffer size
 
 	hresult = m_pDIDevice->SetProperty(
-					DIPROP_BUFFERSIZE,	//設定対象プロパティのGUID
-					&diprop.diph		//設定するDIPROPHEADER構造体
+					DIPROP_BUFFERSIZE,	//GUID of the property to set
+					&diprop.diph		//DIPROPHEADER structure to set
 				);
 	if (FAILED(hresult) && (hresult != DI_PROPNOEFFECT)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -117,7 +117,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 終了処理
+// Terminate
 //******************************************************************************
 void DIKeyCtrl::Terminate()
 {
@@ -136,7 +136,7 @@ void DIKeyCtrl::Terminate()
 }
 
 //******************************************************************************
-// デバイスアクセス権取得
+// Acquire device access
 //******************************************************************************
 int DIKeyCtrl::Acquire()
 {
@@ -145,7 +145,7 @@ int DIKeyCtrl::Acquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//アクセス権取得：//デバイス取得済み(S_FALSE)は正常とみなす
+	//Acquire access: device already acquired (S_FALSE) is treated as normal
 	hresult = m_pDIDevice->Acquire();
 	if (FAILED(hresult) && (hresult != S_FALSE)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -157,7 +157,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイスアクセス権解放
+// Release device access
 //******************************************************************************
 int DIKeyCtrl::Unacquire()
 {
@@ -166,7 +166,7 @@ int DIKeyCtrl::Unacquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//アクセス権解放
+	//Release access
 	hresult = m_pDIDevice->Unacquire();
 	if (FAILED(hresult)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
@@ -178,7 +178,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// キー状態取得
+// Get key state
 //******************************************************************************
 int DIKeyCtrl::GetKeyStatus()
 {
@@ -187,19 +187,21 @@ int DIKeyCtrl::GetKeyStatus()
 
 	hresult = m_pDIDevice->GetDeviceState(256, m_KeyStatus);
 	if (FAILED(hresult)) {
-		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
-		goto EXIT;
+		if (hresult == DIERR_INPUTLOST || hresult == DIERR_NOTACQUIRED) {
+			ZeroMemory(m_KeyStatus, 256);
+		}
+		else {
+			result = YN_SET_ERR("DirectInput API error.", hresult, 0);
+			goto EXIT;
+		}
 	}
-
-	//ウィンドウが非アクティブ状態であるとGetDeviceState()はエラーになる(0x8007000c)
-	//どうしよう・・・
 
 EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// キー状態確認
+// Check key state
 //******************************************************************************
 bool DIKeyCtrl::IsKeyDown(
 		unsigned char key

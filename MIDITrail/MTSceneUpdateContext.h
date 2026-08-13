@@ -2,9 +2,9 @@
 //
 // MIDITrail / MTSceneUpdateContext
 //
-// Per-frame context passed to all scene-managed components during Update.
+// Scene update context structure.
 //
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

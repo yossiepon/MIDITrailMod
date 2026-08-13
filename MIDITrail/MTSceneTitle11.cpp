@@ -2,10 +2,10 @@
 //
 // MIDITrail / MTSceneTitle11
 //
-// DX11 title scene.
+// Title scene.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

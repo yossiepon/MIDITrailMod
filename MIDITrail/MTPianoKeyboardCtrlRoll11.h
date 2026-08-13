@@ -2,13 +2,9 @@
 //
 // MIDITrail / MTPianoKeyboardCtrlRoll11
 //
-// DX11 piano keyboard controller for PianoRoll scene.
-// Multi-port support: creates MTPianoKeyboardFlat11 per active port.
-// World matrix is simplified (model orientation baked into keyboard vertices).
-// Used by PianoRoll3D / 2D scenes.
+// Piano keyboard controller for PianoRoll scenes.
 //
-// Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
-// Copyright (C) 2025 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

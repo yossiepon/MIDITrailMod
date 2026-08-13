@@ -1,10 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTGraphicCfgDlg
 //
-// グラフィック設定ダイアログクラス
+// Graphics configuration dialog.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,97 +18,97 @@ using namespace YNBaseLib;
 
 
 //******************************************************************************
-// グラフィック設定定義
+// Graphics configuration definitions
 //******************************************************************************
-//アンチエイリアシング：マルチサンプル種別デフォルト
+//Antialiasing: default multisample type
 #define MT_GRAPHIC_MULTI_SAMPLE_TYPE_DEF  (0)  //OFF
 
 
 //******************************************************************************
-// グラフィック設定ダイアログクラス
+// Graphics configuration dialog class
 //******************************************************************************
 class MTGraphicCfgDlg
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	MTGraphicCfgDlg(void);
 	virtual ~MTGraphicCfgDlg(void);
 
-	//アンチエイリアシングサポート情報設定
+	//Set antialiasing support information
 	void SetAntialiasSupport(unsigned long multiSampleType, bool isSupport);
 
-	//表示：ダイアログが閉じられるまで制御を返さない
+	//Show: does not return control until the dialog is closed
 	int Show(HWND hParentWnd);
 
-	//パラメータ変更確認
+	//Check for parameter changes
 	bool IsChanged();
 
 private:
 
-	//ウィンドウプロシージャ制御用ポインタ
+	//Pointer for window procedure control
 	static MTGraphicCfgDlg* m_pThis;
 
-	//アプリケーションインスタンス
+	//Application instance
 	HINSTANCE m_hInstance;
 
-	//ウィンドウハンドル
+	//Window handle
 	HWND m_hWnd;
 
-	//設定ファイル
+	//Configuration file
 	YNConfFile m_ConfFile;
 
-	//コンボボックスのウィンドウハンドル
+	//Combo box window handle
 	HWND m_hComboMultiSampleType;
 	bool m_MultSampleTypeSupport[DX_MULTI_SAMPLE_TYPE_MAX+1];
 
-	//背景画像ファイルパスエディットボックスのウィンドウハンドル
+	//Background image file path edit box window handle
 	HWND m_hEditImageFilePath;
 	
-	//四分音符長拡大率エディットボックスのウィンドウハンドル
+	//Quarter-note length magnification edit box window handle
 	HWND m_hEditQuarterNoteLengthMag;
 
-	//アンチエイリアシング設定
+	//Antialiasing setting
 	unsigned long m_MultiSampleType;
 
-	//背景画像ファイルパス
+	//Background image file path
 	WCHAR m_ImageFilePath[_MAX_PATH];
 	
-	//四分音符長拡大率
+	//Quarter-note length magnification
 	int m_QuarterNoteLengthMag;
 
-	//更新フラグ
+	//Update flag
 	bool m_isChanged;
 
-	//ウィンドウプロシージャ
+	//Window procedure
 	static INT_PTR CALLBACK _WndProc(HWND, UINT, WPARAM, LPARAM);
 	INT_PTR _WndProcImpl(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
 
-	//ダイアログ表示直前初期化
+	//Pre-display dialog initialization
 	int _OnInitDlg(HWND hDlg);
 
-	//設定ファイル初期化
+	//Initialize config file
 	int _InitConfFile();
 
-	//設定ファイル読み込み
+	//Load config file
 	int _LoadConf();
 
-	//デバイス選択コンボボックス初期化
+	//Initialize the device selection combo box
 	int _InitComboMultiSampleType(HWND hCombo, unsigned long selMultiSampleType);
 
-	//背景画像ファイルパス初期化
+	//Initialize the background image file path
 	int _InitBackgroundImageFilePath();
 	
-	//四分音符設定初期化
+	//Initialize quarter-note settings
 	int _InitQuarterNote();
 
-	//保存処理
+	//Save processing
 	int _Save();
 
-	//背景画像ファイルパスブラウズボタン押下
+	//Background image file path browse button pressed
 	int _OnBtnBrowse();
 
-	//画像ファイル選択
+	//Select image file
 	int _SelectImageFile(WCHAR* pFilePath, unsigned long bufSize, bool* pIsSelected);
 
 };
