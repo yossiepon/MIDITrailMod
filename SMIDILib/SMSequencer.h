@@ -2,9 +2,13 @@
 //
 // Simple MIDI Library / SMSequencer
 //
-// シーケンサクラス
+// MIDI sequencer class.
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+// Based on the DX11 migration design by ced (Zel9278)
+// https://github.com/Zel9278/MIDITrailModMod
 //
 //******************************************************************************
 

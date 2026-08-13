@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMInDevCtrl
 //
-// MIDI入力デバイス制御クラス
+// MIDI input device control class.
 //
 // Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //

@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMNoteList
 //
-// ノートリストクラス
+// Note list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

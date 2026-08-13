@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMMsgQueue
 //
-// メッセージキュークラスヘッダ
+// Message queue class.
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //

@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMEventSysEx
 //
-// SysExイベントクラス
+// System exclusive (SysEx) event class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

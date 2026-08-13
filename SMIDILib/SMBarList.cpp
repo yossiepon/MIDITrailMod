@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMBarList
 //
-// 小節リストクラス
+// Bar (measure) list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

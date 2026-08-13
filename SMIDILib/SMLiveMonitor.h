@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMLiveMonitor
 //
-// ライブモニタクラス
+// Live (real-time input) monitor class.
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //

@@ -2,9 +2,10 @@
 //
 // Simple MIDI Library / SMEventMeta
 //
-// メタイベントクラス
+// Meta event class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2017-2025 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

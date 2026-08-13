@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMRcpConv
 //
-// RCPファイル変換クラス
+// RCP-format file conversion class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

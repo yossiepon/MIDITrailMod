@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMPortList
 //
-// ポートリストクラス
+// Port list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

@@ -1,8 +1,8 @@
 ﻿//******************************************************************************
 //
-// Simple Base Library / YNConfFile
+// YN Base Library / YNConfFile
 //
-// 設定ファイルクラス
+// Configuration (INI) file access class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMCommon
 //
-// 共通定義
+// Common definitions for the Simple MIDI Library.
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //

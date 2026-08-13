@@ -2,9 +2,10 @@
 //
 // Simple MIDI Library / SMEventWatcher
 //
-// イベントウォッチャークラス
+// Event watcher class.
 //
 // Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

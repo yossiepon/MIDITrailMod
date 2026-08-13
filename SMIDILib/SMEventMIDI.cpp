@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMEventMIDI
 //
-// MIDIイベントクラス
+// MIDI channel-message event class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

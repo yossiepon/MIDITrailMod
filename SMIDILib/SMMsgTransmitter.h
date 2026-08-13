@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMMsgTransmitter
 //
-// メッセージ転送クラス
+// Message transmitter class.
 //
 // Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
 //

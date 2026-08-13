@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMSimpleList
 //
-// 単純リストクラス
+// Fixed-size block-allocated simple list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

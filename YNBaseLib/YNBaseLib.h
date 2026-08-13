@@ -1,8 +1,8 @@
 ﻿//******************************************************************************
 //
-// Simple Base Library / YNBaseLib
+// YN Base Library / YNBaseLib
 //
-// 基本ライブラリ
+// Base utility library public header.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

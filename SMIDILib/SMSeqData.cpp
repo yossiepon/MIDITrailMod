@@ -1,10 +1,11 @@
 ﻿//******************************************************************************
 //
-// Simple Base Library / SMSeqData
+// Simple MIDI Library / SMSeqData
 //
-// シーケンスデータクラス
+// Sequence data class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2025 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

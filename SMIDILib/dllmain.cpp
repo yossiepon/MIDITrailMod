@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / DllMain
 //
-// DLLエントリポイント
+// DLL entry point.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

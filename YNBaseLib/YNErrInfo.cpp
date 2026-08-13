@@ -1,8 +1,8 @@
 ﻿//******************************************************************************
 //
-// Simple Base Library / YNErrInfo
+// YN Base Library / YNErrInfo
 //
-// エラー情報クラス
+// Error information class.
 //
 // Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
 //

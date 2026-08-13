@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMIDILib
 //
-// シンプルMIDIライブラリヘッダ
+// Simple MIDI Library public header.
 //
 // Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
 //

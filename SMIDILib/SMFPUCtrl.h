@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMFPUCtrl
 //
-// 浮動点小数プロセッサ制御クラス
+// Floating-point unit precision control class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

@@ -1,8 +1,8 @@
 ﻿//******************************************************************************
 //
-// Simple Base Library / YNPathUtil
+// YN Base Library / YNPathUtil
 //
-// パスユーティリティクラス
+// Path utility class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

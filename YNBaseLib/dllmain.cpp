@@ -1,8 +1,8 @@
 ﻿//******************************************************************************
 //
-// Simple Base Library / DllMain
+// YN Base Library / DllMain
 //
-// DLLエントリーポイント
+// DLL entry point.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //

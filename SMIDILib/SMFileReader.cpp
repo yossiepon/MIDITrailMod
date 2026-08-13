@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMFileReader
 //
-// 標準MIDIファイル読み込みクラス
+// Standard MIDI file reader class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //

@@ -2,7 +2,7 @@
 //
 // Simple MIDI Library / SMEventSysMsg
 //
-// システムメッセージイベントクラス
+// System message event class.
 //
 // Copyright (C) 2012-2022 WADA Masashi. All Rights Reserved.
 //

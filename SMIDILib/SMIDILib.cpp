@@ -1,8 +1,8 @@
 ﻿//******************************************************************************
 //
-// Simple MIDI Library / SMLib
+// Simple MIDI Library / SMIDILib
 //
-// シンプルMIDIライブラリ
+// Simple MIDI Library module.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
