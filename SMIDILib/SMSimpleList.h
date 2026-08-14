@@ -1,17 +1,17 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMSimpleList
 //
-// 単純リストクラス
+// Fixed-size block-allocated simple list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// 固定サイズのアイテムを追加／参照するだけの単純リストクラス。
-// メモリをブロック単位で確保することにより、newの実施回数を抑止して、
-// 性能を優先する。トレードオフでメモリを無駄遣いする。
+// A simple list class that only adds/references fixed-size items.
+// Allocates memory in block units to reduce the number of new calls,
+// prioritizing performance at the cost of wasted memory.
 
 #pragma once
 
@@ -29,32 +29,32 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// 単純リストクラス
+// Simple list class
 //******************************************************************************
 class SMIDILIB_API SMSimpleList
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMSimpleList(unsigned long itemSize, unsigned long unitNum);
 	virtual ~SMSimpleList(void);
 
-	//クリア
+	//Clear
 	virtual void Clear();
 
-	//項目追加
+	//Add item
 	virtual int AddItem(void* pItem);
 
-	//項目取得
+	//Get item
 	virtual int GetItem(unsigned long index, void* pItem);
 
-	//項目登録（上書き）
+	//Set item (overwrite)
 	virtual int SetItem(unsigned long index, void* pItem);
 
-	//項目数取得
+	//Get item count
 	virtual unsigned long GetSize();
 
-	//コピー
+	//Copy
 	virtual int CopyFrom(SMSimpleList* pSrcList);
 
 private:
@@ -73,7 +73,7 @@ private:
 	unsigned long _GetBlockNo(unsigned long index);
 	unsigned long _GetBlockIndex(unsigned long index);
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMSimpleList&);
 	SMSimpleList(const SMSimpleList&);
 

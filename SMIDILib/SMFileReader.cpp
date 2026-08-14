@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMFileReader
 //
-// 標準MIDIファイル読み込みクラス
+// Standard MIDI file reader class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMFileReader::SMFileReader(void)
 {
@@ -31,14 +31,14 @@ SMFileReader::SMFileReader(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMFileReader::~SMFileReader(void)
 {
 }
 
 //******************************************************************************
-// ログ出力パス設定
+// Log output path setting
 //******************************************************************************
 int SMFileReader::SetLogPath(
 		const WCHAR* pLogPath
@@ -69,7 +69,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// Standard MIDI File のロード
+// Load Standard MIDI File
 //******************************************************************************
 int SMFileReader::Load(
 		const WCHAR *pSMFPath,
@@ -91,43 +91,43 @@ int SMFileReader::Load(
 
 	pSeqData->Clear();
 
-	//ログファイルを開く
+	//Open log file
 	result = _OpenLogFile();
 	if (result != 0 ) goto EXIT;
 
-	//ファイルを開く
+	//Open file
 	hFile = mmioOpenW((LPWSTR)pSMFPath, NULL, MMIO_READ);
 	if (hFile == NULL) {
 		result = YN_SET_ERR("File open error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//RIFFヘッダ読み飛ばし
+	//Skip RIFF header
 	result = _SkipRIFFHeader(hFile);
 	if (result != 0 ) goto EXIT;
 
-	//ヘッダ読み込み
+	//Read header
 	result = _ReadChunkHeader(hFile, &chunkTypeSection, &chunkDataSection);
 	if (result != 0 ) goto EXIT;
 
 	if ((chunkDataSection.format != 0) && (chunkDataSection.format != 1)) {
-		//フォーマット0,1以外は未対応
+		//Formats other than 0 and 1 are not supported
 		result = YN_SET_ERR("Unsupported SMF format.", chunkDataSection.format, 0);
 		goto EXIT;
 	}
 	if ( chunkDataSection.ntracks == 0) {
-		//データ異常
+		//Data error
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 	if ( chunkDataSection.timeDivision == 0) {
-		//データ異常
+		//Data error
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 	if ((chunkDataSection.timeDivision & 0x80000000) != 0) {
-		//分解能が負の場合はデルタタイムを実時間とみなす仕様がある
-		//一般的でないので今のところサポートしない
+		//Spec allows negative division to mean delta time is real time
+		//Not common, so not supported for now
 		result = YN_SET_ERR("Unsupported SMF format.", chunkDataSection.timeDivision, 0);
 		goto EXIT;
 	}
@@ -136,11 +136,11 @@ int SMFileReader::Load(
 	pSeqData->SetTimeDivision(chunkDataSection.timeDivision);
 
 	for (i = 0; i < chunkDataSection.ntracks; i++) {
-		//トラックヘッダ読み込み
+		//Read track header
 		result = _ReadTrackHeader(hFile, i, &chunkTypeSectionOfTrack);
 		if (result != 0 ) goto EXIT;
 
-		//トラックイベント読み込み
+		//Read track events
 		result = _ReadTrackEvents(hFile, chunkTypeSectionOfTrack.chunkSize, &pTrack);
 		if (result != 0 ) goto EXIT;
 
@@ -149,11 +149,11 @@ int SMFileReader::Load(
 		pTrack = NULL;
 	}
 
-	//トラックを閉じる
+	//Close track
 	result = pSeqData->CloseTrack();
 	if (result != 0 ) goto EXIT;
 
-	//ファイル名登録
+	//Register file name
 	pSeqData->SetFileName(PathFindFileNameW(pSMFPath));
 
 EXIT:;
@@ -166,7 +166,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// RIFFヘッダ読み飛ばし
+// Skip RIFF header
 //******************************************************************************
 int SMFileReader::_SkipRIFFHeader(
 		HMMIO hFile
@@ -177,16 +177,16 @@ int SMFileReader::_SkipRIFFHeader(
 	SMFRIFFChunkHeader chunkHeader;
 	SMFRIFFSubChunkHeader subChunkHeader;
 
-	//RIFFチャンクの読み込み
+	//Read RIFF chunk
 	apiresult = mmioRead(hFile, (HPSTR)&chunkHeader, sizeof(SMFRIFFChunkHeader));
 	if (apiresult != sizeof(SMFRIFFChunkHeader)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//識別子チェック
+	//Check identifier
 	if (memcmp(chunkHeader.chunkID, "RIFF", 4) != 0) {
-		//RIFFではないため読み取り位置を先頭に戻して正常終了
+		//Not RIFF; rewind read position to start and exit normally
 		apiresult = mmioSeek(hFile, 0, SEEK_SET);
 		if (apiresult == -1) {
 			result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -195,22 +195,22 @@ int SMFileReader::_SkipRIFFHeader(
 		goto EXIT;
 	}
 
-	//フォーマットチェック
+	//Check format
 	if (memcmp(chunkHeader.format, "RMID", 4) != 0) {
-		//RIFFであるがMIDIデータではないためファイル異常とみなす
+		//RIFF but not MIDI data; treat as file error
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 
-	//RIFFサブチャンクの読み込み
+	//Read RIFF sub-chunk
 	apiresult = mmioRead(hFile, (HPSTR)&subChunkHeader, sizeof(SMFRIFFSubChunkHeader));
 	if (apiresult != sizeof(SMFRIFFSubChunkHeader)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//フォーマットチェック
-	//  LISTチャンクには対応しない
+	//Check format
+	//  LIST chunks are not supported
 	if (memcmp(subChunkHeader.chunkID, "data", 4) != 0) {
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
@@ -221,7 +221,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFヘッダ読み込み
+// Read SMF header
 //******************************************************************************
 int SMFileReader::_ReadChunkHeader(
 		HMMIO hFile,
@@ -233,17 +233,17 @@ int SMFileReader::_ReadChunkHeader(
 	long apiresult = 0;
 	long offset = 0;
 
-	//識別子とヘッダデータサイズの読み込み
+	//Read identifier and header data size
 	apiresult = mmioRead(hFile, (HPSTR)pChunkTypeSection, sizeof(SMFChunkTypeSection));
 	if (apiresult != sizeof(SMFChunkTypeSection)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//エンディアン変換
+	//Endian conversion
 	_ReverseEndian(&(pChunkTypeSection->chunkSize), sizeof(unsigned long));
 
-	//整合性チェック
+	//Consistency check
 	if (memcmp(pChunkTypeSection->chunkType, "MThd", 4) != 0) {
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
@@ -253,19 +253,19 @@ int SMFileReader::_ReadChunkHeader(
 		goto EXIT;
 	}
 
-	//ヘッダデータの読み込み
+	//Read header data
 	apiresult = mmioRead(hFile, (HPSTR)pChunkDataSection, sizeof(SMFChunkDataSection));
 	if (apiresult != sizeof(SMFChunkDataSection)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//エンディアン変換
+	//Endian conversion
 	_ReverseEndian(&(pChunkDataSection->format), sizeof(unsigned short));
 	_ReverseEndian(&(pChunkDataSection->ntracks), sizeof(unsigned short));
 	_ReverseEndian(&(pChunkDataSection->timeDivision), sizeof(unsigned short));
 
-	//指定されたデータサイズまでスキップする（念のため）
+	//Skip to specified data size (just in case)
 	if (pChunkTypeSection->chunkSize > sizeof(SMFChunkDataSection)) {
 		offset = pChunkTypeSection->chunkSize - sizeof(SMFChunkDataSection);
 		apiresult = mmioSeek(hFile, offset, SEEK_CUR);
@@ -283,7 +283,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFトラックヘッダの読み込み
+// Read SMF track header
 //******************************************************************************
 int SMFileReader::_ReadTrackHeader(
 		HMMIO hFile,
@@ -294,17 +294,17 @@ int SMFileReader::_ReadTrackHeader(
 	int result = 0;
 	long apiresult = 0;
 
-	//識別子とヘッダデータサイズの読み込み
+	//Read identifier and header data size
 	apiresult = mmioRead(hFile, (HPSTR)pChunkTypeSection, sizeof(SMFChunkTypeSection));
 	if (apiresult != sizeof(SMFChunkTypeSection)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
 		goto EXIT;
 	}
 
-	//エンディアン変換
+	//Endian conversion
 	_ReverseEndian(&(pChunkTypeSection->chunkSize), sizeof(unsigned long));
 
-	//整合性チェック
+	//Consistency check
 	if (memcmp(pChunkTypeSection->chunkType, "MTrk", 4) != 0) {
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
@@ -318,7 +318,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFトラックイベントの読み込み
+// Read SMF track events
 //******************************************************************************
 int SMFileReader::_ReadTrackEvents(
 		HMMIO hFile,
@@ -344,23 +344,23 @@ int SMFileReader::_ReadTrackEvents(
 		goto EXIT;
 	}
 
-	//出力先ポートの初期値はトラック単位で0番とする
+	//Default output port per track is 0
 	portNo = 0;
 
 	m_PrevStatus = 0;
 	while (readSize < chunkSize) {
 
-		//デルタタイム読み込み
+		//Read delta time
 		result = _ReadDeltaTime(hFile, &deltaTime, &offset);
 		if (result != 0) goto EXIT;
 		readSize += offset;
 
-		//イベント読み込み
+		//Read event
 		result = _ReadEvent(hFile, &event, &isEndOfTrack, &offset);
 		if (result != 0) goto EXIT;
 		readSize += offset;
 
-		//出力ポートの切り替えを確認
+		//Check for output port change
 		if (event.GetType() == SMEvent::EventMeta) {
 			if (event.GetMetaType() == 0x21) {
 				SMEventMeta meta;
@@ -369,13 +369,13 @@ int SMFileReader::_ReadTrackEvents(
 			}
 		}
 
-		//イベントリストに追加
+		//Add to event list
 		result = pTrack->AddDataSet(deltaTime, &event, portNo);
 		if (result != 0) goto EXIT;
 
-		//トラック終端
+		//End of track
 		if (isEndOfTrack) {
-			//指定されたチャンクサイズまでスキップする（念のため）
+			//Skip to specified chunk size (just in case)
 			if (readSize < chunkSize) {
 				offset = chunkSize - readSize;
 				apiresult = mmioSeek(hFile, offset, SEEK_CUR);
@@ -398,7 +398,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMFデルタタイムの読み込み
+// Read SMF delta time
 //******************************************************************************
 int SMFileReader::_ReadDeltaTime(
 		HMMIO hFile,
@@ -419,7 +419,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SMF可変長データサイズの読み込み
+// Read SMF variable-length data size
 //******************************************************************************
 int SMFileReader::_ReadVariableDataSize(
 		HMMIO hFile,
@@ -453,7 +453,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// イベントの読み込み
+// Read event
 //******************************************************************************
 int SMFileReader::_ReadEvent(
 		HMMIO hFile,
@@ -470,7 +470,7 @@ int SMFileReader::_ReadEvent(
 	*pIsEndOfTrack = false;
 	*pOffset = 0;
 
-	//ステータスを読み込む
+	//Read status
 	apiresult = mmioRead(hFile, (HPSTR)&tmp, sizeof(unsigned char));
 	if (apiresult != sizeof(unsigned char)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -478,13 +478,13 @@ int SMFileReader::_ReadEvent(
 	}
 	*pOffset += sizeof(unsigned char);
 
-	//ランニングステータスの省略チェック
-	//前回のMIDIイベントが存在してかつ今回の1byte最上位ビットが0なら省略
+	//Check for running status omission
+	//Omitted if a previous MIDI event exists and this byte's high bit is 0
 	if ((m_PrevStatus != 0) && ((tmp & 0x80) == 0)) { 
-		//省略されたので前回のMIDIイベントのステータスを引き継ぐ
+		//Omitted; inherit status from the previous MIDI event
 		status = m_PrevStatus;
 
-		//読み込み位置を戻す
+		//Rewind read position
 		apiresult = mmioSeek(hFile, -1, SEEK_CUR);
 		if (apiresult == -1) {
 			result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -497,38 +497,38 @@ int SMFileReader::_ReadEvent(
 	}
 
 	switch (status & 0xF0) {
-		case 0x80:  //ノートオフ
-		case 0x90:  //ノートオン
-		case 0xA0:  //ポリフォニックキープレッシャー
-		case 0xB0:  //コントロールチェンジ
-		case 0xC0:  //プログラムチェンジ
-		case 0xD0:  //チャンネルプレッシャー
-		case 0xE0:  //ピッチベンド
-			//MIDIイベント
+		case 0x80:  //Note Off
+		case 0x90:  //Note On
+		case 0xA0:  //Polyphonic Key Pressure
+		case 0xB0:  //Control Change
+		case 0xC0:  //Program Change
+		case 0xD0:  //Channel Pressure
+		case 0xE0:  //Pitch Bend
+			//MIDI event
 			result = _ReadEventMIDI(hFile, status, pEvent, &offsetTmp);
 			if (result != 0) goto EXIT;
-			//ランニングステータス省略判定のため前回ステータスとして記憶する
+			//Remember as previous status for running status omission check
 			m_PrevStatus = status;
 			break;
 		case 0xF0:
 			if ((status == 0xF0) || (status == 0xF7)) {
-				//SysExイベント
+				//SysEx event
 				result = _ReadEventSysEx(hFile, status, pEvent, &offsetTmp);
 				if (result != 0) goto EXIT;
 			}
 			else if (status == 0xFF) {
-				//メタイベント
+				//Meta event
 				result = _ReadEventMeta(hFile, status, pEvent, pIsEndOfTrack, &offsetTmp);
 				if (result != 0) goto EXIT;
 			}
 			else {
-				//データ不正
+				//Invalid data
 				result = YN_SET_ERR("Invalid data found.", status, 0);
 				goto EXIT;
 			}
 			break;
 		default:
-			//データ不正
+			//Invalid data
 			result = YN_SET_ERR("Invalid data found.", status, 0);
 			goto EXIT;
 	}
@@ -539,7 +539,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントの読み込み
+// Read MIDI event
 //******************************************************************************
 int SMFileReader::_ReadEventMIDI(
 		HMMIO hFile,
@@ -555,7 +555,7 @@ int SMFileReader::_ReadEventMIDI(
 
 	*pOffset = 0;
 
-	//DATA1を読み込む
+	//Read DATA1
 	apiresult = mmioRead(hFile, (HPSTR)&(data[0]), sizeof(unsigned char));
 	if (apiresult != sizeof(unsigned char)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -564,12 +564,12 @@ int SMFileReader::_ReadEventMIDI(
 	*pOffset += sizeof(unsigned char);
 
 	switch (status & 0xF0) {
-		case 0x80:  //ノートオフ
-		case 0x90:  //ノートオン
-		case 0xA0:  //ポリフォニックキープレッシャー
-		case 0xB0:  //コントロールチェンジ
-		case 0xE0:  //ピッチベンド
-			//DATA2を読み込む
+		case 0x80:  //Note Off
+		case 0x90:  //Note On
+		case 0xA0:  //Polyphonic Key Pressure
+		case 0xB0:  //Control Change
+		case 0xE0:  //Pitch Bend
+			//Read DATA2
 			apiresult = mmioRead(hFile, (HPSTR)&(data[1]), sizeof(unsigned char));
 			if (apiresult != sizeof(unsigned char)) {
 				result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -578,13 +578,13 @@ int SMFileReader::_ReadEventMIDI(
 			*pOffset += sizeof(unsigned char);
 			size = 2;
 			break;
-		case 0xC0:  //プログラムチェンジ
-		case 0xD0:  //チャンネルプレッシャー
-			//DATA2なし
+		case 0xC0:  //Program Change
+		case 0xD0:  //Channel Pressure
+			//No DATA2
 			size = 1;
 			break;
 		default:
-			//データ不正
+			//Invalid data
 			result = YN_SET_ERR("Invalid data found.", status, 0);
 			goto EXIT;
 	}
@@ -600,7 +600,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysExイベントの読み込み
+// Read SysEx event
 //******************************************************************************
 int SMFileReader::_ReadEventSysEx(
 		HMMIO hFile,
@@ -616,7 +616,7 @@ int SMFileReader::_ReadEventSysEx(
 	unsigned long offsetTmp = 0;
 	*pOffset = 0;
 
-	//可変長データサイズを読み込む
+	//Read variable-length data size
 	result = _ReadVariableDataSize(hFile, &size, &offsetTmp);
 	if (result != 0) goto EXIT;
 	*pOffset += offsetTmp;
@@ -629,7 +629,7 @@ int SMFileReader::_ReadEventSysEx(
 		goto EXIT;
 	}
 
-	//可変長データを読み込む
+	//Read variable-length data
 	apiresult = mmioRead(hFile, (HPSTR)(pData), size);
 	if (apiresult != size) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -649,7 +649,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// メタイベントの読み込み
+// Read meta event
 //******************************************************************************
 int SMFileReader::_ReadEventMeta(
 		HMMIO hFile,
@@ -668,7 +668,7 @@ int SMFileReader::_ReadEventMeta(
 	*pIsEndOfTrack = false;
 	*pOffset = 0;
 
-	//種別を読み込む
+	//Read type
 	apiresult = mmioRead(hFile, (HPSTR)&type, sizeof(unsigned char));
 	if (apiresult != sizeof(unsigned char)) {
 		result = YN_SET_ERR("File read error.", GetLastError(), apiresult);
@@ -676,30 +676,30 @@ int SMFileReader::_ReadEventMeta(
 	}
 	*pOffset += sizeof(unsigned char);
 
-	//メタイベント種別
+	//Meta event type
 	switch (type) {
-		            //  size（v:可変長データサイズ）
-		case 0x00:  //  2  シーケンス番号
-		case 0x01:  //  v  テキスト
-		case 0x02:  //  v  著作権表示
-		case 0x03:  //  v  シーケンス名／トラック名
-		case 0x04:  //  v  楽器名
-		case 0x05:  //  v  歌詞
-		case 0x06:  //  v  マーカー
-		case 0x07:  //  v  キューポイント
-		case 0x08:  //  v  プログラム名／音色名
-		case 0x09:  //  v  デバイス名 ／音源名
-		case 0x20:  //  1  MIDIチャンネルプリフィックス
-		case 0x21:  //  1  ポ ート指定
-		case 0x2F:  //  0  トラック終端
-		case 0x51:  //  3  テンポ設定
-		case 0x54:  //  5  SMPTE オフセット
-		case 0x58:  //  4  拍子の設定
-		case 0x59:  //  2  調の設定
-		case 0x7F:  //  v  シーケンサ特定メタイベント
+		            //  size (v: variable-length data size)
+		case 0x00:  //  2  Sequence Number
+		case 0x01:  //  v  Text
+		case 0x02:  //  v  Copyright Notice
+		case 0x03:  //  v  Sequence/Track Name
+		case 0x04:  //  v  Instrument Name
+		case 0x05:  //  v  Lyric
+		case 0x06:  //  v  Marker
+		case 0x07:  //  v  Cue Point
+		case 0x08:  //  v  Program Name / Patch Name
+		case 0x09:  //  v  Device Name / Sound Set Name
+		case 0x20:  //  1  MIDI Channel Prefix
+		case 0x21:  //  1  Port designation
+		case 0x2F:  //  0  End of Track
+		case 0x51:  //  3  Set Tempo
+		case 0x54:  //  5  SMPTE Offset
+		case 0x58:  //  4  Time Signature
+		case 0x59:  //  2  Key Signature
+		case 0x7F:  //  v  Sequencer-Specific Meta Event
 			break;
 		default:
-			//未知の種別でもエラーにはしない
+			//Do not error on unknown type
 			// result = YN_SET_ERR("Invalid data found.", type, 0);
 			// goto EXIT;
 			break;
@@ -709,12 +709,12 @@ int SMFileReader::_ReadEventMeta(
 		*pIsEndOfTrack = true;
 	}
 
-	//可変長データサイズを読み込む
+	//Read variable-length data size
 	result = _ReadVariableDataSize(hFile, &size, &offsetTmp);
 	if (result != 0) goto EXIT;
 	*pOffset += offsetTmp;
 
-	//可変長データを読み込む
+	//Read variable-length data
 	if (size > 0) {
 		try {
 			pData = new unsigned char[size];
@@ -743,7 +743,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// エンディアン変換
+// Endian conversion
 //******************************************************************************
 void SMFileReader::_ReverseEndian(
 		void* pData,
@@ -766,7 +766,7 @@ void SMFileReader::_ReverseEndian(
 }
 
 //******************************************************************************
-// ログファイルオープン
+// Open log file
 //******************************************************************************
 int SMFileReader::_OpenLogFile()
 {
@@ -786,7 +786,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログファイルクローズ
+// Close log file
 //******************************************************************************
 int SMFileReader::_CloseLogFile()
 {
@@ -808,7 +808,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力
+// Log output
 //******************************************************************************
 int SMFileReader::_WriteLog(char* pText)
 {
@@ -831,7 +831,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力：ファイルヘッダ
+// Log output: File header
 //******************************************************************************
 int SMFileReader::_WriteLogChunkHeader(
 		SMFChunkTypeSection* pChunkTypeSection,
@@ -861,7 +861,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力：トラックヘッダ
+// Log output: Track header
 //******************************************************************************
 int SMFileReader::_WriteLogTrackHeader(
 		unsigned long trackNo,
@@ -887,7 +887,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力：デルタタイム
+// Log output: Delta time
 //******************************************************************************
 int SMFileReader::_WriteLogDeltaTime(
 		unsigned long deltaTime
@@ -906,7 +906,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力：MIDIイベント
+// Log output: MIDI event
 //******************************************************************************
 int SMFileReader::_WriteLogEventMIDI(
 		unsigned char status,
@@ -947,7 +947,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力：SysExイベント
+// Log output: SysEx event
 //******************************************************************************
 int SMFileReader::_WriteLogEventSysEx(
 		unsigned char status,
@@ -975,7 +975,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ログ出力：メタイベント
+// Log output: Meta event
 //******************************************************************************
 int SMFileReader::_WriteLogEventMeta(
 		unsigned char status,

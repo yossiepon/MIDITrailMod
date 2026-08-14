@@ -1,16 +1,16 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMEventMIDI
 //
-// MIDIイベントクラス
+// MIDI channel-message event class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// イベントクラスから派生させる設計が理想だが、newの実施回数を激増させる
-// ため、スタックで処理できるデータ解析ユーティリティクラスとして実装する。
+// Ideally this would derive from the event class, but that would greatly increase the number of new calls,
+// so it's implemented as a stack-based data parsing utility class instead.
 
 #pragma once
 
@@ -26,13 +26,13 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// MIDIイベントクラス
+// MIDI event class
 //******************************************************************************
 class SMIDILIB_API SMEventMIDI
 {
 public:
 
-	//チャンネルメッセージ種別
+	//Channel message type
 	enum ChMsg {
 		None					= 0x00, // none
 		NoteOff					= 0x80, // 8n kk vv
@@ -46,48 +46,48 @@ public:
 
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMEventMIDI();
 	virtual ~SMEventMIDI(void);
 
-	//イベントアタッチ
+	//Attach event
 	void Attach(SMEvent* pEvent);
 
-	//MIDI出力メッセージ取得
+	//MIDI outputGet message
 	int GetMIDIOutShortMsg(unsigned long* pMsg);
 
-	//チャンネルメッセージ
+	//Channel message
 	ChMsg GetChMsg();
 
-	//チャンネル番号取得
+	//Get channel number
 	unsigned char GetChNo();
 
-	//ノート番号取得
+	//Get note number
 	unsigned char GetNoteNo();
 
-	//ベロシティ取得
+	//Get velocity
 	unsigned char GetVelocity();
 
-	//コントロールチェンジ番号取得
+	//Get control change number
 	unsigned char GetCCNo();
 
-	//コントロールチェンジ値取得
+	//Get control change value
 	unsigned char GetCCValue();
 
-	//プログラム番号取得
+	//Get program number
 	unsigned char GetProgramNo();
 
-	//チャンネルプレッシャー値取得
+	//Get channel pressure value
 	unsigned char GetPressureValue();
 
-	//ピッチベンド値取得
+	//Get pitch bend value
 	short GetPitchBendValue();
 
 private:
 
 	SMEvent* m_pEvent;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMEventMIDI&);
 	SMEventMIDI(const SMEventMIDI&);
 

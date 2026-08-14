@@ -1,10 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMNoteList
 //
-// ノートリストクラス
+// Note list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,9 +23,9 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ノート情報構造体
+// Note info structure
 //******************************************************************************
-//ノート情報
+//Note info
 typedef struct {
 	unsigned char portNo;
 	unsigned char chNo;
@@ -32,45 +33,43 @@ typedef struct {
 	unsigned char velocity;
 	unsigned long startTime;
 	unsigned long endTime;
-// >>> add 20120728 yossiepon begin
 	WCHAR lyric[17];
-// <<< add 20120728 yossiepon end
 } SMNote;
 
 //******************************************************************************
-// ノートリストクラス
+// Note list class
 //******************************************************************************
 class SMIDILIB_API SMNoteList
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMNoteList(void);
 	virtual ~SMNoteList(void);
 
-	//クリア
+	//Clear
 	void Clear();
 
-	//ノート情報追加
+	//Add note info
 	int AddNote(SMNote note);
 
-	//ノート情報取得
+	//Get note info
 	int GetNote(unsigned long index, SMNote* pNote);
 
-	//ノート情報登録（上書き）
+	//Set note info (overwrite)
 	int SetNote(unsigned long index, SMNote* pNote);
 
-	//ノート数取得
+	//Get note count
 	unsigned long GetSize();
 
-	//コピー
+	//Copy
 	int CopyFrom(SMNoteList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMNoteList&);
 	SMNoteList(const SMNoteList&);
 

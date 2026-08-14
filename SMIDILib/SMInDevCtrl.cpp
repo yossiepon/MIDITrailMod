@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMInDevCtrl
 //
-// MIDI入力デバイス制御クラス
+// MIDI input device control class.
 //
 // Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
@@ -18,26 +18,26 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMInDevCtrl::SMInDevCtrl(void)
 {
-	//ポート情報
+	// Port info
 	m_PortInfo.isExist = false;
 	m_PortInfo.devId = 0;
 	m_PortInfo.hMidiIn = NULL;
 	memset((void*)&(m_PortInfo.midiHdr), 0, sizeof(MIDIHDR));
-	
-	//コールバック関数
+
+	// Callback function
 	m_pInReadCallBack = NULL;
 	m_pCallBackUserParam = NULL;
-	
-	//パケット解析系
+
+	// Packet parsing
 	m_isContinueSysEx = false;
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMInDevCtrl::~SMInDevCtrl()
 {
@@ -46,17 +46,17 @@ SMInDevCtrl::~SMInDevCtrl()
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int SMInDevCtrl::Initialize()
 {
 	int result = 0;
 	
-	//ポート情報クリア
+	// Clear port info
 	result = ClearPortInfo();
 	if (result != 0) goto EXIT;
-	
-	//MIDI入力デバイス一覧を作成
+
+	// Build MIDI input device list
 	result = _InitDevList();
 	if (result != 0) goto EXIT;
 	
@@ -65,7 +65,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイスリスト初期化
+// Initialize device list
 //******************************************************************************
 int SMInDevCtrl::_InitDevList()
 {
@@ -78,10 +78,10 @@ int SMInDevCtrl::_InitDevList()
 
 	m_InDevList.clear();
 
-	//MIDI出力デバイスの数
+	// Number of MIDI output devices
 	devNum = midiInGetNumDevs();
 
-	//MIDI出力デバイスの情報を取得する
+	// Get MIDI output device info
 	for (devId = 0; devId < devNum; devId++) {
 
 		ZeroMemory(&mic, sizeof(MIDIINCAPS));
@@ -95,7 +95,7 @@ int SMInDevCtrl::_InitDevList()
 		devInfo.devId = devId;
 		memcpy(devInfo.productName, mic.szPname, MAXPNAMELEN);
 
-		//取得した情報をリストに登録
+		// Register retrieved info to the list
 		m_InDevList.push_back(devInfo);
 	}
 	
@@ -104,7 +104,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイス数取得
+// Get device count
 //******************************************************************************
 unsigned long SMInDevCtrl::GetDevNum()
 {
@@ -112,7 +112,7 @@ unsigned long SMInDevCtrl::GetDevNum()
 }
 
 //******************************************************************************
-// デバイスプロダクト名称取得
+// Get device product name
 //******************************************************************************
 int SMInDevCtrl::GetDevProductName(
 		unsigned long index,
@@ -137,7 +137,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポートに対応するデバイスを設定
+// Set device corresponding to port
 //******************************************************************************
 int SMInDevCtrl::SetPortDev(
 		const char* pProductName
@@ -171,7 +171,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベント読み込みコールバック関数登録
+// Register MIDI event read callback function
 //******************************************************************************
 void SMInDevCtrl::SetInReadCallBack(
 		SMInReadCallBack pCallBack,
@@ -183,7 +183,7 @@ void SMInDevCtrl::SetInReadCallBack(
 }
 
 //******************************************************************************
-// ポートに対応するデバイスを開く
+// Open device corresponding to port
 //******************************************************************************
 int SMInDevCtrl::OpenPortDev()
 {
@@ -194,19 +194,19 @@ int SMInDevCtrl::OpenPortDev()
 	
 	result = ClosePortDev();
 	if (result != 0) goto EXIT;
-	
-	//ポートが存在しなければスキップ
+
+	// Skip if port does not exist
 	if (!m_PortInfo.isExist) goto EXIT;;
-	
+
 	m_isContinueSysEx = false;
-	
-	//デバイスを開く
+
+	// Open device
 	apiresult = midiInOpen(
-					&hMidiIn,			//ハンドルのアドレス
-					m_PortInfo.devId,	//デバイス識別子
-					(DWORD_PTR)_InReadCallBack,	//コールバック関数
-					(DWORD_PTR)this,	//コールバック関数に渡すユーザーインスタンスデータ
-					CALLBACK_FUNCTION	//コールバックフラグ：コールバック関数
+					&hMidiIn,			// handle address
+					m_PortInfo.devId,	// device identifier
+					(DWORD_PTR)_InReadCallBack,	// callback function
+					(DWORD_PTR)this,	// user instance data passed to callback function
+					CALLBACK_FUNCTION	// callback flag: callback function
 				);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device open error.", apiresult, 0);
@@ -214,7 +214,7 @@ int SMInDevCtrl::OpenPortDev()
 	}
 	m_PortInfo.hMidiIn = hMidiIn;
 	
-	//MIDI入力バッファ作成
+	// Create MIDI input buffer
 	try {
 		pBuf = new unsigned char[SM_MIDIIN_BUF_SIZE];
 	}
@@ -223,28 +223,28 @@ int SMInDevCtrl::OpenPortDev()
 		goto EXIT;
 	}
 	
-	//ヘッダ作成
+	// Create header
 	memset((void*)&(m_PortInfo.midiHdr), 0, sizeof(MIDIHDR));
 	m_PortInfo.midiHdr.lpData         = (LPSTR)pBuf;
 	m_PortInfo.midiHdr.dwBufferLength = SM_MIDIIN_BUF_SIZE;
 	m_PortInfo.midiHdr.dwFlags        = 0;
 	pBuf = NULL;
 	
-	//MIDI入力バッファ準備
+	// Prepare MIDI input buffer
 	apiresult = midiInPrepareHeader(hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
 		goto EXIT;
 	}
-	
-	//MIDI入力バッファ登録
+
+	// Register MIDI input buffer
 	apiresult = midiInAddBuffer(hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
 		goto EXIT;
 	}
-	
-	//MIDI入力開始
+
+	// Start MIDI input
 	apiresult = midiInStart(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device open error.", apiresult, 0);
@@ -257,50 +257,50 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポートに対応するデバイスを閉じる
+// Close device corresponding to port
 //******************************************************************************
 int SMInDevCtrl::ClosePortDev()
 {
 	int result = 0;
 	UINT apiresult = 0;
 	
-	//ポートが存在しなければスキップ
+	// Skip if port does not exist
 	if (!m_PortInfo.isExist) goto EXIT;
-	
-	//ポートを開いてなければスキップ
+
+	// Skip if port is not open
 	if (m_PortInfo.hMidiIn == NULL) goto EXIT;
-	
-	//MIDI入力停止
-	//  キューにバッファが存在する場合は現在のバッファは処理済みにされる
-	//  MIDIHDRのdwBytesRecordedメンバにはデータの実際の長さが入る
-	//  ただしキューにある空のバッファは残され処理済みとはされない
+
+	// Stop MIDI input
+	//  if a buffer exists in the queue, the current buffer is marked as processed
+	//  the dwBytesRecorded member of MIDIHDR holds the actual length of the data
+	//  however an empty buffer left in the queue is not marked as processed
 	apiresult = midiInStop(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", apiresult, 0);
 		goto EXIT;
 	}
-	
-	//MIDI入力停止
-	//  未処理の入力バッファをコールバック関数に返す
-	//  MIDIHDRのdwFlagsメンバにMHDR_DONEフラグをセットする
+
+	// Stop MIDI input
+	//  return unprocessed input buffers to the callback function
+	//  set the MHDR_DONE flag on the dwFlags member of MIDIHDR
 	apiresult = midiInReset(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", apiresult, 0);
 		goto EXIT;
 	}
-	
-	//MIDI入力バッファ解除
+
+	// Release MIDI input buffer
 	apiresult = midiInUnprepareHeader(m_PortInfo.hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", apiresult, 0);
 		goto EXIT;
 	}
-	
-	//バッファ破棄
+
+	// Discard buffer
 	delete [] (unsigned char*)(m_PortInfo.midiHdr.lpData);
 	m_PortInfo.midiHdr.lpData = NULL;
-	
-	//デバイスを閉じる
+
+	// Close device
 	apiresult = midiInClose(m_PortInfo.hMidiIn);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device close error.", 0, 0);
@@ -314,7 +314,7 @@ EXIT:;
 
 
 //******************************************************************************
-// ポート情報クリア
+// Clear port info
 //******************************************************************************
 int SMInDevCtrl::ClearPortInfo()
 {
@@ -333,7 +333,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN 読み込みコールバック関数
+// MIDI IN read callback function
 //******************************************************************************
 void SMInDevCtrl::_InReadCallBack(
 		HMIDIIN hMidiIn,
@@ -352,7 +352,7 @@ void SMInDevCtrl::_InReadCallBack(
 }
 
 //******************************************************************************
-// MIDI IN 読み込み処理
+// MIDI IN read process
 //******************************************************************************
 void SMInDevCtrl::_InReadProc(
 		HMIDIIN hMidiIn,
@@ -366,41 +366,41 @@ void SMInDevCtrl::_InReadProc(
 	
 	switch (wMsg) {
 		case MIM_OPEN:
-			//MIDI入力デバイスオープン
+			// MIDI input device open
 			break;
 		case MIM_CLOSE:
-			//MIDI入力デバイスクローズ
+			// MIDI input device close
 			break;
 		case MIM_DATA:
-			//MIDIメッセージ受信
-			//  dwParam1 MIDIメッセージ
-			//  dwParam2 タイムスタンプ
+			// MIDI message received
+			//  dwParam1 MIDI message
+			//  dwParam2 timestamp
 			m_isContinueSysEx = false;
 			result = _InReadProcMIDI(dwParam1, dwParam2, &event);
 			if (result != 0) goto EXIT;
 			break;
 		case MIM_LONGDATA:
-			//システムエクスクルーシブ受信
-			//  dwParam1 MIDIHDR構造体へのポインタ
-			//  dwParam2 タイムスタンプ
+			// System exclusive received
+			//  dwParam1 pointer to MIDIHDR structure
+			//  dwParam2 timestamp
 			result = _InReadProcSysEx((MIDIHDR*)dwParam1, dwParam2, &m_isContinueSysEx, &event);
 			if (result != 0) goto EXIT;
 			break;
 		case MIM_ERROR:
-			//無効なMIDIメッセージ受信
+			// Invalid MIDI message received
 			break;
 		case MIM_LONGERROR:
-			//無効なエクスクルーシブメッセージ受信
+			// Invalid exclusive message received
 			break;
 		case MIM_MOREDATA:
-			//未処理のMIDIメッセージ
-			//midiInOpenでMIDI_IO_STATUSを指定した場合のみ発生する
+			// Unprocessed MIDI message
+			// only occurs when MIDI_IO_STATUS is specified in midiInOpen
 			break;
 		default:
 			break;
 	}
-	
-	//コールバック呼び出し
+
+	// Call callback
 	if ((m_pInReadCallBack != NULL) &&
 		(event.GetType() != SMEvent::EventNone)) {
 		result = m_pInReadCallBack(&event, m_pCallBackUserParam);
@@ -415,7 +415,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIメッセージ読み込み処理
+// MIDI message read process
 //******************************************************************************
 int SMInDevCtrl::_InReadProcMIDI(
 		DWORD_PTR midiMessage,
@@ -433,19 +433,19 @@ int SMInDevCtrl::_InReadProcMIDI(
 	data[1] = (unsigned char)((midiMessage >> 16) & 0x000000FF);
 	
 	if ((status & 0xF0) != 0xF0) {
-		//MIDIメッセージ
+		// MIDI message
 		dataLength = _GetMIDIMsgSize(status) - 1;
 		result = pEvent->SetMIDIData(status, data, dataLength);
 		if (result != 0) goto EXIT;
 	}
 	else if (status == 0xF0) {
-		//システムエクスクルーシブメッセージ
-		//ありえないAPIの挙動
+		// System exclusive message
+		// this API behavior should not occur
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 	else {
-		//システムコモンメッセージまたはシステムリアルタイムメッセージ
+		// System common message or system realtime message
 		dataLength = _GetSysMsgSize(status) - 1;
 		result = pEvent->SetSysMsgData(status, data, dataLength);
 		if (result != 0) goto EXIT;
@@ -456,7 +456,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// システムエクスクルーシブ読み込み処理
+// System exclusive read process
 //******************************************************************************
 int SMInDevCtrl::_InReadProcSysEx(
 		MIDIHDR* pMIDIHDR,
@@ -469,40 +469,40 @@ int SMInDevCtrl::_InReadProcSysEx(
 	unsigned char* pData = NULL;
 	UINT apiresult = 0;
 	
-	//受信データサイズがゼロなら何もしない
+	// If received data size is zero, do nothing
 	if (pMIDIHDR->dwBytesRecorded == 0) goto EXIT;
-	
-	//システムエクスクルーシブ初回読み込み
+
+	// First read of system exclusive
 	if (!(*pIsContinueSysEx)) {
 		pData = (unsigned char*)(pMIDIHDR->lpData);
 		result = pEvent->SetSysExData(0xF0, pData + 1, pMIDIHDR->dwBytesRecorded - 1);
 		if (result != 0) goto EXIT;
 	}
-	//2番目以降のパケット
+	// Second and later packets
 	else {
 		pData = (unsigned char*)(pMIDIHDR->lpData);
 		result = pEvent->SetSysExData(0xF7, pData, pMIDIHDR->dwBytesRecorded);
 		if (result != 0) goto EXIT;
 	}
-	
-	//システムエクスクルーシブの終端を確認
+
+	// Check the end of the system exclusive
 	if (pData[(pMIDIHDR->dwBytesRecorded)-1] == 0xF7) {
-		//システムエクスクルーシブが閉じる
+		// System exclusive closes
 		*pIsContinueSysEx = false;
 	}
 	else {
-		//末尾が0xF7でなければ次にデータがまたがる
+		// If the last byte is not 0xF7, data continues into the next packet
 		*pIsContinueSysEx = true;
 	}
-	
-	//MIDI入力バッファ準備
+
+	// Prepare MIDI input buffer
 	apiresult = midiInPrepareHeader(m_PortInfo.hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
 		goto EXIT;
 	}
-	
-	//MIDI入力バッファ登録
+
+	// Register MIDI input buffer
 	apiresult = midiInAddBuffer(m_PortInfo.hMidiIn, &(m_PortInfo.midiHdr), sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI API error.", apiresult, 0);
@@ -514,20 +514,20 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIメッセージサイズ取得
+// Get MIDI message size
 //******************************************************************************
 unsigned long SMInDevCtrl::_GetMIDIMsgSize(unsigned char status)
 {
 	unsigned long size = 0;
 
 	switch (status & 0xF0) {
-		case 0x80: size = 3; break;  //ノートオフ
-		case 0x90: size = 3; break;  //ノートオン
-		case 0xA0: size = 3; break;  //ポリフォニックキープレッシャー
-		case 0xB0: size = 3; break;  //コントロールチェンジ
-		case 0xC0: size = 2; break;  //プログラムチェンジ
-		case 0xD0: size = 2; break;  //チャンネルプレッシャー
-		case 0xE0: size = 3; break;  //ピッチベンド
+		case 0x80: size = 3; break;  // note off
+		case 0x90: size = 3; break;  // note on
+		case 0xA0: size = 3; break;  // polyphonic key pressure
+		case 0xB0: size = 3; break;  // control change
+		case 0xC0: size = 2; break;  // program change
+		case 0xD0: size = 2; break;  // channel pressure
+		case 0xE0: size = 3; break;  // pitch bend
 		case 0xF0:
 			size = _GetSysMsgSize(status);
 			break;
@@ -537,29 +537,29 @@ unsigned long SMInDevCtrl::_GetMIDIMsgSize(unsigned char status)
 }
 
 //******************************************************************************
-// システムメッセージサイズ取得
+// Get system message size
 //******************************************************************************
 unsigned long SMInDevCtrl::_GetSysMsgSize(unsigned char status)
 {
 	unsigned long size = 0;
 	
 	switch (status) {
-		case 0xF0: size = 0; break;  // F0 ... F7 システムエクスクルーシブ
-		case 0xF1: size = 2; break;  // F1 dd     システムコモンメッセージ：クオーターフレーム(MTC)
-		case 0xF2: size = 3; break;  // F2 dl dm  システムコモンメッセージ：ソングポジションポインタ
-		case 0xF3: size = 2; break;  // F3 dd     システムコモンメッセージ：ソングセレクト
-		case 0xF4: size = 1; break;  // F4 未定義
-		case 0xF5: size = 1; break;  // F5 未定義
-		case 0xF6: size = 1; break;  // F6 システムコモンメッセージ：チューンリクエスト
-		case 0xF7: size = 1; break;  // F7 エンドオブシステムエクスクルーシブ
-		case 0xF8: size = 1; break;  // F8 システムリアルタイムメッセージ：タイミングクロック
-		case 0xF9: size = 1; break;  // F9 未定義
-		case 0xFA: size = 1; break;  // FA システムリアルタイムメッセージ：スタート
-		case 0xFB: size = 1; break;  // FB システムリアルタイムメッセージ：コンティニュー
-		case 0xFC: size = 1; break;  // FC システムリアルタイムメッセージ：ストップ
-		case 0xFD: size = 1; break;  // FD 未定義
-		case 0xFE: size = 1; break;  // FE システムリアルタイムメッセージ：アクティブセンシング
-		case 0xFF: size = 1; break;  // FF システムリアルタイムメッセージ：システムリセット
+		case 0xF0: size = 0; break;  // F0 ... F7 system exclusive
+		case 0xF1: size = 2; break;  // F1 dd     system common message: quarter frame (MTC)
+		case 0xF2: size = 3; break;  // F2 dl dm  system common message: song position pointer
+		case 0xF3: size = 2; break;  // F3 dd     system common message: song select
+		case 0xF4: size = 1; break;  // F4 undefined
+		case 0xF5: size = 1; break;  // F5 undefined
+		case 0xF6: size = 1; break;  // F6 system common message: tune request
+		case 0xF7: size = 1; break;  // F7 end of system exclusive
+		case 0xF8: size = 1; break;  // F8 system realtime message: timing clock
+		case 0xF9: size = 1; break;  // F9 undefined
+		case 0xFA: size = 1; break;  // FA system realtime message: start
+		case 0xFB: size = 1; break;  // FB system realtime message: continue
+		case 0xFC: size = 1; break;  // FC system realtime message: stop
+		case 0xFD: size = 1; break;  // FD undefined
+		case 0xFE: size = 1; break;  // FE system realtime message: active sensing
+		case 0xFF: size = 1; break;  // FF system realtime message: system reset
 	}
 	
 	return size;

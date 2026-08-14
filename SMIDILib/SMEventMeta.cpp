@@ -1,10 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMEventMeta
 //
-// メタイベントクラス
+// Meta event class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2017-2025 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -13,11 +14,9 @@
 #include "SMEventMeta.h"
 #include <new>
 
-// >>> add 20170528 yossiepon begin
 #include <algorithm>
 #include <functional>
 #include <cctype>
-// <<< add 20170528 yossiepon end
 
 using namespace YNBaseLib;
 
@@ -25,7 +24,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMEventMeta::SMEventMeta()
 {
@@ -33,14 +32,14 @@ SMEventMeta::SMEventMeta()
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMEventMeta::~SMEventMeta(void)
 {
 }
 
 //******************************************************************************
-// イベント紐付け
+// Attach event
 //******************************************************************************
 void SMEventMeta::Attach(
 		SMEvent* pEvent
@@ -50,7 +49,7 @@ void SMEventMeta::Attach(
 }
 
 //******************************************************************************
-// メタイベント種別取得
+// Get meta event type
 //******************************************************************************
 unsigned char SMEventMeta::GetType()
 {
@@ -65,7 +64,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テンポ取得
+// Get tempo
 //******************************************************************************
 unsigned long SMEventMeta::GetTempo()
 {
@@ -89,7 +88,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テンポ取得(BPM)
+// Get tempo(BPM)
 //******************************************************************************
 unsigned long SMEventMeta::GetTempoBPM()
 {
@@ -106,7 +105,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テキスト取得
+// Get text
 //******************************************************************************
 int SMEventMeta::GetText(
 		std::string* pText
@@ -133,8 +132,6 @@ int SMEventMeta::GetText(
 
 	*pText = pBuf;
 
-// >>> add 20170528 yossiepon begin
-// >>> modify 20251101 yossiepon begin
 
 	//// rtrim
 	//pText->erase(std::find_if(pText->rbegin(), pText->rend(),
@@ -144,16 +141,14 @@ int SMEventMeta::GetText(
 	struct local_func {
 		static int isspace(int ch)
 		{
-			// デバッグ実行時にstd::isspaceが標準ライブラリ内のアサーションに引っ掛かるので
-			// 負の値が行かないように修正
+			// std::isspace triggers an assertion in the standard library during debug runs,
+			// so this is fixed to avoid passing negative values
 			return std::isspace(static_cast<unsigned int>(ch) & 0xff);
 		}
 	};
 	pText->erase(std::find_if(pText->rbegin(), pText->rend(),
 		std::not1(std::ptr_fun<int, int>(local_func::isspace))).base(), pText->end());
 
-// <<< modify 20251101 yossiepon end
-// <<< add 20170528 yossiepon end
 
 
 EXIT:;
@@ -162,7 +157,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポート番号取得
+// Get port number
 //******************************************************************************
 unsigned char SMEventMeta::GetPortNo()
 {
@@ -186,7 +181,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 拍子記号取得
+// Get time signature
 //******************************************************************************
 void SMEventMeta::GetTimeSignature(
 		unsigned long* pNumerator,
@@ -208,16 +203,16 @@ void SMEventMeta::GetTimeSignature(
 	pData = m_pEvent->GetDataPtr();
 
 	// FF 58 04 nn dd cc bb
-	//   nn: 分子
-	//   dd: 分母（2のマイナス乗）
-	//   cc: 1メトロノームクリックあたりのMIDIクロック数
-	//   bb: MIDI四分音符（24 MIDIクロック）中に記譜上の32分音符が入る数（通常は8）
-	//   → cc bb は無視
+	//   nn: numerator
+	//   dd: denominator (as a negative power of 2)
+	//   cc: number of MIDI clocks per metronome click
+	//   bb: number of notated 32nd notes per MIDI quarter note (24 MIDI clocks) (usually 8)
+	//   -> cc and bb are ignored
 
-	//分子
+	//numerator
 	*pNumerator   = pData[0];
 
-	//分母
+	//denominator
 	*pDenominator = 1;
 	for (i = 0; i < pData[1]; i++) {
 		*pDenominator = *pDenominator * 2;

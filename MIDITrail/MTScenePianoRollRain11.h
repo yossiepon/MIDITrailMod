@@ -4,8 +4,8 @@
 //
 // PianoRoll Rain scene (Playback).
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

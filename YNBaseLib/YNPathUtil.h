@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
-// Simple Base Library / YNPathUtil
+// YN Base Library / YNPathUtil
 //
-// パスユーティリティクラス
+// Path utility class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
@@ -20,41 +20,41 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-// パスユーティリティクラス
+// Path utility class
 //******************************************************************************
 class YNBASELIB_API YNPathUtil
 {
 public:
 
-	//プロセス実行ファイルディレクトリパス取得
-	//  末尾に"\"を付与する
-	//  取得パスの例："C:\Program Files\AppName\"
+	//Get the process executable's directory path
+	//  A trailing "\" is appended
+	//  Example path: "C:\Program Files\AppName\"
 	static int GetModuleDirPath(TCHAR* pBuf, unsigned long bufSize);
 
-	//アプリケーションデータディレクトリパス取得
-	//  末尾に"\"を付与する
-	//  取得パスの例：Widows7の場合 "C:\Users\UserName\AppData\Roaming\"
+	//Get the application data directory path
+	//  A trailing "\" is appended
+	//  Example path on Windows 7: "C:\Users\UserName\AppData\Roaming\"
 	static int GetAppDataDirPath(TCHAR* pBuf, unsigned long bufSize);
 
-	//拡張子判定
-	//  ファイルの拡張子が指定されたものであるか判定する
-	//  指定する拡張子の例：".txt"
+	//Check file extension
+	//  Determines whether the file's extension matches the one specified
+	//  Example extension: ".txt"
 	static bool IsFileExtMatch(const WCHAR* pPath, const WCHAR* pExt);
 
-	//テンポラリファイルパス取得
-	//  環境変数(TMP or TEMP)で定義されたテンポラリディレクトリに
-	//  一意のテンポラリファイルを作成してパスを返却する
-	//  指定できるプレフィックスは3文字
-	//  作成されるファイルの名称は PREuuuu.TMP
+	//Get temporary file path
+	//  Creates a unique temporary file in the temp directory defined by
+	//  the TMP or TEMP environment variable and returns its path
+	//  The prefix can be up to 3 characters
+	//  The created file is named PREuuuu.TMP
 	static int GetTempFilePath(WCHAR* pPathBuf, unsigned long bufSize, const WCHAR* pPrefix);
 
 private:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	YNPathUtil(void);
 	virtual ~YNPathUtil(void);
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const YNPathUtil&);
 	YNPathUtil(const YNPathUtil&);
 

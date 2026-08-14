@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMPortList
 //
-// ポートリストクラス
+// Port list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -22,36 +22,36 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ポートリストクラス
+// Port list class
 //******************************************************************************
 class SMIDILIB_API SMPortList
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMPortList(void);
 	virtual ~SMPortList(void);
 
-	//クリア
+	//Clear
 	void Clear();
 
-	//ポート登録
+	//Register port
 	int AddPort(unsigned char portNo);
 
-	//ポート取得
+	//Get port
 	int GetPort(unsigned long index, unsigned char* pPortNo);
 
-	//ポート数取得
+	//Get port count
 	unsigned long GetSize();
 
-	//コピー
+	//Copy
 	int CopyFrom(SMPortList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMPortList&);
 	SMPortList(const SMPortList&);
 

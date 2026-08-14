@@ -1,15 +1,15 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
-// Simple Base Library / YNConfFile
+// YN Base Library / YNConfFile
 //
-// 設定ファイルクラス
+// Configuration (INI) file access class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// INIファイルへのアクセスをラップするクラス。
+// Class that wraps access to an INI file.
 
 #pragma once
 
@@ -24,35 +24,35 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-// 設定ファイルクラス
+// Configuration file class
 //******************************************************************************
 class YNBASELIB_API YNConfFile
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	YNConfFile(void);
 	virtual ~YNConfFile(void);
 
-	//初期化
+	//Initialize
 	int Initialize(const TCHAR* pConfFilePath);
 
-	//カレントセクション設定
+	//Set the current section
 	int SetCurSection(const TCHAR* pSection);
 
-	//整数値取得／登録
+	//Get/set integer value
 	int GetInt(const TCHAR* pKey, int* pVal, int defaultVal);
 	int SetInt(const TCHAR* pKey, int val);
 
-	//浮動小数値取得／登録
+	//Get/set float value
 	int GetFloat(const TCHAR* pKey, float* pVal, float defaultVal);
 	int SetFloat(const TCHAR* pKey, float val);
 
-	//文字列取得／登録
+	//Get/set string
 	int GetStr(const TCHAR* pKey, TCHAR* pBuf, unsigned long bufSize, const TCHAR* pDefaultVal);
 	int SetStr(const TCHAR* pKey, const TCHAR* pStr);
 
-	//文字列取得／登録（値のみワイド文字列）
+	//Get/set string (value only, as wide string)
 	int GetWStr(const TCHAR* pKey, WCHAR* pBuf, unsigned long bufSize, const WCHAR* pDefaultVal);
 	int SetWStr(const TCHAR* pKey, const WCHAR* pStr);
 
@@ -61,7 +61,7 @@ private:
 	TCHAR m_FilePath[_MAX_PATH];
 	TCHAR m_Section[_MAX_PATH];
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const YNConfFile&);
 	YNConfFile(const YNConfFile&);
 

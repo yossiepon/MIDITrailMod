@@ -5,7 +5,7 @@
 // Application entry point.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2016-2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2016-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

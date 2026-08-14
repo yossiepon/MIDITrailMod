@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMInDevCtrl
 //
-// MIDI入力デバイス制御クラス
+// MIDI input device control class.
 //
 // Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
 //
@@ -26,52 +26,52 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//MIDIイベント読み込みコールバック関数
+//MIDI event read callback function
 typedef int (*SMInReadCallBack)(SMEvent* pEvent, void* pUserParam);
 
-//システムエクスクルーシブ用バッファサイズ
-//  サイズの根拠は特になし
+//Buffer size for system exclusive messages
+//  No particular basis for this size
 #define SM_MIDIIN_BUF_SIZE  (1024 * 10)
 
 
 //******************************************************************************
-// MIDI入力デバイス制御クラス
+// MIDI input device control class
 //******************************************************************************
 class SMIDILIB_API SMInDevCtrl
 {
 public:
 	
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMInDevCtrl(void);
 	virtual ~SMInDevCtrl(void);
 	
-	//初期化
+	//Initialize
 	int Initialize();
 	
-	//デバイス数取得
+	//Get device count
 	unsigned long GetDevNum();
 	
-	//デバイスプロダクト名称取得
+	//Get device product name
 	int GetDevProductName(unsigned long index, std::string& name);
 	
-	//ポート対応デバイス登録
+	//Register port-associated device
 	int SetPortDev(const char* pProductName);
 	
-	//MIDIイベント読み込みコールバック関数登録
+	//Register MIDI event read callback function
 	void SetInReadCallBack(SMInReadCallBack pCallBack, void* pUserParam);
 	
-	//全デバイスのオープン／クローズ
+	//Open/close all devices
 	int OpenPortDev();
 	int ClosePortDev();
 	
-	//ポート情報クリア
+	//Clear port info
 	int ClearPortInfo();
 	
 private:
 	
-	//ポート情報
+	//Port info
 	typedef struct {
 		bool isExist;
 		unsigned long devId;
@@ -79,25 +79,25 @@ private:
 		MIDIHDR midiHdr;
 	} SMPortInfo;
 	
-	//デバイス情報
+	//Device info
 	typedef struct {
 		unsigned long devId;
 		char productName[MAXPNAMELEN];
 	} SMInDevInfo;
 	
-	//入力デバイスリスト
+	//Input device list
 	typedef std::list<SMInDevInfo> SMInDevList;
 	typedef std::list<SMInDevInfo>::iterator SMInDevListItr;
 	SMInDevList m_InDevList;
 	
-	//ポート情報
+	//Port info
 	SMPortInfo m_PortInfo;
 	
-	//コールバック関数
+	//Callback function
 	SMInReadCallBack m_pInReadCallBack;
 	void* m_pCallBackUserParam;
 	
-	//パケット解析系
+	//Packet parsing
 	bool m_isContinueSysEx;
 	
 	int _InitDevList();

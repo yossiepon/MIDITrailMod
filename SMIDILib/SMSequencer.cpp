@@ -1,18 +1,23 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMSequencer
 //
-// シーケンサクラス
+// MIDI sequencer class.
 //
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 Yossiepon Oniichan. All Rights Reserved.
+//
+// Based on the DX11 migration design by ced (Zel9278)
+// https://github.com/Zel9278/MIDITrailModMod
 //
 //******************************************************************************
 
 // MEMO:
-// タイマースレッドは演奏処理を行うため、MIDI出力デバイスの制御に専念
-// させる。このスレッドで画面更新処理等を行ってはならない。
-// 他スレッドへの通知はPostMessage等で実現する。
-// _TimerCallBack()→_OnTimer()→・・・
+// The timer thread handles playback processing, so it must focus solely
+// on controlling the MIDI output device. Do not perform screen update
+// processing etc. on this thread.
+// Notify other threads via PostMessage etc.
+// _TimerCallBack()->_OnTimer()->...
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
@@ -28,22 +33,22 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMSequencer::SMSequencer(void)
 {
-	//演奏状態
+	//Playback status
 	m_Status = StatusStop;
 	m_PlayIndex = 0;
 	m_UserRequest = RequestNone;
 
-	//MIDIデバイス系
+	//MIDI device related
 	m_PortNo = 0;
 
-	//MIDIデータ系
+	//MIDI data related
 	m_pSeqData = NULL;
 
-	//タイマー制御系
+	//Timer control related
 	m_TimerID = NULL;
 	m_TimerResolution = 0;
 	m_TimeDivision = 0;
@@ -58,7 +63,7 @@ SMSequencer::SMSequencer(void)
 	m_PlaybackSpeed = 1;
 	m_PlaySpeedRatio = 1.0;
 
-	//スキップ制御
+	//Skip control
 	m_isSkipping = false;
 	m_isInTimer = false;
 	m_SkipTargetTime = 0;
@@ -66,39 +71,39 @@ SMSequencer::SMSequencer(void)
 	m_TotalPlayTimeNano = 0;
 	m_MovingTimeSpanInMsec = 0;
 
-	//小節番号制御系
+	//Bar number control related
 	m_TickTimeOfBar = 0;
 	m_CurBarNo = 1;
 	m_PrevBarTickTime = 0;
 
-	//拍子記号
+	//Time signature
 	m_BeatNumerator = 0;
 	m_BeatDenominator = 0;
 
-	//ポート情報クリア
+	//Clear port info
 	_ClearPortInfo();
 
-		//ノートベロシティクリア
+		//Clear note velocity
 	_ClearNoteVelocity();
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMSequencer::~SMSequencer(void)
 {
-	//ポート情報クリア
+	//Clear port info
 	_ClearPortInfo();
 
-	//MIDI出力デバイスを閉じる
+	//Close MIDI output device
 	_CloseMIDIOutDev();
 
-	//タイマデバイス解放
+	//Release timer device
 	_ReleaseTimerDev();
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int SMSequencer::Initialize(
 		SMMsgQueue* pMsgQueue
@@ -111,26 +116,26 @@ int SMSequencer::Initialize(
 		goto EXIT;
 	}
 
-	//MIDI出力デバイス初期化
+	//Initialize MIDI output device
 	result = m_OutDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
 
-	//ポート情報クリア
+	//Clear port info
 	_ClearPortInfo();
 
-	//イベント転送オブジェクト初期化
+	//Initialize event transmission object
 	result = m_MsgTrans.Initialize(pMsgQueue);
 	if (result != 0) goto EXIT;
 
-	//イベントウォッチャー初期化
+	//Initialize event watcher
 	result = m_EventWatcher.Initialize(&m_MsgTrans);
 	if (result != 0) goto EXIT;
 
-	//Playbackモード: NoteOn/NoteOff/AllNoteOffのMsgQueueポストを無効化
-	//DX11ではNoteTrackerが描画ノートを管理するため不要。Live用にはデフォルトtrue
+	//Playback mode: disable MsgQueue posting of NoteOn/NoteOff/AllNoteOff
+	//Not needed in DX11 since NoteTracker manages draw notes. Defaults to true for Live
 	m_EventWatcher.SetNoteEventPostEnabled(false);
 
-	//タイマデバイス初期化
+	//Initialize timer device
 	result = _InitializeTimerDev();
 	if (result != 0) goto EXIT;
 
@@ -139,7 +144,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポート対応デバイス登録
+// Register port-to-device mapping
 //******************************************************************************
 int SMSequencer::SetPortDev(
 		unsigned char portNo,
@@ -165,7 +170,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// シーケンスデータ登録
+// Register sequence data
 //******************************************************************************
 int SMSequencer::SetSeqData(
 		SMSeqData* pSeqData
@@ -182,35 +187,35 @@ int SMSequencer::SetSeqData(
 
 	m_pSeqData = pSeqData;
 
-	//公称曲長（ナノ秒）を保持（暫定：ロード時イベントクリップ導入後に除去）
-	//GetTotalPlayTime はミリ秒を返す
+	//Hold nominal song length (nanoseconds) (temporary: remove once load-time event clipping is introduced)
+	//GetTotalPlayTime returns milliseconds
 	m_TotalPlayTimeNano = (unsigned long long)m_pSeqData->GetTotalPlayTime() * 1000000ULL;
 
-	//マージ済みトラック取得
+	//Get merged track
 	result = m_pSeqData->GetMergedTrack(&m_Track);
 	if (result != 0) goto EXIT;
 
-	//分解能取得：四分音符の長さを示す値 (ex. 48, 480, ...)
+	//Get resolution: value indicating the length of a quarter note (ex. 48, 480, ...)
 	m_TimeDivision = m_pSeqData->GetTimeDivision();
 	if (m_TimeDivision == 0) {
-		//データ異常：SMF読み込み時にチェックしているはず
+		//Invalid data: should have been checked when reading the SMF
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//テンポ取得
+	//Get tempo
 	m_Tempo = m_pSeqData->GetTempo();
 	if (m_Tempo == 0) {
-		//データ異常
+		//Invalid data
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 
-	//拍子記号から1小節あたりのチックタイムを算出
+	//Calculate tick time per bar from the time signature
 	numerator = m_pSeqData->GetBeatNumerator();
 	denominator = m_pSeqData->GetBeatDenominator();
 	if (denominator == 0) {
-		//データ異常
+		//Invalid data
 		result = YN_SET_ERR("Invalid data found.", numerator, denominator);
 		goto EXIT;
 	}
@@ -224,7 +229,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏開始
+// Start playback
 //******************************************************************************
 int SMSequencer::Play()
 {
@@ -236,28 +241,28 @@ int SMSequencer::Play()
 		goto EXIT;
 	}
 
-	//演奏中なら何もしない
+	//Do nothing if already playing
 	if (m_Status == StatusPlay) goto EXIT;
 
-	//浮動小数点演算精度を倍精度に設定
+	//Set floating-point precision to double
 	result = fpuCtrl.Start(SMFPUCtrl::FPUDouble);
 	if (result != 0) goto EXIT;
 
-	//先頭から演奏開始
+	//Start playback from the beginning
 	if (m_Status == StatusStop) {
-		//MIDI出力デバイスを開く
+		//Open the MIDI output device
 		result = _OpenMIDIOutDev();
 		if (result != 0) goto EXIT;
 
-		//再生開始パラメータ初期化
+		//Initialize parameters on play start
 		result = _InitializeParamsOnPlayStart();
 		if (result != 0) goto EXIT;
 	}
-	//一時停止から演奏再開
+	//Resume playback from pause
 	if (m_Status == StatusPause) {
 		m_PrevTimerTime = _GetCurTimeInNano();
 
-		//アクティブノートにノートONを送信
+		//Send note-on for active notes
 		result = _SendNoteOnForActiveNotes();
 		if (result != 0) goto EXIT;
 	}
@@ -265,13 +270,13 @@ int SMSequencer::Play()
 	m_UserRequest = RequestNone;
 	m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_PLAY);
 
-	//タイマ起動
+	//Start the timer
 	m_TimerID = timeSetEvent(
-					m_TimerResolution, //イベント遅延（ミリ秒）
-					m_TimerResolution, //イベント分解能（ミリ秒）
-					_TimerCallBack,    //コールバック関数
-					(DWORD_PTR)this,   //ユーザーコールバックデータ
-					TIME_PERIODIC      //タイマー種別：周期呼び出し
+					m_TimerResolution, //Event delay (milliseconds)
+					m_TimerResolution, //Event resolution (milliseconds)
+					_TimerCallBack,    //Callback function
+					(DWORD_PTR)this,   //User callback data
+					TIME_PERIODIC      //Timer type: periodic invocation
 				);
 	if (m_TimerID == NULL) {
 		result = YN_SET_ERR("Timer device error.", m_TimerResolution, 0);
@@ -286,23 +291,23 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏一時停止
+// Pause playback
 //******************************************************************************
 void SMSequencer::Pause()
 {
-	//要求を受け付けるだけ（キューイングはしない）
-	//実際の処理はタイマースレッドに委任する
+	//Just accept the request (no queuing)
+	//The actual processing is delegated to the timer thread
 	m_UserRequest = RequestPause;
 }
 
 //******************************************************************************
-// 演奏再開
+// Resume playback
 //******************************************************************************
 int SMSequencer::Resume()
 {
 	int result = 0;
 
-	//現在はPlay()が再開処理も兼ねている
+	//Currently Play() also serves as the resume handler
 	result = Play();
 	if (result != 0) goto EXIT;
 
@@ -311,26 +316,26 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏停止
+// Stop playback
 //******************************************************************************
 void SMSequencer::Stop()
 {
 
 	if (m_Status == StatusPause) {
-		//一時停止中の場合はタイマースレッドが停止しているため
-		//ここから終了を通知する
+		//While paused, the timer thread is stopped,
+		//so notify termination from here
 		m_Status = StatusStop;
 		m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
 	}
 	else {
-		//演奏中は要求を受け付けるだけ（キューイングはしない）
-		//実際の処理はタイマースレッドに委任する
+		//While playing, just accept the request (no queuing)
+		//The actual processing is delegated to the timer thread
 		m_UserRequest = RequestStop;
 	}
 }
 
 //******************************************************************************
-// 再生スピード設定（n倍速）
+// Set playback speed (n times)
 //******************************************************************************
 void SMSequencer::SetPlaybackSpeed(
 		unsigned long nTimes
@@ -340,7 +345,7 @@ void SMSequencer::SetPlaybackSpeed(
 }
 
 //******************************************************************************
-// 再生スピード設定（パーセント）
+// Set playback speed (percent)
 //******************************************************************************
 void SMSequencer::SetPlaySpeedRatio(
 		unsigned long ratio
@@ -350,7 +355,7 @@ void SMSequencer::SetPlaySpeedRatio(
 }
 
 //******************************************************************************
-// リワインド／スキップ移動時間設定
+// Set rewind/skip movement time span
 //******************************************************************************
 void SMSequencer::SetMovingTimeSpanInMsec(
 		unsigned long timeSpan
@@ -360,7 +365,7 @@ void SMSequencer::SetMovingTimeSpanInMsec(
 }
 
 //******************************************************************************
-//演奏位置スキップ
+//Skip playback position
 //******************************************************************************
 int SMSequencer::Skip(
 		int relativeTimeInMsec
@@ -369,10 +374,10 @@ int SMSequencer::Skip(
 	int result = 0;
 	unsigned long long diffTime = 0;
 
-	//演奏中でなければ何もしない
+	//Do nothing if not playing
 	if (m_Status != StatusPlay) goto EXIT;
 
-	//演奏位置
+	//Playback position
 	if (relativeTimeInMsec < 0) {
 		diffTime = (unsigned long long)(-1 * relativeTimeInMsec) * 1000000;
 		if (m_CurPlayTime < diffTime) {
@@ -385,11 +390,11 @@ int SMSequencer::Skip(
 	else {
 		diffTime = (unsigned long long)(relativeTimeInMsec) * 1000000;
 		m_SkipTargetTime = m_CurPlayTime + diffTime;
-		//曲の終了時間を超える可能性がある
+		//May exceed the song's end time
 	}
 
-	//演奏中は要求を受け付けるだけ（キューイングはしない）
-	//実際の処理はタイマースレッドに委任する
+	//While playing, just accept the request (no queuing)
+	//The actual processing is delegated to the timer thread
 	m_UserRequest = RequestSkip;
 
 EXIT:;
@@ -397,7 +402,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// タイマデバイス初期化
+// Initialize timer device
 //******************************************************************************
 int SMSequencer::_InitializeTimerDev()
 {
@@ -407,7 +412,7 @@ int SMSequencer::_InitializeTimerDev()
 
 	if (m_TimerResolution != 0) goto EXIT;
 
-	//タイマデバイスの最小分解能を取得（通常1ms）
+	//Get the minimum resolution of the timer device (typically 1ms)
 	apiresult = timeGetDevCaps(&tc, sizeof(TIMECAPS));
 	if (apiresult != TIMERR_NOERROR) {
 		result = YN_SET_ERR("Timer device error.", apiresult, 0);
@@ -415,7 +420,7 @@ int SMSequencer::_InitializeTimerDev()
 	}
 	m_TimerResolution = tc.wPeriodMin;
 
-	//最小タイマ分解能の設定
+	//Set the minimum timer resolution
 	timeBeginPeriod(m_TimerResolution);
 
 EXIT:;
@@ -423,7 +428,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// タイマデバイス解放
+// Release timer device
 //******************************************************************************
 int SMSequencer::_ReleaseTimerDev()
 {
@@ -443,7 +448,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポート情報クリア
+// Clear port info
 //******************************************************************************
 void SMSequencer::_ClearPortInfo()
 {
@@ -455,14 +460,14 @@ void SMSequencer::_ClearPortInfo()
 }
 
 //******************************************************************************
-// MIDI出力デバイスオープン
+// Open the MIDI output device
 //******************************************************************************
 int SMSequencer::_OpenMIDIOutDev()
 {
 	int result = 0;
 	unsigned char portNo = 0;
 
-	//ポート対応デバイス名をMIDI出力デバイス制御に登録
+	//Register port-to-device names with the MIDI output device control
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 		if (strlen(m_PortDevName[portNo]) > 0) {
 			result = m_OutDevCtrl.SetPortDev(portNo, m_PortDevName[portNo]);
@@ -470,7 +475,7 @@ int SMSequencer::_OpenMIDIOutDev()
 		}
 	}
 
-	//全ポートのデバイスを開く
+	//Open the devices for all ports
 	result = m_OutDevCtrl.OpenPortDevAll();
 	if (result != 0) goto EXIT;
 
@@ -479,7 +484,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI出力デバイスクローズ
+// Close the MIDI output device
 //******************************************************************************
 int SMSequencer::_CloseMIDIOutDev()
 {
@@ -493,7 +498,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏インターバル処理
+// Playback interval processing
 //******************************************************************************
 int SMSequencer::_IntervalProc(
 		BOOL* pIsContinue
@@ -504,12 +509,12 @@ int SMSequencer::_IntervalProc(
 
 	*pIsContinue = true;
 
-	//演奏位置を更新
+	//Update playback position
 	result = _UpdatePlayPosition();
 	if (result != 0) goto EXIT;
 
-	//公称曲長＋マージンを超過したら演奏終了（安全弁）
-	//通常MIDIでは全イベント処理完了（m_PlayIndex >= m_Track.GetSize()）が先に発火する
+	//Stop playback if the nominal song length + margin is exceeded (safety net)
+	//Normally, completion of all event processing (m_PlayIndex >= m_Track.GetSize()) fires first for MIDI
 	if (m_TotalPlayTimeNano > 0 && m_CurPlayTime >= m_TotalPlayTimeNano + 100000000ULL) {
 		if (!m_isSkipping) {
 			_AllTrackNoteOff();
@@ -522,20 +527,20 @@ int SMSequencer::_IntervalProc(
 		goto EXIT;
 	}
 
-	//イベント処理時刻に到達していたら送信処理を行う
-	//whileループにより遅延が蓄積しても1コールバックで全キャッチアップする
+	//If the event processing time has been reached, perform the send processing
+	//The while loop ensures that even if delay accumulates, one callback fully catches up
 	while (((unsigned long long)m_NextEventTime <= m_CurPlayTime) && *pIsContinue) {
 
-		//チックタイム合計
+		//Sum of tick time
 		m_TotalTickTime += m_PrevDeltaTime;
 
 		deltaTime = 0;
 		while (deltaTime == 0) {
-			//イベント送信
+			//Event transmission
 			result = _OutputMIDIEvent(m_PortNo, &m_Event);
 			if (result != 0) goto EXIT;
 
-			//データ終端なら演奏終了
+			//Stop playback at end of data
 			m_PlayIndex++;
 			if (m_PlayIndex >= m_Track.GetSize()) {
 				if (!m_isSkipping) {
@@ -548,14 +553,14 @@ int SMSequencer::_IntervalProc(
 				break;
 			}
 
-			//次イベント取得
+			//Get next event
 			m_Track.GetDataSet(m_PlayIndex, &deltaTime, &m_Event, &m_PortNo);
 		}
-		//定期通知のためイベント発生時刻を記憶する
-		//定期通知は厳密な精度を必要としないため1msec未満は無視する
+		//Remember the event occurrence time for periodic notification
+		//Periodic notification does not require strict precision, so anything under 1msec is ignored
 		m_PrevEventTime = (unsigned long long)m_NextEventTime;
 
-		//次イベント送信位置を算出
+		//Calculate the next event transmission position
 		m_NextEventTime += _ConvTick2TimeNanosec(deltaTime);
 		m_PrevDeltaTime = deltaTime;
 	}
@@ -565,7 +570,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏位置更新
+// Update playback position
 //******************************************************************************
 int SMSequencer::_UpdatePlayPosition()
 {
@@ -578,21 +583,21 @@ int SMSequencer::_UpdatePlayPosition()
 
 	curTime = _GetCurTimeInNano();
 
-	//前回タイマーからの経過時間を利用して演奏時間を更新
-	//  起動後から49日をまたぐケースでもこの計算で問題ない
+	//Update playback time using the elapsed time since the previous timer tick
+	//  This calculation is still valid even when crossing the 49-day mark since startup
 	diffTime = curTime - m_PrevTimerTime;
 
-	//前回タイマーからの経過時間を利用して演奏時間を更新
+	//Update playback time using the elapsed time since the previous timer tick
 	if (m_isSkipping) {
-		//スキップ中の場合は仮想的に5msec.経過させる
+		//While skipping, advance by a virtual 5msec.
 		diffTime = 5 * 1000000;
 	}
 	else {
-		//スキップ中でなければ実際の経過時間を算出する
+		//If not skipping, calculate the actual elapsed time
 		diffTime = curTime - m_PrevTimerTime;
 	}
 
-	//再生スピードを反映（n倍速）
+	//Apply playback speed (n times)
 	if (m_PlaybackSpeed == 1) {
 		diffTime = (unsigned long long)((double)diffTime * m_PlaySpeedRatio);
 	}
@@ -603,26 +608,24 @@ int SMSequencer::_UpdatePlayPosition()
 	m_CurPlayTime += diffTime;
 	m_PrevTimerTime = curTime;
 
-	//前回イベント発生からの経過時間をチックタイムに換算
-	//  変換誤差が生じるが誤差を蓄積させないため問題ない
+	//Convert the elapsed time since the previous event into tick time
+	//  A conversion error occurs but is harmless since it is not allowed to accumulate
 	diffTickTime = _ConvTimeNanosec2Tick(m_CurPlayTime - m_PrevEventTime);
 
-	//曲先頭からのチックタイム合計
-	//m_TotalTickTimeはイベント発生時にのみ更新するためここでは書き換えない
+	//Total tick time from the start of the song
+	//m_TotalTickTime is only updated on event occurrence, so it is not rewritten here
 	m_TotalTickTimeTemp = m_TotalTickTime + diffTickTime;
 
-	//通知時間に到達したら演奏時間を通知する
+	//Notify the playback time once the notification time is reached
 	if ((m_NextNtcTime <= m_CurPlayTime) && (!m_isSkipping)) {
 		m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), m_TotalTickTimeTemp);
-// >>> modify 20120728 yossiepon begin
-		//通知間隔は60FPS表示を考慮して1,000,000,000/120[nanosec]×再生スピードとする
-		//TODO: 外部から間隔を指定できるようにする
+		//The notification interval is set to 1,000,000,000/120[nanosec] x playback speed, considering 60FPS display
+		//TODO: allow the interval to be specified externally
 		ntcSpan = (unsigned long long)(1000000000.0 * m_PlaySpeedRatio / 120.0);
-// <<< modify 20120728 yossiepon end
 		m_NextNtcTime = m_CurPlayTime - (m_CurPlayTime % ntcSpan) + ntcSpan;
 	}
 
-	//小節番号更新の確認
+	//Check whether the bar number needs updating
 	nextBarTickTime = m_PrevBarTickTime + m_TickTimeOfBar;
 	if (nextBarTickTime <= m_TotalTickTimeTemp) {
 		m_CurBarNo++;
@@ -637,7 +640,7 @@ int SMSequencer::_UpdatePlayPosition()
 }
 
 //******************************************************************************
-// チックタイムから実時間への変換（ナノ秒）
+// Convert tick time to real time (nanoseconds)
 //******************************************************************************
 double SMSequencer::_ConvTick2TimeNanosec(
 		unsigned long tickTime
@@ -645,15 +648,15 @@ double SMSequencer::_ConvTick2TimeNanosec(
 {
 	double timeNanosec = 0;
 	
-	//(1) 四分音符あたりの分解能 division
-	//    例：48
-	//(2) トラックデータのデルタタイム delta
-	//    分解能の値を用いて表現する時間差
-	//    分解能が48でデルタタイムが24なら八分音符分の時間差
-	//(3) テンポ設定（マイクロ秒） tempo
-	//    四分音符の実時間間隔
+	//(1) Resolution per quarter note: division
+	//    e.g. 48
+	//(2) Delta time of track data: delta
+	//    A time difference expressed using the resolution value
+	//    If the resolution is 48 and the delta time is 24, that is the time difference of an eighth note
+	//(3) Tempo setting (microseconds): tempo
+	//    Real-time interval of a quarter note
 	//
-	// デルタタイムに対応する実時間間隔（ミリ秒）
+	// Real-time interval corresponding to the delta time (milliseconds)
 	//  = (delta / division) * tempo / 1000
 	//  = (delta * tempo) / (division * 1000)
 	
@@ -663,7 +666,7 @@ double SMSequencer::_ConvTick2TimeNanosec(
 }
 
 //******************************************************************************
-// 実時間（ナノ秒）からチックタイムへの変換
+// Convert real time (nanoseconds) to tick time
 //******************************************************************************
 unsigned long SMSequencer::_ConvTimeNanosec2Tick(
 		unsigned long long timeNanosec
@@ -681,7 +684,7 @@ unsigned long SMSequencer::_ConvTimeNanosec2Tick(
 }
 
 //******************************************************************************
-// イベント送信処理
+// Event transmission processing
 //******************************************************************************
 int SMSequencer::_OutputMIDIEvent(
 		unsigned char portNo,
@@ -690,21 +693,21 @@ int SMSequencer::_OutputMIDIEvent(
 {
 	int result = 0;
 
-	//MIDIイベント送信
+	//MIDIEvent transmission
 	if (pEvent->GetType() == SMEvent::EventMIDI) {
 		SMEventMIDI eventMIDI;
 		eventMIDI.Attach(pEvent);
 		result = _SendMIDIEvent(portNo, &eventMIDI);
 		if (result != 0) goto EXIT;
 	}
-	//SysExイベント送信
+	//SysExEvent transmission
 	else if (pEvent->GetType() == SMEvent::EventSysEx) {
 		SMEventSysEx eventSysEx;
 		eventSysEx.Attach(pEvent);
 		result = _SendSysExEvent(portNo, &eventSysEx);
 		if (result != 0) goto EXIT;
 	}
-	//メタイベント送信
+	//Meta event transmission
 	else if (pEvent->GetType() == SMEvent::EventMeta) {
 		SMEventMeta eventMeta;
 		eventMeta.Attach(pEvent);
@@ -717,7 +720,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベント送信
+// MIDIEvent transmission
 //******************************************************************************
 int SMSequencer::_SendMIDIEvent(
 		unsigned char portNo,
@@ -730,26 +733,26 @@ int SMSequencer::_SendMIDIEvent(
 	unsigned int chNo = 0;
 	unsigned int noteNo = 0;
 
-	//メッセージ取得
+	//Get message
 	result = pMIDIEvent->GetMIDIOutShortMsg(&msg);
 	if (result != 0) goto EXIT;
 
-	//MIDIイベントフィルタ
+	//MIDI event filter
 	result = _FilterMIDIEvent(portNo, pMIDIEvent, &isFiltered);
 	if (result != 0) goto EXIT;
 
-	//MIDIイベント送信
+	//MIDIEvent transmission
 	if (!isFiltered) {
-		//メッセージ出力：出力完了まで制御が戻らない
+		//Message output: control does not return until output completes
 		result = m_OutDevCtrl.SendShortMsg(portNo, msg);
 		if (result != 0) goto EXIT;
 
-		//MIDIイベントメッセージポスト
+		//Post the MIDI event message
 		result =  m_EventWatcher.WatchEventMIDI(portNo, pMIDIEvent);
 		if (result != 0) goto EXIT;
 	}
 
-	//ノート状態更新
+	//Update note state
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
 		chNo = pMIDIEvent->GetChNo();
 		noteNo = pMIDIEvent->GetNoteNo();
@@ -765,13 +768,13 @@ int SMSequencer::_SendMIDIEvent(
 		}
 	}
 
-	//ノートONをカウント
+	//Count note-on
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
 		m_NotesCount++;
 	}
 
-	//コントロールチェンジ監視処理
-	//  ピッチベンド感度を拾うためRPNを監視する
+	//Control change monitoring
+	//  Monitor RPN in order to pick up the pitch bend sensitivity
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::ControlChange) {
 		result = m_EventWatcher.WatchEventControlChange(portNo, pMIDIEvent);
 		if (result != 0) goto EXIT;
@@ -782,7 +785,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysExイベント送信
+// SysExEvent transmission
 //******************************************************************************
 int SMSequencer::_SendSysExEvent(
 		unsigned char portNo,
@@ -793,10 +796,10 @@ int SMSequencer::_SendSysExEvent(
 	unsigned char* pVarMsg = NULL;
 	unsigned long size = 0;
 
-	//メッセージ取得
+	//Get message
 	pSysExEvent->GetMIDIOutLongMsg(&pVarMsg, &size);
 
-	//メッセージ出力：出力完了まで制御が戻らない
+	//Message output: control does not return until output completes
 	result = m_OutDevCtrl.SendLongMsg(portNo, pVarMsg, size);
 	if (result != 0) goto EXIT;
 
@@ -805,7 +808,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// メタイベント送信
+// Meta event transmission
 //******************************************************************************
 int SMSequencer::_SendMetaEvent(
 		unsigned char portNo,
@@ -814,47 +817,47 @@ int SMSequencer::_SendMetaEvent(
 {
 	int result = 0;
 
-	//メタイベントはMIDIデバイスに送信しない
+	//Meta events are not sent to the MIDI device
 
-	//テンポ情報
+	//Tempo info
 	if (pMetaEvent->GetType() == 0x51) {
-		//デルタタイム計算に反映
+		//Reflect in the delta time calculation
 		m_Tempo = pMetaEvent->GetTempo();
 		if (m_Tempo == 0) {
-			//データ異常
+			//Invalid data
 			result = YN_SET_ERR("Invalid data found.", 0, 0);
 			goto EXIT;
 		}
 
-		//通知
+		//Notify
 		if (!m_isSkipping) {
 			m_MsgTrans.PostTempo(m_Tempo);
 		}
 	}
 
-	//拍子記号
+	//Time signature
 	if (pMetaEvent->GetType() == 0x58) {
-		//分子分母を取得
+		//Get numerator and denominator
 		unsigned long numerator = 0;
 		unsigned long denominator = 0;
 		pMetaEvent->GetTimeSignature(&numerator, &denominator);
 		if (denominator == 0) {
-			//データ異常
+			//Invalid data
 			result = YN_SET_ERR("Invalid data found.", numerator, denominator);
 			goto EXIT;
 		}
 		m_BeatNumerator = numerator;
 		m_BeatDenominator = denominator;
 
-		//通知
+		//Notify
 		if (!m_isSkipping) {
 			m_MsgTrans.PostBeat((unsigned short)numerator, (unsigned short)denominator);
 		}
 
-		//1小節あたりのチックタイムを更新
+		//Update the tick time per bar
 		m_TickTimeOfBar = (numerator * m_TimeDivision * 4) / denominator;
 
-		//拍子記号更新のため1小節目開始地点として通知
+		//Notify as the start of bar 1 since the time signature was updated
 		if (m_PrevBarTickTime != m_TotalTickTime) {
 			m_CurBarNo++;
 			m_PrevBarTickTime = m_TotalTickTime;
@@ -869,7 +872,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ユーザ要求処理
+// User request processing
 //******************************************************************************
 int SMSequencer::_ProcUserRequest(
 		BOOL* pIsContinue
@@ -879,36 +882,36 @@ int SMSequencer::_ProcUserRequest(
 
 	if (m_UserRequest == RequestNone) goto EXIT;
 
-	//All Notes Off メッセージに対応していないMIDI音源を考慮してアクティブノートにノートOFFを送信
+	//Send note-off for active notes, considering MIDI sound modules that do not support the All Notes Off message
 	result = _SendNoteOffForActiveNotes();
 	if (result != 0) goto EXIT;
 
-	//全トラックノートオフ
+	//All tracks note off
 	result = _AllTrackNoteOff();
 	if (result != 0) goto EXIT;
 
-	//全トラックサウンドオフ
+	//All tracks sound off
 	result = _AllTrackSoundOff();
 	if (result != 0) goto EXIT;
 
 	*pIsContinue = false;
 
-	//一時停止を要求された場合
+	//If a pause was requested
 	if (m_UserRequest == RequestPause) {
 		m_Status = StatusPause;
 		m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_PAUSE);
 	}
 
-	//停止を要求された場合
+	//If a stop was requested
 	if (m_UserRequest == RequestStop) {
 		m_Status = StatusStop;
 		m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
 	}
 
-	//スキップを要求された場合
+	//If a skip was requested
 	if (m_UserRequest == RequestSkip) {
 		*pIsContinue = true;
-		//公称曲長＋マージンでクリップ（安全弁）
+		//Clip at nominal song length + margin (safety net)
 		unsigned long long skipTarget = m_SkipTargetTime;
 		unsigned long long endTimeWithMargin = m_TotalPlayTimeNano + 100000000ULL;
 		if (m_TotalPlayTimeNano > 0 && skipTarget > endTimeWithMargin) {
@@ -925,7 +928,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// アクティブノートにノートOFFを送信
+// Send note-off for active notes
 //******************************************************************************
 int SMSequencer::_SendNoteOffForActiveNotes()
 {
@@ -954,7 +957,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// アクティブノートにノートONを送信
+// Send note-on for active notes
 //******************************************************************************
 int SMSequencer::_SendNoteOnForActiveNotes()
 {
@@ -983,7 +986,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 全トラックノートオフ
+// All tracks note off
 //******************************************************************************
 int SMSequencer::_AllTrackNoteOff()
 {
@@ -997,7 +1000,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 全トラックサウンドオフ
+// All tracks sound off
 //******************************************************************************
 int SMSequencer::_AllTrackSoundOff()
 {
@@ -1011,7 +1014,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 現在時刻取得（ナノ秒）
+// Get current time (nanoseconds)
 //******************************************************************************
 unsigned long long SMSequencer::_GetCurTimeInNano()
 {
@@ -1019,14 +1022,14 @@ unsigned long long SMSequencer::_GetCurTimeInNano()
 }
 
 //******************************************************************************
-// 再生開始パラメータ初期化
+// Initialize parameters on play start
 //******************************************************************************
 int SMSequencer::_InitializeParamsOnPlayStart()
 {
 	int result = 0;
 	unsigned long deltaTime = 0;
 
-	//演奏位置を曲の先頭に戻す
+	//Reset the playback position to the start of the song
 	m_PlayIndex = 0;
 	result = m_Track.GetDataSet(m_PlayIndex, &deltaTime, &m_Event, &m_PortNo);
 	if (result != 0) goto EXIT;
@@ -1043,11 +1046,11 @@ int SMSequencer::_InitializeParamsOnPlayStart()
 	m_PrevBarTickTime = 0;
 	m_NotesCount = 0;
 
-	//イベントウォッチャー初期化
+	//Initialize event watcher
 	result = m_EventWatcher.Initialize(&m_MsgTrans);
 	if (result != 0) goto EXIT;
 
-	//ノートベロシティクリア
+	//Clear note velocity
 	_ClearNoteVelocity();
 
 EXIT:;
@@ -1055,7 +1058,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントキャッシュクリア
+// Clear MIDI event cache
 //******************************************************************************
 void SMSequencer::_ClearMIDIEventCache()
 {
@@ -1077,7 +1080,7 @@ void SMSequencer::_ClearMIDIEventCache()
 }
 
 //******************************************************************************
-// MIDIイベントフィルタ
+// MIDI event filter
 //******************************************************************************
 int SMSequencer::_FilterMIDIEvent(
 		unsigned char portNo,
@@ -1095,62 +1098,62 @@ int SMSequencer::_FilterMIDIEvent(
 
 	*pIsFiltered = false;
 
-	//スキップ中のみフィルタする
+	//Only filter while skipping
 	if (!m_isSkipping) goto EXIT;
 
 	chNo = pMIDIEvent->GetChNo();
 
-	//ノートON/OFFは送信しない
+	//Do not send note on/off
 	if ((pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOff) ||
 		(pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn)) {
 		*pIsFiltered = true;
 	}
 
-	//ピッチベンドは送信しない
+	//Do not send pitch bend
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::PitchBend) {
 		*pIsFiltered = true;
 		result = pMIDIEvent->GetMIDIOutShortMsg(&shortMsg);
 		if (result != 0) goto EXIT;
-		
-		//ピッチベンドの値を記憶する：En dl dm 第2,3バイト目を参照
+
+		//Remember the pitch bend value: refer to bytes 2 and 3 (En dl dm)
 		pData = (unsigned char*)(&shortMsg);
 		m_CachePitchBend[portNo][chNo][0] = pData[1];
 		m_CachePitchBend[portNo][chNo][1] = pData[2];
 	}
 
-	//コントロールチェンジの一部は送信しない
+	//Do not send some control changes
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::ControlChange) {
 		ccNo = pMIDIEvent->GetCCNo();
 		ccValue = pMIDIEvent->GetCCValue();
 
-		//CC#1 モジュレーション
+		//CC#1 Modulation
 		if (ccNo == 1) {
 			*pIsFiltered = true;
 			m_CacheCC001_Modulation[portNo][chNo] = ccValue;
 		}
-		//CC#7 ボリューム
+		//CC#7 Volume
 		else if (ccNo == 7) {
 			*pIsFiltered = true;
 			m_CacheCC007_Volume[portNo][chNo] = ccValue;
 		}
-		//CC#10 パンポット
+		//CC#10 Panpot
 		else if (ccNo == 10) {
 			*pIsFiltered = true;
 			m_CacheCC010_Panpot[portNo][chNo] = ccValue;
 		}
-		//CC#11 エクスプレッション
+		//CC#11 Expression
 		else if (ccNo == 11) {
 			*pIsFiltered = true;
 			m_CacheCC011_Expression[portNo][chNo] = ccValue;
 		}
-		//CC#121 リセットオールコントローラ
+		//CC#121 Reset All Controllers
 		else if (ccNo == 121) {
-			//クリア対象パラメータのキャッシュを破棄する
+			//Discard the cache for the parameters to be cleared
 			m_CachePitchBend[portNo][chNo][0] = 0xFF;
 			m_CachePitchBend[portNo][chNo][1] = 0xFF;
 			m_CacheCC001_Modulation[portNo][chNo] = 0xFF;
-			//対象外 m_CacheCC007_Volume[portNo][chNo] = 0xFF;
-			//対象外 m_CacheCC010_Panpot[portNo][chNo] = 0xFF;
+			//Excluded m_CacheCC007_Volume[portNo][chNo] = 0xFF;
+			//Excluded m_CacheCC010_Panpot[portNo][chNo] = 0xFF;
 			m_CacheCC011_Expression[portNo][chNo] = 0xFF;
 		}
 	}
@@ -1160,7 +1163,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントキャッシュ送信
+// Send MIDI event cache
 //******************************************************************************
 int SMSequencer::_SendMIDIEventCache()
 {
@@ -1174,32 +1177,32 @@ int SMSequencer::_SendMIDIEventCache()
 	for (index = 0; index < SM_MAX_PORT_NUM; index++) {
 		portNo = (unsigned char)index;
 		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-			//ピッチベンド
+			//Pitch bend
 			pitchBend[0] = m_CachePitchBend[portNo][chNo][0];
 			pitchBend[1] = m_CachePitchBend[portNo][chNo][1];
 			if (pitchBend[0] < 0xFF) {
 				result = _SendMIDIEventPitchBend(portNo, chNo, pitchBend);
 				if (result != 0) goto EXIT;
 			}
-			//CC#1 モジュレーション
+			//CC#1 Modulation
 			ccValue = m_CacheCC001_Modulation[portNo][chNo];
 			if (ccValue < 0x80) {
 				result = _SendMIDIEventCC(portNo, chNo, 1, ccValue);
 				if (result != 0) goto EXIT;
 			}
-			//CC#7 ボリューム
+			//CC#7 Volume
 			ccValue = m_CacheCC007_Volume[portNo][chNo];
 			if (ccValue < 0x80) {
 				result = _SendMIDIEventCC(portNo, chNo, 7, ccValue);
 				if (result != 0) goto EXIT;
 			}
-			//CC#10 パンポット
+			//CC#10 Panpot
 			ccValue = m_CacheCC010_Panpot[portNo][chNo];
 			if (ccValue < 0x80) {
 				result = _SendMIDIEventCC(portNo, chNo, 10, ccValue);
 				if (result != 0) goto EXIT;
 			}
-			//CC#11 エクスプレッション
+			//CC#11 Expression
 			ccValue = m_CacheCC011_Expression[portNo][chNo];
 			if (ccValue < 0x80) {
 				result = _SendMIDIEventCC(portNo, chNo, 11, ccValue);
@@ -1213,7 +1216,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントキャッシュ送信：ピッチベンド
+// Send MIDI event cache: pitch bend
 //******************************************************************************
 int SMSequencer::_SendMIDIEventPitchBend(
 		unsigned char portNo,
@@ -1225,11 +1228,11 @@ int SMSequencer::_SendMIDIEventPitchBend(
 	SMEvent event;
 	SMEventMIDI eventMIDI;
 
-	//MIDIイベントデータ作成
+	//Create MIDI event data
 	event.SetMIDIData(0xE0 | chNo, pPtichBend, 2);
 	eventMIDI.Attach(&event);
 
-	//MIDIイベント送信
+	//MIDIEvent transmission
 	result = _SendMIDIEvent(portNo, &eventMIDI);
 	if (result != 0) goto EXIT;
 
@@ -1238,7 +1241,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントキャッシュ送信：コントロールチェンジ
+// Send MIDI event cache: control change
 //******************************************************************************
 int SMSequencer::_SendMIDIEventCC(
 		unsigned char portNo,
@@ -1252,13 +1255,13 @@ int SMSequencer::_SendMIDIEventCC(
 	SMEvent event;
 	SMEventMIDI eventMIDI;
 
-	//MIDIイベントデータ作成
+	//Create MIDI event data
 	data[0] = ccNo;
 	data[1] = ccValue;
 	event.SetMIDIData(0xB0 | chNo, data, 2);
 	eventMIDI.Attach(&event);
 
-	//MIDIイベント送信
+	//MIDIEvent transmission
 	result = _SendMIDIEvent(portNo, &eventMIDI);
 	if (result != 0) goto EXIT;
 
@@ -1267,7 +1270,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// スキップ処理
+// Skip processing
 //******************************************************************************
 int SMSequencer::_ProcSkip(
 		unsigned long long targetTimeInNanoSec,
@@ -1284,59 +1287,59 @@ int SMSequencer::_ProcSkip(
 	startPlayTime = m_CurPlayTime;
 	startTickTime = m_TotalTickTimeTemp;
 
-	//後方スキップの場合
+	//If skipping backward
 	if (targetTimeInNanoSec < m_CurPlayTime) {
-		//再生開始パラメータ初期化
+		//Initialize parameters on play start
 		result = _InitializeParamsOnPlayStart();
 		if (result != 0) goto EXIT;
-		
+
 		m_MsgTrans.PostSkipStart(SM_SKIP_BACK);
 	}
-	//前方スキップの場合
+	//If skipping forward
 	else {
 		m_MsgTrans.PostSkipStart(SM_SKIP_FORWARD);
 	}
 
-	//MIDIイベントキャッシュクリア
+	//Clear MIDI event cache
 	_ClearMIDIEventCache();
 
-	//指定時刻までMIDIイベントを処理する
+	//Process MIDI events up to the specified time
 	m_isSkipping = true;
 	while (*pIsContinue) {
-		//スレッドインターバル処理
+		//Thread interval processing
 		result = _IntervalProc(pIsContinue);
 		if (result != 0) goto EXIT;
-		
-		//指定時刻に達したらスキップ終了とする
+
+		//End the skip once the specified time is reached
 		if (targetTimeInNanoSec <= m_CurPlayTime) break;
 	}
 	m_isSkipping = false;
 
-	//キャッシュ送信
+	//Send cache
 	result = _SendMIDIEventCache();
 	if (result != 0) goto EXIT;
 
-	//再生時刻移動
+	//Move the playback time
 	endTickTime = m_TotalTickTimeTemp;
 	_SlidePlaybackTime(startPlayTime, startTickTime, endTickTime);
 
-	//アクティブノート単位にノートONを送信
+	//Send note-on per active note
 	result = _SendNoteOnForActiveNotes();
 	if (result != 0) goto EXIT;
 
-	//スキップ移動先の状態を通知
+	//Notify the state at the skip destination
 	m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), endTickTime);
 	m_MsgTrans.PostTempo(m_Tempo);
 	m_MsgTrans.PostBeat((unsigned short)m_BeatNumerator, (unsigned short)m_BeatDenominator);
 	m_MsgTrans.PostBar(m_CurBarNo);
 
-	//再生開始時刻を更新
+	//Update the playback start time
 	m_PrevTimerTime = _GetCurTimeInNano();
 
-	//スキップ終了
+	//End of skip
 	m_MsgTrans.PostSkipEnd(m_NotesCount);
 
-	//前方スキップによる再生終了
+	//End of playback due to a forward skip
 	if (!(*pIsContinue)) {
 		_AllTrackNoteOff();
 		m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), m_TotalTickTime);
@@ -1349,7 +1352,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 再生時刻移動
+// Move the playback time
 //******************************************************************************
 void SMSequencer::_SlidePlaybackTime(
 		unsigned long long startPlayTime,
@@ -1360,14 +1363,14 @@ void SMSequencer::_SlidePlaybackTime(
 	unsigned long i = 0;
 	unsigned long tickTime = 0;
 	unsigned long tickTimeStep = 0;
-	unsigned long waitTimeInMsec = 10;  //10msec.ごとに通知
+	unsigned long waitTimeInMsec = 10;  //Notify every 10msec.
 	unsigned long stepNum = 0;
 	bool isRewind = false;
 
-	//再生時刻通知回数
+	//Number of playback time notifications
 	stepNum = m_MovingTimeSpanInMsec / waitTimeInMsec;
 
-	//チックタイム刻み値
+	//Tick time step value
 	if (startTickTime > endTickTime) {
 		isRewind = true;
 		tickTimeStep = (startTickTime - endTickTime) / stepNum;
@@ -1377,10 +1380,10 @@ void SMSequencer::_SlidePlaybackTime(
 		tickTimeStep = (endTickTime - startTickTime) / stepNum;
 	}
 
-	//再生時刻移動
+	//Move the playback time
 	tickTime = startTickTime;
 	for (i = 0; i < stepNum; i ++) {
-		//再生時刻を通知：チックタイムのみ更新
+		//Notify playback time: only the tick time is updated
 		if (isRewind) {
 			tickTime -= tickTimeStep;
 		}
@@ -1388,8 +1391,8 @@ void SMSequencer::_SlidePlaybackTime(
 			tickTime += tickTimeStep;
 		}
 		m_MsgTrans.PostPlayTime((unsigned long)(startPlayTime/1000000), tickTime);
-		
-		//待機
+
+		//Wait
 		Sleep(waitTimeInMsec);
 	}
 
@@ -1397,7 +1400,7 @@ void SMSequencer::_SlidePlaybackTime(
 }
 
 //******************************************************************************
-// ノートベロシティクリア
+// Clear note velocity
 //******************************************************************************
 void SMSequencer::_ClearNoteVelocity()
 {
@@ -1405,7 +1408,7 @@ void SMSequencer::_ClearNoteVelocity()
 }
 
 //******************************************************************************
-// タイマー呼び出し
+// Timer invocation
 //******************************************************************************
 int SMSequencer::_OnTimer()
 {
@@ -1414,24 +1417,24 @@ int SMSequencer::_OnTimer()
 
 	unsigned long deltaTime = 0;
 
-	//リエントラント防止（whileループで1ms超えた場合の並行コールバック排除）
+	//Prevent reentrancy (excludes concurrent callbacks if the while loop exceeds 1ms)
 	if (m_isInTimer) {
 		return 0;
 	}
 	m_isInTimer = true;
 
-	//浮動小数点演算精度を倍精度に設定
-	//  タイマー開始直後に1回だけ実行する
+	//Set floating-point precision to double
+	//  Executed only once, right after the timer starts
 	if (!(m_FPUCtrl.IsLocked())) {
 		result = m_FPUCtrl.Start(SMFPUCtrl::FPUDouble);
 		if (result != 0) goto EXIT;
 	}
 
-	//スレッドインターバル処理
+	//Thread interval processing
 	result = _IntervalProc(&isContinue);
 	if (result != 0) goto EXIT;
 
-	//ユーザリクエストの処理
+	//Process the user request
 	if (isContinue) {
 		result = _ProcUserRequest(&isContinue);
 		if (result != 0) goto EXIT;
@@ -1449,7 +1452,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// タイマーコールバック関数
+// Timer callback function
 //******************************************************************************
 void SMSequencer::_TimerCallBack(
 		UINT uTimerID,

@@ -1,4 +1,4 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MTFont2Bmp
 //
@@ -49,39 +49,27 @@ void MTFont2Bmp::Clear()
 		m_hFont = NULL;
 	}
 
-// >>> add 20120728 yossiepon begin
 	if(!m_GlyphBmpList.empty()) {
-// <<< add 20120728 yossiepon end
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 
-// >>> add 20120728 yossiepon begin
 			if(itr->pBmp != NULL) {
-// <<< add 20120728 yossiepon end
 
 				delete [] (itr->pBmp);
 
-// >>> add 20120728 yossiepon begin
 			}
-// <<< add 20120728 yossiepon end
 
 		}
 		m_GlyphBmpList.clear();
 
-// >>> add 20120728 yossiepon begin
 	}
-// <<< add 20120728 yossiepon end
 
-// >>> add 20120728 yossiepon begin
 	if(m_pBmpBuf != NULL) {
-// <<< add 20120728 yossiepon end
 
 		delete [] m_pBmpBuf;
 		m_pBmpBuf = NULL;
 
-// >>> add 20120728 yossiepon begin
 	}
-// <<< add 20120728 yossiepon end
 }
 
 //******************************************************************************
@@ -429,17 +417,13 @@ int MTFont2Bmp::_CreateBmpBuf()
 	//Width
 	m_BmpWidth = 0;
 
-// >>> add 20120728 yossiepon begin
 	if(!m_GlyphBmpList.empty()) {
-// <<< add 20120728 yossiepon end
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 			m_BmpWidth += (itr->glyphMetric.gmCellIncX);
 		}
 
-// >>> add 20120728 yossiepon begin
 	}
-// <<< add 20120728 yossiepon end
 
 	//Round the width up to a multiple of 4
 	m_BmpWidth = m_BmpWidth + ((4 - (m_BmpWidth % 4)) % 4);
@@ -477,9 +461,7 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 	BYTE* pSrc = NULL;
 	BYTE* pDest = NULL;
 
-// >>> add 20120728 yossiepon begin
 	if(!m_GlyphBmpList.empty()) {
-// <<< add 20120728 yossiepon end
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
 
@@ -524,9 +506,7 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 			offsetX += (itr->glyphMetric.gmCellIncX);
 		}
 
-// >>> add 20120728 yossiepon begin
 	}
-// <<< add 20120728 yossiepon end
 
 //EXIT:;
 	return result;

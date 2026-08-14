@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMLiveMonitor
 //
-// ライブモニタクラス
+// Live (real-time input) monitor class.
 //
 // Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
 //
@@ -27,60 +27,60 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
 
 
 //******************************************************************************
-// ライブモニタクラス
+// Live monitor class
 //******************************************************************************
 class SMIDILIB_API SMLiveMonitor
 {
 public:
 	
-	//演奏状態
+	//Playback state
 	enum Status {
 		StatusMonitorOFF,
 		StatusMonitorON
 	};
 	
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMLiveMonitor(void);
 	virtual ~SMLiveMonitor(void);
 	
-	//初期化
+	//Initialize
 	int Initialize(SMMsgQueue* pMsgQueue);
 	
-	//ポート対応デバイス登録
+	//Register device for port
 	int SetInPortDev(const char* pProductName, bool isMIDITHRU);
 	int SetOutPortDev(const char* pProductName);
 	
-	//入力ポートデバイス表示名取得
+	//Get input port device display name
 	//NSString* GetInPortDevDisplayName(NSString* pIdName);
 	int GetInPortDevDisplayName(std::string& name);
 	
-	//モニタ開始
+	//Start monitor
 	int Start();
 	
-	//モニタ停止
+	//Stop monitor
 	int Stop();
 	
 private:
 	
-	//演奏状態
+	//Playback state
 	Status m_Status;
 	SMMsgTransmitter m_MsgTrans;
 	SMMsgQueue* m_pMsgQue;
 	SMEventWatcher m_EventWatcher;
 	
-	//MIDIデバイス系
+	//MIDI device related
 	char m_InPortDevName[MAXPNAMELEN];
 	char m_OutPortDevName[MAXPNAMELEN];
 	bool m_isMIDITHRU;
 	SMInDevCtrl m_InDevCtrl;
 	SMOutDevCtrl m_OutDevCtrl;
 	
-	//ポート制御
+	//Port control
 	void _ClearPortInfo();
 	int _OpenMIDIDev();
 	int _CloseMIDIDev();

@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMBarList
 //
-// 小節リストクラス
+// Bar (measure) list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
 //
@@ -21,36 +21,36 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// 小節リストクラス
+// Bar list class
 //******************************************************************************
 class SMIDILIB_API SMBarList
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMBarList(void);
 	virtual ~SMBarList(void);
 
-	//クリア
+	//Clear
 	void Clear();
 
-	//小節追加
+	//Add bar
 	int AddBar(unsigned long tickTime);
 
-	//小節取得
+	//Get bar
 	int GetBar(unsigned long index, unsigned long* pTickTime);
 
-	//小節数取得
+	//Get bar count
 	unsigned long GetSize();
 
-	//コピー
+	//Copy
 	int CopyFrom(SMBarList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMBarList&);
 	SMBarList(const SMBarList&);
 

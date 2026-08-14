@@ -4,7 +4,8 @@
 //
 // Piano keyboard controller base class.
 //
-// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 // Based on the DX11 migration design by ced (Zel9278)
 // https://github.com/Zel9278/MIDITrailModMod

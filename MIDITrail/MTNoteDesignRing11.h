@@ -5,7 +5,7 @@
 // Note design class for Ring scenes.
 //
 // Copyright (C) 2019-2022 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2019-2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2019-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

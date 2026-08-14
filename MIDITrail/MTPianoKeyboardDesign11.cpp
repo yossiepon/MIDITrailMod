@@ -1,11 +1,11 @@
-//******************************************************************************
+﻿//******************************************************************************
 //
 // MIDITrail / MTPianoKeyboardDesign11
 //
 // Piano keyboard design class.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2012-2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -955,7 +955,6 @@ unsigned long MTPianoKeyboardDesign11::GetKeyboardMaxDispNum()
 	return (unsigned long)m_KeyboardMaxDispNum;
 }
 
-// >>> add 20180404 yossiepon begin
 //******************************************************************************
 // Set keyboard display count
 //******************************************************************************
@@ -963,7 +962,6 @@ void MTPianoKeyboardDesign11::SetKeyboardSingle()
 {
 	m_KeyboardMaxDispNum = 1;
 }
-// <<< add 20180404 yossiepon end
 
 //******************************************************************************
 // Key display range: start

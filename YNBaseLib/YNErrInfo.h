@@ -1,8 +1,8 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
-// Simple Base Library / YNErrInfo
+// YN Base Library / YNErrInfo
 //
-// エラー情報クラス
+// Error information class.
 //
 // Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 //
@@ -22,20 +22,20 @@ using namespace std;
 namespace YNBaseLib {
 
 //******************************************************************************
-// エラー情報クラス
+// Error information class
 //******************************************************************************
 class YNBASELIB_API YNErrInfo
 {
 public:
 
-	//エラーレベル
+	//Error level
 	enum ErrLevel {
 		LVL_ERR,
 		LVL_WARN,
 		LVL_INFO
 	};
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	YNErrInfo(
 			ErrLevel errLevel,
 			unsigned long lineNo,
@@ -46,19 +46,19 @@ public:
 		);
 	virtual ~YNErrInfo(void);
 
-	//エラーレベル取得
+	//Get error level
 	ErrLevel GetErrLevel();
 
-	//行番号取得
+	//Get line number
 	unsigned long GetLineNo();
 
-	//関数名取得
+	//Get function name
 	const TCHAR* GetFuncName();
 
-	//メッセージ取得
+	//Get message
 	const TCHAR* GetMessage();
 
-	//エラー情報取得
+	//Get error information
 	unsigned long long GetErrInfo1();
 	unsigned long long GetErrInfo2();
 
@@ -69,7 +69,7 @@ private:
 	unsigned long long m_ErrInfo1;
 	unsigned long long m_ErrInfo2;
 
-//CRTをスタティックリンク(/MT)すると警告が出る
+//A warning occurs when the CRT is statically linked (/MT)
 #pragma warning(disable:4251)
 #ifdef _UNICODE
 	wstring m_FuncName;
@@ -80,7 +80,7 @@ private:
 #endif
 #pragma warning(default:4251)
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const YNErrInfo&);
 	YNErrInfo(const YNErrInfo&);
 

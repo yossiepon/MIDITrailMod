@@ -1,19 +1,19 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // Simple MIDI Library / SMRcpConv
 //
-// RCPファイル変換クラス
+// RCP-format file conversion class.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 // MEMO:
-// ふみぃ氏が公開している RCPCV.DLL(*1) を用いて、レコンポーザの
-// データファイル(*.rcp,*.r36,*.g36)を標準MIDIファイルに変換する。
-// RCPCV.DLL がアプリケーションと同じフォルダに存在するときに利用可能とする。
-// RCPCV.DLL が存在しなければ本クラスの機能は利用できない。
-// 事前にIsAvailable()メソッドを用いて利用可否を確認すること。
+// Uses RCPCV.DLL(*1), published by Fumii, to convert Recomposer
+// data files (*.rcp,*.r36,*.g36) into Standard MIDI Files.
+// Available only when RCPCV.DLL exists in the same folder as the application.
+// If RCPCV.DLL does not exist, this class's functionality is unavailable.
+// Check availability beforehand using the IsAvailable() method.
 //
 // (*1) RCPCV.DLL
 // http://www.vector.co.jp/soft/win95/art/se114143.html
@@ -31,36 +31,36 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// SysExイベントクラス
+// SysEx event class
 //******************************************************************************
 class SMIDILIB_API SMRcpConv
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMRcpConv();
 	virtual ~SMRcpConv(void);
 
-	//初期化
+	//Initialize
 	int Initialize();
 
-	//利用可否判定
+	//Determine availability
 	bool IsAvailable();
 
-	//標準MIDファイル変換
+	//Convert to Standard MIDI File
 	int Convert(const WCHAR* pRCPPath, const WCHAR* pSMFPath);
 
-	//拡張子によるサポート対象ファイル判定
+	//Determine supported file by extension
 	bool IsSupportFileExt(const WCHAR* pFilePath);
 
-	//GetOpenFileName用ファイルフィルタ取得
+	//Get file filter for GetOpenFileName
 	const WCHAR* GetOpenFileNameFilter();
 
 private:
 
 	HMODULE m_hModule;
 
-	//RCPCV.DLL API定義
+	//RCPCV.DLL API definitions
 	typedef DWORD  (WINAPI *RCPCV_ConvertFile)(LPCSTR, UINT, DWORD, UINT, DWORD);
 	typedef int    (WINAPI *RCPCV_SaveSMF)(DWORD, LPCSTR);
 	typedef void   (WINAPI *RCPCV_DeleteObject)(DWORD);
@@ -68,7 +68,7 @@ private:
 	typedef LPCSTR (WINAPI *RCPCV_GetSMF)(DWORD);
 	typedef int    (WINAPI *RCPCV_GetSMFLength)(DWORD);
 
-	//関数ポインタ
+	//Function pointers
 	RCPCV_ConvertFile           m_pFuncConvertFile;
 	RCPCV_SaveSMF               m_pFuncSaveSMF;
 	RCPCV_DeleteObject          m_pFuncDeleteObject;
