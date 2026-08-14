@@ -1,3 +1,5 @@
+[🇬🇧 English](README.md)
+
 # MIDITrail Mod
 
 MIDITrailは、MIDIデータを三次元可視化するMIDIプレーヤーです。

@@ -1,3 +1,5 @@
+[🇯🇵 日本語](README.ja.md)
+
 # MIDITrail Mod
 
 MIDITrail is a MIDI player which provides 3D visualization of MIDI datasets.
