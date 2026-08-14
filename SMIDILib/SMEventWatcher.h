@@ -27,39 +27,39 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// イベントウォッチャークラス
+// Event watcher class
 //******************************************************************************
 class SMIDILIB_API SMEventWatcher
 {
 public:
 	
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMEventWatcher(void);
 	virtual ~SMEventWatcher(void);
 	
-	//初期化
+	//Initialize
 	int Initialize(SMMsgTransmitter* pMsgTrans);
 	
-	//イベント監視
+	//Event monitoring
 	int WatchEvent(unsigned char portNo, SMEvent* pEvent);
 
-	//イベント監視：シーケンサ向け
+	//Event monitoring: for sequencer
 	int WatchEventMIDI(unsigned char portNo, SMEventMIDI* pMIDIEvent);
 	int WatchEventControlChange(unsigned char portNo, SMEventMIDI* pMIDIEvent);
 
-	//ノートイベントポスト制御（Playback: false, Live: true）
+	//Note event post control (Playback: false, Live: true)
 	void SetNoteEventPostEnabled(bool enabled) { m_isNoteEventPostEnabled = enabled; }
 
 private:
 	
-	//RPN/NRPN選択状態
+	//RPN/NRPN selection state
 	enum RPN_NRPN_Select {
 		RPN_NULL,
 		RPN,
 		NRPN
 	};
 	
-	//RPN種別
+	//RPN type
 	enum RPN_Type {
 		RPN_None,
 		PitchBendSensitivity,
@@ -67,14 +67,14 @@ private:
 		MasterCourseTune
 	};
 	
-	//メッセージ送信制御
+	//Message transmission control
 	SMMsgTransmitter* m_pMsgTrans;
 	bool m_isNoteEventPostEnabled;
 	
-	//ピッチベンド制御
+	//Pitch bend control
 	unsigned char m_PitchBendSensitivity[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	
-	//RPN制御系
+	//RPN control related
 	RPN_NRPN_Select m_RPN_NRPN_Select[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	unsigned char m_RPN_MSB[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	unsigned char m_RPN_LSB[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];

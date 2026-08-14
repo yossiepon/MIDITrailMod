@@ -16,7 +16,7 @@ namespace YNBaseLib {
 DWORD g_TlsIndex = 0xFFFFFFFF;
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 YNErrCtrl::YNErrCtrl()
 {
@@ -24,7 +24,7 @@ YNErrCtrl::YNErrCtrl()
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 YNErrCtrl::~YNErrCtrl()
 {
@@ -32,7 +32,7 @@ YNErrCtrl::~YNErrCtrl()
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int YNErrCtrl::Initialize()
 {
@@ -49,7 +49,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 終了処理
+// Terminate
 //******************************************************************************
 int YNErrCtrl::Terminate()
 {
@@ -69,7 +69,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// エラー登録
+// Register error information
 //******************************************************************************
 int YNErrCtrl::SetErr(
 		YNErrInfo::ErrLevel errLevel,
@@ -84,21 +84,21 @@ int YNErrCtrl::SetErr(
 	BOOL apiresult = false;
 	YNErrInfo* pErrInfo = NULL;
 
-	//エラー情報が登録されたままであれば破棄する
+	//Discard any error information that's still registered
 	pErrInfo = GetErr();
 	if (pErrInfo != NULL) {
 		delete pErrInfo;
 		pErrInfo = NULL;
 	}
 
-	//エラー情報オブジェクトを生成
+	//Create the error information object
 	pErrInfo = new YNErrInfo(errLevel, lineNo, pFuncName, pMessage, errInfo1, errInfo2);
 	if (pErrInfo == NULL) {
 		result = -2;
 		goto EXIT;
 	}
 
-	//スレッドローカル記憶域に格納
+	//Store it in thread-local storage
 	apiresult = TlsSetValue(g_TlsIndex, (void*)pErrInfo);
 	if (!apiresult) {
 		result = -2;
@@ -106,7 +106,7 @@ int YNErrCtrl::SetErr(
 	}
 	pErrInfo = NULL;
 
-	//TODO:エラーコード生成
+	//TODO: generate an error code
 	result = -1;
 
 EXIT:;
@@ -115,7 +115,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// エラー情報取得
+// Get error information
 //******************************************************************************
 YNErrInfo* YNErrCtrl::GetErr()
 {
@@ -123,14 +123,14 @@ YNErrInfo* YNErrCtrl::GetErr()
 	BOOL apiresult = false;
 	YNErrInfo* pErrInfo = NULL;
 
-	//スレッドローカル記憶域からエラー情報オブジェクトを取得
+	//Get the error information object from thread-local storage
 	pErrInfo = (YNErrInfo*)TlsGetValue(g_TlsIndex);
 	if (pErrInfo == NULL) {
 		result = -1;
 		goto EXIT;
 	}
 
-	//スレッドローカル記憶域をクリア
+	//Clear thread-local storage
 	apiresult = TlsSetValue(g_TlsIndex, NULL);
 	if (!apiresult) {
 		result = -1;
@@ -142,7 +142,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// エラー表示
+// Show error
 //******************************************************************************
 int YNErrCtrl::ShowErr(
 		HWND hOwner
@@ -162,7 +162,7 @@ int YNErrCtrl::ShowErr(
 	string title;
 #endif
 
-	//エラー情報がなければ何もしない
+	//Do nothing if there's no error information
 	pErrInfo = GetErr();
 	if (pErrInfo == NULL) goto EXIT;
 
@@ -198,10 +198,10 @@ int YNErrCtrl::ShowErr(
 	msg += msgex;
 
 	apiresult = MessageBox(
-					hOwner,			//オーナーウィンドウ
-					msg.c_str(),	//メッセージ
-					title.c_str(),	//タイトル
-					MB_OK | type	//フラグ
+					hOwner,			//Owner window
+					msg.c_str(),	//Message
+					title.c_str(),	//Title
+					MB_OK | type	//Flags
 				);
 	if (apiresult == 0) {
 		result = -1;

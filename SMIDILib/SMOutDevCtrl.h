@@ -25,45 +25,45 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//最大ポート数：A,B,C,D,E,F
+//Max port count: A,B,C,D,E,F
 #define SM_MIDIOUT_PORT_NUM_MAX   (6)
 
 //******************************************************************************
-// MIDI出力デバイス制御クラス
+// MIDI output device control class
 //******************************************************************************
 class SMIDILIB_API SMOutDevCtrl
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMOutDevCtrl(void);
 	virtual ~SMOutDevCtrl(void);
 
-	//初期化
+	//Initialize
 	int Initialize();
 
-	//デバイス数取得
+	//Get device count
 	unsigned long GetDevNum();
 
-	//デバイスプロダクト名称取得
+	//Get device product name
 	int GetDevProductName(unsigned long index, std::string& name);
 
-	//ポート対応デバイス登録
+	//Register device for port
 	int SetPortDev(unsigned char portNo, const char* pProductName);
 
-	//ポート対応デバイスID取得
+	//Get device ID for port
 	int GetPortDevId(unsigned char portNo, unsigned long* pDevId);
 
-	//全デバイスのオープン／クローズ
+	//Open/close all devices
 	int OpenPortDevAll();
 	int ClosePortDevAll();
 
-	//ポート情報クリア
+	//Clear port info
 	int ClearPortInfo();
 
-	//MIDI出力メッセージ送信
+	//Send MIDI output message
 	int SendShortMsg(unsigned char portNo, unsigned long msg);
 	int SendLongMsg(unsigned char portNo, unsigned char* pMsg, unsigned long size);
 	int NoteOffAll();
@@ -91,7 +91,7 @@ private:
 
 	int _InitDevList();
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMOutDevCtrl&);
 	SMOutDevCtrl(const SMOutDevCtrl&);
 

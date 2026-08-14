@@ -20,7 +20,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMEventWatcher::SMEventWatcher(void)
 {
@@ -30,14 +30,14 @@ SMEventWatcher::SMEventWatcher(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMEventWatcher::~SMEventWatcher(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int SMEventWatcher::Initialize(SMMsgTransmitter* pMsgTrans)
 {
@@ -51,7 +51,7 @@ int SMEventWatcher::Initialize(SMMsgTransmitter* pMsgTrans)
 }
 
 //******************************************************************************
-// イベントウォッチ
+// Event watch
 //******************************************************************************
 int SMEventWatcher::WatchEvent(
 		unsigned char portNo,
@@ -65,11 +65,11 @@ int SMEventWatcher::WatchEvent(
 	if (pEvent->GetType() == SMEvent::EventMIDI) {
 		eventMIDI.Attach(pEvent);
 		
-		//MIDIイベント監視
+		//MIDIEvent monitoring
 		result = _WatchEventMIDI(portNo, &eventMIDI);
 		if (result != 0) goto EXIT;
-		
-		//コントロールチェンジ監視
+
+		//Monitor control change
 		if (eventMIDI.GetChMsg() == SMEventMIDI::ControlChange) {
 			result = _WatchEventControlChange(portNo, &eventMIDI);
 			if (result != 0) goto EXIT;
@@ -80,7 +80,7 @@ int SMEventWatcher::WatchEvent(
 	else if (pEvent->GetType() == SMEvent::EventSysMsg) {
 		eventSysMsg.Attach(pEvent);
 		
-		//システムメッセージイベント監視
+		//System message event monitoring
 		result = _WatchEventSysMsg(portNo, &eventSysMsg);
 		if (result != 0) goto EXIT;
 	}
@@ -90,7 +90,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントウォッチ
+// MIDIEvent watch
 //******************************************************************************
 int SMEventWatcher::WatchEventMIDI(
 		unsigned char portNo,
@@ -101,7 +101,7 @@ int SMEventWatcher::WatchEventMIDI(
 }
 
 //******************************************************************************
-// コントロールチェンジイベントウォッチ
+// Control change event watch
 //******************************************************************************
 int SMEventWatcher::WatchEventControlChange(
 		unsigned char portNo,
@@ -112,7 +112,7 @@ int SMEventWatcher::WatchEventControlChange(
 }
 
 //******************************************************************************
-// チャンネル情報クリア
+// Clear channel info
 //******************************************************************************
 void SMEventWatcher::_ClearChInfo()
 {
@@ -121,12 +121,12 @@ void SMEventWatcher::_ClearChInfo()
 	
 	for (portNo = 0; portNo < SM_MAX_PORT_NUM; portNo++) {
 		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
-			//RPN/NRPN選択状態
+			//RPN/NRPN selection state
 			m_RPN_NRPN_Select[portNo][chNo] = RPN_NULL;
 			//RPN
 			m_RPN_MSB[portNo][chNo] = 0x7F; //RPN NULL
 			m_RPN_LSB[portNo][chNo] = 0x7F; //RPN NULL
-			//ピッチベンド感度
+			//Pitch bend sensitivity
 			m_PitchBendSensitivity[portNo][chNo] = SM_DEFAULT_PITCHBEND_SENSITIVITY;
 		}
 	}
@@ -135,7 +135,7 @@ void SMEventWatcher::_ClearChInfo()
 }
 
 //******************************************************************************
-// MIDIイベント監視処理
+// MIDIEvent monitoring processing
 //******************************************************************************
 int SMEventWatcher::_WatchEventMIDI(
 		unsigned char portNo,
@@ -144,7 +144,7 @@ int SMEventWatcher::_WatchEventMIDI(
 {
 	int result = 0;
 	
-	//ノートOFF/ONを通知（Live用。Playback時はNoteTrackerが管理するため無効化）
+	//Notify note off/on (for Live. Disabled during playback since NoteTracker manages it)
 	if (m_isNoteEventPostEnabled) {
 		if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOff) {
 			m_pMsgTrans->PostNoteOff(
@@ -157,7 +157,7 @@ int SMEventWatcher::_WatchEventMIDI(
 		}
 	}
 	
-	//ピッチベンドを通知
+	//Notify pitch bend
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::PitchBend) {
 		m_pMsgTrans->PostPitchBend(
 				portNo,
@@ -171,7 +171,7 @@ int SMEventWatcher::_WatchEventMIDI(
 }
 
 //******************************************************************************
-// コントロールチェンジ監視処理
+// Control change monitoring
 //******************************************************************************
 int SMEventWatcher::_WatchEventControlChange(
 		unsigned char portNo,
@@ -219,19 +219,19 @@ int SMEventWatcher::_WatchEventControlChange(
 	//----------------------------------------------------------------
 	//Data Entry MSB (CC#6)
 	if (pMIDIEvent->GetCCNo() == 0x06) {
-		//ピッチベンド感度 MSB
+		//Pitch bend sensitivity MSB
 		if (_GetCurRPNType(portNo, chNo) == PitchBendSensitivity) {
 			m_PitchBendSensitivity[portNo][chNo] = pMIDIEvent->GetCCValue();
 		}
 	}
 	//Data Entry LSB (CC#38)
 	if (pMIDIEvent->GetCCNo() == 0x26) {
-		//特に制御なし
+		//No control performed
 	}
-	
+
 	//Data Increment (CC#96)
 	if (pMIDIEvent->GetCCNo() == 0x60) {
-		//ピッチベンド感度 MSB
+		//Pitch bend sensitivity MSB
 		if (_GetCurRPNType(portNo, chNo) == PitchBendSensitivity) {
 			msb = m_PitchBendSensitivity[portNo][chNo];
 			if (msb < 24) {
@@ -241,7 +241,7 @@ int SMEventWatcher::_WatchEventControlChange(
 	}
 	//Data Decremnet (CC#97)
 	if (pMIDIEvent->GetCCNo() == 0x61) {
-		//ピッチベンド感度 MSB
+		//Pitch bend sensitivity MSB
 		if (_GetCurRPNType(portNo, chNo) == PitchBendSensitivity) {
 			msb = m_PitchBendSensitivity[portNo][chNo]++;
 			if (msb > 0) {
@@ -251,31 +251,31 @@ int SMEventWatcher::_WatchEventControlChange(
 	}
 	
 	//----------------------------------------------------------------
-	// リセットオールコントローラ
+	// Reset All Controllers
 	//----------------------------------------------------------------
 	//Reset All Controllers (CC#121)
 	if (pMIDIEvent->GetCCNo() == 0x79) {
-		//ピッチベンドを通知：0
+		//Notify pitch bend: 0
 		m_pMsgTrans->PostPitchBend(portNo, chNo, 0, m_PitchBendSensitivity[portNo][chNo]);
-		//RPN/NRPN選択状態
+		//RPN/NRPN selection state
 		m_RPN_NRPN_Select[portNo][chNo] = RPN_NULL;
 		//RPN
 		m_RPN_MSB[portNo][chNo] = 0x7F; //RPN NULL
 		m_RPN_LSB[portNo][chNo] = 0x7F; //RPN NULL
-		
-		//Roland SCシリーズ,Yamaha MUシリーズの場合
-		//CC#121 リセットオールコントローラで次の値がクリアされる
-		//  An     ポリフォニックキープレッシャー  0
-		//  Dn     チャンネルプレッシャー  0
-		//  En     ピッチベンド  0
-		//  CC#1   モジュレーション  0
-		//  CC#11  エクスプレッション  127
-		//  CC#64  ホールド1    0
-		//  CC#65  ポルタメント  0
-		//  CC#66  ソステヌート  0
-		//  CC#67  ソフト  0
-		//  CC#98,99   NRPN  未設定状態（設定済みデータは変化しない）
-		//  CC#100,101 RPN   未設定状態（設定済みデータは変化しない）
+
+		//For Roland SC series / Yamaha MU series
+		//CC#121 Reset All Controllers clears the following values
+		//  An     Polyphonic key pressure  0
+		//  Dn     Channel pressure  0
+		//  En     Pitch bend  0
+		//  CC#1   Modulation  0
+		//  CC#11  Expression  127
+		//  CC#64  Hold 1    0
+		//  CC#65  Portamento  0
+		//  CC#66  Sostenuto  0
+		//  CC#67  Soft  0
+		//  CC#98,99   NRPN  Unset state (already-set data is unchanged)
+		//  CC#100,101 RPN   Unset state (already-set data is unchanged)
 	}
 	
 	//EXIT:;
@@ -283,7 +283,7 @@ int SMEventWatcher::_WatchEventControlChange(
 }
 
 //******************************************************************************
-// RPN種別取得
+// Get RPN type
 //******************************************************************************
 SMEventWatcher::RPN_Type SMEventWatcher::_GetCurRPNType(
 		unsigned char portNo,
@@ -311,7 +311,7 @@ SMEventWatcher::RPN_Type SMEventWatcher::_GetCurRPNType(
 }
 
 //******************************************************************************
-// コントロールチェンジ監視処理2
+// Control change monitoring2
 //******************************************************************************
 int SMEventWatcher::_WatchEventControlChange2(
 		unsigned char portNo,
@@ -334,7 +334,7 @@ int SMEventWatcher::_WatchEventControlChange2(
 }
 
 //******************************************************************************
-// システムメッセージイベント監視処理
+// System message event monitoring processing
 //******************************************************************************
 int SMEventWatcher::_WatchEventSysMsg(
 		unsigned char portNo,
@@ -343,7 +343,7 @@ int SMEventWatcher::_WatchEventSysMsg(
 {
 	int result = 0;
 
-	//現状は何もしない
+	//Currently does nothing
 	goto EXIT;
 
 	switch (pEventSysMsg->GetSysMsg()) {

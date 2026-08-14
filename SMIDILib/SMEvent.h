@@ -20,19 +20,19 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
 #define SMEVENT_INTERNAL_DATA_SIZE  (16)
 
 
 //******************************************************************************
-// イベントクラス
+// Event class
 //******************************************************************************
 class SMIDILIB_API SMEvent
 {
 public:
 
-	//イベント種別
+	//Event type
 	enum EventType {
 		EventNone,
 		EventMIDI,
@@ -41,50 +41,50 @@ public:
 		EventMeta
 	};
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMEvent(void);
 	virtual ~SMEvent(void);
 
-	//データ登録
+	//Register data
 	int SetData(EventType type, unsigned char status, unsigned char meta, unsigned char* pData, unsigned long size);
 
-	//MIDIイベント登録
+	//Register MIDI event
 	int SetMIDIData(unsigned char status, unsigned char* pData, unsigned long size);
 
-	//SysExイベント登録
+	//Register SysEx event
 	int SetSysExData(unsigned char status, unsigned char* pData, unsigned long size);
 
-	//SysMsgイベント登録
+	//Register SysMsg event
 	int SetSysMsgData(unsigned char status, unsigned char* pData, unsigned long size);
 
-	//メタイベント登録
+	//Register meta event
 	int SetMetaData(unsigned char status, unsigned char type, unsigned char* pData, unsigned long size);
 
-	//イベント種別取得
+	//Get event type
 	EventType GetType();
 
-	//ステータス取得
+	//Get status
 	unsigned char GetStatus();
 
 
-	//ステータス設定
+	//Set status
 	void SetStatus(unsigned char status);
 
 
-	//メタ種別取得
+	//Get meta type
 	unsigned char GetMetaType();
 
-	//データサイズ取得
+	//Get data size
 	unsigned long GetDataSize();
 
-	//データポインタ取得
+	//Get data pointer
 	unsigned char* GetDataPtr();
 
-	//クリア
+	//Clear
 	void Clear();
 
 
-	//ダンプ出力
+	//Dump output
 	void Dump();
 
 
@@ -97,7 +97,7 @@ private:
 	unsigned char m_Data[SMEVENT_INTERNAL_DATA_SIZE];
 	unsigned char* m_pExData;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMEvent&);
 	SMEvent(const SMEvent&);
 

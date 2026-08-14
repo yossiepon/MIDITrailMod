@@ -9,31 +9,31 @@
 //******************************************************************************
 
 // memo
-// 浮動小数点演算精度の制御を行うクラス。
-// このクラスが必要になる理由をメモしておく。
+// Class that controls floating-point arithmetic precision.
+// Notes on why this class is needed.
 //
-// 総演奏時間や次回イベント処理時間の算出において、チックタイムを
-// 実時間に変換するために、浮動小数点(double)を用いた演算を行う。
-// しかしSMIDILibを利用するスレッド間で、浮動小数点演算精度の設定
-// が異なると、動作に不整合が生じる場合がある。
+// When calculating total playback time or the next event processing time,
+// floating-point (double) arithmetic is used to convert tick time to real
+// time. However, if the floating-point precision setting differs between
+// threads using SMIDILib, inconsistent behavior can occur.
 //
-// 例えばスレッドAが、SMTrack::GetNoteListWithRealTime()を利用して、
-// ノートごとの発音時刻をチェックしている場合を想定する。
-// シーケンサクラスは、マルチメディアタイマースレッドで演奏処理を
-// 行うため、スレッドAと浮動小数点演算精度が一致していなければ、
-// シーケンサクラスが演奏時に通知してくるノート発音タイミングと、
-// スレッドAが期待している発音時刻がずれる。
+// For example, consider thread A checking each note's sounding time using
+// SMTrack::GetNoteListWithRealTime(). The sequencer class performs playback
+// processing on the multimedia timer thread, so if its floating-point
+// precision does not match thread A's, the note-on timing notified by the
+// sequencer class during playback will drift from the sounding time thread
+// A expects.
 //
-// 浮動小数点演算において、丸め方／演算精度／例外といった浮動小数点
-// プロセッサの動作は、スレッドごとに制御される。
-// 演算精度はデフォルトで倍精度であるが、Direct3Dを利用する場合、
-// IDirect3D9::CreateDeviceを呼び出した時点で、呼び出したスレッドの
-// 演算精度が単精度に切り替わる。(*1)
-// このようなケースで前述のズレの問題が発生する。
+// In floating-point arithmetic, rounding mode / precision / exceptions -
+// i.e. the FPU's behavior - are controlled per thread.
+// Precision defaults to double precision, but when using Direct3D, calling
+// IDirect3D9::CreateDevice switches the calling thread's precision to
+// single precision. (*1)
+// This causes the aforementioned drift problem.
 //
-// (*1) これを抑止するには、IDirect3D9::CreateDeviceの引数で
-//      D3DCREATE_FPU_PRESERVEを指定すればよいが、性能の低下や
-//      予期しない動作を招く可能性がある。
+// (*1) To prevent this, pass D3DCREATE_FPU_PRESERVE as an argument to
+//      IDirect3D9::CreateDevice, but this may reduce performance or cause
+//      unexpected behavior.
 
 #pragma once
 
@@ -47,50 +47,50 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// 浮動点小数プロセッサ制御クラス
+// FPU control class
 //******************************************************************************
 class SMIDILIB_API SMFPUCtrl
 {
 public:
 
-	//浮動小数点精度
+	//Floating-point precision
 	enum FPUPrecision {
-		FPUSingle,		//単精度(32bit)
-		FPUDouble,		//倍精度(64bit)
-		FPUExtended		//拡張倍精度(80bit)
+		FPUSingle,		//Single precision (32bit)
+		FPUDouble,		//Double precision (64bit)
+		FPUExtended		//Extended precision (80bit)
 	};
 
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMFPUCtrl(void);
 	virtual ~SMFPUCtrl(void);
 
-	//精度設定開始
+	//Start precision setting
 	int Start(FPUPrecision precision);
 
-	//精度設定終了
+	//End precision setting
 	int End();
 
-	//精度設定状態確認
+	//Check precision setting state
 	bool IsLocked();
 
 private:
 
-	//スレッドID
+	//Thread ID
 	unsigned long m_ThreadID;
 
-	//浮動小数点制御ワード
+	//Floating-point control word
 	unsigned int m_FPUCtrl;
 
-	//精度設定状態
+	//Precision setting state
 	bool m_isLock;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMFPUCtrl&);
 	SMFPUCtrl(const SMFPUCtrl&);
 
-	//浮動小数点制御ワード表示
+	//Display current control word
 	void _DisplayCurCtrl(TCHAR* pTitle);
 
 };

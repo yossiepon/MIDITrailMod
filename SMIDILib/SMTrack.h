@@ -10,15 +10,16 @@
 //******************************************************************************
 
 // MEMO:
-// SysEXイベントとメタイベントは可変長サイズのため、単純リストクラスを
-// そのまま利用できない。しかしこれらのイベントは、必ず4byteに収まるMIDI
-// イベントに比べて圧倒的に少ないので、個々にnewされることを容認し、
-// mapで管理する。
+// SysEx events and meta events are variable-length, so the simple list
+// class cannot be used as-is for them. However, these events are far fewer
+// than MIDI events, which always fit within 4 bytes, so individual "new"
+// allocations are accepted and they are managed with a map instead.
 //
 // TODO:
-// SMEventクラスにデルタタイムとポート番号を持たせるべき。
-// イベント／デルタタイム／ポート番号を分離しているため、
-// SMTrackクラス利用者の処理が煩雑になっている。
+// The SMEvent class should hold the delta time and port number.
+// Because the event / delta time / port number are kept separate,
+// handling by users of the SMTrack class is more cumbersome than it
+// needs to be.
 
 #pragma once
 
@@ -39,49 +40,49 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// トラッククラス
+// Track class
 //******************************************************************************
 class SMIDILIB_API SMTrack
 {
 
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMTrack(void);
 	virtual ~SMTrack(void);
 
-	//クリア
+	//Clear
 	void Clear();
 
-	//データセット登録
+	//Register data set
 	int AddDataSet(unsigned long deltaTime, SMEvent* pEvent, unsigned char portNo);
 
-	//データセット取得
+	//Get data set
 	int GetDataSet(unsigned long index, unsigned long* pDeltaTime, SMEvent* pEvent, unsigned char* pPortNo);
 
-	//データセット数取得
+	//Get data set count
 	unsigned long GetSize();
 
-	//ノートリスト取得：startTime, endTime はチックタイム
+	//Get note list: startTime, endTime are in tick time
 	int GetNoteList(SMNoteList* pNoteList);
 
-	//ノートリスト取得：startTime, endTime はリアルタイム(msec)
+	//Get note list: startTime, endTime are in real time (msec)
 	int GetNoteListWithRealTime(SMNoteList* pNoteList, unsigned long timeDivision);
 
-	//コピー
+	//Copy
 	int CopyFrom(SMTrack* pSrcTrack);
 
 
-	//ポート番号上書き
+	//Overwrite port number
 	int OverwritePortNo(short portNo);
 
-	//チャンネル番号上書き
+	//Overwrite channel number
 	int OverwriteChNo(short chNo);
 
 
 private:
 
-	//イベントデータ
+	//Event data
 	typedef struct {
 		SMEvent::EventType type;
 		unsigned char status;
@@ -90,18 +91,18 @@ private:
 		unsigned char data[4];
 	} SMEventData;
 
-	//データセット
+	//Data set
 	typedef struct {
 		unsigned long deltaTime;
 		SMEventData eventData;
 		unsigned char portNo;
 	} SMDataSet;
 
-	//拡張データマップ：インデックス→データ位置
+	//Extended data map: index -> data position
 	typedef std::map<unsigned long, unsigned char*> SMExDataMap;
 	typedef std::pair<unsigned long, unsigned char*> SMExDataMapPair;
 
-	//ノート情報マップ：ノート特定キー→ノートリストインデックス
+	//Note info map: note identification key -> note list index
 	typedef std::map<unsigned long, unsigned long> SMNoteMap;
 	typedef std::pair<unsigned long, unsigned long> SMNoteMapPair;
 
@@ -117,7 +118,7 @@ private:
 	int _GetNoteList(SMNoteList* pNoteList, unsigned long timeDivision);
 	double _ConvTick2TimeMsec(unsigned long tickTime, unsigned long tempo, unsigned long timeDivision);
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMTrack&);
 	SMTrack(const SMTrack&);
 

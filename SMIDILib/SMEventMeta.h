@@ -9,8 +9,9 @@
 //******************************************************************************
 
 // MEMO:
-// イベントクラスから派生させる設計が理想だが、newの実施回数を激増させる
-// ため、スタックで処理できるデータ解析ユーティリティクラスとして実装する。
+// Ideally this would derive from the event class, but that would greatly
+// increase the number of new calls, so it is implemented as a stack-based
+// data parsing utility class instead.
 
 #pragma once
 
@@ -27,42 +28,42 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// メタイベントクラス
+// Meta event class
 //******************************************************************************
 class SMIDILIB_API SMEventMeta
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMEventMeta();
 	~SMEventMeta(void);
 
-	//イベントアタッチ
+	//Attach event
 	void Attach(SMEvent* pEvent);
 
-	//メタタイプ取得
+	//Get meta type
 	unsigned char GetType();
 
-	//テンポ取得
+	//Get tempo
 	unsigned long GetTempo();
 
-	//テンポ取得(BPM)
+	//Get tempo(BPM)
 	unsigned long GetTempoBPM();
 
-	//テキスト取得
+	//Get text
 	int GetText(std::string* pText);
 
-	//ポート番号取得
+	//Get port number
 	unsigned char GetPortNo();
 
-	//拍子記号取得
+	//Get time signature
 	void GetTimeSignature(unsigned long* pNumerator, unsigned long* pDenominator);
 
 private:
 
 	SMEvent* m_pEvent;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMEventMeta&);
 	SMEventMeta(const SMEventMeta&);
 

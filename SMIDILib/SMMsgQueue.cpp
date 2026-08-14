@@ -15,7 +15,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMMsgQueue::SMMsgQueue(void)
  : m_List(sizeof(unsigned long)*2, 10000)
@@ -27,7 +27,7 @@ SMMsgQueue::SMMsgQueue(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMMsgQueue::~SMMsgQueue(void)
 {
@@ -35,7 +35,7 @@ SMMsgQueue::~SMMsgQueue(void)
 }
 
 //******************************************************************************
-// バッファ作成
+// Create buffer
 //******************************************************************************
 int SMMsgQueue::Initialize(
 		unsigned long maxMsgNum
@@ -45,7 +45,7 @@ int SMMsgQueue::Initialize(
 	unsigned long index = 0;
 	unsigned long dummy[2] = {0, 0};
 	
-	//作成済みなら何もしない
+	//Do nothing if already created
 	if (m_List.GetSize() > 0) goto EXIT;
 	
 	for (index = 0; index < maxMsgNum; index++) {
@@ -59,7 +59,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// メッセージ登録
+// Post message
 //******************************************************************************
 int SMMsgQueue::PostMessage(
 		unsigned long param1,
@@ -74,19 +74,19 @@ int SMMsgQueue::PostMessage(
 	params[0] = param1;
 	params[1] = param2;
 	
-	//パラメータ登録
+	//Register parameters
 	result = m_List.SetItem(m_NextPostIndex, params);
 	if (result != 0) goto EXIT;
 	
-	//次回読み込み位置を更新
+	//Update next post index
 	m_NextPostIndex++;
 	if (m_NextPostIndex == m_MaxMsgNum) {
 		m_NextPostIndex = 0;
 	}
 	
-	//読み込みしていない最も古いデータが上書きによって捨てられた場合
+	//When the oldest unread data was discarded by overwrite
 	if (m_NextPostIndex == m_NextReadIndex) {
-		//読み込み位置を繰り上げる（捨てられたデータは無視する）
+		//Advance the read index (ignore the discarded data)
 		m_NextReadIndex++;
 		if (m_NextReadIndex == m_MaxMsgNum) {
 			m_NextReadIndex = 0;
@@ -99,7 +99,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// メッセージ取得
+// Get message
 //******************************************************************************
 int SMMsgQueue::GetMessage(
 		bool* pIsExist,
@@ -114,17 +114,17 @@ int SMMsgQueue::GetMessage(
 	
 	*pIsExist = false;
 	
-	//メッセージが空の場合
+	//When the message queue is empty
 	if (m_NextReadIndex == m_NextPostIndex) goto EXIT;
 	
-	//パラメータ取得
+	//Get parameters
 	result = m_List.GetItem(m_NextReadIndex, params);
 	if (result != 0) goto EXIT;
 	
 	*pParam1 = params[0];
 	*pParam2 = params[1];
 	
-	//次回読み取り位置を更新
+	//Update next read index
 	m_NextReadIndex++;
 	if (m_NextReadIndex == m_MaxMsgNum) {
 		m_NextReadIndex = 0;

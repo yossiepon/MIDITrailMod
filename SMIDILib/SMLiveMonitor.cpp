@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMLiveMonitor::SMLiveMonitor(void)
 {	
@@ -30,19 +30,19 @@ SMLiveMonitor::SMLiveMonitor(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMLiveMonitor::~SMLiveMonitor()
 {
-	//ポート情報クリア
+	// Clear port info
 	_ClearPortInfo();
-	
-	//MIDIデバイスを閉じる
+
+	// Close MIDI device
 	_CloseMIDIDev();
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int SMLiveMonitor::Initialize(
 		SMMsgQueue* pMsgQueue
@@ -52,22 +52,22 @@ int SMLiveMonitor::Initialize(
 	
 	m_pMsgQue = pMsgQueue;	
 	
-	//MIDI出力デバイス初期化
+	// Initialize MIDI output device
 	result = m_OutDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
-	
-	//MIDI入力デバイス初期化
+
+	// Initialize MIDI input device
 	result = m_InDevCtrl.Initialize();
 	if (result != 0) goto EXIT;
-	
-	//ポート情報クリア
+
+	// Clear port info
 	_ClearPortInfo();
-	
-	//イベント転送オブジェクト初期化
+
+	// Initialize event transmission object
 	result = m_MsgTrans.Initialize(pMsgQueue);
 	if (result != 0) goto EXIT;
-	
-	//イベントウォッチャー初期化
+
+	// Initialize event watcher
 	result = m_EventWatcher.Initialize(&m_MsgTrans);
 	if (result != 0) goto EXIT;
 	
@@ -76,7 +76,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 入力ポート対応デバイス登録
+// Register device corresponding to input port
 //******************************************************************************
 int SMLiveMonitor::SetInPortDev(
 		const char* pProductName,
@@ -99,7 +99,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 出力ポート対応デバイス登録
+// Register device corresponding to output port
 //******************************************************************************
 int SMLiveMonitor::SetOutPortDev(
 		const char* pProductName
@@ -119,7 +119,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 入力ポートデバイス表示名称取得
+// Get input port device display name
 //******************************************************************************
 int SMLiveMonitor::GetInPortDevDisplayName(
 		std::string& name
@@ -133,16 +133,16 @@ int SMLiveMonitor::GetInPortDevDisplayName(
 }
 
 //******************************************************************************
-// モニタ開始
+// Start monitor
 //******************************************************************************
 int SMLiveMonitor::Start()
 {
 	int result = 0;
 	
-	//モニタ中なら何もしない
+	// Do nothing if already monitoring
 	if (m_Status == StatusMonitorON) goto EXIT;
-		
-	//MIDIデバイスを開く
+
+	// Open MIDI device
 	result = _OpenMIDIDev();
 	if (result != 0) goto EXIT;
 	
@@ -153,17 +153,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// モニタ停止
+// Stop monitor
 //******************************************************************************
 int SMLiveMonitor::Stop()
 {
 	int result = 0;
 	
-	//全トラックノートオフ
+	//All tracks note off
 	result = m_OutDevCtrl.NoteOffAll();
 	if (result != 0) goto EXIT;
 	
-	//MIDIデバイスを閉じる
+	// Close MIDI device
 	result = _CloseMIDIDev();
 	if (result != 0) goto EXIT;
 
@@ -174,7 +174,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポート情報クリア
+// Clear port info
 //******************************************************************************
 void SMLiveMonitor::_ClearPortInfo()
 {
@@ -183,26 +183,26 @@ void SMLiveMonitor::_ClearPortInfo()
 }
 
 //******************************************************************************
-// MIDIデバイスオープン
+// MIDI device open
 //******************************************************************************
 int SMLiveMonitor::_OpenMIDIDev()
 {
 	int result = 0;
 	
-	//出力ポートのデバイスを開く
+	// Open the output port device
 	if (strlen(m_OutPortDevName) > 0) {
 		result = m_OutDevCtrl.SetPortDev(0, m_OutPortDevName);
 		if (result != 0) goto EXIT;
 	}
 	result = m_OutDevCtrl.OpenPortDevAll();
 	if (result != 0) goto EXIT;
-	
-	//入力ポートのデバイスを開く
+
+	// Open the input port device
 	if (strlen(m_InPortDevName) > 0) {
 		result = m_InDevCtrl.SetPortDev(m_InPortDevName);
 		if (result != 0) goto EXIT;
-		
-		//コールバック登録
+
+		// Register callback
 		m_InDevCtrl.SetInReadCallBack(_InReadCallBack, this);
 	}
 	result = m_InDevCtrl.OpenPortDev();
@@ -213,17 +213,17 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIデバイスクローズ
+// MIDI device close
 //******************************************************************************
 int SMLiveMonitor::_CloseMIDIDev()
 {
 	int result = 0;
 	
-	//入力ポートのデバイスを閉じる
+	// Close the input port device
 	result = m_InDevCtrl.ClosePortDev();
 	if (result != 0) goto EXIT;
-	
-	//出力ポートのデバイスを閉じる
+
+	// Close the output port device
 	result = m_OutDevCtrl.ClosePortDevAll();
 	if (result != 0) goto EXIT;
 	
@@ -232,7 +232,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN 読み込みコールバック
+// MIDI IN read callback
 //******************************************************************************
 int SMLiveMonitor::_InReadCallBack(
 		SMEvent* pEvent,
@@ -254,18 +254,18 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN 読み込み処理
+// MIDI IN read process
 //******************************************************************************
 int SMLiveMonitor::_InReadProc(SMEvent* pEvent)
 {
 	int result = 0;
-	
-	//MIDIイベントを選別してメッセージキューに登録
-	//コントロールチェンジの監視あり
+
+	// Filter MIDI events and register them to the message queue
+	// includes control change monitoring
 	result = _InReadProcParseEvent(pEvent);
 	if (result != 0) goto EXIT;
-	
-	//MIDI出力デバイスに出力
+
+	// Output to MIDI output device
 	result = _InReadProcMIDITHRU(pEvent);
 	if (result != 0) goto EXIT;
 	
@@ -274,14 +274,14 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN 読み込み処理：イベント解析
+// MIDI IN read process: event parsing
 //******************************************************************************
 int SMLiveMonitor::_InReadProcParseEvent(SMEvent* pEvent)
 {
 	int result = 0;
 	unsigned char portNo = 0;
 	
-	//イベントウォッチ
+	//Event watch
 	result = m_EventWatcher.WatchEvent(portNo, pEvent);
 	if (result != 0) goto EXIT;
 	
@@ -290,27 +290,27 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDI IN 読み込み処理：MIDITHRU処理
+// MIDI IN read process: MIDITHRU processing
 //******************************************************************************
 int SMLiveMonitor::_InReadProcMIDITHRU(SMEvent* pEvent)
 {
 	int result = 0;
 	unsigned char portNo = 0;
 	
-	//MIDITHRUオフならなにもしない
+	// Do nothing if MIDITHRU is off
 	if (!m_isMIDITHRU) goto EXIT;
-	
-	//MIDIイベント送信
+
+	//MIDIEvent transmission
 	if (pEvent->GetType() == SMEvent::EventMIDI) {
 		result = _InReadProcSendMIDIEvent(portNo, pEvent);
 		if (result != 0) goto EXIT;
 	}
-	//システムエクスクルーシブ送信
+	// Send system exclusive
 	else if (pEvent->GetType() == SMEvent::EventSysEx) {
 		result = _InReadProcSendSysExEvent(portNo, pEvent);
 		if (result != 0) goto EXIT;
 	}
-	//システムメッセージ送信
+	// Send system message
 	else if (pEvent->GetType() == SMEvent::EventSysMsg) {
 		result = _InReadProcSendSysMsgEvent(portNo, pEvent);
 		if (result != 0) goto EXIT;
@@ -321,7 +321,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベント送信
+// MIDIEvent transmission
 //******************************************************************************
 int SMLiveMonitor::_InReadProcSendMIDIEvent(
 		unsigned char portNo,
@@ -334,11 +334,11 @@ int SMLiveMonitor::_InReadProcSendMIDIEvent(
 	
 	midiEvent.Attach(pEvent);
 	
-	//メッセージ取得
+	//Get message
 	result = midiEvent.GetMIDIOutShortMsg(&msg);
 	if (result != 0) goto EXIT;
 	
-	//メッセージ出力
+	// Output message
 	result = m_OutDevCtrl.SendShortMsg(portNo, msg);
 	if (result != 0) goto EXIT;
 	
@@ -347,7 +347,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysExイベント送信
+// SysExEvent transmission
 //******************************************************************************
 int SMLiveMonitor::_InReadProcSendSysExEvent(
 		unsigned char portNo,
@@ -361,10 +361,10 @@ int SMLiveMonitor::_InReadProcSendSysExEvent(
 	
 	sysExEvent.Attach(pEvent);
 	
-	//メッセージ取得
+	//Get message
 	sysExEvent.GetMIDIOutLongMsg(&pVarMsg, &size);
 	
-	//メッセージ出力：出力完了まで制御が戻らない
+	// Output message: control does not return until output completes
 	result = m_OutDevCtrl.SendLongMsg(portNo, pVarMsg, size);
 	if (result != 0) goto EXIT;
 	
@@ -373,7 +373,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysMsgイベント送信
+// SysMsgEvent transmission
 //******************************************************************************
 int SMLiveMonitor::_InReadProcSendSysMsgEvent(
 		unsigned char portNo,
@@ -387,11 +387,11 @@ int SMLiveMonitor::_InReadProcSendSysMsgEvent(
 	
 	sysMsgEvent.Attach(pEvent);
 	
-	//メッセージ取得
+	//Get message
 	result = sysMsgEvent.GetMIDIOutShortMsg(&msg, &size);
 	if (result != 0) goto EXIT;
 	
-	//メッセージ出力
+	// Output message
 	result = m_OutDevCtrl.SendShortMsg(portNo, msg);
 	if (result != 0) goto EXIT;
 	

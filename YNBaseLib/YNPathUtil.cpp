@@ -19,21 +19,21 @@ namespace YNBaseLib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 YNPathUtil::YNPathUtil(void)
 {
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 YNPathUtil::~YNPathUtil(void)
 {
 }
 
 //******************************************************************************
-// プロセス実行ファイルディレクトリパス取得
+// Get the process executable's directory path
 //******************************************************************************
 int YNPathUtil::GetModuleDirPath(
 		TCHAR* pBuf,
@@ -49,38 +49,38 @@ int YNPathUtil::GetModuleDirPath(
 	TCHAR fname[_MAX_FNAME];
 	TCHAR ext[_MAX_EXT];
 
-	//プロセス実行ファイルパス取得
+	//Get the process executable's file path
 	apiresult = GetModuleFileName(GetModuleHandle(NULL), path, _MAX_PATH);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//パス要素の分割
+	//Split the path into its elements
 	eresult = _tsplitpath_s(
-					path,		//パス
-					drive,		//ドライブ文字列バッファ
-					_MAX_DRIVE,	//バッファサイズ
-					dir,		//ディレクトリ文字列バッファ
-					_MAX_DIR,	//バッファサイズ
-					fname,		//ファイル名文字列バッファ
-					_MAX_FNAME,	//バッファサイズ
-					ext,		//拡張子文字列バッファ
-					_MAX_EXT	//バッファサイズ
+					path,		//Path
+					drive,		//Drive string buffer
+					_MAX_DRIVE,	//Buffer size
+					dir,		//Directory string buffer
+					_MAX_DIR,	//Buffer size
+					fname,		//File name string buffer
+					_MAX_FNAME,	//Buffer size
+					ext,		//Extension string buffer
+					_MAX_EXT	//Buffer size
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//パス作成
+	//Build the path
 	eresult = _tmakepath_s(
-					pBuf,		//パス格納先バッファ
-					bufSize,	//バッファサイズ
-					drive,		//ドライブ文字列
-					dir,		//ディレクトリ文字列
-					NULL,		//ファイル名文字列
-					NULL		//拡張子文字列
+					pBuf,		//Destination buffer for the path
+					bufSize,	//Buffer size
+					drive,		//Drive string
+					dir,		//Directory string
+					NULL,		//File name string
+					NULL		//Extension string
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -92,7 +92,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// アプリケーションデータディレクトリパス取得
+// Get the application data directory path
 //******************************************************************************
 int YNPathUtil::GetAppDataDirPath(
 		TCHAR* pBuf,
@@ -105,12 +105,12 @@ int YNPathUtil::GetAppDataDirPath(
 	TCHAR path[MAX_PATH];
 
 	hresult = SHGetFolderPath(
-					NULL,				//オーナーウィンドウ
-					CSIDL_APPDATA,		//フォルダ指定
-					NULL,				//アクセストークン
-					SHGFP_TYPE_CURRENT,	//フラグ：現在のフォルダパス
-										//  ユーザが変更している可能性がある
-					path				//パス格納先バッファ
+					NULL,				//Owner window
+					CSIDL_APPDATA,		//Folder specifier
+					NULL,				//Access token
+					SHGFP_TYPE_CURRENT,	//Flag: current folder path
+										//  the user may have relocated it
+					path				//Destination buffer for the path
 				);
 	if (hresult != S_OK) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -134,7 +134,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 拡張子判定
+// Check file extension
 //******************************************************************************
 bool YNPathUtil::IsFileExtMatch(
 		const WCHAR* pPath,
@@ -145,20 +145,20 @@ bool YNPathUtil::IsFileExtMatch(
 	errno_t eresult = 0;
 	WCHAR ext[_MAX_EXT] = { L'\0' };
 
-	//パス要素を分割して拡張子を取得
+	//Split the path into its elements and get the extension
 	eresult = _wsplitpath_s(
-					pPath,			//パス
-					NULL, 0,		//ドライブ文字列バッファとサイズ
-					NULL, 0,		//ディレクトリ文字列バッファとサイズ
-					NULL, 0,		//ファイル名文字列バッファとサイズ
-					ext, _MAX_EXT	//拡張子文字列バッファとサイズ
+					pPath,			//Path
+					NULL, 0,		//Drive string buffer and size
+					NULL, 0,		//Directory string buffer and size
+					NULL, 0,		//File name string buffer and size
+					ext, _MAX_EXT	//Extension string buffer and size
 				);
 	if (eresult != 0) {
 		//result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//大文字と小文字を区別せずに拡張子を比較する
+	//Compare the extension case-insensitively
 	if (_wcsicmp(ext, pExt) == 0) {
 		isMatch = true;
 	}
@@ -168,7 +168,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テンポラリファイルパス取得
+// Get temporary file path
 //******************************************************************************
 int YNPathUtil::GetTempFilePath(
 		WCHAR* pPathBuf,
@@ -180,30 +180,30 @@ int YNPathUtil::GetTempFilePath(
 	DWORD apiresult = 0;
 	WCHAR tempDir[_MAX_PATH] = { L'\0' };
 
-	//テンポラリディレクトリパスを取得
+	//Get the temporary directory path
 	apiresult = GetTempPathW(_MAX_PATH, tempDir);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//GetTmpFileNameはバッファサイズを指定できない奇妙なAPIである
-	//「バッファサイズはMAX_PATH以上にせよ」と定義されているので
-	//サイズチェックを行う
+	//GetTempFileName is an odd API that doesn't let you specify a buffer size
+	//It's documented as requiring a buffer of at least MAX_PATH,
+	//so check the size here
 	if (bufSize < MAX_PATH) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//テンポラリファイルパスを取得
-	//  ファイル名：PREuuuu.TMP
-	//    PRE ：プレフィックス
-	//    uuuu：システム時刻に基づいて生成された16進文字列
+	//Get the temporary file path
+	//  File name: PREuuuu.TMP
+	//    PRE : prefix
+	//    uuuu: hex string generated from the system time
 	apiresult = GetTempFileNameW(
-						tempDir,	//ディレクトリパス
-						pPrefix,	//プレフィックス（3文字）
-						0,			//一意性：有効
-						pPathBuf	//生成されたファイルパス
+						tempDir,	//Directory path
+						pPrefix,	//Prefix (3 characters)
+						0,			//Uniqueness: enabled
+						pPathBuf	//The generated file path
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

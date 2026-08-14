@@ -30,92 +30,92 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// シーケンスデータクラス
+// Sequence data class
 //******************************************************************************
 class SMIDILIB_API SMSeqData
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMSeqData();
 	virtual ~SMSeqData(void);
 
 	//----------------------------------------------------------------
-	//データ作成系
+	//Data creation related
 	//----------------------------------------------------------------
-	//SMFフォーマット登録
+	//Register SMF format
 	void SetSMFFormat(unsigned long smfFormat);
 
-	//時間解像度登録
+	//Register time division
 	void SetTimeDivision(unsigned long timeDivision);
 
-	//トラック登録
+	//Register track
 	int AddTrack(SMTrack* pTrack);
 
-	//トラック登録終了
+	//End track registration
 	int CloseTrack();
 
-	//ファイル名登録
+	//Register file name
 	void SetFileName(const WCHAR* pFileName);
 
-	//クリア
+	//Clear
 	void Clear();
 
 
-	//シーケンス追加
+	//Add sequence
 	void AddSequence(SMSeqData &other, short portNo = -1, short chNo = -1);
 
 
 	//----------------------------------------------------------------
-	//データ取得系
+	//Get data related
 	//----------------------------------------------------------------
-	//SMFフォーマット取得
+	//Get SMF format
 	unsigned long GetSMFFormat();
 
-	//時間解像度取得
+	//Get time division
 	unsigned long GetTimeDivision();
 
-	//トラック数取得
+	//Get track count
 	unsigned long GetTrackNum();
 
-	//トラック取得
+	//Get track
 	int GetTrack(unsigned long index, SMTrack* pTrack);
 
-	//マージ済みトラック取得
+	//Get merged track
 	int GetMergedTrack(SMTrack* pMergedTrack);
 
-	//トータルチックタイム取得
+	//Get total tick time
 	unsigned long GetTotalTickTime();
 
-	//トータル演奏時間取得
+	//Get total playback time
 	unsigned long GetTotalPlayTime();
 
-	//テンポ取得
+	//Get tempo
 	unsigned long GetTempo();
 
-	//テンポ取得(BPM)
+	//Get tempo(BPM)
 	unsigned long GetTempoBPM();
 
-	//拍子記号取得：分子と分母
+	//Get time signature: numerator and denominator
 	unsigned long GetBeatNumerator();
 	unsigned long GetBeatDenominator();
 
-	//小節数取得
+	//Get bar count
 	unsigned long GetBarNum();
 
-	//コピーライト文字列取得
+	//Get copyright string
 	const WCHAR* GetCopyRight();
 
-	//タイトル文字列取得
+	//Get title string
 	const WCHAR* GetTitle();
 
-	//小節リスト取得
+	//Get bar list
 	int GetBarList(SMBarList* pBarList);
 
-	//ポートリスト取得
+	//Get port list
 	int GetPortList(SMPortList* pPortList);
 
-	//ファイル名取得
+	//Get file name
 	const WCHAR* GetFileName();
 
 	static int StringToWstring(std::string* pStr, std::wstring* pWstr);
@@ -158,7 +158,7 @@ private:
 	int _SearchText();
 	static int _StringToWstring(std::string* pStr, std::wstring* pWstr);
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMSeqData&);
 	SMSeqData(const SMSeqData&);
 };

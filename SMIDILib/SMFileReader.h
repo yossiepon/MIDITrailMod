@@ -29,52 +29,52 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// 標準MIDIファイル読み込みクラス
+// Standard MIDI file reader class
 //******************************************************************************
 class SMIDILIB_API SMFileReader
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMFileReader(void);
 	~SMFileReader(void);
 
-	//ログ出力先ファイルパス登録
+	//Register log output file path
 	int SetLogPath(const WCHAR* pLogPath);
 
-	//標準MIDIファイル読み込み
+	//Load standard MIDI file
 	int Load(const WCHAR* pSMFPath, SMSeqData* pMIDIData);
 
 private:
 
-	//チャンクヘッダ構造
+	//Chunk header structure
 
 	#pragma pack(push,1)
 
-	//SMFチャンクタイプ
+	//SMF chunk type
 	typedef struct {
-		unsigned char chunkType[4];		//チャンクタイプ MThd/MTrk
-		unsigned long chunkSize;		//チャンクサイズ
+		unsigned char chunkType[4];		//Chunk type MThd/MTrk
+		unsigned long chunkSize;		//Chunk size
 	} SMFChunkTypeSection;
 
-	//SMFチャンクデータ
+	//SMF chunk data
 	typedef struct {
-		unsigned short format;			//フォーマット 0,1,2
-		unsigned short ntracks;			//トラック数
-		unsigned short timeDivision;	//4分音符あたりの分解能
+		unsigned short format;			//Format 0,1,2
+		unsigned short ntracks;			//Track count
+		unsigned short timeDivision;	//Resolution per quarter note
 	} SMFChunkDataSection;
 
-	//RIFFチャンク
+	//RIFF chunk
 	typedef struct {
-		unsigned char chunkID[4];		//チャンクID
-		unsigned long chunkSize;		//チャンクサイズ
-		unsigned char format[4];		//フォーマット
+		unsigned char chunkID[4];		//Chunk ID
+		unsigned long chunkSize;		//Chunk size
+		unsigned char format[4];		//Format
 	} SMFRIFFChunkHeader;
 
-	//RIFFサブチャンク
+	//RIFF sub chunk
 	typedef struct {
-		unsigned char chunkID[4];		//チャンクID
-		unsigned long chunkSize;		//チャンクサイズ
+		unsigned char chunkID[4];		//Chunk ID
+		unsigned long chunkSize;		//Chunk size
 	} SMFRIFFSubChunkHeader;
 
 	#pragma pack(pop)
@@ -186,7 +186,7 @@ private:
 				unsigned long size
 			);
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMFileReader&);
 	SMFileReader(const SMFileReader&);
 

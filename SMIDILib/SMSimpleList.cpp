@@ -18,7 +18,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMSimpleList::SMSimpleList(
 		unsigned long itemSize,
@@ -31,7 +31,7 @@ SMSimpleList::SMSimpleList(
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMSimpleList::~SMSimpleList(void)
 {
@@ -39,7 +39,7 @@ SMSimpleList::~SMSimpleList(void)
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void SMSimpleList::Clear()
 {
@@ -56,7 +56,7 @@ void SMSimpleList::Clear()
 }
 
 //******************************************************************************
-// 項目追加
+// Add item
 //******************************************************************************
 int SMSimpleList::AddItem(
 		void* pItem
@@ -76,11 +76,11 @@ int SMSimpleList::AddItem(
 
 	index = m_DataNum;
 
-	//データセットを格納するメモリブロックの位置を算出
+	//Calculate the memory block position to store the data set
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//メモリブロックがなければ作成する
+	//Create the memory block if it doesn't exist yet
 	blockitr = m_MemBlockMap.find(blockNo);
 	if (blockitr == m_MemBlockMap.end()) {
 		try {
@@ -97,7 +97,7 @@ int SMSimpleList::AddItem(
 		pBlock = blockitr->second;
 	}
 
-	//メモリブロック上にアイテムをコピーする
+	//Copy the item into the memory block
 	try {
 		memcpy(pBlock + (m_ItemSize * blockIndex), pItem, m_ItemSize);
 	}
@@ -106,7 +106,7 @@ int SMSimpleList::AddItem(
 		goto EXIT;
 	}
 
-	//インデックスを更新
+	//Update the index
 	m_DataNum += 1;
 
 EXIT:;
@@ -114,7 +114,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 項目取得
+// Get item
 //******************************************************************************
 int SMSimpleList::GetItem(
 		unsigned long index,
@@ -136,11 +136,11 @@ int SMSimpleList::GetItem(
 		goto EXIT;
 	}
 
-	//データセットを格納するメモリブロックの位置を算出
+	//Calculate the memory block position to store the data set
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//メモリブロックを検索
+	//Find the memory block
 	blockitr = m_MemBlockMap.find(blockNo);
 	if (blockitr == m_MemBlockMap.end()) {
 		result = YN_SET_ERR("Program error.", index, blockIndex);
@@ -148,7 +148,7 @@ int SMSimpleList::GetItem(
 	}
 	pBlock = blockitr->second;
 
-	//メモリブロック上のアイテムを参照する
+	//Reference the item in the memory block
 	try {
 		memcpy(pItem, pBlock + (m_ItemSize * blockIndex), m_ItemSize);
 	}
@@ -162,7 +162,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 項目登録（上書き）
+// Set item (overwrite)
 //******************************************************************************
 int SMSimpleList::SetItem(
 		unsigned long index,
@@ -184,11 +184,11 @@ int SMSimpleList::SetItem(
 		goto EXIT;
 	}
 
-	//データセットを格納するメモリブロックの位置を算出
+	//Calculate the memory block position to store the data set
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//メモリブロックを検索
+	//Find the memory block
 	blockitr = m_MemBlockMap.find(blockNo);
 	if (blockitr == m_MemBlockMap.end()) {
 		result = YN_SET_ERR("Program error.", index, blockIndex);
@@ -196,7 +196,7 @@ int SMSimpleList::SetItem(
 	}
 	pBlock = blockitr->second;
 
-	//メモリブロック上にアイテムをコピーする
+	//Copy the item into the memory block
 	try {
 		memcpy(pBlock + (m_ItemSize * blockIndex), pItem, m_ItemSize);
 	}
@@ -210,7 +210,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// アイテム数取得
+// Get item count
 //******************************************************************************
 unsigned long SMSimpleList::GetSize()
 {
@@ -218,7 +218,7 @@ unsigned long SMSimpleList::GetSize()
 }
 
 //******************************************************************************
-// ブロック番号取得
+// Get block number
 //******************************************************************************
 unsigned long SMSimpleList::_GetBlockNo(
 		unsigned long index
@@ -228,7 +228,7 @@ unsigned long SMSimpleList::_GetBlockNo(
 }
 
 //******************************************************************************
-// ブロック内インデックス取得
+// Get index within block
 //******************************************************************************
 unsigned long SMSimpleList::_GetBlockIndex(
 		unsigned long index
@@ -238,7 +238,7 @@ unsigned long SMSimpleList::_GetBlockIndex(
 }
 
 //******************************************************************************
-// コピー
+// Copy
 //******************************************************************************
 int SMSimpleList::CopyFrom(
 		SMSimpleList* pSrcList
@@ -248,7 +248,7 @@ int SMSimpleList::CopyFrom(
 	unsigned long index = 0;
 	unsigned char* pData = NULL;
 
-	//TODO: もう少しインテリジェントなコピーにする
+	//TODO: Make this copy more intelligent
 
 	if (pSrcList == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);

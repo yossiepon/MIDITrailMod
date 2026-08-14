@@ -14,37 +14,37 @@
 #define SMIDILIB_API __declspec(dllimport)
 #endif
 
-//共通定義
+//Common definitions
 #include "SMCommon.h"
 
-//標準MIDIファイル読み込みクラス
+//Standard MIDI file reader class
 #include "SMFileReader.h"
 
-//イベントクラス系
+//Event classes
 #include "SMEvent.h"
 #include "SMEventMIDI.h"
 #include "SMEventSysEx.h"
 #include "SMEventSysMsg.h"
 #include "SMEventMeta.h"
 
-//リストクラス系
+//List classes
 #include "SMTrack.h"
 #include "SMNoteList.h"
 #include "SMBarList.h"
 #include "SMPortList.h"
 
-//デバイス制御系
+//Device control
 #include "SMOutDevCtrl.h"
 #include "SMInDevCtrl.h"
 
-//シーケンス処理系
+//Sequence processing
 #include "SMSeqData.h"
 #include "SMSequencer.h"
 #include "SMMsgParser.h"
 
-//モニタ系
+//Monitor
 #include "SMLiveMonitor.h"
 
-//その他
+//Other
 #include "SMRcpConv.h"
 

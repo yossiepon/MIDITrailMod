@@ -23,9 +23,9 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// ノート情報構造体
+// Note info structure
 //******************************************************************************
-//ノート情報
+//Note info
 typedef struct {
 	unsigned char portNo;
 	unsigned char chNo;
@@ -37,39 +37,39 @@ typedef struct {
 } SMNote;
 
 //******************************************************************************
-// ノートリストクラス
+// Note list class
 //******************************************************************************
 class SMIDILIB_API SMNoteList
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMNoteList(void);
 	virtual ~SMNoteList(void);
 
-	//クリア
+	//Clear
 	void Clear();
 
-	//ノート情報追加
+	//Add note info
 	int AddNote(SMNote note);
 
-	//ノート情報取得
+	//Get note info
 	int GetNote(unsigned long index, SMNote* pNote);
 
-	//ノート情報登録（上書き）
+	//Set note info (overwrite)
 	int SetNote(unsigned long index, SMNote* pNote);
 
-	//ノート数取得
+	//Get note count
 	unsigned long GetSize();
 
-	//コピー
+	//Copy
 	int CopyFrom(SMNoteList* pSrcList);
 
 private:
 
 	SMSimpleList m_List;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMNoteList&);
 	SMNoteList(const SMNoteList&);
 

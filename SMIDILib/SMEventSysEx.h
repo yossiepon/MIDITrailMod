@@ -9,8 +9,8 @@
 //******************************************************************************
 
 // MEMO:
-// イベントクラスから派生させる設計が理想だが、newの実施回数を激増させる
-// ため、スタックで処理できるデータ解析ユーティリティクラスとして実装する。
+// Ideally this would derive from the event class, but that would greatly
+// increase the number of new calls, so it is implemented as a stack-based
 
 #pragma once
 
@@ -26,27 +26,27 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// SysExイベントクラス
+// SysEx event class
 //******************************************************************************
 class SMIDILIB_API SMEventSysEx
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMEventSysEx();
 	virtual ~SMEventSysEx(void);
 
-	//イベントアタッチ
+	//Attach event
 	void Attach(SMEvent* pEvent);
 
-	//MIDI出力メッセージ取得
+	//MIDI outputGet message
 	int GetMIDIOutLongMsg(unsigned char** pPtrMsg, unsigned long* pSize);
 
 private:
 
 	SMEvent* m_pEvent;
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMEventSysEx&);
 	SMEventSysEx(const SMEventSysEx&);
 

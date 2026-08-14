@@ -21,7 +21,7 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-//エラー制御マクロ
+//Error control macros
 //******************************************************************************
 #define YN_SET_ERR(msg,info1,info2)   YNErrCtrl::SetErr(YNErrInfo::LVL_ERR,__LINE__,__FUNCTION__,msg,info1,info2)
 #define YN_SET_WARN(msg,info1,info2)  YNErrCtrl::SetErr(YNErrInfo::LVL_WARN,__LINE__,__FUNCTION__,msg,info1,info2)
@@ -30,30 +30,30 @@ namespace YNBaseLib {
 
 
 //******************************************************************************
-// エラー制御クラス
+// Error control class
 //******************************************************************************
 class YNBASELIB_API YNErrCtrl
 {
 private:
 
-	//コンストラクタ／デストラクタ
-	//インスタンス生成を許可しない
+	//Constructor / Destructor
+	//Instance creation is not allowed
 	YNErrCtrl();
 	virtual ~YNErrCtrl();
 
 public:
 
-	//初期化
-	//  プロセスアタッチ時に実行する
-	//  一般利用者は利用しないこと
+	//Initialize
+	//  Runs on process attach
+	//  Not intended for general use
 	static int Initialize();
 
-	//終了
-	//  プロセス終了時に実行する
-	//  一般利用者は利用しないこと
+	//Terminate
+	//  Runs on process termination
+	//  Not intended for general use
 	static int Terminate();
 
-	//エラー情報登録
+	//Register error information
 	static int SetErr(
 			YNErrInfo::ErrLevel errLevel,
 			unsigned long lineNo,
@@ -63,15 +63,15 @@ public:
 			unsigned long long errInfo2
 		);
 
-	//エラー情報取得
+	//Get error information
 	static YNErrInfo* GetErr();
 
-	//エラー情報ダイアログ表示
+	//Show the error information dialog
 	static int ShowErr(HWND hOwner);
 
 private:
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const YNErrCtrl&);
 	YNErrCtrl(const YNErrCtrl&);
 

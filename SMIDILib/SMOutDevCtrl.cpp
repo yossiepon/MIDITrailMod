@@ -18,7 +18,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMOutDevCtrl::SMOutDevCtrl(void)
 {
@@ -32,24 +32,24 @@ SMOutDevCtrl::SMOutDevCtrl(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMOutDevCtrl::~SMOutDevCtrl(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int SMOutDevCtrl::Initialize()
 {
 	int result = 0;
 
-	//ポート情報クリア
+	// Clear port info
 	result = ClearPortInfo();
 	if (result != 0) goto EXIT;
 
-	//MIDI出力デバイス一覧を作成
+	// Build MIDI output device list
 	result = _InitDevList();
 	if (result != 0) goto EXIT;
 
@@ -58,7 +58,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイスリスト初期化
+// Initialize device list
 //******************************************************************************
 int SMOutDevCtrl::_InitDevList()
 {
@@ -71,10 +71,10 @@ int SMOutDevCtrl::_InitDevList()
 
 	m_OutDevList.clear();
 
-	//MIDI出力デバイスの数
+	// Number of MIDI output devices
 	devNum = midiOutGetNumDevs();
 
-	//MIDI出力デバイスの情報を取得する
+	// Get MIDI output device info
 	for (devId = 0; devId < devNum; devId++) {
 
 		ZeroMemory(&moc, sizeof(MIDIOUTCAPS));
@@ -88,7 +88,7 @@ int SMOutDevCtrl::_InitDevList()
 		devInfo.devId = devId;
 		memcpy(devInfo.productName, moc.szPname, MAXPNAMELEN);
 
-		//取得した情報をリストに登録
+		// Register retrieved info to the list
 		m_OutDevList.push_back(devInfo);
 	}
 
@@ -97,7 +97,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デバイス数取得
+// Get device count
 //******************************************************************************
 unsigned long SMOutDevCtrl::GetDevNum()
 {
@@ -105,7 +105,7 @@ unsigned long SMOutDevCtrl::GetDevNum()
 }
 
 //******************************************************************************
-// デバイスプロダクト名称取得
+// Get device product name
 //******************************************************************************
 int SMOutDevCtrl::GetDevProductName(
 		unsigned long index,
@@ -130,7 +130,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポートに対応するデバイスを設定
+// Set device corresponding to port
 //******************************************************************************
 int SMOutDevCtrl::SetPortDev(
 		unsigned char portNo,
@@ -169,7 +169,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポートに対応するデバイスIDを取得
+// Get device ID corresponding to port
 //******************************************************************************
 int SMOutDevCtrl::GetPortDevId(
 		unsigned char portNo,
@@ -198,7 +198,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 全ポートに対応するデバイスを開く
+// Open devices corresponding to all ports
 //******************************************************************************
 int SMOutDevCtrl::OpenPortDevAll()
 {
@@ -215,13 +215,13 @@ int SMOutDevCtrl::OpenPortDevAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ポートが存在しなければスキップ
+		// Skip if port does not exist
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		//ポートに対応するデバイスIDを取得
+		// Get device ID corresponding to port
 		devId = m_PortInfo[portNo].devId;
 
-		//別のポートで同じデバイスをすでに開いている場合の対処
+		// Handle the case where the same device is already open on another port
 		isOpen = false;
 		for (prevPortNo = 0; prevPortNo < portNo; prevPortNo++) {
 			if (devId == m_PortInfo[prevPortNo].devId) {
@@ -231,14 +231,14 @@ int SMOutDevCtrl::OpenPortDevAll()
 			}
 		}
 
-		//新規にデバイスを開く
+		// Open the device newly
 		if (!isOpen) {
 			apiresult = midiOutOpen(
-							&hMIDIOut,      //ハンドル
-							devId,          //MIDI出力デバイス識別子
-							NULL,           //再生進捗状況コールバック関数
-							NULL,           //コールバック関数に渡すユーザーインスタンスデータ
-							CALLBACK_NULL   //コールバックフラグ：コールバックなし
+							&hMIDIOut,      // handle
+							devId,          // MIDI output device identifier
+							NULL,           // playback progress callback function
+							NULL,           // user instance data passed to callback function
+							CALLBACK_NULL   // callback flag: no callback
 						);
 			if (apiresult != MMSYSERR_NOERROR) {
 				result = YN_SET_ERR("MIDI OUT device open error.", apiresult, 0);
@@ -253,7 +253,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 全ポートに対応するデバイスを閉じる
+// Close devices corresponding to all ports
 //******************************************************************************
 int SMOutDevCtrl::ClosePortDevAll()
 {
@@ -264,13 +264,13 @@ int SMOutDevCtrl::ClosePortDevAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ポートが存在しなければスキップ
+		// Skip if port does not exist
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		//デバイスを開いてなければスキップ
+		// Skip if device is not open
 		if (m_PortInfo[portNo].hMIDIOut == NULL) continue;
 
-		//デバイスを閉じる
+		// Close the device
 		apiresult = midiOutClose(m_PortInfo[portNo].hMIDIOut);
 		if (apiresult != MMSYSERR_NOERROR) {
 			result = YN_SET_ERR("MIDI OUT device close error.", 0, 0);
@@ -278,7 +278,7 @@ int SMOutDevCtrl::ClosePortDevAll()
 		}
 		m_PortInfo[portNo].hMIDIOut = NULL;
 
-		//別のポートで同じデバイスを開いている場合の対処
+		// Handle the case where the same device is open on another port
 		for (nextPortNo = portNo+1; nextPortNo < SM_MIDIOUT_PORT_NUM_MAX; nextPortNo++) {
 			if (m_PortInfo[portNo].devId == m_PortInfo[nextPortNo].devId) {
 				m_PortInfo[nextPortNo].hMIDIOut = NULL;
@@ -291,7 +291,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポート情報クリア
+// Clear port info
 //******************************************************************************
 int SMOutDevCtrl::ClearPortInfo()
 {
@@ -312,7 +312,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIデータ送信（ショートメッセージ）
+// Send MIDI data (short message)
 //******************************************************************************
 int SMOutDevCtrl::SendShortMsg(
 		unsigned char portNo,
@@ -323,20 +323,20 @@ int SMOutDevCtrl::SendShortMsg(
 	UINT apiresult = 0;
 	HMIDIOUT hMIDIOut = NULL;
 
-	//サポート範囲外のポートが指定された場合は何もしない
+	// If a port outside the supported range is specified, do nothing
 	if (portNo >= SM_MIDIOUT_PORT_NUM_MAX) goto EXIT;
 
-	//ポートが存在しなければ何もしない
+	// Do nothing if the port does not exist
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
-	//デバイスが開かれていなければエラー
+	// Error if the device is not open
 	if (m_PortInfo[portNo].hMIDIOut == NULL) {
 		result = YN_SET_ERR("Program error.", portNo, 0);
 		goto EXIT;
 	}
 	hMIDIOut = m_PortInfo[portNo].hMIDIOut;
 
-	//メッセージ出力：MIDI仕様により約0.3msec掛かる
+	// Output message: takes about 0.3msec per the MIDI spec
 	apiresult = midiOutShortMsg(hMIDIOut, msg);
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, msg);
@@ -348,7 +348,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIデータ送信（ロングメッセージ）
+// Send MIDI data (long message)
 //******************************************************************************
 int SMOutDevCtrl::SendLongMsg(
 		unsigned char portNo,
@@ -361,50 +361,50 @@ int SMOutDevCtrl::SendLongMsg(
 	HMIDIOUT hMIDIOut = NULL;
 	MIDIHDR mh;
 
-	//パラメータチェック
+	//parameter check
 	if (pMsg == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//サポート範囲外のポートが指定された場合は何もしない
+	// If a port outside the supported range is specified, do nothing
 	if (portNo >= SM_MIDIOUT_PORT_NUM_MAX) goto EXIT;
 
-	//ポートが存在しなければ何もしない
+	// Do nothing if the port does not exist
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
-	//デバイスが開かれていなければエラー
+	// Error if the device is not open
 	if (m_PortInfo[portNo].hMIDIOut == NULL) {
 		result = YN_SET_ERR("Program error.", portNo, 0);
 		goto EXIT;
 	}
 	hMIDIOut = m_PortInfo[portNo].hMIDIOut;
 
-	//ヘッダ作成
+	// Create header
 	memset((void*)&mh, 0, sizeof(MIDIHDR));
 	mh.lpData         = (LPSTR)pMsg;
 	mh.dwBufferLength = size;
 	mh.dwFlags        = 0;
 
-	//出力バッファ準備
+	// Prepare output buffer
 	apiresult = midiOutPrepareHeader(hMIDIOut, &mh, sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, size);
 		goto EXIT;
 	}
-	//メッセージ出力：MIDI仕様により約0.3msec以上掛かる
+	// Output message: takes about 0.3msec or more per the MIDI spec
 	apiresult = midiOutLongMsg(hMIDIOut, &mh, sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, size);
 		goto EXIT;
 	}
 
-	//出力完了まで待ち合わせ
+	// Wait until output completes
 	while ((mh.dwFlags & MHDR_DONE) == 0) {
-		//コールバックI/Fがないのでこうするしか・・・
+		// There is no callback I/F, so this is the only way...
 	}
 
-	//出力バッファ解放
+	// Release output buffer
 	apiresult = midiOutUnprepareHeader(hMIDIOut, &mh, sizeof(MIDIHDR));
 	if (apiresult != MMSYSERR_NOERROR) {
 		result = YN_SET_ERR("MIDI OUT device output error.", apiresult, size);
@@ -416,7 +416,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 全ポートノートオフ
+// Note off on all ports
 //******************************************************************************
 int SMOutDevCtrl::NoteOffAll()
 {
@@ -428,11 +428,11 @@ int SMOutDevCtrl::NoteOffAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ポートとデバイスが存在しなければスキップ
+		// Skip if the port and device do not exist
 		if (!m_PortInfo[portNo].isExist) continue;
 		if (m_PortInfo[portNo].hMIDIOut == NULL) continue;
 
-		//全トラックノートオフ
+		//All tracks note off
 		for (i = 0; i < 16; i++) {
 			msg = (0x7B << 8) | (0xB0 | i);
 			apiresult = midiOutShortMsg(m_PortInfo[portNo].hMIDIOut, msg);
@@ -448,7 +448,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 全ポートサウンドオフ
+// Sound off on all ports
 //******************************************************************************
 int SMOutDevCtrl::SoundOffAll()
 {
@@ -460,11 +460,11 @@ int SMOutDevCtrl::SoundOffAll()
 
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
-		//ポートとデバイスが存在しなければスキップ
+		// Skip if the port and device do not exist
 		if (!m_PortInfo[portNo].isExist) continue;
 		if (m_PortInfo[portNo].hMIDIOut == NULL) continue;
 
-		//全トラックサウンドオフ
+		// Sound off on all tracks
 		for (i = 0; i < 16; i++) {
 			msg = (0x78 << 8) | (0xB0 | i);
 			apiresult = midiOutShortMsg(m_PortInfo[portNo].hMIDIOut, msg);

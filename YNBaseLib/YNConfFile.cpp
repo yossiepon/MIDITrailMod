@@ -18,12 +18,12 @@
 namespace YNBaseLib {
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
 #define YNCONFFILE_NO_DATA  _T("*** NO DATA ***")
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 YNConfFile::YNConfFile(void)
 {
@@ -32,14 +32,14 @@ YNConfFile::YNConfFile(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 YNConfFile::~YNConfFile(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int YNConfFile::Initialize(
 		const TCHAR* pConfFilePath
@@ -59,7 +59,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// セクション設定
+// Set section
 //******************************************************************************
 int YNConfFile::SetCurSection(
 		const TCHAR* pSection
@@ -79,7 +79,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 整数値取得
+// Get integer value
 //******************************************************************************
 int YNConfFile::GetInt(
 		const TCHAR* pKey,
@@ -92,14 +92,14 @@ int YNConfFile::GetInt(
 	TCHAR buf[20];
 
 	apiresult = GetPrivateProfileString(
-					m_Section,			//セクション名
-					pKey,				//キー名
-					YNCONFFILE_NO_DATA, //デフォルト文字列
-					buf,				//バッファ位置
-					20,					//バッファサイズ（TCHAR単位）
-					m_FilePath			//ファイルパス
+					m_Section,			//Section name
+					pKey,				//Key name
+					YNCONFFILE_NO_DATA, //Default string
+					buf,				//Buffer address
+					20,					//Buffer size (in TCHAR units)
+					m_FilePath			//File path
 				);
-	//戻り値のチェックはあきらめる
+	//Give up on checking the return value
 
 	if (_tcscmp(buf, YNCONFFILE_NO_DATA) == 0) {
 		*pVal = defaultVal;
@@ -113,7 +113,7 @@ int YNConfFile::GetInt(
 }
 
 //******************************************************************************
-// 整数値登録
+// Set integer value
 //******************************************************************************
 int YNConfFile::SetInt(
 		const TCHAR* pKey,
@@ -127,10 +127,10 @@ int YNConfFile::SetInt(
 	_stprintf_s(buf, 20, _T("%d"), val);
 
 	bresult = WritePrivateProfileString(
-					m_Section,		//セクション名
-					pKey,			//キー名
-					buf,			//登録する文字列
-					m_FilePath		//ファイルパス
+					m_Section,		//Section name
+					pKey,			//Key name
+					buf,			//String to write
+					m_FilePath		//File path
 				);
 	if (!bresult) {
 		result = -1;  //GetLastError
@@ -142,7 +142,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 浮動小数値取得
+// Get float value
 //******************************************************************************
 int YNConfFile::GetFloat(
 		const TCHAR* pKey,
@@ -155,20 +155,20 @@ int YNConfFile::GetFloat(
 	TCHAR buf[20];
 
 	apiresult = GetPrivateProfileString(
-					m_Section,			//セクション名
-					pKey,				//キー名
-					YNCONFFILE_NO_DATA, //デフォルト文字列
-					buf,				//バッファ位置
-					20,					//バッファサイズ（TCHAR単位）
-					m_FilePath			//ファイルパス
+					m_Section,			//Section name
+					pKey,				//Key name
+					YNCONFFILE_NO_DATA, //Default string
+					buf,				//Buffer address
+					20,					//Buffer size (in TCHAR units)
+					m_FilePath			//File path
 				);
-	//戻り値のチェックはあきらめる
+	//Give up on checking the return value
 
 	if (_tcscmp(buf, YNCONFFILE_NO_DATA) == 0) {
 		*pVal = defaultVal;
 	}
 	else {
-		//_tstofはdoubleを返す
+		//_tstof returns a double
 		*pVal = (float)_tstof(buf);
 	}
 
@@ -177,7 +177,7 @@ int YNConfFile::GetFloat(
 }
 
 //******************************************************************************
-// 浮動小数値登録
+// Set float value
 //******************************************************************************
 int YNConfFile::SetFloat(
 		const TCHAR* pKey,
@@ -191,10 +191,10 @@ int YNConfFile::SetFloat(
 	_stprintf_s(buf, 20, _T("%f"), val);
 
 	bresult = WritePrivateProfileString(
-					m_Section,		//セクション名
-					pKey,			//キー名
-					buf,			//登録する文字列
-					m_FilePath		//ファイルパス
+					m_Section,		//Section name
+					pKey,			//Key name
+					buf,			//String to write
+					m_FilePath		//File path
 				);
 	if (!bresult) {
 		result = -1;  //GetLastError
@@ -206,7 +206,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 文字列取得
+// Get string
 //******************************************************************************
 int YNConfFile::GetStr(
 		const TCHAR* pKey,
@@ -219,21 +219,21 @@ int YNConfFile::GetStr(
 	DWORD apiresult = 0;
 
 	apiresult = GetPrivateProfileString(
-					m_Section,			//セクション名
-					pKey,				//キー名
-					pDefaultVal,		//デフォルト文字列
-					pBuf,				//バッファ位置
-					bufSize,			//バッファサイズ（TCHAR単位）
-					m_FilePath			//ファイルパス
+					m_Section,			//Section name
+					pKey,				//Key name
+					pDefaultVal,		//Default string
+					pBuf,				//Buffer address
+					bufSize,			//Buffer size (in TCHAR units)
+					m_FilePath			//File path
 				);
-	//戻り値のチェックはあきらめる
+	//Give up on checking the return value
 
 //EXIT:;
 	return result;
 }
 
 //******************************************************************************
-// 文字列登録
+// Set string
 //******************************************************************************
 int YNConfFile::SetStr(
 		const TCHAR* pKey,
@@ -245,9 +245,9 @@ int YNConfFile::SetStr(
 	TCHAR* pValue = NULL;
 	size_t length = 0;
 
-	//INIファイルに末尾が空白文字の値を登録すると
-	//値を取得するときに空白文字を削除されてしまうため
-	//シングルクォートで囲んで登録する
+	//If a value ending in whitespace is written to the INI file,
+	//the trailing whitespace is stripped when reading it back,
+	//so wrap the value in single quotes when writing it.
 	length = _tcslen(pStr) + 4;
 	try {
 		pValue = new TCHAR[length];
@@ -259,10 +259,10 @@ int YNConfFile::SetStr(
 	_stprintf_s(pValue, length, _T("'%s'"), pStr);
 
 	bresult = WritePrivateProfileString(
-					m_Section,		//セクション名
-					pKey,			//キー名
-					pValue,			//登録する文字列
-					m_FilePath		//ファイルパス
+					m_Section,		//Section name
+					pKey,			//Key name
+					pValue,			//String to write
+					m_FilePath		//File path
 				);
 	if (!bresult) {
 		result = -1;  //GetLastError
@@ -275,7 +275,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 文字列取得（値のみワイド文字列）
+// Get string (value only, as wide string)
 //******************************************************************************
 int YNConfFile::GetWStr(
 		const TCHAR* pKey,
@@ -294,7 +294,7 @@ int YNConfFile::GetWStr(
 	TCHAR* stopped = NULL;
 	WCHAR wchar = 0;
 
-	//バッファサイズがデフォルト値を格納できなければエラー
+	//Error if the buffer is too small to hold the default value
 	if (bufSize < (wcslen(pDefaultVal) + 1)) {
 		result = YN_SET_ERR("Program Error.", bufSize, 0);
 		goto EXIT;
@@ -302,7 +302,7 @@ int YNConfFile::GetWStr(
 
 	hexBufSize = (bufSize * 4) + (unsigned long)_tcslen(YNCONFFILE_NO_DATA) + 1;
 
-	//16進数文字列を格納するメモリを確保
+	//Allocate memory to hold the hex string
 	try {
 		pHexString = new TCHAR[hexBufSize];
 	}
@@ -312,11 +312,11 @@ int YNConfFile::GetWStr(
 	}
 	memset(pHexString, 0, hexBufSize);
 
-	//16進数文字列を取得
+	//Get the hex string
 	result = GetStr(pKey, pHexString, hexBufSize, YNCONFFILE_NO_DATA);
 	if (result != 0) goto EXIT;
 	
-	//未登録の場合はデフォルト文字列を返す
+	//Return the default string if not set
 	if (_tcscmp(pHexString, YNCONFFILE_NO_DATA) == 0) {
 		wcscpy_s(pBuf, bufSize, pDefaultVal);
 		goto EXIT;
@@ -324,14 +324,14 @@ int YNConfFile::GetWStr(
 
 	hexLength = (unsigned long)_tcslen(pHexString);
 
-	//空文字列の場合
+	//If the string is empty
 	if (hexLength == 0) {
 		pBuf[0] = L'\0';
 		goto EXIT;
 	}
 
-	//16進数文字列を4文字ずつワイド文字に変換
-	//末尾が4文字単位でなければ切り捨てる
+	//Convert the hex string to wide chars, 4 hex digits at a time
+	//Truncate any trailing chars that don't form a complete group of 4
 	while ((index + 4) <= hexLength) {
 		hexChar[0] = pHexString[index + 0];
 		hexChar[1] = pHexString[index + 1];
@@ -340,7 +340,7 @@ int YNConfFile::GetWStr(
 		hexChar[4] = '\0';
 		pBuf[indexw] = (WCHAR)_tcstol(hexChar, &stopped, 16);
 
-		//バッファ終端であれば変換を終了
+		//Stop converting if at the end of the buffer
 		if ((indexw + 1) == bufSize) {
 			break;
 		}
@@ -356,7 +356,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 文字列登録（値のみワイド文字列）
+// Set string (value only, as wide string)
 //******************************************************************************
 int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
 {
@@ -370,7 +370,7 @@ int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
 	length = (unsigned long)wcslen(pStr);
 	bufSize = (length + 1) * 4;
 
-	//16進数文字列を格納するメモリを確保
+	//Allocate memory to hold the hex string
 	try {
 		pHexString = new TCHAR[bufSize];
 	}
@@ -380,13 +380,13 @@ int YNConfFile::SetWStr(const TCHAR* pKey, const WCHAR* pStr)
 	}
 	memset(pHexString, 0, bufSize);
 
-	//ワイド文字文字列を1文字ずつ16進数4文字に変換（終端文字は変換しない）
+	//Convert the wide string to hex, 4 digits per character (excluding the null terminator)
 	for (index = 0; index < length; index ++) {
 		_stprintf_s(hexChar, 5, _T("%04X"), pStr[index]);
 		_tcscat_s(pHexString, bufSize, hexChar);
 	}
 
-	//文字列登録
+	//Write the string
 	result = SetStr(pKey, pHexString);
 	if (result != 0) goto EXIT;
 

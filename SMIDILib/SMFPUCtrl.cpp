@@ -21,7 +21,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMFPUCtrl::SMFPUCtrl(void)
 {
@@ -31,11 +31,11 @@ SMFPUCtrl::SMFPUCtrl(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMFPUCtrl::~SMFPUCtrl(void)
 {
-	//設定開始したままであれば解除する
+	//Release if still active
 	if ((m_isLock) && (m_ThreadID == GetCurrentThreadId())) {
 		unsigned int curCtrl = 0;
 #ifndef _WIN64
@@ -46,7 +46,7 @@ SMFPUCtrl::~SMFPUCtrl(void)
 }
 
 //******************************************************************************
-// 精度設定開始
+// Start precision setting
 //******************************************************************************
 int SMFPUCtrl::Start(FPUPrecision precision)
 {
@@ -55,17 +55,17 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 	unsigned int curCtrl = 0;
 	unsigned int flag = 0;
 
-	//すでに設定開始済みならエラー
+	//Error if already started
 	if (m_isLock) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//変更前の制御フラグを取得
+	//Get control flags before change
 	eresult = _controlfp_s(
-					&m_FPUCtrl,	//現在の制御ワード
-					0,			//制御ワード：なし
-					0			//マスク：なし
+					&m_FPUCtrl,	//Current control word
+					0,			//Control word: none
+					0			//Mask: none
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
@@ -74,7 +74,7 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 
 	_DisplayCurCtrl(_T("Start before"));
 
-	//浮動小数点精度を設定
+	//Set floating-point precision
 	switch (precision) {
 		case FPUSingle:
 			flag = _PC_24;
@@ -92,13 +92,13 @@ int SMFPUCtrl::Start(FPUPrecision precision)
 
 #ifdef _WIN64
 	//x64(64bit)
-	//精度制御の必要なし
+	//No precision control needed
 #else
 	//x86(32bit)
 	eresult = _controlfp_s(
-					&curCtrl,	//現在の制御ワード
-					flag,		//制御ワード：制御種別
-					_MCW_PC		//マスク：精度制御
+					&curCtrl,	//Current control word
+					flag,		//Control word: control type
+					_MCW_PC		//Mask: precision control
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
@@ -116,7 +116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 精度設定終了
+// End precision setting
 //******************************************************************************
 int SMFPUCtrl::End()
 {
@@ -124,28 +124,28 @@ int SMFPUCtrl::End()
 	errno_t eresult = 0;
 	unsigned int curCtrl = 0;
 
-	//設定開始していない場合はエラー
+	//Error if not started
 	if (!m_isLock) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
 
-	//設定開始時と異なるスレッドで設定終了することはできない
+	//Cannot end on a thread different from the one that started it
 	if (m_ThreadID != GetCurrentThreadId()) {
 		result = YN_SET_ERR("Program error.", m_ThreadID, GetCurrentThreadId());
 		goto EXIT;
 	}
 
-	//浮動小数点精度を復元する
+	//Restore floating-point precision
 #ifdef _WIN64
 	//x64(64bit)
-	//精度制御の必要なし
+	//No precision control needed
 #else
 	//x86(32bit)
 	eresult = _controlfp_s(
-					&curCtrl,	//現在の制御ワード
-					m_FPUCtrl,	//制御ワード：設定開始時点
-					_MCW_PC		//マスク：精度制御
+					&curCtrl,	//Current control word
+					m_FPUCtrl,	//Control word: value at start
+					_MCW_PC		//Mask: precision control
 				);
 	if (eresult != 0) {
 		result = YN_SET_ERR("Windows API error.", eresult, GetLastError());
@@ -164,7 +164,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 精度設定状態確認
+// Check precision setting state
 //******************************************************************************
 bool SMFPUCtrl::IsLocked()
 {
@@ -172,7 +172,7 @@ bool SMFPUCtrl::IsLocked()
 }
 
 //******************************************************************************
-// 浮動小数点制御ワード表示
+// Display floating-point control word
 //******************************************************************************
 void SMFPUCtrl::_DisplayCurCtrl(
 		TCHAR* pTitle
@@ -197,11 +197,11 @@ void SMFPUCtrl::_DisplayCurCtrl(
 //			_T("_MCW_PC %08X"),
 //			GetCurrentThreadId(),
 //			fpuctrl,
-//			(fpuctrl & _MCW_DN), //DENORMAL制御
-//			(fpuctrl & _MCW_EM), //割り込み例外マスク
-//			(fpuctrl & _MCW_IC), //無限制御
-//			(fpuctrl & _MCW_RC), //丸め制御
-//			(fpuctrl & _MCW_PC)  //精度制御
+//			(fpuctrl & _MCW_DN), //DENORMAL control
+//			(fpuctrl & _MCW_EM), //Interrupt exception mask
+//			(fpuctrl & _MCW_IC), //Infinity control
+//			(fpuctrl & _MCW_RC), //Rounding control
+//			(fpuctrl & _MCW_PC)  //Precision control
 //		);
 //
 //	MessageBox(NULL, msg, pTitle, MB_OK);

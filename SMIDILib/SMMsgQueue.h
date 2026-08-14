@@ -22,23 +22,23 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// メッセージキュークラス
+// Message queue class
 //******************************************************************************
 class SMIDILIB_API SMMsgQueue
 {
 public:
 	
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMMsgQueue(void);
 	virtual ~SMMsgQueue(void);
 	
-	//初期化
+	//Initialize
 	int Initialize(unsigned long maxMsgNum);
 	
-	//メッセージ登録
+	//Post message
 	int PostMessage(unsigned long param1, unsigned long param2);
 	
-	//メッセージ取得
+	//Get message
 	int GetMessage(bool* pIsExist, unsigned long* pParam1, unsigned long* pParam2);
 	
 private:

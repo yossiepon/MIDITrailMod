@@ -19,37 +19,37 @@
 namespace SMIDILib {
 
 //******************************************************************************
-// メッセージ解析クラス
+// Message parser class
 //******************************************************************************
 class SMIDILIB_API SMMsgParser
 {
 public:
 
-	//シーケンサメッセージ種別
+	//Sequencer message type
 	enum Message {
-		MsgUnknown,		//メッセージ不明
-		MsgPlayStatus,	//演奏状態通知
-		MsgPlayTime,	//演奏時間通知
-		MsgTempo,		//テンポ変更通知
-		MsgBar,			//小節番号通知
-		MsgBeat,		//拍子記号変更通知
-		MsgNoteOff,		//ノートOFF通知
-		MsgNoteOn,		//ノートON通知
-		MsgPitchBend,	//ピッチベンド通知
-		MsgSkipStart,	//スキップ開始通知
-		MsgSkipEnd,		//スキップ終了通知
-		MsgAllNoteOff	//オールノートOFF通知
+		MsgUnknown,		//Unknown message
+		MsgPlayStatus,	//Playback state notification
+		MsgPlayTime,	//Playback time notification
+		MsgTempo,		//Tempo change notification
+		MsgBar,			//Bar number notification
+		MsgBeat,		//Time signature change notification
+		MsgNoteOff,		//Note OFF notification
+		MsgNoteOn,		//Note ON notification
+		MsgPitchBend,	//Pitch bend notification
+		MsgSkipStart,	//Skip start notification
+		MsgSkipEnd,		//Skip end notification
+		MsgAllNoteOff	//All note OFF notification
 	};
 
-	//演奏状態
+	//Playback state
 	enum PlayStatus {
-		StatusUnknown,	//メッセージ不明
-		StatusStop,		//停止
-		StatusPlay,		//演奏
-		StatusPause		//一時停止
+		StatusUnknown,	//Unknown message
+		StatusStop,		//Stopped
+		StatusPlay,		//Playing
+		StatusPause		//Paused
 	};
 
-	//スキップ方向
+	//Skip direction
 	enum SkipDirection {
 		SkipBack,
 		SkipForward
@@ -57,48 +57,48 @@ public:
 
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMMsgParser(void);
 	virtual ~SMMsgParser(void);
 
-	//メッセージ解析
+	//Message parsing
 	void Parse(unsigned long param1, unsigned long param2);
 
-	//メッセージ種別取得
+	//Get message type
 	Message GetMsg();
 
-	//演奏状態取得
+	//Get playback state
 	PlayStatus GetPlayStatus();
 
-	//演奏時間取得
+	//Get playback time
 	unsigned long GetPlayTimeSec();
 	unsigned long GetPlayTimeMSec();
 	unsigned long GetPlayTickTime();
 
-	//テンポ取得
+	//Get tempo
 	unsigned long GetTempoBPM();
 
-	//小節番号取得
+	//Get bar number
 	unsigned long GetBarNo();
 
-	//拍子記号取得
+	//Get time signature
 	unsigned long GetBeatNumerator();
 	unsigned long GetBeatDenominator();
 
-	//ノートON/OFF情報取得
+	//Get note ON/OFF info
 	unsigned char GetPortNo();
 	unsigned char GetChNo();
 	unsigned char GetNoteNo();
 	unsigned char GetVelocity();
 
-	//ピッチベンド情報取得
+	//Get pitch bend info
 	short GetPitchBendValue();
 	unsigned char GetPitchBendSensitivity();
 
-	//スキップ開始情報取得
+	//Get skip start info
 	SkipDirection GetSkipStartDirection();
 
-	//スキップ終了情報取得
+	//Get skip end info
 	unsigned long GetSkipEndNotesCount();
 
 private:

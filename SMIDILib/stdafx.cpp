@@ -1,8 +1,8 @@
-﻿// stdafx.cpp : 標準インクルード SMLib.pch のみを
-// 含むソース ファイルは、プリコンパイル済みヘッダーになります。
-// stdafx.obj にはプリコンパイル済み型情報が含まれます。
+﻿// stdafx.cpp : source file that includes just the standard includes
+// SMLib.pch will be the pre-compiled header.
+// stdafx.obj will contain the pre-compiled type information.
 
 #include "stdafx.h"
 
-// TODO: このファイルではなく、STDAFX.H で必要な
-// 追加ヘッダーを参照してください。
+// TODO: reference any additional headers you need in STDAFX.H
+// and not in this file

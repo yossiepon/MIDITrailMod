@@ -22,7 +22,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMSeqData::SMSeqData()
 {
@@ -31,7 +31,7 @@ SMSeqData::SMSeqData()
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMSeqData::~SMSeqData(void)
 {
@@ -39,7 +39,7 @@ SMSeqData::~SMSeqData(void)
 }
 
 //******************************************************************************
-// SMFフォーマット登録
+// Register SMF format
 //******************************************************************************
 void SMSeqData::SetSMFFormat(
 		unsigned long smfFormat
@@ -49,7 +49,7 @@ void SMSeqData::SetSMFFormat(
 }
 
 //******************************************************************************
-// 分解能登録
+// Register time division
 //******************************************************************************
 void SMSeqData::SetTimeDivision(
 		unsigned long timeDivision
@@ -59,7 +59,7 @@ void SMSeqData::SetTimeDivision(
 }
 
 //******************************************************************************
-// トラック登録
+// Register track
 //******************************************************************************
 int SMSeqData::AddTrack(
 		SMTrack* pTrack
@@ -70,33 +70,33 @@ int SMSeqData::AddTrack(
 }
 
 //******************************************************************************
-// トラック登録完了
+// Track registration complete
 //******************************************************************************
 int SMSeqData::CloseTrack()
 {
 	int result = 0;
 
-	//トラックマージ処理
+	//Merge tracks process
 	result = _MergeTracks();
 	if (result != 0) goto EXIT;
 
-	//合計演奏時間算出
+	//Calculate total playback time
 	result = _CalcTotalTime();
 	if (result != 0) goto EXIT;
 
-	//テンポ取得
+	//Get tempo
 	result = _GetTempo(&m_Tempo);
 	if (result != 0) goto EXIT;
 
-	//拍子記号取得
+	//Get time signature
 	result = _GetBeat(&m_BeatNumerator, &m_BeatDenominator);
 	if (result != 0) goto EXIT;
 
-	//小節数取得
+	//Get bar count
 	result = _GetBarNum(&m_BarNum);
 	if (result != 0) goto EXIT;
 
-	//テキスト情報取得
+	//Get text information
 	result = _SearchText();
 	if (result != 0) goto EXIT;
 
@@ -105,7 +105,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// トラックマージ処理
+// Merge tracks process
 //******************************************************************************
 int SMSeqData::_MergeTracks()
 {
@@ -131,7 +131,7 @@ int SMSeqData::_MergeTracks()
 		goto EXIT;
 	}
 
-	//デルタタイムバッファリストの作成
+	//Build delta time buffer list
 	for (trackListItr = m_TrackList.begin(); trackListItr != m_TrackList.end(); trackListItr++) {
 		pTrack = *trackListItr;
 		if (pTrack->GetSize() == 0) continue;
@@ -143,10 +143,10 @@ int SMSeqData::_MergeTracks()
 		deltaTimeBufList.push_back(deltaTimeBuf);
 	}
 
-	//マージ処理
+	//Merge process
 	while (true) {
 
-		//各トラックを参照して最もデルタタイムが短いイベントを取得する
+		//Check each track and get the event with the shortest delta time
 		unsigned long deltaTimeMin = 0xFFFFFFFF;
 		unsigned long targetTrackIndex = 0;
 		bool isDataExist = false;
@@ -155,35 +155,35 @@ int SMSeqData::_MergeTracks()
 		deltaTimeBufListItr = deltaTimeBufList.begin();
 		for (i = 0; i < m_TrackList.size(); i++) {
 
-			pTrack = *trackListItr;                //カレントトラック
-			deltaTimeBuf = *deltaTimeBufListItr;   //カレントトラックのデルタタイム情報
+			pTrack = *trackListItr;                //Current track
+			deltaTimeBuf = *deltaTimeBufListItr;   //Current track's delta time info
 
-			//トラックを読み終わっていなければデルタタイムを参照する
+			//Reference delta time if the track has not finished being read
 			if (deltaTimeBuf.index < pTrack->GetSize()) {
-				//最小デルタタイムのトラックをマークする
+				//Mark the track with the smallest delta time
 				if (deltaTimeBuf.deltaTime < deltaTimeMin) {
 					targetTrackIndex = i;
 					deltaTimeMin = deltaTimeBuf.deltaTime ;
 				}
 				isDataExist = true;
 			}
-			//次のトラック
+			//Next track
 			trackListItr++;
 			deltaTimeBufListItr++;
 		}
 
-		//イベントが存在しなければマージ完了
+		//Merge complete if no more events exist
 		if (!isDataExist) break;
 
-		//各トラックのデルタタイムを更新する
+		//Update delta time for each track
 		trackListItr = m_TrackList.begin();
 		deltaTimeBufListItr = deltaTimeBufList.begin();
 		for (i = 0; i < m_TrackList.size(); i++) {
 
-			pTrack = *trackListItr;               //カレントトラック
-			deltaTimeBuf = *deltaTimeBufListItr;  //カレントトラックのデルタタイム情報
+			pTrack = *trackListItr;               //Current track
+			deltaTimeBuf = *deltaTimeBufListItr;  //Current track's delta time info
 
-			//マークしたトラックはイベントをコピーしてマージトラックに登録
+			//For the marked track, copy the event and register it into the merged track
 			if (i == targetTrackIndex) {
 				result = pTrack->GetDataSet(deltaTimeBuf.index, NULL, &event, &portNo);
 				if (result != 0) goto EXIT;
@@ -191,7 +191,7 @@ int SMSeqData::_MergeTracks()
 				result = pMergedTrack->AddDataSet(deltaTimeMin, &event, portNo);
 				if (result != 0) goto EXIT;
 
-				//マークしたトラックの次のデルタタイムを取得する
+				//Get the next delta time for the marked track
 				deltaTimeBuf.index += 1;
 				deltaTimeBuf.deltaTime = 0xFFFFFFFF;
 				if (deltaTimeBuf.index < pTrack->GetSize()) {
@@ -199,13 +199,13 @@ int SMSeqData::_MergeTracks()
 					if (result != 0) goto EXIT;
 				}
 			}
-			//それ以外のトラックはデルタタイムを減算する
+			//For other tracks, subtract the delta time
 			else if (deltaTimeBuf.index < pTrack->GetSize()) {
 				deltaTimeBuf.deltaTime -= deltaTimeMin;
 			}
 			*deltaTimeBufListItr = deltaTimeBuf;
 
-			//次のトラック
+			//Next track
 			trackListItr++;
 			deltaTimeBufListItr++;
 		}
@@ -222,7 +222,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// データクリア
+// Clear data
 //******************************************************************************
 void SMSeqData::Clear()
 {
@@ -254,7 +254,7 @@ void SMSeqData::Clear()
 
 
 //******************************************************************************
-// シーケンス追加
+// Add sequence
 //******************************************************************************
 void SMSeqData::AddSequence(SMSeqData &other, short portNo, short chNo)
 {
@@ -278,7 +278,7 @@ void SMSeqData::AddSequence(SMSeqData &other, short portNo, short chNo)
 
 
 //******************************************************************************
-// SMFフォーマット取得
+// Get SMF format
 //******************************************************************************
 unsigned long SMSeqData::GetSMFFormat()
 {
@@ -286,7 +286,7 @@ unsigned long SMSeqData::GetSMFFormat()
 }
 
 //******************************************************************************
-// 分解能取得
+// Get time division
 //******************************************************************************
 unsigned long SMSeqData::GetTimeDivision()
 {
@@ -294,7 +294,7 @@ unsigned long SMSeqData::GetTimeDivision()
 }
 
 //******************************************************************************
-// トラック数取得
+// Get track count
 //******************************************************************************
 unsigned long SMSeqData::GetTrackNum()
 {
@@ -302,7 +302,7 @@ unsigned long SMSeqData::GetTrackNum()
 }
 
 //******************************************************************************
-// トラック取得
+// Get track
 //******************************************************************************
 int SMSeqData::GetTrack(
 		unsigned long index,
@@ -334,7 +334,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// マージトラック取得
+// Get merged track
 //******************************************************************************
 int SMSeqData::GetMergedTrack(
 		SMTrack* pMergedTrack
@@ -359,7 +359,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 合計チックタイム取得
+// Get total tick time
 //******************************************************************************
 unsigned long SMSeqData::GetTotalTickTime()
 {
@@ -367,7 +367,7 @@ unsigned long SMSeqData::GetTotalTickTime()
 }
 
 //******************************************************************************
-// 合計演奏時間取得（msec.）
+// Get total playback time (msec.)
 //******************************************************************************
 unsigned long SMSeqData::GetTotalPlayTime()
 {
@@ -375,7 +375,7 @@ unsigned long SMSeqData::GetTotalPlayTime()
 }
 
 //******************************************************************************
-// テンポ取得(μsec.)
+// Get tempo(μsec.)
 //******************************************************************************
 unsigned long SMSeqData::GetTempo()
 {
@@ -383,7 +383,7 @@ unsigned long SMSeqData::GetTempo()
 }
 
 //******************************************************************************
-// テンポ取得(BPM)
+// Get tempo(BPM)
 //******************************************************************************
 unsigned long SMSeqData::GetTempoBPM()
 {
@@ -391,7 +391,7 @@ unsigned long SMSeqData::GetTempoBPM()
 }
 
 //******************************************************************************
-// 拍子記号取得：分子
+// Get time signature: numerator
 //******************************************************************************
 unsigned long SMSeqData::GetBeatNumerator()
 {
@@ -399,7 +399,7 @@ unsigned long SMSeqData::GetBeatNumerator()
 }
 
 //******************************************************************************
-// 拍子記号取得：分母
+// Get time signature: denominator
 //******************************************************************************
 unsigned long SMSeqData::GetBeatDenominator()
 {
@@ -407,7 +407,7 @@ unsigned long SMSeqData::GetBeatDenominator()
 }
 
 //******************************************************************************
-// 小節数取得
+// Get bar count
 //******************************************************************************
 unsigned long SMSeqData::GetBarNum()
 {
@@ -415,7 +415,7 @@ unsigned long SMSeqData::GetBarNum()
 }
 
 //******************************************************************************
-// 著作権テキスト取得
+// Get copyright text
 //******************************************************************************
 const WCHAR* SMSeqData::GetCopyRight()
 {
@@ -423,7 +423,7 @@ const WCHAR* SMSeqData::GetCopyRight()
 }
 
 //******************************************************************************
-// タイトルテキスト取得
+// Get title text
 //******************************************************************************
 const WCHAR* SMSeqData::GetTitle()
 {
@@ -435,7 +435,7 @@ const WCHAR* SMSeqData::GetTitle()
 }
 
 //******************************************************************************
-// 合計演奏時間算出
+// Calculate total playback time
 //******************************************************************************
 int SMSeqData::_CalcTotalTime()
 {
@@ -453,7 +453,7 @@ int SMSeqData::_CalcTotalTime()
 		goto EXIT;
 	}
 
-	//浮動小数点演算精度を倍精度に設定
+	//Set floating-point precision to double
 	result = fpuCtrl.Start(SMFPUCtrl::FPUDouble);
 	if (result != 0) goto EXIT;
 
@@ -463,16 +463,16 @@ int SMSeqData::_CalcTotalTime()
 
 	for (index = 0; index < m_pMergedTrack->GetSize(); index++) {
 
-		//トラックからデータセット取得
+		//Get data set from track
 		result = m_pMergedTrack->GetDataSet(index, &deltaTime, &event, NULL);
 		if (result != 0) goto EXIT;
 
-		//デルタタイムを実時間に変換して演奏時間に加算
-		//  1msec未満を切り捨てると誤差が蓄積するためdoubleで積算する
+		//Convert delta time to real time and add to playback time
+		//  Truncating below 1msec accumulates error, so accumulate using double
 		m_TotalTickTime += deltaTime;
 		totalPlayTime += _GetDeltaTimeMsec(tempo, deltaTime);
 
-		//メタイベントが現れたらテンポの更新を確認する
+		//Check for tempo update when a meta event appears
 		if (event.GetType() == SMEvent::EventMeta) {
 			metaEvent.Attach(&event);
 			if (metaEvent.GetType() == 0x51) {
@@ -491,7 +491,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// デルタタイム取得（ミリ秒）
+// Get delta time (milliseconds)
 //******************************************************************************
 double SMSeqData::_GetDeltaTimeMsec(
 		unsigned long tempo,
@@ -500,15 +500,15 @@ double SMSeqData::_GetDeltaTimeMsec(
 {
 	double deltaTimeMsec = 0;
 
-	//(1) 四分音符あたりの分解能 division
-	//    例：48
-	//(2) トラックデータのデルタタイム delta
-	//    分解能の値を用いて表現する時間差
-	//    分解能が48でデルタタイムが24なら八分音符分の時間差
-	//(3) テンポ設定（マイクロ秒） tempo
-	//    四分音符の実時間間隔
+	//(1) Division: resolution per quarter note
+	//    e.g. 48
+	//(2) delta: track data's delta time
+	//    Time difference expressed using the division value
+	//    If division is 48 and delta time is 24, that's an eighth note's worth of time
+	//(3) tempo: tempo setting (microseconds)
+	//    Real-time interval of a quarter note
 	//
-	// デルタタイムに対応する実時間間隔（ミリ秒）
+	// Real-time interval corresponding to delta time (milliseconds)
 	//  = (delta / division) * tempo / 1000
 	//  = (delta * tempo) / (division * 1000)
 
@@ -518,7 +518,7 @@ double SMSeqData::_GetDeltaTimeMsec(
 }
 
 //******************************************************************************
-// テンポ取得
+// Get tempo
 //******************************************************************************
 int SMSeqData::_GetTempo(
 		unsigned long* pTempo
@@ -535,11 +535,11 @@ int SMSeqData::_GetTempo(
 		goto EXIT;
 	}
 
-	//MIDI仕様においてテンポのデフォルトはBPM120 = 500msec = 500,000μsec
+	//Per the MIDI spec, the default tempo is BPM120 = 500msec = 500,000usec
 	*pTempo = SM_DEFAULT_TEMPO;
 
-	//シーケンスの先頭（デルタタイムゼロ）からテンポを検索
-	//見つからなければデフォルト値が採用される
+	//Search for tempo from the beginning of the sequence (delta time zero)
+	//If not found, the default value is used
 	for (index = 0; index < m_pMergedTrack->GetSize(); index++) {
 
 		result = m_pMergedTrack->GetDataSet(index, &deltaTime, &event, NULL);
@@ -547,10 +547,10 @@ int SMSeqData::_GetTempo(
 
 		if (deltaTime != 0) break;
 
-		//メタイベント以外は無視
+		//Ignore anything other than meta events
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//テンポを取得
+		//Get tempo
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() == 0x51) {
 			*pTempo = metaEvent.GetTempo();
@@ -563,7 +563,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 拍子記号取得
+// Get time signature
 //******************************************************************************
 int SMSeqData::_GetBeat(
 		unsigned long* pNumerator,
@@ -581,12 +581,12 @@ int SMSeqData::_GetBeat(
 		goto EXIT;
 	}
 
-	//MIDI仕様において拍子記号のデフォルトは4/4
+	//Per the MIDI spec, the default time signature is 4/4
 	*pNumerator   = SM_DEFAULT_TIME_SIGNATURE_NUMERATOR;
 	*pDenominator = SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR;
 
-	//シーケンスの先頭（デルタタイムゼロ）から拍子記号を検索
-	//見つからなければデフォルト値が採用される
+	//Search for time signature from the beginning of the sequence (delta time zero)
+	//If not found, the default value is used
 	for (index = 0; index < m_pMergedTrack->GetSize(); index++) {
 
 		result = m_pMergedTrack->GetDataSet(index, &deltaTime, &event, NULL);
@@ -594,10 +594,10 @@ int SMSeqData::_GetBeat(
 
 		if (deltaTime != 0) break;
 
-		//メタイベント以外は無視
+		//Ignore anything other than meta events
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//拍子記号を取得
+		//Get time signature
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() == 0x58) {
 			metaEvent.GetTimeSignature(pNumerator, pDenominator);
@@ -610,7 +610,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 小節数取得
+// Get bar count
 //******************************************************************************
 int SMSeqData::_GetBarNum(
 		unsigned long* pBarNum
@@ -629,7 +629,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テキスト情報検索
+// Search for text information
 //******************************************************************************
 int SMSeqData::_SearchText()
 {
@@ -644,20 +644,20 @@ int SMSeqData::_SearchText()
 	std::string copyRight;
 	std::string title;
 
-	//トラックが存在しなければ何もしない
+	//Do nothing if no tracks exist
 	if (m_TrackList.size() == 0) goto EXIT;
 
-	//第1トラック(Conductor Track)を参照する
+	//Reference the first track (Conductor Track)
 	itr = m_TrackList.begin();
 	pTrack = *itr;
 
-	//著作権表示を検索
+	//Search for copyright notice
 	for (index = 0; index < pTrack->GetSize(); index++) {
 
 		result = pTrack->GetDataSet(index, &deltaTime, &event, NULL);
 		if (result != 0) goto EXIT;
 
-		//著作権表示はデルタタイムゼロに記録される
+		//Copyright notice is recorded at delta time zero
 		if (deltaTime != 0) break;
 
 		if (event.GetType() == SMEvent::EventMeta) {
@@ -669,13 +669,13 @@ int SMSeqData::_SearchText()
 			}
 		}
 	}
-	//ワイド文字列変換
+	//Convert to wide string
 	if (copyRight.length() > 0) {
 		result = _StringToWstring(&copyRight, &m_CopyRight);
 		if (result != 0) goto EXIT;
 	}
 
-	//シーケンス名を検索
+	//Search for sequence name
 	for (index = 0; index < pTrack->GetSize(); index++) {
 
 		result = pTrack->GetDataSet(index, &deltaTime, &event, NULL);
@@ -683,15 +683,15 @@ int SMSeqData::_SearchText()
 
 		if (event.GetType() == SMEvent::EventMeta) {
 			metaEvent.Attach(&event);
-			//任意テキスト
+			//Arbitrary text
 			if ((metaEvent.GetType() == 0x01) && (!isFoundText)) {
 				result = metaEvent.GetText(&title);
 				if (result != 0) goto EXIT;
 
-				//シーケンス名を優先するので検索は継続する
+				//Sequence name takes priority, so continue searching
 				isFoundText = true;
 			}
-			//シーケンス名
+			//Sequence name
 			if (metaEvent.GetType() == 0x03) {
 				result = metaEvent.GetText(&title);
 				if (result != 0) goto EXIT;
@@ -699,7 +699,7 @@ int SMSeqData::_SearchText()
 			}
 		}
 	}
-	//ワイド文字列変換
+	//Convert to wide string
 	if (title.length() > 0) {
 		result = _StringToWstring(&title, &m_Title);
 		if (result != 0) goto EXIT;
@@ -710,7 +710,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 小節リスト取得
+// Get bar list
 //******************************************************************************
 int SMSeqData::GetBarList(
 		SMBarList* pBarList
@@ -738,10 +738,10 @@ int SMSeqData::GetBarList(
 
 	pBarList->Clear();
 
-	//1小節あたりのチックタイム
+	//Tick time per bar
 	tickTimeOfBar = (SM_DEFAULT_TIME_SIGNATURE_NUMERATOR * m_TimeDivision * 4) / SM_DEFAULT_TIME_SIGNATURE_DENOMINATOR;
 
-	//1小節目開始地点として登録
+	//Register as the start point of the first bar
 	totalTickTime = 0;
 	prevBarTime = totalTickTime;
 	result = pBarList->AddBar(totalTickTime);
@@ -755,7 +755,7 @@ int SMSeqData::GetBarList(
 
 		totalTickTime += deltaTime;
 
-		//経過時間内で小節の区切りを見つけて登録する
+		//Find and register bar boundaries within the elapsed time
 		while(true) {
 			nextBarTime = prevBarTime + tickTimeOfBar;
 			if (nextBarTime <= totalTickTime) {
@@ -767,27 +767,27 @@ int SMSeqData::GetBarList(
 			}
 		}
 
-		//以降は拍子記号が現れた場合の対応
+		//From here, handle the case when a time signature appears
 
-		//メタイベント以外は無視
+		//Ignore anything other than meta events
 		if (event.GetType() != SMEvent::EventMeta) continue;
 
-		//拍子記号以外は無視
+		//Ignore anything other than time signature
 		metaEvent.Attach(&event);
 		if (metaEvent.GetType() != 0x58) continue;
 
-		//拍子記号を取得
+		//Get time signature
 		metaEvent.GetTimeSignature(&numerator, &denominator);
 		if (denominator == 0) {
-			//データ異常
+			//Data error
 			result = YN_SET_ERR("Invalid data found.", index, numerator);
 			goto EXIT;
 		}
 
-		//1小節あたりのチックタイムを更新
+		//Update tick time per bar
 		tickTimeOfBar = (numerator * m_TimeDivision * 4) / denominator;
 
-		//拍子記号更新のため1小節目開始地点として登録
+		//Register as the start point of the first bar due to time signature update
 		if (prevBarTime != totalTickTime) {
 			prevBarTime = totalTickTime;
 			result = pBarList->AddBar(totalTickTime);
@@ -800,7 +800,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ポートリスト取得
+// Get port list
 //******************************************************************************
 int SMSeqData::GetPortList(
 		SMPortList* pPortList
@@ -845,7 +845,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ファイル名登録
+// Register file name
 //******************************************************************************
 void SMSeqData::SetFileName(
 		const WCHAR* pFileName
@@ -856,7 +856,7 @@ void SMSeqData::SetFileName(
 }
 
 //******************************************************************************
-// ファイル名取得
+// Get file name
 //******************************************************************************
 const WCHAR* SMSeqData::GetFileName()
 {
@@ -864,7 +864,7 @@ const WCHAR* SMSeqData::GetFileName()
 }
 
 //******************************************************************************
-// ワイド文字列変換
+// Convert to wide string
 //******************************************************************************
 int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 {
@@ -873,13 +873,13 @@ int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 	int buffSize = 0;
 	WCHAR* wstrBuff = NULL;
 
-	//空文字の場合は変換なし
+	//No conversion if the string is empty
 	if (pStr->length() == 0) {
 		*pWstr = L"";
 		goto EXIT;
 	}
 
-	//サロゲートペアと0終端を考慮したバッファサイズ
+	//Buffer size accounting for surrogate pairs and null terminator
 	buffSize = (int)(pStr->length()) * 2 + 1;
 
 	try {
@@ -893,12 +893,12 @@ int SMSeqData::_StringToWstring(std::string* pStr, std::wstring* pWstr)
 	memset(wstrBuff, 0, sizeof(WCHAR) * buffSize);
 
 	apiresult = MultiByteToWideChar(
-						_getmbcp(),			//コードページ
-						MB_PRECOMPOSED,		//フラグ：
-						pStr->c_str(),		//変換元マルチバイト文字列
-						(int)(pStr->length()),	//変換元マルチバイト文字列バイト数
-						wstrBuff,			//変換先ワイド文字列バッファ
-						buffSize - 1		//バッファサイズ（ワイド文字数単位）
+						_getmbcp(),			//Code page
+						MB_PRECOMPOSED,		//Flags:
+						pStr->c_str(),		//Source multibyte string
+						(int)(pStr->length()),	//Source multibyte string byte count
+						wstrBuff,			//Destination wide string buffer
+						buffSize - 1		//Buffer size (in wide characters)
 					);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

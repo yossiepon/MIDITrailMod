@@ -23,9 +23,9 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// パラメータ定義
+// Parameter definitions
 //******************************************************************************
-//メッセージ種別
+//Message type
 #define SM_MSG_PLAY_STATUS     (0x00)
 #define SM_MSG_TIME            (0x01)
 #define SM_MSG_TEMPO           (0x02)
@@ -38,49 +38,49 @@ namespace SMIDILib {
 #define SM_MSG_SKIP_END        (0x14)
 #define SM_MSG_ALL_NOTE_OFF    (0x15)
 
-//演奏状態
+//Playback state
 #define SM_PLAYSTATUS_STOP       (0x00)
 #define SM_PLAYSTATUS_PLAY       (0x01)
 #define SM_PLAYSTATUS_PAUSE      (0x02)
 
-//スキップ方向
+//Skip direction
 #define SM_SKIP_BACK           (0x00)
 #define SM_SKIP_FORWARD        (0x01)
 
 
 //******************************************************************************
-// メッセージ転送クラス
+// Message transmitter class
 //******************************************************************************
 class SMIDILIB_API SMMsgTransmitter
 {
 public:
 
-	//コンストラクタ／デストラクタ
+	//Constructor / Destructor
 	SMMsgTransmitter(void);
 	virtual ~SMMsgTransmitter(void);
 
-	//初期化
+	//Initialize
 	int Initialize(SMMsgQueue* pMsgQueue);
 
-	//演奏状態
+	//Playback state
 	int PostPlayStatus(unsigned long playStatus);
 
-	//演奏時間通知
-	//  実時間(playTimeSec)は3byte(0x00FFFFFF)までの制限あり
+	//Playback time notification
+	//  Real time (playTimeSec) is limited to 3 bytes (0x00FFFFFF)
 	int PostPlayTime(unsigned long playTimeMSec, unsigned long tickTime);
 
-	//テンポ通知
+	//Tempo notification
 	int PostTempo(unsigned long bpm);
 
-	//小節番号通知：1から開始
+	//Bar number notification: starts from 1
 	int PostBar(unsigned long barNo);
 
-	//拍子記号通知
-	//  分母は最大65535まで渡せるが
-	//  MIDIの仕様では分子255／分母2の255乗まで表現できる
+	//Time signature notification
+	//  The denominator can be passed up to 65535, but
+	//  the MIDI spec allows numerator up to 255 / denominator up to 2^255
 	int PostBeat(unsigned short numerator, unsigned short denominator);
 
-	//ノートON通知
+	//Note ON notification
 	int PostNoteOn(
 				unsigned char portNo,
 				unsigned char chNo,
@@ -88,14 +88,14 @@ public:
 				unsigned char verocity
 			);
 
-	//ノートOFF通知
+	//Note OFF notification
 	int PostNoteOff(
 				unsigned char portNo,
 				unsigned char chNo,
 				unsigned char noteNo
 			);
 
-	//ピッチベンド通知
+	//Pitch bend notification
 	int PostPitchBend(
 				unsigned char portNo,
 				unsigned char chNo,
@@ -103,13 +103,13 @@ public:
 				unsigned char pitchBendSensitivity
 			);
 
-	//スキップ開始
+	//Skip start
 	int PostSkipStart(unsigned long skipDirection);
 
-	//スキップ終了
+	//Skip end
 	int PostSkipEnd(unsigned long notesCount);
 
-	//オールノートOFF
+	//All note OFF
 	int PostAllNoteOff(
 				unsigned char portNo,
 				unsigned char chNo
@@ -121,11 +121,11 @@ private:
 
 	int _Post(
 			unsigned char msg,
-			unsigned long param1, //3byteまで
-			unsigned long param2  //4byteまで
+			unsigned long param1, //up to 3 bytes
+			unsigned long param2  //up to 4 bytes
 		);
 
-	//代入とコピーコンストラクタの禁止
+	//Prohibit assignment and copy constructor
 	void operator=(const SMMsgTransmitter&);
 	SMMsgTransmitter(const SMMsgTransmitter&);
 

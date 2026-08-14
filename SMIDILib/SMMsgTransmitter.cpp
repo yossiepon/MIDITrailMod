@@ -18,7 +18,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMMsgTransmitter::SMMsgTransmitter(void)
 {
@@ -26,14 +26,14 @@ SMMsgTransmitter::SMMsgTransmitter(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMMsgTransmitter::~SMMsgTransmitter(void)
 {
 }
 
 //******************************************************************************
-// 初期化
+// Initialize
 //******************************************************************************
 int SMMsgTransmitter::Initialize(
 		SMMsgQueue* pMsgQueue
@@ -44,7 +44,7 @@ int SMMsgTransmitter::Initialize(
 }
 
 //******************************************************************************
-// 演奏状態通知
+// Notify playback status
 //******************************************************************************
 int SMMsgTransmitter::PostPlayStatus(
 		unsigned long playStatus
@@ -60,7 +60,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 演奏位置通知
+// Notify playback position
 //******************************************************************************
 int SMMsgTransmitter::PostPlayTime(
 		unsigned long playTimeMSec,
@@ -69,9 +69,9 @@ int SMMsgTransmitter::PostPlayTime(
 {
 	int result = 0;
 
-	//ポストできるデータサイズの制限があるため演奏時間(msec)は3byteまでとする
+	//Since there's a limit on postable data size, playback time (msec) is limited to 3 bytes
 	//  0x00FFFFFF = 16777215 msec = 16777 sec = 279 min = 4.6 hour
-	//この時間を越える場合はクリップする
+	//Clip the value if it exceeds this time
 	if (playTimeMSec > 0x00FFFFFF) {
 		playTimeMSec = 0x00FFFFFF;
 	}
@@ -84,7 +84,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// テンポ通知
+// Notify tempo
 //******************************************************************************
 int SMMsgTransmitter::PostTempo(
 		unsigned long tempo
@@ -100,7 +100,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 小節番号通知
+// Notify bar number
 //******************************************************************************
 int SMMsgTransmitter::PostBar(
 		unsigned long barNo
@@ -116,7 +116,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// 拍子記号通知
+// Notify time signature
 //******************************************************************************
 int SMMsgTransmitter::PostBeat(
 		unsigned short numerator,
@@ -136,7 +136,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ノートOFF通知
+// Notify note off
 //******************************************************************************
 int SMMsgTransmitter::PostNoteOff(
 		unsigned char portNo,
@@ -157,7 +157,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ノートON通知
+// Notify note on
 //******************************************************************************
 int SMMsgTransmitter::PostNoteOn(
 		unsigned char portNo,
@@ -179,7 +179,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// ピッチベンド通知
+// Notify pitch bend
 //******************************************************************************
 int SMMsgTransmitter::PostPitchBend(
 		unsigned char portNo,
@@ -201,7 +201,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// スキップ開始通知
+// Notify skip start
 //******************************************************************************
 int SMMsgTransmitter::PostSkipStart(
 		unsigned long skipDirection
@@ -217,7 +217,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// スキップ開始通知
+// Notify skip start
 //******************************************************************************
 int SMMsgTransmitter::PostSkipEnd(
 		unsigned long notesCount
@@ -233,7 +233,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// オールノートOFF通知
+// Notify all note off
 //******************************************************************************
 int SMMsgTransmitter::PostAllNoteOff(
 		unsigned char portNo,
@@ -254,12 +254,12 @@ EXIT:;
 }
 
 //******************************************************************************
-// メッセージ通知
+// Message notification
 //******************************************************************************
 int SMMsgTransmitter::_Post(
 		unsigned char event,
-		unsigned long param1, //3byteまで
-		unsigned long param2  //4byteまで
+		unsigned long param1, //up to 3 bytes
+		unsigned long param2  //up to 4 bytes
 	)
 {
 	int result = 0;

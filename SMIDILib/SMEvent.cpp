@@ -20,7 +20,7 @@ namespace SMIDILib {
 
 
 //******************************************************************************
-// コンストラクタ
+// Constructor
 //******************************************************************************
 SMEvent::SMEvent(void)
 {
@@ -29,7 +29,7 @@ SMEvent::SMEvent(void)
 }
 
 //******************************************************************************
-// デストラクタ
+// Destructor
 //******************************************************************************
 SMEvent::~SMEvent(void)
 {
@@ -37,7 +37,7 @@ SMEvent::~SMEvent(void)
 }
 
 //******************************************************************************
-// データ登録
+// Register data
 //******************************************************************************
 int SMEvent::SetData(
 		EventType type,
@@ -59,7 +59,7 @@ int SMEvent::SetData(
 	ZeroMemory(m_Data, SMEVENT_INTERNAL_DATA_SIZE);
 
 	if (size == 0) {
-		//何もしない
+		//do nothing
 	}
 	else if (size <= SMEVENT_INTERNAL_DATA_SIZE) {
 		memcpy(m_Data, pData, size);
@@ -82,7 +82,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// MIDIイベントデータ登録
+// Register MIDI event data
 //******************************************************************************
 int SMEvent::SetMIDIData(
 		unsigned char status,
@@ -100,7 +100,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysExイベントデータ登録
+// Register SysEx event data
 //******************************************************************************
 int SMEvent::SetSysExData(
 		unsigned char status,
@@ -111,8 +111,8 @@ int SMEvent::SetSysExData(
 	int result = 0;
 	unsigned char* pExData = NULL;
 
-	//ステータス 0xF0 の場合は先頭パケット
-	// → 先頭に 0xF0 をつけて送信する
+	//If status is 0xF0, it's the first packet
+	// -> Send with 0xF0 prepended
 	if (status == 0xF0) {
 		try {
 			pExData = new unsigned char[size + 1];
@@ -126,13 +126,13 @@ int SMEvent::SetSysExData(
 		result = SetData(EventSysEx, status, 0, pExData, size + 1);
 		if (result != 0) goto EXIT;
 	}
-	//ステータス 0xF7 の場合は後続パケット
-	// → 先頭に 0xF7 をつけて送信しない
+	//If status is 0xF7, it's a continuation packet
+	// -> Send without prepending 0xF7
 	else if (status == 0xF7) {
 		result = SetData(EventSysEx, status, 0, pData, size);
 		if (result != 0) goto EXIT;
 	}
-	//それ以外はエラー
+	//Otherwise, it's an error
 	else {
 		result = YN_SET_ERR("Program error.", status, 0);
 		goto EXIT;
@@ -144,7 +144,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// SysMsgイベントデータ登録
+// Register SysMsg event data
 //******************************************************************************
 int SMEvent::SetSysMsgData(
 		unsigned char status,
@@ -162,7 +162,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// メタイベントデータ登録
+// Register meta event data
 //******************************************************************************
 int SMEvent::SetMetaData(
 		unsigned char status,
@@ -181,7 +181,7 @@ EXIT:;
 }
 
 //******************************************************************************
-// イベント種別取得
+// Get event type
 //******************************************************************************
 SMEvent::EventType SMEvent::GetType()
 {
@@ -189,7 +189,7 @@ SMEvent::EventType SMEvent::GetType()
 }
 
 //******************************************************************************
-// ステータス取得
+// Get status
 //******************************************************************************
 unsigned char SMEvent::GetStatus()
 {
@@ -198,7 +198,7 @@ unsigned char SMEvent::GetStatus()
 
 
 //******************************************************************************
-// ステータス設定
+// Set status
 //******************************************************************************
 void SMEvent::SetStatus(unsigned char status)
 {
@@ -207,7 +207,7 @@ void SMEvent::SetStatus(unsigned char status)
 
 
 //******************************************************************************
-// メタイベント種別取得
+// Get meta event type
 //******************************************************************************
 unsigned char SMEvent::GetMetaType()
 {
@@ -215,7 +215,7 @@ unsigned char SMEvent::GetMetaType()
 }
 
 //******************************************************************************
-// データサイズ取得
+// Get data size
 //******************************************************************************
 unsigned long SMEvent::GetDataSize()
 {
@@ -223,7 +223,7 @@ unsigned long SMEvent::GetDataSize()
 }
 
 //******************************************************************************
-// データ位置取得
+// Get data pointer
 //******************************************************************************
 unsigned char* SMEvent::GetDataPtr()
 {
@@ -240,7 +240,7 @@ unsigned char* SMEvent::GetDataPtr()
 }
 
 //******************************************************************************
-// クリア
+// Clear
 //******************************************************************************
 void SMEvent::Clear()
 {
@@ -255,7 +255,7 @@ void SMEvent::Clear()
 }
 
 //******************************************************************************
-// ダンプ出力
+// Dump output
 //******************************************************************************
 
 void SMEvent::Dump()
