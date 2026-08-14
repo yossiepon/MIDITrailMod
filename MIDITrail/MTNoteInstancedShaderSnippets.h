@@ -4,7 +4,7 @@
 //
 // Shader snippet definitions for instanced rendering.
 //
-// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

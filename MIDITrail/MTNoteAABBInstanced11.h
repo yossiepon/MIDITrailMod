@@ -4,8 +4,9 @@
 //
 // GPU-instanced note renderer for AABB scenes.
 //
+// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2026 Ced (MIDITrail Mod Mod). All Rights Reserved.
-// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

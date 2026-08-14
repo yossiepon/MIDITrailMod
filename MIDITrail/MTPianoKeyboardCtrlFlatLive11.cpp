@@ -4,7 +4,8 @@
 //
 // Piano keyboard controller (Flat, Live).
 //
-// Copyright (C) 2026 yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
