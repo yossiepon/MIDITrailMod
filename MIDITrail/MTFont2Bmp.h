@@ -20,8 +20,8 @@
 //******************************************************************************
 // Parameter definitions
 //******************************************************************************
-//Maximum bitmap size: the typical maximum size allowed for a texture image
-#define MTFONT2BMP_MAX_BMP_WIDTH  (2048)
+//Maximum bitmap size: D3D11 Feature Level 11 supports up to 16384
+#define MTFONT2BMP_MAX_BMP_WIDTH  (4096)
 
 //******************************************************************************
 // Font-to-bitmap conversion class
