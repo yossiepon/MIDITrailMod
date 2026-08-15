@@ -16,7 +16,6 @@
 #define SMIDILIB_API __declspec(dllimport)
 #endif
 
-#include "mmsystem.h"
 #include "ISMOutDevCtrl.h"
 #include <string>
 #include <list>
@@ -30,6 +29,9 @@ namespace SMIDILib {
 //******************************************************************************
 //Max port count: A,B,C,D,E,F
 #define SM_MIDIOUT_PORT_NUM_MAX   (6)
+
+// Max product name length (matches MAXPNAMELEN from mmsystem.h)
+#define SM_MIDIOUT_PRODUCT_NAME_MAX   (32)
 
 //******************************************************************************
 // MIDI output device control class
@@ -75,20 +77,22 @@ private:
 	typedef struct {
 		bool isExist;
 		unsigned long devId;
-		HMIDIOUT hMIDIOut;
 	} SMPortInfo;
 
 	SMPortInfo m_PortInfo[SM_MIDIOUT_PORT_NUM_MAX];
 
 	typedef struct {
 		unsigned long devId;
-		char productName[MAXPNAMELEN];
+		char productName[SM_MIDIOUT_PRODUCT_NAME_MAX];
 	} SMOutDevInfo;
 
 	typedef std::list<SMOutDevInfo> SMOutDevList;
 	typedef std::list<SMOutDevInfo>::iterator SMOutDevListItr;
 
 	SMOutDevList m_OutDevList;
+
+	struct ImplData;
+	ImplData* m_pImpl;
 
 	int _InitDevList();
 
@@ -101,4 +105,3 @@ private:
 } // end of namespace
 
 #pragma warning(default:4251)
-
