@@ -257,6 +257,7 @@
     <ClInclude Include="SMMsgQueue.h" />
     <ClInclude Include="SMMsgTransmitter.h" />
     <ClInclude Include="SMNoteList.h" />
+    <ClInclude Include="ISMOutDevCtrl.h" />
     <ClInclude Include="SMOutDevCtrl.h" />
     <ClInclude Include="SMPortList.h" />
     <ClInclude Include="SMRcpConv.h" />

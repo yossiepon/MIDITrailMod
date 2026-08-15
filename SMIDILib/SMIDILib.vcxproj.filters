@@ -120,6 +120,9 @@
     <ClInclude Include="SMInDevCtrl.h">
       <Filter>Sources\DeviceIO</Filter>
     </ClInclude>
+    <ClInclude Include="ISMOutDevCtrl.h">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClInclude>
     <ClInclude Include="SMOutDevCtrl.h">
       <Filter>Sources\DeviceIO</Filter>
     </ClInclude>

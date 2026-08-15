@@ -17,6 +17,7 @@
 #endif
 
 #include "mmsystem.h"
+#include "ISMOutDevCtrl.h"
 #include <string>
 #include <list>
 
@@ -33,7 +34,7 @@ namespace SMIDILib {
 //******************************************************************************
 // MIDI output device control class
 //******************************************************************************
-class SMIDILIB_API SMOutDevCtrl
+class SMIDILIB_API SMOutDevCtrl : public ISMOutDevCtrl
 {
 public:
 
