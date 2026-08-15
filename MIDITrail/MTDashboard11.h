@@ -76,6 +76,9 @@ private:
 	MTStaticCaption11 m_Title;
 	MTStaticCaption11 m_FileName;
 	MTDynamicCaption11 m_Counter;
+	UINT m_Dpi;
+	std::wstring m_TitleText;
+	std::wstring m_FileNameText;
 
 	float m_PosCounterX;
 	float m_PosCounterY;
@@ -102,6 +105,9 @@ private:
 	bool m_isMonitoring;
 	WCHAR m_MIDIINDevName[256];
 
+	UINT _GetDpi();
+	unsigned long _GetScaledFontSize();
+	int _RecreateCaptions();
 	int _GetCounterPos(float* pX, float* pY);
 	int _GetCounterStr(WCHAR* pStr, unsigned long bufSize);
 	int _LoadConfFile(const TCHAR* pSceneName);

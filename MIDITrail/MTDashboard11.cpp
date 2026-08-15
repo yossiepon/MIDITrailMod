@@ -30,6 +30,7 @@ MTDashboard11::MTDashboard11()
 	m_hWnd = NULL;
 	m_pDevice = NULL;
 	m_pContext = NULL;
+	m_Dpi = USER_DEFAULT_SCREEN_DPI;
 	m_PosCounterX = 0.0f;
 	m_PosCounterY = 0.0f;
 	m_CounterMag = MTDASHBOARD11_DEFAULT_MAGRATE;
@@ -85,6 +86,7 @@ int MTDashboard11::Create(
 	Release();
 
 	m_hWnd = hWnd;
+	m_Dpi = _GetDpi();
 
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
@@ -121,23 +123,28 @@ int MTDashboard11::Create(
 		fileName = L" ";
 	}
 
+	m_TitleText = title;
+	m_FileNameText = fileName;
+
+	unsigned long scaledFontSize = _GetScaledFontSize();
+
 	// Title caption
 	result = m_Title.Create(pDevice, pContext,
-				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+				MTDASHBOARD11_FONTNAME, scaledFontSize,
 				title.c_str());
 	if (result != 0) goto EXIT;
 	m_Title.SetColor(m_CaptionColor);
 
 	// File name caption
 	result = m_FileName.Create(pDevice, pContext,
-				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+				MTDASHBOARD11_FONTNAME, scaledFontSize,
 				fileName.c_str());
 	if (result != 0) goto EXIT;
 	m_FileName.SetColor(m_CaptionColor);
 
 	// Counter caption
 	result = m_Counter.Create(pDevice, pContext,
-				MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+				MTDASHBOARD11_FONTNAME, scaledFontSize,
 				MTDASHBOARD11_COUNTER_CHARS, MTDASHBOARD11_COUNTER_SIZE);
 	if (result != 0) goto EXIT;
 	m_Counter.SetColor(m_CaptionColor);
@@ -178,16 +185,21 @@ int MTDashboard11::Draw(
 
 	if (!m_isEnable) goto EXIT;
 
-	if (m_isEnableFileName) {
-		result = m_FileName.Draw(pContext,
+	{
+		MTStaticCaption11& caption = m_isEnableFileName ? m_FileName : m_Title;
+		unsigned long texH = 0, texW = 0;
+		caption.GetTextureSize(&texH, &texW);
+
+		float captionMag = MTDASHBOARD11_DEFAULT_MAGRATE;
+		float availableWidth = (float)screenWidth - MTDASHBOARD11_FRAMESIZE * 2.0f;
+		float captionWidth = (float)texW * captionMag;
+		if (captionWidth > availableWidth && texW > 0) {
+			captionMag = availableWidth / (float)texW;
+		}
+
+		result = caption.Draw(pContext,
 					MTDASHBOARD11_FRAMESIZE, MTDASHBOARD11_FRAMESIZE,
-					m_CounterMag, screenWidth, screenHeight);
-		if (result != 0) goto EXIT;
-	}
-	else {
-		result = m_Title.Draw(pContext,
-					MTDASHBOARD11_FRAMESIZE, MTDASHBOARD11_FRAMESIZE,
-					m_CounterMag, screenWidth, screenHeight);
+					captionMag, screenWidth, screenHeight);
 		if (result != 0) goto EXIT;
 	}
 
@@ -197,10 +209,28 @@ int MTDashboard11::Draw(
 	result = m_Counter.SetString(counter);
 	if (result != 0) goto EXIT;
 
-	result = m_Counter.Draw(pContext,
-				m_PosCounterX, m_PosCounterY,
-				m_CounterMag, screenWidth, screenHeight);
-	if (result != 0) goto EXIT;
+	{
+		unsigned long cTexH = 0, cTexW = 0;
+		m_Counter.GetTextureSize(&cTexH, &cTexW);
+
+		unsigned long charWidth = 0;
+		if (wcslen(MTDASHBOARD11_COUNTER_CHARS) > 0) {
+			charWidth = cTexW / (unsigned long)wcslen(MTDASHBOARD11_COUNTER_CHARS);
+		}
+		float counterMag = m_CounterMag;
+		float counterDrawnW = (float)(charWidth * (unsigned long)wcslen(counter)) * counterMag;
+		float availW = (float)screenWidth - MTDASHBOARD11_FRAMESIZE * 2.0f;
+		if (counterDrawnW > availW && counterDrawnW > 0.0f) {
+			counterMag *= availW / counterDrawnW;
+		}
+
+		float counterY = (float)screenHeight - (float)cTexH * counterMag - MTDASHBOARD11_FRAMESIZE;
+
+		result = m_Counter.Draw(pContext,
+					m_PosCounterX, counterY,
+					counterMag, screenWidth, screenHeight);
+		if (result != 0) goto EXIT;
+	}
 
 EXIT:;
 	return result;
@@ -224,19 +254,6 @@ int MTDashboard11::_GetCounterPos(float* pX, float* pY)
 
 	unsigned long th = 0, tw = 0;
 	m_Counter.GetTextureSize(&th, &tw);
-
-	unsigned long charWidth = 0;
-	if (wcslen(MTDASHBOARD11_COUNTER_CHARS) > 0) {
-		charWidth = tw / (unsigned long)wcslen(MTDASHBOARD11_COUNTER_CHARS);
-	}
-	unsigned long captionWidth = charWidth * MTDASHBOARD11_COUNTER_SIZE;
-
-	if (((cw - (unsigned long)(MTDASHBOARD11_FRAMESIZE * 2)) < captionWidth) && (tw > 0)) {
-		float newMag = (float)(cw - (unsigned long)(MTDASHBOARD11_FRAMESIZE * 2)) / (float)captionWidth;
-		if (m_CounterMag > newMag) {
-			m_CounterMag = newMag;
-		}
-	}
 
 	*pX = MTDASHBOARD11_FRAMESIZE;
 	*pY = (float)ch - ((float)th * m_CounterMag) - MTDASHBOARD11_FRAMESIZE;
@@ -360,6 +377,12 @@ void MTDashboard11::Reset()
 //******************************************************************************
 void MTDashboard11::OnWindowResize()
 {
+	UINT newDpi = _GetDpi();
+	if (newDpi != m_Dpi) {
+		m_Dpi = newDpi;
+		_RecreateCaptions();
+	}
+
 	m_CounterMag = MTDASHBOARD11_DEFAULT_MAGRATE;
 	_GetCounterPos(&m_PosCounterX, &m_PosCounterY);
 }
@@ -407,11 +430,57 @@ int MTDashboard11::SetMIDIINDeviceName(const TCHAR* pName)
 
 	if (m_pDevice != NULL && m_pContext != NULL) {
 		result = m_Title.Create(m_pDevice, m_pContext,
-					MTDASHBOARD11_FONTNAME, MTDASHBOARD11_FONTSIZE,
+					MTDASHBOARD11_FONTNAME, _GetScaledFontSize(),
 					titleStr);
 		if (result != 0) goto EXIT;
 		m_Title.SetColor(m_CaptionColor);
 	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// DPI helpers
+//******************************************************************************
+UINT MTDashboard11::_GetDpi()
+{
+	if (m_hWnd != NULL) {
+		return GetDpiForWindow(m_hWnd);
+	}
+	return USER_DEFAULT_SCREEN_DPI;
+}
+
+unsigned long MTDashboard11::_GetScaledFontSize()
+{
+	return MulDiv(MTDASHBOARD11_FONTSIZE, m_Dpi, USER_DEFAULT_SCREEN_DPI);
+}
+
+int MTDashboard11::_RecreateCaptions()
+{
+	int result = 0;
+	unsigned long scaledFontSize = _GetScaledFontSize();
+
+	m_Title.Release();
+	result = m_Title.Create(m_pDevice, m_pContext,
+				MTDASHBOARD11_FONTNAME, scaledFontSize,
+				m_TitleText.c_str());
+	if (result != 0) goto EXIT;
+	m_Title.SetColor(m_CaptionColor);
+
+	m_FileName.Release();
+	result = m_FileName.Create(m_pDevice, m_pContext,
+				MTDASHBOARD11_FONTNAME, scaledFontSize,
+				m_FileNameText.c_str());
+	if (result != 0) goto EXIT;
+	m_FileName.SetColor(m_CaptionColor);
+
+	m_Counter.Release();
+	result = m_Counter.Create(m_pDevice, m_pContext,
+				MTDASHBOARD11_FONTNAME, scaledFontSize,
+				MTDASHBOARD11_COUNTER_CHARS, MTDASHBOARD11_COUNTER_SIZE);
+	if (result != 0) goto EXIT;
+	m_Counter.SetColor(m_CaptionColor);
 
 EXIT:;
 	return result;
