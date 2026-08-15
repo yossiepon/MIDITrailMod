@@ -11,6 +11,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "SMFileReader.h"
+#include "SMSimpleList.h"
 #include "SMCommon.h"
 #include "tchar.h"
 #include "shlwapi.h"
@@ -19,6 +20,8 @@ using namespace YNBaseLib;
 
 namespace SMIDILib {
 
+SMFileReader::LoadProgressFunc SMFileReader::s_ProgressFunc = NULL;
+void* SMFileReader::s_ProgressUserData = NULL;
 
 //******************************************************************************
 // Constructor
@@ -79,6 +82,9 @@ int SMFileReader::Load(
 	int result = 0;
 	unsigned long i = 0;
 	HMMIO hFile = NULL;
+	HANDLE hOsFile = INVALID_HANDLE_VALUE;
+	HANDLE hMapping = NULL;
+	LPVOID pMapView = NULL;
 	SMFChunkTypeSection chunkTypeSection;
 	SMFChunkDataSection chunkDataSection;
 	SMFChunkTypeSection chunkTypeSectionOfTrack;
@@ -90,16 +96,45 @@ int SMFileReader::Load(
 	}
 
 	pSeqData->Clear();
+	SMSimpleList::ResetTruncatedFlag();
 
 	//Open log file
 	result = _OpenLogFile();
 	if (result != 0 ) goto EXIT;
 
-	//Open file
-	hFile = mmioOpenW((LPWSTR)pSMFPath, NULL, MMIO_READ);
+	//Try memory-mapped I/O first
+	hOsFile = CreateFileW(pSMFPath, GENERIC_READ, FILE_SHARE_READ, NULL,
+						  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hOsFile != INVALID_HANDLE_VALUE) {
+		DWORD fileSizeHigh = 0;
+		DWORD fileSize = GetFileSize(hOsFile, &fileSizeHigh);
+		if (fileSizeHigh == 0 && fileSize > 0) {
+			hMapping = CreateFileMapping(hOsFile, NULL, PAGE_READONLY, 0, 0, NULL);
+			if (hMapping != NULL) {
+				pMapView = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
+				if (pMapView != NULL) {
+					MMIOINFO mmioInfo;
+					ZeroMemory(&mmioInfo, sizeof(MMIOINFO));
+					mmioInfo.fccIOProc = FOURCC_MEM;
+					mmioInfo.cchBuffer = fileSize;
+					mmioInfo.pchBuffer = (HPSTR)pMapView;
+					hFile = mmioOpen(NULL, &mmioInfo, MMIO_READ);
+				}
+			}
+		}
+	}
+
+	//Fallback to standard mmio if memory mapping failed
 	if (hFile == NULL) {
-		result = YN_SET_ERR("File open error.", GetLastError(), 0);
-		goto EXIT;
+		if (pMapView != NULL) { UnmapViewOfFile(pMapView); pMapView = NULL; }
+		if (hMapping != NULL) { CloseHandle(hMapping); hMapping = NULL; }
+		if (hOsFile != INVALID_HANDLE_VALUE) { CloseHandle(hOsFile); hOsFile = INVALID_HANDLE_VALUE; }
+
+		hFile = mmioOpenW((LPWSTR)pSMFPath, NULL, MMIO_READ);
+		if (hFile == NULL) {
+			result = YN_SET_ERR("File open error.", GetLastError(), 0);
+			goto EXIT;
+		}
 	}
 
 	//Skip RIFF header
@@ -111,23 +146,18 @@ int SMFileReader::Load(
 	if (result != 0 ) goto EXIT;
 
 	if ((chunkDataSection.format != 0) && (chunkDataSection.format != 1)) {
-		//Formats other than 0 and 1 are not supported
 		result = YN_SET_ERR("Unsupported SMF format.", chunkDataSection.format, 0);
 		goto EXIT;
 	}
 	if ( chunkDataSection.ntracks == 0) {
-		//Data error
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 	if ( chunkDataSection.timeDivision == 0) {
-		//Data error
 		result = YN_SET_ERR("Invalid data found.", 0, 0);
 		goto EXIT;
 	}
 	if ((chunkDataSection.timeDivision & 0x80000000) != 0) {
-		//Spec allows negative division to mean delta time is real time
-		//Not common, so not supported for now
 		result = YN_SET_ERR("Unsupported SMF format.", chunkDataSection.timeDivision, 0);
 		goto EXIT;
 	}
@@ -141,12 +171,15 @@ int SMFileReader::Load(
 		if (result != 0 ) goto EXIT;
 
 		//Read track events
-		result = _ReadTrackEvents(hFile, chunkTypeSectionOfTrack.chunkSize, &pTrack);
+		result = _ReadTrackEvents(hFile, chunkTypeSectionOfTrack.chunkSize, &pTrack,
+								 i, chunkDataSection.ntracks);
 		if (result != 0 ) goto EXIT;
 
 		result = pSeqData->AddTrack(pTrack);
 		if (result != 0 ) goto EXIT;
 		pTrack = NULL;
+
+		if (SMSimpleList::WasTruncated()) break;
 	}
 
 	//Close track
@@ -161,6 +194,9 @@ EXIT:;
 		mmioClose(hFile, 0);
 		hFile = NULL;
 	}
+	if (pMapView != NULL) UnmapViewOfFile(pMapView);
+	if (hMapping != NULL) CloseHandle(hMapping);
+	if (hOsFile != INVALID_HANDLE_VALUE) CloseHandle(hOsFile);
 	_CloseLogFile();
 	return result;
 }
@@ -323,7 +359,9 @@ EXIT:;
 int SMFileReader::_ReadTrackEvents(
 		HMMIO hFile,
 		unsigned long chunkSize,
-		SMTrack** pPtrTrack
+		SMTrack** pPtrTrack,
+		unsigned long trackIndex,
+		unsigned long trackCount
 	)
 {
 	int result = 0;
@@ -333,8 +371,12 @@ int SMFileReader::_ReadTrackEvents(
 	unsigned long offset = 0;
 	unsigned char portNo = 0;
 	bool isEndOfTrack = false;
+	unsigned long lastProgressRead = 0;
 	SMEvent event;
 	SMTrack* pTrack = NULL;
+
+	static const unsigned long PROGRESS_GRANULARITY = 10000;
+	static const unsigned long PROGRESS_INTERVAL = 256 * 1024;
 
 	try {
 		pTrack = new SMTrack();
@@ -372,6 +414,19 @@ int SMFileReader::_ReadTrackEvents(
 		//Add to event list
 		result = pTrack->AddDataSet(deltaTime, &event, portNo);
 		if (result != 0) goto EXIT;
+
+		if (SMSimpleList::WasTruncated()) break;
+
+		//Progress callback
+		if (s_ProgressFunc != NULL && (readSize - lastProgressRead) >= PROGRESS_INTERVAL) {
+			unsigned long fraction = (chunkSize > 0)
+				? (unsigned long)((unsigned long long)readSize * PROGRESS_GRANULARITY / chunkSize)
+				: PROGRESS_GRANULARITY;
+			unsigned long current = trackIndex * PROGRESS_GRANULARITY + fraction;
+			unsigned long total = trackCount * PROGRESS_GRANULARITY;
+			s_ProgressFunc(current, total, s_ProgressUserData);
+			lastProgressRead = readSize;
+		}
 
 		//End of track
 		if (isEndOfTrack) {
@@ -1023,6 +1078,18 @@ int SMFileReader::_WriteLogEventMeta(
 
 EXIT:;
 	return result;
+}
+
+//******************************************************************************
+// Set progress callback
+//******************************************************************************
+void SMFileReader::SetLoadProgressCallback(
+		LoadProgressFunc func,
+		void* userData
+	)
+{
+	s_ProgressFunc = func;
+	s_ProgressUserData = userData;
 }
 
 } // end of namespace
