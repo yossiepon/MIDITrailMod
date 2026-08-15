@@ -112,9 +112,6 @@ int MTNoteCylindricalLive11::_CreateVertexOfNote(
 	if (note.endTime != 0) {
 		endElapsed = curTimeMs - note.endTime;
 	}
-	if (startElapsed < endElapsed + 50) {
-		startElapsed = endElapsed + 50;
-	}
 
 	m_NoteDesignLocal.GetNoteBoxVirtexPosLive(
 		startElapsed, note.portNo, note.chNo, note.noteNo,

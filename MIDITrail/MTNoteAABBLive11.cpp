@@ -138,9 +138,6 @@ int MTNoteAABBLive11::_CreateVertexOfNote(
 	if (note.endTime != 0) {
 		endElapsed = curTimeMs - note.endTime;
 	}
-	if (startElapsed < endElapsed + 50) {
-		startElapsed = endElapsed + 50;
-	}
 
 	// Color
 	Color color = m_NoteDesignLocal.GetNoteBoxColor(note.portNo, note.chNo, note.noteNo);
