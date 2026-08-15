@@ -148,7 +148,7 @@ int MIDITrailApp::Initialize(
 	LoadStringW(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_MIDITRAIL, m_WndClassName, MAX_LOADSTRING);
 
-	WCHAR* pVersion = NULL;
+	const WCHAR* pVersion = NULL;
 
 	//Version string
 #ifdef _WIN64
@@ -2777,6 +2777,8 @@ int MIDITrailApp::_AddMIDIFile(
 	SMFileReader smfReader;
 	int portNo = -1;
 	int chNo = -1;
+	WCHAR* pPortNo = NULL;
+	WCHAR* pChNo = NULL;
 
 	//If the extension is *.mid
 	if (YNPathUtil::IsFileExtMatch(pFilePath, L".mid")) {
@@ -2808,7 +2810,7 @@ int MIDITrailApp::_AddMIDIFile(
 	if (result != 0) goto EXIT;
 
 	//Extract the port number if it is included in the file name
-	WCHAR *pPortNo = wcsstr(pPath, L"port");
+	pPortNo = wcsstr(pPath, L"port");
 	if(pPortNo != NULL) {
 		portNo = towlower(*(pPortNo + 4)) - L'a';
 
@@ -2820,7 +2822,7 @@ int MIDITrailApp::_AddMIDIFile(
 	}
 
 	//Extract the channel number if it is included in the file name
-	WCHAR *pChNo = wcsstr(pPath, L"ch");
+	pChNo = wcsstr(pPath, L"ch");
 	if(pChNo != NULL) {
 		WCHAR bufChNo[3];
 		wcsncpy_s(bufChNo, 3, pChNo + 2, 2);
@@ -2957,7 +2959,7 @@ int MIDITrailApp::_SetPortDev(
 	int result = 0;
 	unsigned char portNo = 0;
 	TCHAR devName[MAXPNAMELEN];
-	char* portName[] = {"PortA", "PortB", "PortC", "PortD", "PortE", "PortF"};
+	const char* portName[] = {"PortA", "PortB", "PortC", "PortD", "PortE", "PortF"};
 
 	result = m_MIDIConf.SetCurSection(_T("MIDIOUT"));
 	if (result != 0) goto EXIT;
@@ -3372,7 +3374,7 @@ EXIT:;
 int MIDITrailApp::_SaveSceneType()
 {
 	int result = 0;
-	TCHAR* pType = _T("");
+	const TCHAR* pType = _T("");
 
 	//TAG: add scene
 	switch (m_SelectedSceneType) {

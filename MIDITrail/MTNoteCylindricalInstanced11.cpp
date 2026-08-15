@@ -311,6 +311,10 @@ int MTNoteCylindricalInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
 {
 	int result = 0;
 
+	// C++20: declare before the first goto below so the jump to EXIT does not
+	// bypass this variable's initialization while it remains in scope (C2362).
+	unsigned long indices[6] = {};
+
 	// corner: (x_mask, r_mask, angle_mask)
 	// x_mask: 0=xStart, 1=xEnd (not used for Ring flat quads, kept at 0)
 	// r_mask: 0=inner(0), 1=outer(1)
@@ -327,10 +331,8 @@ int MTNoteCylindricalInstanced11::_CreateTemplateGeometry(ID3D11Device* pDevice)
 	                               verts, sizeof(verts), &m_pTemplateVB);
 	if (result != 0) goto EXIT;
 
-	unsigned long indices[6] = {
-		0, 1, 2,
-		0, 2, 3,
-	};
+	indices[0] = 0; indices[1] = 1; indices[2] = 2;
+	indices[3] = 0; indices[4] = 2; indices[5] = 3;
 
 	result = CreateImmutableBuffer(pDevice, D3D11_BIND_INDEX_BUFFER,
 	                               indices, sizeof(indices), &m_pIndexBuffer);

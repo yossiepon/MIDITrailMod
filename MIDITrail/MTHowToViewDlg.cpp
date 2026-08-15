@@ -185,7 +185,7 @@ int MTHowToViewDlg::_LoadHowToBmp()
 	HANDLE hMemBmpPixel = NULL;
 	BYTE* pBmpPixcel = NULL;
 	TCHAR bmpFilePath[_MAX_PATH] = {_T('\0')};
-	TCHAR* pBmpFileName[3] = { MT_IMGFILE_HOWTOVIEW1, MT_IMGFILE_HOWTOVIEW2, MT_IMGFILE_HOWTOVIEW3 };
+	const TCHAR* pBmpFileName[3] = { MT_IMGFILE_HOWTOVIEW1, MT_IMGFILE_HOWTOVIEW2, MT_IMGFILE_HOWTOVIEW3 };
 	DWORD bmpPixelDataSize = 0;
 
 	_Clear();

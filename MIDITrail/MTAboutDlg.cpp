@@ -120,8 +120,8 @@ int MTAboutDlg::_OnInitDlg(
 {
 	int result = 0;
 	BOOL bresult = FALSE;
-	WCHAR* pVersion = NULL;
-	WCHAR* pCopyright = NULL;
+	const WCHAR* pVersion = NULL;
+	const WCHAR* pCopyright = NULL;
 
 	//Version string
 #ifdef _WIN64

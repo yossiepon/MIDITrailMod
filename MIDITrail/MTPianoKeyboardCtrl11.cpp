@@ -102,10 +102,11 @@ int MTPianoKeyboardCtrl11::_BuildPerKeyIndex(
 	)
 {
 	int result = 0;
+	unsigned long totalNotes = 0;
 
 	if (m_pNoteTracker == NULL) goto EXIT;
 
-	unsigned long totalNotes = m_pNoteTracker->GetNoteCount();
+	totalNotes = m_pNoteTracker->GetNoteCount();
 
 	ZeroMemory(pSub->keyOffset, sizeof(pSub->keyOffset));
 	for (unsigned long i = 0; i < totalNotes; i++) {
