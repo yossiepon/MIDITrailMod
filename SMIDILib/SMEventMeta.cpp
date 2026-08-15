@@ -147,7 +147,7 @@ int SMEventMeta::GetText(
 		}
 	};
 	pText->erase(std::find_if(pText->rbegin(), pText->rend(),
-		std::not1(std::ptr_fun<int, int>(local_func::isspace))).base(), pText->end());
+		[](int ch) { return !local_func::isspace(ch); }).base(), pText->end());
 
 
 

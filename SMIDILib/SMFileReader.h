@@ -157,7 +157,7 @@ private:
 
 	int _OpenLogFile();
 	int _CloseLogFile();
-	int _WriteLog(char* pText);
+	int _WriteLog(const char* pText);
 	int _WriteLogChunkHeader(
 				SMFChunkTypeSection* pChunkTypeSection,
 				SMFChunkDataSection* pChunkDataSection

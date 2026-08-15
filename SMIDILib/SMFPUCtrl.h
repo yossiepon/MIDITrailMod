@@ -91,7 +91,7 @@ private:
 	SMFPUCtrl(const SMFPUCtrl&);
 
 	//Display current control word
-	void _DisplayCurCtrl(TCHAR* pTitle);
+	void _DisplayCurCtrl(const TCHAR* pTitle);
 
 };
 

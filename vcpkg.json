@@ -3,6 +3,7 @@
   "version-string": "1.4.1",
   "description": "MIDITrail - MIDI visualizer (DX11 migration)",
   "dependencies": [
-    "directxtk"
+    "directxtk",
+    "libremidi"
   ]
 }

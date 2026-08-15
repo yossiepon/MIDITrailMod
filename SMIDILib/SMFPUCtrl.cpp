@@ -175,7 +175,7 @@ bool SMFPUCtrl::IsLocked()
 // Display floating-point control word
 //******************************************************************************
 void SMFPUCtrl::_DisplayCurCtrl(
-		TCHAR* pTitle
+		const TCHAR* pTitle
 	)
 {
 //	errno_t eresult = 0;

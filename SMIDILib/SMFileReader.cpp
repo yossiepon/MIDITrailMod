@@ -810,7 +810,7 @@ EXIT:;
 //******************************************************************************
 // Log output
 //******************************************************************************
-int SMFileReader::_WriteLog(char* pText)
+int SMFileReader::_WriteLog(const char* pText)
 {
 	int result = 0;
 	size_t size = 0;
@@ -915,7 +915,7 @@ int SMFileReader::_WriteLogEventMIDI(
 	)
 {
 	int result = 0;
-	char* cmd = "";
+	const char* cmd = "";
 	char msg[256];
 
 	if (!m_IsLogOut) goto EXIT;
@@ -985,7 +985,7 @@ int SMFileReader::_WriteLogEventMeta(
 	)
 {
 	int result = 0;
-	char* cmd = "";
+	const char* cmd = "";
 	char msg[256];
 	unsigned long i = 0;
 

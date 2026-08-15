@@ -342,7 +342,7 @@ bool SMRcpConv::IsSupportFileExt(
 //******************************************************************************
 const WCHAR* SMRcpConv::GetOpenFileNameFilter()
 {
-	WCHAR* pFilter =
+	const WCHAR* pFilter =
 		L"MIDI File (*.mid *.rcp *.r36 *.g36)\0*.mid;*.rcp;*.r36;*.g36\0"
 		L"Standard MIDI File (*.mid)\0*.mid\0"
 		L"Recomposer Data File (*.rcp *.r36 *.g36)\0*.rcp;*.r36;*.g36\0"
