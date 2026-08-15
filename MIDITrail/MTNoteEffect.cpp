@@ -167,6 +167,18 @@ int MTNoteEffect::Update(
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (!m_Status[i].isActive) continue;
 
+		// Release slots for notes past their end time + release duration
+		// (bypasses prefix-max deactivation barrier).
+		// Live mode has endTimeMs==0 until NoteOff, so this is safe for both modes.
+		if (m_Status[i].endTimeMs != 0) {
+			unsigned long releaseEnd = m_Status[i].endTimeMs
+				+ m_pNoteDesign->GetRippleReleaseDuration();
+			if (m_PlayTimeMSec > releaseEnd) {
+				m_Status[i].isActive = false;
+				continue;
+			}
+		}
+
 		MTNoteEnvelopeResult env = m_pNoteDesign->CalcNoteEnvelope(
 			m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
 		m_Status[i].keyDownRate = env.keyDownRate;
