@@ -82,7 +82,6 @@ int MTScenePianoRollRingBase11::Create(
 	if (m_pGridRing) _RegisterComponent(m_pGridRing);
 	_RegisterComponent(&m_TimeIndicator);
 	_RegisterComponent(&m_PictBoard);
-	_RegisterComponent(&m_Dashboard);
 	_RegisterComponent(&m_NotePitchBend);
 	_RegisterModeComponents();
 
@@ -172,9 +171,9 @@ int MTScenePianoRollRingBase11::_DrawSceneComponents(
 	{
 		RECT rect;
 		GetClientRect(m_hWnd, &rect);
-		result = m_Dashboard.Draw(pContext,
-		                          rect.right - rect.left,
-		                          rect.bottom - rect.top);
+		result = _DrawDashboard(pContext,
+		                        rect.right - rect.left,
+		                        rect.bottom - rect.top);
 		if (result != 0) goto EXIT;
 	}
 
@@ -252,7 +251,7 @@ void MTScenePianoRollRingBase11::SetEffect(MTEffectType type, bool isEnable)
 			m_Stars.SetEnable(isEnable);
 			break;
 		case MTEffectCounter:
-			m_Dashboard.SetEnable(isEnable);
+			_SetDashboardEnable(isEnable);
 			break;
 		case MTEffectBackgroundImage:
 			m_BackgroundImage.SetEnable(isEnable);
@@ -287,7 +286,7 @@ void MTScenePianoRollRingBase11::SetPlaySpeedRatio(unsigned long ratio)
 void MTScenePianoRollRingBase11::OnWindowResize()
 {
 	m_BackgroundImage.OnWindowResize();
-	m_Dashboard.OnWindowResize();
+	_OnDashboardWindowResize();
 }
 
 //******************************************************************************
@@ -319,4 +318,26 @@ float MTScenePianoRollRingBase11::_GetViewpointCompensation() const
 void MTScenePianoRollRingBase11::_Reset()
 {
 	MTSceneBase11::_Reset();
+}
+
+//******************************************************************************
+// Dashboard virtual methods (default: Playback dashboard)
+//******************************************************************************
+int MTScenePianoRollRingBase11::_DrawDashboard(
+		ID3D11DeviceContext* pContext,
+		unsigned int screenWidth,
+		unsigned int screenHeight
+	)
+{
+	return m_Dashboard.Draw(pContext, screenWidth, screenHeight);
+}
+
+void MTScenePianoRollRingBase11::_OnDashboardWindowResize()
+{
+	m_Dashboard.OnWindowResize();
+}
+
+void MTScenePianoRollRingBase11::_SetDashboardEnable(bool isEnable)
+{
+	m_Dashboard.SetEnable(isEnable);
 }

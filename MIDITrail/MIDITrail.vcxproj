@@ -295,6 +295,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClCompile Include="MTStaticCaption11.cpp" />
     <ClCompile Include="MTDynamicCaption11.cpp" />
     <ClCompile Include="MTDashboard11.cpp" />
+    <ClCompile Include="MTDashboardLive11.cpp" />
     <ClCompile Include="MTNoteTrackerBase.cpp" />
     <ClCompile Include="MTNoteTracker.cpp" />
     <ClCompile Include="MTNoteTrackerLive.cpp" />
@@ -388,6 +389,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClInclude Include="MTStaticCaption11.h" />
     <ClInclude Include="MTDynamicCaption11.h" />
     <ClInclude Include="MTDashboard11.h" />
+    <ClInclude Include="MTDashboardLive11.h" />
     <ClInclude Include="IMTSceneManagedComponent.h" />
     <ClInclude Include="MTSceneUpdateContext.h" />
     <ClInclude Include="MTSceneComponent11.h" />

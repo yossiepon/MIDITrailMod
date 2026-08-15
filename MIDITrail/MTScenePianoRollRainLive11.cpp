@@ -73,11 +73,10 @@ int MTScenePianoRollRainLive11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 	m_NoteTrackerLive.AddListener((MTPianoKeyboardCtrlRainLive11*)m_pKeyboardCtrl, NoteEventType::Note);
 
-	// Dashboard (Live monitor mode)
-	result = m_Dashboard.Create(pDevice, pContext, GetName(), NULL, m_hWnd);
+	// Dashboard (Live monitor)
+	result = m_DashboardLive.Create(pDevice, pContext, GetName(), m_hWnd);
 	if (result != 0) goto EXIT;
-	m_Dashboard.SetMonitorMode(true, _T(""));
-	m_NoteTrackerLive.AddListener(&m_Dashboard, NoteEventType::Note);
+	m_NoteTrackerLive.AddListener(&m_DashboardLive, NoteEventType::Note);
 
 EXIT:;
 	return result;
@@ -88,6 +87,7 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRollRainLive11::_RegisterModeComponents()
 {
+	_RegisterComponent(&m_DashboardLive);
 	_RegisterComponent(&m_NoteTrackerLive);
 	_RegisterComponent(m_pNoteRainLive);
 	_RegisterComponent(m_pKeyboardCtrl);
@@ -126,8 +126,7 @@ int MTScenePianoRollRainLive11::OnPlayStart()
 {
 	MTScenePianoRollRainBase11::OnPlayStart();
 	m_isMonitoringActive = true;
-	m_Dashboard.SetMonitoringStatus(true);
-	m_Dashboard.SetMIDIINDeviceName(GetParam("MIDI_IN_DEVICE_NAME"));
+	m_DashboardLive.SetMonitoringStatus(true);
 	return 0;
 }
 
@@ -140,7 +139,7 @@ int MTScenePianoRollRainLive11::OnPlayEnd()
 	if (m_pNoteRainLive != NULL) {
 		m_pNoteRainLive->AllNoteOff();
 		m_NoteTrackerLive.AllNoteOff();
-		m_Dashboard.SetMonitoringStatus(false);
+		m_DashboardLive.SetMonitoringStatus(false);
 	}
 	return 0;
 }
@@ -184,4 +183,29 @@ void MTScenePianoRollRainLive11::AllNoteOffOnChLive(
 		m_pNoteRainLive->AllNoteOffOnCh(portNo, chNo);
 		m_NoteTrackerLive.AllNoteOffOnCh(portNo, chNo);
 	}
+}
+
+//******************************************************************************
+// Dashboard overrides (Live)
+//******************************************************************************
+int MTScenePianoRollRainLive11::_DrawDashboard(
+		ID3D11DeviceContext* pContext,
+		unsigned int screenWidth, unsigned int screenHeight)
+{
+	return m_DashboardLive.Draw(pContext, screenWidth, screenHeight);
+}
+
+void MTScenePianoRollRainLive11::_OnDashboardWindowResize()
+{
+	m_DashboardLive.OnWindowResize();
+}
+
+void MTScenePianoRollRainLive11::_SetDashboardEnable(bool isEnable)
+{
+	m_DashboardLive.SetEnable(isEnable);
+}
+
+int MTScenePianoRollRainLive11::OnMIDIINDeviceChanged(const TCHAR* pName)
+{
+	return m_DashboardLive.SetMIDIINDeviceName(pName);
 }

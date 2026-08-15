@@ -52,9 +52,6 @@ MTDashboard11::MTDashboard11()
 
 	m_CaptionColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
 	m_isEnableFileName = false;
-	m_isMonitorMode = false;
-	m_isMonitoring = false;
-	m_MIDIINDevName[0] = L'\0';
 }
 
 MTDashboard11::~MTDashboard11()
@@ -91,37 +88,34 @@ int MTDashboard11::Create(
 	result = _LoadConfFile(pSceneName);
 	if (result != 0) goto EXIT;
 
-	if (pSeqData != NULL) {
-		// Playback mode: read title, filename, totals from sequence data
-		title = pSeqData->GetTitle();
-		if (title.size() == 0) {
-			title += L" ";
-		}
-		fileName = pSeqData->GetFileName();
-		if (fileName.size() == 0) {
-			fileName += L" ";
-		}
-
-		SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
-		SetTempoBPM(pSeqData->GetTempoBPM());
-		m_TempoBPMOnStart = pSeqData->GetTempoBPM();
-		SetBeat(pSeqData->GetBeatNumerator(), pSeqData->GetBeatDenominator());
-		m_BeatNumeratorOnStart = pSeqData->GetBeatNumerator();
-		m_BeatDenominatorOnStart = pSeqData->GetBeatDenominator();
-		SetBarNo(1);
-		SetBarNum(pSeqData->GetBarNum());
-
-		result = pSeqData->GetMergedTrack(&track);
-		if (result != 0) goto EXIT;
-		result = track.GetNoteList(&noteList);
-		if (result != 0) goto EXIT;
-		m_NoteNum = noteList.GetSize();
+	if (pSeqData == NULL) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
 	}
-	else {
-		// Live mode: default captions
-		title = L" ";
-		fileName = L" ";
+
+	title = pSeqData->GetTitle();
+	if (title.size() == 0) {
+		title += L" ";
 	}
+	fileName = pSeqData->GetFileName();
+	if (fileName.size() == 0) {
+		fileName += L" ";
+	}
+
+	SetTotalPlayTimeSec(pSeqData->GetTotalPlayTime());
+	SetTempoBPM(pSeqData->GetTempoBPM());
+	m_TempoBPMOnStart = pSeqData->GetTempoBPM();
+	SetBeat(pSeqData->GetBeatNumerator(), pSeqData->GetBeatDenominator());
+	m_BeatNumeratorOnStart = pSeqData->GetBeatNumerator();
+	m_BeatDenominatorOnStart = pSeqData->GetBeatDenominator();
+	SetBarNo(1);
+	SetBarNum(pSeqData->GetBarNum());
+
+	result = pSeqData->GetMergedTrack(&track);
+	if (result != 0) goto EXIT;
+	result = track.GetNoteList(&noteList);
+	if (result != 0) goto EXIT;
+	m_NoteNum = noteList.GetSize();
 
 	m_TitleText = title;
 	m_FileNameText = fileName;
@@ -270,15 +264,6 @@ int MTDashboard11::_GetCounterStr(WCHAR* pStr, unsigned long bufSize)
 	int eresult = 0;
 	WCHAR spdstr[16] = {0};
 
-	if (m_isMonitorMode) {
-		const WCHAR* statusStr = m_isMonitoring ? L"" : L" [MONITORING OFF]";
-		eresult = swprintf_s(pStr, bufSize, L"NOTES:%08lu%s", m_NoteCount, statusStr);
-		if (eresult < 0) {
-			return YN_SET_ERR("Program error.", 0, 0);
-		}
-		return 0;
-	}
-
 	eresult = swprintf_s(
 				pStr, bufSize,
 				L"TIME:%02lu:%02lu.%03lu/%02lu:%02lu.%03lu BPM:%03lu BEAT:%lu/%lu BAR:%03lu/%03lu NOTES:%05lu/%05lu",
@@ -385,59 +370,6 @@ void MTDashboard11::OnWindowResize()
 
 	m_CounterMag = MTDASHBOARD11_DEFAULT_MAGRATE;
 	_GetCounterPos(&m_PosCounterX, &m_PosCounterY);
-}
-
-//******************************************************************************
-// Live monitor mode
-//******************************************************************************
-void MTDashboard11::SetMonitorMode(
-		bool isMonitor,
-		const TCHAR* pMIDIINDevName
-	)
-{
-	m_isMonitorMode = isMonitor;
-	m_isMonitoring = isMonitor;
-	m_NoteCount = 0;
-	SetMIDIINDeviceName(pMIDIINDevName);
-}
-
-void MTDashboard11::SetMonitoringStatus(bool isMonitoring)
-{
-	m_isMonitoring = isMonitoring;
-}
-
-int MTDashboard11::SetMIDIINDeviceName(const TCHAR* pName)
-{
-	int result = 0;
-
-	if (pName != NULL && _tcslen(pName) > 0) {
-		size_t converted = 0;
-		mbstowcs_s(&converted, m_MIDIINDevName, 256, pName, _TRUNCATE);
-	}
-	else {
-		m_MIDIINDevName[0] = L'\0';
-	}
-
-	m_Title.Release();
-
-	WCHAR titleStr[300];
-	if (m_MIDIINDevName[0] != L'\0') {
-		swprintf_s(titleStr, 300, L"MIDI IN: %s", m_MIDIINDevName);
-	}
-	else {
-		swprintf_s(titleStr, 300, L" ");
-	}
-
-	if (m_pDevice != NULL && m_pContext != NULL) {
-		result = m_Title.Create(m_pDevice, m_pContext,
-					MTDASHBOARD11_FONTNAME, _GetScaledFontSize(),
-					titleStr);
-		if (result != 0) goto EXIT;
-		m_Title.SetColor(m_CaptionColor);
-	}
-
-EXIT:;
-	return result;
 }
 
 //******************************************************************************

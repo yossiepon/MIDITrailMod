@@ -15,6 +15,7 @@
 #include "MTNoteTrackerLive.h"
 #include "MTNoteCylindricalLive11.h"
 #include "MTNoteDesignRingLive11.h"
+#include "MTDashboardLive11.h"
 
 
 //******************************************************************************
@@ -39,6 +40,7 @@ public:
 	                    unsigned char noteNo) override;
 	void AllNoteOffLive() override;
 	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
+	int  OnMIDIINDeviceChanged(const TCHAR* pName) override;
 
 protected:
 
@@ -51,10 +53,16 @@ protected:
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
 				const DirectX::SimpleMath::Vector4& lightDir) override;
+	int _DrawDashboard(
+				ID3D11DeviceContext* pContext,
+				unsigned int screenWidth, unsigned int screenHeight) override;
+	void _OnDashboardWindowResize() override;
+	void _SetDashboardEnable(bool isEnable) override;
 
 private:
 
 	MTNoteTrackerLive      m_NoteTrackerLive;
 	MTNoteCylindricalLive11* m_pNoteBoxLive;
 	MTNoteDesignRingLive11 m_NoteDesignRingLive;
+	MTDashboardLive11      m_DashboardLive;
 };

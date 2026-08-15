@@ -1655,8 +1655,8 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 			if (result != 0) goto EXIT;
 
 			//Set the MIDI IN device name
-			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-			if (result != 0) goto EXIT;
+			result = m_pScene->OnMIDIINDeviceChanged(m_MIDIINDevName);
+		if (result != 0) goto EXIT;
 
 			//Notify the scene that playback has ended (live monitor stopped) so the device name is reflected on screen
 			result = m_pScene->OnPlayEnd();
@@ -1912,6 +1912,16 @@ int MIDITrailApp::_OnMenuOptionMIDIIN()
 	result = m_MIDIINCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
+	//Notify scene of device name change for immediate dashboard update
+	if (m_pScene != NULL && m_PlayStatus == MonitorOFF) {
+		result = m_MIDIConf.SetCurSection(_T("MIDIIN"));
+		if (result != 0) goto EXIT;
+		result = m_MIDIConf.GetStr("PortA", m_MIDIINDevName, MAXPNAMELEN, _T(""));
+		if (result != 0) goto EXIT;
+		result = m_pScene->OnMIDIINDeviceChanged(m_MIDIINDevName);
+		if (result != 0) goto EXIT;
+	}
+
 EXIT:;
 	return result;
 }
@@ -1977,8 +1987,8 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 		else {
 			result = _CreateScene(m_SceneType, NULL);
 			if (result != 0) goto EXIT;
-			result = m_pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
-			if (result != 0) goto EXIT;
+			result = m_pScene->OnMIDIINDeviceChanged(m_MIDIINDevName);
+		if (result != 0) goto EXIT;
 			if (m_PlayStatus == MonitorON) {
 				result = m_pScene->OnPlayStart();
 				if (result != 0) goto EXIT;
@@ -3001,7 +3011,7 @@ int MIDITrailApp::_SetMonitorPortDev(
 	}
 
 	//Register the MIDI IN device name with the scene
-	result = pScene->SetParam("MIDI_IN_DEVICE_NAME", m_MIDIINDevName);
+	result = pScene->OnMIDIINDeviceChanged(m_MIDIINDevName);
 	if (result != 0) goto EXIT;
 
 	//--------------------------------------

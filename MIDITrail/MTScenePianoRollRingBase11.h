@@ -75,6 +75,11 @@ protected:
 					const DirectX::SimpleMath::Matrix& viewProj,
 					const DirectX::SimpleMath::Vector4& lightDir,
 					const DirectX::SimpleMath::Vector3& camPos) { return 0; }
+	virtual int _DrawDashboard(
+					ID3D11DeviceContext* pContext,
+					unsigned int screenWidth, unsigned int screenHeight);
+	virtual void _OnDashboardWindowResize();
+	virtual void _SetDashboardEnable(bool isEnable);
 
 	// Shared members
 	HWND m_hWnd;
