@@ -16,6 +16,7 @@ using namespace YNBaseLib;
 
 namespace SMIDILib {
 
+bool SMSimpleList::s_Truncated = false;
 
 //******************************************************************************
 // Constructor
@@ -28,6 +29,8 @@ SMSimpleList::SMSimpleList(
 	m_ItemSize = itemSize;
 	m_UnitNum = unitNum;
 	m_DataNum = 0;
+	m_CacheBlockNo = 0xFFFFFFFF;
+	m_pCacheBlock = NULL;
 }
 
 //******************************************************************************
@@ -51,6 +54,8 @@ void SMSimpleList::Clear()
 	m_MemBlockMap.clear();
 
 	m_DataNum = 0;
+	m_CacheBlockNo = 0xFFFFFFFF;
+	m_pCacheBlock = NULL;
 
 	return;
 }
@@ -74,6 +79,11 @@ int SMSimpleList::AddItem(
 		goto EXIT;
 	}
 
+	if (m_DataNum >= 0xFFFFFFFF) {
+		s_Truncated = true;
+		goto EXIT;
+	}
+
 	index = m_DataNum;
 
 	//Calculate the memory block position to store the data set
@@ -81,20 +91,27 @@ int SMSimpleList::AddItem(
 	blockIndex = _GetBlockIndex(index);
 
 	//Create the memory block if it doesn't exist yet
-	blockitr = m_MemBlockMap.find(blockNo);
-	if (blockitr == m_MemBlockMap.end()) {
-		try {
-			pBlock = new unsigned char[m_ItemSize * m_UnitNum];
-		}
-		catch (std::bad_alloc) {
-			result = YN_SET_ERR("Could not allocate memory.", m_ItemSize, m_UnitNum);
-			goto EXIT;
-		}
-		ZeroMemory(pBlock, m_ItemSize * m_UnitNum);
-		m_MemBlockMap.insert(SMMemBlockMapPair(blockNo, pBlock));
+	if ((m_pCacheBlock != NULL) && (blockNo == m_CacheBlockNo)) {
+		pBlock = m_pCacheBlock;
 	}
 	else {
-		pBlock = blockitr->second;
+		blockitr = m_MemBlockMap.find(blockNo);
+		if (blockitr == m_MemBlockMap.end()) {
+			try {
+				pBlock = new unsigned char[m_ItemSize * m_UnitNum];
+			}
+			catch (std::bad_alloc) {
+				result = YN_SET_ERR("Could not allocate memory.", m_ItemSize, m_UnitNum);
+				goto EXIT;
+			}
+			ZeroMemory(pBlock, m_ItemSize * m_UnitNum);
+			m_MemBlockMap.insert(SMMemBlockMapPair(blockNo, pBlock));
+		}
+		else {
+			pBlock = blockitr->second;
+		}
+		m_CacheBlockNo = blockNo;
+		m_pCacheBlock = pBlock;
 	}
 
 	//Copy the item into the memory block
@@ -140,13 +157,20 @@ int SMSimpleList::GetItem(
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//Find the memory block
-	blockitr = m_MemBlockMap.find(blockNo);
-	if (blockitr == m_MemBlockMap.end()) {
-		result = YN_SET_ERR("Program error.", index, blockIndex);
-		goto EXIT;
+	//Find the memory block (cache-first)
+	if ((m_pCacheBlock != NULL) && (blockNo == m_CacheBlockNo)) {
+		pBlock = m_pCacheBlock;
 	}
-	pBlock = blockitr->second;
+	else {
+		blockitr = m_MemBlockMap.find(blockNo);
+		if (blockitr == m_MemBlockMap.end()) {
+			result = YN_SET_ERR("Program error.", index, blockIndex);
+			goto EXIT;
+		}
+		pBlock = blockitr->second;
+		m_CacheBlockNo = blockNo;
+		m_pCacheBlock = pBlock;
+	}
 
 	//Reference the item in the memory block
 	try {
@@ -188,13 +212,20 @@ int SMSimpleList::SetItem(
 	blockNo = _GetBlockNo(index);
 	blockIndex = _GetBlockIndex(index);
 
-	//Find the memory block
-	blockitr = m_MemBlockMap.find(blockNo);
-	if (blockitr == m_MemBlockMap.end()) {
-		result = YN_SET_ERR("Program error.", index, blockIndex);
-		goto EXIT;
+	//Find the memory block (cache-first)
+	if ((m_pCacheBlock != NULL) && (blockNo == m_CacheBlockNo)) {
+		pBlock = m_pCacheBlock;
 	}
-	pBlock = blockitr->second;
+	else {
+		blockitr = m_MemBlockMap.find(blockNo);
+		if (blockitr == m_MemBlockMap.end()) {
+			result = YN_SET_ERR("Program error.", index, blockIndex);
+			goto EXIT;
+		}
+		pBlock = blockitr->second;
+		m_CacheBlockNo = blockNo;
+		m_pCacheBlock = pBlock;
+	}
 
 	//Copy the item into the memory block
 	try {
@@ -280,6 +311,22 @@ int SMSimpleList::CopyFrom(
 EXIT:;
 	delete [] pData;
 	return result;
+}
+
+//******************************************************************************
+// Check if truncation occurred due to 32-bit item limit
+//******************************************************************************
+bool SMSimpleList::WasTruncated()
+{
+	return s_Truncated;
+}
+
+//******************************************************************************
+// Reset truncation flag
+//******************************************************************************
+void SMSimpleList::ResetTruncatedFlag()
+{
+	s_Truncated = false;
 }
 
 } // end of namespace
