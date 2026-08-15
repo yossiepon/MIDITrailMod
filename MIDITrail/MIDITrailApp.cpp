@@ -10,7 +10,7 @@
 //******************************************************************************
 
 #include "StdAfx.h"
-#include "imagehlp.h"
+#include <shlobj.h>
 #include "shellapi.h"
 #include "shlwapi.h"
 #include <ShellScalingApi.h>
@@ -682,7 +682,6 @@ EXIT:;
 int MIDITrailApp::_InitConfFile()
 {
 	int result = 0;
-	BOOL bresult = FALSE;
 	TCHAR userConfDirPath[_MAX_PATH] = {_T('\0')};
 	TCHAR viewConfPath[_MAX_PATH] = {_T('\0')};
 	TCHAR midiOutConfPath[_MAX_PATH] = {_T('\0')};
@@ -694,11 +693,12 @@ int MIDITrailApp::_InitConfFile()
 	_tcscat_s(userConfDirPath, _MAX_PATH, MT_USER_CONFFILE_DIR);
 
 	//Create the user config file storage directory
-	//TODO: Switch to SHCreateDirectoryEx when adding Unicode support
-	bresult = MakeSureDirectoryPathExists(userConfDirPath);
-	if (!bresult) {
-		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-		goto EXIT;
+	{
+		int shr = SHCreateDirectoryEx(NULL, userConfDirPath, NULL);
+		if (shr != ERROR_SUCCESS && shr != ERROR_ALREADY_EXISTS && shr != ERROR_FILE_EXISTS) {
+			result = YN_SET_ERR("Windows API error.", shr, 0);
+			goto EXIT;
+		}
 	}
 
 	//View settings config file

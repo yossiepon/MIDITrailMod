@@ -109,7 +109,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +146,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -181,7 +181,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -222,7 +222,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
