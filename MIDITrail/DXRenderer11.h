@@ -50,6 +50,13 @@ public:
 	// Render one frame: clear, call pScene->Draw(), present.
 	int RenderScene(IMTScene11* pScene, MTFirstPersonCam* pCamera);
 
+	// Frame begin/end for non-scene rendering (e.g. loading screen)
+	int BeginFrame(const float* pClearColor = NULL);
+	int EndFrame();
+
+	// Render target accessors (for loading screen)
+	ID3D11RenderTargetView* GetRTV() { return m_pRTV; }
+
 	// Terminate and release all D3D resources.
 	void Terminate();
 

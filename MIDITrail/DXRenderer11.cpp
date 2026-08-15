@@ -280,13 +280,8 @@ int DXRenderer11::RenderScene(
 	}
 
 	// Clear render target and depth buffer
-	m_pContext->ClearRenderTargetView(m_pRTV, pScene->GetBGColor());
-	m_pContext->ClearDepthStencilView(m_pDSV,
-	                                  D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-	                                  1.0f, 0);
-
-	// Ensure render target is bound
-	m_pContext->OMSetRenderTargets(1, &m_pRTV, m_pDSV);
+	result = BeginFrame(pScene->GetBGColor());
+	if (result != 0) goto EXIT;
 
 	// Draw scene
 	{
@@ -308,6 +303,47 @@ int DXRenderer11::RenderScene(
 	}
 
 	// Present
+	result = EndFrame();
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// Begin frame: clear render target
+//******************************************************************************
+int DXRenderer11::BeginFrame(
+		const float* pClearColor
+	)
+{
+	int result = 0;
+
+	static const float defaultColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	if (m_pContext == nullptr || m_pRTV == nullptr) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	m_pContext->ClearRenderTargetView(m_pRTV,
+		(pClearColor != NULL) ? pClearColor : defaultColor);
+	m_pContext->ClearDepthStencilView(m_pDSV,
+		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pContext->OMSetRenderTargets(1, &m_pRTV, m_pDSV);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// End frame: present
+//******************************************************************************
+int DXRenderer11::EndFrame()
+{
+	int result = 0;
+	HRESULT hr = S_OK;
+
 	hr = m_pSwapChain->Present(1, 0);
 	if (FAILED(hr)) {
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
