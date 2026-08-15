@@ -57,6 +57,10 @@ public:
 	//Copy
 	virtual int CopyFrom(SMSimpleList* pSrcList);
 
+	//32-bit overflow detection
+	static bool WasTruncated();
+	static void ResetTruncatedFlag();
+
 private:
 
 	typedef std::map<unsigned long, unsigned char*> SMMemBlockMap;
@@ -69,6 +73,11 @@ private:
 	unsigned long m_DataNum;
 
 	SMMemBlockMap m_MemBlockMap;
+
+	unsigned long m_CacheBlockNo;
+	unsigned char* m_pCacheBlock;
+
+	static bool s_Truncated;
 
 	unsigned long _GetBlockNo(unsigned long index);
 	unsigned long _GetBlockIndex(unsigned long index);
