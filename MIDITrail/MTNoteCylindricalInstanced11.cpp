@@ -263,12 +263,15 @@ int MTNoteCylindricalInstanced11::Create(
 		SMSeqData* pSeqData,
 		MTNoteTracker* pNoteTracker,
 		MTNotePitchBend* pNotePitchBend,
-		MTNoteDesignRing11* pNoteDesign
+		MTNoteDesignRing11* pNoteDesign,
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;
 
 	Release();
+
+	m_pProgress = pProgress;
 
 	if (pSeqData == NULL || pNoteTracker == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -385,6 +388,10 @@ int MTNoteCylindricalInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
 
 			startTicks[i] = note.startTimeTick;
 			endTicks[i] = note.endTimeTick;
+
+			if (m_pProgress != NULL && (i & 0x3FFF) == 0) {
+				m_pProgress->Fire(i, m_NoteCount);
+			}
 		}
 
 		result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,

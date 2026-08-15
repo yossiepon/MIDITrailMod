@@ -51,7 +51,8 @@ int MTSceneTitle11::Create(
 		HWND hWnd,
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
-		SMIDILib::SMSeqData* pSeqData
+		SMIDILib::SMSeqData* pSeqData,
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;

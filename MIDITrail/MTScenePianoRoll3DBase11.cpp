@@ -48,7 +48,8 @@ int MTScenePianoRoll3DBase11::Create(
 		HWND hWnd,
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
-		SMIDILib::SMSeqData* pSeqData
+		SMIDILib::SMSeqData* pSeqData,
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;
@@ -79,7 +80,7 @@ int MTScenePianoRoll3DBase11::Create(
 	result = m_NotePitchBend.Initialize();
 	if (result != 0) goto EXIT;
 
-	result = _CreateModeComponents(pDevice, pContext, pSeqData);
+	result = _CreateModeComponents(pDevice, pContext, pSeqData, pProgress);
 	if (result != 0) goto EXIT;
 
 	_RegisterComponent(&m_Stars);

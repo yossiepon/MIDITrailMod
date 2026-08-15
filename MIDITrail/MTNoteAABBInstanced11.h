@@ -77,7 +77,8 @@ public:
 				MTNoteTracker* pNoteTracker,
 				MTNotePitchBend* pNotePitchBend,
 				MTAABBMode mode,
-				MTNoteDesign11* pNoteDesign = NULL
+				MTNoteDesign11* pNoteDesign = NULL,
+				const MTLoadProgressContext* pProgress = NULL
 			);
 	void Release();
 
@@ -150,6 +151,8 @@ private:
 	unsigned long m_NoteCount;
 	unsigned long m_IndexCountPerInstance;
 	float         m_TickToPos;
+
+	const MTLoadProgressContext* m_pProgress;
 
 	DirectX::XMFLOAT4X4 m_World;
 

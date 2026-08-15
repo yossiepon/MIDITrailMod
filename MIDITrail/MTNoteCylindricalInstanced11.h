@@ -59,7 +59,8 @@ public:
 				SMSeqData* pSeqData,
 				MTNoteTracker* pNoteTracker,
 				MTNotePitchBend* pNotePitchBend,
-				MTNoteDesignRing11* pNoteDesign = NULL
+				MTNoteDesignRing11* pNoteDesign = NULL,
+				const MTLoadProgressContext* pProgress = NULL
 			);
 	void Release();
 
@@ -102,6 +103,8 @@ private:
 	unsigned long m_PlayTimeMSec;
 	unsigned long m_NoteCount;
 	float         m_XPerTick;
+
+	const MTLoadProgressContext* m_pProgress;
 
 	DirectX::XMFLOAT4X4 m_World;
 

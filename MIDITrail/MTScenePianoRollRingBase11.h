@@ -35,7 +35,8 @@ public:
 	// IMTScene11
 	int  Create(HWND hWnd, ID3D11Device* pDevice,
 	            ID3D11DeviceContext* pContext,
-	            SMIDILib::SMSeqData* pSeqData) override;
+	            SMIDILib::SMSeqData* pSeqData,
+	            const MTLoadProgressContext* pProgress = NULL) override;
 	void Release() override;
 	int  Draw(ID3D11DeviceContext* pContext,
 	          const DirectX::SimpleMath::Matrix& viewProj,
@@ -64,7 +65,8 @@ protected:
 	virtual int _CreateModeComponents(
 					ID3D11Device* pDevice,
 					ID3D11DeviceContext* pContext,
-					SMIDILib::SMSeqData* pSeqData) = 0;
+					SMIDILib::SMSeqData* pSeqData,
+					const MTLoadProgressContext* pProgress = NULL) = 0;
 	virtual void _RegisterModeComponents() = 0;
 	virtual int _DrawNotes(
 					ID3D11DeviceContext* pContext,

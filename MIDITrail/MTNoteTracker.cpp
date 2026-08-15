@@ -35,7 +35,8 @@ MTNoteTracker::~MTNoteTracker()
 // Create
 //******************************************************************************
 int MTNoteTracker::Create(
-		SMSeqData* pSeqData
+		SMSeqData* pSeqData,
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;
@@ -82,6 +83,10 @@ int MTNoteTracker::Create(
 		nd.startTimeMs = noteMs.startTime;
 		nd.endTimeMs = noteMs.endTime;
 		memcpy(nd.lyric, noteTick.lyric, sizeof(nd.lyric));
+
+		if (pProgress != NULL && (i & 0x3FFF) == 0) {
+			pProgress->Fire(i, noteCount);
+		}
 	}
 
 	_BuildMaxEndTimeMs();
