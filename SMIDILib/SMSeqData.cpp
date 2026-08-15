@@ -15,6 +15,8 @@
 #include "SMSeqData.h"
 #include "SMFPUCtrl.h"
 #include <mbctype.h>
+#include <vector>
+#include <queue>
 
 using namespace YNBaseLib;
 
@@ -105,19 +107,30 @@ EXIT:;
 }
 
 //******************************************************************************
-// Merge tracks process
+// Merge tracks process (k-way merge via min-heap)
 //******************************************************************************
+
+namespace {
+
+struct MergeHeapItem {
+	unsigned long long absTime;
+	unsigned long trackIdx;
+};
+
+struct MergeHeapCmp {
+	bool operator()(const MergeHeapItem& a, const MergeHeapItem& b) const {
+		if (a.absTime != b.absTime) return a.absTime > b.absTime;
+		return a.trackIdx > b.trackIdx;
+	}
+};
+
+} // anonymous namespace
+
 int SMSeqData::_MergeTracks()
 {
 	int result = 0;
-	unsigned long i = 0;
 	unsigned char portNo = 0;
-	SMTrackListItr trackListItr;
-	SMDeltaTimeBuf deltaTimeBuf;
-	SMDeltaTimeBufList deltaTimeBufList;
-	SMDeltaTimeBufListItr deltaTimeBufListItr;
 	SMEvent event;
-	SMTrack* pTrack = NULL;
 	SMTrack* pMergedTrack = NULL;
 
 	delete m_pMergedTrack;
@@ -131,90 +144,63 @@ int SMSeqData::_MergeTracks()
 		goto EXIT;
 	}
 
-	//Build delta time buffer list
-	for (trackListItr = m_TrackList.begin(); trackListItr != m_TrackList.end(); trackListItr++) {
-		pTrack = *trackListItr;
-		if (pTrack->GetSize() == 0) continue;
+	{
+		// Build indexed track array from std::list
+		std::vector<SMTrack*> tracks(m_TrackList.begin(), m_TrackList.end());
+		std::vector<unsigned long> idx(tracks.size(), 0);
 
-		deltaTimeBuf.index = 0;
-		result = pTrack->GetDataSet(0, &deltaTimeBuf.deltaTime, NULL, NULL);
-		if (result != 0) goto EXIT;
+		// Initialize min-heap with each track's first event
+		std::priority_queue<MergeHeapItem, std::vector<MergeHeapItem>, MergeHeapCmp> heap;
 
-		deltaTimeBufList.push_back(deltaTimeBuf);
-	}
+		for (unsigned long t = 0; t < tracks.size(); t++) {
+			if (tracks[t]->GetSize() == 0) continue;
 
-	//Merge process
-	while (true) {
+			unsigned long deltaTime = 0;
+			result = tracks[t]->GetDataSet(0, &deltaTime, NULL, NULL);
+			if (result != 0) goto EXIT;
 
-		//Check each track and get the event with the shortest delta time
-		unsigned long deltaTimeMin = 0xFFFFFFFF;
-		unsigned long targetTrackIndex = 0;
-		bool isDataExist = false;
-
-		trackListItr = m_TrackList.begin();
-		deltaTimeBufListItr = deltaTimeBufList.begin();
-		for (i = 0; i < m_TrackList.size(); i++) {
-
-			pTrack = *trackListItr;                //Current track
-			deltaTimeBuf = *deltaTimeBufListItr;   //Current track's delta time info
-
-			//Reference delta time if the track has not finished being read
-			if (deltaTimeBuf.index < pTrack->GetSize()) {
-				//Mark the track with the smallest delta time
-				if (deltaTimeBuf.deltaTime < deltaTimeMin) {
-					targetTrackIndex = i;
-					deltaTimeMin = deltaTimeBuf.deltaTime ;
-				}
-				isDataExist = true;
-			}
-			//Next track
-			trackListItr++;
-			deltaTimeBufListItr++;
+			MergeHeapItem item;
+			item.absTime = deltaTime;
+			item.trackIdx = t;
+			heap.push(item);
+			idx[t] = 0;
 		}
 
-		//Merge complete if no more events exist
-		if (!isDataExist) break;
+		unsigned long long prevAbsTime = 0;
 
-		//Update delta time for each track
-		trackListItr = m_TrackList.begin();
-		deltaTimeBufListItr = deltaTimeBufList.begin();
-		for (i = 0; i < m_TrackList.size(); i++) {
+		while (!heap.empty()) {
+			MergeHeapItem top = heap.top();
+			heap.pop();
 
-			pTrack = *trackListItr;               //Current track
-			deltaTimeBuf = *deltaTimeBufListItr;  //Current track's delta time info
+			unsigned long t = top.trackIdx;
+			unsigned long deltaTime = (unsigned long)(top.absTime - prevAbsTime);
+			prevAbsTime = top.absTime;
 
-			//For the marked track, copy the event and register it into the merged track
-			if (i == targetTrackIndex) {
-				result = pTrack->GetDataSet(deltaTimeBuf.index, NULL, &event, &portNo);
+			result = tracks[t]->GetDataSet(idx[t], NULL, &event, &portNo);
+			if (result != 0) goto EXIT;
+
+			result = pMergedTrack->AddDataSet(deltaTime, &event, portNo);
+			if (result != 0) goto EXIT;
+
+			// Push next event from the same track
+			idx[t] += 1;
+			if (idx[t] < tracks[t]->GetSize()) {
+				unsigned long nextDelta = 0;
+				result = tracks[t]->GetDataSet(idx[t], &nextDelta, NULL, NULL);
 				if (result != 0) goto EXIT;
 
-				result = pMergedTrack->AddDataSet(deltaTimeMin, &event, portNo);
-				if (result != 0) goto EXIT;
-
-				//Get the next delta time for the marked track
-				deltaTimeBuf.index += 1;
-				deltaTimeBuf.deltaTime = 0xFFFFFFFF;
-				if (deltaTimeBuf.index < pTrack->GetSize()) {
-					result = pTrack->GetDataSet(deltaTimeBuf.index, &deltaTimeBuf.deltaTime, NULL, NULL);
-					if (result != 0) goto EXIT;
-				}
+				MergeHeapItem next;
+				next.absTime = top.absTime + nextDelta;
+				next.trackIdx = t;
+				heap.push(next);
 			}
-			//For other tracks, subtract the delta time
-			else if (deltaTimeBuf.index < pTrack->GetSize()) {
-				deltaTimeBuf.deltaTime -= deltaTimeMin;
-			}
-			*deltaTimeBufListItr = deltaTimeBuf;
-
-			//Next track
-			trackListItr++;
-			deltaTimeBufListItr++;
 		}
 	}
 
 	m_pMergedTrack = pMergedTrack;
 
 EXIT:;
-	if (result != NULL) {
+	if (result != 0) {
 		delete pMergedTrack;
 		pMergedTrack = NULL;
 	}
