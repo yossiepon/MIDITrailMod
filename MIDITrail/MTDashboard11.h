@@ -64,10 +64,6 @@ public:
 	unsigned long GetPlayTimeSec();
 	void SetEnableFileName(bool isEnable);
 
-	void SetMonitorMode(bool isMonitor, const TCHAR* pMIDIINDevName);
-	void SetMonitoringStatus(bool isMonitoring);
-	int SetMIDIINDeviceName(const TCHAR* pName);
-
 private:
 
 	HWND m_hWnd;
@@ -101,9 +97,6 @@ private:
 
 	DirectX::SimpleMath::Color m_CaptionColor;
 	bool m_isEnableFileName;
-	bool m_isMonitorMode;
-	bool m_isMonitoring;
-	WCHAR m_MIDIINDevName[256];
 
 	UINT _GetDpi();
 	unsigned long _GetScaledFontSize();

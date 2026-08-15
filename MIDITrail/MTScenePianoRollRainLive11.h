@@ -14,6 +14,7 @@
 #include "MTScenePianoRollRainBase11.h"
 #include "MTNoteTrackerLive.h"
 #include "MTNoteAABBLive11.h"
+#include "MTDashboardLive11.h"
 
 
 //******************************************************************************
@@ -38,6 +39,7 @@ public:
 	                    unsigned char noteNo) override;
 	void AllNoteOffLive() override;
 	void AllNoteOffOnChLive(unsigned char portNo, unsigned char chNo) override;
+	int  OnMIDIINDeviceChanged(const TCHAR* pName) override;
 
 protected:
 
@@ -50,9 +52,15 @@ protected:
 				ID3D11DeviceContext* pContext,
 				const DirectX::SimpleMath::Matrix& viewProj,
 				const DirectX::SimpleMath::Vector4& lightDir) override;
+	int _DrawDashboard(
+				ID3D11DeviceContext* pContext,
+				unsigned int screenWidth, unsigned int screenHeight) override;
+	void _OnDashboardWindowResize() override;
+	void _SetDashboardEnable(bool isEnable) override;
 
 private:
 
 	MTNoteTrackerLive  m_NoteTrackerLive;
 	MTNoteAABBLive11*  m_pNoteRainLive;
+	MTDashboardLive11  m_DashboardLive;
 };

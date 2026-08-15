@@ -85,6 +85,7 @@ EXIT:;
 //******************************************************************************
 void MTScenePianoRollRain11::_RegisterModeComponents()
 {
+	_RegisterComponent(&m_Dashboard);
 	_RegisterComponent(&m_NoteTracker);
 	_RegisterComponent(m_pKeyboardCtrl);
 	_RegisterComponent(&m_NoteRain);

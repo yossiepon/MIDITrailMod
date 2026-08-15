@@ -148,6 +148,7 @@ public:
 					unsigned char portNo,
 					unsigned char chNo
 				) = 0;
+	virtual int  OnMIDIINDeviceChanged(const TCHAR* pName) { return 0; }
 
 	//----------------------------------------------------------------------
 	// Window resize notification

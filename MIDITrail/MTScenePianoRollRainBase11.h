@@ -67,6 +67,11 @@ protected:
 					ID3D11DeviceContext* pContext,
 					const DirectX::SimpleMath::Matrix& viewProj,
 					const DirectX::SimpleMath::Vector4& lightDir) = 0;
+	virtual int _DrawDashboard(
+					ID3D11DeviceContext* pContext,
+					unsigned int screenWidth, unsigned int screenHeight);
+	virtual void _OnDashboardWindowResize();
+	virtual void _SetDashboardEnable(bool isEnable);
 
 	// Shared members
 	bool m_Is2D;
