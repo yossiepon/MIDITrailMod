@@ -37,9 +37,6 @@ class SMIDILIB_API SMFileReader
 {
 public:
 
-	//Progress callback
-	typedef void (*LoadProgressFunc)(unsigned long current, unsigned long total, void* userData);
-
 	//Constructor / Destructor
 	SMFileReader(void);
 	~SMFileReader(void);
@@ -48,10 +45,13 @@ public:
 	int SetLogPath(const WCHAR* pLogPath);
 
 	//Load standard MIDI file
-	int Load(const WCHAR* pSMFPath, SMSeqData* pMIDIData);
-
-	//Set progress callback (static, process-wide)
-	static void SetLoadProgressCallback(LoadProgressFunc func, void* userData);
+	int Load(
+			const WCHAR* pSMFPath,
+			SMSeqData* pMIDIData,
+			SMLoadProgressFunc progressFunc = NULL,
+			void* progressUserData = NULL,
+			bool* pWasTruncated = NULL
+		);
 
 private:
 
@@ -89,14 +89,20 @@ private:
 
 private:
 
+	//Progress context for internal methods
+	struct SMLoadProgressContext {
+		SMLoadProgressFunc func;
+		void* userData;
+		unsigned long offset;
+		unsigned long range;
+		unsigned long total;
+	};
+
 	unsigned char m_PrevStatus;
 
 	WCHAR m_LogPath[MAX_PATH];
 	FILE* m_pLogFile;
 	bool m_IsLogOut;
-
-	static LoadProgressFunc s_ProgressFunc;
-	static void* s_ProgressUserData;
 
 	int _SkipRIFFHeader(
 			HMMIO hFile
@@ -119,7 +125,8 @@ private:
 			unsigned long chunkSize,
 			SMTrack** pPtrTrack,
 			unsigned long trackIndex,
-			unsigned long trackCount
+			unsigned long trackCount,
+			const SMLoadProgressContext* pProgress
 		);
 
 	int _ReadDeltaTime(

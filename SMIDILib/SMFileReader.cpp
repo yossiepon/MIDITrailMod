@@ -22,9 +22,6 @@ using namespace YNBaseLib;
 
 namespace SMIDILib {
 
-SMFileReader::LoadProgressFunc SMFileReader::s_ProgressFunc = NULL;
-void* SMFileReader::s_ProgressUserData = NULL;
-
 //******************************************************************************
 // Constructor
 //******************************************************************************
@@ -78,7 +75,10 @@ EXIT:;
 //******************************************************************************
 int SMFileReader::Load(
 		const WCHAR *pSMFPath,
-		SMSeqData* pSeqData
+		SMSeqData* pSeqData,
+		SMLoadProgressFunc progressFunc,
+		void* progressUserData,
+		bool* pWasTruncated
 	)
 {
 	int result = 0;
@@ -91,6 +91,10 @@ int SMFileReader::Load(
 	SMFChunkDataSection chunkDataSection;
 	SMFChunkTypeSection chunkTypeSectionOfTrack;
 	SMTrack* pTrack = NULL;
+
+	static const unsigned long TOTAL_UNITS = 10000;
+	static const unsigned long READ_UNITS  = 6000;
+	static const unsigned long MERGE_UNITS = 4000;
 
 	if ((pSMFPath == NULL) || (pSeqData == NULL)) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -167,31 +171,46 @@ int SMFileReader::Load(
 	pSeqData->SetSMFFormat(chunkDataSection.format);
 	pSeqData->SetTimeDivision(chunkDataSection.timeDivision);
 
-	for (i = 0; i < chunkDataSection.ntracks; i++) {
-		//Read track header
-		result = _ReadTrackHeader(hFile, i, &chunkTypeSectionOfTrack);
-		if (result != 0 ) goto EXIT;
+	{
+		//Progress context for track reading phase (0 ~ READ_UNITS)
+		SMLoadProgressContext readProgress;
+		readProgress.func = progressFunc;
+		readProgress.userData = progressUserData;
+		readProgress.offset = 0;
+		readProgress.range = READ_UNITS;
+		readProgress.total = TOTAL_UNITS;
 
-		//Read track events
-		result = _ReadTrackEvents(hFile, chunkTypeSectionOfTrack.chunkSize, &pTrack,
-								 i, chunkDataSection.ntracks);
-		if (result != 0 ) goto EXIT;
+		for (i = 0; i < chunkDataSection.ntracks; i++) {
+			//Read track header
+			result = _ReadTrackHeader(hFile, i, &chunkTypeSectionOfTrack);
+			if (result != 0 ) goto EXIT;
 
-		result = pSeqData->AddTrack(pTrack);
-		if (result != 0 ) goto EXIT;
-		pTrack = NULL;
+			//Read track events
+			result = _ReadTrackEvents(hFile, chunkTypeSectionOfTrack.chunkSize, &pTrack,
+									 i, chunkDataSection.ntracks,
+									 (progressFunc != NULL) ? &readProgress : NULL);
+			if (result != 0 ) goto EXIT;
 
-		if (SMSimpleList::WasTruncated()) break;
+			result = pSeqData->AddTrack(pTrack);
+			if (result != 0 ) goto EXIT;
+			pTrack = NULL;
+
+			if (SMSimpleList::WasTruncated()) break;
+		}
 	}
 
-	//Close track
-	result = pSeqData->CloseTrack();
+	//Close track (merge phase: READ_UNITS ~ TOTAL_UNITS)
+	result = pSeqData->CloseTrack(progressFunc, progressUserData,
+								  READ_UNITS, TOTAL_UNITS);
 	if (result != 0 ) goto EXIT;
 
 	//Register file name
 	pSeqData->SetFileName(PathFindFileNameW(pSMFPath));
 
 EXIT:;
+	if (pWasTruncated != NULL) {
+		*pWasTruncated = SMSimpleList::WasTruncated();
+	}
 	if (hFile != NULL) {
 		mmioClose(hFile, 0);
 		hFile = NULL;
@@ -363,7 +382,8 @@ int SMFileReader::_ReadTrackEvents(
 		unsigned long chunkSize,
 		SMTrack** pPtrTrack,
 		unsigned long trackIndex,
-		unsigned long trackCount
+		unsigned long trackCount,
+		const SMLoadProgressContext* pProgress
 	)
 {
 	int result = 0;
@@ -377,7 +397,6 @@ int SMFileReader::_ReadTrackEvents(
 	SMEvent event;
 	SMTrack* pTrack = NULL;
 
-	static const unsigned long PROGRESS_GRANULARITY = 10000;
 	static const unsigned long PROGRESS_INTERVAL = 256 * 1024;
 
 	try {
@@ -420,13 +439,16 @@ int SMFileReader::_ReadTrackEvents(
 		if (SMSimpleList::WasTruncated()) break;
 
 		//Progress callback
-		if (s_ProgressFunc != NULL && (readSize - lastProgressRead) >= PROGRESS_INTERVAL) {
-			unsigned long fraction = (chunkSize > 0)
-				? (unsigned long)((unsigned long long)readSize * PROGRESS_GRANULARITY / chunkSize)
-				: PROGRESS_GRANULARITY;
-			unsigned long current = trackIndex * PROGRESS_GRANULARITY + fraction;
-			unsigned long total = trackCount * PROGRESS_GRANULARITY;
-			s_ProgressFunc(current, total, s_ProgressUserData);
+		if (pProgress != NULL && pProgress->func != NULL
+			&& (readSize - lastProgressRead) >= PROGRESS_INTERVAL) {
+			unsigned long trackFraction = (chunkSize > 0)
+				? (unsigned long)((unsigned long long)readSize * 10000 / chunkSize)
+				: 10000;
+			unsigned long perTrack = pProgress->range / trackCount;
+			unsigned long current = pProgress->offset
+				+ trackIndex * perTrack
+				+ (unsigned long)((unsigned long long)trackFraction * perTrack / 10000);
+			pProgress->func(current, pProgress->total, pProgress->userData);
 			lastProgressRead = readSize;
 		}
 
@@ -1080,18 +1102,6 @@ int SMFileReader::_WriteLogEventMeta(
 
 EXIT:;
 	return result;
-}
-
-//******************************************************************************
-// Set progress callback
-//******************************************************************************
-void SMFileReader::SetLoadProgressCallback(
-		LoadProgressFunc func,
-		void* userData
-	)
-{
-	s_ProgressFunc = func;
-	s_ProgressUserData = userData;
 }
 
 } // end of namespace

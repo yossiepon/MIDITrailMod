@@ -53,7 +53,12 @@ public:
 	int AddTrack(SMTrack* pTrack);
 
 	//End track registration
-	int CloseTrack();
+	int CloseTrack(
+			SMLoadProgressFunc progressFunc = NULL,
+			void* progressUserData = NULL,
+			unsigned long progressOffset = 0,
+			unsigned long progressTotal = 0
+		);
 
 	//Register file name
 	void SetFileName(const WCHAR* pFileName);
@@ -149,7 +154,12 @@ private:
 	SMTrackList m_TrackList;
 	SMTrack* m_pMergedTrack;
 
-	int _MergeTracks();
+	int _MergeTracks(
+			SMLoadProgressFunc progressFunc = NULL,
+			void* progressUserData = NULL,
+			unsigned long progressOffset = 0,
+			unsigned long progressTotal = 0
+		);
 	double _GetDeltaTimeMsec(unsigned long tempo, unsigned long deltaTime);
 	int _GetTempo(unsigned long* pTempo);
 	int _GetBeat(unsigned long* pNumerator, unsigned long* pDenominator);
