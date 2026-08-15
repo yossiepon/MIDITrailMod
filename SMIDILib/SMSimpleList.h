@@ -5,6 +5,8 @@
 // Fixed-size block-allocated simple list class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Ced (MIDITrail Mod Mod). All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
