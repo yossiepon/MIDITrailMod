@@ -12,7 +12,7 @@
 #pragma once
 
 // Maximum number of ripple effects (from MTNoteRipple.h)
-#define MTNOTERIPPLE_MAX_RIPPLE_NUM  (100)
+#define MTNOTERIPPLE_MAX_RIPPLE_NUM  (256)
 
 // Maximum number of lyrics (from MTNoteLyrics.h / MTNoteRipple.h)
-#define MTNOTELYRICS_MAX_LYRICS_NUM  (100)
+#define MTNOTELYRICS_MAX_LYRICS_NUM  (256)
