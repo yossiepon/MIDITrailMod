@@ -102,10 +102,6 @@ private:
 	typedef std::map<unsigned long, unsigned char*> SMExDataMap;
 	typedef std::pair<unsigned long, unsigned char*> SMExDataMapPair;
 
-	//Note info map: note identification key -> note list index
-	typedef std::map<unsigned long, unsigned long> SMNoteMap;
-	typedef std::pair<unsigned long, unsigned long> SMNoteMapPair;
-
 private:
 
 	SMSimpleList m_List;

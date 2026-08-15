@@ -19,6 +19,7 @@
 #include "SMEventMIDI.h"
 #include "SMEventMeta.h"
 #include "SMFPUCtrl.h"
+#include <vector>
 
 #include "SMSeqData.h"
 
@@ -311,8 +312,10 @@ int SMTrack::_GetNoteList(
 	unsigned long key = 0;
 	unsigned long tempo = SM_DEFAULT_TEMPO;
 	double totalRealtime = 0;
-	SMNoteMap noteMap;
-	SMNoteMap::iterator itr;
+	static const unsigned long ACTIVE_SENTINEL = 0xFFFFFFFF;
+	static const unsigned long ACTIVE_SIZE = 256 * 16 * 128;
+	std::vector<unsigned long> active(ACTIVE_SIZE, ACTIVE_SENTINEL);
+	unsigned long noteIdx = 0;
 	SMNote note;
 	SMEvent event;
 	SMEventMIDI midiEvent;
@@ -392,12 +395,11 @@ int SMTrack::_GetNoteList(
 
 		// Note on
 		if (midiEvent.GetChMsg() == SMEventMIDI::NoteOn) {
-			// Search for the note in the map
 			key = _GetNoteKey(portNo, midiEvent.GetChNo(), midiEvent.GetNoteNo());
-			itr = noteMap.find(key);
+			noteIdx = active[key];
 
-			// If not yet registered
-			if (itr == noteMap.end()) {
+			if (noteIdx == ACTIVE_SENTINEL) {
+				// Not yet registered
 				note.portNo = portNo;
 				note.chNo = midiEvent.GetChNo();
 				note.noteNo = midiEvent.GetNoteNo();
@@ -406,58 +408,49 @@ int SMTrack::_GetNoteList(
 				note.endTime = 0;
 				note.lyric[0] = L'\0';
 			}
-			// If already registered
 			else {
-				// Corresponds to a note on occurring again for the same note number without a note off in between
-				// It is unclear how this should be handled per the MIDI spec
-				// Cut the note here and treat it as the start of a new note
-				result = pNoteList->GetNote(itr->second, &note);
+				// Already registered — retrigger: cut and start new note
+				result = pNoteList->GetNote(noteIdx, &note);
 				if (result != 0) goto EXIT;
 
-				// Record the end tick time and write it back to the list
 				note.endTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
-				result = pNoteList->SetNote(itr->second, &note);
+				result = pNoteList->SetNote(noteIdx, &note);
 				if (result != 0) goto EXIT;
 
-				noteMap.erase(itr);
-
-				// New note
 				note.velocity = midiEvent.GetVelocity();
 				note.startTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
 				note.endTime = 0;
 			}
-			// Register in the note list with the end tick time still undetermined
 			pNoteList->AddNote(note);
-			// Record the note list index position in the map
-			noteMap.insert(SMNoteMapPair(key, (pNoteList->GetSize()-1)));
+			active[key] = pNoteList->GetSize() - 1;
 		}
 		// Note off
 		if (midiEvent.GetChMsg() == SMEventMIDI::NoteOff) {
-			// Search for the note in the map
 			key = _GetNoteKey(portNo, midiEvent.GetChNo(), midiEvent.GetNoteNo());
-			itr = noteMap.find(key);
+			noteIdx = active[key];
 
-			if (itr != noteMap.end()) {
-				result = pNoteList->GetNote(itr->second, &note);
+			if (noteIdx != ACTIVE_SENTINEL) {
+				result = pNoteList->GetNote(noteIdx, &note);
 				if (result != 0) goto EXIT;
 
-				// Record the end tick time and write it back to the list
 				note.endTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
-				result = pNoteList->SetNote(itr->second, &note);
+				result = pNoteList->SetNote(noteIdx, &note);
 				if (result != 0) goto EXIT;
 
-				noteMap.erase(itr);
+				active[key] = ACTIVE_SENTINEL;
 			}
 		}
 	}
 
-	// If a note is still on when processing ends, cut it and add it to the list
-	for (itr = noteMap.begin(); itr != noteMap.end(); itr++) {
-		result = pNoteList->GetNote(itr->second, &note);
+	// If a note is still on when processing ends, cut it
+	for (unsigned long k = 0; k < ACTIVE_SIZE; k++) {
+		if (active[k] == ACTIVE_SENTINEL) continue;
+
+		result = pNoteList->GetNote(active[k], &note);
 		if (result != 0) goto EXIT;
 
 		note.endTime = ((timeDivision == 0) ? totalTime : (unsigned long)totalRealtime);
-		result = pNoteList->SetNote(itr->second, &note);
+		result = pNoteList->SetNote(active[k], &note);
 		if (result != 0) goto EXIT;
 	}
 
