@@ -16,6 +16,7 @@
 #include "YNBaseLib.h"
 #include "SMIDILib.h"
 #include "DXRenderer11.h"
+#include "MTLoadingScreen11.h"
 #include "IMTScene11.h"
 #include "MTWindowSizeCfgDlg.h"
 #include "MTMIDIOUTCfgDlg.h"
@@ -175,6 +176,9 @@ private:
 	IMTScene11* m_pScene;
 	unsigned long m_MultiSampleType;
 
+	//Loading screen
+	MTLoadingScreen11 m_LoadingScreen;
+
 	//FPS display-related
 	DWORD m_PrevTime;
 	DWORD m_FPSCount;
@@ -328,6 +332,8 @@ private:
 	int _SelectMIDIFile(WCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
 	int _SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const WCHAR* pFilePath);
+	static void _OnParseProgress(unsigned long current, unsigned long total, void* userData);
+	static void _OnBuildProgress(unsigned long current, unsigned long total, const char* message, void* userData);
 	int _AddMIDIFile(const WCHAR* pFilePath);
 	void _UpdateWindowTitle(const WCHAR* pFileName);
 	void _UpdateFPS();
@@ -336,7 +342,8 @@ private:
 	int _ChangeWindowSize();
 	int _ChangePlayStatus(PlayStatus status);
 	int _ChangeMenuStyle();
-	int _CreateScene(SceneType type, SMSeqData* pSeqData);
+	int _CreateScene(SceneType type, SMSeqData* pSeqData,
+	                 const MTLoadProgressContext* pProgress = NULL);
 	int _LoadSceneType();
 	int _SaveSceneType();
 	int _LoadSceneConf();

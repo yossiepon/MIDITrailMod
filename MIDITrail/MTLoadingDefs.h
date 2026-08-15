@@ -40,3 +40,30 @@ struct MTLoadProgressContext
 		}
 	}
 };
+
+
+//******************************************************************************
+// Progress band wrapper (maps local 0~count to a sub-range of the parent)
+//******************************************************************************
+struct MTProgressBand
+{
+	const MTLoadProgressContext* pParent;
+	float startRatio;
+	float endRatio;
+
+	static void Callback(unsigned long current, unsigned long total,
+	                      const char* message, void* userData)
+	{
+		auto* band = static_cast<MTProgressBand*>(userData);
+		if (band == NULL || band->pParent == NULL) return;
+		float local = (total > 0) ? (float)current / (float)total : 1.0f;
+		float global = band->startRatio + local * (band->endRatio - band->startRatio);
+		unsigned long globalCurrent = (unsigned long)(global * 10000.0f);
+		band->pParent->Fire(globalCurrent, 10000, message);
+	}
+
+	MTLoadProgressContext ToContext()
+	{
+		return MTLoadProgressContext(&Callback, this);
+	}
+};

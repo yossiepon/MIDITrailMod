@@ -70,8 +70,12 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
 	if (result != 0) goto EXIT;
 
-	// NoteTracker
-	result = m_NoteTracker.Create(pSeqData);
+	// NoteTracker (progress band: 0% ~ 20%)
+	{
+		MTProgressBand band = { pProgress, 0.0f, 0.2f };
+		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+		result = m_NoteTracker.Create(pSeqData, (pProgress != NULL) ? &ctx : NULL);
+	}
 	if (result != 0) goto EXIT;
 
 	// Ripple / Lyrics
@@ -83,9 +87,14 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
 	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
-	// NoteBox (Instanced)
-	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
-	                          m_Is2D ? MTAABBMode::Roll2D : MTAABBMode::Roll3D);
+	// NoteBox (Instanced, progress band: 20% ~ 90%)
+	{
+		MTProgressBand band = { pProgress, 0.2f, 0.9f };
+		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+		result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
+		                          m_Is2D ? MTAABBMode::Roll2D : MTAABBMode::Roll3D, NULL,
+		                          (pProgress != NULL) ? &ctx : NULL);
+	}
 	if (result != 0) goto EXIT;
 
 	// Keyboard (Playback)

@@ -55,8 +55,12 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 
 	if (pSeqData == NULL) goto EXIT;
 
-	// NoteTracker
-	result = m_NoteTracker.Create(pSeqData);
+	// NoteTracker (progress band: 0% ~ 20%)
+	{
+		MTProgressBand band = { pProgress, 0.0f, 0.2f };
+		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+		result = m_NoteTracker.Create(pSeqData, (pProgress != NULL) ? &ctx : NULL);
+	}
 	if (result != 0) goto EXIT;
 
 	// Keyboard (Playback)
@@ -67,9 +71,14 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 	((MTPianoKeyboardCtrlRain11*)m_pKeyboardCtrl)->SetPlaybackPosTracking(false);
 
-	// Note rain
-	result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
-	                           m_Is2D ? MTAABBMode::Rain2D : MTAABBMode::Rain);
+	// Note rain (progress band: 20% ~ 90%)
+	{
+		MTProgressBand band = { pProgress, 0.2f, 0.9f };
+		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+		result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
+		                           m_Is2D ? MTAABBMode::Rain2D : MTAABBMode::Rain, NULL,
+		                           (pProgress != NULL) ? &ctx : NULL);
+	}
 	if (result != 0) goto EXIT;
 
 	// Dashboard

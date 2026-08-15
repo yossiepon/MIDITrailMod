@@ -2731,24 +2731,39 @@ int MIDITrailApp::_LoadMIDIFile(
 		smfReader.SetLogPath(smfDumpPath);
 	}
 
-	//Load file
-	result = smfReader.Load(pPath, &m_SeqData);
-	if (result != 0) goto EXIT;
+	//Initialize loading screen
+	m_LoadingScreen.Create(m_hWnd, &m_Renderer);
+	m_LoadingScreen.Update(0.0f, "Opening MIDI file...");
+
+	//Load file with progress callback
+	{
+		bool wasTruncated = false;
+		result = smfReader.Load(pPath, &m_SeqData, &_OnParseProgress, this, &wasTruncated);
+		if (result != 0) goto EXIT;
+	}
 
 	//Register file name: set the original file name from before the SMF conversion process
 	m_SeqData.SetFileName(PathFindFileNameW(pFilePath));
 
+	m_LoadingScreen.Update(0.30f, "Building scene...");
+
 	//Reset the playback speed to 100% when loading a file: reflected in the counter by _CreateScene
 	m_PlaySpeedRatio = 100;
 
-	//Create scene object
+	//Create scene object with progress callback
 	m_SceneType = m_SelectedSceneType;
-	result = _CreateScene(m_SceneType, &m_SeqData);
+	{
+		MTLoadProgressContext buildProgress(&_OnBuildProgress, this);
+		result = _CreateScene(m_SceneType, &m_SeqData, &buildProgress);
+	}
 	if (result != 0) goto EXIT;
 
 	//Change playback status
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
+
+	m_LoadingScreen.Update(1.0f, "Complete");
+	m_LoadingScreen.Release();
 
 	m_isRewind = false;
 
@@ -2757,6 +2772,35 @@ EXIT:;
 		DeleteFileW(smfTempPath);
 	}
 	return result;
+}
+
+//******************************************************************************
+// Parse progress callback (SMIDILib → MIDITrail)
+//******************************************************************************
+void MIDITrailApp::_OnParseProgress(
+		unsigned long current,
+		unsigned long total,
+		void* userData
+	)
+{
+	auto* app = static_cast<MIDITrailApp*>(userData);
+	float progress = (total > 0) ? (float)current / (float)total * 0.30f : 0.0f;
+	app->m_LoadingScreen.Update(progress, "Reading MIDI file...");
+}
+
+//******************************************************************************
+// Build progress callback (Scene → MIDITrail)
+//******************************************************************************
+void MIDITrailApp::_OnBuildProgress(
+		unsigned long current,
+		unsigned long total,
+		const char* message,
+		void* userData
+	)
+{
+	auto* app = static_cast<MIDITrailApp*>(userData);
+	float progress = 0.30f + (total > 0 ? (float)current / (float)total * 0.60f : 0.0f);
+	app->m_LoadingScreen.Update(progress, message != NULL ? message : "Building scene...");
 }
 
 
@@ -3238,7 +3282,8 @@ int MIDITrailApp::_ChangeMenuStyle()
 //******************************************************************************
 int MIDITrailApp::_CreateScene(
 		SceneType type,
-		SMSeqData* pSeqData  //NULL for live monitor
+		SMSeqData* pSeqData,  //NULL for live monitor
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;
@@ -3310,7 +3355,7 @@ int MIDITrailApp::_CreateScene(
 	// The Title scene has no data: pass pSeqData as NULL
 	{
 		SMSeqData* pCreateSeqData = (type == Title) ? NULL : pSeqData;
-		result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), m_Renderer.GetContext(), pCreateSeqData);
+		result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), m_Renderer.GetContext(), pCreateSeqData, pProgress);
 		if (result != 0) goto EXIT;
 	}
 
