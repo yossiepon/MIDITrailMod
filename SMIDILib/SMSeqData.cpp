@@ -75,12 +75,18 @@ int SMSeqData::AddTrack(
 //******************************************************************************
 // Track registration complete
 //******************************************************************************
-int SMSeqData::CloseTrack()
+int SMSeqData::CloseTrack(
+		SMLoadProgressFunc progressFunc,
+		void* progressUserData,
+		unsigned long progressOffset,
+		unsigned long progressTotal
+	)
 {
 	int result = 0;
 
 	//Merge tracks process
-	result = _MergeTracks();
+	result = _MergeTracks(progressFunc, progressUserData,
+						  progressOffset, progressTotal);
 	if (result != 0) goto EXIT;
 
 	//Calculate total playback time
@@ -127,7 +133,12 @@ struct MergeHeapCmp {
 
 } // anonymous namespace
 
-int SMSeqData::_MergeTracks()
+int SMSeqData::_MergeTracks(
+		SMLoadProgressFunc progressFunc,
+		void* progressUserData,
+		unsigned long progressOffset,
+		unsigned long progressTotal
+	)
 {
 	int result = 0;
 	unsigned char portNo = 0;
@@ -150,6 +161,12 @@ int SMSeqData::_MergeTracks()
 		std::vector<SMTrack*> tracks(m_TrackList.begin(), m_TrackList.end());
 		std::vector<unsigned long> idx(tracks.size(), 0);
 
+		// Count total events for progress reporting
+		unsigned long totalEvents = 0;
+		for (unsigned long t = 0; t < tracks.size(); t++) {
+			totalEvents += tracks[t]->GetSize();
+		}
+
 		// Initialize min-heap with each track's first event
 		std::priority_queue<MergeHeapItem, std::vector<MergeHeapItem>, MergeHeapCmp> heap;
 
@@ -168,6 +185,9 @@ int SMSeqData::_MergeTracks()
 		}
 
 		unsigned long long prevAbsTime = 0;
+		unsigned long mergedCount = 0;
+		unsigned long mergeRange = (progressTotal > progressOffset)
+			? (progressTotal - progressOffset) : 0;
 
 		while (!heap.empty()) {
 			MergeHeapItem top = heap.top();
@@ -182,6 +202,13 @@ int SMSeqData::_MergeTracks()
 
 			result = pMergedTrack->AddDataSet(deltaTime, &event, portNo);
 			if (result != 0) goto EXIT;
+
+			mergedCount++;
+			if (progressFunc != NULL && (mergedCount & 0x3FFF) == 0 && totalEvents > 0) {
+				unsigned long current = progressOffset
+					+ (unsigned long)((unsigned long long)mergedCount * mergeRange / totalEvents);
+				progressFunc(current, progressTotal, progressUserData);
+			}
 
 			// Push next event from the same track
 			idx[t] += 1;
