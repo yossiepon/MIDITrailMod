@@ -144,23 +144,25 @@ int MTNoteLyrics11::BuildVertices(
 	)
 {
 	int result = 0;
+	// Declared before the first goto below for C++20 compatibility (jump over initialization is not allowed).
+	Vector3 moveVec;
+	Matrix world;
+	DXPRIMITIVE11_VERTEX* pVertex = NULL;
+	unsigned long activeNoteNum = 0;
 
 	if (m_isSkipping) goto EXIT;
 	if (m_pContext == NULL) goto EXIT;
 
 	// World matrix: Rotation(rollAngle) * Translation(WorldMoveVector)
-	Vector3 moveVec = m_pNoteDesign->GetWorldMoveVector();
-	Matrix world = Matrix::CreateRotationX(XMConvertToRadians(m_RollAngle))
+	moveVec = m_pNoteDesign->GetWorldMoveVector();
+	world = Matrix::CreateRotationX(XMConvertToRadians(m_RollAngle))
 	             * Matrix::CreateTranslation(moveVec);
 	m_Prim.SetWorldMatrix(world);
 
-	DXPRIMITIVE11_VERTEX* pVertex = NULL;
 	result = m_Prim.LockVertex(m_pContext, &pVertex);
 	if (result != 0) goto EXIT;
 
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
-
-	unsigned long activeNoteNum = 0;
 
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (!m_Status[i].isActive) continue;

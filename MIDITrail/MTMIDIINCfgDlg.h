@@ -62,14 +62,14 @@ private:
 	int _InitConfFile();
 
 	//Initialize the device selection combo box
-	int _InitComboDev(HWND hComboDev, TCHAR* pPortName);
+	int _InitComboDev(HWND hComboDev, const TCHAR* pPortName);
 
 	//Initialize the MIDITHRU checkbox
 	int _InitCheckBtnMIDITHRU();
 
 	//Save processing
 	int _Save();
-	int _SavePortCfg(HWND hComboDev, TCHAR* pPortName);
+	int _SavePortCfg(HWND hComboDev, const TCHAR* pPortName);
 	int _SaveMIDITHRU();
 
 };

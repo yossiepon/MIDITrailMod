@@ -1009,7 +1009,7 @@ int MTColorPaletteCfgDlg::_MakeImportKeyValueMap(
 	std::string value;
 	std::string::size_type trimLeft;
 	std::string::size_type trimRight;
-	TCHAR* trimCharList = _T(" \t\r\n");
+	const TCHAR* trimCharList = _T(" \t\r\n");
 	MTColorParamDictionary::iterator itr;
 
 	//Parse each line

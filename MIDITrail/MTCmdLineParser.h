@@ -48,7 +48,7 @@ public:
 private:
 
 	unsigned char m_CmdSwitchStatus[CMDSW_MAX];
-	WCHAR* m_pFilePath;
+	const WCHAR* m_pFilePath;
 
 	int _AnalyzeCmdLine();
 

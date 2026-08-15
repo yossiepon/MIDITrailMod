@@ -137,6 +137,11 @@ int DXTexture11::CreateFromRGBA(
 	int result = 0;
 	HRESULT hr = S_OK;
 	ID3D11Texture2D* pTex = NULL;
+	// Declared here (before the first goto) to avoid C2362: a goto must not
+	// jump past the initialization of a variable that is in scope at the label.
+	D3D11_TEXTURE2D_DESC td = {};
+	D3D11_SUBRESOURCE_DATA srd = {};
+	D3D11_SHADER_RESOURCE_VIEW_DESC sd = {};
 
 	if (pDevice == NULL || pPixels == NULL || ppSRV == NULL ||
 		width == 0 || height == 0) {
@@ -145,7 +150,6 @@ int DXTexture11::CreateFromRGBA(
 	}
 	*ppSRV = NULL;
 
-	D3D11_TEXTURE2D_DESC td = {};
 	td.Width     = width;
 	td.Height    = height;
 	td.MipLevels = 1;
@@ -155,7 +159,6 @@ int DXTexture11::CreateFromRGBA(
 	td.Usage     = D3D11_USAGE_IMMUTABLE;
 	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-	D3D11_SUBRESOURCE_DATA srd = {};
 	srd.pSysMem     = pPixels;
 	srd.SysMemPitch = width * 4;
 
@@ -165,7 +168,6 @@ int DXTexture11::CreateFromRGBA(
 		goto EXIT;
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC sd = {};
 	sd.Format              = td.Format;
 	sd.ViewDimension       = D3D11_SRV_DIMENSION_TEXTURE2D;
 	sd.Texture2D.MipLevels = 1;

@@ -79,6 +79,8 @@ int MTDashboard11::Create(
 	SMTrack track;
 	SMNoteList noteList;
 	WCHAR counter[100];
+	// Declared here (before the first goto) for C++20 compatibility with the goto-based error handling below.
+	unsigned long scaledFontSize = 0;
 
 	Release();
 
@@ -120,7 +122,7 @@ int MTDashboard11::Create(
 	m_TitleText = title;
 	m_FileNameText = fileName;
 
-	unsigned long scaledFontSize = _GetScaledFontSize();
+	scaledFontSize = _GetScaledFontSize();
 
 	// Title caption
 	result = m_Title.Create(pDevice, pContext,
@@ -237,16 +239,19 @@ int MTDashboard11::_GetCounterPos(float* pX, float* pY)
 {
 	int result = 0;
 	RECT rect;
+	// Declared here (before the first goto) for C++20 compatibility with the goto-based error handling below.
+	unsigned long cw = 0;
+	unsigned long ch = 0;
+	unsigned long th = 0, tw = 0;
 
 	if (!GetClientRect(m_hWnd, &rect)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	unsigned long cw = rect.right - rect.left;
-	unsigned long ch = rect.bottom - rect.top;
+	cw = rect.right - rect.left;
+	ch = rect.bottom - rect.top;
 
-	unsigned long th = 0, tw = 0;
 	m_Counter.GetTextureSize(&th, &tw);
 
 	*pX = MTDASHBOARD11_FRAMESIZE;

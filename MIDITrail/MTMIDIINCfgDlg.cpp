@@ -180,7 +180,7 @@ EXIT:;
 //******************************************************************************
 int MTMIDIINCfgDlg::_InitComboDev(
 		HWND hComboDev,
-		TCHAR* pPortName
+		const TCHAR* pPortName
 	)
 {
 	int result = 0;
@@ -303,7 +303,7 @@ EXIT:;
 //******************************************************************************
 int MTMIDIINCfgDlg::_SavePortCfg(
 		HWND hComboDev,
-		TCHAR* pPortName
+		const TCHAR* pPortName
 	)
 {
 	int result = 0;

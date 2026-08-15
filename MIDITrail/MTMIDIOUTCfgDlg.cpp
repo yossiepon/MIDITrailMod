@@ -195,7 +195,7 @@ EXIT:;
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_InitComboDev(
 		HWND hComboDev,
-		TCHAR* pPortName
+		const TCHAR* pPortName
 	)
 {
 	int result = 0;
@@ -300,7 +300,7 @@ EXIT:;
 //******************************************************************************
 int MTMIDIOUTCfgDlg::_SavePortCfg(
 		HWND hComboDev,
-		TCHAR* pPortName
+		const TCHAR* pPortName
 	)
 {
 	int result = 0;
