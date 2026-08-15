@@ -123,7 +123,7 @@
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
-xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
@@ -161,7 +161,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
-xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
@@ -200,7 +200,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
-xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
@@ -242,7 +242,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
-xcopy ..\README.en.md $(TargetDir) /Y
+xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
 </Command>
     </PostBuildEvent>
