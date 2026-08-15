@@ -20,3 +20,23 @@ typedef void (*MTLoadingProgressFunc)(
 	const char* message,
 	void* userData
 );
+
+
+//******************************************************************************
+// Loading progress context (MIDITrail layer)
+//******************************************************************************
+struct MTLoadProgressContext
+{
+	MTLoadingProgressFunc func;
+	void* userData;
+
+	MTLoadProgressContext() : func(NULL), userData(NULL) {}
+	MTLoadProgressContext(MTLoadingProgressFunc f, void* u) : func(f), userData(u) {}
+
+	void Fire(unsigned long current, unsigned long total, const char* message = NULL) const
+	{
+		if (func != NULL) {
+			func(current, total, message, userData);
+		}
+	}
+};

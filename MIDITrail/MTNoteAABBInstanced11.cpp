@@ -375,12 +375,15 @@ int MTNoteAABBInstanced11::Create(
 		MTNoteTracker* pNoteTracker,
 		MTNotePitchBend* pNotePitchBend,
 		MTAABBMode mode,
-		MTNoteDesign11* pNoteDesign
+		MTNoteDesign11* pNoteDesign,
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;
 
 	Release();
+
+	m_pProgress = pProgress;
 
 	if (pSeqData == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -555,6 +558,10 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 
 			startTicks[i] = note.startTime;
 			endTicks[i] = note.endTime;
+
+			if (m_pProgress != NULL && (i & 0x3FFF) == 0) {
+				m_pProgress->Fire(i, m_NoteCount);
+			}
 		}
 
 		result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,
@@ -606,6 +613,10 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 
 			startTicks[i] = note.startTimeTick;
 			endTicks[i] = note.endTimeTick;
+
+			if (m_pProgress != NULL && (i & 0x3FFF) == 0) {
+				m_pProgress->Fire(i, m_NoteCount);
+			}
 		}
 
 		result = CreateImmutableBuffer(pDevice, D3D11_BIND_VERTEX_BUFFER,

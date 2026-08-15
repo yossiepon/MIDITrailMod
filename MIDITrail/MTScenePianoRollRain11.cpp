@@ -47,7 +47,8 @@ const TCHAR* MTScenePianoRollRain11::GetName() const
 int MTScenePianoRollRain11::_CreateModeComponents(
 		ID3D11Device* pDevice,
 		ID3D11DeviceContext* pContext,
-		SMIDILib::SMSeqData* pSeqData
+		SMIDILib::SMSeqData* pSeqData,
+		const MTLoadProgressContext* pProgress
 	)
 {
 	int result = 0;

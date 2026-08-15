@@ -13,6 +13,7 @@
 
 #include <vector>
 #include "MTNoteTrackerBase.h"
+#include "MTLoadingDefs.h"
 
 
 //******************************************************************************
@@ -25,7 +26,8 @@ public:
 	MTNoteTracker();
 	~MTNoteTracker();
 
-	int Create(SMSeqData* pSeqData);
+	int Create(SMSeqData* pSeqData,
+	           const MTLoadProgressContext* pProgress = NULL);
 	void Release();
 
 	int  Update(const MTSceneUpdateContext& ctx) override;

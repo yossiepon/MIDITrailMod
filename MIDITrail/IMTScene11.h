@@ -15,6 +15,7 @@
 #include <directxtk/SimpleMath.h>
 #include <tchar.h>
 #include "MTViewParamMap.h"
+#include "MTLoadingDefs.h"
 
 namespace SMIDILib { class SMSeqData; }
 class MTFirstPersonCam;
@@ -54,11 +55,13 @@ public:
 	//----------------------------------------------------------------------
 
 	// pSeqData is NULL for live monitoring scenes.
+	// pProgress: optional progress callback context for loading UI.
 	virtual int  Create(
 					HWND hWnd,
 					ID3D11Device* pDevice,
 					ID3D11DeviceContext* pContext,
-					SMIDILib::SMSeqData* pSeqData
+					SMIDILib::SMSeqData* pSeqData,
+					const MTLoadProgressContext* pProgress = NULL
 				) = 0;
 
 	virtual void Release() = 0;

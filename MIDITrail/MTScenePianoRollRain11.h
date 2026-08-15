@@ -37,7 +37,8 @@ protected:
 	int _CreateModeComponents(
 				ID3D11Device* pDevice,
 				ID3D11DeviceContext* pContext,
-				SMIDILib::SMSeqData* pSeqData) override;
+				SMIDILib::SMSeqData* pSeqData,
+				const MTLoadProgressContext* pProgress = NULL) override;
 	void _RegisterModeComponents() override;
 	int _DrawNotes(
 				ID3D11DeviceContext* pContext,
