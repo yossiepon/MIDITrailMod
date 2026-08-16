@@ -53,6 +53,7 @@ public:
 	void SetBeat(unsigned long numerator, unsigned long denominator);
 	void SetPlaySpeedRatio(unsigned long ratio);
 	void SetNotesCount(unsigned long notesCount);
+	void SetNoteNum(unsigned long noteNum);
 	void Reset() override;
 	void OnWindowResize();
 

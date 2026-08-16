@@ -82,13 +82,24 @@ int MTScenePianoRollRing11::_CreateModeComponents(
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
 	if (result != 0) goto EXIT;
 
-	// NoteTracker
-	result = m_NoteTracker.Create(pSeqData);
+	// NoteTracker (progress band: 0% ~ 20%)
+	{
+		MTProgressBand band = { pProgress, MTLoadBand::TRACKER_START, MTLoadBand::TRACKER_END };
+		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+		result = m_NoteTracker.Create(pSeqData, (pProgress != NULL) ? &ctx : NULL);
+	}
 	if (result != 0) goto EXIT;
 
-	// NoteBox (GPU-instanced Ring renderer)
-	result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData,
-	                          &m_NoteTracker, &m_NotePitchBend, &m_NoteDesignRing);
+	m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
+
+	// NoteBox (GPU-instanced Ring renderer, progress band: 20% ~ 90%)
+	{
+		MTProgressBand band = { pProgress, MTLoadBand::INSTANCED_START, MTLoadBand::INSTANCED_END };
+		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+		result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData,
+		                          &m_NoteTracker, &m_NotePitchBend, &m_NoteDesignRing,
+		                          (pProgress != NULL) ? &ctx : NULL);
+	}
 	if (result != 0) goto EXIT;
 
 	// Ripple (with Ring NoteDesign injection)
