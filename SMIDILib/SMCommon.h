@@ -40,10 +40,4 @@
 //Default pitch bend sensitivity: 2 semitones
 #define SM_DEFAULT_PITCHBEND_SENSITIVITY  (2)
 
-namespace SMIDILib {
-
-//Progress callback type for file loading operations
-typedef void (*SMLoadProgressFunc)(unsigned long current, unsigned long total, void* userData);
-
-} // end of namespace
 

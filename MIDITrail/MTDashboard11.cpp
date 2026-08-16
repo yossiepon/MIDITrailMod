@@ -76,8 +76,6 @@ int MTDashboard11::Create(
 
 	m_pDevice = pDevice;
 	m_pContext = pContext;
-	SMTrack track;
-	SMNoteList noteList;
 	WCHAR counter[100];
 	// Declared here (before the first goto) for C++20 compatibility with the goto-based error handling below.
 	unsigned long scaledFontSize = 0;
@@ -113,11 +111,9 @@ int MTDashboard11::Create(
 	SetBarNo(1);
 	SetBarNum(pSeqData->GetBarNum());
 
-	result = pSeqData->GetMergedTrack(&track);
-	if (result != 0) goto EXIT;
-	result = track.GetNoteList(&noteList);
-	if (result != 0) goto EXIT;
-	m_NoteNum = noteList.GetSize();
+	// Note count is set later via SetNoteNum() after NoteTracker is built.
+	// Previously called GetMergedTrack+GetNoteList here, which duplicated
+	// heavy processing (2+ seconds for 6M+ notes) just to get the count.
 
 	m_TitleText = title;
 	m_FileNameText = fileName;
@@ -333,6 +329,7 @@ void MTDashboard11::SetBarNum(unsigned long barNum)            { m_BarNum = barN
 void MTDashboard11::SetBeat(unsigned long n, unsigned long d)  { m_BeatNumerator = n; m_BeatDenominator = d; }
 void MTDashboard11::SetPlaySpeedRatio(unsigned long ratio)     { m_PlaySpeedRatio = ratio; }
 void MTDashboard11::SetNotesCount(unsigned long c)             { m_NoteCount = c; }
+void MTDashboard11::SetNoteNum(unsigned long noteNum)          { m_NoteNum = noteNum; }
 unsigned long MTDashboard11::GetPlayTimeSec()                  { return m_PlayTimeMSec; }
 void MTDashboard11::SetEnableFileName(bool e)                  { m_isEnableFileName = e; }
 

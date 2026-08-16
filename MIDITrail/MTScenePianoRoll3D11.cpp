@@ -14,6 +14,7 @@
 #include "MTGridBox11.h"
 #include "MTPianoKeyboardCtrlRoll11.h"
 #include "SMMsgParser.h"
+#include "MTLoadingDefs.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -56,52 +57,73 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 
 	if (pSeqData == NULL) goto EXIT;
 
-	// Grid (Playback)
-	try { m_pGrid = new MTGridBox11(); }
-	catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
-	result = ((MTGridBox11*)m_pGrid)->Create(pDevice, pContext, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-
-	// TimeIndicator
-	result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
-	if (result != 0) goto EXIT;
-
-	// Dashboard
-	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
-	if (result != 0) goto EXIT;
-
-	// NoteTracker (progress band: 0% ~ 20%)
 	{
-		MTProgressBand band = { pProgress, 0.0f, 0.2f };
-		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
-		result = m_NoteTracker.Create(pSeqData, (pProgress != NULL) ? &ctx : NULL);
+		LARGE_INTEGER freq, t0, t1;
+		QueryPerformanceFrequency(&freq);
+
+		// Grid (Playback)
+		MTLoadLog("Component Grid begin\n"); QueryPerformanceCounter(&t0);
+		try { m_pGrid = new MTGridBox11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTGridBox11*)m_pGrid)->Create(pDevice, pContext, GetName(), pSeqData);
+		QueryPerformanceCounter(&t1); MTLoadLog("Component Grid: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		if (result != 0) goto EXIT;
+
+		// TimeIndicator
+		MTLoadLog("Component TimeIndicator begin\n"); QueryPerformanceCounter(&t0);
+		result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
+		QueryPerformanceCounter(&t1); MTLoadLog("Component TimeIndicator: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		if (result != 0) goto EXIT;
+
+		// Dashboard
+		MTLoadLog("Component Dashboard begin\n"); QueryPerformanceCounter(&t0);
+		result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
+		QueryPerformanceCounter(&t1); MTLoadLog("Component Dashboard: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		if (result != 0) goto EXIT;
+
+		// NoteTracker (progress band: 16% ~ 63%)
+		{
+			MTProgressBand band = { pProgress, MTLoadBand::TRACKER_START, MTLoadBand::TRACKER_END };
+			MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+			result = m_NoteTracker.Create(pSeqData, (pProgress != NULL) ? &ctx : NULL);
+		}
+		if (result != 0) goto EXIT;
+
+		m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
+
+		// Ripple
+		MTLoadLog("Component Ripple begin\n"); QueryPerformanceCounter(&t0);
+		result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+		QueryPerformanceCounter(&t1); MTLoadLog("Component Ripple: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		if (result != 0) goto EXIT;
+		m_NoteTracker.AddListener(&m_Ripple, NoteEventType::Note);
+
+		// Lyrics
+		MTLoadLog("Component Lyrics begin\n"); QueryPerformanceCounter(&t0);
+		result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
+		QueryPerformanceCounter(&t1); MTLoadLog("Component Lyrics: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		if (result != 0) goto EXIT;
+		m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
+		m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
+
+		// NoteBox (Instanced, progress band: 66% ~ 98%)
+		{
+			MTProgressBand band = { pProgress, MTLoadBand::INSTANCED_START, MTLoadBand::INSTANCED_END };
+			MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
+			result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
+			                          m_Is2D ? MTAABBMode::Roll2D : MTAABBMode::Roll3D, NULL,
+			                          (pProgress != NULL) ? &ctx : NULL);
+		}
+		if (result != 0) goto EXIT;
+
+		// Keyboard (Playback)
+		MTLoadLog("Component Keyboard begin\n"); QueryPerformanceCounter(&t0);
+		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRoll11(); }
+		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
+		result = ((MTPianoKeyboardCtrlRoll11*)m_pKeyboardCtrl)->Create(
+			pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, m_Is2D);
+		QueryPerformanceCounter(&t1); MTLoadLog("Component Keyboard: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 	}
-	if (result != 0) goto EXIT;
-
-	// Ripple / Lyrics
-	result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-	m_NoteTracker.AddListener(&m_Ripple, NoteEventType::Note);
-	result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
-	if (result != 0) goto EXIT;
-	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
-	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
-
-	// NoteBox (Instanced, progress band: 20% ~ 90%)
-	{
-		MTProgressBand band = { pProgress, 0.2f, 0.9f };
-		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
-		result = m_NoteBox.Create(pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend,
-		                          m_Is2D ? MTAABBMode::Roll2D : MTAABBMode::Roll3D, NULL,
-		                          (pProgress != NULL) ? &ctx : NULL);
-	}
-	if (result != 0) goto EXIT;
-
-	// Keyboard (Playback)
-	try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRoll11(); }
-	catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
-	result = ((MTPianoKeyboardCtrlRoll11*)m_pKeyboardCtrl)->Create(
-		pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, m_Is2D);
 	if (result != 0) goto EXIT;
 
 EXIT:;

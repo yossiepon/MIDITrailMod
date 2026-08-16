@@ -57,7 +57,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 
 	// NoteTracker (progress band: 0% ~ 20%)
 	{
-		MTProgressBand band = { pProgress, 0.0f, 0.2f };
+		MTProgressBand band = { pProgress, MTLoadBand::TRACKER_START, MTLoadBand::TRACKER_END };
 		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
 		result = m_NoteTracker.Create(pSeqData, (pProgress != NULL) ? &ctx : NULL);
 	}
@@ -73,7 +73,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 
 	// Note rain (progress band: 20% ~ 90%)
 	{
-		MTProgressBand band = { pProgress, 0.2f, 0.9f };
+		MTProgressBand band = { pProgress, MTLoadBand::INSTANCED_START, MTLoadBand::INSTANCED_END };
 		MTLoadProgressContext ctx = (pProgress != NULL) ? band.ToContext() : MTLoadProgressContext();
 		result = m_NoteRain.Create(pDevice, pContext, GetName(), pSeqData, nullptr, &m_NotePitchBend,
 		                           m_Is2D ? MTAABBMode::Rain2D : MTAABBMode::Rain, NULL,
@@ -84,6 +84,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 	// Dashboard
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
 	if (result != 0) goto EXIT;
+	m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
 	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 EXIT:;

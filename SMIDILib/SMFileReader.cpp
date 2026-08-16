@@ -14,6 +14,7 @@
 #include "YNBaseLib.h"
 #include "SMFileReader.h"
 #include "SMSimpleList.h"
+#include "SMLoadingDefs.h"
 #include "SMCommon.h"
 #include "tchar.h"
 #include "shlwapi.h"
@@ -93,8 +94,8 @@ int SMFileReader::Load(
 	SMTrack* pTrack = NULL;
 
 	static const unsigned long TOTAL_UNITS = 10000;
-	static const unsigned long READ_UNITS  = 6000;
-	static const unsigned long MERGE_UNITS = 4000;
+	unsigned long READ_UNITS  = 2000;
+	unsigned long MERGE_UNITS = 8000;
 
 	if ((pSMFPath == NULL) || (pSeqData == NULL)) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -171,7 +172,26 @@ int SMFileReader::Load(
 	pSeqData->SetSMFFormat(chunkDataSection.format);
 	pSeqData->SetTimeDivision(chunkDataSection.timeDivision);
 
+	// Dynamic band allocation based on track count
+	// MergeTracks is O(E * log T), TrackRead is O(E)
+	// Ratio: read = 1/(1+log2(T)), merge = log2(T)/(1+log2(T))
 	{
+		double logT = log2((double)chunkDataSection.ntracks);
+		if (logT < 1.0) logT = 1.0;
+		READ_UNITS  = (unsigned long)(TOTAL_UNITS / (1.0 + logT));
+		MERGE_UNITS = TOTAL_UNITS - READ_UNITS;
+	}
+
+	SMLoadLog("  FileOpen: %s\n", (pMapView != NULL) ? "mmap" : "mmio");
+	SMLoadLog("  Format: %u, Tracks: %u, TimeDivision: %u\n",
+		chunkDataSection.format, chunkDataSection.ntracks, chunkDataSection.timeDivision);
+	SMLoadLog("  BandAlloc: read=%lu, merge=%lu (log2(T)=%.1f)\n",
+		READ_UNITS, MERGE_UNITS, log2((double)chunkDataSection.ntracks));
+
+	{
+		LARGE_INTEGER lFreq, lT0, lT1;
+		QueryPerformanceFrequency(&lFreq);
+
 		//Progress context for track reading phase (0 ~ READ_UNITS)
 		SMLoadProgressContext readProgress;
 		readProgress.func = progressFunc;
@@ -180,6 +200,8 @@ int SMFileReader::Load(
 		readProgress.range = READ_UNITS;
 		readProgress.total = TOTAL_UNITS;
 
+		SMLoadLog("  TrackRead begin\n");
+		QueryPerformanceCounter(&lT0);
 		for (i = 0; i < chunkDataSection.ntracks; i++) {
 			//Read track header
 			result = _ReadTrackHeader(hFile, i, &chunkTypeSectionOfTrack);
@@ -197,11 +219,23 @@ int SMFileReader::Load(
 
 			if (SMSimpleList::WasTruncated()) break;
 		}
+		QueryPerformanceCounter(&lT1);
+		SMLoadLog("  TrackRead: %lld ms (%u tracks)\n",
+			(lT1.QuadPart - lT0.QuadPart) * 1000 / lFreq.QuadPart, chunkDataSection.ntracks);
 	}
 
 	//Close track (merge phase: READ_UNITS ~ TOTAL_UNITS)
-	result = pSeqData->CloseTrack(progressFunc, progressUserData,
-								  READ_UNITS, TOTAL_UNITS);
+	SMLoadLog("  CloseTrack (merge) begin\n");
+	{
+		LARGE_INTEGER lFreq2, lT2a, lT2b;
+		QueryPerformanceFrequency(&lFreq2);
+		QueryPerformanceCounter(&lT2a);
+		result = pSeqData->CloseTrack(progressFunc, progressUserData,
+									  READ_UNITS, TOTAL_UNITS);
+		QueryPerformanceCounter(&lT2b);
+		SMLoadLog("  CloseTrack (merge): %lld ms\n",
+			(lT2b.QuadPart - lT2a.QuadPart) * 1000 / lFreq2.QuadPart);
+	}
 	if (result != 0 ) goto EXIT;
 
 	//Register file name

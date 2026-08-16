@@ -7,11 +7,15 @@
 // Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
 // Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
+// Based on the DX11 migration design by ced (Zel9278)
+// https://github.com/Zel9278/MIDITrailModMod
+//
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MTNoteTracker.h"
+#include "MTLoadingDefs.h"
 
 using namespace YNBaseLib;
 
@@ -52,18 +56,45 @@ int MTNoteTracker::Create(
 		goto EXIT;
 	}
 
-	result = pSeqData->GetMergedTrack(&mergedTrack);
-	if (result != 0) goto EXIT;
+	{
+		LARGE_INTEGER freq, t0, t1;
+		QueryPerformanceFrequency(&freq);
 
-	result = mergedTrack.GetNoteList(&noteListTick);
-	if (result != 0) goto EXIT;
+		if (pProgress != NULL) pProgress->Fire(0, 8);
+		MTLoadLog("NoteTracker GetMergedTrack begin\n");
+		QueryPerformanceCounter(&t0);
+		result = pSeqData->GetMergedTrack(&mergedTrack);
+		if (result != 0) goto EXIT;
+		QueryPerformanceCounter(&t1);
+		MTLoadLog("NoteTracker GetMergedTrack: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 
-	result = mergedTrack.GetNoteListWithRealTime(&noteListMs, pSeqData->GetTimeDivision());
-	if (result != 0) goto EXIT;
+		if (pProgress != NULL) pProgress->Fire(1, 8);
+		MTLoadLog("NoteTracker GetNoteList begin\n");
+		QueryPerformanceCounter(&t0);
+		result = mergedTrack.GetNoteList(&noteListTick);
+		if (result != 0) goto EXIT;
+		QueryPerformanceCounter(&t1);
+		MTLoadLog("NoteTracker GetNoteList: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+
+		if (pProgress != NULL) pProgress->Fire(2, 8);
+		MTLoadLog("NoteTracker GetNoteListWithRealTime begin\n");
+		QueryPerformanceCounter(&t0);
+		result = mergedTrack.GetNoteListWithRealTime(&noteListMs, pSeqData->GetTimeDivision());
+		if (result != 0) goto EXIT;
+		QueryPerformanceCounter(&t1);
+		MTLoadLog("NoteTracker GetNoteListWithRealTime: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+	}
 
 	noteCount = noteListTick.GetSize();
 	m_Notes.resize(noteCount);
 
+	{
+		LARGE_INTEGER freq, tLoop0, tLoop1;
+		QueryPerformanceFrequency(&freq);
+		MTLoadLog("NoteTracker CopyLoop begin (%lu notes)\n", noteCount);
+		QueryPerformanceCounter(&tLoop0);
+
+	// Copy loop: report 3/8 ~ 8/8 (37.5%~100% of NoteTracker band)
 	for (unsigned long i = 0; i < noteCount; i++) {
 		SMNote noteTick;
 		result = noteListTick.GetNote(i, &noteTick);
@@ -85,8 +116,13 @@ int MTNoteTracker::Create(
 		memcpy(nd.lyric, noteTick.lyric, sizeof(nd.lyric));
 
 		if (pProgress != NULL && (i & 0x3FFF) == 0) {
-			pProgress->Fire(i, noteCount);
+			unsigned long current = 3 + (unsigned long)((unsigned long long)i * 5 / noteCount);
+			pProgress->Fire(current, 8);
 		}
+	}
+
+		QueryPerformanceCounter(&tLoop1);
+		MTLoadLog("NoteTracker CopyLoop: %lld ms\n", (tLoop1.QuadPart - tLoop0.QuadPart) * 1000 / freq.QuadPart);
 	}
 
 	_BuildMaxEndTimeMs();

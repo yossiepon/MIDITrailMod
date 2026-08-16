@@ -10,6 +10,68 @@
 
 #pragma once
 
+#include <cstdio>
+#include <cstdarg>
+#include <share.h>
+#include <windows.h>
+
+
+//******************************************************************************
+// Loading progress callback type (MIDITrail layer)
+//******************************************************************************
+//******************************************************************************
+// Load log output (open, write, close per call)
+//******************************************************************************
+inline void MTLoadLog(const char* fmt, ...)
+{
+	WCHAR path[MAX_PATH];
+	GetModuleFileNameW(NULL, path, MAX_PATH);
+	WCHAR* s = wcsrchr(path, L'\\');
+	if (s) *(s + 1) = L'\0';
+	wcscat_s(path, MAX_PATH, L"load_log.txt");
+	FILE* f = _wfsopen(path, L"a", _SH_DENYNO);
+	if (f) {
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(f, fmt, args);
+		va_end(args);
+		fclose(f);
+	}
+}
+
+inline void MTLoadLogCreate()
+{
+	WCHAR path[MAX_PATH];
+	GetModuleFileNameW(NULL, path, MAX_PATH);
+	WCHAR* s = wcsrchr(path, L'\\');
+	if (s) *(s + 1) = L'\0';
+	wcscat_s(path, MAX_PATH, L"load_log.txt");
+	FILE* f = _wfsopen(path, L"w", _SH_DENYNO);
+	if (f) fclose(f);
+}
+
+
+//******************************************************************************
+// Loading progress callback type (MIDITrail layer)
+//******************************************************************************
+//******************************************************************************
+// Loading progress band allocation (single source of truth)
+// Ratios are 0.0~1.0 within the overall progress bar.
+//******************************************************************************
+namespace MTLoadBand {
+	// MIDITrailApp level: SMFileReader::Load vs Scene::Create
+	// Measured with 6.28M notes: Load 16.5s (45%), Scene 20.3s (55%)
+	static constexpr float PARSE_END       = 0.45f;  // 0% ~ 45%: SMFileReader::Load
+	static constexpr float BUILD_END       = 0.97f;  // 45% ~ 97%: Scene::Create
+
+	// Scene level (within BUILD band, as 0.0~1.0 ratios within Scene)
+	// Measured: Grid+TI+Dash 1.3s (6%), Tracker 9.6s (47%), Ripple+Lyrics 0.6s (3%), AABB 6.5s (32%), Keyboard 1.3s (6%)
+	static constexpr float TRACKER_START   = 0.06f;  // after Grid/TimeIndicator/Dashboard
+	static constexpr float TRACKER_END     = 0.54f;  // NoteTracker
+	static constexpr float INSTANCED_START = 0.57f;  // after Ripple/Lyrics
+	static constexpr float INSTANCED_END   = 0.89f;  // NoteInstanced
+}
+
 
 //******************************************************************************
 // Loading progress callback type (MIDITrail layer)

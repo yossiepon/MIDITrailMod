@@ -33,6 +33,7 @@
 #include <ShObjIdl.h>
 #include <mbctype.h>
 #include <dwmapi.h>
+#include "MTLoadingDefs.h"
 
 using namespace YNBaseLib;
 
@@ -2702,6 +2703,13 @@ int MIDITrailApp::_LoadMIDIFile(
 	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
 	SMFileReader smfReader;
 
+	// Open load log immediately (before any heavy processing)
+	LARGE_INTEGER perfFreq, perfT0, perfT1;
+	QueryPerformanceFrequency(&perfFreq);
+	MTLoadLogCreate();
+	MTLoadLog("=== Load started ===\n");
+	MTLoadLog("File: %ls\n", pFilePath);
+
 	//Update window title
 	//Show it before loading the file so the file name can be checked if an error occurs
 	_UpdateWindowTitle(PathFindFileNameW(pFilePath));
@@ -2735,27 +2743,32 @@ int MIDITrailApp::_LoadMIDIFile(
 	m_LoadingScreen.Create(m_hWnd, &m_Renderer);
 	m_LoadingScreen.Update(0.0f, "Opening MIDI file...");
 
-	//Load file with progress callback
+	MTLoadLog("SMFileReader::Load begin\n");
+	QueryPerformanceCounter(&perfT0);
 	{
 		bool wasTruncated = false;
 		result = smfReader.Load(pPath, &m_SeqData, &_OnParseProgress, this, &wasTruncated);
 		if (result != 0) goto EXIT;
 	}
+	QueryPerformanceCounter(&perfT1);
+	MTLoadLog("SMFileReader::Load: %lld ms\n", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
 
-	//Register file name: set the original file name from before the SMF conversion process
+	//Register file name
 	m_SeqData.SetFileName(PathFindFileNameW(pFilePath));
 
-	m_LoadingScreen.Update(0.30f, "Building scene...");
+	m_LoadingScreen.Update(MTLoadBand::PARSE_END, "Building scene...");
 
-	//Reset the playback speed to 100% when loading a file: reflected in the counter by _CreateScene
 	m_PlaySpeedRatio = 100;
 
-	//Create scene object with progress callback
+	MTLoadLog("_CreateScene begin\n");
 	m_SceneType = m_SelectedSceneType;
 	{
 		MTLoadProgressContext buildProgress(&_OnBuildProgress, this);
+		QueryPerformanceCounter(&perfT0);
 		result = _CreateScene(m_SceneType, &m_SeqData, &buildProgress);
+		QueryPerformanceCounter(&perfT1);
 	}
+	MTLoadLog("_CreateScene: %lld ms\n", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
 	if (result != 0) goto EXIT;
 
 	//Change playback status
@@ -2768,6 +2781,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	m_isRewind = false;
 
 EXIT:;
+	MTLoadLog("=== Load %s ===\n", (result == 0) ? "completed" : "failed");
 	if (wcslen(smfTempPath) != 0) {
 		DeleteFileW(smfTempPath);
 	}
@@ -2784,7 +2798,7 @@ void MIDITrailApp::_OnParseProgress(
 	)
 {
 	auto* app = static_cast<MIDITrailApp*>(userData);
-	float progress = (total > 0) ? (float)current / (float)total * 0.30f : 0.0f;
+	float progress = (total > 0) ? (float)current / (float)total * MTLoadBand::PARSE_END : 0.0f;
 	app->m_LoadingScreen.Update(progress, "Reading MIDI file...");
 }
 
@@ -2799,7 +2813,8 @@ void MIDITrailApp::_OnBuildProgress(
 	)
 {
 	auto* app = static_cast<MIDITrailApp*>(userData);
-	float progress = 0.30f + (total > 0 ? (float)current / (float)total * 0.60f : 0.0f);
+	float buildRange = MTLoadBand::BUILD_END - MTLoadBand::PARSE_END;
+	float progress = MTLoadBand::PARSE_END + (total > 0 ? (float)current / (float)total * buildRange : 0.0f);
 	app->m_LoadingScreen.Update(progress, message != NULL ? message : "Building scene...");
 }
 
@@ -3354,22 +3369,32 @@ int MIDITrailApp::_CreateScene(
 	//Create the scene
 	// The Title scene has no data: pass pSeqData as NULL
 	{
+		LARGE_INTEGER tS0, tS1, tFreq;
+		QueryPerformanceFrequency(&tFreq);
+
 		SMSeqData* pCreateSeqData = (type == Title) ? NULL : pSeqData;
+		MTLoadLog("Scene::Create begin\n");
+		QueryPerformanceCounter(&tS0);
 		result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), m_Renderer.GetContext(), pCreateSeqData, pProgress);
+		QueryPerformanceCounter(&tS1);
+		MTLoadLog("Scene::Create: %lld ms\n", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
 		if (result != 0) goto EXIT;
+
+		MTLoadLog("Post-scene begin\n");
+		QueryPerformanceCounter(&tS0);
+
+		//Apply the saved viewpoint to the scene
+		if (type != Title) {
+			result = _LoadViewpoint();
+			if (result != 0) goto EXIT;
+		}
+
+		_UpdateEffect();
+		m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
+
+		QueryPerformanceCounter(&tS1);
+		MTLoadLog("Post-scene: %lld ms\n", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
 	}
-
-	//Apply the saved viewpoint to the scene
-	if (type != Title) {
-		result = _LoadViewpoint();
-		if (result != 0) goto EXIT;
-	}
-
-	//Apply display effect
-	_UpdateEffect();
-
-	//Set playbackspeed
-	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
 
 EXIT:;
 	return result;
