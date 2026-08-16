@@ -122,6 +122,7 @@
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\THIRDPARTY.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
 xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
@@ -160,6 +161,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\THIRDPARTY.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
 xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
@@ -199,6 +201,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\THIRDPARTY.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
 xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
@@ -241,6 +244,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <Command>xcopy ..\Resources\* $(TargetDir) /Y /S
 xcopy ..\COPYRIGHT.TXT $(TargetDir) /Y
 xcopy ..\LICENSE.TXT $(TargetDir) /Y
+xcopy ..\THIRDPARTY.TXT $(TargetDir) /Y
 xcopy ..\CHANGELOG.md $(TargetDir) /Y
 xcopy ..\README.md $(TargetDir) /Y
 xcopy ..\README.ja.md $(TargetDir) /Y
