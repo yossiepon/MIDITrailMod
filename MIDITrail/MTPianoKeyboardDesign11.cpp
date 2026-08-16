@@ -16,7 +16,6 @@
 #include "MTConfFile.h"
 #include "MTPianoKeyboardDesign11.h"
 #include "MTNotePitchBend.h"
-#include "MTSceneConst.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -1228,7 +1227,7 @@ float MTPianoKeyboardDesign11::GetRippleSpacing()
 
 float MTPianoKeyboardDesign11::GetRippleMargin()
 {
-	return GetRippleSpacing() * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM);
+	return GetRippleSpacing() * 2;
 }
 
 float MTPianoKeyboardDesign11::GetKeyboardResizeRatio()

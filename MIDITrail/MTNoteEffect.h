@@ -18,7 +18,7 @@
 //******************************************************************************
 // Constants
 //******************************************************************************
-#define NOTEEFFECT_MAX_SLOTS  (256)
+#define NOTEEFFECT_MAX_SLOTS  (16384)
 #define NOTEEFFECT_MAX_PORT   (8)
 
 //******************************************************************************
@@ -77,4 +77,10 @@ protected:
 	unsigned long m_PlayTimeMSec;
 	float m_RollAngle;
 	bool m_isSkipping;
+
+	int m_FreeStack[NOTEEFFECT_MAX_SLOTS];
+	int m_FreeCount;
+
+	void _InitFreeList();
+	void _ReleaseSlot(int slotIndex);
 };
