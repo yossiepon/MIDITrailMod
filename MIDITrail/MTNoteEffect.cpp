@@ -25,10 +25,29 @@ MTNoteEffect::MTNoteEffect()
 	m_isSkipping = false;
 	ZeroMemory(m_Status, sizeof(m_Status));
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
+	_InitFreeList();
 }
 
 MTNoteEffect::~MTNoteEffect()
 {
+}
+
+//******************************************************************************
+// Free-list management
+//******************************************************************************
+void MTNoteEffect::_InitFreeList()
+{
+	m_FreeCount = NOTEEFFECT_MAX_SLOTS;
+	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
+		m_FreeStack[i] = NOTEEFFECT_MAX_SLOTS - 1 - i;
+	}
+}
+
+void MTNoteEffect::_ReleaseSlot(int slotIndex)
+{
+	m_Status[slotIndex].isActive = false;
+	m_FreeStack[m_FreeCount] = slotIndex;
+	m_FreeCount++;
 }
 
 //******************************************************************************
@@ -55,6 +74,7 @@ int MTNoteEffect::Create(
 	m_PlayTimeMSec = 0;
 	ZeroMemory(m_Status, sizeof(m_Status));
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
+	_InitFreeList();
 
 EXIT:;
 	return result;
@@ -67,6 +87,7 @@ void MTNoteEffect::Release()
 {
 	ZeroMemory(m_Status, sizeof(m_Status));
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
+	_InitFreeList();
 	m_CurTickTime = 0;
 	m_PlayTimeMSec = 0;
 }
@@ -81,35 +102,24 @@ void MTNoteEffect::OnNoteActivate(
 {
 	if (m_isSkipping) return;
 
-	// Skip if already registered with same index
-	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
-		if (m_Status[i].isActive && m_Status[i].index == index) {
-			return;
-		}
-	}
+	// Pop from free-list
+	if (m_FreeCount <= 0) return;
 
-	// Find empty slot
-	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
-		if (!m_Status[i].isActive) {
-			NoteEffectStatus& s = m_Status[i];
-			s.isActive = true;
-			s.keyStatus = BeforeNoteON;
-			s.keyDownRate = 0.0f;
-			s.index = index;
-			s.portNo = note.portNo;
-			s.chNo = note.chNo;
-			s.noteNo = note.noteNo;
-			s.velocity = note.velocity;
-			s.startTimeMs = note.startTimeMs;
-			s.endTimeMs = note.endTimeMs;
-			memcpy(s.lyric, note.lyric, sizeof(s.lyric));
+	int slotIndex = m_FreeStack[--m_FreeCount];
+	NoteEffectStatus& s = m_Status[slotIndex];
+	s.isActive = true;
+	s.keyStatus = BeforeNoteON;
+	s.keyDownRate = 0.0f;
+	s.index = index;
+	s.portNo = note.portNo;
+	s.chNo = note.chNo;
+	s.noteNo = note.noteNo;
+	s.velocity = note.velocity;
+	s.startTimeMs = note.startTimeMs;
+	s.endTimeMs = note.endTimeMs;
+	memcpy(s.lyric, note.lyric, sizeof(s.lyric));
 
-			OnActivate(s);
-			return;
-		}
-	}
-
-	// No empty slot: silently drop
+	OnActivate(s);
 }
 
 //******************************************************************************
@@ -127,7 +137,7 @@ void MTNoteEffect::OnNoteDeactivate(
 				m_Status[i].endTimeMs = note.endTimeMs;
 			}
 			else {
-				m_Status[i].isActive = false;
+				_ReleaseSlot(i);
 			}
 			return;
 		}
@@ -144,7 +154,7 @@ void MTNoteEffect::OnReset()
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		if (m_Status[i].isActive) {
 			OnDeactivate(m_Status[i]);
-			m_Status[i].isActive = false;
+			_ReleaseSlot(i);
 		}
 	}
 }
@@ -174,7 +184,7 @@ int MTNoteEffect::Update(
 			unsigned long releaseEnd = m_Status[i].endTimeMs
 				+ m_pNoteDesign->GetRippleReleaseDuration();
 			if (m_PlayTimeMSec > releaseEnd) {
-				m_Status[i].isActive = false;
+				_ReleaseSlot(i);
 				continue;
 			}
 		}
@@ -185,7 +195,7 @@ int MTNoteEffect::Update(
 		m_Status[i].keyStatus = env.keyStatus;
 
 		if (env.keyDownRate == 0.0f && env.keyStatus == AfterNoteOFF) {
-			m_Status[i].isActive = false;
+			_ReleaseSlot(i);
 		}
 	}
 

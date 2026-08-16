@@ -14,7 +14,6 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MTPictBoardRing11.h"
-#include "MTSceneConst.h"
 #include "DXH.h"
 
 using namespace YNBaseLib;
@@ -248,8 +247,7 @@ int MTPictBoardRing11::_CreateVertexOfBoard(
 //******************************************************************************
 float MTPictBoardRing11::_GetRippleMargin()
 {
-	return m_NoteDesign.GetRippleSpacing()
-	     * (MTNOTELYRICS_MAX_LYRICS_NUM + MTNOTERIPPLE_MAX_RIPPLE_NUM);
+	return m_NoteDesign.GetRippleSpacing() * 2;
 }
 
 //******************************************************************************

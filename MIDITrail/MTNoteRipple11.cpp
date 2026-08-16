@@ -15,7 +15,6 @@
 #include "MTConfFile.h"
 #include "DXTexture11.h"
 #include "MTNoteRipple11.h"
-#include "MTSceneConst.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -54,6 +53,8 @@ int MTNoteRipple11::Create(
 {
 	int result = 0;
 	unsigned long vertexNum = 0;
+	unsigned long indexNum = 0;
+	unsigned long* pIndex = NULL;
 
 	m_pContext = pContext;
 	m_pNotePitchBend = pNotePitchBend;
@@ -66,13 +67,32 @@ int MTNoteRipple11::Create(
 	result = _LoadTexture(pDevice, pSceneName);
 	if (result != 0) goto EXIT;
 
-	// Create vertex buffer: 6 vertices per ripple * overwrite times * max slots
+	// Create vertex buffer: 4 vertices per quad * overwrite times * max slots
 	{
 		unsigned long overwriteTimes = m_pNoteDesign->GetRippleOverwriteTimes();
-		vertexNum = 6 * overwriteTimes * NOTEEFFECT_MAX_SLOTS;
+		vertexNum = 4 * overwriteTimes * NOTEEFFECT_MAX_SLOTS;
+		indexNum = 6 * overwriteTimes * NOTEEFFECT_MAX_SLOTS;
 	}
 	result = m_Prim.CreateVertexBuffer(pDevice, vertexNum);
 	if (result != 0) goto EXIT;
+
+	result = m_Prim.CreateIndexBuffer(pDevice, indexNum);
+	if (result != 0) goto EXIT;
+
+	// Fill index buffer (static pattern: 0,1,2, 2,1,3 per quad)
+	result = m_Prim.LockIndex(pContext, &pIndex);
+	if (result != 0) goto EXIT;
+	for (unsigned long q = 0; q < vertexNum / 4; q++) {
+		unsigned long base = q * 4;
+		unsigned long idx = q * 6;
+		pIndex[idx + 0] = base + 0;
+		pIndex[idx + 1] = base + 1;
+		pIndex[idx + 2] = base + 2;
+		pIndex[idx + 3] = base + 2;
+		pIndex[idx + 4] = base + 1;
+		pIndex[idx + 5] = base + 3;
+	}
+	m_Prim.UnlockIndex(pContext);
 
 	m_Prim.SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -192,41 +212,29 @@ int MTNoteRipple11::BuildVertices(
 
 			if (rh <= 0.0f || rw <= 0.0f) continue;
 
-			// Z-fighting avoidance: offset ripple along X from camera
-			if (center.x < m_CamPos.x) {
-				center.x -= spacing * (MTNOTELYRICS_MAX_LYRICS_NUM
-					+ MTNOTERIPPLE_MAX_RIPPLE_NUM - (i + 1));
-			}
-			else {
-				center.x -= spacing * (MTNOTELYRICS_MAX_LYRICS_NUM + i + 1);
-			}
+			center.x -= spacing;
 
 			// Note color
 			Color color = m_pNoteDesign->GetNoteBoxColor(s.portNo, s.chNo, s.noteNo);
 			unsigned long c = Color(color.R(), color.G(), color.B(), alpha).BGRA();
 
 			for (unsigned long j = 0; j < overwriteTimes; j++) {
-				DXPRIMITIVE11_VERTEX* v = &pVertex[activeNoteNum * 6];
+				DXPRIMITIVE11_VERTEX* v = &pVertex[activeNoteNum * 4];
 
-				// Quad: two triangles (0-1-2, 3-4-5)
+				// Quad: 4 vertices (indexed as 0,1,2, 2,1,3)
 				v[0].pos[0] = center.x; v[0].pos[1] = center.y + rh/2.0f; v[0].pos[2] = center.z + rw/2.0f;
 				v[1].pos[0] = center.x; v[1].pos[1] = center.y + rh/2.0f; v[1].pos[2] = center.z - rw/2.0f;
 				v[2].pos[0] = center.x; v[2].pos[1] = center.y - rh/2.0f; v[2].pos[2] = center.z + rw/2.0f;
-				v[3] = v[2];
-				v[4] = v[1];
-				v[5].pos[0] = center.x; v[5].pos[1] = center.y - rh/2.0f; v[5].pos[2] = center.z - rw/2.0f;
+				v[3].pos[0] = center.x; v[3].pos[1] = center.y - rh/2.0f; v[3].pos[2] = center.z - rw/2.0f;
 
-				// Normal, color, UV
-				for (int k = 0; k < 6; k++) {
+				for (int k = 0; k < 4; k++) {
 					v[k].normal[0] = 0.0f; v[k].normal[1] = 0.0f; v[k].normal[2] = -1.0f;
 					v[k].color = c;
 				}
 				v[0].uv[0] = 0.0f; v[0].uv[1] = 0.0f;
 				v[1].uv[0] = 1.0f; v[1].uv[1] = 0.0f;
 				v[2].uv[0] = 0.0f; v[2].uv[1] = 1.0f;
-				v[3].uv[0] = 0.0f; v[3].uv[1] = 1.0f;
-				v[4].uv[0] = 1.0f; v[4].uv[1] = 0.0f;
-				v[5].uv[0] = 1.0f; v[5].uv[1] = 1.0f;
+				v[3].uv[0] = 1.0f; v[3].uv[1] = 1.0f;
 
 				activeNoteNum++;
 			}
