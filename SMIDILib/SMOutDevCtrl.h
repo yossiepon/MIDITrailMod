@@ -5,6 +5,7 @@
 // MIDI output device control class.
 //
 // Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

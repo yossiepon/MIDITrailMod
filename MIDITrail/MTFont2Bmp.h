@@ -5,6 +5,7 @@
 // Font-to-bitmap rasterizer.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 

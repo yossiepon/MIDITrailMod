@@ -5,7 +5,7 @@
 // MIDI track class.
 //
 // Copyright (C) 2010 WADA Masashi. All Rights Reserved.
-// Copyright (C) 2012-2025 Yossiepon Oniichan. All Rights Reserved.
+// Copyright (C) 2012-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
