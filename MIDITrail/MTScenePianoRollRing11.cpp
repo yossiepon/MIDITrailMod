@@ -65,6 +65,7 @@ int MTScenePianoRollRing11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 
 	// Grid Ring (Playback)
+	if (pProgress != NULL) pProgress->Fire(0, 10000, "Building grid...");
 	try { m_pGridRing = new MTGridRing11(); }
 	catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 	result = ((MTGridRing11*)m_pGridRing)->Create(pDevice, pContext, GetName(), pSeqData);
@@ -103,6 +104,7 @@ int MTScenePianoRollRing11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 
 	// Ripple (with Ring NoteDesign injection)
+	if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::INSTANCED_END * 10000), 10000, "Building effects...");
 	result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData,
 	                         &m_NotePitchBend, &m_NoteDesignRing);
 	if (result != 0) goto EXIT;

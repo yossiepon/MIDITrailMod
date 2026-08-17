@@ -64,6 +64,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 
 	// Keyboard (Playback)
+	if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::TRACKER_END * 10000), 10000, "Building keyboard...");
 	try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRain11(); }
 	catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 	result = ((MTPianoKeyboardCtrlRain11*)m_pKeyboardCtrl)->Create(

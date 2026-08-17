@@ -56,11 +56,14 @@ int MTNoteTracker::Create(
 		goto EXIT;
 	}
 
+	static const unsigned long PROG_TOTAL = 10000;
+	static const unsigned long PROG_PRE_END = 3750;
+
 	{
 		LARGE_INTEGER freq, t0, t1;
 		QueryPerformanceFrequency(&freq);
 
-		if (pProgress != NULL) pProgress->Fire(0, 8);
+		if (pProgress != NULL) pProgress->Fire(0, PROG_TOTAL, "Reading notes...");
 		MTLoadLog("NoteTracker GetMergedTrack begin\n");
 		QueryPerformanceCounter(&t0);
 		result = pSeqData->GetMergedTrack(&mergedTrack);
@@ -68,7 +71,7 @@ int MTNoteTracker::Create(
 		QueryPerformanceCounter(&t1);
 		MTLoadLog("NoteTracker GetMergedTrack: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 
-		if (pProgress != NULL) pProgress->Fire(1, 8);
+		if (pProgress != NULL) pProgress->Fire(1250, PROG_TOTAL, "Reading notes...");
 		MTLoadLog("NoteTracker GetNoteList begin\n");
 		QueryPerformanceCounter(&t0);
 		result = mergedTrack.GetNoteList(&noteListTick);
@@ -76,7 +79,7 @@ int MTNoteTracker::Create(
 		QueryPerformanceCounter(&t1);
 		MTLoadLog("NoteTracker GetNoteList: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 
-		if (pProgress != NULL) pProgress->Fire(2, 8);
+		if (pProgress != NULL) pProgress->Fire(2500, PROG_TOTAL, "Reading notes...");
 		MTLoadLog("NoteTracker GetNoteListWithRealTime begin\n");
 		QueryPerformanceCounter(&t0);
 		result = mergedTrack.GetNoteListWithRealTime(&noteListMs, pSeqData->GetTimeDivision());
@@ -94,7 +97,6 @@ int MTNoteTracker::Create(
 		MTLoadLog("NoteTracker CopyLoop begin (%lu notes)\n", noteCount);
 		QueryPerformanceCounter(&tLoop0);
 
-	// Copy loop: report 3/8 ~ 8/8 (37.5%~100% of NoteTracker band)
 	for (unsigned long i = 0; i < noteCount; i++) {
 		SMNote noteTick;
 		result = noteListTick.GetNote(i, &noteTick);
@@ -116,8 +118,11 @@ int MTNoteTracker::Create(
 		memcpy(nd.lyric, noteTick.lyric, sizeof(nd.lyric));
 
 		if (pProgress != NULL && (i & 0x3FFF) == 0) {
-			unsigned long current = 3 + (unsigned long)((unsigned long long)i * 5 / noteCount);
-			pProgress->Fire(current, 8);
+			unsigned long current = PROG_PRE_END
+				+ (unsigned long)((unsigned long long)i * (PROG_TOTAL - PROG_PRE_END) / noteCount);
+			char msg[64];
+			snprintf(msg, sizeof(msg), "Reading notes: %lu / %lu", i, noteCount);
+			pProgress->Fire(current, PROG_TOTAL, msg);
 		}
 	}
 

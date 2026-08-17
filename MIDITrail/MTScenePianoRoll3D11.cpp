@@ -62,6 +62,7 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 		QueryPerformanceFrequency(&freq);
 
 		// Grid (Playback)
+		if (pProgress != NULL) pProgress->Fire(0, 10000, "Building grid...");
 		MTLoadLog("Component Grid begin\n"); QueryPerformanceCounter(&t0);
 		try { m_pGrid = new MTGridBox11(); }
 		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
@@ -92,6 +93,7 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 		m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
 
 		// Ripple
+		if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::TRACKER_END * 10000), 10000, "Building effects...");
 		MTLoadLog("Component Ripple begin\n"); QueryPerformanceCounter(&t0);
 		result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
 		QueryPerformanceCounter(&t1); MTLoadLog("Component Ripple: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
@@ -117,6 +119,7 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 		if (result != 0) goto EXIT;
 
 		// Keyboard (Playback)
+		if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::INSTANCED_END * 10000), 10000, "Building keyboard...");
 		MTLoadLog("Component Keyboard begin\n"); QueryPerformanceCounter(&t0);
 		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRoll11(); }
 		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
