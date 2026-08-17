@@ -1646,8 +1646,13 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 
 		m_SceneType = m_SelectedSceneType;
 		if (m_PlayStatus == Stop) {
-			//Switch the player's scene type
-			result = _CreateScene(m_SceneType, &m_SeqData);
+			m_LoadingScreen.Create(m_hWnd, &m_Renderer);
+			MTLoadProgressContext topCtx(&_OnLoadingProgress, this);
+			MTProgressBand fullBand = { &topCtx, 0.0f, 1.0f };
+			MTLoadProgressContext buildCtx = fullBand.ToContext();
+			result = _CreateScene(m_SceneType, &m_SeqData, &buildCtx);
+			m_LoadingScreen.Update(1.0f, "Complete");
+			m_LoadingScreen.Release();
 			if (result != 0) goto EXIT;
 		}
 		else {
@@ -2702,6 +2707,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	WCHAR smfTempPath[_MAX_PATH] = { L'\0' };
 	WCHAR smfDumpPath[_MAX_PATH] = { L'\0' };
 	SMFileReader smfReader;
+	MTLoadProgressContext topCtx;
 
 	// Open load log immediately (before any heavy processing)
 	LARGE_INTEGER perfFreq, perfT0, perfT1;
@@ -2743,11 +2749,15 @@ int MIDITrailApp::_LoadMIDIFile(
 	m_LoadingScreen.Create(m_hWnd, &m_Renderer);
 	m_LoadingScreen.Update(0.0f, "Opening MIDI file...");
 
+	topCtx = MTLoadProgressContext(&_OnLoadingProgress, this);
+
 	MTLoadLog("SMFileReader::Load begin\n");
 	QueryPerformanceCounter(&perfT0);
 	{
+		MTProgressBand parseBand = { &topCtx, 0.0f, MTLoadBand::PARSE_END };
+		MTLoadProgressContext parseCtx = parseBand.ToContext();
 		bool wasTruncated = false;
-		result = smfReader.Load(pPath, &m_SeqData, &_OnParseProgress, this, &wasTruncated);
+		result = smfReader.Load(pPath, &m_SeqData, &MTProgressBand::Callback, &parseBand, &wasTruncated);
 		if (result != 0) goto EXIT;
 	}
 	QueryPerformanceCounter(&perfT1);
@@ -2763,9 +2773,10 @@ int MIDITrailApp::_LoadMIDIFile(
 	MTLoadLog("_CreateScene begin\n");
 	m_SceneType = m_SelectedSceneType;
 	{
-		MTLoadProgressContext buildProgress(&_OnBuildProgress, this);
+		MTProgressBand buildBand = { &topCtx, MTLoadBand::PARSE_END, MTLoadBand::BUILD_END };
+		MTLoadProgressContext buildCtx = buildBand.ToContext();
 		QueryPerformanceCounter(&perfT0);
-		result = _CreateScene(m_SceneType, &m_SeqData, &buildProgress);
+		result = _CreateScene(m_SceneType, &m_SeqData, &buildCtx);
 		QueryPerformanceCounter(&perfT1);
 	}
 	MTLoadLog("_CreateScene: %lld ms\n", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
@@ -2789,9 +2800,9 @@ EXIT:;
 }
 
 //******************************************************************************
-// Parse progress callback (SMIDILib → MIDITrail)
+// Loading progress callback (unified, no band conversion)
 //******************************************************************************
-void MIDITrailApp::_OnParseProgress(
+void MIDITrailApp::_OnLoadingProgress(
 		unsigned long current,
 		unsigned long total,
 		const char* message,
@@ -2799,24 +2810,8 @@ void MIDITrailApp::_OnParseProgress(
 	)
 {
 	auto* app = static_cast<MIDITrailApp*>(userData);
-	float progress = (total > 0) ? (float)current / (float)total * MTLoadBand::PARSE_END : 0.0f;
-	app->m_LoadingScreen.Update(progress, message != NULL ? message : "Reading MIDI file...");
-}
-
-//******************************************************************************
-// Build progress callback (Scene → MIDITrail)
-//******************************************************************************
-void MIDITrailApp::_OnBuildProgress(
-		unsigned long current,
-		unsigned long total,
-		const char* message,
-		void* userData
-	)
-{
-	auto* app = static_cast<MIDITrailApp*>(userData);
-	float buildRange = MTLoadBand::BUILD_END - MTLoadBand::PARSE_END;
-	float progress = MTLoadBand::PARSE_END + (total > 0 ? (float)current / (float)total * buildRange : 0.0f);
-	app->m_LoadingScreen.Update(progress, message != NULL ? message : "Building scene...");
+	float progress = (total > 0) ? (float)current / (float)total : 0.0f;
+	app->m_LoadingScreen.Update(progress, message);
 }
 
 

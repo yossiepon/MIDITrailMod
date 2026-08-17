@@ -390,7 +390,9 @@ int MTNoteCylindricalInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
 			endTicks[i] = note.endTimeTick;
 
 			if (m_pProgress != NULL && (i & 0x3FFF) == 0) {
-				m_pProgress->Fire(i, m_NoteCount);
+				char msg[64];
+				snprintf(msg, sizeof(msg), "Rendering notes: %lu / %lu", i, m_NoteCount);
+				m_pProgress->Fire(i, m_NoteCount, msg);
 			}
 		}
 
