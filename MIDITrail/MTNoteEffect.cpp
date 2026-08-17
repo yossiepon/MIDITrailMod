@@ -41,10 +41,26 @@ void MTNoteEffect::_InitFreeList()
 	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
 		m_FreeStack[i] = NOTEEFFECT_MAX_SLOTS - 1 - i;
 	}
+	m_IndexToSlot.clear();
+	m_IndexToSlot.reserve(NOTEEFFECT_MAX_SLOTS);
+	m_ActiveSlots.clear();
+	m_ActiveSlots.reserve(NOTEEFFECT_MAX_SLOTS);
+	memset(m_SlotToActivePos, -1, sizeof(m_SlotToActivePos));
 }
 
 void MTNoteEffect::_ReleaseSlot(int slotIndex)
 {
+	m_IndexToSlot.erase(m_Status[slotIndex].index);
+
+	int pos = m_SlotToActivePos[slotIndex];
+	if (pos >= 0 && pos < (int)m_ActiveSlots.size()) {
+		int lastSlot = m_ActiveSlots.back();
+		m_ActiveSlots[pos] = lastSlot;
+		m_SlotToActivePos[lastSlot] = pos;
+		m_ActiveSlots.pop_back();
+		m_SlotToActivePos[slotIndex] = -1;
+	}
+
 	m_Status[slotIndex].isActive = false;
 	m_FreeStack[m_FreeCount] = slotIndex;
 	m_FreeCount++;
@@ -119,6 +135,10 @@ void MTNoteEffect::OnNoteActivate(
 	s.endTimeMs = note.endTimeMs;
 	memcpy(s.lyric, note.lyric, sizeof(s.lyric));
 
+	m_IndexToSlot[index] = slotIndex;
+	m_SlotToActivePos[slotIndex] = (int)m_ActiveSlots.size();
+	m_ActiveSlots.push_back(slotIndex);
+
 	OnActivate(s);
 }
 
@@ -130,17 +150,16 @@ void MTNoteEffect::OnNoteDeactivate(
 		unsigned long index
 	)
 {
-	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
-		if (m_Status[i].isActive && m_Status[i].index == index) {
-			OnDeactivate(m_Status[i]);
-			if (m_Status[i].endTimeMs == 0) {
-				m_Status[i].endTimeMs = note.endTimeMs;
-			}
-			else {
-				_ReleaseSlot(i);
-			}
-			return;
-		}
+	auto it = m_IndexToSlot.find(index);
+	if (it == m_IndexToSlot.end()) return;
+
+	int slotIndex = it->second;
+	OnDeactivate(m_Status[slotIndex]);
+	if (m_Status[slotIndex].endTimeMs == 0) {
+		m_Status[slotIndex].endTimeMs = note.endTimeMs;
+	}
+	else {
+		_ReleaseSlot(slotIndex);
 	}
 }
 
@@ -157,6 +176,9 @@ void MTNoteEffect::OnReset()
 			_ReleaseSlot(i);
 		}
 	}
+	m_IndexToSlot.clear();
+	m_ActiveSlots.clear();
+	memset(m_SlotToActivePos, -1, sizeof(m_SlotToActivePos));
 }
 
 //******************************************************************************
@@ -174,28 +196,29 @@ int MTNoteEffect::Update(
 
 	if (m_isSkipping) goto EXIT;
 
-	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
-		if (!m_Status[i].isActive) continue;
+	for (int j = 0; j < (int)m_ActiveSlots.size(); ) {
+		int slotIndex = m_ActiveSlots[j];
+		NoteEffectStatus& s = m_Status[slotIndex];
 
-		// Release slots for notes past their end time + release duration
-		// (bypasses prefix-max deactivation barrier).
-		// Live mode has endTimeMs==0 until NoteOff, so this is safe for both modes.
-		if (m_Status[i].endTimeMs != 0) {
-			unsigned long releaseEnd = m_Status[i].endTimeMs
+		if (s.endTimeMs != 0) {
+			unsigned long releaseEnd = s.endTimeMs
 				+ m_pNoteDesign->GetRippleReleaseDuration();
 			if (m_PlayTimeMSec > releaseEnd) {
-				_ReleaseSlot(i);
+				_ReleaseSlot(slotIndex);
 				continue;
 			}
 		}
 
 		MTNoteEnvelopeResult env = m_pNoteDesign->CalcNoteEnvelope(
-			m_PlayTimeMSec, m_Status[i].startTimeMs, m_Status[i].endTimeMs);
-		m_Status[i].keyDownRate = env.keyDownRate;
-		m_Status[i].keyStatus = env.keyStatus;
+			m_PlayTimeMSec, s.startTimeMs, s.endTimeMs);
+		s.keyDownRate = env.keyDownRate;
+		s.keyStatus = env.keyStatus;
 
 		if (env.keyDownRate == 0.0f && env.keyStatus == AfterNoteOFF) {
-			_ReleaseSlot(i);
+			_ReleaseSlot(slotIndex);
+		}
+		else {
+			j++;
 		}
 	}
 

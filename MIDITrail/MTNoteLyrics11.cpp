@@ -187,9 +187,8 @@ int MTNoteLyrics11::BuildVertices(
 
 	ZeroMemory(m_KeyDownRate, sizeof(m_KeyDownRate));
 
-	for (int i = 0; i < NOTEEFFECT_MAX_SLOTS; i++) {
-		if (!m_Status[i].isActive) continue;
-
+	for (int ai = 0; ai < (int)m_ActiveSlots.size(); ai++) {
+		int i = m_ActiveSlots[ai];
 		NoteEffectStatus& s = m_Status[i];
 
 		if ((s.portNo < NOTEEFFECT_MAX_PORT)

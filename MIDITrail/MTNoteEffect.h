@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <unordered_map>
+#include <vector>
 #include "MTSceneComponent11.h"
 #include "MTNoteTrackerBase.h"
 #include "MTNoteDesign11.h"
@@ -80,6 +82,9 @@ protected:
 
 	int m_FreeStack[NOTEEFFECT_MAX_SLOTS];
 	int m_FreeCount;
+	std::unordered_map<unsigned long, int> m_IndexToSlot;
+	std::vector<int> m_ActiveSlots;
+	int m_SlotToActivePos[NOTEEFFECT_MAX_SLOTS];
 
 	void _InitFreeList();
 	void _ReleaseSlot(int slotIndex);
