@@ -482,7 +482,10 @@ int SMFileReader::_ReadTrackEvents(
 			unsigned long current = pProgress->offset
 				+ trackIndex * perTrack
 				+ (unsigned long)((unsigned long long)trackFraction * perTrack / 10000);
-			pProgress->func(current, pProgress->total, pProgress->userData);
+			char msg[64];
+			snprintf(msg, sizeof(msg), "Reading MIDI file...  (track %lu / %lu)",
+			         trackIndex + 1, trackCount);
+			pProgress->func(current, pProgress->total, msg, pProgress->userData);
 			lastProgressRead = readSize;
 		}
 
