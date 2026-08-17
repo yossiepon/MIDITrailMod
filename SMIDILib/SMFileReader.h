@@ -96,6 +96,12 @@ private:
 		unsigned long offset;
 		unsigned long range;
 		unsigned long total;
+
+		void Fire(unsigned long current, unsigned long total,
+		          const char* message = NULL) const
+		{
+			if (func != NULL) func(current, total, message, userData);
+		}
 	};
 
 	unsigned char m_PrevStatus;

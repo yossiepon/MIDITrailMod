@@ -14,11 +14,9 @@
 #include <cstdarg>
 #include <share.h>
 #include <windows.h>
+#include "SMLoadingDefs.h"
 
 
-//******************************************************************************
-// Loading progress callback type (MIDITrail layer)
-//******************************************************************************
 //******************************************************************************
 // Load log output (open, write, close per call)
 //******************************************************************************
@@ -52,9 +50,6 @@ inline void MTLoadLogCreate()
 
 
 //******************************************************************************
-// Loading progress callback type (MIDITrail layer)
-//******************************************************************************
-//******************************************************************************
 // Loading progress band allocation (single source of truth)
 // Ratios are 0.0~1.0 within the overall progress bar.
 //******************************************************************************
@@ -74,26 +69,16 @@ namespace MTLoadBand {
 
 
 //******************************************************************************
-// Loading progress callback type (MIDITrail layer)
-//******************************************************************************
-typedef void (*MTLoadingProgressFunc)(
-	unsigned long current,
-	unsigned long total,
-	const char* message,
-	void* userData
-);
-
-
-//******************************************************************************
 // Loading progress context (MIDITrail layer)
+// Uses SMLoadProgressFunc directly (MTLoadingProgressFunc is deprecated).
 //******************************************************************************
 struct MTLoadProgressContext
 {
-	MTLoadingProgressFunc func;
+	SMIDILib::SMLoadProgressFunc func;
 	void* userData;
 
 	MTLoadProgressContext() : func(NULL), userData(NULL) {}
-	MTLoadProgressContext(MTLoadingProgressFunc f, void* u) : func(f), userData(u) {}
+	MTLoadProgressContext(SMIDILib::SMLoadProgressFunc f, void* u) : func(f), userData(u) {}
 
 	void Fire(unsigned long current, unsigned long total, const char* message = NULL) const
 	{

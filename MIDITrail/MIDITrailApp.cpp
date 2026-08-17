@@ -2794,12 +2794,13 @@ EXIT:;
 void MIDITrailApp::_OnParseProgress(
 		unsigned long current,
 		unsigned long total,
+		const char* message,
 		void* userData
 	)
 {
 	auto* app = static_cast<MIDITrailApp*>(userData);
 	float progress = (total > 0) ? (float)current / (float)total * MTLoadBand::PARSE_END : 0.0f;
-	app->m_LoadingScreen.Update(progress, "Reading MIDI file...");
+	app->m_LoadingScreen.Update(progress, message != NULL ? message : "Reading MIDI file...");
 }
 
 //******************************************************************************

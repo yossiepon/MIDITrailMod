@@ -207,7 +207,10 @@ int SMSeqData::_MergeTracks(
 			if (progressFunc != NULL && (mergedCount & 0x3FFF) == 0 && totalEvents > 0) {
 				unsigned long current = progressOffset
 					+ (unsigned long)((unsigned long long)mergedCount * mergeRange / totalEvents);
-				progressFunc(current, progressTotal, progressUserData);
+				char msg[80];
+				snprintf(msg, sizeof(msg), "Merging tracks...  (%lu / %lu events)",
+				         mergedCount, totalEvents);
+				progressFunc(current, progressTotal, msg, progressUserData);
 			}
 
 			// Push next event from the same track

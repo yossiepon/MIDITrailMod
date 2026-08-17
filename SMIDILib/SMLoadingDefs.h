@@ -21,7 +21,7 @@ namespace SMIDILib {
 //******************************************************************************
 // Progress callback type for file loading operations
 //******************************************************************************
-typedef void (*SMLoadProgressFunc)(unsigned long current, unsigned long total, void* userData);
+typedef void (*SMLoadProgressFunc)(unsigned long current, unsigned long total, const char* message, void* userData);
 
 //******************************************************************************
 // Load log output (open, write, close per call)

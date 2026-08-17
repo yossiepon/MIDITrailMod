@@ -332,7 +332,7 @@ private:
 	int _SelectMIDIFile(WCHAR* pFilePath,  unsigned long bufSize, bool* pIsSelected);
 	int _SelectFolder(WCHAR* pFolderPath, unsigned long bufSize, bool* pIsSelected);
 	int _LoadMIDIFile(const WCHAR* pFilePath);
-	static void _OnParseProgress(unsigned long current, unsigned long total, void* userData);
+	static void _OnParseProgress(unsigned long current, unsigned long total, const char* message, void* userData);
 	static void _OnBuildProgress(unsigned long current, unsigned long total, const char* message, void* userData);
 	int _AddMIDIFile(const WCHAR* pFilePath);
 	void _UpdateWindowTitle(const WCHAR* pFileName);
