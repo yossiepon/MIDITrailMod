@@ -13,6 +13,7 @@
 #include "YNBaseLib.h"
 #include "SMEventWatcher.h"
 #include "SMEventSysMsg.h"
+#include <spdlog/spdlog.h>
 
 using namespace YNBaseLib;
 
@@ -346,39 +347,23 @@ int SMEventWatcher::_WatchEventSysMsg(
 	//Currently does nothing
 	goto EXIT;
 
-	switch (pEventSysMsg->GetSysMsg()) {
-		case SMEventSysMsg::Common_QuarterFrame:
-			OutputDebugString(_T("Common_QuarterFrame\n"));
-			break;
-		case SMEventSysMsg::Common_SongPositionPointer:
-			OutputDebugString(_T("Common_SongPositionPointer\n"));
-			break;
-		case SMEventSysMsg::Common_SongSelect:
-			OutputDebugString(_T("Common_SongSelect\n"));
-			break;
-		case SMEventSysMsg::Common_TuneRequest:
-			OutputDebugString(_T("Common_TuneRequest\n"));
-			break;
-		case SMEventSysMsg::RealTime_TimingClock:
-			OutputDebugString(_T("RealTime_TimingClock\n"));
-			break;
-		case SMEventSysMsg::RealTime_Start:
-			OutputDebugString(_T("RealTime_Start\n"));
-			break;
-		case SMEventSysMsg::RealTime_Continue:
-			OutputDebugString(_T("RealTime_Continue\n"));
-			break;
-		case SMEventSysMsg::RealTime_Stop:
-			OutputDebugString(_T("RealTime_Stop\n"));
-			break;
-		case SMEventSysMsg::RealTime_ActiveSensing:
-			OutputDebugString(_T("RealTime_ActiveSensing\n"));
-			break;
-		case SMEventSysMsg::RealTime_SystemReset:
-			OutputDebugString(_T("RealTime_SystemReset\n"));
-			break;
-		default:
-			break;
+	{
+		auto logger = spdlog::get("SM");
+		if (logger) {
+			switch (pEventSysMsg->GetSysMsg()) {
+				case SMEventSysMsg::Common_QuarterFrame:       logger->trace("Common_QuarterFrame"); break;
+				case SMEventSysMsg::Common_SongPositionPointer: logger->trace("Common_SongPositionPointer"); break;
+				case SMEventSysMsg::Common_SongSelect:          logger->trace("Common_SongSelect"); break;
+				case SMEventSysMsg::Common_TuneRequest:         logger->trace("Common_TuneRequest"); break;
+				case SMEventSysMsg::RealTime_TimingClock:       logger->trace("RealTime_TimingClock"); break;
+				case SMEventSysMsg::RealTime_Start:             logger->trace("RealTime_Start"); break;
+				case SMEventSysMsg::RealTime_Continue:          logger->trace("RealTime_Continue"); break;
+				case SMEventSysMsg::RealTime_Stop:              logger->trace("RealTime_Stop"); break;
+				case SMEventSysMsg::RealTime_ActiveSensing:     logger->trace("RealTime_ActiveSensing"); break;
+				case SMEventSysMsg::RealTime_SystemReset:       logger->trace("RealTime_SystemReset"); break;
+				default: break;
+			}
+		}
 	}
 
 EXIT:;

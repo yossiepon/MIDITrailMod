@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "YNErrCtrl.h"
+#include <spdlog/spdlog.h>
 
 namespace YNBaseLib {
 
@@ -105,6 +106,20 @@ int YNErrCtrl::SetErr(
 		goto EXIT;
 	}
 	pErrInfo = NULL;
+
+	//Log via spdlog (nullptr check: logger may not be initialized yet)
+	{
+		auto logger = spdlog::get("YN");
+		if (logger) {
+			if (errLevel == YNErrInfo::LVL_ERR) {
+				logger->error("{} ({}:{}) info1={:08X} info2={:08X}",
+					pMessage, pFuncName, lineNo, errInfo1, errInfo2);
+			} else if (errLevel == YNErrInfo::LVL_WARN) {
+				logger->warn("{} ({}:{}) info1={:08X} info2={:08X}",
+					pMessage, pFuncName, lineNo, errInfo1, errInfo2);
+			}
+		}
+	}
 
 	//TODO: generate an error code
 	result = -1;

@@ -13,6 +13,7 @@
 //******************************************************************************
 
 #include "StdAfx.h"
+#include <spdlog/spdlog.h>
 #include "YNBaseLib.h"
 #include "MTNoteTracker.h"
 #include "MTLoadingDefs.h"
@@ -64,28 +65,28 @@ int MTNoteTracker::Create(
 		QueryPerformanceFrequency(&freq);
 
 		if (pProgress != NULL) pProgress->Fire(0, PROG_TOTAL, "Reading notes...");
-		MTLoadLog("NoteTracker GetMergedTrack begin\n");
+		spdlog::debug("NoteTracker GetMergedTrack begin");
 		QueryPerformanceCounter(&t0);
 		result = pSeqData->GetMergedTrack(&mergedTrack);
 		if (result != 0) goto EXIT;
 		QueryPerformanceCounter(&t1);
-		MTLoadLog("NoteTracker GetMergedTrack: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		spdlog::debug("NoteTracker GetMergedTrack: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 
 		if (pProgress != NULL) pProgress->Fire(1250, PROG_TOTAL, "Reading notes...");
-		MTLoadLog("NoteTracker GetNoteList begin\n");
+		spdlog::debug("NoteTracker GetNoteList begin");
 		QueryPerformanceCounter(&t0);
 		result = mergedTrack.GetNoteList(&noteListTick);
 		if (result != 0) goto EXIT;
 		QueryPerformanceCounter(&t1);
-		MTLoadLog("NoteTracker GetNoteList: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		spdlog::debug("NoteTracker GetNoteList: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 
 		if (pProgress != NULL) pProgress->Fire(2500, PROG_TOTAL, "Reading notes...");
-		MTLoadLog("NoteTracker GetNoteListWithRealTime begin\n");
+		spdlog::debug("NoteTracker GetNoteListWithRealTime begin");
 		QueryPerformanceCounter(&t0);
 		result = mergedTrack.GetNoteListWithRealTime(&noteListMs, pSeqData->GetTimeDivision());
 		if (result != 0) goto EXIT;
 		QueryPerformanceCounter(&t1);
-		MTLoadLog("NoteTracker GetNoteListWithRealTime: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		spdlog::debug("NoteTracker GetNoteListWithRealTime: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 	}
 
 	noteCount = noteListTick.GetSize();
@@ -94,7 +95,7 @@ int MTNoteTracker::Create(
 	{
 		LARGE_INTEGER freq, tLoop0, tLoop1;
 		QueryPerformanceFrequency(&freq);
-		MTLoadLog("NoteTracker CopyLoop begin (%lu notes)\n", noteCount);
+		spdlog::debug("NoteTracker CopyLoop begin ({} notes)", noteCount);
 		QueryPerformanceCounter(&tLoop0);
 
 	for (unsigned long i = 0; i < noteCount; i++) {
@@ -127,7 +128,7 @@ int MTNoteTracker::Create(
 	}
 
 		QueryPerformanceCounter(&tLoop1);
-		MTLoadLog("NoteTracker CopyLoop: %lld ms\n", (tLoop1.QuadPart - tLoop0.QuadPart) * 1000 / freq.QuadPart);
+		spdlog::debug("NoteTracker CopyLoop: {} ms", (tLoop1.QuadPart - tLoop0.QuadPart) * 1000 / freq.QuadPart);
 	}
 
 	_BuildMaxEndTimeMs();

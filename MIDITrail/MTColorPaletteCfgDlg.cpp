@@ -1072,13 +1072,6 @@ int MTColorPaletteCfgDlg::_MakeImportKeyValueMap(
 		}
 		//Register the data
 		pParamDictionary->insert(MTColorParamDictionaryPair(key, value));
-
-		//OutputDebugString(_T("key:"));
-		//OutputDebugString(key.c_str());
-		//OutputDebugString(_T("\n"));
-		//OutputDebugString(_T("value:"));
-		//OutputDebugString(value.c_str());
-		//OutputDebugString(_T("\n"));
 	}
 
 EXIT:;
