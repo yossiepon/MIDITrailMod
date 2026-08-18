@@ -5,6 +5,7 @@
 // Command-line argument parser.
 //
 // Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -99,9 +100,14 @@ int MTCmdLineParser::_AnalyzeCmdLine()
 		if (wcscmp(pArg, L"-q") == 0) {
 			m_CmdSwitchStatus[CMDSW_QUIET] = CMDSW_ON;
 		}
-		//Debug mode
-		if (wcscmp(pArg, L"-d") == 0) {
-			m_CmdSwitchStatus[CMDSW_DEBUG] = CMDSW_ON;
+		//MIDI file dump (--dump-midi or -d for backward compatibility)
+		if (wcscmp(pArg, L"-d") == 0 || wcscmp(pArg, L"--dump-midi") == 0) {
+			m_CmdSwitchStatus[CMDSW_DUMP_MIDI] = CMDSW_ON;
+		}
+		//Log level override (--log-level <level>)
+		if (wcscmp(pArg, L"--log-level") == 0 && i + 1 < argc) {
+			m_LogLevel = pArgList[++i];
+			m_CmdSwitchStatus[CMDSW_LOG_LEVEL] = CMDSW_ON;
 		}
 	}
 
@@ -148,4 +154,10 @@ const WCHAR* MTCmdLineParser::GetFilePath()
 	return m_pFilePath;
 }
 
-
+//******************************************************************************
+// Get log level override value
+//******************************************************************************
+const WCHAR* MTCmdLineParser::GetLogLevel()
+{
+	return m_LogLevel.c_str();
+}

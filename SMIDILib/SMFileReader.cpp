@@ -13,6 +13,7 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "SMFileReader.h"
+#include <spdlog/spdlog.h>
 #include "SMSimpleList.h"
 #include "SMLoadingDefs.h"
 #include "SMCommon.h"
@@ -182,10 +183,10 @@ int SMFileReader::Load(
 		MERGE_UNITS = TOTAL_UNITS - READ_UNITS;
 	}
 
-	SMLoadLog("  FileOpen: %s\n", (pMapView != NULL) ? "mmap" : "mmio");
-	SMLoadLog("  Format: %u, Tracks: %u, TimeDivision: %u\n",
+	spdlog::get("SM")->debug("  FileOpen: {}", (pMapView != NULL) ? "mmap" : "mmio");
+	spdlog::get("SM")->debug("  Format: {}, Tracks: {}, TimeDivision: {}",
 		chunkDataSection.format, chunkDataSection.ntracks, chunkDataSection.timeDivision);
-	SMLoadLog("  BandAlloc: read=%lu, merge=%lu (log2(T)=%.1f)\n",
+	spdlog::get("SM")->debug("  BandAlloc: read={}, merge={} (log2(T)={:.1f})",
 		READ_UNITS, MERGE_UNITS, log2((double)chunkDataSection.ntracks));
 
 	{
@@ -200,7 +201,7 @@ int SMFileReader::Load(
 		readProgress.range = READ_UNITS;
 		readProgress.total = TOTAL_UNITS;
 
-		SMLoadLog("  TrackRead begin\n");
+		spdlog::get("SM")->debug("  TrackRead begin");
 		QueryPerformanceCounter(&lT0);
 		for (i = 0; i < chunkDataSection.ntracks; i++) {
 			//Read track header
@@ -220,12 +221,12 @@ int SMFileReader::Load(
 			if (SMSimpleList::WasTruncated()) break;
 		}
 		QueryPerformanceCounter(&lT1);
-		SMLoadLog("  TrackRead: %lld ms (%u tracks)\n",
+		spdlog::get("SM")->debug("  TrackRead: {} ms ({} tracks)",
 			(lT1.QuadPart - lT0.QuadPart) * 1000 / lFreq.QuadPart, chunkDataSection.ntracks);
 	}
 
 	//Close track (merge phase: READ_UNITS ~ TOTAL_UNITS)
-	SMLoadLog("  CloseTrack (merge) begin\n");
+	spdlog::get("SM")->debug("  CloseTrack (merge) begin");
 	{
 		LARGE_INTEGER lFreq2, lT2a, lT2b;
 		QueryPerformanceFrequency(&lFreq2);
@@ -233,7 +234,7 @@ int SMFileReader::Load(
 		result = pSeqData->CloseTrack(progressFunc, progressUserData,
 									  READ_UNITS, TOTAL_UNITS);
 		QueryPerformanceCounter(&lT2b);
-		SMLoadLog("  CloseTrack (merge): %lld ms\n",
+		spdlog::get("SM")->debug("  CloseTrack (merge): {} ms",
 			(lT2b.QuadPart - lT2a.QuadPart) * 1000 / lFreq2.QuadPart);
 	}
 	if (result != 0 ) goto EXIT;
@@ -937,7 +938,7 @@ int SMFileReader::_WriteLog(const char* pText)
 	size = strlen(pText);
 
 	eresult = fwrite(pText, size, 1, m_pLogFile);
-	if (eresult != size) {
+	if (eresult != 1) {
 		result = YN_SET_ERR("Log file write error.", size, eresult);
 		goto EXIT;
 	}

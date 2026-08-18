@@ -13,6 +13,7 @@
 #include "MTScenePianoRoll3D11.h"
 #include "MTGridBox11.h"
 #include "MTPianoKeyboardCtrlRoll11.h"
+#include <spdlog/spdlog.h>
 #include "SMMsgParser.h"
 #include "MTLoadingDefs.h"
 
@@ -63,23 +64,23 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 
 		// Grid (Playback)
 		if (pProgress != NULL) pProgress->Fire(0, 10000, "Building grid...");
-		MTLoadLog("Component Grid begin\n"); QueryPerformanceCounter(&t0);
+		spdlog::debug("Component Grid begin"); QueryPerformanceCounter(&t0);
 		try { m_pGrid = new MTGridBox11(); }
 		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 		result = ((MTGridBox11*)m_pGrid)->Create(pDevice, pContext, GetName(), pSeqData);
-		QueryPerformanceCounter(&t1); MTLoadLog("Component Grid: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		QueryPerformanceCounter(&t1); spdlog::debug("Component Grid: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 
 		// TimeIndicator
-		MTLoadLog("Component TimeIndicator begin\n"); QueryPerformanceCounter(&t0);
+		spdlog::debug("Component TimeIndicator begin"); QueryPerformanceCounter(&t0);
 		result = m_TimeIndicator.Create(pDevice, pContext, GetName(), pSeqData);
-		QueryPerformanceCounter(&t1); MTLoadLog("Component TimeIndicator: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		QueryPerformanceCounter(&t1); spdlog::debug("Component TimeIndicator: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 
 		// Dashboard
-		MTLoadLog("Component Dashboard begin\n"); QueryPerformanceCounter(&t0);
+		spdlog::debug("Component Dashboard begin"); QueryPerformanceCounter(&t0);
 		result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
-		QueryPerformanceCounter(&t1); MTLoadLog("Component Dashboard: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		QueryPerformanceCounter(&t1); spdlog::debug("Component Dashboard: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 
 		// NoteTracker (progress band: 16% ~ 63%)
@@ -94,16 +95,16 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 
 		// Ripple
 		if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::TRACKER_END * 10000), 10000, "Building effects...");
-		MTLoadLog("Component Ripple begin\n"); QueryPerformanceCounter(&t0);
+		spdlog::debug("Component Ripple begin"); QueryPerformanceCounter(&t0);
 		result = m_Ripple.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
-		QueryPerformanceCounter(&t1); MTLoadLog("Component Ripple: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		QueryPerformanceCounter(&t1); spdlog::debug("Component Ripple: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 		m_NoteTracker.AddListener(&m_Ripple, NoteEventType::Note);
 
 		// Lyrics
-		MTLoadLog("Component Lyrics begin\n"); QueryPerformanceCounter(&t0);
+		spdlog::debug("Component Lyrics begin"); QueryPerformanceCounter(&t0);
 		result = m_Lyrics.Create(pDevice, pContext, GetName(), pSeqData, &m_NotePitchBend);
-		QueryPerformanceCounter(&t1); MTLoadLog("Component Lyrics: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		QueryPerformanceCounter(&t1); spdlog::debug("Component Lyrics: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 		m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
 		m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
@@ -120,12 +121,12 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 
 		// Keyboard (Playback)
 		if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::INSTANCED_END * 10000), 10000, "Building keyboard...");
-		MTLoadLog("Component Keyboard begin\n"); QueryPerformanceCounter(&t0);
+		spdlog::debug("Component Keyboard begin"); QueryPerformanceCounter(&t0);
 		try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRoll11(); }
 		catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
 		result = ((MTPianoKeyboardCtrlRoll11*)m_pKeyboardCtrl)->Create(
 			pDevice, pContext, GetName(), pSeqData, &m_NoteTracker, &m_NotePitchBend, m_Is2D);
-		QueryPerformanceCounter(&t1); MTLoadLog("Component Keyboard: %lld ms\n", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
+		QueryPerformanceCounter(&t1); spdlog::debug("Component Keyboard: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 	}
 	if (result != 0) goto EXIT;
 

@@ -145,9 +145,10 @@ int DIKeyCtrl::Acquire()
 
 	if (m_pDIDevice == NULL) goto EXIT;
 
-	//Acquire access: device already acquired (S_FALSE) is treated as normal
+	//Acquire access: S_FALSE (already acquired) and DIERR_OTHERAPPHASPRIO
+	//(another app has priority, e.g. window inactive) are normal conditions
 	hresult = m_pDIDevice->Acquire();
-	if (FAILED(hresult) && (hresult != S_FALSE)) {
+	if (FAILED(hresult) && (hresult != S_FALSE) && (hresult != DIERR_OTHERAPPHASPRIO)) {
 		result = YN_SET_ERR("DirectInput API error.", hresult, 0);
 		goto EXIT;
 	}

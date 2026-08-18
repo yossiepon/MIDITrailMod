@@ -16,6 +16,7 @@
 
 //User settings save file: path relative to the APPDATA folder
 #define MT_USER_CONFFILE_DIR     _T("yknk\\MIDITrail\\")
+#define MT_USER_CONFFILE_DIR_W   L"yknk\\MIDITrail\\"
 #define MT_USER_CONFFILE_VIEW    _T("View.ini")
 #define MT_USER_CONFFILE_MIDI    _T("MIDI.ini")
 #define MT_USER_CONFFILE_GRAPHIC _T("Graphic.ini")

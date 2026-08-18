@@ -18,6 +18,8 @@
 #include "MTParam.h"
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
+#include "MTLogManager.h"
+#include <spdlog/spdlog.h>
 #include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
 #include "MTScenePianoRoll3DLive11.h"
@@ -144,6 +146,18 @@ int MIDITrailApp::Initialize(
 	bool isExitApp = false;
 
 	m_hInstance = hInstance;
+
+	//Parse command line early (needed for --log-level before logger init)
+	m_CmdLineParser.Initialize();
+
+	//Initialize logging framework (before all other initialization)
+	{
+		const WCHAR* pLogLevel = nullptr;
+		if (m_CmdLineParser.GetSwitch(CMDSW_LOG_LEVEL) == CMDSW_ON) {
+			pLogLevel = m_CmdLineParser.GetLogLevel();
+		}
+		MTLogManager::Initialize(pLogLevel);
+	}
 
 	//String initialization
 	LoadStringW(hInstance, IDS_APP_TITLE, m_TitleBase, MAX_LOADSTRING);
@@ -280,6 +294,8 @@ int MIDITrailApp::Terminate()
 	int result = 0;
 
 	_StopTimer();
+
+	MTLogManager::Terminate();
 
 	m_Renderer.Terminate();
 
@@ -1475,6 +1491,7 @@ int MIDITrailApp::_OnMenuPlaySpeedDown()
 	//Set playbackspeed
 	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
 	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
+	spdlog::info("Play speed: {}%", m_PlaySpeedRatio);
 
 EXIT:;
 	return result;
@@ -1507,6 +1524,7 @@ int MIDITrailApp::_OnMenuPlaySpeedUp()
 	//Set playbackspeed
 	m_Sequencer.SetPlaySpeedRatio(m_PlaySpeedRatio);
 	m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
+	spdlog::info("Play speed: {}%", m_PlaySpeedRatio);
 
 EXIT:;
 	return result;
@@ -1518,7 +1536,8 @@ EXIT:;
 int MIDITrailApp::_OnMenuStartMonitoring()
 {
 	int result = 0;
-	
+	spdlog::info("Live monitor: starting");
+
 	//Check playback status
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
 		//Monitor start OK
@@ -1581,7 +1600,8 @@ EXIT:;
 int MIDITrailApp::_OnMenuStopMonitoring()
 {
 	int result = 0;
-	
+	spdlog::info("Live monitor: stopping");
+
 	//Check playback status
 	if (m_PlayStatus == MonitorON) {
 		//Monitor start OK
@@ -1617,6 +1637,10 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 	)
 {
 	int result = 0;
+	const char* sceneNames[] = { "Title", "PianoRoll3D", "PianoRoll2D", "PianoRollRain",
+		"PianoRollRain2D", "PianoRollRing", "PianoRoll3DLive", "PianoRoll2DLive",
+		"PianoRollRainLive", "PianoRollRain2DLive", "PianoRollRingLive" };
+	spdlog::info("Scene type: {}", sceneNames[type]);
 
 	//Check playback status
 	if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {
@@ -1867,6 +1891,7 @@ EXIT:;
 int MIDITrailApp::_OnMenuFullScreen()
 {
 	int result = 0;
+	spdlog::info("Fullscreen: toggle");
 
 	//Toggle fullscreen
 	result = _ToggleFullScreen();
@@ -2709,12 +2734,10 @@ int MIDITrailApp::_LoadMIDIFile(
 	SMFileReader smfReader;
 	MTLoadProgressContext topCtx;
 
-	// Open load log immediately (before any heavy processing)
 	LARGE_INTEGER perfFreq, perfT0, perfT1;
 	QueryPerformanceFrequency(&perfFreq);
-	MTLoadLogCreate();
-	MTLoadLog("=== Load started ===\n");
-	MTLoadLog("File: %ls\n", pFilePath);
+	spdlog::info("=== Load started ===");
+	spdlog::info(L"File: {}", pFilePath);
 
 	//Update window title
 	//Show it before loading the file so the file name can be checked if an error occurs
@@ -2739,7 +2762,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	}
 
 	//Dump the MIDI file parsing result if in debug mode
-	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
+	if (m_CmdLineParser.GetSwitch(CMDSW_DUMP_MIDI) == CMDSW_ON) {
 		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
 		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
 		smfReader.SetLogPath(smfDumpPath);
@@ -2751,7 +2774,7 @@ int MIDITrailApp::_LoadMIDIFile(
 
 	topCtx = MTLoadProgressContext(&_OnLoadingProgress, this);
 
-	MTLoadLog("SMFileReader::Load begin\n");
+	spdlog::debug("SMFileReader::Load begin");
 	QueryPerformanceCounter(&perfT0);
 	{
 		MTProgressBand parseBand = { &topCtx, 0.0f, MTLoadBand::PARSE_END };
@@ -2761,7 +2784,7 @@ int MIDITrailApp::_LoadMIDIFile(
 		if (result != 0) goto EXIT;
 	}
 	QueryPerformanceCounter(&perfT1);
-	MTLoadLog("SMFileReader::Load: %lld ms\n", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
+	spdlog::debug("SMFileReader::Load: {} ms", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
 
 	//Register file name
 	m_SeqData.SetFileName(PathFindFileNameW(pFilePath));
@@ -2770,7 +2793,7 @@ int MIDITrailApp::_LoadMIDIFile(
 
 	m_PlaySpeedRatio = 100;
 
-	MTLoadLog("_CreateScene begin\n");
+	spdlog::debug("_CreateScene begin");
 	m_SceneType = m_SelectedSceneType;
 	{
 		MTProgressBand buildBand = { &topCtx, MTLoadBand::PARSE_END, MTLoadBand::BUILD_END };
@@ -2779,7 +2802,7 @@ int MIDITrailApp::_LoadMIDIFile(
 		result = _CreateScene(m_SceneType, &m_SeqData, &buildCtx);
 		QueryPerformanceCounter(&perfT1);
 	}
-	MTLoadLog("_CreateScene: %lld ms\n", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
+	spdlog::debug("_CreateScene: {} ms", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
 	if (result != 0) goto EXIT;
 
 	//Change playback status
@@ -2792,7 +2815,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	m_isRewind = false;
 
 EXIT:;
-	MTLoadLog("=== Load %s ===\n", (result == 0) ? "completed" : "failed");
+	spdlog::info("=== Load {} ===", (result == 0) ? "completed" : "failed");
 	if (wcslen(smfTempPath) != 0) {
 		DeleteFileW(smfTempPath);
 	}
@@ -2854,7 +2877,7 @@ int MIDITrailApp::_AddMIDIFile(
 	}
 
 	//Dump the MIDI file parsing result if in debug mode
-	if (m_CmdLineParser.GetSwitch(CMDSW_DEBUG) == CMDSW_ON) {
+	if (m_CmdLineParser.GetSwitch(CMDSW_DUMP_MIDI) == CMDSW_ON) {
 		wcscat_s(smfDumpPath, _MAX_PATH, pPath);
 		wcscat_s(smfDumpPath, _MAX_PATH, L".dump.txt");
 		smfReader.SetLogPath(smfDumpPath);
@@ -2868,12 +2891,7 @@ int MIDITrailApp::_AddMIDIFile(
 	pPortNo = wcsstr(pPath, L"port");
 	if(pPortNo != NULL) {
 		portNo = towlower(*(pPortNo + 4)) - L'a';
-
-#ifdef _DEBUG
-		char buf[32];
-		sprintf_s(buf, "port %c added.\n", 'A' + portNo);
-		OutputDebugStringA(buf);
-#endif
+		spdlog::debug("port {} added.", (char)('A' + portNo));
 	}
 
 	//Extract the channel number if it is included in the file name
@@ -2883,12 +2901,7 @@ int MIDITrailApp::_AddMIDIFile(
 		wcsncpy_s(bufChNo, 3, pChNo + 2, 2);
 		bufChNo[2] = L'\0';
 		chNo = _wtoi(bufChNo) - 1;
-
-#ifdef _DEBUG
-		char buf[32];
-		sprintf_s(buf, "chNo %d added.\n", chNo);
-		OutputDebugStringA(buf);
-#endif
+		spdlog::debug("chNo {} added.", chNo);
 	}
 
 	//Merge the temporary sequence
@@ -3124,6 +3137,11 @@ int MIDITrailApp::_ChangePlayStatus(
 	)
 {
 	int result = 0;
+
+	{
+		const char* names[] = { "NoData", "Stop", "Play", "Pause", "MonitorON", "MonitorOFF" };
+		spdlog::info("PlayStatus: {} -> {}", names[m_PlayStatus], names[status]);
+	}
 
 	//Change playback status
 	m_PlayStatus = status;
@@ -3369,14 +3387,14 @@ int MIDITrailApp::_CreateScene(
 		QueryPerformanceFrequency(&tFreq);
 
 		SMSeqData* pCreateSeqData = (type == Title) ? NULL : pSeqData;
-		MTLoadLog("Scene::Create begin\n");
+		spdlog::debug("Scene::Create begin");
 		QueryPerformanceCounter(&tS0);
 		result = m_pScene->Create(m_hWnd, m_Renderer.GetDevice(), m_Renderer.GetContext(), pCreateSeqData, pProgress);
 		QueryPerformanceCounter(&tS1);
-		MTLoadLog("Scene::Create: %lld ms\n", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
+		spdlog::debug("Scene::Create: {} ms", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
 		if (result != 0) goto EXIT;
 
-		MTLoadLog("Post-scene begin\n");
+		spdlog::debug("Post-scene begin");
 		QueryPerformanceCounter(&tS0);
 
 		//Apply the saved viewpoint to the scene
@@ -3389,7 +3407,7 @@ int MIDITrailApp::_CreateScene(
 		m_pScene->SetPlaySpeedRatio(m_PlaySpeedRatio);
 
 		QueryPerformanceCounter(&tS1);
-		MTLoadLog("Post-scene: %lld ms\n", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
+		spdlog::debug("Post-scene: {} ms", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
 	}
 
 EXIT:;
@@ -3902,6 +3920,7 @@ int MIDITrailApp::_RebuildScene()
 	bool m_isResume = false;
 	bool m_isResumeMonitoring = false;
 	MTViewParamMap viewParamMap;
+	spdlog::critical("Device lost detected, rebuilding scene");
 
 	// DX11: DXGI_ERROR_DEVICE_REMOVED occurs due to a driver crash or similar cause.
 	// Unlike DX9, waiting for a device state transition does not recover the device,

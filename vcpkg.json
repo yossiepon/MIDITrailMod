@@ -4,6 +4,10 @@
   "description": "MIDITrail - MIDI visualizer (DX11 migration)",
   "dependencies": [
     "directxtk",
-    "libremidi"
+    "libremidi",
+    {
+      "name": "spdlog",
+      "features": ["wchar"]
+    }
   ]
 }

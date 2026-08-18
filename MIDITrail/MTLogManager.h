@@ -1,8 +1,8 @@
 //******************************************************************************
 //
-// Simple MIDI Library / SMLoadingDefs
+// MIDITrail / MTLogManager
 //
-// Loading progress definitions.
+// Log manager class.
 //
 // Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
@@ -10,14 +10,23 @@
 
 #pragma once
 
-#include <windows.h>
-
-
-namespace SMIDILib {
+#include <string>
 
 //******************************************************************************
-// Progress callback type for file loading operations
+// Log manager class
 //******************************************************************************
-typedef void (*SMLoadProgressFunc)(unsigned long current, unsigned long total, const char* message, void* userData);
+class MTLogManager
+{
+public:
 
-} // end of namespace
+	static int Initialize(const WCHAR* pLogLevelOverride = nullptr);
+	static void Terminate();
+
+private:
+
+	MTLogManager() = delete;
+
+	static int _DetermineLogDir(WCHAR* pLogDirPath, unsigned long bufSize);
+	static int _GetExeBaseName(WCHAR* pBaseName, unsigned long bufSize);
+
+};

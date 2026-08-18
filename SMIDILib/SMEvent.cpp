@@ -13,6 +13,7 @@
 #include "YNBaseLib.h"
 #include "SMEvent.h"
 #include <new>
+#include <spdlog/spdlog.h>
 
 using namespace YNBaseLib;
 
@@ -260,7 +261,9 @@ void SMEvent::Clear()
 
 void SMEvent::Dump()
 {
-#ifdef _DEBUG
+	auto logger = spdlog::get("SM");
+	if (!logger || !logger->should_log(spdlog::level::trace)) return;
+
 	char buf[256];
 	sprintf_s(buf, "Event %02X: Status %02X, Meta: %02X, DataSize: %d(%04X), Data: [", m_Type, m_Status, m_MetaType, m_DataSize, m_DataSize);
 	if (m_DataSize <= SMEVENT_INTERNAL_DATA_SIZE)
@@ -280,9 +283,8 @@ void SMEvent::Dump()
 	{
 		strcat_s(buf, "...");
 	}
-	strcat_s(buf, "]\n");
-	OutputDebugStringA(buf);
-#endif
+	strcat_s(buf, "]");
+	logger->trace(buf);
 }
 
 } // end of namespace

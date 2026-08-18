@@ -13,6 +13,7 @@
 //******************************************************************************
 
 #include "StdAfx.h"
+#include <spdlog/spdlog.h>
 #include "YNBaseLib.h"
 #include "DXRenderer11.h"
 #include "DXPrimitive11.h"
@@ -61,6 +62,7 @@ int DXRenderer11::Initialize(
 	RECT rect;
 
 	m_hWnd = hWnd;
+	spdlog::debug("DXRenderer11::Initialize begin (MSAA {}x)", multiSampleCount);
 
 	if (!GetClientRect(m_hWnd, &rect)) {
 		return YN_SET_ERR("GetClientRect failed.", GetLastError(), 0);

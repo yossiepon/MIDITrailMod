@@ -17,6 +17,7 @@
 #include "MTNoteInstancedShaderSnippets.h"
 #include "DXPrimitive11.h"
 #include "MTLoadingDefs.h"
+#include <spdlog/spdlog.h>
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -504,7 +505,7 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 
 	LARGE_INTEGER perfFreq, perfT0, perfT1;
 	QueryPerformanceFrequency(&perfFreq);
-	MTLoadLog("AABB _CreateInstanceBuffer begin (%lu notes)\n", m_NoteCount);
+	spdlog::debug("AABB _CreateInstanceBuffer begin ({} notes)", m_NoteCount);
 	QueryPerformanceCounter(&perfT0);
 
 	if (m_Mode != MTAABBMode::Rain && m_Mode != MTAABBMode::Rain2D && m_NoteCount == 0) goto EXIT;
@@ -640,7 +641,7 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 
 EXIT:;
 	QueryPerformanceCounter(&perfT1);
-	MTLoadLog("AABB _CreateInstanceBuffer: %lld ms\n", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
+	spdlog::debug("AABB _CreateInstanceBuffer: {} ms", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
 	return result;
 }
 
