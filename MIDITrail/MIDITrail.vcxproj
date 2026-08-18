@@ -100,7 +100,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\YNBaseLib\;$(SolutionDir)\SMIDILib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;SPDLOG_COMPILED_LIB;SPDLOG_SHARED_LIB;SPDLOG_WCHAR_TO_UTF8_SUPPORT;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/utf-8 /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -110,7 +111,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>spdlogd.lib;fmtd.lib;dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -139,7 +140,8 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\YNBaseLib\;$(SolutionDir)\SMIDILib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;SPDLOG_COMPILED_LIB;SPDLOG_SHARED_LIB;SPDLOG_WCHAR_TO_UTF8_SUPPORT;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/utf-8 /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -149,7 +151,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>spdlogd.lib;fmtd.lib;dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -176,7 +178,8 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(SolutionDir)\YNBaseLib\;$(SolutionDir)\SMIDILib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_BIND_TO_CURRENT_VCLIBS_VERSION;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_BIND_TO_CURRENT_VCLIBS_VERSION;SPDLOG_COMPILED_LIB;SPDLOG_SHARED_LIB;SPDLOG_WCHAR_TO_UTF8_SUPPORT;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/utf-8 /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -186,7 +189,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>spdlog.lib;fmt.lib;dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -219,7 +222,8 @@ xcopy ..\README.ja.md $(TargetDir) /Y
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(SolutionDir)\YNBaseLib\;$(SolutionDir)\SMIDILib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_BIND_TO_CURRENT_VCLIBS_VERSION;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_BIND_TO_CURRENT_VCLIBS_VERSION;SPDLOG_COMPILED_LIB;SPDLOG_SHARED_LIB;SPDLOG_WCHAR_TO_UTF8_SUPPORT;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/utf-8 /wd4251 /wd4275 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -229,7 +233,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>spdlog.lib;fmt.lib;dxguid.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;shell32.lib;shlwapi.lib;Dwmapi.lib;windowscodecs.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -345,6 +349,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClCompile Include="MTFirstPersonCam.cpp" />
     <ClCompile Include="MTFont2Bmp.cpp" />
     <ClCompile Include="MTGamePadCtrl.cpp" />
+    <ClCompile Include="MTLogManager.cpp" />
     <ClCompile Include="MTHowToViewDlg.cpp" />
     <ClCompile Include="MTMIDIINCfgDlg.cpp" />
     <ClCompile Include="MTMIDIOUTCfgDlg.cpp" />
@@ -445,6 +450,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClInclude Include="MTFirstPersonCam.h" />
     <ClInclude Include="MTFont2Bmp.h" />
     <ClInclude Include="MTGamePadCtrl.h" />
+    <ClInclude Include="MTLogManager.h" />
     <ClInclude Include="MTGraphicCfgDlg.h" />
     <ClInclude Include="MTHowToViewDlg.h" />
     <ClInclude Include="MTMIDIINCfgDlg.h" />
