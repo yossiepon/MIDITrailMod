@@ -466,18 +466,50 @@ int SMSequencer::_OpenMIDIOutDev()
 {
 	int result = 0;
 	unsigned char portNo = 0;
+	TCHAR warnMsg[1024] = {_T('\0')};
+	int warnCount = 0;
 
 	//Register port-to-device names with the MIDI output device control
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 		if (strlen(m_PortDevName[portNo]) > 0) {
 			result = m_OutDevCtrl.SetPortDev(portNo, m_PortDevName[portNo]);
 			if (result != 0) goto EXIT;
+
+			//Consume TLS to detect device-not-found warning
+			YNErrInfo* pWarn = YNErrCtrl::GetErr();
+			if (pWarn != NULL) {
+				TCHAR line[256];
+				_sntprintf_s(line, 256, _TRUNCATE,
+					_T("  Port %c: %s (not found)\n"), _T('A') + portNo, m_PortDevName[portNo]);
+				_tcsncat_s(warnMsg, 1024, line, _TRUNCATE);
+				warnCount++;
+				delete pWarn;
+			}
 		}
 	}
 
 	//Open the devices for all ports
 	result = m_OutDevCtrl.OpenPortDevAll();
 	if (result != 0) goto EXIT;
+
+	//Consume TLS to detect port-open warnings
+	{
+		YNErrInfo* pWarn = YNErrCtrl::GetErr();
+		if (pWarn != NULL) {
+			_tcsncat_s(warnMsg, 1024, _T("  Some ports failed to open.\n"), _TRUNCATE);
+			warnCount++;
+			delete pWarn;
+		}
+	}
+
+	//Show aggregated warning dialog
+	if (warnCount > 0) {
+		TCHAR summary[1200];
+		_sntprintf_s(summary, 1200, _TRUNCATE,
+			_T("MIDI OUT device warning:\n%sPlayback will continue without these ports."), warnMsg);
+		YN_SET_WARN(summary, warnCount, 0);
+		YN_SHOW_ERR(NULL);
+	}
 
 EXIT:;
 	return result;

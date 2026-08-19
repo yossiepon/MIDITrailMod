@@ -257,7 +257,13 @@ int MTBackgroundImage11::_LoadTexture(ID3D11Device* pDevice)
 		TCHAR imgPathA[_MAX_PATH] = {_T('\0')};
 		WideCharToMultiByte(CP_ACP, 0, imageFilePathW, -1, imgPathA, _MAX_PATH, NULL, NULL);
 		result = DXTexture11::LoadFromFile(pDevice, imgPathA, &m_pSRV, &m_ImgWidth, &m_ImgHeight);
-		if (result != 0) goto EXIT;
+		if (result != 0) {
+			TCHAR warnMsg[512];
+			_sntprintf_s(warnMsg, 512, _TRUNCATE, _T("Background image load failed: %s"), imgPathA);
+			YN_SET_WARN(warnMsg, 0, 0);
+			YN_SHOW_ERR(NULL);
+			result = 0;
+		}
 	}
 
 EXIT:;

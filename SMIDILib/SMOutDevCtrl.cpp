@@ -199,8 +199,11 @@ int SMOutDevCtrl::SetPortDev(
 		}
 	}
 	if (!isFound) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
+		TCHAR warnMsg[256];
+		_sntprintf_s(warnMsg, 256, _TRUNCATE,
+			_T("MIDI OUT device not found: %s (Port %c)"),
+			pProductName, _T('A') + portNo);
+		YN_SET_WARN(warnMsg, portNo, 0);
 	}
 
 EXIT:;
@@ -260,8 +263,9 @@ int SMOutDevCtrl::OpenPortDevAll()
 
 		// Validate device index
 		if (devId >= m_pImpl->outputPorts.size()) {
-			result = YN_SET_ERR("MIDI OUT device open error.", devId, 0);
-			goto EXIT;
+			YN_SET_WARN("MIDI OUT device open error: invalid device index.", devId, portNo);
+			m_PortInfo[portNo].isExist = false;
+			continue;
 		}
 
 		const auto& port = m_pImpl->outputPorts[devId];
@@ -284,8 +288,9 @@ int SMOutDevCtrl::OpenPortDevAll()
 		// Open the port
 		auto err = pMidiOut->open_port(port);
 		if (err.is_set()) {
-			result = YN_SET_ERR("MIDI OUT device open error.", devId, 0);
-			goto EXIT;
+			YN_SET_WARN("MIDI OUT device open error.", devId, portNo);
+			m_PortInfo[portNo].isExist = false;
+			continue;
 		}
 
 		m_pImpl->openDevices[devId] = std::move(pMidiOut);
