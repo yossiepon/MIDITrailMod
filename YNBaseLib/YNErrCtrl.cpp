@@ -121,8 +121,7 @@ int YNErrCtrl::SetErr(
 		}
 	}
 
-	//TODO: generate an error code
-	result = -1;
+	result = (errLevel == YNErrInfo::LVL_ERR) ? -1 : 0;
 
 EXIT:;
 	delete pErrInfo;

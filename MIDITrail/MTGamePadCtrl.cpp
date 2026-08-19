@@ -66,10 +66,10 @@ int MTGamePadCtrl::Initialize(int userIndex)
 		m_CurGamePadState = xInputState.Gamepad;
 	}
 	else if (dwResult != ERROR_SUCCESS) {
-		result = YN_SET_ERR("XInput API error.", m_UserIndex, dwResult);
-		goto EXIT;
+		YN_SET_WARN("XInput API error.", m_UserIndex, dwResult);
+		YN_SHOW_ERR(NULL);
 	}
-	
+
 EXIT:;
 	return result;
 }
