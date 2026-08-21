@@ -45,7 +45,7 @@ private:
 
 	// Function pointer types
 	typedef BOOL(WINAPI* IsKDMAPIAvailable_t)();
-	typedef VOID(WINAPI* InitializeKDMAPIStream_t)();
+	typedef BOOL(WINAPI* InitializeKDMAPIStream_t)();
 	typedef VOID(WINAPI* TerminateKDMAPIStream_t)();
 	typedef VOID(WINAPI* SendDirectDataMultiPort_t)(DWORD dwMsg, BYTE port);
 	typedef UINT(WINAPI* SendDirectLongDataMultiPort_t)(LPSTR data, DWORD len, BYTE port);
