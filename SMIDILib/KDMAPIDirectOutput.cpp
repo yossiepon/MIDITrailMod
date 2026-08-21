@@ -119,7 +119,9 @@ bool KDMAPIDirectOutput::InitializeStream()
 		if (s_pfnIsKDMAPIAvailable && !s_pfnIsKDMAPIAvailable()) {
 			return false;
 		}
-		s_pfnInitializeKDMAPIStream();
+		if (!s_pfnInitializeKDMAPIStream()) {
+			return false;
+		}
 	}
 	s_streamRefCount++;
 	return true;
