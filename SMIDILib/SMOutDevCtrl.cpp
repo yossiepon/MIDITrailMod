@@ -14,10 +14,13 @@
 #include "SMOutDevCtrl.h"
 #include "IPortOutput.h"
 #include "LibremidiPortOutput.h"
+#include "KDMAPIDirectOutput.h"
 #include <libremidi/libremidi.hpp>
 #include <map>
 #include <memory>
 #include <vector>
+#include <set>
+#include <cstdio>
 
 using namespace YNBaseLib;
 
@@ -30,6 +33,9 @@ struct SMOutDevCtrl::ImplData
 {
 	std::vector<libremidi::output_port> outputPorts;
 	std::map<unsigned long, std::unique_ptr<IPortOutput>> openDevices;
+	std::set<unsigned long> kdmapiVirtualDevIds;
+	bool kdmapiForkDetected = false;
+	bool kdmapiStreamInitialized = false;
 
 	IPortOutput* GetPortOutput(unsigned long devId)
 	{
@@ -37,6 +43,11 @@ struct SMOutDevCtrl::ImplData
 		if (it != openDevices.end())
 			return it->second.get();
 		return nullptr;
+	}
+
+	bool IsKDMAPIVirtualPort(unsigned long devId)
+	{
+		return kdmapiVirtualDevIds.count(devId) > 0;
 	}
 };
 
@@ -92,6 +103,14 @@ int SMOutDevCtrl::_InitDevList()
 
 	m_OutDevList.clear();
 	m_pImpl->outputPorts.clear();
+	m_pImpl->kdmapiVirtualDevIds.clear();
+	m_pImpl->kdmapiForkDetected = false;
+
+	// Detect OmniMIDI Mod before device enumeration
+	KDMAPIDirectOutput::UnloadDLL();
+	if (KDMAPIDirectOutput::LoadDLL() && KDMAPIDirectOutput::IsForkDetected()) {
+		m_pImpl->kdmapiForkDetected = true;
+	}
 
 	// Enumerate WinMM output ports
 	{
@@ -114,8 +133,27 @@ int SMOutDevCtrl::_InitDevList()
 		}
 	}
 
-	// Enumerate KDMAPI output ports (if available)
-	{
+	if (m_pImpl->kdmapiForkDetected) {
+		// Fork detected: add virtual KDMAPI ports instead of libremidi observer
+		unsigned long portCount = KDMAPIDirectOutput::GetPortCount();
+		for (unsigned long i = 0; i < portCount; i++) {
+			SMOutDevInfo devInfo;
+			memset(&devInfo, 0, sizeof(SMOutDevInfo));
+			devInfo.devId = devId;
+
+			char name[SM_MIDIOUT_PRODUCT_NAME_MAX];
+			_snprintf_s(name, SM_MIDIOUT_PRODUCT_NAME_MAX, _TRUNCATE,
+				"OmniMIDI Mod (KDMAPI Port %c)", 'A' + (char)i);
+			strncpy_s(devInfo.productName, SM_MIDIOUT_PRODUCT_NAME_MAX, name, _TRUNCATE);
+
+			m_OutDevList.push_back(devInfo);
+			m_pImpl->outputPorts.push_back(libremidi::output_port{});
+			m_pImpl->kdmapiVirtualDevIds.insert(devId);
+			devId++;
+		}
+	}
+	else {
+		// Original OmniMIDI or not installed: enumerate via libremidi
 		libremidi::observer obs{{}, libremidi::kdmapi::observer_configuration{}};
 		auto ports = obs.get_output_ports();
 		for (auto& port : ports) {
@@ -253,6 +291,25 @@ int SMOutDevCtrl::OpenPortDevAll()
 	result = ClosePortDevAll();
 	if (result != 0) goto EXIT;
 
+	// Initialize KDMAPI stream if fork is detected and any virtual port is assigned
+	if (m_pImpl->kdmapiForkDetected) {
+		bool hasKDMAPIPort = false;
+		for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
+			if (m_PortInfo[portNo].isExist && m_pImpl->IsKDMAPIVirtualPort(m_PortInfo[portNo].devId)) {
+				hasKDMAPIPort = true;
+				break;
+			}
+		}
+		if (hasKDMAPIPort) {
+			if (!KDMAPIDirectOutput::InitializeStream()) {
+				YN_SET_WARN("KDMAPI stream initialization failed.", 0, 0);
+			}
+			else {
+				m_pImpl->kdmapiStreamInitialized = true;
+			}
+		}
+	}
+
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
 		// Skip if port does not exist
@@ -263,40 +320,49 @@ int SMOutDevCtrl::OpenPortDevAll()
 		// Skip if this device is already open (shared by another port)
 		if (m_pImpl->GetPortOutput(devId) != nullptr) continue;
 
-		// Validate device index
-		if (devId >= m_pImpl->outputPorts.size()) {
-			YN_SET_WARN("MIDI OUT device open error: invalid device index.", devId, portNo);
-			m_PortInfo[portNo].isExist = false;
-			continue;
-		}
+		if (m_pImpl->IsKDMAPIVirtualPort(devId)) {
+			// KDMAPI virtual port: create KDMAPIDirectOutput
+			if (!m_pImpl->kdmapiStreamInitialized) {
+				YN_SET_WARN("KDMAPI stream not initialized.", devId, portNo);
+				m_PortInfo[portNo].isExist = false;
+				continue;
+			}
 
-		const auto& port = m_pImpl->outputPorts[devId];
-
-		// Create midi_out with the appropriate backend
-		std::unique_ptr<libremidi::midi_out> pMidiOut;
-		if (port.api == libremidi::API::KDMAPI) {
-			pMidiOut = std::make_unique<libremidi::midi_out>(
-				libremidi::output_configuration{},
-				libremidi::kdmapi::output_configuration{}
-			);
+			m_pImpl->openDevices[devId] = std::make_unique<KDMAPIDirectOutput>(portNo);
 		}
 		else {
-			pMidiOut = std::make_unique<libremidi::midi_out>(
-				libremidi::output_configuration{},
-				libremidi::winmm_output_configuration{}
-			);
-		}
+			// libremidi port: create LibremidiPortOutput
+			if (devId >= m_pImpl->outputPorts.size()) {
+				YN_SET_WARN("MIDI OUT device open error: invalid device index.", devId, portNo);
+				m_PortInfo[portNo].isExist = false;
+				continue;
+			}
 
-		// Open the port
-		auto err = pMidiOut->open_port(port);
-		if (err.is_set()) {
-			YN_SET_WARN("MIDI OUT device open error.", devId, portNo);
-			m_PortInfo[portNo].isExist = false;
-			continue;
-		}
+			const auto& port = m_pImpl->outputPorts[devId];
 
-		// Wrap in LibremidiPortOutput and store via IPortOutput interface
-		m_pImpl->openDevices[devId] = std::make_unique<LibremidiPortOutput>(std::move(pMidiOut));
+			std::unique_ptr<libremidi::midi_out> pMidiOut;
+			if (port.api == libremidi::API::KDMAPI) {
+				pMidiOut = std::make_unique<libremidi::midi_out>(
+					libremidi::output_configuration{},
+					libremidi::kdmapi::output_configuration{}
+				);
+			}
+			else {
+				pMidiOut = std::make_unique<libremidi::midi_out>(
+					libremidi::output_configuration{},
+					libremidi::winmm_output_configuration{}
+				);
+			}
+
+			auto err = pMidiOut->open_port(port);
+			if (err.is_set()) {
+				YN_SET_WARN("MIDI OUT device open error.", devId, portNo);
+				m_PortInfo[portNo].isExist = false;
+				continue;
+			}
+
+			m_pImpl->openDevices[devId] = std::make_unique<LibremidiPortOutput>(std::move(pMidiOut));
+		}
 	}
 
 EXIT:;
@@ -309,6 +375,12 @@ EXIT:;
 int SMOutDevCtrl::ClosePortDevAll()
 {
 	m_pImpl->openDevices.clear();
+
+	if (m_pImpl->kdmapiStreamInitialized) {
+		KDMAPIDirectOutput::TerminateStream();
+		m_pImpl->kdmapiStreamInitialized = false;
+	}
+
 	return 0;
 }
 
