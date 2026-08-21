@@ -229,6 +229,8 @@
     <ClCompile Include="SMMsgQueue.cpp" />
     <ClCompile Include="SMMsgTransmitter.cpp" />
     <ClCompile Include="SMNoteList.cpp" />
+    <ClCompile Include="KDMAPIDirectOutput.cpp" />
+    <ClCompile Include="LibremidiPortOutput.cpp" />
     <ClCompile Include="SMOutDevCtrl.cpp" />
     <ClCompile Include="SMPortList.cpp" />
     <ClCompile Include="SMRcpConv.cpp" />
@@ -263,6 +265,9 @@
     <ClInclude Include="SMMsgTransmitter.h" />
     <ClInclude Include="SMNoteList.h" />
     <ClInclude Include="ISMOutDevCtrl.h" />
+    <ClInclude Include="IPortOutput.h" />
+    <ClInclude Include="KDMAPIDirectOutput.h" />
+    <ClInclude Include="LibremidiPortOutput.h" />
     <ClInclude Include="SMOutDevCtrl.h" />
     <ClInclude Include="SMPortList.h" />
     <ClInclude Include="SMRcpConv.h" />

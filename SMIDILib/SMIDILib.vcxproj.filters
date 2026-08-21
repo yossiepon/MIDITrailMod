@@ -40,6 +40,12 @@
     <ClCompile Include="SMInDevCtrl.cpp">
       <Filter>Sources\DeviceIO</Filter>
     </ClCompile>
+    <ClCompile Include="KDMAPIDirectOutput.cpp">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClCompile>
+    <ClCompile Include="LibremidiPortOutput.cpp">
+      <Filter>SourcesDeviceIO</Filter>
+    </ClCompile>
     <ClCompile Include="SMOutDevCtrl.cpp">
       <Filter>Sources\DeviceIO</Filter>
     </ClCompile>
@@ -119,6 +125,15 @@
     </ClInclude>
     <ClInclude Include="SMInDevCtrl.h">
       <Filter>Sources\DeviceIO</Filter>
+    </ClInclude>
+    <ClInclude Include="IPortOutput.h">
+      <Filter>SourcesDeviceIO</Filter>
+    </ClInclude>
+    <ClInclude Include="KDMAPIDirectOutput.h">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClInclude>
+    <ClInclude Include="LibremidiPortOutput.h">
+      <Filter>SourcesDeviceIO</Filter>
     </ClInclude>
     <ClInclude Include="ISMOutDevCtrl.h">
       <Filter>Sources\DeviceIO</Filter>

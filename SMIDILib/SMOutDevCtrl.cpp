@@ -12,10 +12,15 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "SMOutDevCtrl.h"
+#include "IPortOutput.h"
+#include "LibremidiPortOutput.h"
+#include "KDMAPIDirectOutput.h"
 #include <libremidi/libremidi.hpp>
 #include <map>
 #include <memory>
 #include <vector>
+#include <set>
+#include <cstdio>
 
 using namespace YNBaseLib;
 
@@ -27,14 +32,22 @@ namespace SMIDILib {
 struct SMOutDevCtrl::ImplData
 {
 	std::vector<libremidi::output_port> outputPorts;
-	std::map<unsigned long, std::unique_ptr<libremidi::midi_out>> openDevices;
+	std::map<unsigned long, std::unique_ptr<IPortOutput>> openDevices;
+	std::set<unsigned long> kdmapiVirtualDevIds;
+	bool kdmapiForkDetected = false;
+	bool kdmapiStreamInitialized = false;
 
-	libremidi::midi_out* GetMidiOut(unsigned long devId)
+	IPortOutput* GetPortOutput(unsigned long devId)
 	{
 		auto it = openDevices.find(devId);
 		if (it != openDevices.end())
 			return it->second.get();
 		return nullptr;
+	}
+
+	bool IsKDMAPIVirtualPort(unsigned long devId)
+	{
+		return kdmapiVirtualDevIds.count(devId) > 0;
 	}
 };
 
@@ -90,6 +103,14 @@ int SMOutDevCtrl::_InitDevList()
 
 	m_OutDevList.clear();
 	m_pImpl->outputPorts.clear();
+	m_pImpl->kdmapiVirtualDevIds.clear();
+	m_pImpl->kdmapiForkDetected = false;
+
+	// Detect OmniMIDI Mod before device enumeration
+	KDMAPIDirectOutput::UnloadDLL();
+	if (KDMAPIDirectOutput::LoadDLL() && KDMAPIDirectOutput::IsForkDetected()) {
+		m_pImpl->kdmapiForkDetected = true;
+	}
 
 	// Enumerate WinMM output ports
 	{
@@ -112,8 +133,27 @@ int SMOutDevCtrl::_InitDevList()
 		}
 	}
 
-	// Enumerate KDMAPI output ports (if available)
-	{
+	if (m_pImpl->kdmapiForkDetected) {
+		// Fork detected: add virtual KDMAPI ports instead of libremidi observer
+		unsigned long portCount = KDMAPIDirectOutput::GetPortCount();
+		for (unsigned long i = 0; i < portCount; i++) {
+			SMOutDevInfo devInfo;
+			memset(&devInfo, 0, sizeof(SMOutDevInfo));
+			devInfo.devId = devId;
+
+			char name[SM_MIDIOUT_PRODUCT_NAME_MAX];
+			_snprintf_s(name, SM_MIDIOUT_PRODUCT_NAME_MAX, _TRUNCATE,
+				"OmniMIDI Mod (KDMAPI Port %c)", 'A' + (char)i);
+			strncpy_s(devInfo.productName, SM_MIDIOUT_PRODUCT_NAME_MAX, name, _TRUNCATE);
+
+			m_OutDevList.push_back(devInfo);
+			m_pImpl->outputPorts.push_back(libremidi::output_port{});
+			m_pImpl->kdmapiVirtualDevIds.insert(devId);
+			devId++;
+		}
+	}
+	else {
+		// Original OmniMIDI or not installed: enumerate via libremidi
 		libremidi::observer obs{{}, libremidi::kdmapi::observer_configuration{}};
 		auto ports = obs.get_output_ports();
 		for (auto& port : ports) {
@@ -251,6 +291,25 @@ int SMOutDevCtrl::OpenPortDevAll()
 	result = ClosePortDevAll();
 	if (result != 0) goto EXIT;
 
+	// Initialize KDMAPI stream if fork is detected and any virtual port is assigned
+	if (m_pImpl->kdmapiForkDetected) {
+		bool hasKDMAPIPort = false;
+		for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
+			if (m_PortInfo[portNo].isExist && m_pImpl->IsKDMAPIVirtualPort(m_PortInfo[portNo].devId)) {
+				hasKDMAPIPort = true;
+				break;
+			}
+		}
+		if (hasKDMAPIPort) {
+			if (!KDMAPIDirectOutput::InitializeStream()) {
+				YN_SET_WARN("KDMAPI stream initialization failed.", 0, 0);
+			}
+			else {
+				m_pImpl->kdmapiStreamInitialized = true;
+			}
+		}
+	}
+
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 
 		// Skip if port does not exist
@@ -259,41 +318,51 @@ int SMOutDevCtrl::OpenPortDevAll()
 		devId = m_PortInfo[portNo].devId;
 
 		// Skip if this device is already open (shared by another port)
-		if (m_pImpl->GetMidiOut(devId) != nullptr) continue;
+		if (m_pImpl->GetPortOutput(devId) != nullptr) continue;
 
-		// Validate device index
-		if (devId >= m_pImpl->outputPorts.size()) {
-			YN_SET_WARN("MIDI OUT device open error: invalid device index.", devId, portNo);
-			m_PortInfo[portNo].isExist = false;
-			continue;
-		}
+		if (m_pImpl->IsKDMAPIVirtualPort(devId)) {
+			// KDMAPI virtual port: create KDMAPIDirectOutput
+			if (!m_pImpl->kdmapiStreamInitialized) {
+				YN_SET_WARN("KDMAPI stream not initialized.", devId, portNo);
+				m_PortInfo[portNo].isExist = false;
+				continue;
+			}
 
-		const auto& port = m_pImpl->outputPorts[devId];
-
-		// Create midi_out with the appropriate backend
-		std::unique_ptr<libremidi::midi_out> pMidiOut;
-		if (port.api == libremidi::API::KDMAPI) {
-			pMidiOut = std::make_unique<libremidi::midi_out>(
-				libremidi::output_configuration{},
-				libremidi::kdmapi::output_configuration{}
-			);
+			m_pImpl->openDevices[devId] = std::make_unique<KDMAPIDirectOutput>(portNo);
 		}
 		else {
-			pMidiOut = std::make_unique<libremidi::midi_out>(
-				libremidi::output_configuration{},
-				libremidi::winmm_output_configuration{}
-			);
-		}
+			// libremidi port: create LibremidiPortOutput
+			if (devId >= m_pImpl->outputPorts.size()) {
+				YN_SET_WARN("MIDI OUT device open error: invalid device index.", devId, portNo);
+				m_PortInfo[portNo].isExist = false;
+				continue;
+			}
 
-		// Open the port
-		auto err = pMidiOut->open_port(port);
-		if (err.is_set()) {
-			YN_SET_WARN("MIDI OUT device open error.", devId, portNo);
-			m_PortInfo[portNo].isExist = false;
-			continue;
-		}
+			const auto& port = m_pImpl->outputPorts[devId];
 
-		m_pImpl->openDevices[devId] = std::move(pMidiOut);
+			std::unique_ptr<libremidi::midi_out> pMidiOut;
+			if (port.api == libremidi::API::KDMAPI) {
+				pMidiOut = std::make_unique<libremidi::midi_out>(
+					libremidi::output_configuration{},
+					libremidi::kdmapi::output_configuration{}
+				);
+			}
+			else {
+				pMidiOut = std::make_unique<libremidi::midi_out>(
+					libremidi::output_configuration{},
+					libremidi::winmm_output_configuration{}
+				);
+			}
+
+			auto err = pMidiOut->open_port(port);
+			if (err.is_set()) {
+				YN_SET_WARN("MIDI OUT device open error.", devId, portNo);
+				m_PortInfo[portNo].isExist = false;
+				continue;
+			}
+
+			m_pImpl->openDevices[devId] = std::make_unique<LibremidiPortOutput>(std::move(pMidiOut));
+		}
 	}
 
 EXIT:;
@@ -306,6 +375,12 @@ EXIT:;
 int SMOutDevCtrl::ClosePortDevAll()
 {
 	m_pImpl->openDevices.clear();
+
+	if (m_pImpl->kdmapiStreamInitialized) {
+		KDMAPIDirectOutput::TerminateStream();
+		m_pImpl->kdmapiStreamInitialized = false;
+	}
+
 	return 0;
 }
 
@@ -345,19 +420,14 @@ int SMOutDevCtrl::SendShortMsg(
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
 	{
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) {
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) {
 			result = YN_SET_ERR("Program error.", portNo, 0);
 			goto EXIT;
 		}
 
-		// Unpack DWORD into individual MIDI bytes
-		unsigned char b0 = static_cast<unsigned char>(msg & 0xFF);
-		unsigned char b1 = static_cast<unsigned char>((msg >> 8) & 0xFF);
-		unsigned char b2 = static_cast<unsigned char>((msg >> 16) & 0xFF);
-
-		auto err = pMidiOut->send_message(b0, b1, b2);
-		if (err.is_set()) {
+		int sendResult = pPortOutput->SendShort(msg);
+		if (sendResult != 0) {
 			result = YN_SET_ERR("MIDI OUT device output error.", portNo, msg);
 			goto EXIT;
 		}
@@ -390,14 +460,14 @@ int SMOutDevCtrl::SendLongMsg(
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
 	{
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) {
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) {
 			result = YN_SET_ERR("Program error.", portNo, 0);
 			goto EXIT;
 		}
 
-		auto err = pMidiOut->send_message(pMsg, static_cast<size_t>(size));
-		if (err.is_set()) {
+		int sendResult = pPortOutput->SendLong(pMsg, size);
+		if (sendResult != 0) {
 			result = YN_SET_ERR("MIDI OUT device output error.", portNo, size);
 			goto EXIT;
 		}
@@ -418,20 +488,13 @@ int SMOutDevCtrl::NoteOffAll()
 
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) continue;
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) continue;
 
-		// CC#123 (All Notes Off) on all 16 channels
-		for (int ch = 0; ch < 16; ch++) {
-			auto err = pMidiOut->send_message(
-				static_cast<unsigned char>(0xB0 | ch),
-				static_cast<unsigned char>(0x7B),
-				static_cast<unsigned char>(0x00)
-			);
-			if (err.is_set()) {
-				result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
-				goto EXIT;
-			}
+		int sendResult = pPortOutput->NoteOffAll();
+		if (sendResult != 0) {
+			result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
+			goto EXIT;
 		}
 	}
 
@@ -450,20 +513,13 @@ int SMOutDevCtrl::SoundOffAll()
 
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) continue;
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) continue;
 
-		// CC#120 (All Sounds Off) on all 16 channels
-		for (int ch = 0; ch < 16; ch++) {
-			auto err = pMidiOut->send_message(
-				static_cast<unsigned char>(0xB0 | ch),
-				static_cast<unsigned char>(0x78),
-				static_cast<unsigned char>(0x00)
-			);
-			if (err.is_set()) {
-				result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
-				goto EXIT;
-			}
+		int sendResult = pPortOutput->SoundOffAll();
+		if (sendResult != 0) {
+			result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
+			goto EXIT;
 		}
 	}
 
