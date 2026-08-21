@@ -25,6 +25,30 @@ MIDIデータに含まれるノート数が多くなるほど、より高い性�
 
 詳しい操作方法は「Help」→「Manual...」を参照してください。
 
+## MIDI出力
+
+MIDITrail Mod は以下の MIDI 出力バックエンドに対応しています:
+
+| バックエンド | 説明 |
+|---|---|
+| WinMM | Windows 標準 MIDI 出力。すべての MIDI デバイスで動作します。 |
+| KDMAPI | [OmniMIDI](https://github.com/KeppySoftware/OmniMIDI) ダイレクト API。Windows MIDI サブシステムをバイパスする低遅延出力。 |
+
+いずれも libremidi 経由で管理され、MIDI OUT 設定ダイアログから選択できます。
+
+### マルチポート 128ch 対応（OmniMIDI Mod）
+
+[OmniMIDI Mod](https://github.com/yossiepon/OmniMIDIMod) を導入すると、MIDITrail Mod が自動検出し、KDMAPI 経由のマルチポート 128 チャンネル出力（8ポート × 16ch）が有効になります。
+
+**セットアップ:**
+
+1. [Releases](https://github.com/yossiepon/OmniMIDIMod/releases) から `OmniMIDI Mod` をダウンロード
+2. `OmniMIDI.dll` を `MIDITrail.exe` と同じディレクトリに配置
+3. MIDI OUT 設定に仮想 KDMAPI ポート（"OmniMIDI Mod (KDMAPI Port A)" 〜 "Port H"）が表示される
+4. ポートを割り当てて、マルチポート MIDI ファイルを完全なチャンネル分離で再生
+
+**フォールバック:** Mod DLL がない場合、MIDITrail は libremidi 経由の標準 KDMAPI バックエンド（シングルポート、16ch）を使用します。設定変更は不要です。
+
 ## ビルド方法
 
 ### 必要環境
