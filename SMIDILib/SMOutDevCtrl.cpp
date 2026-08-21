@@ -12,6 +12,8 @@
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "SMOutDevCtrl.h"
+#include "IPortOutput.h"
+#include "LibremidiPortOutput.h"
 #include <libremidi/libremidi.hpp>
 #include <map>
 #include <memory>
@@ -27,9 +29,9 @@ namespace SMIDILib {
 struct SMOutDevCtrl::ImplData
 {
 	std::vector<libremidi::output_port> outputPorts;
-	std::map<unsigned long, std::unique_ptr<libremidi::midi_out>> openDevices;
+	std::map<unsigned long, std::unique_ptr<IPortOutput>> openDevices;
 
-	libremidi::midi_out* GetMidiOut(unsigned long devId)
+	IPortOutput* GetPortOutput(unsigned long devId)
 	{
 		auto it = openDevices.find(devId);
 		if (it != openDevices.end())
@@ -259,7 +261,7 @@ int SMOutDevCtrl::OpenPortDevAll()
 		devId = m_PortInfo[portNo].devId;
 
 		// Skip if this device is already open (shared by another port)
-		if (m_pImpl->GetMidiOut(devId) != nullptr) continue;
+		if (m_pImpl->GetPortOutput(devId) != nullptr) continue;
 
 		// Validate device index
 		if (devId >= m_pImpl->outputPorts.size()) {
@@ -293,7 +295,8 @@ int SMOutDevCtrl::OpenPortDevAll()
 			continue;
 		}
 
-		m_pImpl->openDevices[devId] = std::move(pMidiOut);
+		// Wrap in LibremidiPortOutput and store via IPortOutput interface
+		m_pImpl->openDevices[devId] = std::make_unique<LibremidiPortOutput>(std::move(pMidiOut));
 	}
 
 EXIT:;
@@ -345,19 +348,14 @@ int SMOutDevCtrl::SendShortMsg(
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
 	{
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) {
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) {
 			result = YN_SET_ERR("Program error.", portNo, 0);
 			goto EXIT;
 		}
 
-		// Unpack DWORD into individual MIDI bytes
-		unsigned char b0 = static_cast<unsigned char>(msg & 0xFF);
-		unsigned char b1 = static_cast<unsigned char>((msg >> 8) & 0xFF);
-		unsigned char b2 = static_cast<unsigned char>((msg >> 16) & 0xFF);
-
-		auto err = pMidiOut->send_message(b0, b1, b2);
-		if (err.is_set()) {
+		int sendResult = pPortOutput->SendShort(msg);
+		if (sendResult != 0) {
 			result = YN_SET_ERR("MIDI OUT device output error.", portNo, msg);
 			goto EXIT;
 		}
@@ -390,14 +388,14 @@ int SMOutDevCtrl::SendLongMsg(
 	if (!m_PortInfo[portNo].isExist) goto EXIT;
 
 	{
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) {
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) {
 			result = YN_SET_ERR("Program error.", portNo, 0);
 			goto EXIT;
 		}
 
-		auto err = pMidiOut->send_message(pMsg, static_cast<size_t>(size));
-		if (err.is_set()) {
+		int sendResult = pPortOutput->SendLong(pMsg, size);
+		if (sendResult != 0) {
 			result = YN_SET_ERR("MIDI OUT device output error.", portNo, size);
 			goto EXIT;
 		}
@@ -418,20 +416,13 @@ int SMOutDevCtrl::NoteOffAll()
 
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) continue;
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) continue;
 
-		// CC#123 (All Notes Off) on all 16 channels
-		for (int ch = 0; ch < 16; ch++) {
-			auto err = pMidiOut->send_message(
-				static_cast<unsigned char>(0xB0 | ch),
-				static_cast<unsigned char>(0x7B),
-				static_cast<unsigned char>(0x00)
-			);
-			if (err.is_set()) {
-				result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
-				goto EXIT;
-			}
+		int sendResult = pPortOutput->NoteOffAll();
+		if (sendResult != 0) {
+			result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
+			goto EXIT;
 		}
 	}
 
@@ -450,20 +441,13 @@ int SMOutDevCtrl::SoundOffAll()
 
 		if (!m_PortInfo[portNo].isExist) continue;
 
-		auto* pMidiOut = m_pImpl->GetMidiOut(m_PortInfo[portNo].devId);
-		if (pMidiOut == nullptr) continue;
+		auto* pPortOutput = m_pImpl->GetPortOutput(m_PortInfo[portNo].devId);
+		if (pPortOutput == nullptr) continue;
 
-		// CC#120 (All Sounds Off) on all 16 channels
-		for (int ch = 0; ch < 16; ch++) {
-			auto err = pMidiOut->send_message(
-				static_cast<unsigned char>(0xB0 | ch),
-				static_cast<unsigned char>(0x78),
-				static_cast<unsigned char>(0x00)
-			);
-			if (err.is_set()) {
-				result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
-				goto EXIT;
-			}
+		int sendResult = pPortOutput->SoundOffAll();
+		if (sendResult != 0) {
+			result = YN_SET_ERR("MIDI OUT device output error.", 0, portNo);
+			goto EXIT;
 		}
 	}
 
