@@ -36,4 +36,21 @@ namespace RDFormatProfile
 
 	static const size_t RuntimeSystemCount =
 		sizeof(RuntimeSystem) / sizeof(RuntimeSystem[0]);
+
+	static const RDFormatTemplateEntry FileLoaded[] = {
+		{ "File",     "${AppLoadedFileName}" },
+		{ "Notes",    "${AppTotalNoteCount} notes" },
+		{ "Duration", "${AppTotalPlayTimeMs} ms" },
+	};
+
+	static const size_t FileLoadedCount =
+		sizeof(FileLoaded) / sizeof(FileLoaded[0]);
+
+	static const RDFormatTemplateEntry SceneReady[] = {
+		{ "Scene",    "${AppSceneType}" },
+		{ "Buffer",   "${AppInstanceBufferSizeKB} KB (${AppTotalNoteCount} notes)" },
+	};
+
+	static const size_t SceneReadyCount =
+		sizeof(SceneReady) / sizeof(SceneReady[0]);
 }

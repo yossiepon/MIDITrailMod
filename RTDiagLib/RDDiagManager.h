@@ -39,6 +39,8 @@ public:
 
 	static void ResetFrameMetrics();
 	static void SetLogIntervalMs(DWORD intervalMs);
+	static void LogEvent(const RDFormatTemplateEntry* pProfile, size_t count,
+		const char* eventTag);
 
 private:
 	RDDiagManager() = delete;

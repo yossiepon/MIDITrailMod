@@ -15,6 +15,7 @@
 #include "MTScenePianoRollRing11.h"
 #include "MTGridRing11.h"
 #include "SMMsgParser.h"
+#include "RDDiagManager.h"
 
 using namespace YNBaseLib;
 using namespace SMIDILib;
@@ -92,6 +93,7 @@ int MTScenePianoRollRing11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 
 	m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
+	RDDiagManager::SetInt(RDMetricId::AppTotalNoteCount, static_cast<int64_t>(m_NoteTracker.GetNoteCount()));
 
 	// NoteBox (GPU-instanced Ring renderer, progress band: 20% ~ 90%)
 	{

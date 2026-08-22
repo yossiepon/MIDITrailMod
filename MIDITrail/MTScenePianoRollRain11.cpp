@@ -13,6 +13,7 @@
 #include "MTScenePianoRollRain11.h"
 #include "MTPianoKeyboardCtrlRain11.h"
 #include "SMMsgParser.h"
+#include "RDDiagManager.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -86,6 +87,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
 	if (result != 0) goto EXIT;
 	m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
+	RDDiagManager::SetInt(RDMetricId::AppTotalNoteCount, static_cast<int64_t>(m_NoteTracker.GetNoteCount()));
 	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
 
 EXIT:;
