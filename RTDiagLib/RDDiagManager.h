@@ -36,6 +36,7 @@ public:
 	static void GpuTimestampEndFrame();
 
 	static void ResetFrameMetrics();
+	static void SetLogIntervalMs(DWORD intervalMs);
 
 private:
 	RDDiagManager() = delete;
@@ -98,5 +99,5 @@ private:
 	static RDGpuTimestamp s_gpuTimestamp;
 
 	static LARGE_INTEGER s_lastLogTime;
-	static const DWORD LOG_INTERVAL_MS = 10000;
+	static DWORD s_logIntervalMs;
 };

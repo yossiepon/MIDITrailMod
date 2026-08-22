@@ -32,6 +32,7 @@ std::vector<std::function<void()>> RDDiagManager::s_componentDeleters;
 ID3D11DeviceContext* RDDiagManager::s_pDeviceContext = nullptr;
 RDGpuTimestamp RDDiagManager::s_gpuTimestamp;
 LARGE_INTEGER RDDiagManager::s_lastLogTime = {};
+DWORD RDDiagManager::s_logIntervalMs = 10000;
 
 int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -194,18 +195,19 @@ void RDDiagManager::Update()
 		pComp->CollectFrame();
 	}
 
-	// Periodic runtime metrics log (debug level)
-	double logElapsedMs = static_cast<double>(now.QuadPart - s_lastLogTime.QuadPart)
-		* 1000.0 / static_cast<double>(s_perfFrequency.QuadPart);
-	if (logElapsedMs >= static_cast<double>(LOG_INTERVAL_MS)) {
-		auto logger = spdlog::get("RD");
-		if (logger) {
-			auto rt = Format(RDFormatProfile::RuntimeSystem, RDFormatProfile::RuntimeSystemCount);
-			for (const auto& entry : rt) {
-				logger->info("[runtime] {}: {}", entry.label, entry.value);
+	if (s_logIntervalMs > 0) {
+		double logElapsedMs = static_cast<double>(now.QuadPart - s_lastLogTime.QuadPart)
+			* 1000.0 / static_cast<double>(s_perfFrequency.QuadPart);
+		if (logElapsedMs >= static_cast<double>(s_logIntervalMs)) {
+			auto logger = spdlog::get("RD");
+			if (logger) {
+				auto rt = Format(RDFormatProfile::RuntimeSystem, RDFormatProfile::RuntimeSystemCount);
+				for (const auto& entry : rt) {
+					logger->debug("[runtime] {}: {}", entry.label, entry.value);
+				}
 			}
+			s_lastLogTime = now;
 		}
-		s_lastLogTime = now;
 	}
 }
 
@@ -340,6 +342,11 @@ void RDDiagManager::ResetFrameMetrics()
 	for (auto* pComp : s_frameComponents) {
 		pComp->Reset();
 	}
+}
+
+void RDDiagManager::SetLogIntervalMs(DWORD intervalMs)
+{
+	s_logIntervalMs = intervalMs;
 }
 
 std::vector<RDFormattedEntry> RDDiagManager::Format(
