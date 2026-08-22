@@ -53,6 +53,21 @@ enum class RDMetricId : uint16_t
 	AppDrawTimeMs,
 	AppPresentTimeMs,
 
+	// Diag: Startup timing
+	DiagStartupTotalUs,
+	DiagStartupOsInfoUs,
+	DiagStartupCpuInfoUs,
+	DiagStartupGpuInfoUs,
+	DiagStartupMemoryInfoUs,
+	DiagStartupWmiInfoUs,
+
+	// Diag: Polling timing
+	DiagPollingTotalUs,
+	DiagPollingCpuInfoUs,
+	DiagPollingGpuInfoUs,
+	DiagPollingMemoryInfoUs,
+	DiagPollingCount,
+
 	COUNT
 };
 

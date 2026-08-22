@@ -38,6 +38,19 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppSceneUpdateTimeMs, "AppSceneUpdateTimeMs", RDMetricType::Float },
 	{ RDMetricId::AppDrawTimeMs,        "AppDrawTimeMs",        RDMetricType::Float },
 	{ RDMetricId::AppPresentTimeMs,     "AppPresentTimeMs",     RDMetricType::Float },
+
+	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
+	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },
+	{ RDMetricId::DiagStartupCpuInfoUs, "DiagStartupCpuInfoUs", RDMetricType::Int },
+	{ RDMetricId::DiagStartupGpuInfoUs, "DiagStartupGpuInfoUs", RDMetricType::Int },
+	{ RDMetricId::DiagStartupMemoryInfoUs,"DiagStartupMemoryInfoUs",RDMetricType::Int },
+	{ RDMetricId::DiagStartupWmiInfoUs, "DiagStartupWmiInfoUs", RDMetricType::Int },
+
+	{ RDMetricId::DiagPollingTotalUs,   "DiagPollingTotalUs",   RDMetricType::Int },
+	{ RDMetricId::DiagPollingCpuInfoUs, "DiagPollingCpuInfoUs", RDMetricType::Int },
+	{ RDMetricId::DiagPollingGpuInfoUs, "DiagPollingGpuInfoUs", RDMetricType::Int },
+	{ RDMetricId::DiagPollingMemoryInfoUs,"DiagPollingMemoryInfoUs",RDMetricType::Int },
+	{ RDMetricId::DiagPollingCount,     "DiagPollingCount",     RDMetricType::Int },
 };
 
 static_assert(

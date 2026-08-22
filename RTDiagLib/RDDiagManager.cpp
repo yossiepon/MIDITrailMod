@@ -27,9 +27,8 @@ LARGE_INTEGER RDDiagManager::s_perfFrequency = {};
 std::unordered_map<const RDFormatTemplateEntry*, std::vector<RDDiagManager::CompiledTemplate>>
 	RDDiagManager::s_compiledProfiles;
 
-std::vector<std::unique_ptr<IRDStartupComponent>> RDDiagManager::s_ownedStartup;
-std::vector<std::unique_ptr<IRDIntervalPollingComponent>> RDDiagManager::s_ownedInterval;
-std::vector<std::unique_ptr<IRDFrameComponent>> RDDiagManager::s_ownedFrame;
+std::vector<std::function<void()>> RDDiagManager::s_componentDeleters;
+LARGE_INTEGER RDDiagManager::s_lastLogTime = {};
 
 int RDDiagManager::Initialize(ID3D11Device* pDevice)
 {
@@ -46,33 +45,63 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 
 	_BuildKeyToIdMap();
 
-	// Phase 1A startup components
+	// Phase 1A components
 	// Order matters: RDWmiInfo reads GpuName (set by RDGpuInfo) to match driver version
 	{
-		auto osInfo = std::make_unique<RDOsInfo>();
-		RegisterStartupComponent(osInfo.get());
-		s_ownedStartup.push_back(std::move(osInfo));
+		auto* osInfo = new RDOsInfo();
+		RegisterStartupComponent(osInfo);
+		s_componentDeleters.push_back([osInfo]() { delete osInfo; });
 
-		auto cpuInfo = std::make_unique<RDCpuInfo>();
-		RegisterStartupComponent(cpuInfo.get());
-		s_ownedStartup.push_back(std::move(cpuInfo));
+		auto* cpuInfo = new RDCpuInfo();
+		RegisterStartupComponent(cpuInfo);
+		RegisterIntervalPollingComponent(cpuInfo);
+		s_componentDeleters.push_back([cpuInfo]() { delete cpuInfo; });
 
-		auto gpuInfo = std::make_unique<RDGpuInfo>();
+		auto* gpuInfo = new RDGpuInfo();
 		gpuInfo->SetDevice(pDevice);
-		RegisterStartupComponent(gpuInfo.get());
-		s_ownedStartup.push_back(std::move(gpuInfo));
+		RegisterStartupComponent(gpuInfo);
+		RegisterIntervalPollingComponent(gpuInfo);
+		s_componentDeleters.push_back([gpuInfo]() { delete gpuInfo; });
 
-		auto memInfo = std::make_unique<RDMemoryInfo>();
-		RegisterStartupComponent(memInfo.get());
-		s_ownedStartup.push_back(std::move(memInfo));
+		auto* memInfo = new RDMemoryInfo();
+		RegisterStartupComponent(memInfo);
+		RegisterIntervalPollingComponent(memInfo);
+		s_componentDeleters.push_back([memInfo]() { delete memInfo; });
 
-		auto wmiInfo = std::make_unique<RDWmiInfo>();
-		RegisterStartupComponent(wmiInfo.get());
-		s_ownedStartup.push_back(std::move(wmiInfo));
+		auto* wmiInfo = new RDWmiInfo();
+		RegisterStartupComponent(wmiInfo);
+		s_componentDeleters.push_back([wmiInfo]() { delete wmiInfo; });
 	}
 
-	for (auto* pComp : s_startupComponents) {
-		pComp->CollectStartup();
+	// Per-component startup timing metric IDs (same order as registration)
+	static const RDMetricId startupTimingIds[] = {
+		RDMetricId::DiagStartupOsInfoUs,
+		RDMetricId::DiagStartupCpuInfoUs,
+		RDMetricId::DiagStartupGpuInfoUs,
+		RDMetricId::DiagStartupMemoryInfoUs,
+		RDMetricId::DiagStartupWmiInfoUs,
+	};
+
+	{
+		LARGE_INTEGER totalStart;
+		QueryPerformanceCounter(&totalStart);
+
+		for (size_t i = 0; i < s_startupComponents.size(); i++) {
+			LARGE_INTEGER compStart, compEnd;
+			QueryPerformanceCounter(&compStart);
+			s_startupComponents[i]->CollectStartup();
+			QueryPerformanceCounter(&compEnd);
+
+			if (i < sizeof(startupTimingIds) / sizeof(startupTimingIds[0])) {
+				int64_t us = (compEnd.QuadPart - compStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
+				SetInt(startupTimingIds[i], us);
+			}
+		}
+
+		LARGE_INTEGER totalEnd;
+		QueryPerformanceCounter(&totalEnd);
+		int64_t totalUs = (totalEnd.QuadPart - totalStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
+		SetInt(RDMetricId::DiagStartupTotalUs, totalUs);
 	}
 
 	LARGE_INTEGER now;
@@ -83,6 +112,7 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 	}
 
 	s_isInitialized = true;
+	QueryPerformanceCounter(&s_lastLogTime);
 
 	auto logger = spdlog::get("RD");
 	if (logger) {
@@ -108,18 +138,61 @@ void RDDiagManager::Update()
 	LARGE_INTEGER now;
 	QueryPerformanceCounter(&now);
 
-	for (auto& entry : s_intervalComponents) {
+	// Per-component polling timing metric IDs (same order as IntervalPolling registration)
+	static const RDMetricId pollingTimingIds[] = {
+		RDMetricId::DiagPollingCpuInfoUs,
+		RDMetricId::DiagPollingGpuInfoUs,
+		RDMetricId::DiagPollingMemoryInfoUs,
+	};
+
+	LARGE_INTEGER pollStart;
+	QueryPerformanceCounter(&pollStart);
+	int polledCount = 0;
+
+	for (size_t i = 0; i < s_intervalComponents.size(); i++) {
+		auto& entry = s_intervalComponents[i];
 		double elapsedMs = static_cast<double>(now.QuadPart - entry.lastCollected.QuadPart)
 			* 1000.0 / static_cast<double>(s_perfFrequency.QuadPart);
 
 		if (elapsedMs >= static_cast<double>(entry.pComponent->GetPollingIntervalMs())) {
+			LARGE_INTEGER compStart, compEnd;
+			QueryPerformanceCounter(&compStart);
 			entry.pComponent->CollectIntervalPolling();
+			QueryPerformanceCounter(&compEnd);
 			entry.lastCollected = now;
+			polledCount++;
+
+			if (i < sizeof(pollingTimingIds) / sizeof(pollingTimingIds[0])) {
+				int64_t us = (compEnd.QuadPart - compStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
+				SetInt(pollingTimingIds[i], us);
+			}
 		}
+	}
+
+	if (polledCount > 0) {
+		LARGE_INTEGER pollEnd;
+		QueryPerformanceCounter(&pollEnd);
+		int64_t pollingUs = (pollEnd.QuadPart - pollStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
+		SetInt(RDMetricId::DiagPollingTotalUs, pollingUs);
+		SetInt(RDMetricId::DiagPollingCount, polledCount);
 	}
 
 	for (auto* pComp : s_frameComponents) {
 		pComp->CollectFrame();
+	}
+
+	// Periodic runtime metrics log (debug level)
+	double logElapsedMs = static_cast<double>(now.QuadPart - s_lastLogTime.QuadPart)
+		* 1000.0 / static_cast<double>(s_perfFrequency.QuadPart);
+	if (logElapsedMs >= static_cast<double>(LOG_INTERVAL_MS)) {
+		auto logger = spdlog::get("RD");
+		if (logger) {
+			auto rt = Format(RDFormatProfile::RuntimeSystem, RDFormatProfile::RuntimeSystemCount);
+			for (const auto& entry : rt) {
+				logger->info("[runtime] {}: {}", entry.label, entry.value);
+			}
+		}
+		s_lastLogTime = now;
 	}
 }
 
@@ -137,9 +210,10 @@ void RDDiagManager::Terminate()
 	s_startupComponents.clear();
 	s_intervalComponents.clear();
 	s_frameComponents.clear();
-	s_ownedStartup.clear();
-	s_ownedInterval.clear();
-	s_ownedFrame.clear();
+	for (auto& deleter : s_componentDeleters) {
+		deleter();
+	}
+	s_componentDeleters.clear();
 	s_keyToIdMap.clear();
 	s_formatBuffer.clear();
 	s_compiledProfiles.clear();
