@@ -73,6 +73,7 @@ MIDITrailApp::MIDITrailApp(void)
 	//FPS display-related
 	m_PrevTime = 0;
 	m_FPSCount = 0;
+	m_PrevFrameQPC.QuadPart = 0;
 
 	//MIDI control-related
 	m_MIDIINDevName[0] = _T('\0');
@@ -236,7 +237,7 @@ int MIDITrailApp::Initialize(
 	if (result != 0) goto EXIT;
 
 	//Initialize runtime diagnostics
-	result = RDDiagManager::Initialize(m_Renderer.GetDevice());
+	result = RDDiagManager::Initialize(m_Renderer.GetDevice(), m_Renderer.GetContext());
 	if (result != 0) goto EXIT;
 
 	//Create scene object
@@ -378,12 +379,30 @@ int MIDITrailApp::Run()
 				(wndpl.showCmd != SW_MINIMIZE) &&
 				(wndpl.showCmd != SW_SHOWMINIMIZED) &&
 				(wndpl.showCmd != SW_SHOWMINNOACTIVE)) {
+
+				LARGE_INTEGER frameNow, updateEnd;
+				LARGE_INTEGER freq;
+				QueryPerformanceFrequency(&freq);
+				double toMs = 1000.0 / static_cast<double>(freq.QuadPart);
+
+				QueryPerformanceCounter(&frameNow);
+				if (m_PrevFrameQPC.QuadPart != 0) {
+					double frameTimeMs = static_cast<double>(
+						frameNow.QuadPart - m_PrevFrameQPC.QuadPart) * toMs;
+					RDDiagManager::SetFloat(RDMetricId::AppFrameTimeMs, frameTimeMs);
+				}
+				m_PrevFrameQPC = frameNow;
+
 				//Update scene (camera input, playback position, component state)
 				result = m_pScene->Update();
 				if (result != 0) {
 					YN_SHOW_ERR(m_hWnd);
 					PostMessage(m_hWnd, WM_DESTROY, 0, 0);
 				}
+
+				QueryPerformanceCounter(&updateEnd);
+				RDDiagManager::SetFloat(RDMetricId::AppSceneUpdateTimeMs,
+					static_cast<double>(updateEnd.QuadPart - frameNow.QuadPart) * toMs);
 
 				//Draw
 				result = m_Renderer.RenderScene(m_pScene, m_pScene->GetCamera());
@@ -402,6 +421,7 @@ int MIDITrailApp::Run()
 						PostMessage(m_hWnd, WM_DESTROY, 0, 0);
 					}
 				}
+
 				_UpdateFPS();
 
 				//Update runtime diagnostics (after scene update/draw/present)
@@ -3326,6 +3346,9 @@ int MIDITrailApp::_CreateScene(
 	)
 {
 	int result = 0;
+
+	RDDiagManager::ResetFrameMetrics();
+	m_PrevFrameQPC.QuadPart = 0;
 
 	//Destroy scene
 	if (m_pScene != NULL) {

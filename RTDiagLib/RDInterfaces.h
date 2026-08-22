@@ -23,4 +23,5 @@ class RTDIAGLIB_API IRDFrameComponent
 public:
 	virtual ~IRDFrameComponent() = default;
 	virtual void CollectFrame() = 0;
+	virtual void Reset() {}
 };

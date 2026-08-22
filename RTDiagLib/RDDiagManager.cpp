@@ -29,13 +29,17 @@ std::unordered_map<const RDFormatTemplateEntry*, std::vector<RDDiagManager::Comp
 	RDDiagManager::s_compiledProfiles;
 
 std::vector<std::function<void()>> RDDiagManager::s_componentDeleters;
+ID3D11DeviceContext* RDDiagManager::s_pDeviceContext = nullptr;
+RDGpuTimestamp RDDiagManager::s_gpuTimestamp;
 LARGE_INTEGER RDDiagManager::s_lastLogTime = {};
 
-int RDDiagManager::Initialize(ID3D11Device* pDevice)
+int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	if (s_isInitialized) {
 		return 0;
 	}
+
+	s_pDeviceContext = pContext;
 
 	QueryPerformanceFrequency(&s_perfFrequency);
 	for (auto& m : s_metrics) {
@@ -114,6 +118,10 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 	for (auto& entry : s_intervalComponents) {
 		entry.pComponent->CollectIntervalPolling();
 		entry.lastCollected = now;
+	}
+
+	if (pDevice != nullptr && pContext != nullptr) {
+		s_gpuTimestamp.Initialize(pDevice, pContext);
 	}
 
 	s_isInitialized = true;
@@ -212,6 +220,9 @@ void RDDiagManager::Terminate()
 		logger->info("RDDiagManager terminated");
 	}
 
+	s_gpuTimestamp.Terminate();
+	s_pDeviceContext = nullptr;
+
 	s_startupComponents.clear();
 	s_intervalComponents.clear();
 	s_frameComponents.clear();
@@ -283,6 +294,52 @@ void RDDiagManager::RegisterIntervalPollingComponent(IRDIntervalPollingComponent
 void RDDiagManager::RegisterFrameComponent(IRDFrameComponent* pComponent)
 {
 	s_frameComponents.push_back(pComponent);
+}
+
+void RDDiagManager::GpuTimestampBeginFrame()
+{
+	s_gpuTimestamp.BeginFrame();
+}
+
+void RDDiagManager::GpuTimestampEndFrame()
+{
+	s_gpuTimestamp.EndFrame();
+}
+
+void RDDiagManager::ResetFrameMetrics()
+{
+	static const RDMetricId appMetrics[] = {
+		RDMetricId::AppFrameTimeMs,
+		RDMetricId::AppSceneUpdateTimeMs,
+		RDMetricId::AppDrawTimeMs,
+		RDMetricId::AppPresentTimeMs,
+		RDMetricId::AppGpuRenderTimeMs,
+		RDMetricId::AppAvgFrameTimeMs,
+		RDMetricId::AppFps,
+		RDMetricId::AppFps1PercentLow,
+		RDMetricId::AppFps01PercentLow,
+		RDMetricId::AppFrameTimeStdDev,
+		RDMetricId::AppStutterPercent,
+		RDMetricId::AppNps,
+	};
+	for (auto id : appMetrics) {
+		s_metrics[static_cast<size_t>(id)].floatVal = 0.0;
+	}
+
+	static const RDMetricId appIntMetrics[] = {
+		RDMetricId::AppNoteActivationsPerFrame,
+		RDMetricId::AppPolyphony,
+		RDMetricId::AppPolyphonyPeak,
+		RDMetricId::AppInstanceCount,
+		RDMetricId::AppInstanceBufferSizeKB,
+	};
+	for (auto id : appIntMetrics) {
+		s_metrics[static_cast<size_t>(id)].intVal = 0;
+	}
+
+	for (auto* pComp : s_frameComponents) {
+		pComp->Reset();
+	}
 }
 
 std::vector<RDFormattedEntry> RDDiagManager::Format(
@@ -419,7 +476,7 @@ std::string RDDiagManager::_FormatCompiledTemplate(
 			case RDMetricType::Float:
 				{
 					char buf[32];
-					snprintf(buf, sizeof(buf), "%.1f", s_metrics[idx].floatVal);
+					snprintf(buf, sizeof(buf), "%.2f", s_metrics[idx].floatVal);
 					result += buf;
 				}
 				break;

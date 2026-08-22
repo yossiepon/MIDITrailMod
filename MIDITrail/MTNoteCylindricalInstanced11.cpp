@@ -16,6 +16,7 @@
 #include "MTNoteCylindricalInstanced11.h"
 #include "MTNoteInstancedShaderSnippets.h"
 #include "DXPrimitive11.h"
+#include "RDDiagManager.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -401,6 +402,8 @@ int MTNoteCylindricalInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice)
 		                               (unsigned long)(m_NoteCount * sizeof(MTNOTECYLINDRICAL_INST_INSTANCE)),
 		                               &m_pInstanceVB);
 		if (result != 0) goto EXIT;
+		RDDiagManager::SetInt(RDMetricId::AppInstanceBufferSizeKB,
+			static_cast<int64_t>(m_NoteCount * sizeof(MTNOTECYLINDRICAL_INST_INSTANCE) / 1024));
 
 		BuildCullingArrays(startTicks.data(), endTicks.data(), m_NoteCount);
 	}
@@ -500,10 +503,14 @@ int MTNoteCylindricalInstanced11::Draw(
 
 			if (pass == 0) {
 				pContext->DrawIndexedInstanced(6, hiNote - loNote, 0, 0, loNote);
+				int64_t prev = RDDiagManager::GetInt(RDMetricId::AppInstanceCount);
+				RDDiagManager::SetInt(RDMetricId::AppInstanceCount, prev + (hiNote - loNote));
 			}
 			else {
 				if (loActive < hiActive) {
 					pContext->DrawIndexedInstanced(6, hiActive - loActive, 0, 0, loActive);
+					int64_t prev = RDDiagManager::GetInt(RDMetricId::AppInstanceCount);
+					RDDiagManager::SetInt(RDMetricId::AppInstanceCount, prev + (hiActive - loActive));
 				}
 			}
 		}

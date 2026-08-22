@@ -227,6 +227,7 @@
     <ClCompile Include="RDMemoryInfo.cpp" />
     <ClCompile Include="RDWmiInfo.cpp" />
     <ClCompile Include="RDAppMetrics.cpp" />
+    <ClCompile Include="RDGpuTimestamp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="RDMemoryInfo.h" />
     <ClInclude Include="RDWmiInfo.h" />
     <ClInclude Include="RDAppMetrics.h" />
+    <ClInclude Include="RDGpuTimestamp.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YNBaseLib\YNBaseLib.vcxproj">

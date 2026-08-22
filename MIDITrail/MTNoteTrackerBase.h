@@ -68,6 +68,7 @@ public:
 	bool HasActiveNotesOnPort(unsigned char portNo) const;
 	bool HasActiveNotesOnChannel(unsigned char portNo, unsigned char chNo) const;
 	unsigned short GetActiveChannelMask(unsigned char portNo) const;
+	unsigned long GetTotalActiveNoteCount() const;
 
 protected:
 
@@ -82,4 +83,5 @@ protected:
 
 	std::vector<ListenerEntry> m_Listeners;
 	unsigned long m_ActiveNotesPerCh[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
+	unsigned long m_TotalActiveNotes;
 };

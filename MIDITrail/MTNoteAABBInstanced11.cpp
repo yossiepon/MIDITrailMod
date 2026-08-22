@@ -18,6 +18,7 @@
 #include "DXPrimitive11.h"
 #include "MTLoadingDefs.h"
 #include <spdlog/spdlog.h>
+#include "RDDiagManager.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -578,6 +579,8 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 		                               (unsigned long)(m_NoteCount * sizeof(MTNOTEAABB_INST_INSTANCE_RAIN)),
 		                               &m_pInstanceVB);
 		if (result != 0) goto EXIT;
+		RDDiagManager::SetInt(RDMetricId::AppInstanceBufferSizeKB,
+			static_cast<int64_t>(m_NoteCount * sizeof(MTNOTEAABB_INST_INSTANCE_RAIN) / 1024));
 
 		BuildCullingArrays(startTicks.data(), endTicks.data(), m_NoteCount);
 	}
@@ -635,6 +638,8 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 		                               (unsigned long)(m_NoteCount * sizeof(MTNOTEAABB_INST_INSTANCE_FULL)),
 		                               &m_pInstanceVB);
 		if (result != 0) goto EXIT;
+		RDDiagManager::SetInt(RDMetricId::AppInstanceBufferSizeKB,
+			static_cast<int64_t>(m_NoteCount * sizeof(MTNOTEAABB_INST_INSTANCE_FULL) / 1024));
 
 		BuildCullingArrays(startTicks.data(), endTicks.data(), m_NoteCount);
 	}
@@ -774,10 +779,14 @@ int MTNoteAABBInstanced11::_DrawRoll(
 
 			if (pass == 0) {
 				pContext->DrawIndexedInstanced(m_IndexCountPerInstance, hiNote - loNote, 0, 0, loNote);
+				int64_t prev = RDDiagManager::GetInt(RDMetricId::AppInstanceCount);
+				RDDiagManager::SetInt(RDMetricId::AppInstanceCount, prev + (hiNote - loNote));
 			}
 			else {
 				if (loActive < hiActive) {
 					pContext->DrawIndexedInstanced(m_IndexCountPerInstance, hiActive - loActive, 0, 0, loActive);
+					int64_t prev = RDDiagManager::GetInt(RDMetricId::AppInstanceCount);
+					RDDiagManager::SetInt(RDMetricId::AppInstanceCount, prev + (hiActive - loActive));
 				}
 			}
 		}
@@ -846,6 +855,10 @@ int MTNoteAABBInstanced11::_DrawRain(
 		}
 
 		pContext->DrawIndexedInstanced(m_IndexCountPerInstance, hiNote - loNote, 0, 0, loNote);
+		{
+			int64_t prev = RDDiagManager::GetInt(RDMetricId::AppInstanceCount);
+			RDDiagManager::SetInt(RDMetricId::AppInstanceCount, prev + (hiNote - loNote));
+		}
 	}
 
 EXIT:;
