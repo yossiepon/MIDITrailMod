@@ -53,7 +53,7 @@ int RDGpuTimestamp::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 	{
 		auto logger = spdlog::get("RD");
 		if (logger) {
-			logger->info("GPU Timestamp Query initialized");
+			logger->debug("GPU Timestamp Query initialized");
 		}
 	}
 

@@ -142,7 +142,7 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 	{
 		auto logger = spdlog::get("RD");
 		if (logger) {
-			logger->info("RDDiagManager initialized (async startup pending)");
+			logger->debug("RDDiagManager initialized (async startup pending)");
 		}
 	}
 
@@ -209,7 +209,7 @@ void RDDiagManager::_OnAsyncStartupComplete()
 		for (const auto& entry : signature) {
 			logger->info("{}: {}", entry.label, entry.value);
 		}
-		logger->info("Async startup complete");
+		logger->debug("Async startup complete");
 	}
 }
 
@@ -300,7 +300,7 @@ void RDDiagManager::Terminate()
 
 	auto logger = spdlog::get("RD");
 	if (logger) {
-		logger->info("RDDiagManager terminated");
+		logger->debug("RDDiagManager terminated");
 	}
 
 	if (s_asyncStartup.valid()) {
@@ -433,6 +433,19 @@ void RDDiagManager::ResetFrameMetrics()
 void RDDiagManager::SetLogIntervalMs(DWORD intervalMs)
 {
 	s_logIntervalMs = intervalMs;
+}
+
+void RDDiagManager::LogEvent(
+	const RDFormatTemplateEntry* pProfile, size_t count,
+	const char* eventTag)
+{
+	auto logger = spdlog::get("RD");
+	if (!logger) return;
+
+	auto entries = Format(pProfile, count);
+	for (const auto& entry : entries) {
+		logger->debug("[{}] {}: {}", eventTag, entry.label, entry.value);
+	}
 }
 
 std::vector<RDFormattedEntry> RDDiagManager::Format(

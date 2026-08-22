@@ -20,6 +20,7 @@
 #include "MIDITrailApp.h"
 #include "MTLogManager.h"
 #include "RDDiagManager.h"
+#include "RDFormatProfiles.h"
 #include <spdlog/spdlog.h>
 #include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
@@ -2836,6 +2837,22 @@ int MIDITrailApp::_LoadMIDIFile(
 	spdlog::debug("_CreateScene: {} ms", (perfT1.QuadPart - perfT0.QuadPart) * 1000 / perfFreq.QuadPart);
 	if (result != 0) goto EXIT;
 
+	{
+		static const char* sceneNames[] = { "Title", "PianoRoll3D", "PianoRoll2D", "PianoRollRain",
+			"PianoRollRain2D", "PianoRollRing", "PianoRoll3DLive", "PianoRoll2DLive",
+			"PianoRollRainLive", "PianoRollRain2DLive", "PianoRollRingLive" };
+
+		char fileNameA[256] = {0};
+		WideCharToMultiByte(CP_UTF8, 0, m_SeqData.GetFileName(), -1, fileNameA, 256, NULL, NULL);
+		RDDiagManager::SetString(RDMetricId::AppLoadedFileName, fileNameA);
+		RDDiagManager::SetInt(RDMetricId::AppTotalPlayTimeMs,
+			static_cast<int64_t>(m_SeqData.GetTotalPlayTime()));
+		RDDiagManager::SetString(RDMetricId::AppSceneType, sceneNames[m_SceneType]);
+
+		RDDiagManager::LogEvent(RDFormatProfile::FileLoaded,
+			RDFormatProfile::FileLoadedCount, "file-loaded");
+	}
+
 	//Change playback status
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
@@ -3442,6 +3459,15 @@ int MIDITrailApp::_CreateScene(
 
 		QueryPerformanceCounter(&tS1);
 		spdlog::debug("Post-scene: {} ms", (tS1.QuadPart - tS0.QuadPart) * 1000 / tFreq.QuadPart);
+	}
+
+	if (result == 0 && type != Title) {
+		static const char* sceneNames[] = { "Title", "PianoRoll3D", "PianoRoll2D", "PianoRollRain",
+			"PianoRollRain2D", "PianoRollRing", "PianoRoll3DLive", "PianoRoll2DLive",
+			"PianoRollRainLive", "PianoRollRain2DLive", "PianoRollRingLive" };
+		RDDiagManager::SetString(RDMetricId::AppSceneType, sceneNames[type]);
+		RDDiagManager::LogEvent(RDFormatProfile::SceneReady,
+			RDFormatProfile::SceneReadyCount, "scene-ready");
 	}
 
 EXIT:;

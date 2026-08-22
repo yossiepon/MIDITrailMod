@@ -49,6 +49,11 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppFrameTimeStdDev,   "AppFrameTimeStdDev",   RDMetricType::Float },
 	{ RDMetricId::AppStutterPercent,    "AppStutterPercent",     RDMetricType::Float },
 
+	{ RDMetricId::AppLoadedFileName,    "AppLoadedFileName",    RDMetricType::String },
+	{ RDMetricId::AppTotalNoteCount,    "AppTotalNoteCount",    RDMetricType::Int },
+	{ RDMetricId::AppTotalPlayTimeMs,   "AppTotalPlayTimeMs",   RDMetricType::Int },
+	{ RDMetricId::AppSceneType,         "AppSceneType",         RDMetricType::String },
+
 	{ RDMetricId::AppNoteActivationsPerFrame, "AppNoteActivationsPerFrame", RDMetricType::Int },
 	{ RDMetricId::AppNps,               "AppNps",               RDMetricType::Float },
 	{ RDMetricId::AppPolyphony,         "AppPolyphony",         RDMetricType::Int },

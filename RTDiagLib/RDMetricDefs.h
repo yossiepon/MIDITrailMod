@@ -64,6 +64,12 @@ enum class RDMetricId : uint16_t
 	AppFrameTimeStdDev,
 	AppStutterPercent,
 
+	// App: Event-driven (Push, one-shot)
+	AppLoadedFileName,
+	AppTotalNoteCount,
+	AppTotalPlayTimeMs,
+	AppSceneType,
+
 	// App: Black MIDI metrics (Frame, Push)
 	AppNoteActivationsPerFrame,
 	AppNps,
