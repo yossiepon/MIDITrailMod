@@ -221,6 +221,11 @@
     </ClCompile>
     <ClCompile Include="RDDiagManager.cpp" />
     <ClCompile Include="RDMetricDefs.cpp" />
+    <ClCompile Include="RDOsInfo.cpp" />
+    <ClCompile Include="RDCpuInfo.cpp" />
+    <ClCompile Include="RDGpuInfo.cpp" />
+    <ClCompile Include="RDMemoryInfo.cpp" />
+    <ClCompile Include="RDWmiInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -229,6 +234,12 @@
     <ClInclude Include="RDInterfaces.h" />
     <ClInclude Include="RDMetricDefs.h" />
     <ClInclude Include="RDDiagManager.h" />
+    <ClInclude Include="RDFormatProfiles.h" />
+    <ClInclude Include="RDOsInfo.h" />
+    <ClInclude Include="RDCpuInfo.h" />
+    <ClInclude Include="RDGpuInfo.h" />
+    <ClInclude Include="RDMemoryInfo.h" />
+    <ClInclude Include="RDWmiInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YNBaseLib\YNBaseLib.vcxproj">

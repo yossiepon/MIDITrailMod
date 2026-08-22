@@ -22,6 +22,7 @@ public:
 
 	static void SetFloat(RDMetricId id, double value);
 	static void SetInt(RDMetricId id, int64_t value);
+	static void SetString(RDMetricId id, const char* value);
 
 	static std::vector<RDFormattedEntry> Format(
 		const RDFormatTemplateEntry* pProfile, size_t count);
@@ -84,4 +85,8 @@ private:
 
 	static std::unordered_map<const RDFormatTemplateEntry*, std::vector<CompiledTemplate>>
 		s_compiledProfiles;
+
+	static std::vector<std::unique_ptr<IRDStartupComponent>> s_ownedStartup;
+	static std::vector<std::unique_ptr<IRDIntervalPollingComponent>> s_ownedInterval;
+	static std::vector<std::unique_ptr<IRDFrameComponent>> s_ownedFrame;
 };
