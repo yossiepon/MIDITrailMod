@@ -3,19 +3,27 @@
 
 static const RDMetricMeta s_MetricMetaTable[] =
 {
+	{ RDMetricId::OsProductName,        "OsProductName",        RDMetricType::String },
 	{ RDMetricId::OsVersion,            "OsVersion",            RDMetricType::String },
 
 	{ RDMetricId::CpuName,              "CpuName",              RDMetricType::String },
+	{ RDMetricId::CpuArchitecture,      "CpuArchitecture",      RDMetricType::String },
+	{ RDMetricId::CpuVendor,            "CpuVendor",            RDMetricType::String },
+	{ RDMetricId::CpuSockets,           "CpuSockets",           RDMetricType::Int },
 	{ RDMetricId::CpuPhysicalCores,     "CpuPhysicalCores",     RDMetricType::Int },
 	{ RDMetricId::CpuLogicalProcessors, "CpuLogicalProcessors", RDMetricType::Int },
+	{ RDMetricId::CpuBaseMHz,           "CpuBaseMHz",           RDMetricType::Int },
 	{ RDMetricId::CpuUsageSystem,       "CpuUsageSystem",       RDMetricType::Float },
 	{ RDMetricId::CpuUsageProcess,      "CpuUsageProcess",      RDMetricType::Float },
 
-	{ RDMetricId::MemoryTotalMB,        "MemoryTotalMB",        RDMetricType::Int },
-	{ RDMetricId::MemoryUsedMB,         "MemoryUsedMB",         RDMetricType::Int },
-	{ RDMetricId::MemoryAvailableMB,    "MemoryAvailableMB",    RDMetricType::Int },
-	{ RDMetricId::MemoryWorkingSetMB,   "MemoryWorkingSetMB",   RDMetricType::Int },
-	{ RDMetricId::MemoryHandles,        "MemoryHandles",        RDMetricType::Int },
+	{ RDMetricId::PhysMemTotalMB,       "PhysMemTotalMB",       RDMetricType::Int },
+	{ RDMetricId::PhysMemAvailableMB,   "PhysMemAvailableMB",   RDMetricType::Int },
+
+	{ RDMetricId::CommitLimitMB,        "CommitLimitMB",        RDMetricType::Int },
+	{ RDMetricId::CommitUsedMB,         "CommitUsedMB",         RDMetricType::Int },
+
+	{ RDMetricId::ProcessWorkingSetMB,  "ProcessWorkingSetMB",  RDMetricType::Int },
+	{ RDMetricId::ProcessHandles,       "ProcessHandles",       RDMetricType::Int },
 
 	{ RDMetricId::GpuName,              "GpuName",              RDMetricType::String },
 	{ RDMetricId::GpuVramTotalMB,       "GpuVramTotalMB",       RDMetricType::Int },

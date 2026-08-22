@@ -1,5 +1,11 @@
 #include "stdafx.h"
 #include "RDDiagManager.h"
+#include "RDOsInfo.h"
+#include "RDCpuInfo.h"
+#include "RDGpuInfo.h"
+#include "RDMemoryInfo.h"
+#include "RDWmiInfo.h"
+#include "RDFormatProfiles.h"
 #include <spdlog/spdlog.h>
 #include <cassert>
 
@@ -21,6 +27,10 @@ LARGE_INTEGER RDDiagManager::s_perfFrequency = {};
 std::unordered_map<const RDFormatTemplateEntry*, std::vector<RDDiagManager::CompiledTemplate>>
 	RDDiagManager::s_compiledProfiles;
 
+std::vector<std::unique_ptr<IRDStartupComponent>> RDDiagManager::s_ownedStartup;
+std::vector<std::unique_ptr<IRDIntervalPollingComponent>> RDDiagManager::s_ownedInterval;
+std::vector<std::unique_ptr<IRDFrameComponent>> RDDiagManager::s_ownedFrame;
+
 int RDDiagManager::Initialize(ID3D11Device* pDevice)
 {
 	if (s_isInitialized) {
@@ -28,9 +38,38 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 	}
 
 	QueryPerformanceFrequency(&s_perfFrequency);
-	memset(s_metrics, 0, sizeof(s_metrics));
+	for (auto& m : s_metrics) {
+		m.intVal = 0;
+		m.floatVal = 0.0;
+		m.strVal.clear();
+	}
 
 	_BuildKeyToIdMap();
+
+	// Phase 1A startup components
+	// Order matters: RDWmiInfo reads GpuName (set by RDGpuInfo) to match driver version
+	{
+		auto osInfo = std::make_unique<RDOsInfo>();
+		RegisterStartupComponent(osInfo.get());
+		s_ownedStartup.push_back(std::move(osInfo));
+
+		auto cpuInfo = std::make_unique<RDCpuInfo>();
+		RegisterStartupComponent(cpuInfo.get());
+		s_ownedStartup.push_back(std::move(cpuInfo));
+
+		auto gpuInfo = std::make_unique<RDGpuInfo>();
+		gpuInfo->SetDevice(pDevice);
+		RegisterStartupComponent(gpuInfo.get());
+		s_ownedStartup.push_back(std::move(gpuInfo));
+
+		auto memInfo = std::make_unique<RDMemoryInfo>();
+		RegisterStartupComponent(memInfo.get());
+		s_ownedStartup.push_back(std::move(memInfo));
+
+		auto wmiInfo = std::make_unique<RDWmiInfo>();
+		RegisterStartupComponent(wmiInfo.get());
+		s_ownedStartup.push_back(std::move(wmiInfo));
+	}
 
 	for (auto* pComp : s_startupComponents) {
 		pComp->CollectStartup();
@@ -48,6 +87,13 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 	auto logger = spdlog::get("RD");
 	if (logger) {
 		logger->info("RDDiagManager initialized");
+
+		auto signature = Format(
+			RDFormatProfile::MachineSignature,
+			RDFormatProfile::MachineSignatureCount);
+		for (const auto& entry : signature) {
+			logger->info("{}: {}", entry.label, entry.value);
+		}
 	}
 
 	return 0;
@@ -91,11 +137,18 @@ void RDDiagManager::Terminate()
 	s_startupComponents.clear();
 	s_intervalComponents.clear();
 	s_frameComponents.clear();
+	s_ownedStartup.clear();
+	s_ownedInterval.clear();
+	s_ownedFrame.clear();
 	s_keyToIdMap.clear();
 	s_formatBuffer.clear();
 	s_compiledProfiles.clear();
 
-	memset(s_metrics, 0, sizeof(s_metrics));
+	for (auto& m : s_metrics) {
+		m.intVal = 0;
+		m.floatVal = 0.0;
+		m.strVal.clear();
+	}
 	s_isInitialized = false;
 }
 
@@ -127,6 +180,12 @@ void RDDiagManager::SetInt(RDMetricId id, int64_t value)
 {
 	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
 	s_metrics[static_cast<size_t>(id)].intVal = value;
+}
+
+void RDDiagManager::SetString(RDMetricId id, const char* value)
+{
+	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
+	s_metrics[static_cast<size_t>(id)].strVal = value ? value : "";
 }
 
 void RDDiagManager::RegisterStartupComponent(IRDStartupComponent* pComponent)
@@ -253,6 +312,18 @@ void RDDiagManager::_CompileTemplate(
 	}
 }
 
+static std::string _FormatIntWithCommas(int64_t value)
+{
+	if (value < 0) return "-" + _FormatIntWithCommas(-value);
+	std::string s = std::to_string(value);
+	int pos = static_cast<int>(s.length()) - 3;
+	while (pos > 0) {
+		s.insert(pos, ",");
+		pos -= 3;
+	}
+	return s;
+}
+
 std::string RDDiagManager::_FormatCompiledTemplate(
 	const std::vector<CompiledSegment>& segments)
 {
@@ -264,7 +335,7 @@ std::string RDDiagManager::_FormatCompiledTemplate(
 			size_t idx = static_cast<size_t>(seg.metricId);
 			switch (seg.metricType) {
 			case RDMetricType::Int:
-				result += std::to_string(s_metrics[idx].intVal);
+				result += _FormatIntWithCommas(s_metrics[idx].intVal);
 				break;
 			case RDMetricType::Float:
 				{

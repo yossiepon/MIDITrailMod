@@ -6,23 +6,34 @@
 enum class RDMetricId : uint16_t
 {
 	// OS (Startup)
+	OsProductName,
 	OsVersion,
 
 	// CPU (Startup)
 	CpuName,
+	CpuArchitecture,
+	CpuVendor,
+	CpuSockets,
 	CpuPhysicalCores,
 	CpuLogicalProcessors,
+	CpuBaseMHz,
 	// CPU (IntervalPolling)
 	CpuUsageSystem,
 	CpuUsageProcess,
 
-	// Memory (Startup)
-	MemoryTotalMB,
-	// Memory (IntervalPolling)
-	MemoryUsedMB,
-	MemoryAvailableMB,
-	MemoryWorkingSetMB,
-	MemoryHandles,
+	// Physical Memory (Startup)
+	PhysMemTotalMB,
+	// Physical Memory (IntervalPolling)
+	PhysMemAvailableMB,
+
+	// Commit: Physical + PageFile (Startup)
+	CommitLimitMB,
+	// Commit (IntervalPolling)
+	CommitUsedMB,
+
+	// Process (IntervalPolling)
+	ProcessWorkingSetMB,
+	ProcessHandles,
 
 	// GPU (Startup)
 	GpuName,
