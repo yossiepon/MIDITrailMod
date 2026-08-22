@@ -5,6 +5,7 @@
 #include "RDGpuInfo.h"
 #include "RDMemoryInfo.h"
 #include "RDWmiInfo.h"
+#include "RDAppMetrics.h"
 #include "RDFormatProfiles.h"
 #include <spdlog/spdlog.h>
 #include <cassert>
@@ -71,6 +72,10 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 		auto* wmiInfo = new RDWmiInfo();
 		RegisterStartupComponent(wmiInfo);
 		s_componentDeleters.push_back([wmiInfo]() { delete wmiInfo; });
+
+		auto* appMetrics = new RDAppMetrics();
+		RegisterFrameComponent(appMetrics);
+		s_componentDeleters.push_back([appMetrics]() { delete appMetrics; });
 	}
 
 	// Per-component startup timing metric IDs (same order as registration)

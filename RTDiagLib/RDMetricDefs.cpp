@@ -22,6 +22,7 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::CommitLimitMB,        "CommitLimitMB",        RDMetricType::Int },
 	{ RDMetricId::CommitUsedMB,         "CommitUsedMB",         RDMetricType::Int },
 
+	{ RDMetricId::ProcessCommitMB,      "ProcessCommitMB",      RDMetricType::Int },
 	{ RDMetricId::ProcessWorkingSetMB,  "ProcessWorkingSetMB",  RDMetricType::Int },
 	{ RDMetricId::ProcessHandles,       "ProcessHandles",       RDMetricType::Int },
 

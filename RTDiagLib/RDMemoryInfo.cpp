@@ -37,10 +37,13 @@ void RDMemoryInfo::CollectIntervalPolling()
 		RDDiagManager::SetInt(RDMetricId::CommitUsedMB, commitUsedMB);
 	}
 
-	PROCESS_MEMORY_COUNTERS pmc = {};
-	pmc.cb = sizeof(pmc);
-	if (GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc))) {
-		int64_t wsMB = static_cast<int64_t>(pmc.WorkingSetSize / (1024 * 1024));
+	PROCESS_MEMORY_COUNTERS_EX pmcEx = {};
+	pmcEx.cb = sizeof(pmcEx);
+	if (GetProcessMemoryInfo(GetCurrentProcess(),
+		reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmcEx), sizeof(pmcEx))) {
+		int64_t commitMB = static_cast<int64_t>(pmcEx.PrivateUsage / (1024 * 1024));
+		int64_t wsMB = static_cast<int64_t>(pmcEx.WorkingSetSize / (1024 * 1024));
+		RDDiagManager::SetInt(RDMetricId::ProcessCommitMB, commitMB);
 		RDDiagManager::SetInt(RDMetricId::ProcessWorkingSetMB, wsMB);
 	}
 

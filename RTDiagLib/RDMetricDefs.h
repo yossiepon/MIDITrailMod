@@ -32,6 +32,7 @@ enum class RDMetricId : uint16_t
 	CommitUsedMB,
 
 	// Process (IntervalPolling)
+	ProcessCommitMB,
 	ProcessWorkingSetMB,
 	ProcessHandles,
 
