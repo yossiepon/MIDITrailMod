@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <future>
+#include <atomic>
 
 class RTDIAGLIB_API RDDiagManager
 {
@@ -100,4 +102,11 @@ private:
 
 	static LARGE_INTEGER s_lastLogTime;
 	static DWORD s_logIntervalMs;
+
+	static std::future<void> s_asyncStartup;
+	static std::atomic<bool> s_asyncStartupDone;
+	static void _AsyncStartupProc(
+		std::vector<IRDStartupComponent*> components,
+		const RDMetricId* timingIds, size_t timingCount);
+	static void _OnAsyncStartupComplete();
 };

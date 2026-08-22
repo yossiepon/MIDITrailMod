@@ -33,11 +33,20 @@ ID3D11DeviceContext* RDDiagManager::s_pDeviceContext = nullptr;
 RDGpuTimestamp RDDiagManager::s_gpuTimestamp;
 LARGE_INTEGER RDDiagManager::s_lastLogTime = {};
 DWORD RDDiagManager::s_logIntervalMs = 10000;
+std::future<void> RDDiagManager::s_asyncStartup;
+std::atomic<bool> RDDiagManager::s_asyncStartupDone{false};
 
 int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	if (s_isInitialized) {
 		return 0;
+	}
+
+	{
+		auto logger = spdlog::get("RD");
+		if (logger) {
+			logger->debug("RDDiagManager::Initialize begin");
+		}
 	}
 
 	s_pDeviceContext = pContext;
@@ -83,36 +92,107 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		s_componentDeleters.push_back([appMetrics]() { delete appMetrics; });
 	}
 
-	// Per-component startup timing metric IDs (same order as registration)
-	static const RDMetricId startupTimingIds[] = {
+	// Startup: fast components run synchronously, slow components run async
+	// Registration order: 0=OsInfo, 1=CpuInfo, 2=GpuInfo, 3=MemoryInfo, 4=WmiInfo
+	// Fast (sync): OsInfo(0), CpuInfo(1), MemoryInfo(3)
+	// Slow (async): GpuInfo(2), WmiInfo(4)
+
+	static const RDMetricId syncTimingIds[] = {
 		RDMetricId::DiagStartupOsInfoUs,
 		RDMetricId::DiagStartupCpuInfoUs,
-		RDMetricId::DiagStartupGpuInfoUs,
 		RDMetricId::DiagStartupMemoryInfoUs,
+	};
+	static const size_t syncIndices[] = { 0, 1, 3 };
+
+	static const RDMetricId asyncTimingIds[] = {
+		RDMetricId::DiagStartupGpuInfoUs,
 		RDMetricId::DiagStartupWmiInfoUs,
 	};
+	static const size_t asyncIndices[] = { 2, 4 };
 
 	{
 		LARGE_INTEGER totalStart;
 		QueryPerformanceCounter(&totalStart);
 
-		for (size_t i = 0; i < s_startupComponents.size(); i++) {
+		for (size_t j = 0; j < sizeof(syncIndices) / sizeof(syncIndices[0]); j++) {
+			size_t i = syncIndices[j];
+			if (i >= s_startupComponents.size()) continue;
 			LARGE_INTEGER compStart, compEnd;
 			QueryPerformanceCounter(&compStart);
 			s_startupComponents[i]->CollectStartup();
 			QueryPerformanceCounter(&compEnd);
-
-			if (i < sizeof(startupTimingIds) / sizeof(startupTimingIds[0])) {
-				int64_t us = (compEnd.QuadPart - compStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
-				SetInt(startupTimingIds[i], us);
-			}
+			int64_t us = (compEnd.QuadPart - compStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
+			SetInt(syncTimingIds[j], us);
 		}
 
-		LARGE_INTEGER totalEnd;
-		QueryPerformanceCounter(&totalEnd);
-		int64_t totalUs = (totalEnd.QuadPart - totalStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
-		SetInt(RDMetricId::DiagStartupTotalUs, totalUs);
+		LARGE_INTEGER syncEnd;
+		QueryPerformanceCounter(&syncEnd);
+		int64_t syncUs = (syncEnd.QuadPart - totalStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
+		SetInt(RDMetricId::DiagStartupTotalUs, syncUs);
 	}
+
+	if (pDevice != nullptr && pContext != nullptr) {
+		s_gpuTimestamp.Initialize(pDevice, pContext);
+	}
+
+	s_isInitialized = true;
+	s_asyncStartupDone.store(false);
+	QueryPerformanceCounter(&s_lastLogTime);
+
+	{
+		auto logger = spdlog::get("RD");
+		if (logger) {
+			logger->info("RDDiagManager initialized (async startup pending)");
+		}
+	}
+
+	std::vector<IRDStartupComponent*> asyncComponents;
+	for (size_t j = 0; j < sizeof(asyncIndices) / sizeof(asyncIndices[0]); j++) {
+		size_t i = asyncIndices[j];
+		if (i < s_startupComponents.size()) {
+			asyncComponents.push_back(s_startupComponents[i]);
+		}
+	}
+
+	s_asyncStartup = std::async(std::launch::async, _AsyncStartupProc,
+		asyncComponents, asyncTimingIds,
+		sizeof(asyncTimingIds) / sizeof(asyncTimingIds[0]));
+
+	return 0;
+}
+
+void RDDiagManager::_AsyncStartupProc(
+	std::vector<IRDStartupComponent*> components,
+	const RDMetricId* timingIds, size_t timingCount)
+{
+	LARGE_INTEGER freq, totalStart;
+	QueryPerformanceFrequency(&freq);
+	QueryPerformanceCounter(&totalStart);
+
+	for (size_t i = 0; i < components.size(); i++) {
+		LARGE_INTEGER compStart, compEnd;
+		QueryPerformanceCounter(&compStart);
+		components[i]->CollectStartup();
+		QueryPerformanceCounter(&compEnd);
+
+		if (i < timingCount) {
+			int64_t us = (compEnd.QuadPart - compStart.QuadPart) * 1000000 / freq.QuadPart;
+			SetInt(timingIds[i], us);
+		}
+	}
+
+	LARGE_INTEGER totalEnd;
+	QueryPerformanceCounter(&totalEnd);
+	int64_t prevUs = GetInt(RDMetricId::DiagStartupTotalUs);
+	int64_t asyncUs = (totalEnd.QuadPart - totalStart.QuadPart) * 1000000 / freq.QuadPart;
+	SetInt(RDMetricId::DiagStartupTotalUs, prevUs + asyncUs);
+
+	s_asyncStartupDone.store(true, std::memory_order_release);
+}
+
+void RDDiagManager::_OnAsyncStartupComplete()
+{
+	s_asyncStartup.get();
 
 	LARGE_INTEGER now;
 	QueryPerformanceCounter(&now);
@@ -121,32 +201,33 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		entry.lastCollected = now;
 	}
 
-	if (pDevice != nullptr && pContext != nullptr) {
-		s_gpuTimestamp.Initialize(pDevice, pContext);
-	}
-
-	s_isInitialized = true;
-	QueryPerformanceCounter(&s_lastLogTime);
-
 	auto logger = spdlog::get("RD");
 	if (logger) {
-		logger->info("RDDiagManager initialized");
-
 		auto signature = Format(
 			RDFormatProfile::MachineSignature,
 			RDFormatProfile::MachineSignatureCount);
 		for (const auto& entry : signature) {
 			logger->info("{}: {}", entry.label, entry.value);
 		}
+		logger->info("Async startup complete");
 	}
-
-	return 0;
 }
 
 void RDDiagManager::Update()
 {
 	if (!s_isInitialized) {
 		return;
+	}
+
+	if (!s_asyncStartupDone.load(std::memory_order_acquire)) {
+		for (auto* pComp : s_frameComponents) {
+			pComp->CollectFrame();
+		}
+		return;
+	}
+
+	if (s_asyncStartup.valid()) {
+		_OnAsyncStartupComplete();
 	}
 
 	LARGE_INTEGER now;
@@ -221,6 +302,11 @@ void RDDiagManager::Terminate()
 	if (logger) {
 		logger->info("RDDiagManager terminated");
 	}
+
+	if (s_asyncStartup.valid()) {
+		s_asyncStartup.get();
+	}
+	s_asyncStartupDone.store(false);
 
 	s_gpuTimestamp.Terminate();
 	s_pDeviceContext = nullptr;
