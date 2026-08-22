@@ -110,12 +110,14 @@ int MTLogManager::Initialize(
 			auto yn_logger = std::make_shared<spdlog::logger>("YN", sinks.begin(), sinks.end());
 			auto sm_logger = std::make_shared<spdlog::logger>("SM", sinks.begin(), sinks.end());
 			auto mt_logger = std::make_shared<spdlog::logger>("MT", sinks.begin(), sinks.end());
+			auto rd_logger = std::make_shared<spdlog::logger>("RD", sinks.begin(), sinks.end());
 
 			spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%n] %v");
 
 			spdlog::register_logger(yn_logger);
 			spdlog::register_logger(sm_logger);
 			spdlog::register_logger(mt_logger);
+			spdlog::register_logger(rd_logger);
 
 			spdlog::set_default_logger(mt_logger);
 
@@ -131,10 +133,17 @@ int MTLogManager::Initialize(
 #endif
 			mt_logger->flush();
 
+			// flush on info level and above (crash-safe for important messages)
+			yn_logger->flush_on(spdlog::level::info);
+			sm_logger->flush_on(spdlog::level::info);
+			mt_logger->flush_on(spdlog::level::info);
+			rd_logger->flush_on(spdlog::level::info);
+
 			// apply configured level to all loggers
 			yn_logger->set_level(defaultLevel);
 			sm_logger->set_level(defaultLevel);
 			mt_logger->set_level(defaultLevel);
+			rd_logger->set_level(defaultLevel);
 		}
 		catch (const spdlog::spdlog_ex& ex) {
 			// logging initialization failure is non-fatal

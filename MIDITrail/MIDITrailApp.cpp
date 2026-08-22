@@ -19,6 +19,7 @@
 #include "MTConfFile.h"
 #include "MIDITrailApp.h"
 #include "MTLogManager.h"
+#include "RDDiagManager.h"
 #include <spdlog/spdlog.h>
 #include "MTSceneTitle11.h"
 #include "MTScenePianoRoll3D11.h"
@@ -234,6 +235,10 @@ int MIDITrailApp::Initialize(
 	result = DXPrimitive11::InitPipeline(m_Renderer.GetDevice());
 	if (result != 0) goto EXIT;
 
+	//Initialize runtime diagnostics
+	result = RDDiagManager::Initialize(m_Renderer.GetDevice());
+	if (result != 0) goto EXIT;
+
 	//Create scene object
 	m_SceneType = Title;
 	result = _CreateScene(m_SceneType, &m_SeqData);
@@ -294,6 +299,8 @@ int MIDITrailApp::Terminate()
 	int result = 0;
 
 	_StopTimer();
+
+	RDDiagManager::Terminate();
 
 	MTLogManager::Terminate();
 
@@ -396,6 +403,9 @@ int MIDITrailApp::Run()
 					}
 				}
 				_UpdateFPS();
+
+				//Update runtime diagnostics (after scene update/draw/present)
+				RDDiagManager::Update();
 			}
 		}
     }

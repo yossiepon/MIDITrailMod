@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YNBaseLib", "YNBaseLib\YNBa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SMIDILib", "SMIDILib\SMIDILib.vcxproj", "{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTDiagLib", "RTDiagLib\RTDiagLib.vcxproj", "{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -41,6 +43,14 @@ Global
 		{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}.Release|Win32.Build.0 = Release|Win32
 		{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}.Release|x64.ActiveCfg = Release|x64
 		{AF11E5DF-43CD-4DC3-ACB3-950FC3103D82}.Release|x64.Build.0 = Release|x64
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Debug|Win32.Build.0 = Debug|Win32
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Debug|x64.ActiveCfg = Debug|x64
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Debug|x64.Build.0 = Debug|x64
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Release|Win32.ActiveCfg = Release|Win32
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Release|Win32.Build.0 = Release|Win32
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Release|x64.ActiveCfg = Release|x64
+		{2FA2029A-DF5B-4E07-A9E2-857F587A2F63}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
