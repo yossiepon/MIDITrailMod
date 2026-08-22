@@ -17,6 +17,7 @@
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
 #include <shlobj.h>
+#include <shlwapi.h>
 
 using namespace YNBaseLib;
 
@@ -86,6 +87,40 @@ int MTLogManager::Initialize(
 			}
 			if (confFile.GetInt(_T("FlushInterval"), &val, 1) == 0) {
 				flushIntervalSec = val;
+			}
+
+			TCHAR outputDir[_MAX_PATH] = {0};
+			if (confFile.GetStr(_T("OutputDir"), outputDir, _MAX_PATH, _T("")) == 0 && _tcslen(outputDir) > 0) {
+				WCHAR outputDirW[_MAX_PATH] = {0};
+#ifdef _UNICODE
+				wcscpy_s(outputDirW, _MAX_PATH, outputDir);
+#else
+				MultiByteToWideChar(CP_ACP, 0, outputDir, -1, outputDirW, _MAX_PATH);
+#endif
+				if (PathIsRelativeW(outputDirW)) {
+					TCHAR exeDirT[_MAX_PATH] = {0};
+					YNPathUtil::GetModuleDirPath(exeDirT, _MAX_PATH);
+					WCHAR exeDirW[_MAX_PATH] = {0};
+#ifdef _UNICODE
+					wcscpy_s(exeDirW, _MAX_PATH, exeDirT);
+#else
+					MultiByteToWideChar(CP_ACP, 0, exeDirT, -1, exeDirW, _MAX_PATH);
+#endif
+					wcscpy_s(logDirPath, _MAX_PATH, exeDirW);
+					wcscat_s(logDirPath, _MAX_PATH, outputDirW);
+				} else {
+					wcscpy_s(logDirPath, _MAX_PATH, outputDirW);
+				}
+				if (logDirPath[wcslen(logDirPath) - 1] != L'\\') {
+					wcscat_s(logDirPath, _MAX_PATH, L"\\");
+				}
+				SHCreateDirectoryExW(NULL, logDirPath, NULL);
+
+				char dirPathA[_MAX_PATH] = {0};
+				char baseNameA[_MAX_PATH] = {0};
+				WideCharToMultiByte(CP_UTF8, 0, logDirPath, -1, dirPathA, _MAX_PATH, NULL, NULL);
+				WideCharToMultiByte(CP_UTF8, 0, exeBaseName, -1, baseNameA, _MAX_PATH, NULL, NULL);
+				logFileBasePath = std::string(dirPathA) + baseNameA + ".log";
 			}
 		}
 	}
