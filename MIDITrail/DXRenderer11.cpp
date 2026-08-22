@@ -18,6 +18,7 @@
 #include "DXRenderer11.h"
 #include "DXPrimitive11.h"
 #include "MTFirstPersonCam.h"
+#include "RDDiagManager.h"
 
 using namespace YNBaseLib;
 using namespace DirectX;
@@ -275,6 +276,9 @@ int DXRenderer11::RenderScene(
 {
 	int result = 0;
 	HRESULT hr = S_OK;
+	LARGE_INTEGER drawStart = {}, drawEnd = {}, presentEnd = {}, freq = {};
+	QueryPerformanceFrequency(&freq);
+	double toMs = 1000.0 / static_cast<double>(freq.QuadPart);
 
 	if (m_pContext == nullptr || m_pRTV == nullptr || pScene == nullptr) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -286,6 +290,8 @@ int DXRenderer11::RenderScene(
 	if (result != 0) goto EXIT;
 
 	// Draw scene
+	RDDiagManager::GpuTimestampBeginFrame();
+	QueryPerformanceCounter(&drawStart);
 	{
 		float aspect = static_cast<float>(m_Width) / static_cast<float>(m_Height);
 		Matrix viewProj;
@@ -303,9 +309,18 @@ int DXRenderer11::RenderScene(
 		result = pScene->Draw(m_pContext, viewProj, rollAngle, camPos);
 		if (result != 0) goto EXIT;
 	}
+	QueryPerformanceCounter(&drawEnd);
+	RDDiagManager::GpuTimestampEndFrame();
 
 	// Present
 	result = EndFrame();
+	QueryPerformanceCounter(&presentEnd);
+
+	RDDiagManager::SetFloat(RDMetricId::AppDrawTimeMs,
+		static_cast<double>(drawEnd.QuadPart - drawStart.QuadPart) * toMs);
+	RDDiagManager::SetFloat(RDMetricId::AppPresentTimeMs,
+		static_cast<double>(presentEnd.QuadPart - drawEnd.QuadPart) * toMs);
+
 	if (result != 0) goto EXIT;
 
 EXIT:;

@@ -3,6 +3,7 @@
 #include "RTDiagLib.h"
 #include "RDMetricDefs.h"
 #include "RDInterfaces.h"
+#include "RDGpuTimestamp.h"
 #include <d3d11.h>
 #include <vector>
 #include <string>
@@ -12,7 +13,7 @@
 class RTDIAGLIB_API RDDiagManager
 {
 public:
-	static int Initialize(ID3D11Device* pDevice);
+	static int Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext = nullptr);
 	static void Update();
 	static void Terminate();
 
@@ -30,6 +31,11 @@ public:
 	static void RegisterStartupComponent(IRDStartupComponent* pComponent);
 	static void RegisterIntervalPollingComponent(IRDIntervalPollingComponent* pComponent);
 	static void RegisterFrameComponent(IRDFrameComponent* pComponent);
+
+	static void GpuTimestampBeginFrame();
+	static void GpuTimestampEndFrame();
+
+	static void ResetFrameMetrics();
 
 private:
 	RDDiagManager() = delete;
@@ -87,6 +93,9 @@ private:
 		s_compiledProfiles;
 
 	static std::vector<std::function<void()>> s_componentDeleters;
+
+	static ID3D11DeviceContext* s_pDeviceContext;
+	static RDGpuTimestamp s_gpuTimestamp;
 
 	static LARGE_INTEGER s_lastLogTime;
 	static const DWORD LOG_INTERVAL_MS = 10000;

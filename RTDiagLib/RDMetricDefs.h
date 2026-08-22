@@ -49,10 +49,20 @@ enum class RDMetricId : uint16_t
 	// WMI (Startup)
 	MachineType,
 
-	// App (Frame, Push)
+	// App: Frame timing (Frame, Push)
+	AppFrameTimeMs,
 	AppSceneUpdateTimeMs,
 	AppDrawTimeMs,
 	AppPresentTimeMs,
+	AppGpuRenderTimeMs,
+
+	// App: Frame statistics (Frame, Computed)
+	AppAvgFrameTimeMs,
+	AppFps,
+	AppFps1PercentLow,
+	AppFps01PercentLow,
+	AppFrameTimeStdDev,
+	AppStutterPercent,
 
 	// Diag: Startup timing
 	DiagStartupTotalUs,

@@ -182,6 +182,7 @@ private:
 	//FPS display-related
 	DWORD m_PrevTime;
 	DWORD m_FPSCount;
+	LARGE_INTEGER m_PrevFrameQPC;
 
 	//MIDI control-related
 	SMSeqData m_SeqData;

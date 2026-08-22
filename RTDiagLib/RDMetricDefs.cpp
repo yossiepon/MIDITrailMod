@@ -36,9 +36,18 @@ static const RDMetricMeta s_MetricMetaTable[] =
 
 	{ RDMetricId::MachineType,          "MachineType",          RDMetricType::String },
 
+	{ RDMetricId::AppFrameTimeMs,       "AppFrameTimeMs",       RDMetricType::Float },
 	{ RDMetricId::AppSceneUpdateTimeMs, "AppSceneUpdateTimeMs", RDMetricType::Float },
 	{ RDMetricId::AppDrawTimeMs,        "AppDrawTimeMs",        RDMetricType::Float },
 	{ RDMetricId::AppPresentTimeMs,     "AppPresentTimeMs",     RDMetricType::Float },
+	{ RDMetricId::AppGpuRenderTimeMs,   "AppGpuRenderTimeMs",  RDMetricType::Float },
+
+	{ RDMetricId::AppAvgFrameTimeMs,    "AppAvgFrameTimeMs",    RDMetricType::Float },
+	{ RDMetricId::AppFps,               "AppFps",               RDMetricType::Float },
+	{ RDMetricId::AppFps1PercentLow,    "AppFps1PercentLow",    RDMetricType::Float },
+	{ RDMetricId::AppFps01PercentLow,   "AppFps01PercentLow",   RDMetricType::Float },
+	{ RDMetricId::AppFrameTimeStdDev,   "AppFrameTimeStdDev",   RDMetricType::Float },
+	{ RDMetricId::AppStutterPercent,    "AppStutterPercent",     RDMetricType::Float },
 
 	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
 	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },
