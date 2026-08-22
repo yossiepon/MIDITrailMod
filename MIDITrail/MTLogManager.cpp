@@ -20,6 +20,7 @@
 
 using namespace YNBaseLib;
 
+DWORD MTLogManager::s_runtimeLogIntervalMs = 10000;
 
 //******************************************************************************
 // Initialize
@@ -37,6 +38,8 @@ int MTLogManager::Initialize(
 	int maxFiles = 7;
 	bool msvcSinkEnabled = false;
 	spdlog::level::level_enum defaultLevel = spdlog::level::warn;
+	DWORD runtimeLogIntervalMs = 10000;
+	int flushIntervalSec = 1;
 
 #ifdef _DEBUG
 	defaultLevel = spdlog::level::debug;
@@ -77,6 +80,12 @@ int MTLogManager::Initialize(
 			}
 			if (confFile.GetInt(_T("MsvcSink"), &val, msvcSinkEnabled ? 1 : 0) == 0) {
 				msvcSinkEnabled = (val != 0);
+			}
+			if (confFile.GetInt(_T("RuntimeLogInterval"), &val, 10000) == 0) {
+				runtimeLogIntervalMs = static_cast<DWORD>(val);
+			}
+			if (confFile.GetInt(_T("FlushInterval"), &val, 1) == 0) {
+				flushIntervalSec = val;
 			}
 		}
 	}
@@ -139,14 +148,18 @@ int MTLogManager::Initialize(
 			mt_logger->flush_on(spdlog::level::info);
 			rd_logger->flush_on(spdlog::level::info);
 
-			// periodic flush for debug/trace messages (crash-safe within 1 second)
-			spdlog::flush_every(std::chrono::seconds(1));
+			// periodic flush for debug/trace messages
+			if (flushIntervalSec > 0) {
+				spdlog::flush_every(std::chrono::seconds(flushIntervalSec));
+			}
 
 			// apply configured level to all loggers
 			yn_logger->set_level(defaultLevel);
 			sm_logger->set_level(defaultLevel);
 			mt_logger->set_level(defaultLevel);
 			rd_logger->set_level(defaultLevel);
+
+			s_runtimeLogIntervalMs = runtimeLogIntervalMs;
 		}
 		catch (const spdlog::spdlog_ex& ex) {
 			// logging initialization failure is non-fatal

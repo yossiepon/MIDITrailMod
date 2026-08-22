@@ -239,6 +239,7 @@ int MIDITrailApp::Initialize(
 	//Initialize runtime diagnostics
 	result = RDDiagManager::Initialize(m_Renderer.GetDevice(), m_Renderer.GetContext());
 	if (result != 0) goto EXIT;
+	RDDiagManager::SetLogIntervalMs(MTLogManager::GetRuntimeLogIntervalMs());
 
 	//Create scene object
 	m_SceneType = Title;

@@ -22,7 +22,11 @@ public:
 	static int Initialize(const WCHAR* pLogLevelOverride = nullptr);
 	static void Terminate();
 
+	static DWORD GetRuntimeLogIntervalMs() { return s_runtimeLogIntervalMs; }
+
 private:
+
+	static DWORD s_runtimeLogIntervalMs;
 
 	MTLogManager() = delete;
 
