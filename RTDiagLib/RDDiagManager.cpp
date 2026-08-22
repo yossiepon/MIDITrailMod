@@ -320,9 +320,21 @@ void RDDiagManager::ResetFrameMetrics()
 		RDMetricId::AppFps01PercentLow,
 		RDMetricId::AppFrameTimeStdDev,
 		RDMetricId::AppStutterPercent,
+		RDMetricId::AppNps,
 	};
 	for (auto id : appMetrics) {
 		s_metrics[static_cast<size_t>(id)].floatVal = 0.0;
+	}
+
+	static const RDMetricId appIntMetrics[] = {
+		RDMetricId::AppNoteActivationsPerFrame,
+		RDMetricId::AppPolyphony,
+		RDMetricId::AppPolyphonyPeak,
+		RDMetricId::AppInstanceCount,
+		RDMetricId::AppInstanceBufferSizeKB,
+	};
+	for (auto id : appIntMetrics) {
+		s_metrics[static_cast<size_t>(id)].intVal = 0;
 	}
 
 	for (auto* pComp : s_frameComponents) {

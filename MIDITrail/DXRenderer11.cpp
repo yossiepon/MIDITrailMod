@@ -285,6 +285,8 @@ int DXRenderer11::RenderScene(
 		goto EXIT;
 	}
 
+	RDDiagManager::SetInt(RDMetricId::AppInstanceCount, 0);
+
 	// Clear render target and depth buffer
 	result = BeginFrame(pScene->GetBGColor());
 	if (result != 0) goto EXIT;

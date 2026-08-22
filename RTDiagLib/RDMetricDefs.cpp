@@ -49,6 +49,13 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppFrameTimeStdDev,   "AppFrameTimeStdDev",   RDMetricType::Float },
 	{ RDMetricId::AppStutterPercent,    "AppStutterPercent",     RDMetricType::Float },
 
+	{ RDMetricId::AppNoteActivationsPerFrame, "AppNoteActivationsPerFrame", RDMetricType::Int },
+	{ RDMetricId::AppNps,               "AppNps",               RDMetricType::Float },
+	{ RDMetricId::AppPolyphony,         "AppPolyphony",         RDMetricType::Int },
+	{ RDMetricId::AppPolyphonyPeak,     "AppPolyphonyPeak",     RDMetricType::Int },
+	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
+	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
+
 	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
 	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },
 	{ RDMetricId::DiagStartupCpuInfoUs, "DiagStartupCpuInfoUs", RDMetricType::Int },

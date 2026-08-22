@@ -64,6 +64,14 @@ enum class RDMetricId : uint16_t
 	AppFrameTimeStdDev,
 	AppStutterPercent,
 
+	// App: Black MIDI metrics (Frame, Push)
+	AppNoteActivationsPerFrame,
+	AppNps,
+	AppPolyphony,
+	AppPolyphonyPeak,
+	AppInstanceCount,
+	AppInstanceBufferSizeKB,
+
 	// Diag: Startup timing
 	DiagStartupTotalUs,
 	DiagStartupOsInfoUs,

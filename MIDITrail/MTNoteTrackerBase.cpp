@@ -11,12 +11,14 @@
 
 #include "StdAfx.h"
 #include "MTNoteTrackerBase.h"
+#include "RDDiagManager.h"
 
 
 //******************************************************************************
 // Constructor / Destructor
 //******************************************************************************
 MTNoteTrackerBase::MTNoteTrackerBase()
+	: m_TotalActiveNotes(0)
 {
 	memset(m_ActiveNotesPerCh, 0, sizeof(m_ActiveNotesPerCh));
 }
@@ -79,6 +81,17 @@ unsigned short MTNoteTrackerBase::GetActiveChannelMask(unsigned char portNo) con
 	return mask;
 }
 
+unsigned long MTNoteTrackerBase::GetTotalActiveNoteCount() const
+{
+	unsigned long total = 0;
+	for (unsigned char port = 0; port < SM_MAX_PORT_NUM; port++) {
+		for (unsigned char ch = 0; ch < SM_MAX_CH_NUM; ch++) {
+			total += m_ActiveNotesPerCh[port][ch];
+		}
+	}
+	return total;
+}
+
 void MTNoteTrackerBase::DispatchActivate(
 		const NoteData& note,
 		unsigned long index
@@ -86,6 +99,16 @@ void MTNoteTrackerBase::DispatchActivate(
 {
 	if (note.lyric[0] == L'\0') {
 		m_ActiveNotesPerCh[note.portNo][note.chNo]++;
+		m_TotalActiveNotes++;
+
+		RDDiagManager::SetInt(RDMetricId::AppPolyphony, static_cast<int64_t>(m_TotalActiveNotes));
+		int64_t peak = RDDiagManager::GetInt(RDMetricId::AppPolyphonyPeak);
+		if (static_cast<int64_t>(m_TotalActiveNotes) > peak) {
+			RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, static_cast<int64_t>(m_TotalActiveNotes));
+		}
+
+		int64_t activations = RDDiagManager::GetInt(RDMetricId::AppNoteActivationsPerFrame);
+		RDDiagManager::SetInt(RDMetricId::AppNoteActivationsPerFrame, activations + 1);
 	}
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
@@ -103,6 +126,9 @@ void MTNoteTrackerBase::DispatchDeactivate(
 {
 	if (note.lyric[0] == L'\0' && m_ActiveNotesPerCh[note.portNo][note.chNo] > 0) {
 		m_ActiveNotesPerCh[note.portNo][note.chNo]--;
+		m_TotalActiveNotes--;
+
+		RDDiagManager::SetInt(RDMetricId::AppPolyphony, static_cast<int64_t>(m_TotalActiveNotes));
 	}
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
@@ -116,6 +142,9 @@ void MTNoteTrackerBase::DispatchDeactivate(
 void MTNoteTrackerBase::DispatchReset()
 {
 	memset(m_ActiveNotesPerCh, 0, sizeof(m_ActiveNotesPerCh));
+	m_TotalActiveNotes = 0;
+	RDDiagManager::SetInt(RDMetricId::AppPolyphony, 0);
+	RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, 0);
 	for (const auto& entry : m_Listeners) {
 		entry.pListener->OnReset();
 	}
