@@ -48,7 +48,6 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice)
 	auto logger = spdlog::get("RD");
 	if (logger) {
 		logger->info("RDDiagManager initialized");
-		logger->flush();
 	}
 
 	return 0;
