@@ -32,6 +32,7 @@ enum class RDMetricId : uint16_t
 	CommitUsedMB,
 
 	// Process (IntervalPolling)
+	ProcessCommitMB,
 	ProcessWorkingSetMB,
 	ProcessHandles,
 
@@ -52,6 +53,21 @@ enum class RDMetricId : uint16_t
 	AppSceneUpdateTimeMs,
 	AppDrawTimeMs,
 	AppPresentTimeMs,
+
+	// Diag: Startup timing
+	DiagStartupTotalUs,
+	DiagStartupOsInfoUs,
+	DiagStartupCpuInfoUs,
+	DiagStartupGpuInfoUs,
+	DiagStartupMemoryInfoUs,
+	DiagStartupWmiInfoUs,
+
+	// Diag: Polling timing
+	DiagPollingTotalUs,
+	DiagPollingCpuInfoUs,
+	DiagPollingGpuInfoUs,
+	DiagPollingMemoryInfoUs,
+	DiagPollingCount,
 
 	COUNT
 };

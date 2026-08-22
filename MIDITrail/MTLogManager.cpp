@@ -139,6 +139,9 @@ int MTLogManager::Initialize(
 			mt_logger->flush_on(spdlog::level::info);
 			rd_logger->flush_on(spdlog::level::info);
 
+			// periodic flush for debug/trace messages (crash-safe within 1 second)
+			spdlog::flush_every(std::chrono::seconds(1));
+
 			// apply configured level to all loggers
 			yn_logger->set_level(defaultLevel);
 			sm_logger->set_level(defaultLevel);

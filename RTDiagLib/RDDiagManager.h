@@ -86,7 +86,8 @@ private:
 	static std::unordered_map<const RDFormatTemplateEntry*, std::vector<CompiledTemplate>>
 		s_compiledProfiles;
 
-	static std::vector<std::unique_ptr<IRDStartupComponent>> s_ownedStartup;
-	static std::vector<std::unique_ptr<IRDIntervalPollingComponent>> s_ownedInterval;
-	static std::vector<std::unique_ptr<IRDFrameComponent>> s_ownedFrame;
+	static std::vector<std::function<void()>> s_componentDeleters;
+
+	static LARGE_INTEGER s_lastLogTime;
+	static const DWORD LOG_INTERVAL_MS = 10000;
 };

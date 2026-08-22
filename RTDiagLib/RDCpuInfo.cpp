@@ -4,6 +4,17 @@
 #include <intrin.h>
 #include <string>
 
+RDCpuInfo::RDCpuInfo()
+	: m_logicalProcessorCount(0)
+{
+	m_prevIdleTime.QuadPart = 0;
+	m_prevKernelTime.QuadPart = 0;
+	m_prevUserTime.QuadPart = 0;
+	m_prevProcKernelTime.QuadPart = 0;
+	m_prevProcUserTime.QuadPart = 0;
+	m_prevProcWallTime.QuadPart = 0;
+}
+
 void RDCpuInfo::CollectStartup()
 {
 	int cpuInfo[4] = {};
@@ -87,6 +98,8 @@ void RDCpuInfo::CollectStartup()
 		physicalCores = logicalProcessors;
 	}
 
+	m_logicalProcessorCount = logicalProcessors;
+
 	// Socket (package) count
 	int sockets = 0;
 	bufferSize = 0;
@@ -125,5 +138,87 @@ void RDCpuInfo::CollectStartup()
 			RDDiagManager::SetInt(RDMetricId::CpuBaseMHz, static_cast<int64_t>(mhz));
 		}
 		RegCloseKey(hKey);
+	}
+
+	// Initialize baseline for differential CPU usage calculation
+	FILETIME ftIdle, ftKernel, ftUser;
+	if (GetSystemTimes(&ftIdle, &ftKernel, &ftUser)) {
+		m_prevIdleTime.LowPart = ftIdle.dwLowDateTime;
+		m_prevIdleTime.HighPart = ftIdle.dwHighDateTime;
+		m_prevKernelTime.LowPart = ftKernel.dwLowDateTime;
+		m_prevKernelTime.HighPart = ftKernel.dwHighDateTime;
+		m_prevUserTime.LowPart = ftUser.dwLowDateTime;
+		m_prevUserTime.HighPart = ftUser.dwHighDateTime;
+	}
+
+	FILETIME ftCreate, ftExit, ftProcKernel, ftProcUser;
+	if (GetProcessTimes(GetCurrentProcess(), &ftCreate, &ftExit, &ftProcKernel, &ftProcUser)) {
+		m_prevProcKernelTime.LowPart = ftProcKernel.dwLowDateTime;
+		m_prevProcKernelTime.HighPart = ftProcKernel.dwHighDateTime;
+		m_prevProcUserTime.LowPart = ftProcUser.dwLowDateTime;
+		m_prevProcUserTime.HighPart = ftProcUser.dwHighDateTime;
+	}
+	QueryPerformanceCounter(&m_prevProcWallTime);
+}
+
+void RDCpuInfo::CollectIntervalPolling()
+{
+	// System CPU usage (differential)
+	FILETIME ftIdle, ftKernel, ftUser;
+	if (GetSystemTimes(&ftIdle, &ftKernel, &ftUser)) {
+		ULARGE_INTEGER idle, kernel, user;
+		idle.LowPart = ftIdle.dwLowDateTime;
+		idle.HighPart = ftIdle.dwHighDateTime;
+		kernel.LowPart = ftKernel.dwLowDateTime;
+		kernel.HighPart = ftKernel.dwHighDateTime;
+		user.LowPart = ftUser.dwLowDateTime;
+		user.HighPart = ftUser.dwHighDateTime;
+
+		ULONGLONG idleDiff = idle.QuadPart - m_prevIdleTime.QuadPart;
+		ULONGLONG kernelDiff = kernel.QuadPart - m_prevKernelTime.QuadPart;
+		ULONGLONG userDiff = user.QuadPart - m_prevUserTime.QuadPart;
+		ULONGLONG totalDiff = kernelDiff + userDiff;
+
+		double systemUsage = 0.0;
+		if (totalDiff > 0) {
+			systemUsage = (1.0 - static_cast<double>(idleDiff) / static_cast<double>(totalDiff)) * 100.0;
+		}
+		RDDiagManager::SetFloat(RDMetricId::CpuUsageSystem, systemUsage);
+
+		m_prevIdleTime = idle;
+		m_prevKernelTime = kernel;
+		m_prevUserTime = user;
+	}
+
+	// Process CPU usage (differential, normalized by logical processor count)
+	FILETIME ftCreate, ftExit, ftProcKernel, ftProcUser;
+	if (GetProcessTimes(GetCurrentProcess(), &ftCreate, &ftExit, &ftProcKernel, &ftProcUser)) {
+		ULARGE_INTEGER procKernel, procUser;
+		procKernel.LowPart = ftProcKernel.dwLowDateTime;
+		procKernel.HighPart = ftProcKernel.dwHighDateTime;
+		procUser.LowPart = ftProcUser.dwLowDateTime;
+		procUser.HighPart = ftProcUser.dwHighDateTime;
+
+		LARGE_INTEGER now;
+		QueryPerformanceCounter(&now);
+
+		LARGE_INTEGER freq;
+		QueryPerformanceFrequency(&freq);
+
+		ULONGLONG procCpuDiff = (procKernel.QuadPart - m_prevProcKernelTime.QuadPart)
+			+ (procUser.QuadPart - m_prevProcUserTime.QuadPart);
+		double wallTimeDiff = static_cast<double>(now.QuadPart - m_prevProcWallTime.QuadPart)
+			/ static_cast<double>(freq.QuadPart);
+
+		double processUsage = 0.0;
+		if (wallTimeDiff > 0.0 && m_logicalProcessorCount > 0) {
+			double procCpuSeconds = static_cast<double>(procCpuDiff) / 10000000.0;
+			processUsage = (procCpuSeconds / wallTimeDiff / m_logicalProcessorCount) * 100.0;
+		}
+		RDDiagManager::SetFloat(RDMetricId::CpuUsageProcess, processUsage);
+
+		m_prevProcKernelTime = procKernel;
+		m_prevProcUserTime = procUser;
+		m_prevProcWallTime = now;
 	}
 }
