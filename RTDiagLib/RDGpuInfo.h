@@ -3,20 +3,29 @@
 #include "RDInterfaces.h"
 #include <d3d11.h>
 #include <dxgi1_4.h>
+#include <pdh.h>
 #include <wrl/client.h>
 
-class RDGpuInfo : public IRDStartupComponent
+class RDGpuInfo : public IRDStartupComponent, public IRDIntervalPollingComponent
 {
 public:
-	RDGpuInfo() = default;
-	virtual ~RDGpuInfo() = default;
+	RDGpuInfo();
+	virtual ~RDGpuInfo();
 
 	void SetDevice(ID3D11Device* pDevice);
 	void CollectStartup() override;
-
-	Microsoft::WRL::ComPtr<IDXGIAdapter3> GetAdapter3() const { return m_pAdapter3; }
+	void CollectIntervalPolling() override;
+	DWORD GetPollingIntervalMs() const override { return 1000; }
 
 private:
+	void _InitPdh();
+	void _CollectVram();
+	void _CollectGpuUsage();
+
 	Microsoft::WRL::ComPtr<IDXGIAdapter> m_pAdapter;
 	Microsoft::WRL::ComPtr<IDXGIAdapter3> m_pAdapter3;
+
+	PDH_HQUERY   m_pdhQuery;
+	PDH_HCOUNTER m_pdhGpuCounter;
+	bool         m_pdhInitialized;
 };
