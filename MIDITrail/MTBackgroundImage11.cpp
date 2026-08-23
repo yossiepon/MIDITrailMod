@@ -111,63 +111,16 @@ int MTBackgroundImage11::_CreateVertices(
 	result = m_Primitive.LockIndex(pContext, &pIndex);
 	if (result != 0) goto EXIT;
 
-	{
-		// Client area size
-		bresult = GetClientRect(m_hWnd, &rect);
-		if (!bresult) {
-			result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
-			goto EXIT;
-		}
-		float cw = (float)(rect.right - rect.left);
-		float ch = (float)(rect.bottom - rect.top);
-
-		// UV coordinate calculation based on aspect ratio
-		float ratio_cwh = cw / ch;
-		float ratio_iwh = (float)m_ImgWidth / (float)m_ImgHeight;
-
-		float u0 = 0.0f, u1 = 1.0f;
-		float v0 = 0.0f, v1 = 1.0f;
-
-		if (ratio_cwh < ratio_iwh) {
-			// Image is wider -> crop left and right
-			float visibleFraction = ratio_cwh / ratio_iwh;
-			float margin = (1.0f - visibleFraction) / 2.0f;
-			u0 = margin;
-			u1 = 1.0f - margin;
-		}
-		else if (ratio_cwh > ratio_iwh) {
-			// Image is taller -> crop top and bottom
-			float visibleFraction = ratio_iwh / ratio_cwh;
-			float margin = (1.0f - visibleFraction) / 2.0f;
-			v0 = margin;
-			v1 = 1.0f - margin;
-		}
-
-		// Full-screen quad in NDC coordinates (-1 to +1)
-		//  0(-1,+1)----1(+1,+1)
-		//   |                |
-		//  2(-1,-1)----3(+1,-1)
-
-		auto setVtx = [&](unsigned long i, float x, float y, float u, float v) {
-			pVertex[i].pos[0] = x;
-			pVertex[i].pos[1] = y;
-			pVertex[i].pos[2] = 0.0f;
-			pVertex[i].normal[0] = 0.0f;
-			pVertex[i].normal[1] = 0.0f;
-			pVertex[i].normal[2] = -1.0f;
-			pVertex[i].color = 0xFFFFFFFF;
-			pVertex[i].uv[0] = u;
-			pVertex[i].uv[1] = v;
-		};
-
-		setVtx(0, -1.0f, +1.0f, u0, v0);
-		setVtx(1, +1.0f, +1.0f, u1, v0);
-		setVtx(2, -1.0f, -1.0f, u0, v1);
-		setVtx(3, +1.0f, -1.0f, u1, v1);
-
-		pIndex[0] = 0; pIndex[1] = 1; pIndex[2] = 2;
-		pIndex[3] = 2; pIndex[4] = 1; pIndex[5] = 3;
+	bresult = GetClientRect(m_hWnd, &rect);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
 	}
+
+	_WriteVertices(pVertex);
+
+	pIndex[0] = 0; pIndex[1] = 1; pIndex[2] = 2;
+	pIndex[3] = 2; pIndex[4] = 1; pIndex[5] = 3;
 
 	m_Primitive.UnlockVertex(pContext);
 	m_Primitive.UnlockIndex(pContext);
@@ -278,22 +231,16 @@ void MTBackgroundImage11::Reset()
 }
 
 //******************************************************************************
-// Window resize notification
+// Write vertex data (NDC quad with aspect-ratio-adjusted UVs)
 //******************************************************************************
-void MTBackgroundImage11::OnWindowResize()
+void MTBackgroundImage11::_WriteVertices(DXPRIMITIVE11_VERTEX* pVertex)
 {
-	if (!m_isReady || m_pContext == NULL) return;
-
-	DXPRIMITIVE11_VERTEX* pVertex = NULL;
-	if (m_Primitive.LockVertex(m_pContext, &pVertex) != 0) return;
-
 	RECT rect;
-	if (!GetClientRect(m_hWnd, &rect)) {
-		m_Primitive.UnlockVertex(m_pContext);
-		return;
-	}
+	if (!GetClientRect(m_hWnd, &rect)) return;
+
 	float cw = (float)(rect.right - rect.left);
 	float ch = (float)(rect.bottom - rect.top);
+	if (cw <= 0.0f || ch <= 0.0f) return;
 
 	float ratio_cwh = cw / ch;
 	float ratio_iwh = (float)m_ImgWidth / (float)m_ImgHeight;
@@ -314,10 +261,35 @@ void MTBackgroundImage11::OnWindowResize()
 		v1 = 1.0f - margin;
 	}
 
-	pVertex[0].uv[0] = u0; pVertex[0].uv[1] = v0;
-	pVertex[1].uv[0] = u1; pVertex[1].uv[1] = v0;
-	pVertex[2].uv[0] = u0; pVertex[2].uv[1] = v1;
-	pVertex[3].uv[0] = u1; pVertex[3].uv[1] = v1;
+	auto setVtx = [&](unsigned long i, float x, float y, float u, float v) {
+		pVertex[i].pos[0] = x;
+		pVertex[i].pos[1] = y;
+		pVertex[i].pos[2] = 0.0f;
+		pVertex[i].normal[0] = 0.0f;
+		pVertex[i].normal[1] = 0.0f;
+		pVertex[i].normal[2] = -1.0f;
+		pVertex[i].color = 0xFFFFFFFF;
+		pVertex[i].uv[0] = u;
+		pVertex[i].uv[1] = v;
+	};
+
+	setVtx(0, -1.0f, +1.0f, u0, v0);
+	setVtx(1, +1.0f, +1.0f, u1, v0);
+	setVtx(2, -1.0f, -1.0f, u0, v1);
+	setVtx(3, +1.0f, -1.0f, u1, v1);
+}
+
+//******************************************************************************
+// Window resize notification
+//******************************************************************************
+void MTBackgroundImage11::OnWindowResize()
+{
+	if (!m_isReady || m_pContext == NULL) return;
+
+	DXPRIMITIVE11_VERTEX* pVertex = NULL;
+	if (m_Primitive.LockVertex(m_pContext, &pVertex) != 0) return;
+
+	_WriteVertices(pVertex);
 
 	m_Primitive.UnlockVertex(m_pContext);
 }
