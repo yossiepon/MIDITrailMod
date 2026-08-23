@@ -132,6 +132,7 @@ int MTNoteTracker::Create(
 	}
 
 	_BuildMaxEndTimeMs();
+	SetNoteCount((unsigned long)m_Notes.size());
 
 	m_CurNoteIndex = 0;
 	m_DeactivationCursor = 0;

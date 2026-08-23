@@ -98,6 +98,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isEnableBackgroundImage = true;
 	m_isEnableGridLine = true;
 	m_isEnableTimeIndicator = true;
+	m_isEnableDiagOverlay = false;
 
 	//Scene type
 	m_SceneType = Title;
@@ -945,6 +946,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				case IDM_ENABLE_TIMEINDICATOR:
 					//Display effect: time indicator
 					result = _OnMenuEnableEffect(MTEffectTimeIndicator);
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_ENABLE_DIAGOVERLAY:
+					//Display effect: diagnostic overlay
+					result = _OnMenuEnableEffect(MTEffectDiagOverlay);
 					if (result != 0) goto EXIT;
 					break;
 				//Auto-save viewpoint and save viewpoint have been removed
@@ -1877,6 +1883,9 @@ int MIDITrailApp::_OnMenuEnableEffect(
 			break;
 		case MTEffectTimeIndicator:
 			m_isEnableTimeIndicator = m_isEnableTimeIndicator ? false : true;
+			break;
+		case MTEffectDiagOverlay:
+			m_isEnableDiagOverlay = m_isEnableDiagOverlay ? false : true;
 			break;
 		default:
 			break;
@@ -3255,6 +3264,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_ENABLE_BACKGROUNDIMAGE,
 		IDM_ENABLE_GRIDLINE,
 		IDM_ENABLE_TIMEINDICATOR,
+		IDM_ENABLE_DIAGOVERLAY,
 		IDM_RESET_VIEWPOINT,
 		IDM_VIEWPOINT2,
 		IDM_VIEWPOINT3,
@@ -3308,6 +3318,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_BACKGROUNDIMAGE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_GRIDLINE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_TIMEINDICATOR
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_ENABLE_DIAGOVERLAY
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_RESET_VIEWPOINT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT2
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_VIEWPOINT3
@@ -3643,6 +3654,10 @@ int MIDITrailApp::_LoadEffectStatus()
 	if (result != 0) goto EXIT;
 	m_isEnableTimeIndicator = (value > 0)? true : false;
 
+	result = m_ViewConf.GetInt(_T("DiagOverlay"), &value, 0);
+	if (result != 0) goto EXIT;
+	m_isEnableDiagOverlay = (value > 0)? true : false;
+
 EXIT:;
 	return result;
 }
@@ -3688,6 +3703,10 @@ int MIDITrailApp::_SaveEffectStatus()
 
 	value = m_isEnableTimeIndicator ? 1 : 0;
 	result = m_ViewConf.SetInt(_T("TimeIndicator"), value);
+	if (result != 0) goto EXIT;
+
+	value = m_isEnableDiagOverlay ? 1 : 0;
+	result = m_ViewConf.SetInt(_T("DiagOverlay"), value);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -4174,6 +4193,9 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	//Time indicator
 	_CheckMenuItem(IDM_ENABLE_TIMEINDICATOR, m_isEnableTimeIndicator);
 
+	//Diagnostic overlay
+	_CheckMenuItem(IDM_ENABLE_DIAGOVERLAY, m_isEnableDiagOverlay);
+
 	//Fullscreen
 	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
 
@@ -4221,6 +4243,7 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTEffectGridBox, m_isEnableGridLine);
 		m_pScene->SetEffect(MTEffectTimeIndicator, m_isEnableTimeIndicator);
 		m_pScene->SetEffect(MTEffectFileName, m_isEnableFileName);
+		m_pScene->SetEffect(MTEffectDiagOverlay, m_isEnableDiagOverlay);
 	}
 	return;
 }

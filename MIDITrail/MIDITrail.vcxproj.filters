@@ -149,6 +149,9 @@
     <ClCompile Include="MTDashboardLive11.cpp">
       <Filter>Sources\SceneObject</Filter>
     </ClCompile>
+    <ClCompile Include="MTDiagOverlay11.cpp">
+      <Filter>Sources\SceneObject</Filter>
+    </ClCompile>
     <ClCompile Include="MTDynamicCaption11.cpp">
       <Filter>Sources\SceneLibrary</Filter>
     </ClCompile>
@@ -425,6 +428,9 @@
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTDashboardLive11.h">
+      <Filter>Sources\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MTDiagOverlay11.h">
       <Filter>Sources\SceneObject</Filter>
     </ClInclude>
     <ClInclude Include="MTDynamicCaption11.h">

@@ -12,6 +12,7 @@
 #pragma once
 
 #include <vector>
+#include <cstdint>
 #include "SMIDILib.h"
 #include "IMTSceneManagedComponent.h"
 
@@ -84,4 +85,8 @@ protected:
 	std::vector<ListenerEntry> m_Listeners;
 	unsigned long m_ActiveNotesPerCh[SM_MAX_PORT_NUM][SM_MAX_CH_NUM];
 	unsigned long m_TotalActiveNotes;
+
+	std::vector<uint8_t> m_ActivatedFlags;
+
+	void SetNoteCount(unsigned long noteCount);
 };

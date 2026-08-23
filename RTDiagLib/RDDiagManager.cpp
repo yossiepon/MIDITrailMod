@@ -416,8 +416,8 @@ void RDDiagManager::ResetFrameMetrics()
 
 	static const RDMetricId appIntMetrics[] = {
 		RDMetricId::AppNoteActivationsPerFrame,
-		RDMetricId::AppPolyphony,
-		RDMetricId::AppPolyphonyPeak,
+		RDMetricId::AppNoteTracking,
+		RDMetricId::AppNoteTrackingPeak,
 		RDMetricId::AppInstanceCount,
 		RDMetricId::AppInstanceBufferSizeKB,
 	};

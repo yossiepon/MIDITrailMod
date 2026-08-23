@@ -88,6 +88,7 @@ BEGIN
         MENUITEM "Background Image",            IDM_ENABLE_BACKGROUNDIMAGE
         MENUITEM "Grid Line",                   IDM_ENABLE_GRIDLINE
         MENUITEM "Time Indicator",              IDM_ENABLE_TIMEINDICATOR
+        MENUITEM "Diag Overlay",                IDM_ENABLE_DIAGOVERLAY
         MENUITEM SEPARATOR
         MENUITEM "Viewpoint 1\t7",              IDM_RESET_VIEWPOINT
         MENUITEM "Viewpoint 2\t8",              IDM_VIEWPOINT2

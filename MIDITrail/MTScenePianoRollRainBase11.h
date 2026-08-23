@@ -15,6 +15,7 @@
 #include "MTStars11.h"
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
+#include "MTDiagOverlay11.h"
 #include "MTNotePitchBend.h"
 #include "MTPianoKeyboardCtrlBase11.h"
 
@@ -82,6 +83,7 @@ protected:
 	MTStars11           m_Stars;
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11       m_Dashboard;
+	MTDiagOverlay11     m_DiagOverlay;
 	MTNotePitchBend     m_NotePitchBend;
 	MTPianoKeyboardCtrlBase11* m_pKeyboardCtrl;
 };

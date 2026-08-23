@@ -17,6 +17,7 @@
 #include "MTTimeIndicator11.h"
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
+#include "MTDiagOverlay11.h"
 #include "MTNoteRipple11.h"
 #include "MTNotePitchBend.h"
 #include "MTPianoKeyboardCtrlBase11.h"
@@ -92,6 +93,7 @@ protected:
 	MTTimeIndicator11  m_TimeIndicator;
 	MTBackgroundImage11 m_BackgroundImage;
 	MTDashboard11      m_Dashboard;
+	MTDiagOverlay11    m_DiagOverlay;
 	MTNoteRipple11     m_Ripple;
 	MTNotePitchBend    m_NotePitchBend;
 	MTPianoKeyboardCtrlBase11* m_pKeyboardCtrl;

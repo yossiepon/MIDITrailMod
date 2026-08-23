@@ -21,6 +21,7 @@ static const RDMetricMeta s_MetricMetaTable[] =
 
 	{ RDMetricId::CommitLimitMB,        "CommitLimitMB",        RDMetricType::Int },
 	{ RDMetricId::CommitUsedMB,         "CommitUsedMB",         RDMetricType::Int },
+	{ RDMetricId::CommitFreeMB,         "CommitFreeMB",         RDMetricType::Int },
 
 	{ RDMetricId::ProcessCommitMB,      "ProcessCommitMB",      RDMetricType::Int },
 	{ RDMetricId::ProcessWorkingSetMB,  "ProcessWorkingSetMB",  RDMetricType::Int },
@@ -28,6 +29,7 @@ static const RDMetricMeta s_MetricMetaTable[] =
 
 	{ RDMetricId::GpuName,              "GpuName",              RDMetricType::String },
 	{ RDMetricId::GpuVramTotalMB,       "GpuVramTotalMB",       RDMetricType::Int },
+	{ RDMetricId::GpuVramTotalGB,       "GpuVramTotalGB",       RDMetricType::Int },
 	{ RDMetricId::GpuDriverVersion,     "GpuDriverVersion",     RDMetricType::String },
 	{ RDMetricId::GpuVramUsedMB,        "GpuVramUsedMB",        RDMetricType::Int },
 	{ RDMetricId::GpuVramFreeMB,        "GpuVramFreeMB",        RDMetricType::Int },
@@ -56,8 +58,8 @@ static const RDMetricMeta s_MetricMetaTable[] =
 
 	{ RDMetricId::AppNoteActivationsPerFrame, "AppNoteActivationsPerFrame", RDMetricType::Int },
 	{ RDMetricId::AppNps,               "AppNps",               RDMetricType::Float },
-	{ RDMetricId::AppPolyphony,         "AppPolyphony",         RDMetricType::Int },
-	{ RDMetricId::AppPolyphonyPeak,     "AppPolyphonyPeak",     RDMetricType::Int },
+	{ RDMetricId::AppNoteTracking,         "AppNoteTracking",         RDMetricType::Int },
+	{ RDMetricId::AppNoteTrackingPeak,     "AppNoteTrackingPeak",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
 

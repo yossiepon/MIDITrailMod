@@ -39,11 +39,11 @@ void RDOsInfo::CollectStartup()
 
 				char buf[256];
 				if (ubr > 0) {
-					snprintf(buf, sizeof(buf), "%lu.%lu.%lu.%lu, %s",
-						vi.dwMajorVersion, vi.dwMinorVersion, vi.dwBuildNumber, ubr, arch);
+					snprintf(buf, sizeof(buf), "%lu.%lu.%lu.%lu",
+						vi.dwMajorVersion, vi.dwMinorVersion, vi.dwBuildNumber, ubr);
 				} else {
-					snprintf(buf, sizeof(buf), "%lu.%lu.%lu, %s",
-						vi.dwMajorVersion, vi.dwMinorVersion, vi.dwBuildNumber, arch);
+					snprintf(buf, sizeof(buf), "%lu.%lu.%lu",
+						vi.dwMajorVersion, vi.dwMinorVersion, vi.dwBuildNumber);
 				}
 				osVersion = buf;
 			}

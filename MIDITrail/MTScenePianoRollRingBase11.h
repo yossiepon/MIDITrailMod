@@ -15,6 +15,7 @@
 #include "MTStars11.h"
 #include "MTBackgroundImage11.h"
 #include "MTDashboard11.h"
+#include "MTDiagOverlay11.h"
 #include "MTGridRingBase11.h"
 #include "MTTimeIndicatorRing11.h"
 #include "MTPictBoardRing11.h"
@@ -89,6 +90,7 @@ protected:
 	MTStars11             m_Stars;
 	MTBackgroundImage11   m_BackgroundImage;
 	MTDashboard11         m_Dashboard;
+	MTDiagOverlay11       m_DiagOverlay;
 	MTGridRingBase11*     m_pGridRing;
 	MTTimeIndicatorRing11 m_TimeIndicator;
 	MTPictBoardRing11     m_PictBoard;
