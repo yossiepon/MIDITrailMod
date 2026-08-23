@@ -169,7 +169,6 @@ int MTScenePianoRollRainBase11::_OnRecvSequencerMsg(
 	if (parser.GetMsg() == SMMsgParser::MsgPlayStatus) {
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
-		m_Dashboard.SetTotalPlayTimeSec(parser.GetPlayTimeSec());
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
 		m_Dashboard.SetTempoBPM(parser.GetTempoBPM());
