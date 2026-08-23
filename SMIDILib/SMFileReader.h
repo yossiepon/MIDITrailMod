@@ -49,8 +49,7 @@ public:
 			const WCHAR* pSMFPath,
 			SMSeqData* pMIDIData,
 			SMLoadProgressFunc progressFunc = NULL,
-			void* progressUserData = NULL,
-			bool* pWasTruncated = NULL
+			void* progressUserData = NULL
 		);
 
 private:

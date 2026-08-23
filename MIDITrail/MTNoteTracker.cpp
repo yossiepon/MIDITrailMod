@@ -17,6 +17,7 @@
 #include "YNBaseLib.h"
 #include "MTNoteTracker.h"
 #include "MTLoadingDefs.h"
+#include "MTFormatUtil.h"
 
 using namespace YNBaseLib;
 
@@ -121,8 +122,10 @@ int MTNoteTracker::Create(
 		if (pProgress != NULL && (i & 0x3FFF) == 0) {
 			unsigned long current = PROG_PRE_END
 				+ (unsigned long)((unsigned long long)i * (PROG_TOTAL - PROG_PRE_END) / noteCount);
-			char msg[64];
-			snprintf(msg, sizeof(msg), "Reading notes: %lu / %lu", i, noteCount);
+			char fmtA[32], fmtB[32], msg[80];
+			MTFormatWithCommas(fmtA, sizeof(fmtA), i);
+			MTFormatWithCommas(fmtB, sizeof(fmtB), noteCount);
+			snprintf(msg, sizeof(msg), "Reading notes: %s / %s", fmtA, fmtB);
 			pProgress->Fire(current, PROG_TOTAL, msg);
 		}
 	}

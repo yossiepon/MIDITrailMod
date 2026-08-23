@@ -17,6 +17,7 @@
 #include "MTNoteInstancedShaderSnippets.h"
 #include "DXPrimitive11.h"
 #include "MTLoadingDefs.h"
+#include "MTFormatUtil.h"
 #include <spdlog/spdlog.h>
 #include "RDDiagManager.h"
 
@@ -568,8 +569,10 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 			endTicks[i] = note.endTime;
 
 			if (m_pProgress != NULL && (i & 0x3FFF) == 0) {
-				char msg[64];
-				snprintf(msg, sizeof(msg), "Rendering notes: %lu / %lu", i, m_NoteCount);
+				char fmtA[32], fmtB[32], msg[80];
+				MTFormatWithCommas(fmtA, sizeof(fmtA), i);
+				MTFormatWithCommas(fmtB, sizeof(fmtB), m_NoteCount);
+				snprintf(msg, sizeof(msg), "Rendering notes: %s / %s", fmtA, fmtB);
 				m_pProgress->Fire(i, m_NoteCount, msg);
 			}
 		}
@@ -627,8 +630,10 @@ int MTNoteAABBInstanced11::_CreateInstanceBuffer(ID3D11Device* pDevice, SMSeqDat
 			endTicks[i] = note.endTimeTick;
 
 			if (m_pProgress != NULL && (i & 0x3FFF) == 0) {
-				char msg[64];
-				snprintf(msg, sizeof(msg), "Rendering notes: %lu / %lu", i, m_NoteCount);
+				char fmtA[32], fmtB[32], msg[80];
+				MTFormatWithCommas(fmtA, sizeof(fmtA), i);
+				MTFormatWithCommas(fmtB, sizeof(fmtB), m_NoteCount);
+				snprintf(msg, sizeof(msg), "Rendering notes: %s / %s", fmtA, fmtB);
 				m_pProgress->Fire(i, m_NoteCount, msg);
 			}
 		}

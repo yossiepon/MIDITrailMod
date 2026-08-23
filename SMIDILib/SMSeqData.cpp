@@ -21,6 +21,28 @@
 
 using namespace YNBaseLib;
 
+static void FormatWithCommas(char* buf, size_t bufSize, unsigned long value)
+{
+	char raw[32];
+	snprintf(raw, sizeof(raw), "%lu", value);
+	int len = (int)strlen(raw);
+	int commas = (len - 1) / 3;
+	int total = len + commas;
+	if (total < 0 || (size_t)total >= bufSize) {
+		snprintf(buf, bufSize, "%lu", value);
+		return;
+	}
+	buf[total] = '\0';
+	int src = len - 1, dst = total - 1, cnt = 0;
+	while (src >= 0) {
+		buf[dst--] = raw[src--];
+		if (++cnt == 3 && src >= 0) {
+			buf[dst--] = ',';
+			cnt = 0;
+		}
+	}
+}
+
 namespace SMIDILib {
 
 
@@ -207,9 +229,11 @@ int SMSeqData::_MergeTracks(
 			if (progressFunc != NULL && (mergedCount & 0x3FFF) == 0 && totalEvents > 0) {
 				unsigned long current = progressOffset
 					+ (unsigned long)((unsigned long long)mergedCount * mergeRange / totalEvents);
-				char msg[80];
-				snprintf(msg, sizeof(msg), "Merging tracks...  (%lu / %lu events)",
-				         mergedCount, totalEvents);
+				char fmtA[32], fmtB[32], msg[96];
+				FormatWithCommas(fmtA, sizeof(fmtA), mergedCount);
+				FormatWithCommas(fmtB, sizeof(fmtB), totalEvents);
+				snprintf(msg, sizeof(msg), "Merging tracks...  (%s / %s events)",
+				         fmtA, fmtB);
 				progressFunc(current, progressTotal, msg, progressUserData);
 			}
 
