@@ -79,8 +79,7 @@ int SMFileReader::Load(
 		const WCHAR *pSMFPath,
 		SMSeqData* pSeqData,
 		SMLoadProgressFunc progressFunc,
-		void* progressUserData,
-		bool* pWasTruncated
+		void* progressUserData
 	)
 {
 	int result = 0;
@@ -243,9 +242,6 @@ int SMFileReader::Load(
 	pSeqData->SetFileName(PathFindFileNameW(pSMFPath));
 
 EXIT:;
-	if (pWasTruncated != NULL) {
-		*pWasTruncated = SMSimpleList::WasTruncated();
-	}
 	if (hFile != NULL) {
 		mmioClose(hFile, 0);
 		hFile = NULL;

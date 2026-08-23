@@ -2829,8 +2829,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	{
 		MTProgressBand parseBand = { &topCtx, 0.0f, MTLoadBand::PARSE_END };
 		MTLoadProgressContext parseCtx = parseBand.ToContext();
-		bool wasTruncated = false;
-		result = smfReader.Load(pPath, &m_SeqData, &MTProgressBand::Callback, &parseBand, &wasTruncated);
+		result = smfReader.Load(pPath, &m_SeqData, &MTProgressBand::Callback, &parseBand);
 		if (result != 0) goto EXIT;
 	}
 	QueryPerformanceCounter(&perfT1);
