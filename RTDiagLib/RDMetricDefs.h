@@ -30,6 +30,7 @@ enum class RDMetricId : uint16_t
 	CommitLimitMB,
 	// Commit (IntervalPolling)
 	CommitUsedMB,
+	CommitFreeMB,
 
 	// Process (IntervalPolling)
 	ProcessCommitMB,
@@ -39,6 +40,7 @@ enum class RDMetricId : uint16_t
 	// GPU (Startup)
 	GpuName,
 	GpuVramTotalMB,
+	GpuVramTotalGB,
 	GpuDriverVersion,
 	// GPU (IntervalPolling)
 	GpuVramUsedMB,
@@ -73,8 +75,8 @@ enum class RDMetricId : uint16_t
 	// App: Black MIDI metrics (Frame, Push)
 	AppNoteActivationsPerFrame,
 	AppNps,
-	AppPolyphony,
-	AppPolyphonyPeak,
+	AppNoteTracking,
+	AppNoteTrackingPeak,
 	AppInstanceCount,
 	AppInstanceBufferSizeKB,
 

@@ -84,6 +84,10 @@ int MTScenePianoRollRing11::_CreateModeComponents(
 	result = m_Dashboard.Create(pDevice, pContext, GetName(), pSeqData, m_hWnd);
 	if (result != 0) goto EXIT;
 
+	// DiagOverlay
+	result = m_DiagOverlay.Create(pDevice, pContext, m_hWnd);
+	if (result != 0) goto EXIT;
+
 	// NoteTracker (progress band: 0% ~ 20%)
 	{
 		MTProgressBand band = { pProgress, MTLoadBand::TRACKER_START, MTLoadBand::TRACKER_END };

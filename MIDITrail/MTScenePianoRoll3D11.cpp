@@ -84,6 +84,10 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 		QueryPerformanceCounter(&t1); spdlog::debug("Component Dashboard: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 
+		// DiagOverlay
+		result = m_DiagOverlay.Create(pDevice, pContext, m_hWnd);
+		if (result != 0) goto EXIT;
+
 		// NoteTracker (progress band: 16% ~ 63%)
 		{
 			MTProgressBand band = { pProgress, MTLoadBand::TRACKER_START, MTLoadBand::TRACKER_END };

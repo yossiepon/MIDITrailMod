@@ -48,7 +48,7 @@ using namespace SMIDILib;
 
 //Menu style control
 //TAG: add scene
-#define MT_MENU_NUM        (47+1)
+#define MT_MENU_NUM        (48+1)
 #define MT_PLAYSTATUS_NUM  (6)
 
 //Device lost warning message
@@ -211,6 +211,7 @@ private:
 	bool m_isEnableBackgroundImage;
 	bool m_isEnableGridLine;
 	bool m_isEnableTimeIndicator;
+	bool m_isEnableDiagOverlay;
 
 	//Scene type
 	SceneType m_SceneType;

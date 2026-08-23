@@ -35,6 +35,7 @@ enum MTEffectType {
 	MTEffectGridBox,
 	MTEffectLyrics,
 	MTEffectSingleKeyboard,
+	MTEffectDiagOverlay,
 };
 
 //******************************************************************************

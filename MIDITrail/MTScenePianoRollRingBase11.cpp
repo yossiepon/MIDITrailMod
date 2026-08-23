@@ -11,6 +11,7 @@
 
 #include "StdAfx.h"
 #include "MTScenePianoRollRingBase11.h"
+#include "RDDiagManager.h"
 #include "MTNoteDesignRing11.h"
 #include "SMMsgParser.h"
 
@@ -101,6 +102,7 @@ void MTScenePianoRollRingBase11::Release()
 	m_PictBoard.Release();
 	m_Ripple.Release();
 	m_Dashboard.Release();
+	m_DiagOverlay.Release();
 	m_Stars.Release();
 	m_BackgroundImage.Release();
 
@@ -172,9 +174,11 @@ int MTScenePianoRollRingBase11::_DrawSceneComponents(
 	{
 		RECT rect;
 		GetClientRect(m_hWnd, &rect);
-		result = _DrawDashboard(pContext,
-		                        rect.right - rect.left,
-		                        rect.bottom - rect.top);
+		unsigned int w = rect.right - rect.left;
+		unsigned int h = rect.bottom - rect.top;
+		result = _DrawDashboard(pContext, w, h);
+		if (result != 0) goto EXIT;
+		result = m_DiagOverlay.Draw(pContext, w, h);
 		if (result != 0) goto EXIT;
 	}
 
@@ -230,6 +234,7 @@ int MTScenePianoRollRingBase11::OnPlayStart()
 int MTScenePianoRollRingBase11::OnPlayEnd()
 {
 	m_isMonitoringActive = false;
+	RDDiagManager::SetInt(RDMetricId::AppNoteTracking, 0);
 	return 0;
 }
 
@@ -267,6 +272,9 @@ void MTScenePianoRollRingBase11::SetEffect(MTEffectType type, bool isEnable)
 			m_Dashboard.SetEnableFileName(isEnable);
 			break;
 		case MTEffectLyrics:
+			break;
+		case MTEffectDiagOverlay:
+			m_DiagOverlay.SetEnable(isEnable);
 			break;
 		default:
 			break;
@@ -336,6 +344,7 @@ int MTScenePianoRollRingBase11::_DrawDashboard(
 void MTScenePianoRollRingBase11::_OnDashboardWindowResize()
 {
 	m_Dashboard.OnWindowResize();
+	m_DiagOverlay.OnWindowResize();
 }
 
 void MTScenePianoRollRingBase11::_SetDashboardEnable(bool isEnable)

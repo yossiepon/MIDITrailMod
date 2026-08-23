@@ -60,6 +60,7 @@ void RDGpuInfo::CollectStartup()
 
 	int64_t vramMB = static_cast<int64_t>(desc.DedicatedVideoMemory / (1024 * 1024));
 	RDDiagManager::SetInt(RDMetricId::GpuVramTotalMB, vramMB);
+	RDDiagManager::SetInt(RDMetricId::GpuVramTotalGB, (vramMB + 1023) / 1024);
 
 	_CollectVram();
 	_InitPdh();

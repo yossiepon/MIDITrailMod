@@ -19,6 +19,7 @@ void RDMemoryInfo::CollectStartup()
 		int64_t commitUsedMB = commitLimitMB - commitAvailMB;
 		RDDiagManager::SetInt(RDMetricId::CommitLimitMB, commitLimitMB);
 		RDDiagManager::SetInt(RDMetricId::CommitUsedMB, commitUsedMB);
+		RDDiagManager::SetInt(RDMetricId::CommitFreeMB, commitAvailMB);
 	}
 }
 
@@ -35,6 +36,7 @@ void RDMemoryInfo::CollectIntervalPolling()
 		int64_t commitAvailMB = static_cast<int64_t>(memStatus.ullAvailPageFile / (1024 * 1024));
 		int64_t commitUsedMB = commitLimitMB - commitAvailMB;
 		RDDiagManager::SetInt(RDMetricId::CommitUsedMB, commitUsedMB);
+		RDDiagManager::SetInt(RDMetricId::CommitFreeMB, commitAvailMB);
 	}
 
 	PROCESS_MEMORY_COUNTERS_EX pmcEx = {};

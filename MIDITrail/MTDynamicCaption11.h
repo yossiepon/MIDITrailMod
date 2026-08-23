@@ -17,6 +17,9 @@
 
 #define MTDYNAMICCAPTION11_MAX_CHARS  (256)
 
+// ASCII printable characters (0x20-0x7E): shared by Dashboard and DiagOverlay
+#define MT_ASCII_PRINTABLE_CHARS  L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
 
 //******************************************************************************
 // DX11 dynamic caption renderer

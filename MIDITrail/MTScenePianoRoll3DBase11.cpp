@@ -12,6 +12,7 @@
 #include "StdAfx.h"
 #include "MTScenePianoRoll3DBase11.h"
 #include "SMMsgParser.h"
+#include "RDDiagManager.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -108,6 +109,7 @@ void MTScenePianoRoll3DBase11::Release()
 	m_TimeIndicator.Release();
 	m_BackgroundImage.Release();
 	m_Dashboard.Release();
+	m_DiagOverlay.Release();
 
 	MTSceneBase11::Release();
 }
@@ -133,9 +135,11 @@ int MTScenePianoRoll3DBase11::Draw(
 	{
 		RECT rect;
 		GetClientRect(m_hWnd, &rect);
-		result = _DrawDashboard(pContext,
-		                        rect.right - rect.left,
-		                        rect.bottom - rect.top);
+		unsigned int w = rect.right - rect.left;
+		unsigned int h = rect.bottom - rect.top;
+		result = _DrawDashboard(pContext, w, h);
+		if (result != 0) goto EXIT;
+		result = m_DiagOverlay.Draw(pContext, w, h);
 		if (result != 0) goto EXIT;
 	}
 
@@ -242,6 +246,7 @@ int MTScenePianoRoll3DBase11::OnPlayStart()
 int MTScenePianoRoll3DBase11::OnPlayEnd()
 {
 	m_isMonitoringActive = false;
+	RDDiagManager::SetInt(RDMetricId::AppNoteTracking, 0);
 	return 0;
 }
 
@@ -279,6 +284,9 @@ void MTScenePianoRoll3DBase11::SetEffect(MTEffectType type, bool isEnable)
 		break;
 	case MTEffectPitchBend:
 		m_NotePitchBend.SetEnable(isEnable);
+		break;
+	case MTEffectDiagOverlay:
+		m_DiagOverlay.SetEnable(isEnable);
 		break;
 	default:
 		break;
@@ -351,6 +359,7 @@ int MTScenePianoRoll3DBase11::_DrawDashboard(
 void MTScenePianoRoll3DBase11::_OnDashboardWindowResize()
 {
 	m_Dashboard.OnWindowResize();
+	m_DiagOverlay.OnWindowResize();
 }
 
 void MTScenePianoRoll3DBase11::_SetDashboardEnable(bool isEnable)

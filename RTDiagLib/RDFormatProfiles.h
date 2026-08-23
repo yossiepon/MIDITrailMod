@@ -5,7 +5,7 @@
 namespace RDFormatProfile
 {
 	static const RDFormatTemplateEntry MachineSignature[] = {
-		{ "OS",      "${OsProductName} (${OsVersion})" },
+		{ "OS",      "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
 		{ "CPU",     "${CpuName} (${CpuArchitecture})" },
 		{ "CPU info","${CpuVendor}, ${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T, ${CpuBaseMHz} MHz" },
 		{ "GPU",     "${GpuName}" },
@@ -30,12 +30,42 @@ namespace RDFormatProfile
 		{ "Frame",  "${AppFps} FPS (${AppAvgFrameTimeMs} ms) 1%Low:${AppFps1PercentLow} 0.1%Low:${AppFps01PercentLow}" },
 		{ "Timing", "Update:${AppSceneUpdateTimeMs} Draw:${AppDrawTimeMs} Present:${AppPresentTimeMs} GPU:${AppGpuRenderTimeMs} ms" },
 		{ "Stab",   "StdDev:${AppFrameTimeStdDev} ms, Stutter:${AppStutterPercent}%" },
-		{ "Notes",  "NPS:${AppNps} Poly:${AppPolyphony} (Peak:${AppPolyphonyPeak}) Inst:${AppInstanceCount} Buf:${AppInstanceBufferSizeKB} KB" },
+		{ "Notes",  "NPS:${AppNps} Tracking:${AppNoteTracking} (Peak:${AppNoteTrackingPeak}) Inst:${AppInstanceCount} Buf:${AppInstanceBufferSizeKB} KB" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
 
 	static const size_t RuntimeSystemCount =
 		sizeof(RuntimeSystem) / sizeof(RuntimeSystem[0]);
+
+	static const RDFormatTemplateEntry OverlayMachineSignature[] = {
+		{ "OS",  "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
+		{ "CPU", "${CpuName} (${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T ${CpuBaseMHz} MHz)" },
+		{ "GPU", "${GpuName} ${GpuVramTotalGB}GB (${GpuDriverVersion})" },
+	};
+
+	static const size_t OverlayMachineSignatureCount =
+		sizeof(OverlayMachineSignature) / sizeof(OverlayMachineSignature[0]);
+
+	static const RDFormatTemplateEntry OverlayRuntime[] = {
+		{ "",        "" },
+		{ "RAM",     "${PhysMemAvailableMB} / ${PhysMemTotalMB} MB free" },
+		{ "Commit",  "${CommitFreeMB} / ${CommitLimitMB} MB free" },
+		{ "Process", "WS ${ProcessWorkingSetMB} MB, Commit ${ProcessCommitMB} MB, Handles ${ProcessHandles}" },
+		{ "VRAM",    "${GpuVramUsedMB} / ${GpuVramTotalMB} MB used (Free ${GpuVramFreeMB} MB)" },
+		{ "",        "" },
+		{ "Load",    "CPU ${CpuUsageSystem}% (Sys) / ${CpuUsageProcess}% (Proc), GPU ${GpuUsagePercent}%" },
+		{ "",        "" },
+		{ "Frame",   "${AppFps} FPS (${AppAvgFrameTimeMs} ms), 1%Low ${AppFps1PercentLow}, 0.1%Low ${AppFps01PercentLow}" },
+		{ "Timing",  "Update ${AppSceneUpdateTimeMs} ms, Draw ${AppDrawTimeMs} ms, Present ${AppPresentTimeMs} ms, GPU ${AppGpuRenderTimeMs} ms" },
+		{ "Stab",    "StdDev ${AppFrameTimeStdDev} ms, Stutter ${AppStutterPercent}%" },
+		{ "",        "" },
+		{ "Notes",   "${AppNps} NPS, Tracking ${AppNoteTracking} (Peak ${AppNoteTrackingPeak}), Buf ${AppInstanceBufferSizeKB} KB, Inst ${AppInstanceCount}" },
+		{ "",        "" },
+		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
+	};
+
+	static const size_t OverlayRuntimeCount =
+		sizeof(OverlayRuntime) / sizeof(OverlayRuntime[0]);
 
 	static const RDFormatTemplateEntry FileLoaded[] = {
 		{ "File",     "${AppLoadedFileName}" },
