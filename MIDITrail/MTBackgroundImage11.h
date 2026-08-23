@@ -52,6 +52,7 @@ private:
 	YNConfFile m_ConfFile;
 
 	int _CreateVertices(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	void _WriteVertices(DXPRIMITIVE11_VERTEX* pVertex);
 	int _InitConfFile();
 	int _LoadTexture(ID3D11Device* pDevice);
 };
