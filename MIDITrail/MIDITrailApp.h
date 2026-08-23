@@ -197,6 +197,7 @@ private:
 	bool m_isRepeat;
 	bool m_isFolderPlayback;
 	bool m_isRewind;
+	bool m_isLoading;
 	bool m_isOpenFileAfterStop;
 	MTSequencerLastMsg m_SequencerLastMsg;
 	unsigned long m_PlaySpeedRatio;

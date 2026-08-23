@@ -84,6 +84,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isRepeat = false;
 	m_isFolderPlayback = true;
 	m_isRewind = false;
+	m_isLoading = false;
 	m_isOpenFileAfterStop = false;
 	ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
 	m_PlaySpeedRatio = 100;
@@ -1349,6 +1350,8 @@ int MIDITrailApp::_OnMenuPlay()
 {
 	int result = 0;
 
+	if (m_isLoading) goto EXIT;
+
 	if (m_PlayStatus == Stop) {
 		//Initialize sequencer
 		result = m_Sequencer.Initialize(&m_MsgQueue);
@@ -1708,6 +1711,7 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 
 		m_SceneType = m_SelectedSceneType;
 		if (m_PlayStatus == Stop) {
+			m_isLoading = true;
 			m_LoadingScreen.Create(m_hWnd, &m_Renderer);
 			MTLoadProgressContext topCtx(&_OnLoadingProgress, this);
 			MTProgressBand fullBand = { &topCtx, 0.0f, 1.0f };
@@ -1715,6 +1719,7 @@ int MIDITrailApp::_OnMenuSelectSceneType(
 			result = _CreateScene(m_SceneType, &m_SeqData, &buildCtx);
 			m_LoadingScreen.Update(1.0f, "Complete");
 			m_LoadingScreen.Release();
+			m_isLoading = false;
 			if (result != 0) goto EXIT;
 		}
 		else {
@@ -2385,6 +2390,8 @@ int MIDITrailApp::_OnKeyDown(
 
 	keycode = LOWORD((DWORD)wParam);
 
+	if (m_isLoading) goto EXIT;
+
 	switch (keycode) {
 		case VK_SPACE:
 		case VK_NUMPAD0:
@@ -2775,6 +2782,8 @@ int MIDITrailApp::_LoadMIDIFile(
 	SMFileReader smfReader;
 	MTLoadProgressContext topCtx;
 
+	m_isLoading = true;
+
 	LARGE_INTEGER perfFreq, perfT0, perfT1;
 	QueryPerformanceFrequency(&perfFreq);
 	spdlog::info("=== Load started ===");
@@ -2862,6 +2871,11 @@ int MIDITrailApp::_LoadMIDIFile(
 			RDFormatProfile::FileLoadedCount, "file-loaded");
 	}
 
+	//Stop sequencer if it was started during loading (BUG-19 safety net)
+	if (m_Sequencer.GetStatus() != SMSequencer::StatusStop) {
+		m_Sequencer.Stop();
+	}
+
 	//Change playback status
 	result = _ChangePlayStatus(Stop);
 	if (result != 0) goto EXIT;
@@ -2872,6 +2886,7 @@ int MIDITrailApp::_LoadMIDIFile(
 	m_isRewind = false;
 
 EXIT:;
+	m_isLoading = false;
 	spdlog::info("=== Load {} ===", (result == 0) ? "completed" : "failed");
 	if (wcslen(smfTempPath) != 0) {
 		DeleteFileW(smfTempPath);
