@@ -26,6 +26,7 @@ MTFontTexture11::MTFontTexture11()
 	m_TexHeight = 0;
 	m_TexWidth = 0;
 	m_pSRV = NULL;
+	m_isBorrowed = false;
 }
 
 MTFontTexture11::~MTFontTexture11()
@@ -38,13 +39,30 @@ MTFontTexture11::~MTFontTexture11()
 //******************************************************************************
 void MTFontTexture11::Clear()
 {
-	if (m_pSRV != NULL) {
+	if (m_pSRV != NULL && !m_isBorrowed) {
 		m_pSRV->Release();
-		m_pSRV = NULL;
 	}
+	m_pSRV = NULL;
+	m_isBorrowed = false;
 	m_Font2Bmp.Clear();
 	m_TexHeight = 0;
 	m_TexWidth = 0;
+}
+
+//******************************************************************************
+// Borrow an external SRV (caller owns the texture lifetime)
+//******************************************************************************
+void MTFontTexture11::Borrow(
+		ID3D11ShaderResourceView* pSRV,
+		unsigned long width,
+		unsigned long height
+	)
+{
+	Clear();
+	m_pSRV = pSRV;
+	m_TexWidth = width;
+	m_TexHeight = height;
+	m_isBorrowed = true;
 }
 
 //******************************************************************************

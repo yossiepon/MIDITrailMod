@@ -26,8 +26,6 @@ MTDynamicCaption11::MTDynamicCaption11()
 	m_pDevice = NULL;
 	m_Chars[0] = L'\0';
 	m_CaptionSize = 0;
-	m_Color = Color(1.0f, 1.0f, 1.0f, 1.0f);
-	m_isReady = false;
 	m_isDirty = true;
 	m_CharCount = 0;
 	m_CurrentStr[0] = L'\0';
@@ -60,13 +58,11 @@ int MTDynamicCaption11::Create(
 	wcscpy_s(m_Chars, MTDYNAMICCAPTION11_MAX_CHARS, pCharacters);
 	m_CharCount = (unsigned long)wcslen(m_Chars);
 
-	// Precompute the UV range for each character
 	for (unsigned long i = 0; i < m_CharCount; i++) {
 		m_CharUV[i].u0 = (float)i / (float)m_CharCount;
 		m_CharUV[i].u1 = (float)(i + 1) / (float)m_CharCount;
 	}
 
-	// Create font texture (force fixed pitch)
 	unsigned long rgb = 0x00FFFFFF;
 	result = m_FontTexture.SetFont(pFontName, fontSize, rgb, true);
 	if (result != 0) goto EXIT;
@@ -74,15 +70,12 @@ int MTDynamicCaption11::Create(
 	result = m_FontTexture.CreateTexture(pDevice, pCharacters);
 	if (result != 0) goto EXIT;
 
-	// Create vertex buffer (1 character = 4 vertices)
 	result = m_Primitive.CreateVertexBuffer(pDevice, 4 * m_CaptionSize);
 	if (result != 0) goto EXIT;
 
-	// Create index buffer (1 character = 6 indices)
 	result = m_Primitive.CreateIndexBuffer(pDevice, 6 * m_CaptionSize);
 	if (result != 0) goto EXIT;
 
-	// Indices are fixed, so write them at Create time
 	{
 		unsigned long* pIndex = NULL;
 		ID3D11DeviceContext* pCtx = NULL;
@@ -116,13 +109,73 @@ EXIT:;
 }
 
 //******************************************************************************
+// Create with shared texture (borrowed SRV)
+//******************************************************************************
+int MTDynamicCaption11::CreateWithSharedTexture(
+		ID3D11Device* pDevice,
+		ID3D11DeviceContext* pContext,
+		ID3D11ShaderResourceView* pSharedSRV,
+		unsigned long texWidth,
+		unsigned long texHeight,
+		const WCHAR* pCharacters,
+		unsigned long captionSize
+	)
+{
+	int result = 0;
+
+	Release();
+
+	m_pDevice = pDevice;
+	m_CaptionSize = captionSize;
+
+	wcscpy_s(m_Chars, MTDYNAMICCAPTION11_MAX_CHARS, pCharacters);
+	m_CharCount = (unsigned long)wcslen(m_Chars);
+
+	for (unsigned long i = 0; i < m_CharCount; i++) {
+		m_CharUV[i].u0 = (float)i / (float)m_CharCount;
+		m_CharUV[i].u1 = (float)(i + 1) / (float)m_CharCount;
+	}
+
+	m_FontTexture.Borrow(pSharedSRV, texWidth, texHeight);
+
+	result = m_Primitive.CreateVertexBuffer(pDevice, 4 * m_CaptionSize);
+	if (result != 0) goto EXIT;
+
+	result = m_Primitive.CreateIndexBuffer(pDevice, 6 * m_CaptionSize);
+	if (result != 0) goto EXIT;
+
+	{
+		unsigned long* pIndex = NULL;
+		result = m_Primitive.LockIndex(pContext, &pIndex);
+		if (result != 0) goto EXIT;
+		for (unsigned long i = 0; i < m_CaptionSize; i++) {
+			unsigned long base = i * 4;
+			unsigned long idx = i * 6;
+			pIndex[idx + 0] = base + 0;
+			pIndex[idx + 1] = base + 1;
+			pIndex[idx + 2] = base + 2;
+			pIndex[idx + 3] = base + 2;
+			pIndex[idx + 4] = base + 1;
+			pIndex[idx + 5] = base + 3;
+		}
+		m_Primitive.UnlockIndex(pContext);
+	}
+
+	m_Primitive.SetLightEnable(false);
+	m_Primitive.SetDepthWrite(false);
+
+	m_isReady = true;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // Release
 //******************************************************************************
 void MTDynamicCaption11::Release()
 {
-	m_FontTexture.Clear();
-	m_Primitive.Release();
-	m_isReady = false;
+	MTCaptionBase11::Release();
 }
 
 //******************************************************************************
@@ -139,34 +192,17 @@ int MTDynamicCaption11::SetString(const WCHAR* pStr)
 }
 
 //******************************************************************************
-// Set color
-//******************************************************************************
-void MTDynamicCaption11::SetColor(Color color)
-{
-	m_Color = color;
-	m_isDirty = true;
-}
-
-//******************************************************************************
-// Get texture size
-//******************************************************************************
-void MTDynamicCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pWidth)
-{
-	m_FontTexture.GetTextureSize(pHeight, pWidth);
-}
-
-//******************************************************************************
 // Get display character size (supersample-adjusted)
 //******************************************************************************
 void MTDynamicCaption11::GetDisplayCharSize(float magRate, float* pCharWidth, float* pCharHeight)
 {
-	static const float SS = 0.5f;
 	unsigned long texH = 0, texW = 0;
 	m_FontTexture.GetTextureSize(&texH, &texW);
+	float scale = magRate / (float)SUPERSAMPLE_FACTOR;
 	if (pCharWidth != NULL && m_CharCount > 0)
-		*pCharWidth = ((float)texW / (float)m_CharCount) * magRate * SS;
+		*pCharWidth = ((float)texW / (float)m_CharCount) * scale;
 	if (pCharHeight != NULL)
-		*pCharHeight = (float)texH * magRate * SS;
+		*pCharHeight = (float)texH * scale;
 }
 
 //******************************************************************************
@@ -207,7 +243,6 @@ int MTDynamicCaption11::Draw(
 	if (!m_isReady) return 0;
 	if (screenWidth == 0 || screenHeight == 0) return 0;
 
-	// Update vertex data
 	{
 		DXPRIMITIVE11_VERTEX* pVertex = NULL;
 		result = m_Primitive.LockVertex(pContext, &pVertex);
@@ -216,9 +251,9 @@ int MTDynamicCaption11::Draw(
 		unsigned long texH = 0, texW = 0;
 		m_FontTexture.GetTextureSize(&texH, &texW);
 
-		static const float SS = 0.5f;
-		float charPixelW = ((float)texW / (float)m_CharCount) * magRate * SS;
-		float charPixelH = (float)texH * magRate * SS;
+		float scale = magRate / (float)SUPERSAMPLE_FACTOR;
+		float charPixelW = ((float)texW / (float)m_CharCount) * scale;
+		float charPixelH = (float)texH * scale;
 		float sw = (float)screenWidth;
 		float sh = (float)screenHeight;
 
@@ -256,7 +291,6 @@ int MTDynamicCaption11::Draw(
 				_FindCharUV(m_CurrentStr[i], m_Chars, m_CharCount, &u0, &u1);
 			}
 
-			// 4 vertices (expanded into 2 triangles via the index buffer)
 			unsigned long base = i * 4;
 			setVtx(base + 0, nx0, ny0, u0, 0.0f);
 			setVtx(base + 1, nx1, ny0, u1, 0.0f);
@@ -267,7 +301,6 @@ int MTDynamicCaption11::Draw(
 		m_Primitive.UnlockVertex(pContext);
 	}
 
-	// Draw
 	m_Primitive.SetTexture(m_FontTexture.GetTexture());
 
 	{

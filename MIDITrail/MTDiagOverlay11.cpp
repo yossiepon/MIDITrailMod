@@ -63,18 +63,31 @@ int MTDiagOverlay11::Create(
 
 	unsigned long scaledFontSize = _GetScaledFontSize();
 
-	for (unsigned long i = 0; i < m_TotalLineCount; i++) {
-		auto* pCaption = new MTDynamicCaption11();
-		result = pCaption->Create(
-			pDevice, pContext,
-			MTDIAGOVERLAY11_FONTNAME, scaledFontSize,
-			MT_ASCII_PRINTABLE_CHARS, MTDIAGOVERLAY11_CAPTION_SIZE);
-		if (result != 0) {
-			delete pCaption;
-			goto EXIT;
+	{
+		unsigned long rgb = 0x00FFFFFF;
+		result = m_SharedFontTexture.SetFont(MTDIAGOVERLAY11_FONTNAME, scaledFontSize, rgb, true);
+		if (result != 0) goto EXIT;
+		result = m_SharedFontTexture.CreateTexture(pDevice, MT_ASCII_PRINTABLE_CHARS);
+		if (result != 0) goto EXIT;
+	}
+
+	{
+		unsigned long texH = 0, texW = 0;
+		m_SharedFontTexture.GetTextureSize(&texH, &texW);
+
+		for (unsigned long i = 0; i < m_TotalLineCount; i++) {
+			auto* pCaption = new MTDynamicCaption11();
+			result = pCaption->CreateWithSharedTexture(
+				pDevice, pContext,
+				m_SharedFontTexture.GetTexture(), texW, texH,
+				MT_ASCII_PRINTABLE_CHARS, MTDIAGOVERLAY11_CAPTION_SIZE);
+			if (result != 0) {
+				delete pCaption;
+				goto EXIT;
+			}
+			pCaption->SetColor(m_Color);
+			m_Lines.push_back(pCaption);
 		}
-		pCaption->SetColor(m_Color);
-		m_Lines.push_back(pCaption);
 	}
 
 	result = _CreateBgTexture();
@@ -104,6 +117,7 @@ void MTDiagOverlay11::Release()
 		delete p;
 	}
 	m_Lines.clear();
+	m_SharedFontTexture.Clear();
 	m_BgPrimitive.Release();
 	if (m_pBgSRV != nullptr) {
 		m_pBgSRV->Release();
@@ -371,13 +385,27 @@ int MTDiagOverlay11::_RecreateCaptions()
 		p->Release();
 	}
 
-	for (unsigned long i = 0; i < m_TotalLineCount; i++) {
-		result = m_Lines[i]->Create(
-			m_pDevice, m_pContext,
-			MTDIAGOVERLAY11_FONTNAME, scaledFontSize,
-			MT_ASCII_PRINTABLE_CHARS, MTDIAGOVERLAY11_CAPTION_SIZE);
+	m_SharedFontTexture.Clear();
+	{
+		unsigned long rgb = 0x00FFFFFF;
+		result = m_SharedFontTexture.SetFont(MTDIAGOVERLAY11_FONTNAME, scaledFontSize, rgb, true);
 		if (result != 0) goto EXIT;
-		m_Lines[i]->SetColor(m_Color);
+		result = m_SharedFontTexture.CreateTexture(m_pDevice, MT_ASCII_PRINTABLE_CHARS);
+		if (result != 0) goto EXIT;
+	}
+
+	{
+		unsigned long texH = 0, texW = 0;
+		m_SharedFontTexture.GetTextureSize(&texH, &texW);
+
+		for (unsigned long i = 0; i < m_TotalLineCount; i++) {
+			result = m_Lines[i]->CreateWithSharedTexture(
+				m_pDevice, m_pContext,
+				m_SharedFontTexture.GetTexture(), texW, texH,
+				MT_ASCII_PRINTABLE_CHARS, MTDIAGOVERLAY11_CAPTION_SIZE);
+			if (result != 0) goto EXIT;
+			m_Lines[i]->SetColor(m_Color);
+		}
 	}
 
 	result = _UpdateStaticLines();

@@ -64,6 +64,7 @@ private:
 	unsigned long m_TotalLineCount;
 
 	std::vector<MTDynamicCaption11*> m_Lines;
+	MTFontTexture11 m_SharedFontTexture;
 
 	DXPrimitive11 m_BgPrimitive;
 	ID3D11ShaderResourceView* m_pBgSRV;

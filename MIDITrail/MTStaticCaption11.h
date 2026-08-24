@@ -11,15 +11,13 @@
 
 #pragma once
 
-#include "DXPrimitive11.h"
-#include "MTFontTexture11.h"
-#include <directxtk/SimpleMath.h>
+#include "MTCaptionBase11.h"
 
 
 //******************************************************************************
 // DX11 static caption renderer
 //******************************************************************************
-class MTStaticCaption11
+class MTStaticCaption11 : public MTCaptionBase11
 {
 public:
 
@@ -34,10 +32,8 @@ public:
 			const WCHAR* pText
 		);
 
-	void Release();
+	void Release() override;
 
-	void SetColor(DirectX::SimpleMath::Color color);
-	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
 	void GetDisplaySize(float magRate, float* pWidth, float* pHeight);
 
 	int Draw(
@@ -46,19 +42,5 @@ public:
 			float magRate,
 			unsigned int screenWidth,
 			unsigned int screenHeight
-		);
-
-private:
-
-	MTFontTexture11 m_FontTexture;
-	DXPrimitive11 m_Primitive;
-	DirectX::SimpleMath::Color m_Color;
-	bool m_isReady;
-
-	int _BuildQuad(
-			ID3D11Device* pDevice,
-			ID3D11DeviceContext* pContext,
-			float x, float y, float magRate,
-			unsigned int screenW, unsigned int screenH
 		);
 };

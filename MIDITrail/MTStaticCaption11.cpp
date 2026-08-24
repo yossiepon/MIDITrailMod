@@ -23,8 +23,6 @@ using namespace DirectX::SimpleMath;
 //******************************************************************************
 MTStaticCaption11::MTStaticCaption11()
 {
-	m_Color = Color(1.0f, 1.0f, 1.0f, 1.0f);
-	m_isReady = false;
 }
 
 MTStaticCaption11::~MTStaticCaption11()
@@ -54,13 +52,11 @@ int MTStaticCaption11::Create(
 	result = m_FontTexture.CreateTexture(pDevice, pText);
 	if (result != 0) goto EXIT;
 
-	// Quad: 4 vertices + 6 indices
 	result = m_Primitive.CreateVertexBuffer(pDevice, 4);
 	if (result != 0) goto EXIT;
 	result = m_Primitive.CreateIndexBuffer(pDevice, 6);
 	if (result != 0) goto EXIT;
 
-	// Indices are fixed
 	{
 		unsigned long* pIndex = NULL;
 		result = m_Primitive.LockIndex(pContext, &pIndex);
@@ -86,25 +82,7 @@ EXIT:;
 //******************************************************************************
 void MTStaticCaption11::Release()
 {
-	m_FontTexture.Clear();
-	m_Primitive.Release();
-	m_isReady = false;
-}
-
-//******************************************************************************
-// Set color
-//******************************************************************************
-void MTStaticCaption11::SetColor(Color color)
-{
-	m_Color = color;
-}
-
-//******************************************************************************
-// Get texture size
-//******************************************************************************
-void MTStaticCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pWidth)
-{
-	m_FontTexture.GetTextureSize(pHeight, pWidth);
+	MTCaptionBase11::Release();
 }
 
 //******************************************************************************
@@ -112,11 +90,11 @@ void MTStaticCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pW
 //******************************************************************************
 void MTStaticCaption11::GetDisplaySize(float magRate, float* pWidth, float* pHeight)
 {
-	static const float SS = 0.5f;
 	unsigned long texH = 0, texW = 0;
 	m_FontTexture.GetTextureSize(&texH, &texW);
-	if (pWidth != NULL)  *pWidth  = (float)texW * magRate * SS;
-	if (pHeight != NULL) *pHeight = (float)texH * magRate * SS;
+	float scale = magRate / (float)SUPERSAMPLE_FACTOR;
+	if (pWidth != NULL)  *pWidth  = (float)texW * scale;
+	if (pHeight != NULL) *pHeight = (float)texH * scale;
 }
 
 //******************************************************************************
@@ -139,9 +117,9 @@ int MTStaticCaption11::Draw(
 	m_FontTexture.GetTextureSize(&texH, &texW);
 	if (texW == 0 || texH == 0) return 0;
 
-	static const float SS = 0.5f;
-	float drawW = (float)texW * magRate * SS;
-	float drawH = (float)texH * magRate * SS;
+	float scale = magRate / (float)SUPERSAMPLE_FACTOR;
+	float drawW = (float)texW * scale;
+	float drawH = (float)texH * scale;
 	float sw = (float)screenWidth;
 	float sh = (float)screenHeight;
 
@@ -156,7 +134,6 @@ int MTStaticCaption11::Draw(
 	unsigned char ca = (unsigned char)(m_Color.A() * 255.0f);
 	DWORD color = (ca << 24) | (cr << 16) | (cg << 8) | cb;
 
-	// Update vertices (Map/Unmap only, no buffer recreation)
 	{
 		DXPRIMITIVE11_VERTEX* pVertex = NULL;
 		result = m_Primitive.LockVertex(pContext, &pVertex);
