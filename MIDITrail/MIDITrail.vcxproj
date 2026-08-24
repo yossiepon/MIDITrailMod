@@ -304,6 +304,7 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClCompile Include="MTPictBoard11.cpp" />
     <ClCompile Include="MTBackgroundImage11.cpp" />
     <ClCompile Include="MTFontTexture11.cpp" />
+    <ClCompile Include="MTCaptionBase11.cpp" />
     <ClCompile Include="MTStaticCaption11.cpp" />
     <ClCompile Include="MTLoadingScreen11.cpp" />
     <ClCompile Include="MTDynamicCaption11.cpp" />
@@ -401,6 +402,8 @@ xcopy ..\README.ja.md $(TargetDir) /Y
     <ClInclude Include="MTPictBoard11.h" />
     <ClInclude Include="MTBackgroundImage11.h" />
     <ClInclude Include="MTFontTexture11.h" />
+    <ClInclude Include="MTCaptionBase11.h" />
+    <ClInclude Include="MTSceneLayoutInfo.h" />
     <ClInclude Include="MTStaticCaption11.h" />
     <ClInclude Include="MTLoadingScreen11.h" />
     <ClInclude Include="MTLoadingDefs.h" />

@@ -36,6 +36,8 @@ public:
 
 	int CreateTexture(ID3D11Device* pDevice, const WCHAR* pStr);
 
+	void Borrow(ID3D11ShaderResourceView* pSRV, unsigned long width, unsigned long height);
+
 	ID3D11ShaderResourceView* GetTexture();
 
 	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
@@ -43,6 +45,7 @@ public:
 private:
 
 	ID3D11ShaderResourceView* m_pSRV;
+	bool m_isBorrowed;
 	MTFont2Bmp m_Font2Bmp;
 	unsigned long m_RGB;
 	unsigned long m_TexHeight;

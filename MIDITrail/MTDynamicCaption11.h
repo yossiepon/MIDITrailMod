@@ -11,9 +11,7 @@
 
 #pragma once
 
-#include "DXPrimitive11.h"
-#include "MTFontTexture11.h"
-#include <directxtk/SimpleMath.h>
+#include "MTCaptionBase11.h"
 
 #define MTDYNAMICCAPTION11_MAX_CHARS  (256)
 
@@ -24,7 +22,7 @@
 //******************************************************************************
 // DX11 dynamic caption renderer
 //******************************************************************************
-class MTDynamicCaption11
+class MTDynamicCaption11 : public MTCaptionBase11
 {
 public:
 
@@ -40,11 +38,19 @@ public:
 			unsigned long captionSize
 		);
 
-	void Release();
+	int CreateWithSharedTexture(
+			ID3D11Device* pDevice,
+			ID3D11DeviceContext* pContext,
+			ID3D11ShaderResourceView* pSharedSRV,
+			unsigned long texWidth,
+			unsigned long texHeight,
+			const WCHAR* pCharacters,
+			unsigned long captionSize
+		);
+
+	void Release() override;
 
 	int SetString(const WCHAR* pStr);
-	void SetColor(DirectX::SimpleMath::Color color);
-	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
 	void GetDisplayCharSize(float magRate, float* pCharWidth, float* pCharHeight);
 
 	int Draw(
@@ -57,13 +63,9 @@ public:
 
 private:
 
-	MTFontTexture11 m_FontTexture;
-	DXPrimitive11 m_Primitive;
 	ID3D11Device* m_pDevice;
 	WCHAR m_Chars[MTDYNAMICCAPTION11_MAX_CHARS];
 	unsigned long m_CaptionSize;
-	DirectX::SimpleMath::Color m_Color;
-	bool m_isReady;
 	bool m_isDirty;
 
 	struct CharUV {
