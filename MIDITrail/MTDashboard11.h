@@ -16,6 +16,7 @@
 #include "SMIDILib.h"
 #include "MTStaticCaption11.h"
 #include "MTDynamicCaption11.h"
+#include "MTSceneLayoutInfo.h"
 #include <directxtk/SimpleMath.h>
 
 using namespace SMIDILib;
@@ -25,7 +26,7 @@ using namespace SMIDILib;
 #define MTDASHBOARD11_COUNTER_CHARS  MT_ASCII_PRINTABLE_CHARS
 #define MTDASHBOARD11_COUNTER_SIZE  (90)
 #define MTDASHBOARD11_FRAMESIZE  (5.0f)
-#define MTDASHBOARD11_DEFAULT_MAGRATE  (0.5f)
+#define MTDASHBOARD11_DEFAULT_MAGRATE  (1.0f)
 
 
 //******************************************************************************
@@ -44,7 +45,8 @@ public:
 
 	int Update(const MTSceneUpdateContext& ctx) override;
 	int Draw(ID3D11DeviceContext* pContext,
-	         unsigned int screenWidth, unsigned int screenHeight);
+	         unsigned int screenWidth, unsigned int screenHeight,
+	         MTSceneLayoutInfo* pLayoutInfo = NULL);
 
 	void SetTotalPlayTimeSec(unsigned long totalPlayTimeSec);
 	void SetTempoBPM(unsigned long bpm);

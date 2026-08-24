@@ -156,6 +156,20 @@ void MTDynamicCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* p
 }
 
 //******************************************************************************
+// Get display character size (supersample-adjusted)
+//******************************************************************************
+void MTDynamicCaption11::GetDisplayCharSize(float magRate, float* pCharWidth, float* pCharHeight)
+{
+	static const float SS = 0.5f;
+	unsigned long texH = 0, texW = 0;
+	m_FontTexture.GetTextureSize(&texH, &texW);
+	if (pCharWidth != NULL && m_CharCount > 0)
+		*pCharWidth = ((float)texW / (float)m_CharCount) * magRate * SS;
+	if (pCharHeight != NULL)
+		*pCharHeight = (float)texH * magRate * SS;
+}
+
+//******************************************************************************
 // Look up the UV coordinates for a character
 //******************************************************************************
 static bool _FindCharUV(
@@ -202,8 +216,9 @@ int MTDynamicCaption11::Draw(
 		unsigned long texH = 0, texW = 0;
 		m_FontTexture.GetTextureSize(&texH, &texW);
 
-		float charPixelW = ((float)texW / (float)m_CharCount) * magRate;
-		float charPixelH = (float)texH * magRate;
+		static const float SS = 0.5f;
+		float charPixelW = ((float)texW / (float)m_CharCount) * magRate * SS;
+		float charPixelH = (float)texH * magRate * SS;
 		float sw = (float)screenWidth;
 		float sh = (float)screenHeight;
 

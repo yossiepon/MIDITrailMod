@@ -108,6 +108,18 @@ void MTStaticCaption11::GetTextureSize(unsigned long* pHeight, unsigned long* pW
 }
 
 //******************************************************************************
+// Get display size (supersample-adjusted)
+//******************************************************************************
+void MTStaticCaption11::GetDisplaySize(float magRate, float* pWidth, float* pHeight)
+{
+	static const float SS = 0.5f;
+	unsigned long texH = 0, texW = 0;
+	m_FontTexture.GetTextureSize(&texH, &texW);
+	if (pWidth != NULL)  *pWidth  = (float)texW * magRate * SS;
+	if (pHeight != NULL) *pHeight = (float)texH * magRate * SS;
+}
+
+//******************************************************************************
 // Draw
 //******************************************************************************
 int MTStaticCaption11::Draw(
@@ -127,8 +139,9 @@ int MTStaticCaption11::Draw(
 	m_FontTexture.GetTextureSize(&texH, &texW);
 	if (texW == 0 || texH == 0) return 0;
 
-	float drawW = (float)texW * magRate;
-	float drawH = (float)texH * magRate;
+	static const float SS = 0.5f;
+	float drawW = (float)texW * magRate * SS;
+	float drawH = (float)texH * magRate * SS;
 	float sw = (float)screenWidth;
 	float sh = (float)screenHeight;
 

@@ -148,24 +148,44 @@ EXIT:;
 //******************************************************************************
 int MTDiagOverlay11::_UpdateBgVertices(
 		unsigned int screenWidth,
-		unsigned int screenHeight
+		unsigned int screenHeight,
+		const MTSceneLayoutInfo* pLayoutInfo
 	)
 {
 	int result = 0;
 	if (m_Lines.empty()) goto EXIT;
 
 	{
-		unsigned long texH = 0, texW = 0;
-		m_Lines[0]->GetTextureSize(&texH, &texW);
-		float charWidth = 0.0f;
-		if (wcslen(MT_ASCII_PRINTABLE_CHARS) > 0) {
-			charWidth = (float)texW / (float)wcslen(MT_ASCII_PRINTABLE_CHARS);
-		}
+		float mag = MTDIAGOVERLAY11_MAGRATE;
+		float charW = 0.0f, charH = 0.0f;
+		m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
 
-		float lineHeight = (float)texH * MTDIAGOVERLAY11_MAGRATE + MTDIAGOVERLAY11_LINE_SPACING;
-		float overlayWidth = charWidth * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS * MTDIAGOVERLAY11_MAGRATE;
+		float lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING;
+		float overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
+		float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
+		float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
+		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
 		float overlayHeight = lineHeight * (float)m_TotalLineCount;
-		float topOffset = MTDIAGOVERLAY11_MARGIN + lineHeight * 3.0f;
+
+		float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
+		float availH = (float)screenHeight - topOffset - dashCounterH - MTDIAGOVERLAY11_MARGIN;
+
+		float shrink = 1.0f;
+		if (overlayWidth > availW && overlayWidth > 0.0f) {
+			shrink = availW / overlayWidth;
+		}
+		if (overlayHeight > availH && overlayHeight > 0.0f) {
+			float hShrink = availH / overlayHeight;
+			if (hShrink < shrink) shrink = hShrink;
+		}
+		if (shrink < 1.0f) {
+			mag *= shrink;
+			m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
+			lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
+			overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
+			overlayHeight = lineHeight * (float)m_TotalLineCount;
+			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+		}
 
 		float bgX = (float)screenWidth - overlayWidth - MTDIAGOVERLAY11_MARGIN - MTDIAGOVERLAY11_PADDING;
 		float bgY = topOffset - MTDIAGOVERLAY11_PADDING;
@@ -234,7 +254,8 @@ int MTDiagOverlay11::_DrawBackground(ID3D11DeviceContext* pContext)
 int MTDiagOverlay11::Draw(
 		ID3D11DeviceContext* pContext,
 		unsigned int screenWidth,
-		unsigned int screenHeight
+		unsigned int screenHeight,
+		const MTSceneLayoutInfo* pLayoutInfo
 	)
 {
 	int result = 0;
@@ -246,21 +267,40 @@ int MTDiagOverlay11::Draw(
 	if (result != 0) goto EXIT;
 
 	if (screenWidth != m_LastScreenWidth || screenHeight != m_LastScreenHeight) {
-		result = _UpdateBgVertices(screenWidth, screenHeight);
+		result = _UpdateBgVertices(screenWidth, screenHeight, pLayoutInfo);
 		if (result != 0) goto EXIT;
 	}
 
 	{
-		unsigned long texH = 0, texW = 0;
-		m_Lines[0]->GetTextureSize(&texH, &texW);
-		float charWidth = 0.0f;
-		if (wcslen(MT_ASCII_PRINTABLE_CHARS) > 0) {
-			charWidth = (float)texW / (float)wcslen(MT_ASCII_PRINTABLE_CHARS);
-		}
+		float mag = MTDIAGOVERLAY11_MAGRATE;
+		float charW = 0.0f, charH = 0.0f;
+		m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
 
-		float lineHeight = (float)texH * MTDIAGOVERLAY11_MAGRATE + MTDIAGOVERLAY11_LINE_SPACING;
-		float overlayWidth = charWidth * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS * MTDIAGOVERLAY11_MAGRATE;
-		float topOffset = MTDIAGOVERLAY11_MARGIN + lineHeight * 3.0f;
+		float lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING;
+		float overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
+		float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
+		float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
+		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+		float overlayHeight = lineHeight * (float)m_TotalLineCount;
+
+		float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
+		float availH = (float)screenHeight - topOffset - dashCounterH - MTDIAGOVERLAY11_MARGIN;
+
+		float shrink = 1.0f;
+		if (overlayWidth > availW && overlayWidth > 0.0f) {
+			shrink = availW / overlayWidth;
+		}
+		if (overlayHeight > availH && overlayHeight > 0.0f) {
+			float hShrink = availH / overlayHeight;
+			if (hShrink < shrink) shrink = hShrink;
+		}
+		if (shrink < 1.0f) {
+			mag *= shrink;
+			m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
+			lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
+			overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
+			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+		}
 
 		result = _DrawBackground(pContext);
 		if (result != 0) goto EXIT;
@@ -272,7 +312,7 @@ int MTDiagOverlay11::Draw(
 			float y = topOffset + lineHeight * (float)i;
 
 			result = m_Lines[i]->Draw(pContext, textX, y,
-						MTDIAGOVERLAY11_MAGRATE, screenWidth, screenHeight);
+						mag, screenWidth, screenHeight);
 			if (result != 0) goto EXIT;
 		}
 	}
@@ -309,6 +349,7 @@ void MTDiagOverlay11::OnWindowResize()
 //******************************************************************************
 UINT MTDiagOverlay11::_GetDpi()
 {
+	if (!MTDIAGOVERLAY11_DPI_SCALING) return USER_DEFAULT_SCREEN_DPI;
 	if (m_hWnd != NULL) {
 		return GetDpiForWindow(m_hWnd);
 	}
@@ -319,6 +360,7 @@ unsigned long MTDiagOverlay11::_GetScaledFontSize()
 {
 	return MulDiv(MTDIAGOVERLAY11_FONTSIZE, m_Dpi, USER_DEFAULT_SCREEN_DPI);
 }
+
 
 int MTDiagOverlay11::_RecreateCaptions()
 {

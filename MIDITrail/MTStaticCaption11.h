@@ -38,6 +38,7 @@ public:
 
 	void SetColor(DirectX::SimpleMath::Color color);
 	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
+	void GetDisplaySize(float magRate, float* pWidth, float* pHeight);
 
 	int Draw(
 			ID3D11DeviceContext* pContext,

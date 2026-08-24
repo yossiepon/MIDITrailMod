@@ -191,9 +191,10 @@ void MTScenePianoRollRainLive11::AllNoteOffOnChLive(
 //******************************************************************************
 int MTScenePianoRollRainLive11::_DrawDashboard(
 		ID3D11DeviceContext* pContext,
-		unsigned int screenWidth, unsigned int screenHeight)
+		unsigned int screenWidth, unsigned int screenHeight,
+		MTSceneLayoutInfo* pLayoutInfo)
 {
-	return m_DashboardLive.Draw(pContext, screenWidth, screenHeight);
+	return m_DashboardLive.Draw(pContext, screenWidth, screenHeight, pLayoutInfo);
 }
 
 void MTScenePianoRollRainLive11::_OnDashboardWindowResize()
