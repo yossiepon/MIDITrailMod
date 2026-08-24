@@ -19,9 +19,9 @@
 using namespace YNBaseLib;
 using namespace DirectX::SimpleMath;
 
-// Layout constants (96 dpi baseline)
+// Layout constants (96 dpi baseline, DPI-scaled at runtime)
 static const unsigned long BASE_PANEL_WIDTH     = 520;
-static const unsigned long BASE_FONT_SIZE       = 14;
+static const unsigned long BASE_FONT_SIZE       = 36;
 static const unsigned long BASE_PADDING         = 12;
 static const unsigned long BASE_SEPARATOR_H     = 1;
 static const unsigned long BASE_BAR_HEIGHT      = 22;
@@ -175,9 +175,12 @@ int MTLoadingScreen11::Update(
 	if (progress < 0.0f) progress = 0.0f;
 	if (progress > 1.0f) progress = 1.0f;
 
-	// DPI-scaled layout values
+	// DPI-scaled layout values (panel width capped to screen)
 	unsigned long panelW   = _Scale(BASE_PANEL_WIDTH);
 	unsigned long padding  = _Scale(BASE_PADDING);
+	if (panelW > screenW - padding * 2) {
+		panelW = (screenW > padding * 2) ? screenW - padding * 2 : screenW;
+	}
 	unsigned long sepH     = _Scale(BASE_SEPARATOR_H);
 	unsigned long barH     = _Scale(BASE_BAR_HEIGHT);
 	unsigned long spacing  = _Scale(BASE_SPACING);
@@ -202,18 +205,18 @@ int MTLoadingScreen11::Update(
 	m_PercentCaption.Create(pDevice, pContext, L"Tahoma", fontSize, pPctW);
 	delete[] pPctW;
 
-	// Calculate panel height from content
-	unsigned long titleH = 0, titleW = 0;
-	m_TitleCaption.GetTextureSize(&titleH, &titleW);
-	unsigned long msgH = 0, msgW = 0;
-	m_MessageCaption.GetTextureSize(&msgH, &msgW);
+	// Calculate panel height from content (using display size, not texture size)
+	float titleDispW = 0.0f, titleDispH = 0.0f;
+	m_TitleCaption.GetDisplaySize(1.0f, &titleDispW, &titleDispH);
+	float msgDispW = 0.0f, msgDispH = 0.0f;
+	m_MessageCaption.GetDisplaySize(1.0f, &msgDispW, &msgDispH);
 
-	unsigned long contentH = padding + titleH + spacing + sepH + spacing
-	                         + msgH + spacing + barH + padding;
+	float contentH = (float)padding + titleDispH + (float)spacing + (float)sepH + (float)spacing
+	                 + msgDispH + (float)spacing + (float)barH + (float)padding;
 
 	// Panel position (centered)
 	float panelX = ((float)screenW - (float)panelW) * 0.5f;
-	float panelY = ((float)screenH - (float)contentH) * 0.5f;
+	float panelY = ((float)screenH - contentH) * 0.5f;
 	float contentX = panelX + (float)padding;
 	float innerW = (float)(panelW - padding * 2);
 
@@ -223,7 +226,7 @@ int MTLoadingScreen11::Update(
 
 	// Draw panel background
 	result = _DrawRect(pContext, &m_PanelPrimitive,
-		panelX, panelY, (float)panelW, (float)contentH,
+		panelX, panelY, (float)panelW, contentH,
 		COLOR_PANEL_BG, screenW, screenH);
 	if (result != 0) goto EXIT;
 
@@ -232,7 +235,7 @@ int MTLoadingScreen11::Update(
 
 		// Title
 		m_TitleCaption.Draw(pContext, contentX, curY, 1.0f, screenW, screenH);
-		curY += (float)titleH + (float)spacing;
+		curY += titleDispH + (float)spacing;
 
 		// Separator
 		result = _DrawRect(pContext, &m_SeparatorPrimitive,
@@ -243,7 +246,7 @@ int MTLoadingScreen11::Update(
 
 		// Message
 		m_MessageCaption.Draw(pContext, contentX, curY, 1.0f, screenW, screenH);
-		curY += (float)msgH + (float)spacing;
+		curY += msgDispH + (float)spacing;
 
 		// Progress bar track
 		result = _DrawRect(pContext, &m_BarTrackPrimitive,
@@ -261,10 +264,10 @@ int MTLoadingScreen11::Update(
 		}
 
 		// Percent text (centered on bar)
-		unsigned long pctH = 0, pctW = 0;
-		m_PercentCaption.GetTextureSize(&pctH, &pctW);
-		float pctX = contentX + (innerW - (float)pctW) * 0.5f;
-		float pctY = curY + ((float)barH - (float)pctH) * 0.5f;
+		float pctDispW = 0.0f, pctDispH = 0.0f;
+		m_PercentCaption.GetDisplaySize(1.0f, &pctDispW, &pctDispH);
+		float pctX = contentX + (innerW - pctDispW) * 0.5f;
+		float pctY = curY + ((float)barH - pctDispH) * 0.5f;
 		m_PercentCaption.Draw(pContext, pctX, pctY, 1.0f, screenW, screenH);
 	}
 

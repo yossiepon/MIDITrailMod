@@ -137,9 +137,10 @@ int MTScenePianoRoll3DBase11::Draw(
 		GetClientRect(m_hWnd, &rect);
 		unsigned int w = rect.right - rect.left;
 		unsigned int h = rect.bottom - rect.top;
-		result = _DrawDashboard(pContext, w, h);
+		MTSceneLayoutInfo layoutInfo;
+		result = _DrawDashboard(pContext, w, h, &layoutInfo);
 		if (result != 0) goto EXIT;
-		result = m_DiagOverlay.Draw(pContext, w, h);
+		result = m_DiagOverlay.Draw(pContext, w, h, &layoutInfo);
 		if (result != 0) goto EXIT;
 	}
 
@@ -350,10 +351,11 @@ void MTScenePianoRoll3DBase11::_Reset()
 int MTScenePianoRoll3DBase11::_DrawDashboard(
 		ID3D11DeviceContext* pContext,
 		unsigned int screenWidth,
-		unsigned int screenHeight
+		unsigned int screenHeight,
+		MTSceneLayoutInfo* pLayoutInfo
 	)
 {
-	return m_Dashboard.Draw(pContext, screenWidth, screenHeight);
+	return m_Dashboard.Draw(pContext, screenWidth, screenHeight, pLayoutInfo);
 }
 
 void MTScenePianoRoll3DBase11::_OnDashboardWindowResize()

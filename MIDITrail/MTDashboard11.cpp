@@ -169,7 +169,8 @@ void MTDashboard11::Release()
 int MTDashboard11::Draw(
 		ID3D11DeviceContext* pContext,
 		unsigned int screenWidth,
-		unsigned int screenHeight
+		unsigned int screenHeight,
+		MTSceneLayoutInfo* pLayoutInfo
 	)
 {
 	int result = 0;
@@ -179,20 +180,26 @@ int MTDashboard11::Draw(
 
 	{
 		MTStaticCaption11& caption = m_isEnableFileName ? m_FileName : m_Title;
-		unsigned long texH = 0, texW = 0;
-		caption.GetTextureSize(&texH, &texW);
 
 		float captionMag = MTDASHBOARD11_DEFAULT_MAGRATE;
+		float displayW = 0.0f;
+		caption.GetDisplaySize(captionMag, &displayW, NULL);
 		float availableWidth = (float)screenWidth - MTDASHBOARD11_FRAMESIZE * 2.0f;
-		float captionWidth = (float)texW * captionMag;
-		if (captionWidth > availableWidth && texW > 0) {
-			captionMag = availableWidth / (float)texW;
+		if (displayW > availableWidth && displayW > 0.0f) {
+			captionMag *= availableWidth / displayW;
 		}
+
+		float titleDispH = 0.0f;
+		caption.GetDisplaySize(captionMag, NULL, &titleDispH);
 
 		result = caption.Draw(pContext,
 					MTDASHBOARD11_FRAMESIZE, MTDASHBOARD11_FRAMESIZE,
 					captionMag, screenWidth, screenHeight);
 		if (result != 0) goto EXIT;
+
+		if (pLayoutInfo != NULL) {
+			pLayoutInfo->titleAreaHeight = MTDASHBOARD11_FRAMESIZE + titleDispH;
+		}
 	}
 
 	result = _GetCounterStr(counter, 100);
@@ -202,26 +209,27 @@ int MTDashboard11::Draw(
 	if (result != 0) goto EXIT;
 
 	{
-		unsigned long cTexH = 0, cTexW = 0;
-		m_Counter.GetTextureSize(&cTexH, &cTexW);
-
-		unsigned long charWidth = 0;
-		if (wcslen(MTDASHBOARD11_COUNTER_CHARS) > 0) {
-			charWidth = cTexW / (unsigned long)wcslen(MTDASHBOARD11_COUNTER_CHARS);
-		}
 		float counterMag = m_CounterMag;
-		float counterDrawnW = (float)(charWidth * (unsigned long)wcslen(counter)) * counterMag;
+		float charW = 0.0f, charH = 0.0f;
+		m_Counter.GetDisplayCharSize(counterMag, &charW, &charH);
+		float counterDrawnW = charW * (float)wcslen(counter);
 		float availW = (float)screenWidth - MTDASHBOARD11_FRAMESIZE * 2.0f;
 		if (counterDrawnW > availW && counterDrawnW > 0.0f) {
-			counterMag *= availW / counterDrawnW;
+			float shrink = availW / counterDrawnW;
+			counterMag *= shrink;
+			charH *= shrink;
 		}
 
-		float counterY = (float)screenHeight - (float)cTexH * counterMag - MTDASHBOARD11_FRAMESIZE;
+		float counterY = (float)screenHeight - charH - MTDASHBOARD11_FRAMESIZE;
 
 		result = m_Counter.Draw(pContext,
 					m_PosCounterX, counterY,
 					counterMag, screenWidth, screenHeight);
 		if (result != 0) goto EXIT;
+
+		if (pLayoutInfo != NULL) {
+			pLayoutInfo->counterAreaHeight = charH + MTDASHBOARD11_FRAMESIZE;
+		}
 	}
 
 EXIT:;
@@ -235,10 +243,8 @@ int MTDashboard11::_GetCounterPos(float* pX, float* pY)
 {
 	int result = 0;
 	RECT rect;
-	// Declared here (before the first goto) for C++20 compatibility with the goto-based error handling below.
 	unsigned long cw = 0;
 	unsigned long ch = 0;
-	unsigned long th = 0, tw = 0;
 
 	if (!GetClientRect(m_hWnd, &rect)) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
@@ -248,10 +254,12 @@ int MTDashboard11::_GetCounterPos(float* pX, float* pY)
 	cw = rect.right - rect.left;
 	ch = rect.bottom - rect.top;
 
-	m_Counter.GetTextureSize(&th, &tw);
-
-	*pX = MTDASHBOARD11_FRAMESIZE;
-	*pY = (float)ch - ((float)th * m_CounterMag) - MTDASHBOARD11_FRAMESIZE;
+	{
+		float charH = 0.0f;
+		m_Counter.GetDisplayCharSize(m_CounterMag, NULL, &charH);
+		*pX = MTDASHBOARD11_FRAMESIZE;
+		*pY = (float)ch - charH - MTDASHBOARD11_FRAMESIZE;
+	}
 
 EXIT:;
 	return result;

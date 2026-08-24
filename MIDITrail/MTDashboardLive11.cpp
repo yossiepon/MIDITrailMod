@@ -83,12 +83,12 @@ int MTDashboardLive11::Create(
 	if (result != 0) goto EXIT;
 
 	{
-		unsigned long th = 0, tw = 0;
-		m_Counter.GetTextureSize(&th, &tw);
+		float charH = 0.0f;
+		m_Counter.GetDisplayCharSize(MTDASHBOARDLIVE11_DEFAULT_MAGRATE, NULL, &charH);
 		RECT rect;
 		GetClientRect(m_hWnd, &rect);
 		m_PosCounterX = MTDASHBOARDLIVE11_FRAMESIZE;
-		m_PosCounterY = (float)(rect.bottom - rect.top) - (float)th * MTDASHBOARDLIVE11_DEFAULT_MAGRATE - MTDASHBOARDLIVE11_FRAMESIZE;
+		m_PosCounterY = (float)(rect.bottom - rect.top) - charH - MTDASHBOARDLIVE11_FRAMESIZE;
 	}
 
 EXIT:;
@@ -110,7 +110,8 @@ void MTDashboardLive11::Release()
 int MTDashboardLive11::Draw(
 		ID3D11DeviceContext* pContext,
 		unsigned int screenWidth,
-		unsigned int screenHeight
+		unsigned int screenHeight,
+		MTSceneLayoutInfo* pLayoutInfo
 	)
 {
 	int result = 0;
@@ -119,20 +120,25 @@ int MTDashboardLive11::Draw(
 	if (!m_isEnable) goto EXIT;
 
 	{
-		unsigned long texH = 0, texW = 0;
-		m_Title.GetTextureSize(&texH, &texW);
-
 		float captionMag = MTDASHBOARDLIVE11_DEFAULT_MAGRATE;
+		float displayW = 0.0f;
+		m_Title.GetDisplaySize(captionMag, &displayW, NULL);
 		float availableWidth = (float)screenWidth - MTDASHBOARDLIVE11_FRAMESIZE * 2.0f;
-		float captionWidth = (float)texW * captionMag;
-		if (captionWidth > availableWidth && texW > 0) {
-			captionMag = availableWidth / (float)texW;
+		if (displayW > availableWidth && displayW > 0.0f) {
+			captionMag *= availableWidth / displayW;
 		}
+
+		float titleDispH = 0.0f;
+		m_Title.GetDisplaySize(captionMag, NULL, &titleDispH);
 
 		result = m_Title.Draw(pContext,
 					MTDASHBOARDLIVE11_FRAMESIZE, MTDASHBOARDLIVE11_FRAMESIZE,
 					captionMag, screenWidth, screenHeight);
 		if (result != 0) goto EXIT;
+
+		if (pLayoutInfo != NULL) {
+			pLayoutInfo->titleAreaHeight = MTDASHBOARDLIVE11_FRAMESIZE + titleDispH;
+		}
 	}
 
 	result = _GetCounterStr(counter, 100);
@@ -142,26 +148,27 @@ int MTDashboardLive11::Draw(
 	if (result != 0) goto EXIT;
 
 	{
-		unsigned long cTexH = 0, cTexW = 0;
-		m_Counter.GetTextureSize(&cTexH, &cTexW);
-
-		unsigned long charWidth = 0;
-		if (wcslen(MTDASHBOARDLIVE11_COUNTER_CHARS) > 0) {
-			charWidth = cTexW / (unsigned long)wcslen(MTDASHBOARDLIVE11_COUNTER_CHARS);
-		}
 		float counterMag = MTDASHBOARDLIVE11_DEFAULT_MAGRATE;
-		float counterDrawnW = (float)(charWidth * (unsigned long)wcslen(counter)) * counterMag;
+		float charW = 0.0f, charH = 0.0f;
+		m_Counter.GetDisplayCharSize(counterMag, &charW, &charH);
+		float counterDrawnW = charW * (float)wcslen(counter);
 		float availW = (float)screenWidth - MTDASHBOARDLIVE11_FRAMESIZE * 2.0f;
 		if (counterDrawnW > availW && counterDrawnW > 0.0f) {
-			counterMag *= availW / counterDrawnW;
+			float shrink = availW / counterDrawnW;
+			counterMag *= shrink;
+			charH *= shrink;
 		}
 
-		float counterY = (float)screenHeight - (float)cTexH * counterMag - MTDASHBOARDLIVE11_FRAMESIZE;
+		float counterY = (float)screenHeight - charH - MTDASHBOARDLIVE11_FRAMESIZE;
 
 		result = m_Counter.Draw(pContext,
 					m_PosCounterX, counterY,
 					counterMag, screenWidth, screenHeight);
 		if (result != 0) goto EXIT;
+
+		if (pLayoutInfo != NULL) {
+			pLayoutInfo->counterAreaHeight = charH + MTDASHBOARDLIVE11_FRAMESIZE;
+		}
 	}
 
 EXIT:;

@@ -45,6 +45,7 @@ public:
 	int SetString(const WCHAR* pStr);
 	void SetColor(DirectX::SimpleMath::Color color);
 	void GetTextureSize(unsigned long* pHeight, unsigned long* pWidth);
+	void GetDisplayCharSize(float magRate, float* pCharWidth, float* pCharHeight);
 
 	int Draw(
 			ID3D11DeviceContext* pContext,

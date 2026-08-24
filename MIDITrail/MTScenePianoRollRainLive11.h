@@ -55,7 +55,8 @@ protected:
 				const DirectX::SimpleMath::Vector4& lightDir) override;
 	int _DrawDashboard(
 				ID3D11DeviceContext* pContext,
-				unsigned int screenWidth, unsigned int screenHeight) override;
+				unsigned int screenWidth, unsigned int screenHeight,
+				MTSceneLayoutInfo* pLayoutInfo = NULL) override;
 	void _OnDashboardWindowResize() override;
 	void _SetDashboardEnable(bool isEnable) override;
 

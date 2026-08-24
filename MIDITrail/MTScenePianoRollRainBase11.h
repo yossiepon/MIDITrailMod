@@ -18,6 +18,7 @@
 #include "MTDiagOverlay11.h"
 #include "MTNotePitchBend.h"
 #include "MTPianoKeyboardCtrlBase11.h"
+#include "MTSceneLayoutInfo.h"
 
 
 //******************************************************************************
@@ -72,7 +73,8 @@ protected:
 					const DirectX::SimpleMath::Vector4& lightDir) = 0;
 	virtual int _DrawDashboard(
 					ID3D11DeviceContext* pContext,
-					unsigned int screenWidth, unsigned int screenHeight);
+					unsigned int screenWidth, unsigned int screenHeight,
+					MTSceneLayoutInfo* pLayoutInfo = NULL);
 	virtual void _OnDashboardWindowResize();
 	virtual void _SetDashboardEnable(bool isEnable);
 

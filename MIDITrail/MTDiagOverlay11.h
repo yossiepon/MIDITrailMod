@@ -13,15 +13,17 @@
 
 #include "MTSceneComponent11.h"
 #include "MTDynamicCaption11.h"
+#include "MTSceneLayoutInfo.h"
 #include "DXPrimitive11.h"
 #include "DXTexture11.h"
 #include <directxtk/SimpleMath.h>
 #include <vector>
 #include <string>
 
+#define MTDIAGOVERLAY11_DPI_SCALING   (false)
 #define MTDIAGOVERLAY11_FONTNAME  L"MS Gothic"
-#define MTDIAGOVERLAY11_FONTSIZE  (24)
-#define MTDIAGOVERLAY11_MAGRATE   (0.5f)
+#define MTDIAGOVERLAY11_FONTSIZE  (32)
+#define MTDIAGOVERLAY11_MAGRATE   (1.0f)
 #define MTDIAGOVERLAY11_MARGIN    (5.0f)
 #define MTDIAGOVERLAY11_PADDING   (4.0f)
 #define MTDIAGOVERLAY11_LINE_SPACING  (2.0f)
@@ -44,7 +46,8 @@ public:
 	void Release();
 
 	int Draw(ID3D11DeviceContext* pContext,
-	         unsigned int screenWidth, unsigned int screenHeight);
+	         unsigned int screenWidth, unsigned int screenHeight,
+	         const MTSceneLayoutInfo* pLayoutInfo = NULL);
 
 	void Reset() override;
 	void OnWindowResize();
@@ -73,7 +76,8 @@ private:
 	UINT _GetDpi();
 	unsigned long _GetScaledFontSize();
 	int _CreateBgTexture();
-	int _UpdateBgVertices(unsigned int screenWidth, unsigned int screenHeight);
+	int _UpdateBgVertices(unsigned int screenWidth, unsigned int screenHeight,
+	                      const MTSceneLayoutInfo* pLayoutInfo = NULL);
 	int _DrawBackground(ID3D11DeviceContext* pContext);
 	int _RecreateCaptions();
 	int _UpdateStaticLines();

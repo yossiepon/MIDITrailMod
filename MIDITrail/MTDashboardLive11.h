@@ -17,13 +17,14 @@
 #include "MTDynamicCaption11.h"
 #include <directxtk/SimpleMath.h>
 #include <string>
+#include "MTSceneLayoutInfo.h"
 
 #define MTDASHBOARDLIVE11_FONTNAME  L"MS Gothic"
 #define MTDASHBOARDLIVE11_FONTSIZE  (40)
 #define MTDASHBOARDLIVE11_COUNTER_CHARS  MT_ASCII_PRINTABLE_CHARS
 #define MTDASHBOARDLIVE11_COUNTER_SIZE  (40)
 #define MTDASHBOARDLIVE11_FRAMESIZE  (5.0f)
-#define MTDASHBOARDLIVE11_DEFAULT_MAGRATE  (0.5f)
+#define MTDASHBOARDLIVE11_DEFAULT_MAGRATE  (1.0f)
 
 
 //******************************************************************************
@@ -41,7 +42,8 @@ public:
 	void Release();
 
 	int Draw(ID3D11DeviceContext* pContext,
-	         unsigned int screenWidth, unsigned int screenHeight);
+	         unsigned int screenWidth, unsigned int screenHeight,
+	         MTSceneLayoutInfo* pLayoutInfo = NULL);
 
 	void SetMonitoringStatus(bool isMonitoring);
 	int SetMIDIINDeviceName(const TCHAR* pName);
