@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDDiagManager
+//
+// Diagnostics manager (metric storage, formatting, component lifecycle).
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "RTDiagLib.h"

@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / dllmain
+//
+// DLL entry point.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include <windows.h>
 
 BOOL APIENTRY DllMain(

@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDCpuInfo
+//
+// CPU information and usage collector.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDCpuInfo.h"
 #include "RDDiagManager.h"

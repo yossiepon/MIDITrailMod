@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDGpuVendorTelemetryIgcl
+//
+// Intel GPU vendor telemetry provider via IGCL (64bit only).
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "IRDGpuVendorTelemetryProvider.h"

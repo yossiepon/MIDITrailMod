@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDGpuVendorTelemetry
+//
+// GPU vendor telemetry component and provider factory.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDGpuVendorTelemetry.h"
 #include "RDDiagManager.h"

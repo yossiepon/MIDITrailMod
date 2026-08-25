@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDOsInfo
+//
+// Operating system information collector.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDOsInfo.h"
 #include "RDDiagManager.h"

@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDGpuInfo
+//
+// GPU information and VRAM usage collector via DXGI/PDH.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "RDInterfaces.h"
