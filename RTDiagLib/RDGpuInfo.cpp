@@ -10,7 +10,8 @@
 using Microsoft::WRL::ComPtr;
 
 RDGpuInfo::RDGpuInfo()
-	: m_pdhQuery(NULL)
+	: m_vendorId(0)
+	, m_pdhQuery(NULL)
 	, m_pdhGpuCounter(NULL)
 	, m_pdhInitialized(false)
 {
@@ -44,6 +45,11 @@ void RDGpuInfo::SetDevice(ID3D11Device* pDevice)
 	}
 
 	m_pAdapter->QueryInterface(IID_PPV_ARGS(&m_pAdapter3));
+
+	DXGI_ADAPTER_DESC adapterDesc = {};
+	if (SUCCEEDED(m_pAdapter->GetDesc(&adapterDesc))) {
+		m_vendorId = adapterDesc.VendorId;
+	}
 }
 
 void RDGpuInfo::CollectStartup()
@@ -53,6 +59,8 @@ void RDGpuInfo::CollectStartup()
 	DXGI_ADAPTER_DESC desc = {};
 	HRESULT hr = m_pAdapter->GetDesc(&desc);
 	if (FAILED(hr)) return;
+
+	m_vendorId = desc.VendorId;
 
 	char gpuName[256] = {};
 	WideCharToMultiByte(CP_UTF8, 0, desc.Description, -1, gpuName, sizeof(gpuName), NULL, NULL);

@@ -1,0 +1,4 @@
+Source: https://github.com/NVIDIA/nvapi
+Commit: cd6918f (R610-Developer SDK)
+Date: 2026-08-25
+License: MIT (License.txt)

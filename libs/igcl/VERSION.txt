@@ -1,0 +1,5 @@
+Source: https://github.com/intel/drivers.gpu.control-library
+Commit: b6c4629 (v298)
+Date: 2026-08-25
+License: Intel (LICENSE, License.txt)
+Note: 64-bit only (Level0 limitation)

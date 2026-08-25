@@ -437,7 +437,6 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++
 
 ### Others ###
-LICENSE.*
 
 # vcpkg manifest-mode install dir
 /vcpkg_installed/

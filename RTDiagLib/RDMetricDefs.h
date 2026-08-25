@@ -80,6 +80,14 @@ enum class RDMetricId : uint16_t
 	AppInstanceCount,
 	AppInstanceBufferSizeKB,
 
+	// GPU Telemetry: Vendor SDK (IntervalPolling)
+	GpuTemperature,
+	GpuCoreClock,
+	GpuMemoryClock,
+	GpuPowerWatts,
+	GpuFanSpeedRPM,
+	GpuUsageVendorPercent,
+
 	// KDMAPI: OmniMIDI synthesizer info via KDMAPI (IntervalPolling)
 	KdmapiStatus,
 	KdmapiRenderingTime,
