@@ -39,7 +39,7 @@ namespace RDFormatProfile
 
 	static const RDFormatTemplateEntry OverlayMachineSignature[] = {
 		{ "OS",  "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
-		{ "CPU", "${CpuName} (${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T ${CpuBaseMHz} MHz)" },
+		{ "CPU", "${CpuName} ${CpuBaseMHz} MHz (${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T)" },
 		{ "GPU", "${GpuName} ${GpuVramTotalGB}GB (${GpuDriverVersion})" },
 	};
 
