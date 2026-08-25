@@ -18,6 +18,8 @@ public:
 
 private:
 	bool _TryDetect();
+	bool _ConnectDebugPipe();
+	void _DrainPipe();
 
 	typedef ExtendedDebugInfo* (WINAPI *GetModExtendedDebugInfoFunc)();
 	typedef DebugInfo* (WINAPI *GetDriverDebugInfoFunc)();
@@ -27,4 +29,5 @@ private:
 	SynthMode                  m_mode;
 	GetModExtendedDebugInfoFunc m_pfnGetModExtendedDebugInfo;
 	GetDriverDebugInfoFunc      m_pfnGetDriverDebugInfo;
+	HANDLE                     m_hPipe;
 };

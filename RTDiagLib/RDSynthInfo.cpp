@@ -40,15 +40,23 @@ struct ExtendedDebugInfo
 	DWORD  NumChannels;
 };
 
+static const wchar_t* OMNIMIDI_PIPE_TEMPLATE = L"\\\\.\\pipe\\OmniMIDIDbg%u";
+static const unsigned int PIPE_MAX_ATTEMPTS = 8;
+
 RDSynthInfo::RDSynthInfo()
 	: m_mode(SynthMode::None)
 	, m_pfnGetModExtendedDebugInfo(nullptr)
 	, m_pfnGetDriverDebugInfo(nullptr)
+	, m_hPipe(INVALID_HANDLE_VALUE)
 {
 }
 
 RDSynthInfo::~RDSynthInfo()
 {
+	if (m_hPipe != INVALID_HANDLE_VALUE) {
+		CloseHandle(m_hPipe);
+		m_hPipe = INVALID_HANDLE_VALUE;
+	}
 }
 
 void RDSynthInfo::CollectStartup()
@@ -94,12 +102,62 @@ bool RDSynthInfo::_TryDetect()
 	if (m_pfnGetDriverDebugInfo != nullptr) {
 		m_mode = SynthMode::Standard;
 		RDDiagManager::SetString(RDMetricId::KdmapiStatus, "Std");
-		if (logger) logger->info("RDSynthInfo: OmniMIDI standard detected (DebugInfo only)");
+		_ConnectDebugPipe();
+		if (logger) logger->info("RDSynthInfo: OmniMIDI standard detected (DebugInfo only, pipe={})",
+			m_hPipe != INVALID_HANDLE_VALUE ? "connected" : "unavailable");
 		return true;
 	}
 
 	if (logger) logger->warn("RDSynthInfo: OmniMIDI loaded but no debug API found");
 	return false;
+}
+
+bool RDSynthInfo::_ConnectDebugPipe()
+{
+	wchar_t pipeName[MAX_PATH];
+	for (unsigned int i = 1; i <= PIPE_MAX_ATTEMPTS; ++i) {
+		swprintf_s(pipeName, MAX_PATH, OMNIMIDI_PIPE_TEMPLATE, i);
+		m_hPipe = CreateFileW(
+			pipeName,
+			GENERIC_READ,
+			0,
+			NULL,
+			OPEN_EXISTING,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+		if (m_hPipe != INVALID_HANDLE_VALUE) {
+			DWORD mode = PIPE_READMODE_BYTE;
+			SetNamedPipeHandleState(m_hPipe, &mode, NULL, NULL);
+			return true;
+		}
+	}
+	return false;
+}
+
+void RDSynthInfo::_DrainPipe()
+{
+	if (m_hPipe == INVALID_HANDLE_VALUE) return;
+
+	DWORD bytesAvailable = 0;
+	if (!PeekNamedPipe(m_hPipe, NULL, 0, NULL, &bytesAvailable, NULL)) {
+		CloseHandle(m_hPipe);
+		m_hPipe = INVALID_HANDLE_VALUE;
+		return;
+	}
+
+	if (bytesAvailable > 0) {
+		char buf[4096];
+		while (bytesAvailable > 0) {
+			DWORD toRead = (bytesAvailable < sizeof(buf)) ? bytesAvailable : sizeof(buf);
+			DWORD bytesRead = 0;
+			if (!ReadFile(m_hPipe, buf, toRead, &bytesRead, NULL)) {
+				CloseHandle(m_hPipe);
+				m_hPipe = INVALID_HANDLE_VALUE;
+				return;
+			}
+			bytesAvailable -= bytesRead;
+		}
+	}
 }
 
 void RDSynthInfo::CollectIntervalPolling()
@@ -119,6 +177,11 @@ void RDSynthInfo::CollectIntervalPolling()
 		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, info->MaxVoices);
 	}
 	else if (m_mode == SynthMode::Standard && m_pfnGetDriverDebugInfo != nullptr) {
+		if (m_hPipe == INVALID_HANDLE_VALUE) {
+			_ConnectDebugPipe();
+		}
+		_DrainPipe();
+
 		DebugInfo* info = m_pfnGetDriverDebugInfo();
 		if (info == nullptr) return;
 
@@ -130,6 +193,15 @@ void RDSynthInfo::CollectIntervalPolling()
 			totalVoices += info->ActiveVoices[i];
 		}
 		RDDiagManager::SetInt(RDMetricId::KdmapiTotalActiveVoices, totalVoices);
-		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, 0);
+
+		DWORD maxVoices = 0;
+		HKEY hKey = NULL;
+		if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\OmniMIDI\\Configuration",
+				0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+			DWORD dwSize = sizeof(DWORD);
+			RegQueryValueExW(hKey, L"MaxVoices", NULL, NULL, (LPBYTE)&maxVoices, &dwSize);
+			RegCloseKey(hKey);
+		}
+		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, maxVoices);
 	}
 }
