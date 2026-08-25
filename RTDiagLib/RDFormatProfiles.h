@@ -31,6 +31,7 @@ namespace RDFormatProfile
 		{ "Timing", "Update:${AppSceneUpdateTimeMs} Draw:${AppDrawTimeMs} Present:${AppPresentTimeMs} GPU:${AppGpuRenderTimeMs} ms" },
 		{ "Stab",   "StdDev:${AppFrameTimeStdDev} ms, Stutter:${AppStutterPercent}%" },
 		{ "Notes",  "NPS:${AppNps} Tracking:${AppNoteTracking} (Peak:${AppNoteTrackingPeak}) Inst:${AppInstanceCount} Buf:${AppInstanceBufferSizeKB} KB" },
+		{ "KDMAPI(${KdmapiStatus})", "Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiRenderingTime}% Latency:${KdmapiAudioLatency}ms" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
 
@@ -60,6 +61,8 @@ namespace RDFormatProfile
 		{ "Stab",    "StdDev ${AppFrameTimeStdDev} ms, Stutter ${AppStutterPercent}%" },
 		{ "",        "" },
 		{ "Notes",   "${AppNps} NPS, Tracking ${AppNoteTracking} (Peak ${AppNoteTrackingPeak}), Buf ${AppInstanceBufferSizeKB} KB, Inst ${AppInstanceCount}" },
+		{ "",        "" },
+		{ "KDMAPI(${KdmapiStatus})", "Voices ${KdmapiTotalActiveVoices}/${KdmapiMaxVoices}, CPU ${KdmapiRenderingTime}%, Latency ${KdmapiAudioLatency} ms" },
 		{ "",        "" },
 		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
 	};

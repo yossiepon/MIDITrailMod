@@ -1,0 +1,30 @@
+#pragma once
+
+#include "RDInterfaces.h"
+#include <Windows.h>
+
+struct ExtendedDebugInfo;
+struct DebugInfo;
+
+class RDSynthInfo : public IRDStartupComponent, public IRDIntervalPollingComponent
+{
+public:
+	RDSynthInfo();
+	virtual ~RDSynthInfo();
+
+	void CollectStartup() override;
+	void CollectIntervalPolling() override;
+	DWORD GetPollingIntervalMs() const override { return 50; }
+
+private:
+	bool _TryDetect();
+
+	typedef ExtendedDebugInfo* (WINAPI *GetModExtendedDebugInfoFunc)();
+	typedef DebugInfo* (WINAPI *GetDriverDebugInfoFunc)();
+
+	enum class SynthMode { None, Mod, Standard };
+
+	SynthMode                  m_mode;
+	GetModExtendedDebugInfoFunc m_pfnGetModExtendedDebugInfo;
+	GetDriverDebugInfoFunc      m_pfnGetDriverDebugInfo;
+};

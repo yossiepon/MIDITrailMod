@@ -63,6 +63,12 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
 
+	{ RDMetricId::KdmapiStatus,             "KdmapiStatus",             RDMetricType::String },
+	{ RDMetricId::KdmapiRenderingTime,      "KdmapiRenderingTime",      RDMetricType::Float },
+	{ RDMetricId::KdmapiAudioLatency,       "KdmapiAudioLatency",       RDMetricType::Float },
+	{ RDMetricId::KdmapiTotalActiveVoices,  "KdmapiTotalActiveVoices",  RDMetricType::Int },
+	{ RDMetricId::KdmapiMaxVoices,          "KdmapiMaxVoices",          RDMetricType::Int },
+
 	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
 	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },
 	{ RDMetricId::DiagStartupCpuInfoUs, "DiagStartupCpuInfoUs", RDMetricType::Int },
