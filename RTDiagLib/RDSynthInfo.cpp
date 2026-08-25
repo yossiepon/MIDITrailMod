@@ -53,7 +53,12 @@ RDSynthInfo::~RDSynthInfo()
 
 void RDSynthInfo::CollectStartup()
 {
-	RDDiagManager::SetString(RDMetricId::KdmapiStatus, "N/A");
+	HMODULE hMod = LoadLibraryA("OmniMIDI.dll");
+	if (hMod != NULL) {
+		_TryDetect();
+	} else {
+		RDDiagManager::SetString(RDMetricId::KdmapiStatus, "N/A");
+	}
 }
 
 bool RDSynthInfo::_TryDetect()
