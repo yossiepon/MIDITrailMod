@@ -63,6 +63,13 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
 
+	{ RDMetricId::GpuTemperature,           "GpuTemperature",           RDMetricType::Float },
+	{ RDMetricId::GpuCoreClock,             "GpuCoreClock",             RDMetricType::Int },
+	{ RDMetricId::GpuMemoryClock,           "GpuMemoryClock",           RDMetricType::Int },
+	{ RDMetricId::GpuPowerWatts,            "GpuPowerWatts",            RDMetricType::Float },
+	{ RDMetricId::GpuFanSpeedRPM,           "GpuFanSpeedRPM",           RDMetricType::Int },
+	{ RDMetricId::GpuUsageVendorPercent,    "GpuUsageVendorPercent",    RDMetricType::Float },
+
 	{ RDMetricId::KdmapiStatus,             "KdmapiStatus",             RDMetricType::String },
 	{ RDMetricId::KdmapiRenderingTime,      "KdmapiRenderingTime",      RDMetricType::Float },
 	{ RDMetricId::KdmapiAudioLatency,       "KdmapiAudioLatency",       RDMetricType::Float },

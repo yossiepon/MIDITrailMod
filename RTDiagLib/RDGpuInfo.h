@@ -17,6 +17,8 @@ public:
 	void CollectIntervalPolling() override;
 	DWORD GetPollingIntervalMs() const override { return 1000; }
 
+	UINT GetVendorId() const { return m_vendorId; }
+
 private:
 	void _InitPdh();
 	void _CollectVram();
@@ -25,6 +27,7 @@ private:
 	Microsoft::WRL::ComPtr<IDXGIAdapter> m_pAdapter;
 	Microsoft::WRL::ComPtr<IDXGIAdapter3> m_pAdapter3;
 
+	UINT         m_vendorId;
 	PDH_HQUERY   m_pdhQuery;
 	PDH_HCOUNTER m_pdhGpuCounter;
 	bool         m_pdhInitialized;
