@@ -6,6 +6,7 @@
 #include "RDMemoryInfo.h"
 #include "RDWmiInfo.h"
 #include "RDAppMetrics.h"
+#include "RDKdmapiInfo.h"
 #include "RDFormatProfiles.h"
 #include <spdlog/spdlog.h>
 #include <cassert>
@@ -90,11 +91,17 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		auto* appMetrics = new RDAppMetrics();
 		RegisterFrameComponent(appMetrics);
 		s_componentDeleters.push_back([appMetrics]() { delete appMetrics; });
+
+		auto* synthInfo = new RDKdmapiInfo();
+		RegisterStartupComponent(synthInfo);
+		RegisterIntervalPollingComponent(synthInfo);
+		s_componentDeleters.push_back([synthInfo]() { delete synthInfo; });
 	}
 
 	// Startup: fast components run synchronously, slow components run async
-	// Registration order: 0=OsInfo, 1=CpuInfo, 2=GpuInfo, 3=MemoryInfo, 4=WmiInfo
-	// Fast (sync): OsInfo(0), CpuInfo(1), MemoryInfo(3)
+	// Registration order: 0=OsInfo, 1=CpuInfo, 2=GpuInfo, 3=MemoryInfo, 4=WmiInfo, 5=SynthInfo
+	// Fast (sync, timed): OsInfo(0), CpuInfo(1), MemoryInfo(3)
+	// Fast (sync, untimed): SynthInfo(5) — trivial cost, called after timing loop
 	// Slow (async): GpuInfo(2), WmiInfo(4)
 
 	static const RDMetricId syncTimingIds[] = {
@@ -129,6 +136,11 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		QueryPerformanceCounter(&syncEnd);
 		int64_t syncUs = (syncEnd.QuadPart - totalStart.QuadPart) * 1000000 / s_perfFrequency.QuadPart;
 		SetInt(RDMetricId::DiagStartupTotalUs, syncUs);
+	}
+
+	// SynthInfo startup (trivial cost, untimed)
+	if (5 < s_startupComponents.size()) {
+		s_startupComponents[5]->CollectStartup();
 	}
 
 	if (pDevice != nullptr && pContext != nullptr) {
@@ -457,6 +469,7 @@ std::vector<RDFormattedEntry> RDDiagManager::Format(
 		compiled.resize(count);
 		for (size_t i = 0; i < count; ++i) {
 			compiled[i].label = pProfile[i].label;
+			_CompileTemplate(pProfile[i].label, compiled[i].labelSegments);
 			_CompileTemplate(pProfile[i].templateStr, compiled[i].segments);
 		}
 		it = s_compiledProfiles.emplace(pProfile, std::move(compiled)).first;
@@ -470,9 +483,16 @@ std::vector<RDFormattedEntry> RDDiagManager::Format(
 	result.reserve(compiled.size());
 
 	for (const auto& tmpl : compiled) {
+		if (!tmpl.labelSegments.empty()) {
+			s_formatBuffer.push_back(_FormatCompiledTemplate(tmpl.labelSegments));
+		} else {
+			s_formatBuffer.push_back(tmpl.label);
+		}
+		const char* fmtLabel = s_formatBuffer.back().c_str();
+
 		s_formatBuffer.push_back(_FormatCompiledTemplate(tmpl.segments));
 		RDFormattedEntry entry;
-		entry.label = tmpl.label.c_str();
+		entry.label = fmtLabel;
 		entry.value = s_formatBuffer.back().c_str();
 		result.push_back(entry);
 	}

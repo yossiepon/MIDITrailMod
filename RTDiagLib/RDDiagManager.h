@@ -70,6 +70,7 @@ private:
 	struct CompiledTemplate
 	{
 		std::string label;
+		std::vector<CompiledSegment> labelSegments;
 		std::vector<CompiledSegment> segments;
 	};
 

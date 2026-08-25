@@ -280,10 +280,8 @@ int MTDiagOverlay11::Draw(
 	result = _UpdateDynamicLines();
 	if (result != 0) goto EXIT;
 
-	if (screenWidth != m_LastScreenWidth || screenHeight != m_LastScreenHeight) {
-		result = _UpdateBgVertices(screenWidth, screenHeight, pLayoutInfo);
-		if (result != 0) goto EXIT;
-	}
+	result = _UpdateBgVertices(screenWidth, screenHeight, pLayoutInfo);
+	if (result != 0) goto EXIT;
 
 	{
 		float mag = MTDIAGOVERLAY11_MAGRATE;

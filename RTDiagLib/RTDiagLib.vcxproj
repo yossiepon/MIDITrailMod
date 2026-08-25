@@ -228,6 +228,7 @@
     <ClCompile Include="RDWmiInfo.cpp" />
     <ClCompile Include="RDAppMetrics.cpp" />
     <ClCompile Include="RDGpuTimestamp.cpp" />
+    <ClCompile Include="RDKdmapiInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -244,6 +245,7 @@
     <ClInclude Include="RDWmiInfo.h" />
     <ClInclude Include="RDAppMetrics.h" />
     <ClInclude Include="RDGpuTimestamp.h" />
+    <ClInclude Include="RDKdmapiInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YNBaseLib\YNBaseLib.vcxproj">
