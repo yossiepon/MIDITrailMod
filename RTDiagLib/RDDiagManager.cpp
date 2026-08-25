@@ -7,6 +7,7 @@
 #include "RDWmiInfo.h"
 #include "RDAppMetrics.h"
 #include "RDKdmapiInfo.h"
+#include "RDGpuVendorTelemetry.h"
 #include "RDFormatProfiles.h"
 #include <spdlog/spdlog.h>
 #include <cassert>
@@ -96,6 +97,12 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		RegisterStartupComponent(synthInfo);
 		RegisterIntervalPollingComponent(synthInfo);
 		s_componentDeleters.push_back([synthInfo]() { delete synthInfo; });
+
+		auto* gpuTelemetry = new RDGpuVendorTelemetry();
+		gpuTelemetry->SetVendorId(gpuInfo->GetVendorId());
+		gpuTelemetry->InitializeProvider();
+		RegisterIntervalPollingComponent(gpuTelemetry);
+		s_componentDeleters.push_back([gpuTelemetry]() { delete gpuTelemetry; });
 	}
 
 	// Startup: fast components run synchronously, slow components run async

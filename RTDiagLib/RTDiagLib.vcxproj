@@ -229,6 +229,10 @@
     <ClCompile Include="RDAppMetrics.cpp" />
     <ClCompile Include="RDGpuTimestamp.cpp" />
     <ClCompile Include="RDKdmapiInfo.cpp" />
+    <ClCompile Include="RDGpuVendorTelemetry.cpp" />
+    <ClCompile Include="RDGpuVendorTelemetryNvApi.cpp" />
+    <ClCompile Include="RDGpuVendorTelemetryAdlx.cpp" />
+    <ClCompile Include="RDGpuVendorTelemetryIgcl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -246,6 +250,12 @@
     <ClInclude Include="RDAppMetrics.h" />
     <ClInclude Include="RDGpuTimestamp.h" />
     <ClInclude Include="RDKdmapiInfo.h" />
+    <ClInclude Include="IRDGpuVendorTelemetryProvider.h" />
+    <ClInclude Include="RDGpuVendorTelemetryNullProvider.h" />
+    <ClInclude Include="RDGpuVendorTelemetryNvApi.h" />
+    <ClInclude Include="RDGpuVendorTelemetryAdlx.h" />
+    <ClInclude Include="RDGpuVendorTelemetryIgcl.h" />
+    <ClInclude Include="RDGpuVendorTelemetry.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YNBaseLib\YNBaseLib.vcxproj">
