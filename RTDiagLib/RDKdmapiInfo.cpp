@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "RDSynthInfo.h"
+#include "RDKdmapiInfo.h"
 #include "RDDiagManager.h"
 #include <spdlog/spdlog.h>
 
@@ -43,7 +43,7 @@ struct ExtendedDebugInfo
 static const wchar_t* OMNIMIDI_PIPE_TEMPLATE = L"\\\\.\\pipe\\OmniMIDIDbg%u";
 static const unsigned int PIPE_MAX_ATTEMPTS = 8;
 
-RDSynthInfo::RDSynthInfo()
+RDKdmapiInfo::RDKdmapiInfo()
 	: m_mode(SynthMode::None)
 	, m_pfnGetModExtendedDebugInfo(nullptr)
 	, m_pfnGetDriverDebugInfo(nullptr)
@@ -51,7 +51,7 @@ RDSynthInfo::RDSynthInfo()
 {
 }
 
-RDSynthInfo::~RDSynthInfo()
+RDKdmapiInfo::~RDKdmapiInfo()
 {
 	if (m_hPipe != INVALID_HANDLE_VALUE) {
 		CloseHandle(m_hPipe);
@@ -59,7 +59,7 @@ RDSynthInfo::~RDSynthInfo()
 	}
 }
 
-void RDSynthInfo::CollectStartup()
+void RDKdmapiInfo::CollectStartup()
 {
 	HMODULE hMod = LoadLibraryA("OmniMIDI.dll");
 	if (hMod != NULL) {
@@ -69,7 +69,7 @@ void RDSynthInfo::CollectStartup()
 	}
 }
 
-bool RDSynthInfo::_TryDetect()
+bool RDKdmapiInfo::_TryDetect()
 {
 	auto logger = spdlog::get("RD");
 
@@ -81,7 +81,7 @@ bool RDSynthInfo::_TryDetect()
 	if (logger) {
 		char dllPath[MAX_PATH] = {};
 		GetModuleFileNameA(hMod, dllPath, MAX_PATH);
-		logger->info("RDSynthInfo: OmniMIDI loaded from: {}", dllPath);
+		logger->info("RDKdmapiInfo: OmniMIDI loaded from: {}", dllPath);
 	}
 
 	m_pfnGetModExtendedDebugInfo = reinterpret_cast<GetModExtendedDebugInfoFunc>(
@@ -90,11 +90,11 @@ bool RDSynthInfo::_TryDetect()
 	if (m_pfnGetModExtendedDebugInfo != nullptr) {
 		m_mode = SynthMode::Mod;
 		RDDiagManager::SetString(RDMetricId::KdmapiStatus, "Mod");
-		if (logger) logger->info("RDSynthInfo: OmniMIDI Mod detected (ExtendedDebugInfo available)");
+		if (logger) logger->info("RDKdmapiInfo: OmniMIDI Mod detected (ExtendedDebugInfo available)");
 		return true;
 	}
 
-	if (logger) logger->info("RDSynthInfo: GetModExtendedDebugInfo not found, trying GetDriverDebugInfo");
+	if (logger) logger->info("RDKdmapiInfo: GetModExtendedDebugInfo not found, trying GetDriverDebugInfo");
 
 	m_pfnGetDriverDebugInfo = reinterpret_cast<GetDriverDebugInfoFunc>(
 		GetProcAddress(hMod, "GetDriverDebugInfo"));
@@ -103,16 +103,16 @@ bool RDSynthInfo::_TryDetect()
 		m_mode = SynthMode::Standard;
 		RDDiagManager::SetString(RDMetricId::KdmapiStatus, "Std");
 		_ConnectDebugPipe();
-		if (logger) logger->info("RDSynthInfo: OmniMIDI standard detected (DebugInfo only, pipe={})",
+		if (logger) logger->info("RDKdmapiInfo: OmniMIDI standard detected (DebugInfo only, pipe={})",
 			m_hPipe != INVALID_HANDLE_VALUE ? "connected" : "unavailable");
 		return true;
 	}
 
-	if (logger) logger->warn("RDSynthInfo: OmniMIDI loaded but no debug API found");
+	if (logger) logger->warn("RDKdmapiInfo: OmniMIDI loaded but no debug API found");
 	return false;
 }
 
-bool RDSynthInfo::_ConnectDebugPipe()
+bool RDKdmapiInfo::_ConnectDebugPipe()
 {
 	wchar_t pipeName[MAX_PATH];
 	for (unsigned int i = 1; i <= PIPE_MAX_ATTEMPTS; ++i) {
@@ -134,7 +134,7 @@ bool RDSynthInfo::_ConnectDebugPipe()
 	return false;
 }
 
-void RDSynthInfo::_DrainPipe()
+void RDKdmapiInfo::_DrainPipe()
 {
 	if (m_hPipe == INVALID_HANDLE_VALUE) return;
 
@@ -160,7 +160,7 @@ void RDSynthInfo::_DrainPipe()
 	}
 }
 
-void RDSynthInfo::CollectIntervalPolling()
+void RDKdmapiInfo::CollectIntervalPolling()
 {
 	if (m_mode == SynthMode::None) {
 		_TryDetect();

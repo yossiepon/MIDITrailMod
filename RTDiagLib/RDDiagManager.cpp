@@ -6,7 +6,7 @@
 #include "RDMemoryInfo.h"
 #include "RDWmiInfo.h"
 #include "RDAppMetrics.h"
-#include "RDSynthInfo.h"
+#include "RDKdmapiInfo.h"
 #include "RDFormatProfiles.h"
 #include <spdlog/spdlog.h>
 #include <cassert>
@@ -92,7 +92,7 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		RegisterFrameComponent(appMetrics);
 		s_componentDeleters.push_back([appMetrics]() { delete appMetrics; });
 
-		auto* synthInfo = new RDSynthInfo();
+		auto* synthInfo = new RDKdmapiInfo();
 		RegisterStartupComponent(synthInfo);
 		RegisterIntervalPollingComponent(synthInfo);
 		s_componentDeleters.push_back([synthInfo]() { delete synthInfo; });

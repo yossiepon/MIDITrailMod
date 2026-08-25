@@ -6,11 +6,11 @@
 struct ExtendedDebugInfo;
 struct DebugInfo;
 
-class RDSynthInfo : public IRDStartupComponent, public IRDIntervalPollingComponent
+class RDKdmapiInfo : public IRDStartupComponent, public IRDIntervalPollingComponent
 {
 public:
-	RDSynthInfo();
-	virtual ~RDSynthInfo();
+	RDKdmapiInfo();
+	virtual ~RDKdmapiInfo();
 
 	void CollectStartup() override;
 	void CollectIntervalPolling() override;
