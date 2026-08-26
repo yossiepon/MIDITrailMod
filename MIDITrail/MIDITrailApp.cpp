@@ -3229,14 +3229,15 @@ int MIDITrailApp::_ChangePlayStatus(
 
 	//Update MIDI output transport state metric
 	{
-		auto transport = m_Sequencer.GetTransportType();
-		const char* transportStr = _TransportTypeToString(transport);
-		RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, transportStr);
 		if (status == Play || status == MonitorON) {
-			spdlog::info("MIDI OUT opened: transport={}", transportStr);
+			auto transport = m_Sequencer.GetTransportType();
+			const char* transportStr = _TransportTypeToString(transport);
+			RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, transportStr);
+			spdlog::info("MIDI OUT transport: {}", transportStr);
 		}
-		else if (status == Stop || status == MonitorOFF) {
-			spdlog::info("MIDI OUT closed");
+		else if (status == Stop || status == NoData || status == MonitorOFF) {
+			RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, "Deactivated");
+			spdlog::info("MIDI OUT deactivated");
 		}
 	}
 
