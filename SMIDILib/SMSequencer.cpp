@@ -324,6 +324,7 @@ void SMSequencer::Stop()
 	if (m_Status == StatusPause) {
 		//While paused, the timer thread is stopped,
 		//so notify termination from here
+		_CloseMIDIOutDev();
 		m_Status = StatusStop;
 		m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
 	}
@@ -550,6 +551,7 @@ int SMSequencer::_IntervalProc(
 	if (m_TotalPlayTimeNano > 0 && m_CurPlayTime >= m_TotalPlayTimeNano + 100000000ULL) {
 		if (!m_isSkipping) {
 			_AllTrackNoteOff();
+			_CloseMIDIOutDev();
 			m_MsgTrans.PostPlayTime(
 				(unsigned long)(m_TotalPlayTimeNano / 1000000), m_TotalTickTime);
 			m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
@@ -577,6 +579,7 @@ int SMSequencer::_IntervalProc(
 			if (m_PlayIndex >= m_Track.GetSize()) {
 				if (!m_isSkipping) {
 					_AllTrackNoteOff();
+					_CloseMIDIOutDev();
 					m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), m_TotalTickTime);
 					m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
 					m_Status = StatusStop;
@@ -936,6 +939,7 @@ int SMSequencer::_ProcUserRequest(
 
 	//If a stop was requested
 	if (m_UserRequest == RequestStop) {
+		_CloseMIDIOutDev();
 		m_Status = StatusStop;
 		m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
 	}
@@ -1374,6 +1378,7 @@ int SMSequencer::_ProcSkip(
 	//End of playback due to a forward skip
 	if (!(*pIsContinue)) {
 		_AllTrackNoteOff();
+		_CloseMIDIOutDev();
 		m_MsgTrans.PostPlayTime((unsigned long)(m_CurPlayTime/1000000), m_TotalTickTime);
 		m_MsgTrans.PostPlayStatus(SM_PLAYSTATUS_STOP);
 		m_Status = StatusStop;
