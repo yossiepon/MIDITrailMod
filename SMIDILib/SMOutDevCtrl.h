@@ -72,6 +72,7 @@ public:
 	int SendLongMsg(unsigned char portNo, unsigned char* pMsg, unsigned long size);
 	int NoteOffAll();
 	int SoundOffAll();
+	SMTransportType GetTransportType() const;
 
 private:
 

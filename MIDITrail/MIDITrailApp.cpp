@@ -41,6 +41,16 @@
 
 using namespace YNBaseLib;
 
+static const char* _TransportTypeToString(SMIDILib::SMTransportType type)
+{
+	switch (type) {
+	case SMIDILib::SMTransportType::KDMAPIMod: return "Activated, KDMAPI(Mod)";
+	case SMIDILib::SMTransportType::KDMAPI:    return "Activated, KDMAPI(Std)";
+	case SMIDILib::SMTransportType::WinMM:     return "Activated, WinMM";
+	case SMIDILib::SMTransportType::None:
+	default:                                   return "Deactivated";
+	}
+}
 
 //******************************************************************************
 // Window procedure control parameter setup
@@ -3216,6 +3226,19 @@ int MIDITrailApp::_ChangePlayStatus(
 
 	//Change playback status
 	m_PlayStatus = status;
+
+	//Update MIDI output transport state metric
+	{
+		auto transport = m_Sequencer.GetTransportType();
+		const char* transportStr = _TransportTypeToString(transport);
+		RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, transportStr);
+		if (status == Play || status == MonitorON) {
+			spdlog::info("MIDI OUT opened: transport={}", transportStr);
+		}
+		else if (status == Stop || status == MonitorOFF) {
+			spdlog::info("MIDI OUT closed");
+		}
+	}
 
 	////Allow file drag
 	//if ((m_PlayStatus == NoData) || (m_PlayStatus == Stop) || (m_PlayStatus == MonitorOFF)) {

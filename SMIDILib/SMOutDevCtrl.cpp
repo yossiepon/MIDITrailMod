@@ -36,6 +36,7 @@ struct SMOutDevCtrl::ImplData
 	std::set<unsigned long> kdmapiVirtualDevIds;
 	bool kdmapiForkDetected = false;
 	bool kdmapiStreamInitialized = false;
+	SMTransportType currentTransportType = SMTransportType::None;
 
 	IPortOutput* GetPortOutput(unsigned long devId)
 	{
@@ -365,6 +366,26 @@ int SMOutDevCtrl::OpenPortDevAll()
 		}
 	}
 
+	// Determine transport type from open devices
+	{
+		SMTransportType transport = SMTransportType::None;
+		for (const auto& [id, output] : m_pImpl->openDevices) {
+			if (m_pImpl->IsKDMAPIVirtualPort(id)) {
+				transport = SMTransportType::KDMAPIMod;
+				break;
+			}
+			if (id < m_pImpl->outputPorts.size()) {
+				const auto& p = m_pImpl->outputPorts[id];
+				if (p.api == libremidi::API::KDMAPI) {
+					transport = SMTransportType::KDMAPI;
+				} else if (transport == SMTransportType::None) {
+					transport = SMTransportType::WinMM;
+				}
+			}
+		}
+		m_pImpl->currentTransportType = transport;
+	}
+
 EXIT:;
 	return result;
 }
@@ -375,6 +396,7 @@ EXIT:;
 int SMOutDevCtrl::ClosePortDevAll()
 {
 	m_pImpl->openDevices.clear();
+	m_pImpl->currentTransportType = SMTransportType::None;
 
 	if (m_pImpl->kdmapiStreamInitialized) {
 		KDMAPIDirectOutput::TerminateStream();
@@ -382,6 +404,14 @@ int SMOutDevCtrl::ClosePortDevAll()
 	}
 
 	return 0;
+}
+
+//******************************************************************************
+// Get transport type
+//******************************************************************************
+SMTransportType SMOutDevCtrl::GetTransportType() const
+{
+	return m_pImpl->currentTransportType;
 }
 
 //******************************************************************************

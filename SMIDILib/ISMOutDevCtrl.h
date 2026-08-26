@@ -21,6 +21,17 @@
 namespace SMIDILib {
 
 //******************************************************************************
+// MIDI output transport type
+//******************************************************************************
+enum class SMTransportType : int
+{
+	None = 0,
+	WinMM = 1,
+	KDMAPI = 2,
+	KDMAPIMod = 3,
+};
+
+//******************************************************************************
 // MIDI output device control interface
 //******************************************************************************
 class SMIDILIB_API ISMOutDevCtrl
@@ -41,6 +52,7 @@ public:
 	virtual int SendLongMsg(unsigned char portNo, unsigned char* pMsg, unsigned long size) = 0;
 	virtual int NoteOffAll() = 0;
 	virtual int SoundOffAll() = 0;
+	virtual SMTransportType GetTransportType() const = 0;
 
 };
 
