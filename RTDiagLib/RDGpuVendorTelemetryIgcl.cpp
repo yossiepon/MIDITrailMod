@@ -32,9 +32,11 @@ RDGpuVendorTelemetryIgclProvider::RDGpuVendorTelemetryIgclProvider()
 	, m_pfnEnumerateDevices(nullptr)
 	, m_pfnPowerTelemetryGet(nullptr)
 	, m_hasPrevEnergy(false)
+	, m_hasPrevActivity(false)
 {
 	memset(&m_prevEnergyCounter, 0, sizeof(m_prevEnergyCounter));
 	memset(&m_prevTimestamp, 0, sizeof(m_prevTimestamp));
+	memset(&m_prevGlobalActivity, 0, sizeof(m_prevGlobalActivity));
 }
 
 RDGpuVendorTelemetryIgclProvider::~RDGpuVendorTelemetryIgclProvider()
@@ -48,7 +50,10 @@ bool RDGpuVendorTelemetryIgclProvider::Initialize()
 
 	m_hIgcl = LoadLibraryA("igcl.dll");
 	if (!m_hIgcl) {
-		if (logger) logger->debug("IGCL: DLL not found");
+		m_hIgcl = LoadLibraryA("ControlLib.dll");
+	}
+	if (!m_hIgcl) {
+		if (logger) logger->debug("IGCL: DLL not found (tried igcl.dll and ControlLib.dll)");
 		return false;
 	}
 
@@ -118,6 +123,7 @@ void RDGpuVendorTelemetryIgclProvider::Shutdown()
 	m_deviceHandle = nullptr;
 	m_initialized = false;
 	m_hasPrevEnergy = false;
+	m_hasPrevActivity = false;
 
 	if (m_hIgcl) {
 		FreeLibrary(m_hIgcl);
@@ -196,6 +202,33 @@ void RDGpuVendorTelemetryIgclProvider::CollectTelemetry(RDGpuVendorTelemetryData
 
 	if (telemetry.fanSpeed[0].bSupported) {
 		data.fanSpeedRPM = { true, _ReadItemDouble(telemetry.fanSpeed[0]) };
+	}
+
+	// GPU usage from globalActivityCounter (delta/time, same pattern as energy)
+	if (telemetry.globalActivityCounter.bSupported && telemetry.timeStamp.bSupported) {
+		if (m_hasPrevActivity) {
+			double actNow = _ReadItemDouble(telemetry.globalActivityCounter);
+			double actPrev = _ReadItemDouble(m_prevGlobalActivity);
+			double timeNow = _ReadItemDouble(telemetry.timeStamp);
+			double timePrev = _ReadItemDouble(m_prevTimestamp);
+			double dt = timeNow - timePrev;
+			if (dt > 0.0) {
+				double usage = ((actNow - actPrev) / dt) * 100.0;
+				if (usage >= 0.0 && usage <= 100.0) {
+					data.usagePercent = { true, usage };
+				}
+			}
+		}
+		m_prevGlobalActivity = telemetry.globalActivityCounter;
+		m_hasPrevActivity = true;
+	}
+
+	if (telemetry.gpuVoltage.bSupported) {
+		data.voltageVolts = { true, _ReadItemDouble(telemetry.gpuVoltage) };
+	}
+
+	if (telemetry.vramCurrentTemperature.bSupported) {
+		data.vramTemperatureCelsius = { true, _ReadItemDouble(telemetry.vramCurrentTemperature) };
 	}
 }
 

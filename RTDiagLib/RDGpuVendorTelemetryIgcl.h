@@ -166,7 +166,9 @@ private:
 
 	ctl_oc_telemetry_item_t m_prevEnergyCounter;
 	ctl_oc_telemetry_item_t m_prevTimestamp;
+	ctl_oc_telemetry_item_t m_prevGlobalActivity;
 	bool m_hasPrevEnergy;
+	bool m_hasPrevActivity;
 };
 
 #endif // _M_AMD64
