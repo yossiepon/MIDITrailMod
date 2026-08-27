@@ -26,6 +26,7 @@ static const unsigned int NVAPI_QI_ENUM_PHYSICAL_GPUS      = 0xe5ac921f;
 static const unsigned int NVAPI_QI_GET_THERMAL_SETTINGS    = 0xe3640a56;
 static const unsigned int NVAPI_QI_GET_ALL_CLOCK_FREQS     = 0xdcb616c3;
 static const unsigned int NVAPI_QI_GET_DYNAMIC_PSTATES_EX  = 0x60ded2ed;
+static const unsigned int NVAPI_QI_GET_USAGES              = 0x189a1fdf;
 static const unsigned int NVAPI_QI_GET_TACH_READING        = 0x5f608315;
 static const unsigned int NVAPI_QI_POWER_TOPOLOGY_STATUS   = 0xedcf624e;
 static const unsigned int NVAPI_QI_FAN_COOLERS_GET_STATUS  = 0x35aed5e8;
@@ -42,6 +43,7 @@ RDGpuVendorTelemetryNvApiProvider::RDGpuVendorTelemetryNvApiProvider()
 	, m_pfnGetThermalSettings(nullptr)
 	, m_pfnGetAllClockFrequencies(nullptr)
 	, m_pfnGetDynamicPstatesInfoEx(nullptr)
+	, m_pfnGetUsages(nullptr)
 	, m_pfnGetTachReading(nullptr)
 	, m_pfnPowerTopologyGetStatus(nullptr)
 	, m_pfnFanCoolersGetStatus(nullptr)
@@ -90,6 +92,7 @@ bool RDGpuVendorTelemetryNvApiProvider::Initialize()
 	m_pfnGetThermalSettings   = reinterpret_cast<NvAPI_GPU_GetThermalSettingsFunc>(queryInterface(NVAPI_QI_GET_THERMAL_SETTINGS));
 	m_pfnGetAllClockFrequencies = reinterpret_cast<NvAPI_GPU_GetAllClockFrequenciesFunc>(queryInterface(NVAPI_QI_GET_ALL_CLOCK_FREQS));
 	m_pfnGetDynamicPstatesInfoEx = reinterpret_cast<NvAPI_GPU_GetDynamicPstatesInfoExFunc>(queryInterface(NVAPI_QI_GET_DYNAMIC_PSTATES_EX));
+	m_pfnGetUsages            = reinterpret_cast<NvAPI_GPU_GetUsagesFunc>(queryInterface(NVAPI_QI_GET_USAGES));
 	m_pfnGetTachReading       = reinterpret_cast<NvAPI_GPU_GetTachReadingFunc>(queryInterface(NVAPI_QI_GET_TACH_READING));
 	m_pfnPowerTopologyGetStatus = reinterpret_cast<NvAPI_GPU_PowerTopologyGetStatusFunc>(queryInterface(NVAPI_QI_POWER_TOPOLOGY_STATUS));
 	m_pfnFanCoolersGetStatus = reinterpret_cast<NvAPI_GPU_ClientFanCoolersGetStatusFunc>(queryInterface(NVAPI_QI_FAN_COOLERS_GET_STATUS));
@@ -146,6 +149,13 @@ bool RDGpuVendorTelemetryNvApiProvider::_InitNvml()
 	auto logger = spdlog::get("RD");
 
 	m_hNvml = LoadLibraryA("nvml.dll");
+	if (!m_hNvml) {
+		char nvsmiPath[MAX_PATH] = {};
+		if (GetEnvironmentVariableA("ProgramW6432", nvsmiPath, MAX_PATH) > 0) {
+			strncat_s(nvsmiPath, "\\NVIDIA Corporation\\NVSMI\\nvml.dll", MAX_PATH - strlen(nvsmiPath) - 1);
+			m_hNvml = LoadLibraryA(nvsmiPath);
+		}
+	}
 	if (!m_hNvml) {
 		if (logger) logger->debug("NvApi: nvml.dll not found (power fallback unavailable)");
 		return false;
@@ -234,6 +244,9 @@ void RDGpuVendorTelemetryNvApiProvider::CollectTelemetry(RDGpuVendorTelemetryDat
 		settings.version = MAKE_NVAPI_VERSION(NV_GPU_THERMAL_SETTINGS, 2);
 		if (m_pfnGetThermalSettings(m_gpuHandle, 0, &settings) == 0 && settings.count > 0) {
 			data.temperatureCelsius = { true, static_cast<double>(settings.sensor[0].currentTemp) };
+			if (settings.count > 1 && settings.sensor[1].currentTemp > 0) {
+				data.hotspotTemperatureCelsius = { true, static_cast<double>(settings.sensor[1].currentTemp) };
+			}
 		}
 	}
 
@@ -260,6 +273,15 @@ void RDGpuVendorTelemetryNvApiProvider::CollectTelemetry(RDGpuVendorTelemetryDat
 			}
 		}
 	}
+	if (!data.usagePercent.supported && m_pfnGetUsages) {
+		NV_GPU_USAGES usages = {};
+		usages.version = MAKE_NVAPI_VERSION(NV_GPU_USAGES, 1);
+		if (m_pfnGetUsages(m_gpuHandle, &usages) == 0) {
+			if (usages.entries[0].isPresent) {
+				data.usagePercent = { true, static_cast<double>(usages.entries[0].percentage) };
+			}
+		}
+	}
 
 	if (m_nvmlInitialized && m_pfnNvmlDeviceGetPowerUsage) {
 		unsigned int powerMw = 0;
@@ -272,8 +294,8 @@ void RDGpuVendorTelemetryNvApiProvider::CollectTelemetry(RDGpuVendorTelemetryDat
 		if (m_pfnPowerTopologyGetStatus(m_gpuHandle, &powerStatus) == 0 && powerStatus.count > 0) {
 			NvU32 maxPower = 0;
 			for (NvU32 i = 0; i < powerStatus.count && i < 4; i++) {
-				if (powerStatus.entries[i].power > maxPower)
-					maxPower = powerStatus.entries[i].power;
+				if (powerStatus.entries[i].powerUsage > maxPower)
+					maxPower = powerStatus.entries[i].powerUsage;
 			}
 			data.powerWatts = { true, static_cast<double>(maxPower) / 1000.0 };
 		}

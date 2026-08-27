@@ -82,9 +82,20 @@ private:
 		struct Entry {
 			NvU32 domain;
 			NvU32 reserved;
-			NvU32 power;
-			NvU32 unknown;
+			NvU32 powerUsage;
+			NvU32 reserved1;
 		} entries[4];
+	};
+
+	struct NV_GPU_USAGES {
+		NvU32 version;
+		NvU32 reserved;
+		struct Entry {
+			NvU32 isPresent;
+			NvU32 percentage;
+			NvU32 reserved1;
+			NvU32 reserved2;
+		} entries[8];
 	};
 
 
@@ -110,6 +121,7 @@ private:
 		} items[32];
 	};
 
+	typedef NvAPI_Status(__cdecl* NvAPI_GPU_GetUsagesFunc)(NvPhysicalGpuHandle handle, NV_GPU_USAGES* pUsages);
 	typedef NvAPI_Status(__cdecl* NvAPI_GPU_PowerTopologyGetStatusFunc)(NvPhysicalGpuHandle handle, NV_POWER_TOPOLOGY_STATUS* pStatus);
 	typedef NvAPI_Status(__cdecl* NvAPI_GPU_ClientFanCoolersGetStatusFunc)(NvPhysicalGpuHandle handle, void* pStatus);
 
@@ -132,6 +144,7 @@ private:
 	NvAPI_GPU_GetThermalSettingsFunc       m_pfnGetThermalSettings;
 	NvAPI_GPU_GetAllClockFrequenciesFunc   m_pfnGetAllClockFrequencies;
 	NvAPI_GPU_GetDynamicPstatesInfoExFunc  m_pfnGetDynamicPstatesInfoEx;
+	NvAPI_GPU_GetUsagesFunc               m_pfnGetUsages;
 	NvAPI_GPU_GetTachReadingFunc           m_pfnGetTachReading;
 	NvAPI_GPU_PowerTopologyGetStatusFunc   m_pfnPowerTopologyGetStatus;
 	NvAPI_GPU_ClientFanCoolersGetStatusFunc m_pfnFanCoolersGetStatus;
