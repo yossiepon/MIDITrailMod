@@ -74,6 +74,8 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppNps,               "AppNps",               RDMetricType::Float },
 	{ RDMetricId::AppNoteTracking,         "AppNoteTracking",         RDMetricType::Int },
 	{ RDMetricId::AppNoteTrackingPeak,     "AppNoteTrackingPeak",     RDMetricType::Int },
+	{ RDMetricId::AppPolyphony,            "AppPolyphony",            RDMetricType::Int },
+	{ RDMetricId::AppPolyphonyPeak,        "AppPolyphonyPeak",        RDMetricType::Int },
 	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
 

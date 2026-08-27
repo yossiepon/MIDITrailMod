@@ -31,6 +31,7 @@
 #include "SMCommon.h"
 #include "SMFPUCtrl.h"
 #include "SMEventWatcher.h"
+#include <atomic>
 
 namespace SMIDILib {
 
@@ -91,6 +92,9 @@ public:
 	//Playback speed setting
 	void SetPlaybackSpeed(unsigned long nTimes); //n times speed
 	void SetPlaySpeedRatio(unsigned long ratio); //Percentage
+
+	//Get current polyphony count (thread-safe: read from main thread)
+	int32_t GetPolyphonyCount() const { return m_PolyphonyCount.load(std::memory_order_relaxed); }
 
 	//Rewind/skip move time span setting
 	void SetMovingTimeSpanInMsec(unsigned long timeSpan);
@@ -161,6 +165,9 @@ private:
 
 	//Note velocity
 	unsigned char m_NoteVelocity[SM_MIDIOUT_PORT_NUM_MAX][SM_MAX_CH_NUM][SM_MAX_NOTE_NUM];
+
+	//Polyphony counter (atomic: written by timer thread, read by main thread)
+	std::atomic<int32_t> m_PolyphonyCount{0};
 
 	//Timer device processing
 	int _InitializeTimerDev();

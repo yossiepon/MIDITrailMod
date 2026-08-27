@@ -787,11 +787,14 @@ int SMSequencer::_SendMIDIEvent(
 		if (result != 0) goto EXIT;
 	}
 
-	//Update note state
+	//Update note state and polyphony counter
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::NoteOn) {
 		chNo = pMIDIEvent->GetChNo();
 		noteNo = pMIDIEvent->GetNoteNo();
 		if ((portNo < SM_MIDIOUT_PORT_NUM_MAX) && (chNo < SM_MAX_CH_NUM) && (noteNo < SM_MAX_NOTE_NUM)) {
+			if (m_NoteVelocity[portNo][chNo][noteNo] == 0) {
+				m_PolyphonyCount.fetch_add(1, std::memory_order_relaxed);
+			}
 			m_NoteVelocity[portNo][chNo][noteNo] = pMIDIEvent->GetVelocity();
 		}
 	}
@@ -799,6 +802,9 @@ int SMSequencer::_SendMIDIEvent(
 		chNo = pMIDIEvent->GetChNo();
 		noteNo = pMIDIEvent->GetNoteNo();
 		if ((portNo < SM_MIDIOUT_PORT_NUM_MAX) && (chNo < SM_MAX_CH_NUM) && (noteNo < SM_MAX_NOTE_NUM)) {
+			if (m_NoteVelocity[portNo][chNo][noteNo] != 0) {
+				m_PolyphonyCount.fetch_sub(1, std::memory_order_relaxed);
+			}
 			m_NoteVelocity[portNo][chNo][noteNo] = 0;
 		}
 	}
@@ -974,7 +980,7 @@ int SMSequencer::_SendNoteOffForActiveNotes()
 	unsigned int noteNo = 0;
 	unsigned int velocity = 0;
 	unsigned long msg = 0;
-	
+
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 			for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
@@ -987,7 +993,8 @@ int SMSequencer::_SendNoteOffForActiveNotes()
 			}
 		}
 	}
-	
+	m_PolyphonyCount.store(0, std::memory_order_relaxed);
+
 EXIT:;
 	return result;
 }
@@ -1003,7 +1010,8 @@ int SMSequencer::_SendNoteOnForActiveNotes()
 	unsigned int noteNo = 0;
 	unsigned int velocity = 0;
 	unsigned long msg = 0;
-	
+	int32_t count = 0;
+
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
 		for (chNo = 0; chNo < SM_MAX_CH_NUM; chNo++) {
 			for (noteNo = 0; noteNo < SM_MAX_NOTE_NUM; noteNo++) {
@@ -1012,11 +1020,13 @@ int SMSequencer::_SendNoteOnForActiveNotes()
 					msg = (unsigned long)((velocity << 16) | (noteNo << 8) | (0x90 | chNo));
 					result = m_OutDevCtrl.SendShortMsg(portNo, msg);
 					if (result != 0) goto EXIT;
+					count++;
 				}
 			}
 		}
 	}
-	
+	m_PolyphonyCount.store(count, std::memory_order_relaxed);
+
 EXIT:;
 	return result;
 }
@@ -1442,6 +1452,7 @@ void SMSequencer::_SlidePlaybackTime(
 void SMSequencer::_ClearNoteVelocity()
 {
 	memset(m_NoteVelocity, 0, sizeof(unsigned char) * SM_MIDIOUT_PORT_NUM_MAX * SM_MAX_CH_NUM * SM_MAX_NOTE_NUM);
+	m_PolyphonyCount.store(0, std::memory_order_relaxed);
 }
 
 //******************************************************************************
