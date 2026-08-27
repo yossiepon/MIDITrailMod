@@ -26,6 +26,7 @@ static const unsigned int NVAPI_QI_ENUM_PHYSICAL_GPUS      = 0xe5ac921f;
 static const unsigned int NVAPI_QI_GET_THERMAL_SETTINGS    = 0xe3640a56;
 static const unsigned int NVAPI_QI_GET_ALL_CLOCK_FREQS     = 0xdcb616c3;
 static const unsigned int NVAPI_QI_GET_DYNAMIC_PSTATES_EX  = 0x60ded2ed;
+static const unsigned int NVAPI_QI_GET_THERMAL_SENSORS     = 0x65fe3aad;
 static const unsigned int NVAPI_QI_GET_USAGES              = 0x189a1fdf;
 static const unsigned int NVAPI_QI_GET_TACH_READING        = 0x5f608315;
 static const unsigned int NVAPI_QI_POWER_TOPOLOGY_STATUS   = 0xedcf624e;
@@ -36,6 +37,7 @@ RDGpuVendorTelemetryNvApiProvider::RDGpuVendorTelemetryNvApiProvider()
 	, m_hNvml(NULL)
 	, m_initialized(false)
 	, m_clockVersion(3)
+	, m_thermalSensorsMask(0)
 	, m_gpuHandle(nullptr)
 	, m_pfnInitialize(nullptr)
 	, m_pfnUnload(nullptr)
@@ -43,6 +45,7 @@ RDGpuVendorTelemetryNvApiProvider::RDGpuVendorTelemetryNvApiProvider()
 	, m_pfnGetThermalSettings(nullptr)
 	, m_pfnGetAllClockFrequencies(nullptr)
 	, m_pfnGetDynamicPstatesInfoEx(nullptr)
+	, m_pfnGetThermalSensors(nullptr)
 	, m_pfnGetUsages(nullptr)
 	, m_pfnGetTachReading(nullptr)
 	, m_pfnPowerTopologyGetStatus(nullptr)
@@ -92,6 +95,7 @@ bool RDGpuVendorTelemetryNvApiProvider::Initialize()
 	m_pfnGetThermalSettings   = reinterpret_cast<NvAPI_GPU_GetThermalSettingsFunc>(queryInterface(NVAPI_QI_GET_THERMAL_SETTINGS));
 	m_pfnGetAllClockFrequencies = reinterpret_cast<NvAPI_GPU_GetAllClockFrequenciesFunc>(queryInterface(NVAPI_QI_GET_ALL_CLOCK_FREQS));
 	m_pfnGetDynamicPstatesInfoEx = reinterpret_cast<NvAPI_GPU_GetDynamicPstatesInfoExFunc>(queryInterface(NVAPI_QI_GET_DYNAMIC_PSTATES_EX));
+	m_pfnGetThermalSensors    = reinterpret_cast<NvAPI_GPU_GetThermalSensorsFunc>(queryInterface(NVAPI_QI_GET_THERMAL_SENSORS));
 	m_pfnGetUsages            = reinterpret_cast<NvAPI_GPU_GetUsagesFunc>(queryInterface(NVAPI_QI_GET_USAGES));
 	m_pfnGetTachReading       = reinterpret_cast<NvAPI_GPU_GetTachReadingFunc>(queryInterface(NVAPI_QI_GET_TACH_READING));
 	m_pfnPowerTopologyGetStatus = reinterpret_cast<NvAPI_GPU_PowerTopologyGetStatusFunc>(queryInterface(NVAPI_QI_POWER_TOPOLOGY_STATUS));
@@ -132,6 +136,18 @@ bool RDGpuVendorTelemetryNvApiProvider::Initialize()
 			freqs.version = MAKE_NVAPI_VERSION(NV_GPU_CLOCK_FREQUENCIES, ver);
 			if (m_pfnGetAllClockFrequencies(m_gpuHandle, &freqs) == 0) {
 				m_clockVersion = ver;
+				break;
+			}
+		}
+	}
+
+	if (m_pfnGetThermalSensors) {
+		for (NvU32 bit = 0; bit < 32; bit++) {
+			NV_GPU_THERMAL_SENSORS sensors = {};
+			sensors.version = MAKE_NVAPI_VERSION(NV_GPU_THERMAL_SENSORS, 2);
+			sensors.mask = 1u << bit;
+			if (m_pfnGetThermalSensors(m_gpuHandle, &sensors) != 0) {
+				m_thermalSensorsMask = (1u << bit) - 1;
 				break;
 			}
 		}
@@ -244,8 +260,17 @@ void RDGpuVendorTelemetryNvApiProvider::CollectTelemetry(RDGpuVendorTelemetryDat
 		settings.version = MAKE_NVAPI_VERSION(NV_GPU_THERMAL_SETTINGS, 2);
 		if (m_pfnGetThermalSettings(m_gpuHandle, 0, &settings) == 0 && settings.count > 0) {
 			data.temperatureCelsius = { true, static_cast<double>(settings.sensor[0].currentTemp) };
-			if (settings.count > 1 && settings.sensor[1].currentTemp > 0) {
-				data.hotspotTemperatureCelsius = { true, static_cast<double>(settings.sensor[1].currentTemp) };
+		}
+	}
+
+	if (m_pfnGetThermalSensors && m_thermalSensorsMask > 0) {
+		NV_GPU_THERMAL_SENSORS sensors = {};
+		sensors.version = MAKE_NVAPI_VERSION(NV_GPU_THERMAL_SENSORS, 2);
+		sensors.mask = m_thermalSensorsMask;
+		if (m_pfnGetThermalSensors(m_gpuHandle, &sensors) == 0) {
+			double hotspot = static_cast<double>(sensors.temperatures[1]) / 256.0;
+			if (hotspot > 0.0 && hotspot < 256.0) {
+				data.hotspotTemperatureCelsius = { true, hotspot };
 			}
 		}
 	}

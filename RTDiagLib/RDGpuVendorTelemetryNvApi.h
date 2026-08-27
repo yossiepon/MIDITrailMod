@@ -121,6 +121,17 @@ private:
 		} items[32];
 	};
 
+	static const NvU32 NV_THERMAL_SENSORS_RESERVED_COUNT = 8;
+	static const NvU32 NV_THERMAL_SENSORS_TEMP_COUNT = 32;
+
+	struct NV_GPU_THERMAL_SENSORS {
+		NvU32 version;
+		NvU32 mask;
+		NvS32 reserved[8];
+		NvS32 temperatures[32];
+	};
+
+	typedef NvAPI_Status(__cdecl* NvAPI_GPU_GetThermalSensorsFunc)(NvPhysicalGpuHandle handle, NV_GPU_THERMAL_SENSORS* pSensors);
 	typedef NvAPI_Status(__cdecl* NvAPI_GPU_GetUsagesFunc)(NvPhysicalGpuHandle handle, NV_GPU_USAGES* pUsages);
 	typedef NvAPI_Status(__cdecl* NvAPI_GPU_PowerTopologyGetStatusFunc)(NvPhysicalGpuHandle handle, NV_POWER_TOPOLOGY_STATUS* pStatus);
 	typedef NvAPI_Status(__cdecl* NvAPI_GPU_ClientFanCoolersGetStatusFunc)(NvPhysicalGpuHandle handle, void* pStatus);
@@ -135,6 +146,7 @@ private:
 	HMODULE m_hNvml;
 	bool    m_initialized;
 	NvU32   m_clockVersion;
+	NvU32   m_thermalSensorsMask;
 
 	NvPhysicalGpuHandle m_gpuHandle;
 
@@ -144,6 +156,7 @@ private:
 	NvAPI_GPU_GetThermalSettingsFunc       m_pfnGetThermalSettings;
 	NvAPI_GPU_GetAllClockFrequenciesFunc   m_pfnGetAllClockFrequencies;
 	NvAPI_GPU_GetDynamicPstatesInfoExFunc  m_pfnGetDynamicPstatesInfoEx;
+	NvAPI_GPU_GetThermalSensorsFunc        m_pfnGetThermalSensors;
 	NvAPI_GPU_GetUsagesFunc               m_pfnGetUsages;
 	NvAPI_GPU_GetTachReadingFunc           m_pfnGetTachReading;
 	NvAPI_GPU_PowerTopologyGetStatusFunc   m_pfnPowerTopologyGetStatus;

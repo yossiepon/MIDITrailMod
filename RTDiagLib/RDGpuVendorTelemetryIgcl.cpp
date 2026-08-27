@@ -35,8 +35,9 @@ RDGpuVendorTelemetryIgclProvider::RDGpuVendorTelemetryIgclProvider()
 	, m_hasPrevActivity(false)
 {
 	memset(&m_prevEnergyCounter, 0, sizeof(m_prevEnergyCounter));
-	memset(&m_prevTimestamp, 0, sizeof(m_prevTimestamp));
+	memset(&m_prevEnergyTimestamp, 0, sizeof(m_prevEnergyTimestamp));
 	memset(&m_prevGlobalActivity, 0, sizeof(m_prevGlobalActivity));
+	memset(&m_prevActivityTimestamp, 0, sizeof(m_prevActivityTimestamp));
 }
 
 RDGpuVendorTelemetryIgclProvider::~RDGpuVendorTelemetryIgclProvider()
@@ -188,14 +189,14 @@ void RDGpuVendorTelemetryIgclProvider::CollectTelemetry(RDGpuVendorTelemetryData
 				double energyNow = _ReadItemDouble(*pEnergy);
 				double energyPrev = _ReadItemDouble(m_prevEnergyCounter);
 				double timeNow = _ReadItemDouble(telemetry.timeStamp);
-				double timePrev = _ReadItemDouble(m_prevTimestamp);
+				double timePrev = _ReadItemDouble(m_prevEnergyTimestamp);
 				double dt = timeNow - timePrev;
 				if (dt > 0.0) {
 					data.powerWatts = { true, (energyNow - energyPrev) / dt };
 				}
 			}
 			m_prevEnergyCounter = *pEnergy;
-			m_prevTimestamp = telemetry.timeStamp;
+			m_prevEnergyTimestamp = telemetry.timeStamp;
 			m_hasPrevEnergy = true;
 		}
 	}
@@ -210,7 +211,7 @@ void RDGpuVendorTelemetryIgclProvider::CollectTelemetry(RDGpuVendorTelemetryData
 			double actNow = _ReadItemDouble(telemetry.globalActivityCounter);
 			double actPrev = _ReadItemDouble(m_prevGlobalActivity);
 			double timeNow = _ReadItemDouble(telemetry.timeStamp);
-			double timePrev = _ReadItemDouble(m_prevTimestamp);
+			double timePrev = _ReadItemDouble(m_prevActivityTimestamp);
 			double dt = timeNow - timePrev;
 			if (dt > 0.0) {
 				double usage = ((actNow - actPrev) / dt) * 100.0;
@@ -220,6 +221,7 @@ void RDGpuVendorTelemetryIgclProvider::CollectTelemetry(RDGpuVendorTelemetryData
 			}
 		}
 		m_prevGlobalActivity = telemetry.globalActivityCounter;
+		m_prevActivityTimestamp = telemetry.timeStamp;
 		m_hasPrevActivity = true;
 	}
 
