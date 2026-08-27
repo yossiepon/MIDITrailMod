@@ -438,6 +438,16 @@ int MIDITrailApp::Run()
 
 				_UpdateFPS();
 
+				//Update polyphony from sequencer (atomic read from timer thread)
+				if (m_PlayStatus == Play) {
+					int32_t polyphony = m_Sequencer.GetPolyphonyCount();
+					RDDiagManager::SetInt(RDMetricId::AppPolyphony, static_cast<int64_t>(polyphony));
+					int64_t peak = RDDiagManager::GetInt(RDMetricId::AppPolyphonyPeak);
+					if (static_cast<int64_t>(polyphony) > peak) {
+						RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, static_cast<int64_t>(polyphony));
+					}
+				}
+
 				//Update runtime diagnostics (after scene update/draw/present)
 				RDDiagManager::Update();
 			}
@@ -1385,6 +1395,10 @@ int MIDITrailApp::_OnMenuPlay()
 		//Notify the scene that playback has started
 		result = m_pScene->OnPlayStart();
 		if (result != 0) goto EXIT;
+
+		//Clear peak metrics for new playback session
+		RDDiagManager::SetInt(RDMetricId::AppNoteTrackingPeak, 0);
+		RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, 0);
 
 		//Clear the latest sequencer message
 		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
