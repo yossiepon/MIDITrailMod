@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / stdafx
+//
+// Precompiled header.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "targetver.h"

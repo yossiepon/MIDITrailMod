@@ -1,9 +1,15 @@
+//******************************************************************************
+//
+// RTDiagLib / RDGpuVendorTelemetryAdlx
+//
+// AMD GPU vendor telemetry provider via ADLX.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDGpuVendorTelemetryAdlx.h"
-
-#include "../libs/adlx/ADLX.h"
-#include "../libs/adlx/ISystem.h"
-#include "../libs/adlx/IPerformanceMonitoring.h"
 
 #include <spdlog/spdlog.h>
 

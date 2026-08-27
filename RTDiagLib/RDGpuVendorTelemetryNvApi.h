@@ -6,7 +6,9 @@
 //
 // Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
-// Non-official NVAPI struct layouts and fallback patterns referenced from:
+// Official NVAPI struct definitions derived from:
+//   NVAPI SDK (MIT) - https://github.com/NVIDIA/nvapi
+// Non-official NVAPI struct layouts and fallback patterns derived from:
 //   LibreHardwareMonitor (MIT) - https://github.com/LibreHardwareMonitor/LibreHardwareMonitor
 //   NvAPIWrapper (MIT) - https://github.com/falahati/NvAPIWrapper
 //

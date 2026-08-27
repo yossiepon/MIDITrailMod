@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / IRDGpuVendorTelemetryProvider
+//
+// GPU vendor telemetry provider interface and data structures.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include <memory>

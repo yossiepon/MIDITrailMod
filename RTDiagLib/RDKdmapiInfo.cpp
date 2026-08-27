@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDKdmapiInfo
+//
+// OmniMIDI KDMAPI synthesizer info collector.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDKdmapiInfo.h"
 #include "RDDiagManager.h"

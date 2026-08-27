@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDMetricDefs
+//
+// Metric ID definitions and metadata table.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "RTDiagLib.h"

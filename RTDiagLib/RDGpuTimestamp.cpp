@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDGpuTimestamp
+//
+// D3D11 GPU timestamp query for render time measurement.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDGpuTimestamp.h"
 #include "RDDiagManager.h"

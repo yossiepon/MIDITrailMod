@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDInterfaces
+//
+// RTDiagLib component interfaces (Startup, IntervalPolling, Frame).
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "RTDiagLib.h"

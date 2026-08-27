@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDAppMetrics
+//
+// Application frame metrics collector (FPS, NPS, frame timing).
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "RDInterfaces.h"

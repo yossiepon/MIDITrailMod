@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDWmiInfo
+//
+// WMI-based hardware information collector (GPU driver version, machine type).
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDWmiInfo.h"
 #include "RDDiagManager.h"

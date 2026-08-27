@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDFormatProfiles
+//
+// Format template profiles for log output and overlay display.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #include "RDMetricDefs.h"

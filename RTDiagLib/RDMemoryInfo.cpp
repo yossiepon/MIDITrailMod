@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / RDMemoryInfo
+//
+// System memory and process memory collector.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #include "stdafx.h"
 #include "RDMemoryInfo.h"
 #include "RDDiagManager.h"

@@ -1,3 +1,13 @@
+//******************************************************************************
+//
+// RTDiagLib / targetver
+//
+// Windows SDK target version.
+//
+// Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
+//
+//******************************************************************************
+
 #pragma once
 
 #ifndef WINVER
