@@ -1,4 +1,0 @@
-Source: https://github.com/GPUOpen-LibrariesAndSDKs/ADLX
-Commit: d9f04a9 (ADLX SDK v1.5)
-Date: 2026-08-25
-License: Copyright AMD, header-level copyright notice

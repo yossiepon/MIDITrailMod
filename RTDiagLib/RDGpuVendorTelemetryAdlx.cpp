@@ -11,10 +11,6 @@
 #include "stdafx.h"
 #include "RDGpuVendorTelemetryAdlx.h"
 
-#include "../libs/adlx/ADLX.h"
-#include "../libs/adlx/ISystem.h"
-#include "../libs/adlx/IPerformanceMonitoring.h"
-
 #include <spdlog/spdlog.h>
 
 using namespace adlx;
