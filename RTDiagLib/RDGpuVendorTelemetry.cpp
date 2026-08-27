@@ -99,4 +99,16 @@ void RDGpuVendorTelemetry::CollectIntervalPolling()
 	if (data.usagePercent.supported) {
 		RDDiagManager::SetFloat(RDMetricId::GpuUsageVendorPercent, data.usagePercent.value);
 	}
+	if (data.hotspotTemperatureCelsius.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuHotspotTemperature, data.hotspotTemperatureCelsius.value);
+	}
+	if (data.voltageVolts.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuVoltage, data.voltageVolts.value);
+	}
+	if (data.intakeTemperatureCelsius.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuIntakeTemperature, data.intakeTemperatureCelsius.value);
+	}
+	if (data.vramTemperatureCelsius.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuVramTemperature, data.vramTemperatureCelsius.value);
+	}
 }

@@ -18,7 +18,8 @@ namespace RDFormatProfile
 		{ "OS",      "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
 		{ "CPU",     "${CpuName} (${CpuArchitecture})" },
 		{ "CPU info","${CpuVendor}, ${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T, ${CpuBaseMHz} MHz" },
-		{ "GPU",     "${GpuName}" },
+		{ "GPU",     "${GpuName} ${RdpSession}" },
+		{ "PCI",     "${GpuPciId}" },
 		{ "VRAM",    "${GpuVramUsedMB} / ${GpuVramTotalMB} MB used (Budget: ${GpuVramBudgetMB} MB)" },
 		{ "Driver",  "${GpuDriverVersion}" },
 		{ "RAM",     "${PhysMemAvailableMB} / ${PhysMemTotalMB} MB free" },
@@ -41,7 +42,8 @@ namespace RDFormatProfile
 		{ "Timing", "Update:${AppSceneUpdateTimeMs} Draw:${AppDrawTimeMs} Present:${AppPresentTimeMs} GPU:${AppGpuRenderTimeMs} ms" },
 		{ "Stab",   "StdDev:${AppFrameTimeStdDev} ms, Stutter:${AppStutterPercent}%" },
 		{ "Notes",  "NPS:${AppNps} Tracking:${AppNoteTracking} (Peak:${AppNoteTrackingPeak}) Inst:${AppInstanceCount} Buf:${AppInstanceBufferSizeKB} KB" },
-		{ "GPU Ext", "${GpuUsageVendorPercent}%, ${GpuTemperature}C, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, ${GpuPowerWatts} W, Fan ${GpuFanSpeedRPM} RPM" },
+		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
+		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V" },
 		{ "KDMAPI", "${AppMidiOutTransport}, Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiRenderingTime}% Latency:${KdmapiAudioLatency}ms" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
@@ -52,7 +54,7 @@ namespace RDFormatProfile
 	static const RDFormatTemplateEntry OverlayMachineSignature[] = {
 		{ "OS",  "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
 		{ "CPU", "${CpuName} ${CpuBaseMHz} MHz (${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T)" },
-		{ "GPU", "${GpuName} ${GpuVramTotalGB}GB (${GpuDriverVersion})" },
+		{ "GPU", "${GpuName} ${GpuVramTotalGB}GB (${GpuDriverVersion}) ${RdpSession}" },
 	};
 
 	static const size_t OverlayMachineSignatureCount =
@@ -66,7 +68,8 @@ namespace RDFormatProfile
 		{ "VRAM",    "${GpuVramUsedMB} / ${GpuVramTotalMB} MB used (Free ${GpuVramFreeMB} MB)" },
 		{ "",        "" },
 		{ "Load",    "CPU ${CpuUsageSystem}% (Sys) / ${CpuUsageProcess}% (Proc), GPU ${GpuUsagePercent}%" },
-		{ "GPU Ext", "${GpuUsageVendorPercent}%, ${GpuTemperature}C, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, ${GpuPowerWatts} W, Fan ${GpuFanSpeedRPM} RPM" },
+		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
+		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V" },
 		{ "",        "" },
 		{ "Frame",   "${AppFps} FPS (${AppAvgFrameTimeMs} ms), 1%Low ${AppFps1PercentLow}, 0.1%Low ${AppFps01PercentLow}" },
 		{ "Timing",  "Update ${AppSceneUpdateTimeMs} ms, Draw ${AppDrawTimeMs} ms, Present ${AppPresentTimeMs} ms, GPU ${AppGpuRenderTimeMs} ms" },

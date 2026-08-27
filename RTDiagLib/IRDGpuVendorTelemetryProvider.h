@@ -28,6 +28,11 @@ struct RDGpuVendorTelemetryData
 	Field usagePercent;
 	Field powerWatts;
 	Field fanSpeedRPM;
+
+	Field hotspotTemperatureCelsius;
+	Field voltageVolts;
+	Field intakeTemperatureCelsius;
+	Field vramTemperatureCelsius;
 };
 
 class IRDGpuVendorTelemetryProvider
