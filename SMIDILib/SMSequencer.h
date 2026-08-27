@@ -85,6 +85,9 @@ public:
 	//Get playback status
 	Status GetStatus() const { return m_Status; }
 
+	//Get MIDI output transport type
+	SMTransportType GetTransportType() const { return m_OutDevCtrl.GetTransportType(); }
+
 	//Playback speed setting
 	void SetPlaybackSpeed(unsigned long nTimes); //n times speed
 	void SetPlaySpeedRatio(unsigned long ratio); //Percentage

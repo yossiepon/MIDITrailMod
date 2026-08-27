@@ -81,6 +81,7 @@ enum class RDMetricId : uint16_t
 	AppTotalNoteCount,
 	AppTotalPlayTimeMs,
 	AppSceneType,
+	AppMidiOutTransport,
 
 	// App: Black MIDI metrics (Frame, Push)
 	AppNoteActivationsPerFrame,
