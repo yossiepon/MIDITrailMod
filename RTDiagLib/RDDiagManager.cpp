@@ -494,7 +494,7 @@ std::vector<RDFormattedEntry> RDDiagManager::Format(
 
 	const auto& compiled = it->second;
 	s_formatBuffer.clear();
-	s_formatBuffer.reserve(compiled.size());
+	s_formatBuffer.reserve(compiled.size() * 2);
 
 	std::vector<RDFormattedEntry> result;
 	result.reserve(compiled.size());
