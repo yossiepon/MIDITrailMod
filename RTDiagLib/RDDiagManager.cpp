@@ -447,6 +447,8 @@ void RDDiagManager::ResetFrameMetrics()
 		RDMetricId::AppNoteActivationsPerFrame,
 		RDMetricId::AppNoteTracking,
 		RDMetricId::AppNoteTrackingPeak,
+		RDMetricId::AppPolyphony,
+		RDMetricId::AppPolyphonyPeak,
 		RDMetricId::AppInstanceCount,
 		RDMetricId::AppInstanceBufferSizeKB,
 	};

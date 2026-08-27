@@ -92,6 +92,8 @@ enum class RDMetricId : uint16_t
 	AppNps,
 	AppNoteTracking,
 	AppNoteTrackingPeak,
+	AppPolyphony,
+	AppPolyphonyPeak,
 	AppInstanceCount,
 	AppInstanceBufferSizeKB,
 
