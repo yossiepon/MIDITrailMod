@@ -80,6 +80,11 @@ void RDGpuInfo::CollectStartup()
 	RDDiagManager::SetInt(RDMetricId::GpuVramTotalMB, vramMB);
 	RDDiagManager::SetInt(RDMetricId::GpuVramTotalGB, (vramMB + 1023) / 1024);
 
+	char pciId[64];
+	snprintf(pciId, sizeof(pciId), "%04X:%04X:%08X:%02X",
+		desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision);
+	RDDiagManager::SetString(RDMetricId::GpuPciId, pciId);
+
 	_CollectVram();
 	_InitPdh();
 }

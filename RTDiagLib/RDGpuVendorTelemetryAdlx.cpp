@@ -188,12 +188,23 @@ void RDGpuVendorTelemetryAdlxProvider::CollectTelemetry(RDGpuVendorTelemetryData
 			}
 		}
 
+		// Power: board power preferred over core power (ADR-0137)
 		supported = false;
-		pSupport->IsSupportedGPUPower(&supported);
+		pSupport->IsSupportedGPUTotalBoardPower(&supported);
 		if (supported) {
 			adlx_double power = 0.0;
-			if (ADLX_SUCCEEDED(pMetrics->GPUPower(&power))) {
+			if (ADLX_SUCCEEDED(pMetrics->GPUTotalBoardPower(&power))) {
 				data.powerWatts = { true, power };
+			}
+		}
+		if (!data.powerWatts.supported) {
+			supported = false;
+			pSupport->IsSupportedGPUPower(&supported);
+			if (supported) {
+				adlx_double power = 0.0;
+				if (ADLX_SUCCEEDED(pMetrics->GPUPower(&power))) {
+					data.powerWatts = { true, power };
+				}
 			}
 		}
 
@@ -203,6 +214,33 @@ void RDGpuVendorTelemetryAdlxProvider::CollectTelemetry(RDGpuVendorTelemetryData
 			adlx_int fanRPM = 0;
 			if (ADLX_SUCCEEDED(pMetrics->GPUFanSpeed(&fanRPM))) {
 				data.fanSpeedRPM = { true, static_cast<double>(fanRPM) };
+			}
+		}
+
+		supported = false;
+		pSupport->IsSupportedGPUHotspotTemperature(&supported);
+		if (supported) {
+			adlx_double temp = 0.0;
+			if (ADLX_SUCCEEDED(pMetrics->GPUHotspotTemperature(&temp))) {
+				data.hotspotTemperatureCelsius = { true, temp };
+			}
+		}
+
+		supported = false;
+		pSupport->IsSupportedGPUVoltage(&supported);
+		if (supported) {
+			adlx_int voltage = 0;
+			if (ADLX_SUCCEEDED(pMetrics->GPUVoltage(&voltage))) {
+				data.voltageVolts = { true, static_cast<double>(voltage) / 1000.0 };
+			}
+		}
+
+		supported = false;
+		pSupport->IsSupportedGPUIntakeTemperature(&supported);
+		if (supported) {
+			adlx_double temp = 0.0;
+			if (ADLX_SUCCEEDED(pMetrics->GPUIntakeTemperature(&temp))) {
+				data.intakeTemperatureCelsius = { true, temp };
 			}
 		}
 

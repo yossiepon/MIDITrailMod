@@ -14,6 +14,7 @@
 #include "RDGpuVendorTelemetryNullProvider.h"
 #include "RDGpuVendorTelemetryNvApi.h"
 #include "RDGpuVendorTelemetryAdlx.h"
+#include "RDGpuVendorTelemetryAdl.h"
 #include "RDGpuVendorTelemetryIgcl.h"
 #include <spdlog/spdlog.h>
 
@@ -27,6 +28,10 @@ std::unique_ptr<IRDGpuVendorTelemetryProvider> CreateRDGpuVendorTelemetryProvide
 		break;
 	case 0x1002:
 		provider = std::make_unique<RDGpuVendorTelemetryAdlxProvider>();
+		if (provider && provider->Initialize()) {
+			return provider;
+		}
+		provider = std::make_unique<RDGpuVendorTelemetryAdlProvider>();
 		break;
 	case 0x8086:
 #ifdef _M_AMD64
@@ -98,5 +103,17 @@ void RDGpuVendorTelemetry::CollectIntervalPolling()
 	}
 	if (data.usagePercent.supported) {
 		RDDiagManager::SetFloat(RDMetricId::GpuUsageVendorPercent, data.usagePercent.value);
+	}
+	if (data.hotspotTemperatureCelsius.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuHotspotTemperature, data.hotspotTemperatureCelsius.value);
+	}
+	if (data.voltageVolts.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuVoltage, data.voltageVolts.value);
+	}
+	if (data.intakeTemperatureCelsius.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuIntakeTemperature, data.intakeTemperatureCelsius.value);
+	}
+	if (data.vramTemperatureCelsius.supported) {
+		RDDiagManager::SetFloat(RDMetricId::GpuVramTemperature, data.vramTemperatureCelsius.value);
 	}
 }

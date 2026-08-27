@@ -47,11 +47,15 @@ enum class RDMetricId : uint16_t
 	ProcessWorkingSetMB,
 	ProcessHandles,
 
+	// Session (Startup)
+	RdpSession,
+
 	// GPU (Startup)
 	GpuName,
 	GpuVramTotalMB,
 	GpuVramTotalGB,
 	GpuDriverVersion,
+	GpuPciId,
 	// GPU (IntervalPolling)
 	GpuVramUsedMB,
 	GpuVramFreeMB,
@@ -98,6 +102,10 @@ enum class RDMetricId : uint16_t
 	GpuPowerWatts,
 	GpuFanSpeedRPM,
 	GpuUsageVendorPercent,
+	GpuHotspotTemperature,
+	GpuVoltage,
+	GpuIntakeTemperature,
+	GpuVramTemperature,
 
 	// KDMAPI: OmniMIDI synthesizer info via KDMAPI (IntervalPolling)
 	KdmapiStatus,

@@ -37,10 +37,13 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::ProcessWorkingSetMB,  "ProcessWorkingSetMB",  RDMetricType::Int },
 	{ RDMetricId::ProcessHandles,       "ProcessHandles",       RDMetricType::Int },
 
+	{ RDMetricId::RdpSession,           "RdpSession",           RDMetricType::String },
+
 	{ RDMetricId::GpuName,              "GpuName",              RDMetricType::String },
 	{ RDMetricId::GpuVramTotalMB,       "GpuVramTotalMB",       RDMetricType::Int },
 	{ RDMetricId::GpuVramTotalGB,       "GpuVramTotalGB",       RDMetricType::Int },
 	{ RDMetricId::GpuDriverVersion,     "GpuDriverVersion",     RDMetricType::String },
+	{ RDMetricId::GpuPciId,             "GpuPciId",             RDMetricType::String },
 	{ RDMetricId::GpuVramUsedMB,        "GpuVramUsedMB",        RDMetricType::Int },
 	{ RDMetricId::GpuVramFreeMB,        "GpuVramFreeMB",        RDMetricType::Int },
 	{ RDMetricId::GpuVramBudgetMB,      "GpuVramBudgetMB",      RDMetricType::Int },
@@ -80,6 +83,10 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::GpuPowerWatts,            "GpuPowerWatts",            RDMetricType::Float },
 	{ RDMetricId::GpuFanSpeedRPM,           "GpuFanSpeedRPM",           RDMetricType::Int },
 	{ RDMetricId::GpuUsageVendorPercent,    "GpuUsageVendorPercent",    RDMetricType::Float },
+	{ RDMetricId::GpuHotspotTemperature,    "GpuHotspotTemperature",    RDMetricType::Float },
+	{ RDMetricId::GpuVoltage,               "GpuVoltage",               RDMetricType::Float },
+	{ RDMetricId::GpuIntakeTemperature,     "GpuIntakeTemperature",     RDMetricType::Float },
+	{ RDMetricId::GpuVramTemperature,       "GpuVramTemperature",       RDMetricType::Float },
 
 	{ RDMetricId::KdmapiStatus,             "KdmapiStatus",             RDMetricType::String },
 	{ RDMetricId::KdmapiRenderingTime,      "KdmapiRenderingTime",      RDMetricType::Float },

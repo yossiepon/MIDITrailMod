@@ -61,4 +61,7 @@ void RDOsInfo::CollectStartup()
 	}
 
 	RDDiagManager::SetString(RDMetricId::OsVersion, osVersion.c_str());
+
+	RDDiagManager::SetString(RDMetricId::RdpSession,
+		GetSystemMetrics(SM_REMOTESESSION) ? "(RDP)" : "");
 }

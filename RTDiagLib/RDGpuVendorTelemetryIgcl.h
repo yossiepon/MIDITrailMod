@@ -165,8 +165,11 @@ private:
 	ctlPowerTelemetryGetFunc m_pfnPowerTelemetryGet;
 
 	ctl_oc_telemetry_item_t m_prevEnergyCounter;
-	ctl_oc_telemetry_item_t m_prevTimestamp;
+	ctl_oc_telemetry_item_t m_prevEnergyTimestamp;
+	ctl_oc_telemetry_item_t m_prevGlobalActivity;
+	ctl_oc_telemetry_item_t m_prevActivityTimestamp;
 	bool m_hasPrevEnergy;
+	bool m_hasPrevActivity;
 };
 
 #endif // _M_AMD64
