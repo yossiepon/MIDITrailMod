@@ -6,6 +6,9 @@
 //
 // Copyright (C) 2026 Yossiepon Oniichan. All Rights Reserved.
 //
+// Struct definitions derived from:
+//   Intel Graphics Control Library SDK - https://github.com/intel/drivers.gpu.control-library
+//
 //******************************************************************************
 
 #include "stdafx.h"
