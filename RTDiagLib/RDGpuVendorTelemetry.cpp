@@ -14,6 +14,7 @@
 #include "RDGpuVendorTelemetryNullProvider.h"
 #include "RDGpuVendorTelemetryNvApi.h"
 #include "RDGpuVendorTelemetryAdlx.h"
+#include "RDGpuVendorTelemetryAdl.h"
 #include "RDGpuVendorTelemetryIgcl.h"
 #include <spdlog/spdlog.h>
 
@@ -27,6 +28,10 @@ std::unique_ptr<IRDGpuVendorTelemetryProvider> CreateRDGpuVendorTelemetryProvide
 		break;
 	case 0x1002:
 		provider = std::make_unique<RDGpuVendorTelemetryAdlxProvider>();
+		if (provider && provider->Initialize()) {
+			return provider;
+		}
+		provider = std::make_unique<RDGpuVendorTelemetryAdlProvider>();
 		break;
 	case 0x8086:
 #ifdef _M_AMD64

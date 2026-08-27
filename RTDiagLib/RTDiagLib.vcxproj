@@ -231,6 +231,7 @@
     <ClCompile Include="RDKdmapiInfo.cpp" />
     <ClCompile Include="RDGpuVendorTelemetry.cpp" />
     <ClCompile Include="RDGpuVendorTelemetryNvApi.cpp" />
+    <ClCompile Include="RDGpuVendorTelemetryAdl.cpp" />
     <ClCompile Include="RDGpuVendorTelemetryAdlx.cpp" />
     <ClCompile Include="RDGpuVendorTelemetryIgcl.cpp" />
   </ItemGroup>
@@ -253,6 +254,7 @@
     <ClInclude Include="IRDGpuVendorTelemetryProvider.h" />
     <ClInclude Include="RDGpuVendorTelemetryNullProvider.h" />
     <ClInclude Include="RDGpuVendorTelemetryNvApi.h" />
+    <ClInclude Include="RDGpuVendorTelemetryAdl.h" />
     <ClInclude Include="RDGpuVendorTelemetryAdlx.h" />
     <ClInclude Include="RDGpuVendorTelemetryIgcl.h" />
     <ClInclude Include="RDGpuVendorTelemetry.h" />
