@@ -128,6 +128,7 @@ enum class RDMetricId : uint16_t
 	SynthAudioLatency,
 	SynthAudioFrequency,
 	SynthAudioBitDepth,
+	SynthAudioSampleType,    // "float" or "int"
 	SynthBufferLength,
 
 	// MIDI Synth: KDMAPI-specific (Startup + IntervalPolling, RDKdmapiInfo)

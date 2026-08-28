@@ -55,6 +55,8 @@ struct ExtendedDebugInfo
 	DWORD  OutputVolume;
 	DWORD  AudioBitDepth;
 	BOOL   SincInter;
+	// IMP-36 extension
+	DWORD  AudioSampleFormat;  // 0=unknown, 1=int, 2=float
 };
 
 static const wchar_t* OMNIMIDI_PIPE_TEMPLATE = L"\\\\.\\pipe\\OmniMIDIDbg%u";
@@ -201,34 +203,45 @@ void RDKdmapiInfo::CollectIntervalPolling()
 		ExtendedDebugInfo* info = m_pfnGetModExtendedDebugInfo();
 		if (info == nullptr) return;
 
-		// One-shot: Mod version and audio settings
+		// One-shot: Mod version (available before BASS init via DllMain pre-population)
 		if (!m_modInfoCollected && info->ModVersionDate > 0) {
 			DWORD date = info->ModVersionDate;
 			char modVerStr[64];
 			snprintf(modVerStr, sizeof(modVerStr), "Mod %04u-%02u-%02u",
 				date / 10000, (date / 100) % 100, date % 100);
 			RDDiagManager::SetString(RDMetricId::KdmapiModVersion, modVerStr);
-
-			if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
-				RDDiagManager::SetInt(RDMetricId::SynthAudioFrequency, info->AudioFrequency);
-
-				const char* engineNames[] = { "DirectX", "ASIO", "WASAPI", "XAudio" };
-				DWORD engine = info->CurrentEngine;
-				const char* engineStr = (engine < 4) ? engineNames[engine] : "Unknown";
-				RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineStr);
-
-				RDDiagManager::SetInt(RDMetricId::SynthBufferLength, info->BufferLength);
-				RDDiagManager::SetInt(RDMetricId::SynthAudioBitDepth, info->AudioBitDepth);
-				RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
-					info->SincInter ? "ON" : "OFF");
-			}
 			m_modInfoCollected = true;
 		}
 
+		// Polling: Synth performance metrics
 		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->CpuUsage);
 		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
 		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, info->TotalActiveVoices);
 		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, info->MaxVoices);
+
+		// Polling: Audio settings (may change if user reconfigures OmniMIDI)
+		// IMP-31 fields: StructSize covers up to SincInter
+		static const size_t kImp31Size = offsetof(ExtendedDebugInfo, AudioSampleFormat);
+		if (info->StructSize >= kImp31Size) {
+			RDDiagManager::SetInt(RDMetricId::SynthAudioFrequency, info->AudioFrequency);
+			RDDiagManager::SetInt(RDMetricId::SynthBufferLength, info->BufferLength);
+			RDDiagManager::SetInt(RDMetricId::SynthAudioBitDepth, info->AudioBitDepth);
+
+			const char* engineNames[] = { "DirectX", "ASIO", "WASAPI", "XAudio" };
+			DWORD engine = info->CurrentEngine;
+			const char* engineStr = (engine < 4) ? engineNames[engine] : "Unknown";
+			RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineStr);
+
+			RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
+				info->SincInter ? "ON" : "OFF");
+		}
+		// IMP-36 field: AudioSampleFormat
+		if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
+			const char* sampleTypeNames[] = { "unknown", "int", "float" };
+			DWORD fmt = info->AudioSampleFormat;
+			const char* sampleType = (fmt < 3) ? sampleTypeNames[fmt] : "unknown";
+			RDDiagManager::SetString(RDMetricId::SynthAudioSampleType, sampleType);
+		}
 	}
 	else if (m_mode == SynthMode::Standard && m_pfnGetDriverDebugInfo != nullptr) {
 		if (m_hPipe == INVALID_HANDLE_VALUE) {
