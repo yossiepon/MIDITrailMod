@@ -107,10 +107,6 @@ enum class RDMetricId : uint16_t
 	AppInstanceCount,
 	AppInstanceBufferSizeKB,
 
-	// App: Live mode metrics (Frame, Push)
-	AppLivePolyphony,
-	AppLivePolyphonyPeak,
-
 	// GPU Telemetry: Vendor SDK (IntervalPolling)
 	GpuTemperature,
 	GpuCoreClock,

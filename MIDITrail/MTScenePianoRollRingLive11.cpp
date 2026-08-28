@@ -91,6 +91,10 @@ int MTScenePianoRollRingLive11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 	m_NoteTrackerLive.AddListener(&m_DashboardLive, NoteEventType::Note);
 
+	// DiagOverlay
+	result = m_DiagOverlay.Create(pDevice, pContext, m_hWnd);
+	if (result != 0) goto EXIT;
+
 EXIT:;
 	return result;
 }
@@ -212,6 +216,7 @@ int MTScenePianoRollRingLive11::_DrawDashboard(
 void MTScenePianoRollRingLive11::_OnDashboardWindowResize()
 {
 	m_DashboardLive.OnWindowResize();
+	m_DiagOverlay.OnWindowResize();
 }
 
 void MTScenePianoRollRingLive11::_SetDashboardEnable(bool isEnable)

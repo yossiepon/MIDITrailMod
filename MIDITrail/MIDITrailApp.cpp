@@ -1706,8 +1706,8 @@ int MIDITrailApp::_OnMenuStopMonitoring()
 	}
 
 	//Clear Live metrics (Monitor OFF)
-	RDDiagManager::SetInt(RDMetricId::AppLivePolyphony, 0);
-	RDDiagManager::SetInt(RDMetricId::AppLivePolyphonyPeak, 0);
+	RDDiagManager::SetInt(RDMetricId::AppPolyphony, 0);
+	RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, 0);
 
 EXIT:;
 	return result;

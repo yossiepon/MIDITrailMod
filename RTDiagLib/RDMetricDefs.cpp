@@ -84,9 +84,6 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppPolyphonyPeak,        "AppPolyphonyPeak",        RDMetricType::Int },
 	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
-	{ RDMetricId::AppLivePolyphony,     "AppLivePolyphony",     RDMetricType::Int },
-	{ RDMetricId::AppLivePolyphonyPeak, "AppLivePolyphonyPeak", RDMetricType::Int },
-
 	{ RDMetricId::GpuTemperature,           "GpuTemperature",           RDMetricType::Float },
 	{ RDMetricId::GpuCoreClock,             "GpuCoreClock",             RDMetricType::Int },
 	{ RDMetricId::GpuMemoryClock,           "GpuMemoryClock",           RDMetricType::Int },

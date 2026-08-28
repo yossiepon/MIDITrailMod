@@ -93,6 +93,10 @@ int MTScenePianoRoll3DLive11::_CreateModeComponents(
 	if (result != 0) goto EXIT;
 	m_NoteTrackerLive.AddListener(&m_DashboardLive, NoteEventType::Note);
 
+	// DiagOverlay
+	result = m_DiagOverlay.Create(pDevice, pContext, m_hWnd);
+	if (result != 0) goto EXIT;
+
 	// Keyboard (Live)
 	try { m_pKeyboardCtrl = new MTPianoKeyboardCtrlRollLive11(); }
 	catch (std::bad_alloc) { result = YN_SET_ERR("Could not allocate memory.", 0, 0); goto EXIT; }
@@ -223,6 +227,7 @@ int MTScenePianoRoll3DLive11::_DrawDashboard(
 void MTScenePianoRoll3DLive11::_OnDashboardWindowResize()
 {
 	m_DashboardLive.OnWindowResize();
+	m_DiagOverlay.OnWindowResize();
 }
 
 void MTScenePianoRoll3DLive11::_SetDashboardEnable(bool isEnable)

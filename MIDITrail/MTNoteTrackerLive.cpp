@@ -95,11 +95,11 @@ void MTNoteTrackerLive::SetNoteOn(
 	m_ActiveNotes.push_back(entry);
 	DispatchActivate(entry.note, entry.index);
 
-	int64_t polyphony = RDDiagManager::GetInt(RDMetricId::AppLivePolyphony) + 1;
-	RDDiagManager::SetInt(RDMetricId::AppLivePolyphony, polyphony);
-	int64_t peak = RDDiagManager::GetInt(RDMetricId::AppLivePolyphonyPeak);
+	int64_t polyphony = RDDiagManager::GetInt(RDMetricId::AppPolyphony) + 1;
+	RDDiagManager::SetInt(RDMetricId::AppPolyphony, polyphony);
+	int64_t peak = RDDiagManager::GetInt(RDMetricId::AppPolyphonyPeak);
 	if (polyphony > peak) {
-		RDDiagManager::SetInt(RDMetricId::AppLivePolyphonyPeak, polyphony);
+		RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, polyphony);
 	}
 }
 
@@ -121,9 +121,9 @@ void MTNoteTrackerLive::SetNoteOff(
 			entry.note.endTimeMs = m_LiveTimeMSec;
 			DispatchDeactivate(entry.note, entry.index);
 			entry.isActive = false;
-			int64_t polyphony = RDDiagManager::GetInt(RDMetricId::AppLivePolyphony);
+			int64_t polyphony = RDDiagManager::GetInt(RDMetricId::AppPolyphony);
 			if (polyphony > 0) {
-				RDDiagManager::SetInt(RDMetricId::AppLivePolyphony, polyphony - 1);
+				RDDiagManager::SetInt(RDMetricId::AppPolyphony, polyphony - 1);
 			}
 			return;
 		}
