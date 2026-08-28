@@ -120,30 +120,19 @@ int MTAboutDlg::_OnInitDlg(
 {
 	int result = 0;
 	BOOL bresult = FALSE;
-	const WCHAR* pVersion = NULL;
-	const WCHAR* pCopyright = NULL;
-
-	//Version string
-#ifdef _WIN64
-	//64bit
-	pVersion = MIDITRAIL_VERSION_STRING_X64;
-#else
-	//32bit
-	pVersion = MIDITRAIL_VERSION_STRING_X86;
-#endif
-
-	//Copyright string
-	pCopyright = MIDITRAIL_COPYRIGHT;
 
 	//Set the version string
-	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_VERSION), pVersion);
+	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_VERSION), MIDITRAIL_VERSION_STRING);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
 
-	//Set the copyright string
-	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT), pCopyright);
+	//Set the copyright string (3 lines)
+	bresult = SetWindowTextW(GetDlgItem(hDlg, IDC_TEXT_COPYRIGHT),
+		MIDITRAIL_COPYRIGHT_W L"\r\n"
+		MIDITRAIL_MOD_COPYRIGHT_W L"\r\n"
+		MIDITRAIL_CED_COPYRIGHT_W);
 	if (!bresult) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
