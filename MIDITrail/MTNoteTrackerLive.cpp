@@ -11,6 +11,7 @@
 
 #include "StdAfx.h"
 #include "MTNoteTrackerLive.h"
+#include "RDDiagManager.h"
 
 
 //******************************************************************************
@@ -93,6 +94,13 @@ void MTNoteTrackerLive::SetNoteOn(
 
 	m_ActiveNotes.push_back(entry);
 	DispatchActivate(entry.note, entry.index);
+
+	int64_t polyphony = RDDiagManager::GetInt(RDMetricId::AppPolyphony) + 1;
+	RDDiagManager::SetInt(RDMetricId::AppPolyphony, polyphony);
+	int64_t peak = RDDiagManager::GetInt(RDMetricId::AppPolyphonyPeak);
+	if (polyphony > peak) {
+		RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, polyphony);
+	}
 }
 
 //******************************************************************************
@@ -113,6 +121,10 @@ void MTNoteTrackerLive::SetNoteOff(
 			entry.note.endTimeMs = m_LiveTimeMSec;
 			DispatchDeactivate(entry.note, entry.index);
 			entry.isActive = false;
+			int64_t polyphony = RDDiagManager::GetInt(RDMetricId::AppPolyphony);
+			if (polyphony > 0) {
+				RDDiagManager::SetInt(RDMetricId::AppPolyphony, polyphony - 1);
+			}
 			return;
 		}
 	}

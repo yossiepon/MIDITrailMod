@@ -13,6 +13,7 @@
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
+#include "MIDITrailVersion.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -139,10 +140,48 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION MIDITRAIL_VER_MAJOR,MIDITRAIL_VER_MINOR,MIDITRAIL_VER_PATCH,MIDITRAIL_VER_REV
+ PRODUCTVERSION MIDITRAIL_VER_MAJOR,MIDITRAIL_VER_MINOR,MIDITRAIL_VER_PATCH,MIDITRAIL_VER_REV
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041104b0"
+        BEGIN
+            VALUE "FileDescription", "MIDITrail - 3D MIDI Player"
+            VALUE "FileVersion", MIDITRAIL_VER_STRING
+            VALUE "InternalName", "MIDITrail"
+            VALUE "LegalCopyright", MIDITRAIL_COPYRIGHT ", " MIDITRAIL_MOD_COPYRIGHT ", " MIDITRAIL_CED_COPYRIGHT
+            VALUE "OriginalFilename", "MIDITrail.exe"
+            VALUE "ProductName", "MIDITrail Mod"
+            VALUE "ProductVersion", MIDITRAIL_VER_STRING " (" MIDITRAIL_MOD_STRING ")"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 172, 133
+IDD_ABOUTBOX DIALOGEX 0, 0, 172, 160
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "MIDITrail"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -150,8 +189,8 @@ BEGIN
     ICON            IDI_MIDITRAIL,IDC_STATIC,74,12,20,20
     CTEXT           "MIDITrail",IDC_STATIC,16,42,138,8,SS_NOPREFIX
     CTEXT           "Version x.x.x",IDC_TEXT_VERSION,16,63,138,8
-    CTEXT           "Copyright (C) xxxx-xxxx WADA Masashi",IDC_TEXT_COPYRIGHT,1,84,168,8
-    DEFPUSHBUTTON   "OK",IDOK,58,108,53,14,WS_GROUP
+    CTEXT           "Copyright (C) xxxx-xxxx WADA Masashi",IDC_TEXT_COPYRIGHT,1,84,168,32
+    DEFPUSHBUTTON   "OK",IDOK,58,135,53,14,WS_GROUP
 END
 
 IDD_MIDIOUT_CFG DIALOGEX 0, 0, 304, 219

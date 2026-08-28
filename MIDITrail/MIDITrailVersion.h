@@ -1,10 +1,11 @@
-﻿//******************************************************************************
+//******************************************************************************
 //
 // MIDITrail / MTVersion
 //
 // Version definitions.
 //
 // Copyright (C) 2014-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 Yossiepon Oniichan. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,14 +13,70 @@
 
 
 //******************************************************************************
-// Parameter definitions
+// Base version (frozen at 1.4.1, pre-DX11)
 //******************************************************************************
+#define MIDITRAIL_VER_MAJOR   1
+#define MIDITRAIL_VER_MINOR   4
+#define MIDITRAIL_VER_PATCH   1
+#define MIDITRAIL_VER_REV     65535
 
-//Version string
-#define MIDITRAIL_VERSION_STRING_X86  L"1.4.1 (x86), mod. yossiepon_20251101"
-#define MIDITRAIL_VERSION_STRING_X64  L"1.4.1 (x64), mod. yossiepon_20251101"
+// Auto-derived from numeric macros (no manual sync required)
+#define _MT_STRINGIFY(x) #x
+#define _MT_TOSTRING(x) _MT_STRINGIFY(x)
+#define _MT_WSTRINGIFY(x) L ## #x
+#define _MT_TOWSTRING(x) _MT_WSTRINGIFY(x)
 
-//Copyright
-#define MIDITRAIL_COPYRIGHT          L"Copyright (C) 2010-2025 WADA Masashi";
+// Full version (for VERSIONINFO .rc)
+#define MIDITRAIL_VER_STRING    _MT_TOSTRING(MIDITRAIL_VER_MAJOR) "." _MT_TOSTRING(MIDITRAIL_VER_MINOR) "." _MT_TOSTRING(MIDITRAIL_VER_PATCH) "." _MT_TOSTRING(MIDITRAIL_VER_REV)
+#define MIDITRAIL_VER_STRING_W  _MT_TOWSTRING(MIDITRAIL_VER_MAJOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_MINOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_PATCH) L"." _MT_TOWSTRING(MIDITRAIL_VER_REV)
 
+// Display version (for title bar, DiagOverlay — without Rev)
+#define MIDITRAIL_VER_DISPLAY    _MT_TOSTRING(MIDITRAIL_VER_MAJOR) "." _MT_TOSTRING(MIDITRAIL_VER_MINOR) "." _MT_TOSTRING(MIDITRAIL_VER_PATCH)
+#define MIDITRAIL_VER_DISPLAY_W  _MT_TOWSTRING(MIDITRAIL_VER_MAJOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_MINOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_PATCH)
 
+//******************************************************************************
+// Mod version
+// Build script (build.sh) auto-updates MOD_DATE_STR, MOD_DATE_COMPACT,
+// and MOD_COPYRIGHT_YEARS.
+//******************************************************************************
+#define MIDITRAIL_MOD_AUTHOR              "yossiepon"
+#define MIDITRAIL_MOD_DATE_STR            "2026-08-28"
+#define MIDITRAIL_MOD_DATE_COMPACT        "20260828"
+
+// Formal format (for VERSIONINFO, log)
+#define MIDITRAIL_MOD_STRING              "Mod " MIDITRAIL_MOD_AUTHOR " " MIDITRAIL_MOD_DATE_STR
+// Short format (for DiagOverlay AppModVersion metric — matches KdmapiModVersion format)
+#define MIDITRAIL_MOD_STRING_SHORT        "Mod " MIDITRAIL_MOD_DATE_STR
+#define MIDITRAIL_MOD_STRING_W            L"Mod " L"" MIDITRAIL_MOD_AUTHOR L" " L"" MIDITRAIL_MOD_DATE_STR
+
+// Title bar format (original convention: "mod. author_YYYYMMDD")
+#define MIDITRAIL_MOD_DISPLAY_W           L"mod. " L"" MIDITRAIL_MOD_AUTHOR L"_" L"" MIDITRAIL_MOD_DATE_COMPACT
+
+#define MIDITRAIL_MOD_COPYRIGHT_YEAR_START  2012
+#define MIDITRAIL_MOD_COPYRIGHT_YEARS       "2012-2026"
+
+//******************************************************************************
+// Display strings (for title bar / About dialog)
+//******************************************************************************
+#ifdef _WIN64
+#define MIDITRAIL_VERSION_STRING_ARCH  L"x64"
+#else
+#define MIDITRAIL_VERSION_STRING_ARCH  L"x86"
+#endif
+
+// Title bar: "1.4.1 (x64), mod. yossiepon_20260828"
+#define MIDITRAIL_VERSION_STRING  MIDITRAIL_VER_DISPLAY_W L" (" MIDITRAIL_VERSION_STRING_ARCH L"), " MIDITRAIL_MOD_DISPLAY_W
+
+// Backward compatibility (existing code references X64/X86 variants)
+#define MIDITRAIL_VERSION_STRING_X64  MIDITRAIL_VERSION_STRING
+#define MIDITRAIL_VERSION_STRING_X86  MIDITRAIL_VERSION_STRING
+
+//******************************************************************************
+// Copyright
+//******************************************************************************
+#define MIDITRAIL_COPYRIGHT              "Copyright (C) 2010-2025 WADA Masashi"
+#define MIDITRAIL_COPYRIGHT_W            L"Copyright (C) 2010-2025 WADA Masashi"
+#define MIDITRAIL_MOD_COPYRIGHT          "Mod (C) " MIDITRAIL_MOD_COPYRIGHT_YEARS " yossiepon Oniichan"
+#define MIDITRAIL_MOD_COPYRIGHT_W        L"Mod (C) " L"" MIDITRAIL_MOD_COPYRIGHT_YEARS L" yossiepon Oniichan"
+#define MIDITRAIL_CED_COPYRIGHT          "Portions (C) 2026 Ced (MIDITrail Mod Mod)"
+#define MIDITRAIL_CED_COPYRIGHT_W        L"Portions (C) 2026 Ced (MIDITrail Mod Mod)"

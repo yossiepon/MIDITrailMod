@@ -425,7 +425,12 @@ int MTDiagOverlay11::_UpdateStaticLines()
 		RDFormatProfile::OverlayMachineSignatureCount);
 
 	for (size_t i = 0; i < entries.size() && i < m_StaticLineCount; i++) {
-		std::string line = std::string(entries[i].label) + ": " + entries[i].value;
+		std::string line;
+		if (entries[i].label[0] == '\0' && entries[i].value[0] == '\0') {
+			line = "";
+		} else {
+			line = std::string(entries[i].label) + ": " + entries[i].value;
+		}
 
 		int len = MultiByteToWideChar(CP_UTF8, 0, line.c_str(), -1, NULL, 0);
 		std::vector<WCHAR> wbuf(len);

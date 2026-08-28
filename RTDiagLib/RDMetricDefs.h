@@ -87,6 +87,16 @@ enum class RDMetricId : uint16_t
 	AppSceneType,
 	AppMidiOutTransport,
 
+	// App: Version / identity info (Push, one-shot)
+	AppVersion,
+	AppModVersion,
+	AppBuildConfig,
+	AppDxFeatureLevel,
+
+	// App: MIDI output info (Push, event-driven)
+	AppMidiOutDeviceName,
+	AppMidiOutActivePorts,
+
 	// App: Black MIDI metrics (Frame, Push)
 	AppNoteActivationsPerFrame,
 	AppNps,
@@ -111,10 +121,17 @@ enum class RDMetricId : uint16_t
 
 	// KDMAPI: OmniMIDI synthesizer info via KDMAPI (IntervalPolling)
 	KdmapiStatus,
-	KdmapiRenderingTime,
+	KdmapiCpuUsage,
 	KdmapiAudioLatency,
 	KdmapiTotalActiveVoices,
 	KdmapiMaxVoices,
+	KdmapiVersion,
+	KdmapiModVersion,
+	KdmapiAudioFrequency,
+	KdmapiAudioEngine,
+	KdmapiBufferLength,
+	KdmapiAudioBitDepth,
+	KdmapiSincInterpolation,
 
 	// Diag: Startup timing
 	DiagStartupTotalUs,

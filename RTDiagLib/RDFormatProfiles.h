@@ -26,6 +26,7 @@ namespace RDFormatProfile
 		{ "Commit",  "${CommitUsedMB} / ${CommitLimitMB} MB used" },
 		{ "Machine", "${MachineType}" },
 		{ "Diag",    "startup ${DiagStartupTotalUs} us [OS:${DiagStartupOsInfoUs} CPU:${DiagStartupCpuInfoUs} GPU:${DiagStartupGpuInfoUs} Mem:${DiagStartupMemoryInfoUs} WMI:${DiagStartupWmiInfoUs}]" },
+		{ "Version", "MIDITrail ${AppVersion} (${AppModVersion}), KDMAPI ${KdmapiVersion} (${KdmapiModVersion})" },
 	};
 
 	static const size_t MachineSignatureCount =
@@ -41,11 +42,11 @@ namespace RDFormatProfile
 		{ "Frame",  "${AppFps} FPS (${AppAvgFrameTimeMs} ms) 1%Low:${AppFps1PercentLow} 0.1%Low:${AppFps01PercentLow}" },
 		{ "Timing", "Update:${AppSceneUpdateTimeMs} Draw:${AppDrawTimeMs} Present:${AppPresentTimeMs} GPU:${AppGpuRenderTimeMs} ms" },
 		{ "Stab",   "StdDev:${AppFrameTimeStdDev} ms, Stutter:${AppStutterPercent}%" },
-		{ "Render", "Inst:${AppInstanceCount} Buf:${AppInstanceBufferSizeKB} KB" },
-		{ "Notes",  "NPS:${AppNps} Poly:${AppPolyphony} (Peak:${AppPolyphonyPeak}) Track:${AppNoteTracking} (Peak:${AppNoteTrackingPeak})" },
+		{ "Render", "Instances:${AppInstanceCount} Buffer:${AppInstanceBufferSizeKB} KB" },
+		{ "Notes",  "NPS:${AppNps} Poly:${AppPolyphony} (Peak:${AppPolyphonyPeak}) Tracking:${AppNoteTracking} (Peak:${AppNoteTrackingPeak})" },
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
 		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V" },
-		{ "KDMAPI", "${AppMidiOutTransport}, Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiRenderingTime}% Latency:${KdmapiAudioLatency}ms" },
+		{ "Synth", "${AppMidiOutTransport}, Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiCpuUsage}% Latency:${KdmapiAudioLatency}ms" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
 
@@ -53,6 +54,8 @@ namespace RDFormatProfile
 		sizeof(RuntimeSystem) / sizeof(RuntimeSystem[0]);
 
 	static const RDFormatTemplateEntry OverlayMachineSignature[] = {
+		{ "App", "MIDITrail ${AppVersion} (${AppModVersion}), KDMAPI ${KdmapiVersion} (${KdmapiModVersion})" },
+		{ "",    "" },
 		{ "OS",  "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
 		{ "CPU", "${CpuName} ${CpuBaseMHz} MHz (${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T)" },
 		{ "GPU", "${GpuName} ${GpuVramTotalGB}GB (${GpuDriverVersion}) ${RdpSession}" },
@@ -75,10 +78,10 @@ namespace RDFormatProfile
 		{ "Frame",   "${AppFps} FPS (${AppAvgFrameTimeMs} ms), 1%Low ${AppFps1PercentLow}, 0.1%Low ${AppFps01PercentLow}" },
 		{ "Timing",  "Update ${AppSceneUpdateTimeMs} ms, Draw ${AppDrawTimeMs} ms, Present ${AppPresentTimeMs} ms, GPU ${AppGpuRenderTimeMs} ms" },
 		{ "Stab",    "StdDev ${AppFrameTimeStdDev} ms, Stutter ${AppStutterPercent}%" },
-		{ "Render",  "Buf ${AppInstanceBufferSizeKB} KB, Inst ${AppInstanceCount}" },
+		{ "Render",  "Buffer ${AppInstanceBufferSizeKB} KB, Instances ${AppInstanceCount}" },
 		{ "",        "" },
-		{ "Notes",   "${AppNps} NPS, Poly ${AppPolyphony} (Peak ${AppPolyphonyPeak}), Track ${AppNoteTracking} (Peak ${AppNoteTrackingPeak})" },
-		{ "KDMAPI", "${AppMidiOutTransport}, Voices ${KdmapiTotalActiveVoices}/${KdmapiMaxVoices}, CPU ${KdmapiRenderingTime}%, Latency ${KdmapiAudioLatency} ms" },
+		{ "Notes",   "${AppNps} NPS, Poly ${AppPolyphony} (Peak ${AppPolyphonyPeak}), Tracking ${AppNoteTracking} (Peak ${AppNoteTrackingPeak})" },
+		{ "Synth", "${AppMidiOutTransport}, Voices ${KdmapiTotalActiveVoices}/${KdmapiMaxVoices}, CPU ${KdmapiCpuUsage}%, Latency ${KdmapiAudioLatency} ms" },
 		{ "",        "" },
 		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
 	};
