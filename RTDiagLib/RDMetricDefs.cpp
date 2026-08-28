@@ -93,11 +93,17 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::GpuVramTemperature,       "GpuVramTemperature",       RDMetricType::Float },
 
 	{ RDMetricId::KdmapiStatus,             "KdmapiStatus",             RDMetricType::String },
-	{ RDMetricId::KdmapiRenderingTime,      "KdmapiRenderingTime",      RDMetricType::Float },
+	{ RDMetricId::KdmapiCpuUsage,           "KdmapiCpuUsage",           RDMetricType::Float },
 	{ RDMetricId::KdmapiAudioLatency,       "KdmapiAudioLatency",       RDMetricType::Float },
 	{ RDMetricId::KdmapiTotalActiveVoices,  "KdmapiTotalActiveVoices",  RDMetricType::Int },
 	{ RDMetricId::KdmapiMaxVoices,          "KdmapiMaxVoices",          RDMetricType::Int },
+	{ RDMetricId::KdmapiVersion,            "KdmapiVersion",            RDMetricType::String },
 	{ RDMetricId::KdmapiModVersion,         "KdmapiModVersion",         RDMetricType::String },
+	{ RDMetricId::KdmapiAudioFrequency,     "KdmapiAudioFrequency",     RDMetricType::Int },
+	{ RDMetricId::KdmapiAudioEngine,        "KdmapiAudioEngine",        RDMetricType::String },
+	{ RDMetricId::KdmapiBufferLength,       "KdmapiBufferLength",       RDMetricType::Int },
+	{ RDMetricId::KdmapiAudioBitDepth,      "KdmapiAudioBitDepth",      RDMetricType::Int },
+	{ RDMetricId::KdmapiSincInterpolation,  "KdmapiSincInterpolation",  RDMetricType::String },
 
 	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
 	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },

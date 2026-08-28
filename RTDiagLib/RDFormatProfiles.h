@@ -45,7 +45,7 @@ namespace RDFormatProfile
 		{ "Notes",  "NPS:${AppNps} Poly:${AppPolyphony} (Peak:${AppPolyphonyPeak}) Track:${AppNoteTracking} (Peak:${AppNoteTrackingPeak})" },
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
 		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V" },
-		{ "KDMAPI", "${AppMidiOutTransport}, Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiRenderingTime}% Latency:${KdmapiAudioLatency}ms" },
+		{ "KDMAPI", "${AppMidiOutTransport}, Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiCpuUsage}% Latency:${KdmapiAudioLatency}ms" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
 
@@ -78,7 +78,7 @@ namespace RDFormatProfile
 		{ "Render",  "Buf ${AppInstanceBufferSizeKB} KB, Inst ${AppInstanceCount}" },
 		{ "",        "" },
 		{ "Notes",   "${AppNps} NPS, Poly ${AppPolyphony} (Peak ${AppPolyphonyPeak}), Track ${AppNoteTracking} (Peak ${AppNoteTrackingPeak})" },
-		{ "KDMAPI", "${AppMidiOutTransport}, Voices ${KdmapiTotalActiveVoices}/${KdmapiMaxVoices}, CPU ${KdmapiRenderingTime}%, Latency ${KdmapiAudioLatency} ms" },
+		{ "KDMAPI", "${AppMidiOutTransport}, Voices ${KdmapiTotalActiveVoices}/${KdmapiMaxVoices}, CPU ${KdmapiCpuUsage}%, Latency ${KdmapiAudioLatency} ms" },
 		{ "",        "" },
 		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
 	};

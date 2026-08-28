@@ -115,11 +115,17 @@ enum class RDMetricId : uint16_t
 
 	// KDMAPI: OmniMIDI synthesizer info via KDMAPI (IntervalPolling)
 	KdmapiStatus,
-	KdmapiRenderingTime,
+	KdmapiCpuUsage,
 	KdmapiAudioLatency,
 	KdmapiTotalActiveVoices,
 	KdmapiMaxVoices,
+	KdmapiVersion,
 	KdmapiModVersion,
+	KdmapiAudioFrequency,
+	KdmapiAudioEngine,
+	KdmapiBufferLength,
+	KdmapiAudioBitDepth,
+	KdmapiSincInterpolation,
 
 	// Diag: Startup timing
 	DiagStartupTotalUs,

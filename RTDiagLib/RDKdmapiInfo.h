@@ -33,6 +33,7 @@ private:
 
 	typedef ExtendedDebugInfo* (WINAPI *GetModExtendedDebugInfoFunc)();
 	typedef DebugInfo* (WINAPI *GetDriverDebugInfoFunc)();
+	typedef void (WINAPI *ReturnKDMAPIVerFunc)(LPDWORD, LPDWORD, LPDWORD, LPDWORD);
 
 	enum class SynthMode { None, Mod, Standard };
 
