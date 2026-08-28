@@ -11,7 +11,7 @@
 
 #include "StdAfx.h"
 #include "MTScenePianoRollRainBase11.h"
-#include "RDDiagManager.h"
+
 #include "SMMsgParser.h"
 
 using namespace DirectX::SimpleMath;
@@ -201,8 +201,6 @@ int MTScenePianoRollRainBase11::OnPlayStart()
 int MTScenePianoRollRainBase11::OnPlayEnd()
 {
 	m_isMonitoringActive = false;
-	RDDiagManager::SetInt(RDMetricId::AppNoteTracking, 0);
-	RDDiagManager::SetInt(RDMetricId::AppPolyphony, 0);
 	return 0;
 }
 

@@ -1705,6 +1705,10 @@ int MIDITrailApp::_OnMenuStopMonitoring()
 		if (result != 0) goto EXIT;
 	}
 
+	//Clear Live metrics (Monitor OFF)
+	RDDiagManager::SetInt(RDMetricId::AppLivePolyphony, 0);
+	RDDiagManager::SetInt(RDMetricId::AppLivePolyphonyPeak, 0);
+
 EXIT:;
 	return result;
 }
@@ -2244,6 +2248,10 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 				result = m_pScene->OnPlayEnd();
 				if (result != 0) goto EXIT;
 			}
+
+			//Clear Playback metrics (consolidated from 3 scene base classes)
+			RDDiagManager::SetInt(RDMetricId::AppNoteTracking, 0);
+			RDDiagManager::SetInt(RDMetricId::AppPolyphony, 0);
 
 			//Save viewpoint
 			if (m_isAutoSaveViewpoint) {
