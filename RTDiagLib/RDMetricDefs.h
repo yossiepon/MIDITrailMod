@@ -62,51 +62,6 @@ enum class RDMetricId : uint16_t
 	GpuVramBudgetMB,
 	GpuUsagePercent,
 
-	// WMI (Startup)
-	MachineType,
-
-	// App: Frame timing (Frame, Push)
-	AppFrameTimeMs,
-	AppSceneUpdateTimeMs,
-	AppDrawTimeMs,
-	AppPresentTimeMs,
-	AppGpuRenderTimeMs,
-
-	// App: Frame statistics (Frame, Computed)
-	AppAvgFrameTimeMs,
-	AppFps,
-	AppFps1PercentLow,
-	AppFps01PercentLow,
-	AppFrameTimeStdDev,
-	AppStutterPercent,
-
-	// App: Event-driven (Push, one-shot)
-	AppLoadedFileName,
-	AppTotalNoteCount,
-	AppTotalPlayTimeMs,
-	AppSceneType,
-	AppMidiOutTransport,
-
-	// App: Version / identity info (Push, one-shot)
-	AppVersion,
-	AppModVersion,
-	AppBuildConfig,
-	AppDxFeatureLevel,
-
-	// App: MIDI output info (Push, event-driven)
-	AppMidiOutDeviceName,
-	AppMidiOutActivePorts,
-
-	// App: Black MIDI metrics (Frame, Push)
-	AppNoteActivationsPerFrame,
-	AppNps,
-	AppNoteTracking,
-	AppNoteTrackingPeak,
-	AppPolyphony,
-	AppPolyphonyPeak,
-	AppInstanceCount,
-	AppInstanceBufferSizeKB,
-
 	// GPU Telemetry: Vendor SDK (IntervalPolling)
 	GpuTemperature,
 	GpuCoreClock,
@@ -119,18 +74,67 @@ enum class RDMetricId : uint16_t
 	GpuIntakeTemperature,
 	GpuVramTemperature,
 
-	// KDMAPI: OmniMIDI synthesizer info via KDMAPI (IntervalPolling)
+	// WMI (Startup)
+	MachineType,
+
+	// App Identity (Push, one-shot)
+	AppIdVersion,
+	AppIdModVersion,
+	AppIdBuildConfig,
+	AppIdDxFeatureLevel,
+
+	// Rendering: Frame timing (Frame, Push)
+	RenderFrameTimeMs,
+	RenderSceneUpdateTimeMs,
+	RenderDrawTimeMs,
+	RenderPresentTimeMs,
+	RenderGpuRenderTimeMs,
+
+	// Rendering: Frame statistics (Frame, Computed)
+	RenderAvgFrameTimeMs,
+	RenderFps,
+	RenderFps1PercentLow,
+	RenderFps01PercentLow,
+	RenderFrameTimeStdDev,
+	RenderStutterPercent,
+
+	// Rendering: Instanced drawing (Frame, Push)
+	RenderInstanceCount,
+	RenderInstanceBufferSizeKB,
+
+	// Playback: Content metadata (Push, one-shot)
+	PlaybackLoadedFileName,
+	PlaybackTotalNoteCount,
+	PlaybackTotalPlayTimeMs,
+	PlaybackSceneType,
+
+	// Playback: Note metrics (Frame, Push)
+	PlaybackNoteActivationsPerFrame, // internal: per-frame counter for NPS computation (not displayed)
+	PlaybackNps,
+	PlaybackNoteTracking,
+	PlaybackNoteTrackingPeak,
+	PlaybackPolyphony,
+	PlaybackPolyphonyPeak,
+
+	// MIDI Output (Push, event-driven)
+	MidiOutTransport,
+	MidiOutDeviceName,
+	MidiOutActivePorts,
+
+	// MIDI Synth: Universal parameters (IntervalPolling, RDKdmapiInfo)
+	SynthActiveVoices,
+	SynthMaxVoices,
+	SynthRenderLoad,         // BASS_ATTRIB_CPU: audio rendering load (%)
+	SynthAudioLatency,
+	SynthAudioFrequency,
+	SynthAudioBitDepth,
+	SynthBufferLength,
+
+	// MIDI Synth: KDMAPI-specific (Startup + IntervalPolling, RDKdmapiInfo)
 	KdmapiStatus,
-	KdmapiCpuUsage,
-	KdmapiAudioLatency,
-	KdmapiTotalActiveVoices,
-	KdmapiMaxVoices,
 	KdmapiVersion,
 	KdmapiModVersion,
-	KdmapiAudioFrequency,
 	KdmapiAudioEngine,
-	KdmapiBufferLength,
-	KdmapiAudioBitDepth,
 	KdmapiSincInterpolation,
 
 	// Diag: Startup timing

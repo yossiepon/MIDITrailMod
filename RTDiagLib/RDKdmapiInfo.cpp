@@ -210,25 +210,25 @@ void RDKdmapiInfo::CollectIntervalPolling()
 			RDDiagManager::SetString(RDMetricId::KdmapiModVersion, modVerStr);
 
 			if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
-				RDDiagManager::SetInt(RDMetricId::KdmapiAudioFrequency, info->AudioFrequency);
+				RDDiagManager::SetInt(RDMetricId::SynthAudioFrequency, info->AudioFrequency);
 
 				const char* engineNames[] = { "DirectX", "ASIO", "WASAPI", "XAudio" };
 				DWORD engine = info->CurrentEngine;
 				const char* engineStr = (engine < 4) ? engineNames[engine] : "Unknown";
 				RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineStr);
 
-				RDDiagManager::SetInt(RDMetricId::KdmapiBufferLength, info->BufferLength);
-				RDDiagManager::SetInt(RDMetricId::KdmapiAudioBitDepth, info->AudioBitDepth);
+				RDDiagManager::SetInt(RDMetricId::SynthBufferLength, info->BufferLength);
+				RDDiagManager::SetInt(RDMetricId::SynthAudioBitDepth, info->AudioBitDepth);
 				RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
 					info->SincInter ? "ON" : "OFF");
 			}
 			m_modInfoCollected = true;
 		}
 
-		RDDiagManager::SetFloat(RDMetricId::KdmapiCpuUsage, info->CpuUsage);
-		RDDiagManager::SetFloat(RDMetricId::KdmapiAudioLatency, static_cast<float>(info->AudioLatency));
-		RDDiagManager::SetInt(RDMetricId::KdmapiTotalActiveVoices, info->TotalActiveVoices);
-		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, info->MaxVoices);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->CpuUsage);
+		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
+		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, info->TotalActiveVoices);
+		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, info->MaxVoices);
 	}
 	else if (m_mode == SynthMode::Standard && m_pfnGetDriverDebugInfo != nullptr) {
 		if (m_hPipe == INVALID_HANDLE_VALUE) {
@@ -239,14 +239,14 @@ void RDKdmapiInfo::CollectIntervalPolling()
 		DebugInfo* info = m_pfnGetDriverDebugInfo();
 		if (info == nullptr) return;
 
-		RDDiagManager::SetFloat(RDMetricId::KdmapiCpuUsage, info->RenderingTime);
-		RDDiagManager::SetFloat(RDMetricId::KdmapiAudioLatency, static_cast<float>(info->AudioLatency));
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->RenderingTime);
+		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
 
 		DWORD totalVoices = 0;
 		for (int i = 0; i < 16; ++i) {
 			totalVoices += info->ActiveVoices[i];
 		}
-		RDDiagManager::SetInt(RDMetricId::KdmapiTotalActiveVoices, totalVoices);
+		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, totalVoices);
 
 		DWORD maxVoices = 0;
 		HKEY hKey = NULL;
@@ -256,6 +256,6 @@ void RDKdmapiInfo::CollectIntervalPolling()
 			RegQueryValueExW(hKey, L"MaxVoices", NULL, NULL, (LPBYTE)&maxVoices, &dwSize);
 			RegCloseKey(hKey);
 		}
-		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, maxVoices);
+		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, maxVoices);
 	}
 }

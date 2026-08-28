@@ -42,16 +42,16 @@ void RDAppMetrics::Reset()
 
 void RDAppMetrics::CollectFrame()
 {
-	float frameTimeMs = static_cast<float>(RDDiagManager::GetFloat(RDMetricId::AppFrameTimeMs));
+	float frameTimeMs = static_cast<float>(RDDiagManager::GetFloat(RDMetricId::RenderFrameTimeMs));
 
 	// NPS: store per-frame activation count, then reset for next frame
-	int activations = static_cast<int>(RDDiagManager::GetInt(RDMetricId::AppNoteActivationsPerFrame));
+	int activations = static_cast<int>(RDDiagManager::GetInt(RDMetricId::PlaybackNoteActivationsPerFrame));
 	m_activationRing[m_activationRingHead] = activations;
 	m_activationRingHead = (m_activationRingHead + 1) % m_activationRing.size();
 	if (m_activationRingCount < m_activationRing.size()) {
 		m_activationRingCount++;
 	}
-	RDDiagManager::SetInt(RDMetricId::AppNoteActivationsPerFrame, 0);
+	RDDiagManager::SetInt(RDMetricId::PlaybackNoteActivationsPerFrame, 0);
 
 	if (frameTimeMs <= 0.0f || frameTimeMs > GAP_THRESHOLD_MS) {
 		return;
@@ -93,9 +93,9 @@ void RDAppMetrics::_ComputeStatistics()
 			fpsSum += m_frameTimeRing[idx];
 		}
 		fpsMean = fpsSum / fpsCount;
-		RDDiagManager::SetFloat(RDMetricId::AppAvgFrameTimeMs, fpsMean);
+		RDDiagManager::SetFloat(RDMetricId::RenderAvgFrameTimeMs, fpsMean);
 		double avgFps = (fpsMean > 0.0) ? 1000.0 / fpsMean : 0.0;
-		RDDiagManager::SetFloat(RDMetricId::AppFps, avgFps);
+		RDDiagManager::SetFloat(RDMetricId::RenderFps, avgFps);
 	}
 
 	// NPS: sum activations over the same ~1s window, divide by elapsed time
@@ -109,7 +109,7 @@ void RDAppMetrics::_ComputeStatistics()
 		}
 		double elapsedSec = fpsMean * npsCount / 1000.0;
 		double nps = (elapsedSec > 0.0) ? totalActivations / elapsedSec : 0.0;
-		RDDiagManager::SetFloat(RDMetricId::AppNps, nps);
+		RDDiagManager::SetFloat(RDMetricId::PlaybackNps, nps);
 	}
 
 	// Mean over full buffer (for StdDev and Stutter)
@@ -126,7 +126,7 @@ void RDAppMetrics::_ComputeStatistics()
 		sqSum += diff * diff;
 	}
 	double stdDev = std::sqrt(sqSum / n);
-	RDDiagManager::SetFloat(RDMetricId::AppFrameTimeStdDev, stdDev);
+	RDDiagManager::SetFloat(RDMetricId::RenderFrameTimeStdDev, stdDev);
 
 	// Sort for percentile calculation (ascending = fastest frames first)
 	std::sort(m_sortBuffer.begin(), m_sortBuffer.end());
@@ -140,7 +140,7 @@ void RDAppMetrics::_ComputeStatistics()
 		}
 		double avgSlowest = slowSum / count1pct;
 		double fps1pctLow = (avgSlowest > 0.0) ? 1000.0 / avgSlowest : 0.0;
-		RDDiagManager::SetFloat(RDMetricId::AppFps1PercentLow, fps1pctLow);
+		RDDiagManager::SetFloat(RDMetricId::RenderFps1PercentLow, fps1pctLow);
 	}
 
 	// 0.1% Low: average of the slowest 0.1% of frame times → convert to FPS
@@ -152,7 +152,7 @@ void RDAppMetrics::_ComputeStatistics()
 		}
 		double avgSlowest = slowSum / count01pct;
 		double fps01pctLow = (avgSlowest > 0.0) ? 1000.0 / avgSlowest : 0.0;
-		RDDiagManager::SetFloat(RDMetricId::AppFps01PercentLow, fps01pctLow);
+		RDDiagManager::SetFloat(RDMetricId::RenderFps01PercentLow, fps01pctLow);
 	}
 
 	// Stutter detection (CapFrameX method): frames exceeding 2.5x average
@@ -165,6 +165,6 @@ void RDAppMetrics::_ComputeStatistics()
 			}
 		}
 		double stutterPct = static_cast<double>(stutterCount) / n * 100.0;
-		RDDiagManager::SetFloat(RDMetricId::AppStutterPercent, stutterPct);
+		RDDiagManager::SetFloat(RDMetricId::RenderStutterPercent, stutterPct);
 	}
 }

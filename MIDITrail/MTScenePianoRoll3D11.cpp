@@ -97,7 +97,7 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 		if (result != 0) goto EXIT;
 
 		m_Dashboard.SetNoteNum(m_NoteTracker.GetNoteCount());
-		RDDiagManager::SetInt(RDMetricId::AppTotalNoteCount, static_cast<int64_t>(m_NoteTracker.GetNoteCount()));
+		RDDiagManager::SetInt(RDMetricId::PlaybackTotalNoteCount, static_cast<int64_t>(m_NoteTracker.GetNoteCount()));
 
 		// Ripple
 		if (pProgress != NULL) pProgress->Fire((unsigned long)(MTLoadBand::TRACKER_END * 10000), 10000, "Building effects...");

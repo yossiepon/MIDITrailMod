@@ -112,7 +112,7 @@ void RDGpuTimestamp::BeginFrame()
 			if (hrBegin == S_OK && hrEnd == S_OK && tsEnd >= tsBegin) {
 				double gpuTimeMs = static_cast<double>(tsEnd - tsBegin)
 					/ static_cast<double>(disjointData.Frequency) * 1000.0;
-				RDDiagManager::SetFloat(RDMetricId::AppGpuRenderTimeMs, gpuTimeMs);
+				RDDiagManager::SetFloat(RDMetricId::RenderGpuRenderTimeMs, gpuTimeMs);
 			}
 		}
 	}

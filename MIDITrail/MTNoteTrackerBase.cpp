@@ -109,14 +109,14 @@ void MTNoteTrackerBase::DispatchActivate(
 		m_ActiveNotesPerCh[note.portNo][note.chNo]++;
 		m_TotalActiveNotes++;
 
-		RDDiagManager::SetInt(RDMetricId::AppNoteTracking, static_cast<int64_t>(m_TotalActiveNotes));
-		int64_t peak = RDDiagManager::GetInt(RDMetricId::AppNoteTrackingPeak);
+		RDDiagManager::SetInt(RDMetricId::PlaybackNoteTracking, static_cast<int64_t>(m_TotalActiveNotes));
+		int64_t peak = RDDiagManager::GetInt(RDMetricId::PlaybackNoteTrackingPeak);
 		if (static_cast<int64_t>(m_TotalActiveNotes) > peak) {
-			RDDiagManager::SetInt(RDMetricId::AppNoteTrackingPeak, static_cast<int64_t>(m_TotalActiveNotes));
+			RDDiagManager::SetInt(RDMetricId::PlaybackNoteTrackingPeak, static_cast<int64_t>(m_TotalActiveNotes));
 		}
 
-		int64_t activations = RDDiagManager::GetInt(RDMetricId::AppNoteActivationsPerFrame);
-		RDDiagManager::SetInt(RDMetricId::AppNoteActivationsPerFrame, activations + 1);
+		int64_t activations = RDDiagManager::GetInt(RDMetricId::PlaybackNoteActivationsPerFrame);
+		RDDiagManager::SetInt(RDMetricId::PlaybackNoteActivationsPerFrame, activations + 1);
 	}
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
@@ -151,7 +151,7 @@ void MTNoteTrackerBase::DispatchDeactivate(
 		if (m_TotalActiveNotes > 0) {
 			m_TotalActiveNotes--;
 		}
-		RDDiagManager::SetInt(RDMetricId::AppNoteTracking, static_cast<int64_t>(m_TotalActiveNotes));
+		RDDiagManager::SetInt(RDMetricId::PlaybackNoteTracking, static_cast<int64_t>(m_TotalActiveNotes));
 	}
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
@@ -167,8 +167,8 @@ void MTNoteTrackerBase::DispatchReset()
 	memset(m_ActiveNotesPerCh, 0, sizeof(m_ActiveNotesPerCh));
 	m_TotalActiveNotes = 0;
 	std::fill(m_ActivatedFlags.begin(), m_ActivatedFlags.end(), static_cast<uint8_t>(0));
-	RDDiagManager::SetInt(RDMetricId::AppNoteTracking, 0);
-	RDDiagManager::SetInt(RDMetricId::AppNoteTrackingPeak, 0);
+	RDDiagManager::SetInt(RDMetricId::PlaybackNoteTracking, 0);
+	RDDiagManager::SetInt(RDMetricId::PlaybackNoteTrackingPeak, 0);
 	for (const auto& entry : m_Listeners) {
 		entry.pListener->OnReset();
 	}
