@@ -71,6 +71,10 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppMidiOutTransport,  "AppMidiOutTransport",  RDMetricType::String },
 	{ RDMetricId::AppVersion,           "AppVersion",           RDMetricType::String },
 	{ RDMetricId::AppModVersion,        "AppModVersion",        RDMetricType::String },
+	{ RDMetricId::AppBuildConfig,       "AppBuildConfig",       RDMetricType::String },
+	{ RDMetricId::AppDxFeatureLevel,    "AppDxFeatureLevel",    RDMetricType::String },
+	{ RDMetricId::AppMidiOutDeviceName, "AppMidiOutDeviceName", RDMetricType::String },
+	{ RDMetricId::AppMidiOutActivePorts,"AppMidiOutActivePorts",RDMetricType::Int },
 
 	{ RDMetricId::AppNoteActivationsPerFrame, "AppNoteActivationsPerFrame", RDMetricType::Int },
 	{ RDMetricId::AppNps,               "AppNps",               RDMetricType::Float },
@@ -80,6 +84,8 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppPolyphonyPeak,        "AppPolyphonyPeak",        RDMetricType::Int },
 	{ RDMetricId::AppInstanceCount,     "AppInstanceCount",     RDMetricType::Int },
 	{ RDMetricId::AppInstanceBufferSizeKB, "AppInstanceBufferSizeKB", RDMetricType::Int },
+	{ RDMetricId::AppLivePolyphony,     "AppLivePolyphony",     RDMetricType::Int },
+	{ RDMetricId::AppLivePolyphonyPeak, "AppLivePolyphonyPeak", RDMetricType::Int },
 
 	{ RDMetricId::GpuTemperature,           "GpuTemperature",           RDMetricType::Float },
 	{ RDMetricId::GpuCoreClock,             "GpuCoreClock",             RDMetricType::Int },

@@ -254,9 +254,20 @@ int MIDITrailApp::Initialize(
 	if (result != 0) goto EXIT;
 	RDDiagManager::SetLogIntervalMs(MTLogManager::GetRuntimeLogIntervalMs());
 
-	//Set version metrics
+	//Set version and identity metrics
 	RDDiagManager::SetString(RDMetricId::AppVersion, MIDITRAIL_VER_DISPLAY);
 	RDDiagManager::SetString(RDMetricId::AppModVersion, MIDITRAIL_MOD_STRING);
+#ifdef _DEBUG
+	RDDiagManager::SetString(RDMetricId::AppBuildConfig, "Debug");
+#else
+	RDDiagManager::SetString(RDMetricId::AppBuildConfig, "Release");
+#endif
+	{
+		D3D_FEATURE_LEVEL fl = m_Renderer.GetDevice()->GetFeatureLevel();
+		char flStr[32];
+		snprintf(flStr, sizeof(flStr), "%d.%d", (fl >> 12) & 0xF, (fl >> 8) & 0xF);
+		RDDiagManager::SetString(RDMetricId::AppDxFeatureLevel, flStr);
+	}
 
 	//Create scene object
 	m_SceneType = Title;
@@ -3252,6 +3263,23 @@ int MIDITrailApp::_ChangePlayStatus(
 			const char* transportStr = _TransportTypeToString(transport);
 			RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, transportStr);
 			spdlog::info("MIDI OUT transport: {}", transportStr);
+
+			// MIDI OUT device info
+			TCHAR devName[MAXPNAMELEN];
+			std::string devNames;
+			int activePorts = 0;
+			if (m_MIDIConf.SetCurSection(_T("MIDIOUT")) == 0) {
+				const char* portName[] = {"PortA", "PortB", "PortC", "PortD", "PortE", "PortF"};
+				for (int i = 0; i < SM_MIDIOUT_PORT_NUM_MAX; i++) {
+					if (m_MIDIConf.GetStr(portName[i], devName, MAXPNAMELEN, _T("")) == 0 && devName[0] != '\0') {
+						if (!devNames.empty()) devNames += ", ";
+						devNames += devName;
+						activePorts++;
+					}
+				}
+			}
+			RDDiagManager::SetString(RDMetricId::AppMidiOutDeviceName, devNames.empty() ? "N/A" : devNames.c_str());
+			RDDiagManager::SetInt(RDMetricId::AppMidiOutActivePorts, activePorts);
 		}
 		else if (status == Stop || status == NoData || status == MonitorOFF) {
 			RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, "Deactivated");

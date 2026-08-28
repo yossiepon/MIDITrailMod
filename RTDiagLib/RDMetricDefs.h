@@ -87,9 +87,15 @@ enum class RDMetricId : uint16_t
 	AppSceneType,
 	AppMidiOutTransport,
 
-	// App: Version info (Push, one-shot)
+	// App: Version / identity info (Push, one-shot)
 	AppVersion,
 	AppModVersion,
+	AppBuildConfig,
+	AppDxFeatureLevel,
+
+	// App: MIDI output info (Push, event-driven)
+	AppMidiOutDeviceName,
+	AppMidiOutActivePorts,
 
 	// App: Black MIDI metrics (Frame, Push)
 	AppNoteActivationsPerFrame,
@@ -100,6 +106,10 @@ enum class RDMetricId : uint16_t
 	AppPolyphonyPeak,
 	AppInstanceCount,
 	AppInstanceBufferSizeKB,
+
+	// App: Live mode metrics (Frame, Push)
+	AppLivePolyphony,
+	AppLivePolyphonyPeak,
 
 	// GPU Telemetry: Vendor SDK (IntervalPolling)
 	GpuTemperature,
