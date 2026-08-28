@@ -62,6 +62,7 @@ static const unsigned int PIPE_MAX_ATTEMPTS = 8;
 
 RDKdmapiInfo::RDKdmapiInfo()
 	: m_mode(SynthMode::None)
+	, m_modInfoCollected(false)
 	, m_pfnGetModExtendedDebugInfo(nullptr)
 	, m_pfnGetDriverDebugInfo(nullptr)
 	, m_hPipe(INVALID_HANDLE_VALUE)
@@ -117,36 +118,9 @@ bool RDKdmapiInfo::_TryDetect()
 
 	if (m_pfnGetModExtendedDebugInfo != nullptr) {
 		m_mode = SynthMode::Mod;
+		m_modInfoCollected = false;
 		RDDiagManager::SetString(RDMetricId::KdmapiStatus, "Mod");
 		if (logger) logger->info("RDKdmapiInfo: OmniMIDI Mod detected (ExtendedDebugInfo available)");
-
-		// Read Mod version and audio settings from ExtendedDebugInfo (one-shot)
-		ExtendedDebugInfo* info = m_pfnGetModExtendedDebugInfo();
-		if (info != nullptr) {
-			// Mod version date
-			DWORD date = info->ModVersionDate;
-			char modVerStr[64];
-			snprintf(modVerStr, sizeof(modVerStr), "Mod %04u-%02u-%02u",
-				date / 10000, (date / 100) % 100, date % 100);
-			RDDiagManager::SetString(RDMetricId::KdmapiModVersion, modVerStr);
-
-			// Audio settings (IMP-31 extension, check StructSize)
-			static const size_t kSincInterEnd = offsetof(ExtendedDebugInfo, SincInter) + sizeof(BOOL);
-			if (info->StructSize >= kSincInterEnd) {
-				RDDiagManager::SetInt(RDMetricId::KdmapiAudioFrequency, info->AudioFrequency);
-
-				const char* engineNames[] = { "DirectX", "ASIO", "WASAPI", "XAudio" };
-				DWORD engine = info->CurrentEngine;
-				const char* engineStr = (engine < 4) ? engineNames[engine] : "Unknown";
-				RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineStr);
-
-				RDDiagManager::SetInt(RDMetricId::KdmapiBufferLength, info->BufferLength);
-				RDDiagManager::SetInt(RDMetricId::KdmapiAudioBitDepth, info->AudioBitDepth);
-				RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
-					info->SincInter ? "ON" : "OFF");
-			}
-		}
-
 		return true;
 	}
 
@@ -226,6 +200,30 @@ void RDKdmapiInfo::CollectIntervalPolling()
 	if (m_mode == SynthMode::Mod && m_pfnGetModExtendedDebugInfo != nullptr) {
 		ExtendedDebugInfo* info = m_pfnGetModExtendedDebugInfo();
 		if (info == nullptr) return;
+
+		// One-shot: Mod version and audio settings
+		if (!m_modInfoCollected && info->ModVersionDate > 0) {
+			DWORD date = info->ModVersionDate;
+			char modVerStr[64];
+			snprintf(modVerStr, sizeof(modVerStr), "Mod %04u-%02u-%02u",
+				date / 10000, (date / 100) % 100, date % 100);
+			RDDiagManager::SetString(RDMetricId::KdmapiModVersion, modVerStr);
+
+			if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
+				RDDiagManager::SetInt(RDMetricId::KdmapiAudioFrequency, info->AudioFrequency);
+
+				const char* engineNames[] = { "DirectX", "ASIO", "WASAPI", "XAudio" };
+				DWORD engine = info->CurrentEngine;
+				const char* engineStr = (engine < 4) ? engineNames[engine] : "Unknown";
+				RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineStr);
+
+				RDDiagManager::SetInt(RDMetricId::KdmapiBufferLength, info->BufferLength);
+				RDDiagManager::SetInt(RDMetricId::KdmapiAudioBitDepth, info->AudioBitDepth);
+				RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
+					info->SincInter ? "ON" : "OFF");
+			}
+			m_modInfoCollected = true;
+		}
 
 		RDDiagManager::SetFloat(RDMetricId::KdmapiCpuUsage, info->CpuUsage);
 		RDDiagManager::SetFloat(RDMetricId::KdmapiAudioLatency, static_cast<float>(info->AudioLatency));

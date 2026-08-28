@@ -256,7 +256,7 @@ int MIDITrailApp::Initialize(
 
 	//Set version and identity metrics
 	RDDiagManager::SetString(RDMetricId::AppVersion, MIDITRAIL_VER_DISPLAY);
-	RDDiagManager::SetString(RDMetricId::AppModVersion, MIDITRAIL_MOD_STRING);
+	RDDiagManager::SetString(RDMetricId::AppModVersion, MIDITRAIL_MOD_STRING_SHORT);
 #ifdef _DEBUG
 	RDDiagManager::SetString(RDMetricId::AppBuildConfig, "Debug");
 #else

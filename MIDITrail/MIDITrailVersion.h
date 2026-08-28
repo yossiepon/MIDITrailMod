@@ -43,8 +43,10 @@
 #define MIDITRAIL_MOD_DATE_STR            "2026-08-28"
 #define MIDITRAIL_MOD_DATE_COMPACT        "20260828"
 
-// Formal format (for VERSIONINFO, DiagOverlay, metrics)
+// Formal format (for VERSIONINFO, log)
 #define MIDITRAIL_MOD_STRING              "Mod " MIDITRAIL_MOD_AUTHOR " " MIDITRAIL_MOD_DATE_STR
+// Short format (for DiagOverlay AppModVersion metric — matches KdmapiModVersion format)
+#define MIDITRAIL_MOD_STRING_SHORT        "Mod " MIDITRAIL_MOD_DATE_STR
 #define MIDITRAIL_MOD_STRING_W            L"Mod " L"" MIDITRAIL_MOD_AUTHOR L" " L"" MIDITRAIL_MOD_DATE_STR
 
 // Title bar format (original convention: "mod. author_YYYYMMDD")

@@ -38,6 +38,7 @@ private:
 	enum class SynthMode { None, Mod, Standard };
 
 	SynthMode                  m_mode;
+	bool                       m_modInfoCollected;
 	GetModExtendedDebugInfoFunc m_pfnGetModExtendedDebugInfo;
 	GetDriverDebugInfoFunc      m_pfnGetDriverDebugInfo;
 	HANDLE                     m_hPipe;
