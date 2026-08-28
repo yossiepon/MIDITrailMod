@@ -69,6 +69,8 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::AppTotalPlayTimeMs,   "AppTotalPlayTimeMs",   RDMetricType::Int },
 	{ RDMetricId::AppSceneType,         "AppSceneType",         RDMetricType::String },
 	{ RDMetricId::AppMidiOutTransport,  "AppMidiOutTransport",  RDMetricType::String },
+	{ RDMetricId::AppVersion,           "AppVersion",           RDMetricType::String },
+	{ RDMetricId::AppModVersion,        "AppModVersion",        RDMetricType::String },
 
 	{ RDMetricId::AppNoteActivationsPerFrame, "AppNoteActivationsPerFrame", RDMetricType::Int },
 	{ RDMetricId::AppNps,               "AppNps",               RDMetricType::Float },
@@ -95,6 +97,7 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::KdmapiAudioLatency,       "KdmapiAudioLatency",       RDMetricType::Float },
 	{ RDMetricId::KdmapiTotalActiveVoices,  "KdmapiTotalActiveVoices",  RDMetricType::Int },
 	{ RDMetricId::KdmapiMaxVoices,          "KdmapiMaxVoices",          RDMetricType::Int },
+	{ RDMetricId::KdmapiModVersion,         "KdmapiModVersion",         RDMetricType::String },
 
 	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
 	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },

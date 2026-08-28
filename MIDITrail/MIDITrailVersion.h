@@ -26,23 +26,35 @@
 #define _MT_WSTRINGIFY(x) L ## #x
 #define _MT_TOWSTRING(x) _MT_WSTRINGIFY(x)
 
+// Full version (for VERSIONINFO .rc)
 #define MIDITRAIL_VER_STRING    _MT_TOSTRING(MIDITRAIL_VER_MAJOR) "." _MT_TOSTRING(MIDITRAIL_VER_MINOR) "." _MT_TOSTRING(MIDITRAIL_VER_PATCH) "." _MT_TOSTRING(MIDITRAIL_VER_REV)
 #define MIDITRAIL_VER_STRING_W  _MT_TOWSTRING(MIDITRAIL_VER_MAJOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_MINOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_PATCH) L"." _MT_TOWSTRING(MIDITRAIL_VER_REV)
 
+// Display version (for title bar, DiagOverlay — without Rev)
+#define MIDITRAIL_VER_DISPLAY    _MT_TOSTRING(MIDITRAIL_VER_MAJOR) "." _MT_TOSTRING(MIDITRAIL_VER_MINOR) "." _MT_TOSTRING(MIDITRAIL_VER_PATCH)
+#define MIDITRAIL_VER_DISPLAY_W  _MT_TOWSTRING(MIDITRAIL_VER_MAJOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_MINOR) L"." _MT_TOWSTRING(MIDITRAIL_VER_PATCH)
+
 //******************************************************************************
 // Mod version
-// Build script (build.sh) auto-updates MOD_DATE_STR and MOD_COPYRIGHT_YEARS.
+// Build script (build.sh) auto-updates MOD_DATE_STR, MOD_DATE_COMPACT,
+// and MOD_COPYRIGHT_YEARS.
 //******************************************************************************
 #define MIDITRAIL_MOD_AUTHOR              "yossiepon"
 #define MIDITRAIL_MOD_DATE_STR            "2026-08-28"
+#define MIDITRAIL_MOD_DATE_COMPACT        "20260828"
+
+// Formal format (for VERSIONINFO, DiagOverlay, metrics)
 #define MIDITRAIL_MOD_STRING              "Mod " MIDITRAIL_MOD_AUTHOR " " MIDITRAIL_MOD_DATE_STR
 #define MIDITRAIL_MOD_STRING_W            L"Mod " L"" MIDITRAIL_MOD_AUTHOR L" " L"" MIDITRAIL_MOD_DATE_STR
+
+// Title bar format (original convention: "mod. author_YYYYMMDD")
+#define MIDITRAIL_MOD_DISPLAY_W           L"mod. " L"" MIDITRAIL_MOD_AUTHOR L"_" L"" MIDITRAIL_MOD_DATE_COMPACT
 
 #define MIDITRAIL_MOD_COPYRIGHT_YEAR_START  2012
 #define MIDITRAIL_MOD_COPYRIGHT_YEARS       "2012-2026"
 
 //******************************************************************************
-// Display strings (derived from above)
+// Display strings (for title bar / About dialog)
 //******************************************************************************
 #ifdef _WIN64
 #define MIDITRAIL_VERSION_STRING_ARCH  L"x64"
@@ -50,7 +62,8 @@
 #define MIDITRAIL_VERSION_STRING_ARCH  L"x86"
 #endif
 
-#define MIDITRAIL_VERSION_STRING  MIDITRAIL_VER_STRING_W L" (" MIDITRAIL_VERSION_STRING_ARCH L"), " MIDITRAIL_MOD_STRING_W
+// Title bar: "1.4.1 (x64), mod. yossiepon_20260828"
+#define MIDITRAIL_VERSION_STRING  MIDITRAIL_VER_DISPLAY_W L" (" MIDITRAIL_VERSION_STRING_ARCH L"), " MIDITRAIL_MOD_DISPLAY_W
 
 // Backward compatibility (existing code references X64/X86 variants)
 #define MIDITRAIL_VERSION_STRING_X64  MIDITRAIL_VERSION_STRING

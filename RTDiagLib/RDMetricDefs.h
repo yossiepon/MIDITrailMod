@@ -87,6 +87,10 @@ enum class RDMetricId : uint16_t
 	AppSceneType,
 	AppMidiOutTransport,
 
+	// App: Version info (Push, one-shot)
+	AppVersion,
+	AppModVersion,
+
 	// App: Black MIDI metrics (Frame, Push)
 	AppNoteActivationsPerFrame,
 	AppNps,
@@ -115,6 +119,7 @@ enum class RDMetricId : uint16_t
 	KdmapiAudioLatency,
 	KdmapiTotalActiveVoices,
 	KdmapiMaxVoices,
+	KdmapiModVersion,
 
 	// Diag: Startup timing
 	DiagStartupTotalUs,

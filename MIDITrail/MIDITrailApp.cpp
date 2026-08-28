@@ -254,6 +254,10 @@ int MIDITrailApp::Initialize(
 	if (result != 0) goto EXIT;
 	RDDiagManager::SetLogIntervalMs(MTLogManager::GetRuntimeLogIntervalMs());
 
+	//Set version metrics
+	RDDiagManager::SetString(RDMetricId::AppVersion, MIDITRAIL_VER_DISPLAY);
+	RDDiagManager::SetString(RDMetricId::AppModVersion, MIDITRAIL_MOD_STRING);
+
 	//Create scene object
 	m_SceneType = Title;
 	result = _CreateScene(m_SceneType, &m_SeqData);
