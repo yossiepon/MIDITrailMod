@@ -255,18 +255,18 @@ int MIDITrailApp::Initialize(
 	RDDiagManager::SetLogIntervalMs(MTLogManager::GetRuntimeLogIntervalMs());
 
 	//Set version and identity metrics
-	RDDiagManager::SetString(RDMetricId::AppVersion, MIDITRAIL_VER_DISPLAY);
-	RDDiagManager::SetString(RDMetricId::AppModVersion, MIDITRAIL_MOD_STRING_SHORT);
+	RDDiagManager::SetString(RDMetricId::AppIdVersion, MIDITRAIL_VER_DISPLAY);
+	RDDiagManager::SetString(RDMetricId::AppIdModVersion, MIDITRAIL_MOD_STRING_SHORT);
 #ifdef _DEBUG
-	RDDiagManager::SetString(RDMetricId::AppBuildConfig, "Debug");
+	RDDiagManager::SetString(RDMetricId::AppIdBuildConfig, "Debug");
 #else
-	RDDiagManager::SetString(RDMetricId::AppBuildConfig, "Release");
+	RDDiagManager::SetString(RDMetricId::AppIdBuildConfig, "Release");
 #endif
 	{
 		D3D_FEATURE_LEVEL fl = m_Renderer.GetDevice()->GetFeatureLevel();
 		char flStr[32];
 		snprintf(flStr, sizeof(flStr), "%d.%d", (fl >> 12) & 0xF, (fl >> 8) & 0xF);
-		RDDiagManager::SetString(RDMetricId::AppDxFeatureLevel, flStr);
+		RDDiagManager::SetString(RDMetricId::AppIdDxFeatureLevel, flStr);
 	}
 
 	//Create scene object
@@ -418,7 +418,7 @@ int MIDITrailApp::Run()
 				if (m_PrevFrameQPC.QuadPart != 0) {
 					double frameTimeMs = static_cast<double>(
 						frameNow.QuadPart - m_PrevFrameQPC.QuadPart) * toMs;
-					RDDiagManager::SetFloat(RDMetricId::AppFrameTimeMs, frameTimeMs);
+					RDDiagManager::SetFloat(RDMetricId::RenderFrameTimeMs, frameTimeMs);
 				}
 				m_PrevFrameQPC = frameNow;
 
@@ -430,7 +430,7 @@ int MIDITrailApp::Run()
 				}
 
 				QueryPerformanceCounter(&updateEnd);
-				RDDiagManager::SetFloat(RDMetricId::AppSceneUpdateTimeMs,
+				RDDiagManager::SetFloat(RDMetricId::RenderSceneUpdateTimeMs,
 					static_cast<double>(updateEnd.QuadPart - frameNow.QuadPart) * toMs);
 
 				//Draw
@@ -456,10 +456,10 @@ int MIDITrailApp::Run()
 				//Update polyphony from sequencer (atomic read from timer thread)
 				if (m_PlayStatus == Play) {
 					int32_t polyphony = m_Sequencer.GetPolyphonyCount();
-					RDDiagManager::SetInt(RDMetricId::AppPolyphony, static_cast<int64_t>(polyphony));
-					int64_t peak = RDDiagManager::GetInt(RDMetricId::AppPolyphonyPeak);
+					RDDiagManager::SetInt(RDMetricId::PlaybackPolyphony, static_cast<int64_t>(polyphony));
+					int64_t peak = RDDiagManager::GetInt(RDMetricId::PlaybackPolyphonyPeak);
 					if (static_cast<int64_t>(polyphony) > peak) {
-						RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, static_cast<int64_t>(polyphony));
+						RDDiagManager::SetInt(RDMetricId::PlaybackPolyphonyPeak, static_cast<int64_t>(polyphony));
 					}
 				}
 
@@ -1412,8 +1412,8 @@ int MIDITrailApp::_OnMenuPlay()
 		if (result != 0) goto EXIT;
 
 		//Clear peak metrics for new playback session
-		RDDiagManager::SetInt(RDMetricId::AppNoteTrackingPeak, 0);
-		RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, 0);
+		RDDiagManager::SetInt(RDMetricId::PlaybackNoteTrackingPeak, 0);
+		RDDiagManager::SetInt(RDMetricId::PlaybackPolyphonyPeak, 0);
 
 		//Clear the latest sequencer message
 		ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
@@ -1706,8 +1706,8 @@ int MIDITrailApp::_OnMenuStopMonitoring()
 	}
 
 	//Clear Live metrics (Monitor OFF)
-	RDDiagManager::SetInt(RDMetricId::AppPolyphony, 0);
-	RDDiagManager::SetInt(RDMetricId::AppPolyphonyPeak, 0);
+	RDDiagManager::SetInt(RDMetricId::PlaybackPolyphony, 0);
+	RDDiagManager::SetInt(RDMetricId::PlaybackPolyphonyPeak, 0);
 
 EXIT:;
 	return result;
@@ -2250,8 +2250,8 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 			}
 
 			//Clear Playback metrics (consolidated from 3 scene base classes)
-			RDDiagManager::SetInt(RDMetricId::AppNoteTracking, 0);
-			RDDiagManager::SetInt(RDMetricId::AppPolyphony, 0);
+			RDDiagManager::SetInt(RDMetricId::PlaybackNoteTracking, 0);
+			RDDiagManager::SetInt(RDMetricId::PlaybackPolyphony, 0);
 
 			//Save viewpoint
 			if (m_isAutoSaveViewpoint) {
@@ -2908,10 +2908,10 @@ int MIDITrailApp::_LoadMIDIFile(
 
 		char fileNameA[256] = {0};
 		WideCharToMultiByte(CP_UTF8, 0, m_SeqData.GetFileName(), -1, fileNameA, 256, NULL, NULL);
-		RDDiagManager::SetString(RDMetricId::AppLoadedFileName, fileNameA);
-		RDDiagManager::SetInt(RDMetricId::AppTotalPlayTimeMs,
+		RDDiagManager::SetString(RDMetricId::PlaybackLoadedFileName, fileNameA);
+		RDDiagManager::SetInt(RDMetricId::PlaybackTotalPlayTimeMs,
 			static_cast<int64_t>(m_SeqData.GetTotalPlayTime()));
-		RDDiagManager::SetString(RDMetricId::AppSceneType, sceneNames[m_SceneType]);
+		RDDiagManager::SetString(RDMetricId::PlaybackSceneType, sceneNames[m_SceneType]);
 
 		RDDiagManager::LogEvent(RDFormatProfile::FileLoaded,
 			RDFormatProfile::FileLoadedCount, "file-loaded");
@@ -3269,7 +3269,7 @@ int MIDITrailApp::_ChangePlayStatus(
 		if (status == Play || status == MonitorON) {
 			auto transport = m_Sequencer.GetTransportType();
 			const char* transportStr = _TransportTypeToString(transport);
-			RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, transportStr);
+			RDDiagManager::SetString(RDMetricId::MidiOutTransport, transportStr);
 			spdlog::info("MIDI OUT transport: {}", transportStr);
 
 			// MIDI OUT device info
@@ -3286,11 +3286,11 @@ int MIDITrailApp::_ChangePlayStatus(
 					}
 				}
 			}
-			RDDiagManager::SetString(RDMetricId::AppMidiOutDeviceName, devNames.empty() ? "N/A" : devNames.c_str());
-			RDDiagManager::SetInt(RDMetricId::AppMidiOutActivePorts, activePorts);
+			RDDiagManager::SetString(RDMetricId::MidiOutDeviceName, devNames.empty() ? "N/A" : devNames.c_str());
+			RDDiagManager::SetInt(RDMetricId::MidiOutActivePorts, activePorts);
 		}
 		else if (status == Stop || status == NoData || status == MonitorOFF) {
-			RDDiagManager::SetString(RDMetricId::AppMidiOutTransport, "Deactivated");
+			RDDiagManager::SetString(RDMetricId::MidiOutTransport, "Deactivated");
 			spdlog::info("MIDI OUT deactivated");
 		}
 	}
@@ -3568,7 +3568,7 @@ int MIDITrailApp::_CreateScene(
 		static const char* sceneNames[] = { "Title", "PianoRoll3D", "PianoRoll2D", "PianoRollRain",
 			"PianoRollRain2D", "PianoRollRing", "PianoRoll3DLive", "PianoRoll2DLive",
 			"PianoRollRainLive", "PianoRollRain2DLive", "PianoRollRingLive" };
-		RDDiagManager::SetString(RDMetricId::AppSceneType, sceneNames[type]);
+		RDDiagManager::SetString(RDMetricId::PlaybackSceneType, sceneNames[type]);
 		RDDiagManager::LogEvent(RDFormatProfile::SceneReady,
 			RDFormatProfile::SceneReadyCount, "scene-ready");
 	}

@@ -40,8 +40,8 @@
 // and MOD_COPYRIGHT_YEARS.
 //******************************************************************************
 #define MIDITRAIL_MOD_AUTHOR              "yossiepon"
-#define MIDITRAIL_MOD_DATE_STR            "2026-08-28"
-#define MIDITRAIL_MOD_DATE_COMPACT        "20260828"
+#define MIDITRAIL_MOD_DATE_STR            "2026-08-29"
+#define MIDITRAIL_MOD_DATE_COMPACT        "20260829"
 
 // Formal format (for VERSIONINFO, log)
 #define MIDITRAIL_MOD_STRING              "Mod " MIDITRAIL_MOD_AUTHOR " " MIDITRAIL_MOD_DATE_STR

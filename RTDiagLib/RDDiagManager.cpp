@@ -426,31 +426,31 @@ void RDDiagManager::GpuTimestampEndFrame()
 void RDDiagManager::ResetFrameMetrics()
 {
 	static const RDMetricId appMetrics[] = {
-		RDMetricId::AppFrameTimeMs,
-		RDMetricId::AppSceneUpdateTimeMs,
-		RDMetricId::AppDrawTimeMs,
-		RDMetricId::AppPresentTimeMs,
-		RDMetricId::AppGpuRenderTimeMs,
-		RDMetricId::AppAvgFrameTimeMs,
-		RDMetricId::AppFps,
-		RDMetricId::AppFps1PercentLow,
-		RDMetricId::AppFps01PercentLow,
-		RDMetricId::AppFrameTimeStdDev,
-		RDMetricId::AppStutterPercent,
-		RDMetricId::AppNps,
+		RDMetricId::RenderFrameTimeMs,
+		RDMetricId::RenderSceneUpdateTimeMs,
+		RDMetricId::RenderDrawTimeMs,
+		RDMetricId::RenderPresentTimeMs,
+		RDMetricId::RenderGpuRenderTimeMs,
+		RDMetricId::RenderAvgFrameTimeMs,
+		RDMetricId::RenderFps,
+		RDMetricId::RenderFps1PercentLow,
+		RDMetricId::RenderFps01PercentLow,
+		RDMetricId::RenderFrameTimeStdDev,
+		RDMetricId::RenderStutterPercent,
+		RDMetricId::PlaybackNps,
 	};
 	for (auto id : appMetrics) {
 		s_metrics[static_cast<size_t>(id)].floatVal = 0.0;
 	}
 
 	static const RDMetricId appIntMetrics[] = {
-		RDMetricId::AppNoteActivationsPerFrame,
-		RDMetricId::AppNoteTracking,
-		RDMetricId::AppNoteTrackingPeak,
-		RDMetricId::AppPolyphony,
-		RDMetricId::AppPolyphonyPeak,
-		RDMetricId::AppInstanceCount,
-		RDMetricId::AppInstanceBufferSizeKB,
+		RDMetricId::PlaybackNoteActivationsPerFrame,
+		RDMetricId::PlaybackNoteTracking,
+		RDMetricId::PlaybackNoteTrackingPeak,
+		RDMetricId::PlaybackPolyphony,
+		RDMetricId::PlaybackPolyphonyPeak,
+		RDMetricId::RenderInstanceCount,
+		RDMetricId::RenderInstanceBufferSizeKB,
 	};
 	for (auto id : appIntMetrics) {
 		s_metrics[static_cast<size_t>(id)].intVal = 0;

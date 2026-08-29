@@ -285,7 +285,7 @@ int DXRenderer11::RenderScene(
 		goto EXIT;
 	}
 
-	RDDiagManager::SetInt(RDMetricId::AppInstanceCount, 0);
+	RDDiagManager::SetInt(RDMetricId::RenderInstanceCount, 0);
 
 	// Clear render target and depth buffer
 	result = BeginFrame(pScene->GetBGColor());
@@ -318,9 +318,9 @@ int DXRenderer11::RenderScene(
 	result = EndFrame();
 	QueryPerformanceCounter(&presentEnd);
 
-	RDDiagManager::SetFloat(RDMetricId::AppDrawTimeMs,
+	RDDiagManager::SetFloat(RDMetricId::RenderDrawTimeMs,
 		static_cast<double>(drawEnd.QuadPart - drawStart.QuadPart) * toMs);
-	RDDiagManager::SetFloat(RDMetricId::AppPresentTimeMs,
+	RDDiagManager::SetFloat(RDMetricId::RenderPresentTimeMs,
 		static_cast<double>(presentEnd.QuadPart - drawEnd.QuadPart) * toMs);
 
 	if (result != 0) goto EXIT;

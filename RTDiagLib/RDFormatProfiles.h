@@ -15,6 +15,8 @@
 namespace RDFormatProfile
 {
 	static const RDFormatTemplateEntry MachineSignature[] = {
+		{ "Version", "MIDITrail ${AppIdVersion} (${AppIdModVersion}), KDMAPI ${KdmapiVersion} (${KdmapiModVersion})" },
+		{ "Build",   "${AppIdBuildConfig}, DX ${AppIdDxFeatureLevel}" },
 		{ "OS",      "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
 		{ "CPU",     "${CpuName} (${CpuArchitecture})" },
 		{ "CPU info","${CpuVendor}, ${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T, ${CpuBaseMHz} MHz" },
@@ -26,7 +28,6 @@ namespace RDFormatProfile
 		{ "Commit",  "${CommitUsedMB} / ${CommitLimitMB} MB used" },
 		{ "Machine", "${MachineType}" },
 		{ "Diag",    "startup ${DiagStartupTotalUs} us [OS:${DiagStartupOsInfoUs} CPU:${DiagStartupCpuInfoUs} GPU:${DiagStartupGpuInfoUs} Mem:${DiagStartupMemoryInfoUs} WMI:${DiagStartupWmiInfoUs}]" },
-		{ "Version", "MIDITrail ${AppVersion} (${AppModVersion}), KDMAPI ${KdmapiVersion} (${KdmapiModVersion})" },
 	};
 
 	static const size_t MachineSignatureCount =
@@ -39,14 +40,17 @@ namespace RDFormatProfile
 		{ "Process","Commit: ${ProcessCommitMB} MB, WS: ${ProcessWorkingSetMB} MB, Handles: ${ProcessHandles}" },
 		{ "VRAM",   "${GpuVramUsedMB} / ${GpuVramTotalMB} MB used (Free: ${GpuVramFreeMB} MB)" },
 		{ "GPU",    "${GpuUsagePercent}%" },
-		{ "Frame",  "${AppFps} FPS (${AppAvgFrameTimeMs} ms) 1%Low:${AppFps1PercentLow} 0.1%Low:${AppFps01PercentLow}" },
-		{ "Timing", "Update:${AppSceneUpdateTimeMs} Draw:${AppDrawTimeMs} Present:${AppPresentTimeMs} GPU:${AppGpuRenderTimeMs} ms" },
-		{ "Stab",   "StdDev:${AppFrameTimeStdDev} ms, Stutter:${AppStutterPercent}%" },
-		{ "Render", "Instances:${AppInstanceCount} Buffer:${AppInstanceBufferSizeKB} KB" },
-		{ "Notes",  "NPS:${AppNps} Poly:${AppPolyphony} (Peak:${AppPolyphonyPeak}) Tracking:${AppNoteTracking} (Peak:${AppNoteTrackingPeak})" },
+		{ "Frame",  "${RenderFps} FPS (${RenderAvgFrameTimeMs} ms) 1%Low:${RenderFps1PercentLow} 0.1%Low:${RenderFps01PercentLow}" },
+		{ "Timing", "Update:${RenderSceneUpdateTimeMs} Draw:${RenderDrawTimeMs} Present:${RenderPresentTimeMs} GPU:${RenderGpuRenderTimeMs} ms" },
+		{ "Stab",   "StdDev:${RenderFrameTimeStdDev} ms, Stutter:${RenderStutterPercent}%" },
+		{ "Render", "Instances:${RenderInstanceCount} Buffer:${RenderInstanceBufferSizeKB} KB" },
+		{ "Notes",  "NPS:${PlaybackNps} Poly:${PlaybackPolyphony} (Peak:${PlaybackPolyphonyPeak}) Tracking:${PlaybackNoteTracking} (Peak:${PlaybackNoteTrackingPeak})" },
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
-		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V" },
-		{ "Synth", "${AppMidiOutTransport}, Voices:${KdmapiTotalActiveVoices}/${KdmapiMaxVoices} CPU:${KdmapiCpuUsage}% Latency:${KdmapiAudioLatency}ms" },
+		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V, Intake ${GpuIntakeTemperature} C, VRAM ${GpuVramTemperature} C" },
+		{ "Synth",       "Voices:${SynthActiveVoices}/${SynthMaxVoices} CPU:${SynthRenderLoad}% Headroom:${SynthRenderHeadroom}%" },
+		{ "Synth Audio1","${KdmapiAudioEngine}, ${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Vol:${SynthOutputVolume}%, Sinc:${KdmapiSincInterpolation}" },
+		{ "Synth Audio2","Buf:${SynthAudioBufferSize} frames, Latency:${SynthAudioLatency} ms" },
+		{ "MIDI Out", "${MidiOutTransport}, ${MidiOutDeviceName}, ${MidiOutActivePorts} port(s)" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
 
@@ -54,7 +58,7 @@ namespace RDFormatProfile
 		sizeof(RuntimeSystem) / sizeof(RuntimeSystem[0]);
 
 	static const RDFormatTemplateEntry OverlayMachineSignature[] = {
-		{ "App", "MIDITrail ${AppVersion} (${AppModVersion}), KDMAPI ${KdmapiVersion} (${KdmapiModVersion})" },
+		{ "App", "MIDITrail ${AppIdVersion} (${AppIdModVersion}), KDMAPI ${KdmapiVersion} (${KdmapiModVersion})" },
 		{ "",    "" },
 		{ "OS",  "${OsProductName} (${OsVersion}), ${MachineType} ${CpuArchitecture}" },
 		{ "CPU", "${CpuName} ${CpuBaseMHz} MHz (${CpuSockets}P/${CpuPhysicalCores}C/${CpuLogicalProcessors}T)" },
@@ -65,6 +69,10 @@ namespace RDFormatProfile
 		sizeof(OverlayMachineSignature) / sizeof(OverlayMachineSignature[0]);
 
 	static const RDFormatTemplateEntry OverlayRuntime[] = {
+		{ "",             "" },
+		{ "MIDI",         "${MidiOutTransport}, ${MidiOutActivePorts} port(s)" },
+		{ "Synth Audio1", "${KdmapiAudioEngine}, ${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Vol ${SynthOutputVolume}%, Sinc ${KdmapiSincInterpolation}" },
+		{ "Synth Audio2", "Buf ${SynthAudioBufferSize} frames, Latency ${SynthAudioLatency} ms" },
 		{ "",        "" },
 		{ "RAM",     "${PhysMemAvailableMB} / ${PhysMemTotalMB} MB free" },
 		{ "Commit",  "${CommitFreeMB} / ${CommitLimitMB} MB free" },
@@ -75,13 +83,13 @@ namespace RDFormatProfile
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
 		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V" },
 		{ "",        "" },
-		{ "Frame",   "${AppFps} FPS (${AppAvgFrameTimeMs} ms), 1%Low ${AppFps1PercentLow}, 0.1%Low ${AppFps01PercentLow}" },
-		{ "Timing",  "Update ${AppSceneUpdateTimeMs} ms, Draw ${AppDrawTimeMs} ms, Present ${AppPresentTimeMs} ms, GPU ${AppGpuRenderTimeMs} ms" },
-		{ "Stab",    "StdDev ${AppFrameTimeStdDev} ms, Stutter ${AppStutterPercent}%" },
-		{ "Render",  "Buffer ${AppInstanceBufferSizeKB} KB, Instances ${AppInstanceCount}" },
+		{ "Frame",   "${RenderFps} FPS (${RenderAvgFrameTimeMs} ms), 1%Low ${RenderFps1PercentLow}, 0.1%Low ${RenderFps01PercentLow}" },
+		{ "Timing",  "Update ${RenderSceneUpdateTimeMs} ms, Draw ${RenderDrawTimeMs} ms, Present ${RenderPresentTimeMs} ms, GPU ${RenderGpuRenderTimeMs} ms" },
+		{ "Stab",    "StdDev ${RenderFrameTimeStdDev} ms, Stutter ${RenderStutterPercent}%" },
+		{ "Render",  "Buffer ${RenderInstanceBufferSizeKB} KB, Instances ${RenderInstanceCount}" },
 		{ "",        "" },
-		{ "Notes",   "${AppNps} NPS, Poly ${AppPolyphony} (Peak ${AppPolyphonyPeak}), Tracking ${AppNoteTracking} (Peak ${AppNoteTrackingPeak})" },
-		{ "Synth", "${AppMidiOutTransport}, Voices ${KdmapiTotalActiveVoices}/${KdmapiMaxVoices}, CPU ${KdmapiCpuUsage}%, Latency ${KdmapiAudioLatency} ms" },
+		{ "Notes",   "${PlaybackNps} NPS, Poly ${PlaybackPolyphony} (Peak ${PlaybackPolyphonyPeak}), Tracking ${PlaybackNoteTracking} (Peak ${PlaybackNoteTrackingPeak})" },
+		{ "Synth",   "Voices ${SynthActiveVoices}/${SynthMaxVoices}, Headroom ${SynthRenderHeadroom}%" },
 		{ "",        "" },
 		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
 	};
@@ -90,17 +98,17 @@ namespace RDFormatProfile
 		sizeof(OverlayRuntime) / sizeof(OverlayRuntime[0]);
 
 	static const RDFormatTemplateEntry FileLoaded[] = {
-		{ "File",     "${AppLoadedFileName}" },
-		{ "Notes",    "${AppTotalNoteCount} notes" },
-		{ "Duration", "${AppTotalPlayTimeMs} ms" },
+		{ "File",     "${PlaybackLoadedFileName}" },
+		{ "Notes",    "${PlaybackTotalNoteCount} notes" },
+		{ "Duration", "${PlaybackTotalPlayTimeMs} ms" },
 	};
 
 	static const size_t FileLoadedCount =
 		sizeof(FileLoaded) / sizeof(FileLoaded[0]);
 
 	static const RDFormatTemplateEntry SceneReady[] = {
-		{ "Scene",    "${AppSceneType}" },
-		{ "Buffer",   "${AppInstanceBufferSizeKB} KB (${AppTotalNoteCount} notes)" },
+		{ "Scene",    "${PlaybackSceneType}" },
+		{ "Buffer",   "${RenderInstanceBufferSizeKB} KB (${PlaybackTotalNoteCount} notes)" },
 	};
 
 	static const size_t SceneReadyCount =

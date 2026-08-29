@@ -37,24 +37,23 @@ struct ExtendedDebugInfo
 	DWORD  ModVersionMinor;
 	DWORD  ModVersionPatch;
 	DWORD  ModVersionDate;
-	FLOAT  CpuUsage;
+	DWORD  CurrentEngine;
+	DWORD  AudioFrequency;
+	DWORD  AudioBitDepth;
+	DWORD  AudioSampleFormat;
+	BOOL   SincInter;
+	DWORD  OutputVolume;
+	FLOAT  RenderLoad;
 	DOUBLE AudioLatency;
 	DWORD  AudioBufferSize;
 	DOUBLE ASIOInputLatency;
 	DOUBLE ASIOOutputLatency;
 	DWORD  CurrentSFList;
-	DWORD  ActiveVoicesEx[128];
+	DWORD  NumChannels;
 	DWORD  TotalActiveVoices;
 	DWORD  MaxVoices;
+	DWORD  ActiveVoicesEx[128];
 	DWORD  ActiveNotesEx[128];
-	DWORD  NumChannels;
-	// IMP-31 extension
-	DWORD  AudioFrequency;
-	DWORD  CurrentEngine;
-	DWORD  BufferLength;
-	DWORD  OutputVolume;
-	DWORD  AudioBitDepth;
-	BOOL   SincInter;
 };
 
 static const wchar_t* OMNIMIDI_PIPE_TEMPLATE = L"\\\\.\\pipe\\OmniMIDIDbg%u";
@@ -201,34 +200,48 @@ void RDKdmapiInfo::CollectIntervalPolling()
 		ExtendedDebugInfo* info = m_pfnGetModExtendedDebugInfo();
 		if (info == nullptr) return;
 
-		// One-shot: Mod version and audio settings
+		// One-shot: Mod version (available before BASS init via DllMain pre-population)
 		if (!m_modInfoCollected && info->ModVersionDate > 0) {
 			DWORD date = info->ModVersionDate;
 			char modVerStr[64];
 			snprintf(modVerStr, sizeof(modVerStr), "Mod %04u-%02u-%02u",
 				date / 10000, (date / 100) % 100, date % 100);
 			RDDiagManager::SetString(RDMetricId::KdmapiModVersion, modVerStr);
-
-			if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
-				RDDiagManager::SetInt(RDMetricId::KdmapiAudioFrequency, info->AudioFrequency);
-
-				const char* engineNames[] = { "DirectX", "ASIO", "WASAPI", "XAudio" };
-				DWORD engine = info->CurrentEngine;
-				const char* engineStr = (engine < 4) ? engineNames[engine] : "Unknown";
-				RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineStr);
-
-				RDDiagManager::SetInt(RDMetricId::KdmapiBufferLength, info->BufferLength);
-				RDDiagManager::SetInt(RDMetricId::KdmapiAudioBitDepth, info->AudioBitDepth);
-				RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
-					info->SincInter ? "ON" : "OFF");
-			}
 			m_modInfoCollected = true;
 		}
 
-		RDDiagManager::SetFloat(RDMetricId::KdmapiCpuUsage, info->CpuUsage);
-		RDDiagManager::SetFloat(RDMetricId::KdmapiAudioLatency, static_cast<float>(info->AudioLatency));
-		RDDiagManager::SetInt(RDMetricId::KdmapiTotalActiveVoices, info->TotalActiveVoices);
-		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, info->MaxVoices);
+		// Polling: Synth performance metrics
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->RenderLoad);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderHeadroom, 100.0f - info->RenderLoad);
+		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
+		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, info->TotalActiveVoices);
+		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, info->MaxVoices);
+
+		// Polling: Audio runtime info (BUG-26: all fields now from BASS API)
+		if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
+			RDDiagManager::SetInt(RDMetricId::SynthAudioFrequency, info->AudioFrequency);
+			RDDiagManager::SetInt(RDMetricId::SynthAudioBufferSize, info->AudioBufferSize);
+			RDDiagManager::SetInt(RDMetricId::SynthAudioBitDepth, info->AudioBitDepth);
+
+			const char* engineNames[] = { "WAV", "BASS", "ASIO", "WASAPI", "XAudio" };
+			DWORD engine = info->CurrentEngine;
+			bool engineActive = (engine < 5);
+			RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine,
+				engineActive ? engineNames[engine] : "N/A");
+
+			BOOL sinc = info->SincInter;
+			RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
+				(sinc == TRUE) ? "ON" : (sinc == FALSE) ? "OFF" : "N/A");
+
+			const char* sampleTypeNames[] = { "unknown", "int", "float" };
+			DWORD fmt = info->AudioSampleFormat;
+			const char* sampleType = (fmt < 3) ? sampleTypeNames[fmt] : "unknown";
+			RDDiagManager::SetString(RDMetricId::SynthAudioSampleType, sampleType);
+
+			DWORD vol = info->OutputVolume;
+			RDDiagManager::SetFloat(RDMetricId::SynthOutputVolume,
+				(vol <= 10000) ? (vol / 100.0) : -1.0);
+		}
 	}
 	else if (m_mode == SynthMode::Standard && m_pfnGetDriverDebugInfo != nullptr) {
 		if (m_hPipe == INVALID_HANDLE_VALUE) {
@@ -239,14 +252,15 @@ void RDKdmapiInfo::CollectIntervalPolling()
 		DebugInfo* info = m_pfnGetDriverDebugInfo();
 		if (info == nullptr) return;
 
-		RDDiagManager::SetFloat(RDMetricId::KdmapiCpuUsage, info->RenderingTime);
-		RDDiagManager::SetFloat(RDMetricId::KdmapiAudioLatency, static_cast<float>(info->AudioLatency));
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->RenderingTime);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderHeadroom, 100.0f - info->RenderingTime);
+		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
 
 		DWORD totalVoices = 0;
 		for (int i = 0; i < 16; ++i) {
 			totalVoices += info->ActiveVoices[i];
 		}
-		RDDiagManager::SetInt(RDMetricId::KdmapiTotalActiveVoices, totalVoices);
+		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, totalVoices);
 
 		DWORD maxVoices = 0;
 		HKEY hKey = NULL;
@@ -256,6 +270,6 @@ void RDKdmapiInfo::CollectIntervalPolling()
 			RegQueryValueExW(hKey, L"MaxVoices", NULL, NULL, (LPBYTE)&maxVoices, &dwSize);
 			RegCloseKey(hKey);
 		}
-		RDDiagManager::SetInt(RDMetricId::KdmapiMaxVoices, maxVoices);
+		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, maxVoices);
 	}
 }

@@ -178,7 +178,7 @@ int MTDiagOverlay11::_UpdateBgVertices(
 		float overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
 		float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
 		float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
-		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
 		float overlayHeight = lineHeight * (float)m_TotalLineCount;
 
 		float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
@@ -198,7 +198,7 @@ int MTDiagOverlay11::_UpdateBgVertices(
 			lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
 			overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
 			overlayHeight = lineHeight * (float)m_TotalLineCount;
-			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
 		}
 
 		float bgX = (float)screenWidth - overlayWidth - MTDIAGOVERLAY11_MARGIN - MTDIAGOVERLAY11_PADDING;
@@ -292,7 +292,7 @@ int MTDiagOverlay11::Draw(
 		float overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
 		float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
 		float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
-		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
 		float overlayHeight = lineHeight * (float)m_TotalLineCount;
 
 		float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
@@ -311,7 +311,7 @@ int MTDiagOverlay11::Draw(
 			m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
 			lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
 			overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
-			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN;
+			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
 		}
 
 		result = _DrawBackground(pContext);
