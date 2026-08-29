@@ -37,24 +37,23 @@ struct ExtendedDebugInfo
 	DWORD  ModVersionMinor;
 	DWORD  ModVersionPatch;
 	DWORD  ModVersionDate;
-	FLOAT  CpuUsage;
+	DWORD  CurrentEngine;
+	DWORD  AudioFrequency;
+	DWORD  AudioBitDepth;
+	DWORD  AudioSampleFormat;
+	BOOL   SincInter;
+	DWORD  OutputVolume;
+	FLOAT  RenderLoad;
 	DOUBLE AudioLatency;
 	DWORD  AudioBufferSize;
 	DOUBLE ASIOInputLatency;
 	DOUBLE ASIOOutputLatency;
 	DWORD  CurrentSFList;
-	DWORD  ActiveVoicesEx[128];
+	DWORD  NumChannels;
 	DWORD  TotalActiveVoices;
 	DWORD  MaxVoices;
+	DWORD  ActiveVoicesEx[128];
 	DWORD  ActiveNotesEx[128];
-	DWORD  NumChannels;
-	// IMP-31 extension (BUG-26: runtime values from BASS API)
-	DWORD  AudioFrequency;
-	DWORD  CurrentEngine;
-	DWORD  OutputVolume;
-	DWORD  AudioBitDepth;
-	BOOL   SincInter;
-	DWORD  AudioSampleFormat;  // 0=unknown, 1=int, 2=float
 };
 
 static const wchar_t* OMNIMIDI_PIPE_TEMPLATE = L"\\\\.\\pipe\\OmniMIDIDbg%u";
@@ -212,8 +211,8 @@ void RDKdmapiInfo::CollectIntervalPolling()
 		}
 
 		// Polling: Synth performance metrics
-		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->CpuUsage);
-		RDDiagManager::SetFloat(RDMetricId::SynthRenderHeadroom, 100.0f - info->CpuUsage);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->RenderLoad);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderHeadroom, 100.0f - info->RenderLoad);
 		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
 		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, info->TotalActiveVoices);
 		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, info->MaxVoices);
