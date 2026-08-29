@@ -125,6 +125,7 @@ enum class RDMetricId : uint16_t
 	SynthActiveVoices,
 	SynthMaxVoices,
 	SynthRenderLoad,         // BASS_ATTRIB_CPU: audio rendering load (%)
+	SynthRenderHeadroom,     // 100 - RenderLoad: remaining capacity (%)
 	SynthAudioLatency,
 	SynthAudioFrequency,
 	SynthAudioBitDepth,

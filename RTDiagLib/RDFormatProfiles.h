@@ -48,7 +48,7 @@ namespace RDFormatProfile
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
 		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V, Intake ${GpuIntakeTemperature} C, VRAM ${GpuVramTemperature} C" },
 		{ "Synth",    "Voices:${SynthActiveVoices}/${SynthMaxVoices} CPU:${SynthRenderLoad}% Latency:${SynthAudioLatency}ms" },
-		{ "Synth Audio", "Freq:${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType} Buf:${SynthAudioBufferSize}frames Engine:${KdmapiAudioEngine} Sinc:${KdmapiSincInterpolation} Vol:${SynthOutputVolume}%" },
+		{ "Synth Audio", "Freq:${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType} Vol:${SynthOutputVolume}% Buf:${SynthAudioBufferSize}frames Engine:${KdmapiAudioEngine} Sinc:${KdmapiSincInterpolation}" },
 		{ "MIDI Out", "${MidiOutTransport}, ${MidiOutDeviceName}, ${MidiOutActivePorts} port(s)" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
@@ -68,6 +68,10 @@ namespace RDFormatProfile
 		sizeof(OverlayMachineSignature) / sizeof(OverlayMachineSignature[0]);
 
 	static const RDFormatTemplateEntry OverlayRuntime[] = {
+		{ "",             "" },
+		{ "MIDI",         "${MidiOutTransport}, ${MidiOutActivePorts} port(s)" },
+		{ "Synth Audio1", "${KdmapiAudioEngine}, ${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Vol ${SynthOutputVolume}%, Sinc ${KdmapiSincInterpolation}" },
+		{ "Synth Audio2", "Buf ${SynthAudioBufferSize} frames, Latency ${SynthAudioLatency} ms" },
 		{ "",        "" },
 		{ "RAM",     "${PhysMemAvailableMB} / ${PhysMemTotalMB} MB free" },
 		{ "Commit",  "${CommitFreeMB} / ${CommitLimitMB} MB free" },
@@ -83,10 +87,8 @@ namespace RDFormatProfile
 		{ "Stab",    "StdDev ${RenderFrameTimeStdDev} ms, Stutter ${RenderStutterPercent}%" },
 		{ "Render",  "Buffer ${RenderInstanceBufferSizeKB} KB, Instances ${RenderInstanceCount}" },
 		{ "",        "" },
-		{ "MIDI",    "${MidiOutTransport}, ${MidiOutActivePorts} port(s)" },
 		{ "Notes",   "${PlaybackNps} NPS, Poly ${PlaybackPolyphony} (Peak ${PlaybackPolyphonyPeak}), Tracking ${PlaybackNoteTracking} (Peak ${PlaybackNoteTrackingPeak})" },
-		{ "Synth",   "Voices ${SynthActiveVoices}/${SynthMaxVoices}, CPU ${SynthRenderLoad}%, Latency ${SynthAudioLatency} ms" },
-		{ "Synth Audio", "${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Buf ${SynthAudioBufferSize} frames, ${KdmapiAudioEngine}, Sinc ${KdmapiSincInterpolation}, Vol ${SynthOutputVolume}%" },
+		{ "Synth",   "Voices ${SynthActiveVoices}/${SynthMaxVoices}, Headroom ${SynthRenderHeadroom}%" },
 		{ "",        "" },
 		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
 	};

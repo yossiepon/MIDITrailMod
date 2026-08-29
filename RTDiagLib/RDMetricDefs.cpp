@@ -102,6 +102,7 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::SynthActiveVoices,        "SynthActiveVoices",        RDMetricType::Int },
 	{ RDMetricId::SynthMaxVoices,           "SynthMaxVoices",           RDMetricType::Int },
 	{ RDMetricId::SynthRenderLoad,          "SynthRenderLoad",          RDMetricType::Float },
+	{ RDMetricId::SynthRenderHeadroom,      "SynthRenderHeadroom",      RDMetricType::Float },
 	{ RDMetricId::SynthAudioLatency,        "SynthAudioLatency",        RDMetricType::Float },
 	{ RDMetricId::SynthAudioFrequency,      "SynthAudioFrequency",      RDMetricType::Int },
 	{ RDMetricId::SynthAudioBitDepth,       "SynthAudioBitDepth",       RDMetricType::Int },

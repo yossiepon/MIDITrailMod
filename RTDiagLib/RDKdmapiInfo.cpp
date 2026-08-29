@@ -213,6 +213,7 @@ void RDKdmapiInfo::CollectIntervalPolling()
 
 		// Polling: Synth performance metrics
 		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->CpuUsage);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderHeadroom, 100.0f - info->CpuUsage);
 		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
 		RDDiagManager::SetInt(RDMetricId::SynthActiveVoices, info->TotalActiveVoices);
 		RDDiagManager::SetInt(RDMetricId::SynthMaxVoices, info->MaxVoices);
@@ -253,6 +254,7 @@ void RDKdmapiInfo::CollectIntervalPolling()
 		if (info == nullptr) return;
 
 		RDDiagManager::SetFloat(RDMetricId::SynthRenderLoad, info->RenderingTime);
+		RDDiagManager::SetFloat(RDMetricId::SynthRenderHeadroom, 100.0f - info->RenderingTime);
 		RDDiagManager::SetFloat(RDMetricId::SynthAudioLatency, static_cast<float>(info->AudioLatency));
 
 		DWORD totalVoices = 0;
