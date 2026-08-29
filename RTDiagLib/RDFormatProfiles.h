@@ -47,8 +47,9 @@ namespace RDFormatProfile
 		{ "Notes",  "NPS:${PlaybackNps} Poly:${PlaybackPolyphony} (Peak:${PlaybackPolyphonyPeak}) Tracking:${PlaybackNoteTracking} (Peak:${PlaybackNoteTrackingPeak})" },
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
 		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V, Intake ${GpuIntakeTemperature} C, VRAM ${GpuVramTemperature} C" },
-		{ "Synth",    "Voices:${SynthActiveVoices}/${SynthMaxVoices} CPU:${SynthRenderLoad}% Latency:${SynthAudioLatency}ms" },
-		{ "Synth Audio", "Freq:${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType} Vol:${SynthOutputVolume}% Buf:${SynthAudioBufferSize}frames Engine:${KdmapiAudioEngine} Sinc:${KdmapiSincInterpolation}" },
+		{ "Synth",       "Voices:${SynthActiveVoices}/${SynthMaxVoices} CPU:${SynthRenderLoad}% Headroom:${SynthRenderHeadroom}%" },
+		{ "Synth Audio1","${KdmapiAudioEngine}, ${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Vol:${SynthOutputVolume}%, Sinc:${KdmapiSincInterpolation}" },
+		{ "Synth Audio2","Buf:${SynthAudioBufferSize} frames, Latency:${SynthAudioLatency} ms" },
 		{ "MIDI Out", "${MidiOutTransport}, ${MidiOutDeviceName}, ${MidiOutActivePorts} port(s)" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
