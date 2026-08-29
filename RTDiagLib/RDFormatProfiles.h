@@ -48,7 +48,7 @@ namespace RDFormatProfile
 		{ "GPU API1", "${GpuUsageVendorPercent}%, Core ${GpuCoreClock} MHz, Mem ${GpuMemoryClock} MHz, Fan ${GpuFanSpeedRPM} RPM" },
 		{ "GPU API2", "${GpuTemperature} C (Hotspot ${GpuHotspotTemperature} C), ${GpuPowerWatts} W, ${GpuVoltage} V, Intake ${GpuIntakeTemperature} C, VRAM ${GpuVramTemperature} C" },
 		{ "Synth",    "Voices:${SynthActiveVoices}/${SynthMaxVoices} CPU:${SynthRenderLoad}% Latency:${SynthAudioLatency}ms" },
-		{ "Synth Audio", "Freq:${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType} Buf:${SynthBufferLength} Engine:${KdmapiAudioEngine} Sinc:${KdmapiSincInterpolation}" },
+		{ "Synth Audio", "Freq:${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType} Buf:${SynthAudioBufferSize}frames Engine:${KdmapiAudioEngine} Sinc:${KdmapiSincInterpolation} Vol:${SynthOutputVolume}%" },
 		{ "MIDI Out", "${MidiOutTransport}, ${MidiOutDeviceName}, ${MidiOutActivePorts} port(s)" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
 	};
@@ -86,7 +86,7 @@ namespace RDFormatProfile
 		{ "MIDI",    "${MidiOutTransport}, ${MidiOutActivePorts} port(s)" },
 		{ "Notes",   "${PlaybackNps} NPS, Poly ${PlaybackPolyphony} (Peak ${PlaybackPolyphonyPeak}), Tracking ${PlaybackNoteTracking} (Peak ${PlaybackNoteTrackingPeak})" },
 		{ "Synth",   "Voices ${SynthActiveVoices}/${SynthMaxVoices}, CPU ${SynthRenderLoad}%, Latency ${SynthAudioLatency} ms" },
-		{ "Synth Audio", "${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Buf ${SynthBufferLength}, ${KdmapiAudioEngine}, Sinc ${KdmapiSincInterpolation}" },
+		{ "Synth Audio", "${SynthAudioFrequency}Hz ${SynthAudioBitDepth}bit ${SynthAudioSampleType}, Buf ${SynthAudioBufferSize} frames, ${KdmapiAudioEngine}, Sinc ${KdmapiSincInterpolation}, Vol ${SynthOutputVolume}%" },
 		{ "",        "" },
 		{ "Diag",    "poll ${DiagPollingTotalUs} us [CPU ${DiagPollingCpuInfoUs} us, GPU ${DiagPollingGpuInfoUs} us, Mem ${DiagPollingMemoryInfoUs} us] (${DiagPollingCount} comp)" },
 	};

@@ -106,7 +106,8 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::SynthAudioFrequency,      "SynthAudioFrequency",      RDMetricType::Int },
 	{ RDMetricId::SynthAudioBitDepth,       "SynthAudioBitDepth",       RDMetricType::Int },
 	{ RDMetricId::SynthAudioSampleType,     "SynthAudioSampleType",     RDMetricType::String },
-	{ RDMetricId::SynthBufferLength,        "SynthBufferLength",        RDMetricType::Int },
+	{ RDMetricId::SynthAudioBufferSize,     "SynthAudioBufferSize",     RDMetricType::Int },
+	{ RDMetricId::SynthOutputVolume,        "SynthOutputVolume",        RDMetricType::Float },
 
 	{ RDMetricId::KdmapiStatus,             "KdmapiStatus",             RDMetricType::String },
 	{ RDMetricId::KdmapiVersion,            "KdmapiVersion",            RDMetricType::String },
