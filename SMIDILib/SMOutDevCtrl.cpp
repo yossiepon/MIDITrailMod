@@ -415,6 +415,29 @@ SMTransportType SMOutDevCtrl::GetTransportType() const
 }
 
 //******************************************************************************
+// Check if KDMAPI Mod virtual ports and WinMM ports are mixed
+//******************************************************************************
+bool SMOutDevCtrl::HasMixedKDMAPIAndWinMM() const
+{
+	if (!m_pImpl->kdmapiForkDetected) return false;
+
+	bool hasKDMAPI = false;
+	bool hasWinMM = false;
+
+	for (unsigned char portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
+		if (!m_PortInfo[portNo].isExist) continue;
+
+		if (m_pImpl->IsKDMAPIVirtualPort(m_PortInfo[portNo].devId)) {
+			hasKDMAPI = true;
+		} else {
+			hasWinMM = true;
+		}
+	}
+
+	return hasKDMAPI && hasWinMM;
+}
+
+//******************************************************************************
 // Clear port info
 //******************************************************************************
 int SMOutDevCtrl::ClearPortInfo()
