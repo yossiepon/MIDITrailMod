@@ -28,10 +28,16 @@ MTDiagOverlay11::MTDiagOverlay11()
 	, m_DynamicLineCount(0)
 	, m_TotalLineCount(0)
 	, m_pBgSRV(nullptr)
-	, m_LastScreenWidth(0)
-	, m_LastScreenHeight(0)
+	, m_MaxLineChars(0)
+	, m_StaticMaxChars(0)
+	, m_CachedScreenWidth(0)
+	, m_CachedScreenHeight(0)
+	, m_CachedTitleAreaH(0.0f)
+	, m_CachedCounterAreaH(0.0f)
+	, m_CachedMaxLineChars(0)
 	, m_Color(1.0f, 1.0f, 1.0f, 1.0f)
 {
+	memset(&m_CachedLayout, 0, sizeof(m_CachedLayout));
 }
 
 MTDiagOverlay11::~MTDiagOverlay11()
@@ -99,7 +105,11 @@ int MTDiagOverlay11::Create(
 	{
 		RECT rect;
 		GetClientRect(m_hWnd, &rect);
-		result = _UpdateBgVertices(rect.right - rect.left, rect.bottom - rect.top);
+		unsigned int sw = rect.right - rect.left;
+		unsigned int sh = rect.bottom - rect.top;
+		DiagLayoutParams layout;
+		_CalcLayout(sw, sh, NULL, &layout);
+		result = _UpdateBgVertices(layout, sw, sh);
 		if (result != 0) goto EXIT;
 	}
 
@@ -126,6 +136,13 @@ void MTDiagOverlay11::Release()
 	m_StaticLineCount = 0;
 	m_DynamicLineCount = 0;
 	m_TotalLineCount = 0;
+	m_MaxLineChars = 0;
+	m_StaticMaxChars = 0;
+	m_CachedScreenWidth = 0;
+	m_CachedScreenHeight = 0;
+	m_CachedTitleAreaH = 0.0f;
+	m_CachedCounterAreaH = 0.0f;
+	m_CachedMaxLineChars = 0;
 }
 
 //******************************************************************************
@@ -158,53 +175,84 @@ EXIT:;
 }
 
 //******************************************************************************
-// Update background quad vertices (called on Create and window resize)
+// Calculate layout parameters (single source of truth)
 //******************************************************************************
-int MTDiagOverlay11::_UpdateBgVertices(
+void MTDiagOverlay11::_CalcLayout(
 		unsigned int screenWidth,
 		unsigned int screenHeight,
-		const MTSceneLayoutInfo* pLayoutInfo
+		const MTSceneLayoutInfo* pLayoutInfo,
+		DiagLayoutParams* pOut
+	)
+{
+	if (m_Lines.empty()) {
+		memset(pOut, 0, sizeof(*pOut));
+		return;
+	}
+
+	unsigned long maxChars = m_MaxLineChars + MTDIAGOVERLAY11_RIGHT_MARGIN_CHARS;
+	if (maxChars == 0) maxChars = 1;
+
+	float mag = MTDIAGOVERLAY11_MAGRATE;
+	float charW = 0.0f, charH = 0.0f;
+	m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
+
+	float lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING;
+	float overlayWidth = charW * (float)maxChars;
+	float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
+	float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
+	float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
+	float overlayHeight = lineHeight * (float)m_TotalLineCount;
+
+	float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
+	float availH = (float)screenHeight - topOffset - dashCounterH - MTDIAGOVERLAY11_MARGIN;
+
+	float shrink = 1.0f;
+	if (overlayWidth > availW && overlayWidth > 0.0f) {
+		shrink = availW / overlayWidth;
+	}
+	if (overlayHeight > availH && overlayHeight > 0.0f) {
+		float hShrink = availH / overlayHeight;
+		if (hShrink < shrink) shrink = hShrink;
+	}
+	if (shrink < 1.0f) {
+		mag *= shrink;
+		m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
+		lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
+		overlayWidth = charW * (float)maxChars;
+		overlayHeight = lineHeight * (float)m_TotalLineCount;
+		topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
+	}
+
+	float textX = (float)screenWidth - overlayWidth - MTDIAGOVERLAY11_MARGIN;
+	if (textX < MTDIAGOVERLAY11_MARGIN) textX = MTDIAGOVERLAY11_MARGIN;
+
+	pOut->mag = mag;
+	pOut->charW = charW;
+	pOut->charH = charH;
+	pOut->lineHeight = lineHeight;
+	pOut->overlayWidth = overlayWidth;
+	pOut->overlayHeight = overlayHeight;
+	pOut->topOffset = topOffset;
+	pOut->textX = textX;
+}
+
+//******************************************************************************
+// Update background quad vertices (only when layout changes)
+//******************************************************************************
+int MTDiagOverlay11::_UpdateBgVertices(
+		const DiagLayoutParams& layout,
+		unsigned int screenWidth,
+		unsigned int screenHeight
 	)
 {
 	int result = 0;
 	if (m_Lines.empty()) goto EXIT;
 
 	{
-		float mag = MTDIAGOVERLAY11_MAGRATE;
-		float charW = 0.0f, charH = 0.0f;
-		m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
-
-		float lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING;
-		float overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
-		float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
-		float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
-		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
-		float overlayHeight = lineHeight * (float)m_TotalLineCount;
-
-		float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
-		float availH = (float)screenHeight - topOffset - dashCounterH - MTDIAGOVERLAY11_MARGIN;
-
-		float shrink = 1.0f;
-		if (overlayWidth > availW && overlayWidth > 0.0f) {
-			shrink = availW / overlayWidth;
-		}
-		if (overlayHeight > availH && overlayHeight > 0.0f) {
-			float hShrink = availH / overlayHeight;
-			if (hShrink < shrink) shrink = hShrink;
-		}
-		if (shrink < 1.0f) {
-			mag *= shrink;
-			m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
-			lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
-			overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
-			overlayHeight = lineHeight * (float)m_TotalLineCount;
-			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
-		}
-
-		float bgX = (float)screenWidth - overlayWidth - MTDIAGOVERLAY11_MARGIN - MTDIAGOVERLAY11_PADDING;
-		float bgY = topOffset - MTDIAGOVERLAY11_PADDING;
-		float bgW = overlayWidth + MTDIAGOVERLAY11_PADDING * 2.0f;
-		float bgH = overlayHeight + MTDIAGOVERLAY11_PADDING * 2.0f;
+		float bgX = (float)screenWidth - layout.overlayWidth - MTDIAGOVERLAY11_MARGIN - MTDIAGOVERLAY11_PADDING;
+		float bgY = layout.topOffset - MTDIAGOVERLAY11_PADDING;
+		float bgW = layout.overlayWidth + MTDIAGOVERLAY11_PADDING * 2.0f;
+		float bgH = layout.overlayHeight + MTDIAGOVERLAY11_PADDING * 2.0f;
 		if (bgX < 0.0f) bgX = 0.0f;
 
 		float sw = (float)screenWidth;
@@ -235,9 +283,6 @@ int MTDiagOverlay11::_UpdateBgVertices(
 		pVtx[3].color = 0xFFFFFFFF; pVtx[3].uv[0] = 1.0f; pVtx[3].uv[1] = 1.0f;
 
 		m_BgPrimitive.UnlockVertex(m_pContext);
-
-		m_LastScreenWidth = screenWidth;
-		m_LastScreenHeight = screenHeight;
 	}
 
 EXIT:;
@@ -280,51 +325,40 @@ int MTDiagOverlay11::Draw(
 	result = _UpdateDynamicLines();
 	if (result != 0) goto EXIT;
 
-	result = _UpdateBgVertices(screenWidth, screenHeight, pLayoutInfo);
-	if (result != 0) goto EXIT;
-
 	{
-		float mag = MTDIAGOVERLAY11_MAGRATE;
-		float charW = 0.0f, charH = 0.0f;
-		m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
+		float titleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
+		float counterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
 
-		float lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING;
-		float overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
-		float dashTitleH = (pLayoutInfo != NULL) ? pLayoutInfo->titleAreaHeight : 0.0f;
-		float dashCounterH = (pLayoutInfo != NULL) ? pLayoutInfo->counterAreaHeight : 0.0f;
-		float topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
-		float overlayHeight = lineHeight * (float)m_TotalLineCount;
+		bool layoutChanged = (screenWidth != m_CachedScreenWidth)
+			|| (screenHeight != m_CachedScreenHeight)
+			|| (titleH != m_CachedTitleAreaH)
+			|| (counterH != m_CachedCounterAreaH)
+			|| (m_MaxLineChars != m_CachedMaxLineChars);
 
-		float availW = (float)screenWidth - MTDIAGOVERLAY11_MARGIN * 2.0f;
-		float availH = (float)screenHeight - topOffset - dashCounterH - MTDIAGOVERLAY11_MARGIN;
+		DiagLayoutParams layout;
+		if (layoutChanged) {
+			_CalcLayout(screenWidth, screenHeight, pLayoutInfo, &layout);
+			result = _UpdateBgVertices(layout, screenWidth, screenHeight);
+			if (result != 0) goto EXIT;
 
-		float shrink = 1.0f;
-		if (overlayWidth > availW && overlayWidth > 0.0f) {
-			shrink = availW / overlayWidth;
-		}
-		if (overlayHeight > availH && overlayHeight > 0.0f) {
-			float hShrink = availH / overlayHeight;
-			if (hShrink < shrink) shrink = hShrink;
-		}
-		if (shrink < 1.0f) {
-			mag *= shrink;
-			m_Lines[0]->GetDisplayCharSize(mag, &charW, &charH);
-			lineHeight = charH + MTDIAGOVERLAY11_LINE_SPACING * shrink;
-			overlayWidth = charW * (float)MTDIAGOVERLAY11_MAX_LINE_CHARS;
-			topOffset = dashTitleH + MTDIAGOVERLAY11_MARGIN + lineHeight;
+			m_CachedLayout = layout;
+			m_CachedScreenWidth = screenWidth;
+			m_CachedScreenHeight = screenHeight;
+			m_CachedTitleAreaH = titleH;
+			m_CachedCounterAreaH = counterH;
+			m_CachedMaxLineChars = m_MaxLineChars;
+		} else {
+			layout = m_CachedLayout;
 		}
 
 		result = _DrawBackground(pContext);
 		if (result != 0) goto EXIT;
 
-		float textX = (float)screenWidth - overlayWidth - MTDIAGOVERLAY11_MARGIN;
-		if (textX < MTDIAGOVERLAY11_MARGIN) textX = MTDIAGOVERLAY11_MARGIN;
-
 		for (unsigned long i = 0; i < m_TotalLineCount; i++) {
-			float y = topOffset + lineHeight * (float)i;
+			float y = layout.topOffset + layout.lineHeight * (float)i;
 
-			result = m_Lines[i]->Draw(pContext, textX, y,
-						mag, screenWidth, screenHeight);
+			result = m_Lines[i]->Draw(pContext, layout.textX, y,
+						layout.mag, screenWidth, screenHeight);
 			if (result != 0) goto EXIT;
 		}
 	}
@@ -350,10 +384,9 @@ void MTDiagOverlay11::OnWindowResize()
 		m_Dpi = newDpi;
 		_RecreateCaptions();
 	}
-	RECT rect;
-	if (GetClientRect(m_hWnd, &rect)) {
-		_UpdateBgVertices(rect.right - rect.left, rect.bottom - rect.top);
-	}
+
+	m_CachedScreenWidth = 0;
+	m_CachedScreenHeight = 0;
 }
 
 //******************************************************************************
@@ -414,6 +447,22 @@ EXIT:;
 }
 
 //******************************************************************************
+// Measure max line width in characters from formatted entries
+//******************************************************************************
+unsigned long MTDiagOverlay11::_MeasureMaxLineChars(
+		const std::vector<RDFormattedEntry>& entries
+	)
+{
+	unsigned long maxChars = 0;
+	for (const auto& e : entries) {
+		if (e.label[0] == '\0' && e.value[0] == '\0') continue;
+		unsigned long len = (unsigned long)(strlen(e.label) + 2 + strlen(e.value));
+		if (len > maxChars) maxChars = len;
+	}
+	return maxChars;
+}
+
+//******************************************************************************
 // Update static lines (machine signature, called once)
 //******************************************************************************
 int MTDiagOverlay11::_UpdateStaticLines()
@@ -423,6 +472,9 @@ int MTDiagOverlay11::_UpdateStaticLines()
 	auto entries = RDDiagManager::Format(
 		RDFormatProfile::OverlayMachineSignature,
 		RDFormatProfile::OverlayMachineSignatureCount);
+
+	m_StaticMaxChars = _MeasureMaxLineChars(entries);
+	m_MaxLineChars = (m_StaticMaxChars > m_MaxLineChars) ? m_StaticMaxChars : m_MaxLineChars;
 
 	for (size_t i = 0; i < entries.size() && i < m_StaticLineCount; i++) {
 		std::string line;
@@ -454,6 +506,12 @@ int MTDiagOverlay11::_UpdateDynamicLines()
 	auto entries = RDDiagManager::Format(
 		RDFormatProfile::OverlayRuntime,
 		RDFormatProfile::OverlayRuntimeCount);
+
+	unsigned long dynamicMax = _MeasureMaxLineChars(entries);
+	unsigned long newMax = (m_StaticMaxChars > dynamicMax) ? m_StaticMaxChars : dynamicMax;
+	if (newMax > m_MaxLineChars) {
+		m_MaxLineChars = newMax;
+	}
 
 	for (size_t i = 0; i < entries.size() && i < m_DynamicLineCount; i++) {
 		if (entries[i].label[0] == '\0') {
