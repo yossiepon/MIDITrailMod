@@ -92,7 +92,7 @@ int MTScenePianoRollRain11::_CreateModeComponents(
 	result = m_DiagOverlay.Create(pDevice, pContext, m_hWnd);
 	if (result != 0) goto EXIT;
 	RDDiagManager::SetInt(RDMetricId::PlaybackTotalNoteCount, static_cast<int64_t>(m_NoteTracker.GetNoteCount()));
-	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
+	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Any);
 
 EXIT:;
 	return result;

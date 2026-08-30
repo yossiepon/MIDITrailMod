@@ -73,6 +73,7 @@ public:
 	int NoteOffAll();
 	int SoundOffAll();
 	SMTransportType GetTransportType() const;
+	bool HasMixedKDMAPIAndWinMM() const;
 
 private:
 

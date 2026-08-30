@@ -118,10 +118,18 @@ void MTNoteTrackerBase::DispatchActivate(
 		int64_t activations = RDDiagManager::GetInt(RDMetricId::PlaybackNoteActivationsPerFrame);
 		RDDiagManager::SetInt(RDMetricId::PlaybackNoteActivationsPerFrame, activations + 1);
 	}
+
+	{
+		int64_t progress = RDDiagManager::GetInt(RDMetricId::PlaybackNoteProgress);
+		if (static_cast<int64_t>(index + 1) > progress) {
+			RDDiagManager::SetInt(RDMetricId::PlaybackNoteProgress, static_cast<int64_t>(index + 1));
+		}
+	}
+
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
 	for (const auto& entry : m_Listeners) {
-		if (entry.filter == eventType) {
+		if (entry.filter == eventType || entry.filter == NoteEventType::Any) {
 			entry.pListener->OnNoteActivate(note, index);
 		}
 	}
@@ -156,7 +164,7 @@ void MTNoteTrackerBase::DispatchDeactivate(
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
 	for (const auto& entry : m_Listeners) {
-		if (entry.filter == eventType) {
+		if (entry.filter == eventType || entry.filter == NoteEventType::Any) {
 			entry.pListener->OnNoteDeactivate(note, index);
 		}
 	}
@@ -169,6 +177,7 @@ void MTNoteTrackerBase::DispatchReset()
 	std::fill(m_ActivatedFlags.begin(), m_ActivatedFlags.end(), static_cast<uint8_t>(0));
 	RDDiagManager::SetInt(RDMetricId::PlaybackNoteTracking, 0);
 	RDDiagManager::SetInt(RDMetricId::PlaybackNoteTrackingPeak, 0);
+	RDDiagManager::SetInt(RDMetricId::PlaybackNoteProgress, 0);
 	for (const auto& entry : m_Listeners) {
 		entry.pListener->OnReset();
 	}

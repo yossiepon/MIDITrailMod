@@ -26,6 +26,7 @@
 #include "SMEventSysEx.h"
 #include "SMEventMeta.h"
 #include "SMFPUCtrl.h"
+#include <spdlog/spdlog.h>
 
 using namespace YNBaseLib;
 
@@ -487,6 +488,28 @@ int SMSequencer::_OpenMIDIOutDev()
 				delete pWarn;
 			}
 		}
+	}
+
+	//Check for mixed KDMAPI/WinMM port assignment
+	if (m_OutDevCtrl.HasMixedKDMAPIAndWinMM()) {
+		int choice = MessageBox(
+			GetForegroundWindow(),
+			_T("KDMAPI (OmniMIDI) ports and WinMM ports are assigned simultaneously.\n")
+			_T("\n")
+			_T("Ports may play out of sync or fail to produce sound.\n")
+			_T("\n")
+			_T("Recommendation: Assign all ports to either KDMAPI or WinMM.\n")
+			_T("\n")
+			_T("Continue with the current configuration?"),
+			_T("MIDITrail - MIDI OUT Port Warning"),
+			MB_OKCANCEL | MB_ICONWARNING
+		);
+		if (choice == IDCANCEL) {
+			spdlog::warn("Playback cancelled by user due to mixed KDMAPI/WinMM port configuration.");
+			result = 1;
+			goto EXIT;
+		}
+		spdlog::warn("Mixed KDMAPI/WinMM port configuration: user chose to continue.");
 	}
 
 	//Open the devices for all ports

@@ -106,7 +106,16 @@ enum class RDMetricId : uint16_t
 	PlaybackLoadedFileName,
 	PlaybackTotalNoteCount,
 	PlaybackTotalPlayTimeMs,
+	PlaybackTotalPlayTimeFmt,
+	PlaybackTotalBarCount,
 	PlaybackSceneType,
+
+	// Playback: Position/progress (Push, event-driven)
+	PlaybackPositionMs,
+	PlaybackPositionFmt,
+	PlaybackTempoBPM,
+	PlaybackBarNo,
+	PlaybackNoteProgress,
 
 	// Playback: Note metrics (Frame, Push)
 	PlaybackNoteActivationsPerFrame, // internal: per-frame counter for NPS computation (not displayed)

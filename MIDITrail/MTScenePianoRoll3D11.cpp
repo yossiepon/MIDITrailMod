@@ -113,7 +113,7 @@ int MTScenePianoRoll3D11::_CreateModeComponents(
 		QueryPerformanceCounter(&t1); spdlog::debug("Component Lyrics: {} ms", (t1.QuadPart - t0.QuadPart) * 1000 / freq.QuadPart);
 		if (result != 0) goto EXIT;
 		m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
-		m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
+		m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Any);
 
 		// NoteBox (Instanced, progress band: 66% ~ 98%)
 		{

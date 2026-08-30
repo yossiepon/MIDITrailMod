@@ -415,6 +415,32 @@ SMTransportType SMOutDevCtrl::GetTransportType() const
 }
 
 //******************************************************************************
+// Check if KDMAPI Mod virtual ports and WinMM ports are mixed
+//******************************************************************************
+bool SMOutDevCtrl::HasMixedKDMAPIAndWinMM() const
+{
+	bool hasKDMAPI = false;
+	bool hasWinMM = false;
+
+	for (unsigned char portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
+		if (!m_PortInfo[portNo].isExist) continue;
+
+		unsigned long devId = m_PortInfo[portNo].devId;
+
+		if (m_pImpl->IsKDMAPIVirtualPort(devId)) {
+			hasKDMAPI = true;
+		} else if (devId < m_pImpl->outputPorts.size()
+				&& m_pImpl->outputPorts[devId].api == libremidi::API::KDMAPI) {
+			hasKDMAPI = true;
+		} else {
+			hasWinMM = true;
+		}
+	}
+
+	return hasKDMAPI && hasWinMM;
+}
+
+//******************************************************************************
 // Clear port info
 //******************************************************************************
 int SMOutDevCtrl::ClearPortInfo()

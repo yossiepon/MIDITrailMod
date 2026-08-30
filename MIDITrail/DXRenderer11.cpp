@@ -106,9 +106,37 @@ int DXRenderer11::Initialize(
 	flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
+	// Try to select high-performance GPU via DXGI 1.6
+	IDXGIAdapter1* pPreferredAdapter = nullptr;
+	{
+		IDXGIFactory6* pFactory6 = nullptr;
+		hr = CreateDXGIFactory1(__uuidof(IDXGIFactory6), (void**)&pFactory6);
+		if (SUCCEEDED(hr)) {
+			hr = pFactory6->EnumAdapterByGpuPreference(
+				0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+				__uuidof(IDXGIAdapter1), (void**)&pPreferredAdapter);
+			if (SUCCEEDED(hr)) {
+				DXGI_ADAPTER_DESC1 desc;
+				pPreferredAdapter->GetDesc1(&desc);
+				char adapterName[128];
+				WideCharToMultiByte(CP_UTF8, 0, desc.Description, -1, adapterName, 128, NULL, NULL);
+				spdlog::info("DXGI 1.6: selected high-performance adapter: {}", adapterName);
+			} else {
+				spdlog::debug("DXGI 1.6: EnumAdapterByGpuPreference failed (hr=0x{:08X}), using default", (unsigned long)hr);
+				pPreferredAdapter = nullptr;
+			}
+			pFactory6->Release();
+		} else {
+			spdlog::debug("DXGI 1.6 not available (hr=0x{:08X}), using default adapter", (unsigned long)hr);
+		}
+	}
+
+	D3D_DRIVER_TYPE driverType = (pPreferredAdapter != nullptr)
+		? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE;
+
 	hr = D3D11CreateDeviceAndSwapChain(
-				nullptr,                   // default adapter
-				D3D_DRIVER_TYPE_HARDWARE,
+				pPreferredAdapter,
+				driverType,
 				nullptr,                   // no software rasterizer
 				flags,
 				featureLevels, _countof(featureLevels),
@@ -125,14 +153,20 @@ int DXRenderer11::Initialize(
 			m_SampleCount = 1;
 			scd.SampleDesc.Count = 1;
 			hr = D3D11CreateDeviceAndSwapChain(
-						nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags,
+						pPreferredAdapter, driverType, nullptr, flags,
 						featureLevels, _countof(featureLevels),
 						D3D11_SDK_VERSION, &scd, &m_pSwapChain,
 						&m_pDevice, &featureLevel, &m_pContext);
 		}
 		if (FAILED(hr)) {
+			if (pPreferredAdapter) pPreferredAdapter->Release();
 			return YN_SET_ERR("D3D11CreateDeviceAndSwapChain failed.", hr, 0);
 		}
+	}
+
+	if (pPreferredAdapter) {
+		pPreferredAdapter->Release();
+		pPreferredAdapter = nullptr;
 	}
 
 	// Validate MSAA support (GPU may not support requested count)

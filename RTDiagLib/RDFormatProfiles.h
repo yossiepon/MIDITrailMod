@@ -47,6 +47,7 @@ namespace RDFormatProfile
 		{ "Timing", "Update:${RenderSceneUpdateTimeMs} Draw:${RenderDrawTimeMs} Present:${RenderPresentTimeMs} GPU:${RenderGpuRenderTimeMs} ms" },
 		{ "Stab",   "StdDev:${RenderFrameTimeStdDev} ms, Stutter:${RenderStutterPercent}%" },
 		{ "Render", "Instances:${RenderInstanceCount} Buffer:${RenderInstanceBufferSizeKB} KB" },
+		{ "Playback","Pos:${PlaybackPositionFmt}/${PlaybackTotalPlayTimeFmt} Bar:${PlaybackBarNo}/${PlaybackTotalBarCount} BPM:${PlaybackTempoBPM} Notes:${PlaybackNoteProgress}/${PlaybackTotalNoteCount}" },
 		{ "Notes",  "NPS:${PlaybackNps} Poly:${PlaybackPolyphony} (Peak:${PlaybackPolyphonyPeak}) Tracking:${PlaybackNoteTracking} (Peak:${PlaybackNoteTrackingPeak})" },
 		{ "Synth",       "Voices:${SynthActiveVoices}/${SynthMaxVoices} CPU:${SynthRenderLoad}% Headroom:${SynthRenderHeadroom}%, SoundFontList:${SynthCurrentSFList}" },
 		{ "Diag",   "poll ${DiagPollingTotalUs} us [CPU:${DiagPollingCpuInfoUs} GPU:${DiagPollingGpuInfoUs} Mem:${DiagPollingMemoryInfoUs}] (${DiagPollingCount} comp)" },
@@ -98,7 +99,8 @@ namespace RDFormatProfile
 	static const RDFormatTemplateEntry FileLoaded[] = {
 		{ "File",     "${PlaybackLoadedFileName}" },
 		{ "Notes",    "${PlaybackTotalNoteCount} notes" },
-		{ "Duration", "${PlaybackTotalPlayTimeMs} ms" },
+		{ "Duration", "${PlaybackTotalPlayTimeFmt} (${PlaybackTotalPlayTimeMs} ms)" },
+		{ "Bars",     "${PlaybackTotalBarCount}" },
 	};
 
 	static const size_t FileLoadedCount =
