@@ -2921,8 +2921,18 @@ int MIDITrailApp::_LoadMIDIFile(
 		char fileNameA[256] = {0};
 		WideCharToMultiByte(CP_UTF8, 0, m_SeqData.GetFileName(), -1, fileNameA, 256, NULL, NULL);
 		RDDiagManager::SetString(RDMetricId::PlaybackLoadedFileName, fileNameA);
+		unsigned long totalMs = m_SeqData.GetTotalPlayTime();
 		RDDiagManager::SetInt(RDMetricId::PlaybackTotalPlayTimeMs,
-			static_cast<int64_t>(m_SeqData.GetTotalPlayTime()));
+			static_cast<int64_t>(totalMs));
+		{
+			unsigned long totalSec = totalMs / 1000;
+			unsigned long frac = totalMs % 1000;
+			char buf[16];
+			snprintf(buf, sizeof(buf), "%02lu:%02lu.%03lu", totalSec / 60, totalSec % 60, frac);
+			RDDiagManager::SetString(RDMetricId::PlaybackTotalPlayTimeFmt, buf);
+		}
+		RDDiagManager::SetInt(RDMetricId::PlaybackTotalBarCount,
+			static_cast<int64_t>(m_SeqData.GetBarNum()));
 		RDDiagManager::SetString(RDMetricId::PlaybackSceneType, sceneNames[m_SceneType]);
 
 		RDDiagManager::LogEvent(RDFormatProfile::FileLoaded,

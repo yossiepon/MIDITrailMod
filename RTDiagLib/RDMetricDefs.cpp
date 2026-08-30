@@ -86,7 +86,15 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::PlaybackLoadedFileName,    "PlaybackLoadedFileName",    RDMetricType::String },
 	{ RDMetricId::PlaybackTotalNoteCount,    "PlaybackTotalNoteCount",    RDMetricType::Int },
 	{ RDMetricId::PlaybackTotalPlayTimeMs,   "PlaybackTotalPlayTimeMs",   RDMetricType::Int },
+	{ RDMetricId::PlaybackTotalPlayTimeFmt,  "PlaybackTotalPlayTimeFmt",  RDMetricType::String },
+	{ RDMetricId::PlaybackTotalBarCount,     "PlaybackTotalBarCount",     RDMetricType::Int },
 	{ RDMetricId::PlaybackSceneType,         "PlaybackSceneType",         RDMetricType::String },
+
+	{ RDMetricId::PlaybackPositionMs,        "PlaybackPositionMs",        RDMetricType::Int },
+	{ RDMetricId::PlaybackPositionFmt,       "PlaybackPositionFmt",       RDMetricType::String },
+	{ RDMetricId::PlaybackTempoBPM,          "PlaybackTempoBPM",          RDMetricType::Int },
+	{ RDMetricId::PlaybackBarNo,             "PlaybackBarNo",             RDMetricType::Int },
+	{ RDMetricId::PlaybackNoteProgress,      "PlaybackNoteProgress",      RDMetricType::Int },
 
 	{ RDMetricId::PlaybackNoteActivationsPerFrame, "PlaybackNoteActivationsPerFrame", RDMetricType::Int },
 	{ RDMetricId::PlaybackNps,               "PlaybackNps",               RDMetricType::Float },

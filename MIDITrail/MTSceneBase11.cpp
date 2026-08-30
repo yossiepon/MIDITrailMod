@@ -11,12 +11,14 @@
 
 #include "stdafx.h"
 #include <mmsystem.h>
+#include <cstdio>
 #include "YNBaseLib.h"
 #include "MTSceneBase11.h"
 #include "MTConfFile.h"
 #include "MTColorConf.h"
 #include "MTColorPalette.h"
 #include "SMMsgParser.h"
+#include "RDDiagManager.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -50,6 +52,22 @@ int MTSceneBase11::OnRecvSequencerMsg(
 	if (parser.GetMsg() == SMMsgParser::MsgPlayTime) {
 		m_CurTickTime = parser.GetPlayTickTime();
 		m_PlayTimeMSec = parser.GetPlayTimeMSec();
+
+		unsigned long ms = parser.GetPlayTimeMSec();
+		RDDiagManager::SetInt(RDMetricId::PlaybackPositionMs, static_cast<int64_t>(ms));
+		{
+			unsigned long totalSec = ms / 1000;
+			unsigned long frac = ms % 1000;
+			char buf[16];
+			snprintf(buf, sizeof(buf), "%02lu:%02lu.%03lu", totalSec / 60, totalSec % 60, frac);
+			RDDiagManager::SetString(RDMetricId::PlaybackPositionFmt, buf);
+		}
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgTempo) {
+		RDDiagManager::SetInt(RDMetricId::PlaybackTempoBPM, static_cast<int64_t>(parser.GetTempoBPM()));
+	}
+	else if (parser.GetMsg() == SMMsgParser::MsgBar) {
+		RDDiagManager::SetInt(RDMetricId::PlaybackBarNo, static_cast<int64_t>(parser.GetBarNo()));
 	}
 	else if (parser.GetMsg() == SMMsgParser::MsgNoteOn) {
 		SetNoteOnLive(parser.GetPortNo(), parser.GetChNo(),
