@@ -96,6 +96,7 @@ MIDITrailApp::MIDITrailApp(void)
 	m_isRewind = false;
 	m_isLoading = false;
 	m_isOpenFileAfterStop = false;
+	m_pendingPlaybackStartLog = false;
 	ZeroMemory(&m_SequencerLastMsg, sizeof(MTSequencerLastMsg));
 	m_PlaySpeedRatio = 100;
 
@@ -465,6 +466,16 @@ int MIDITrailApp::Run()
 
 				//Update runtime diagnostics (after scene update/draw/present)
 				RDDiagManager::Update();
+
+				// Deferred playback-start log: wait until synth audio data is valid
+				if (m_pendingPlaybackStartLog) {
+					int64_t freq = RDDiagManager::GetInt(RDMetricId::SynthAudioFrequency);
+					if (freq > 0) {
+						RDDiagManager::LogEvent(RDFormatProfile::PlaybackStart,
+							RDFormatProfile::PlaybackStartCount, "playback-start");
+						m_pendingPlaybackStartLog = false;
+					}
+				}
 			}
 		}
     }
@@ -1428,6 +1439,8 @@ int MIDITrailApp::_OnMenuPlay()
 		//Change playback status
 		result = _ChangePlayStatus(Play);
 		if (result != 0) goto EXIT;
+
+		m_pendingPlaybackStartLog = true;
 	}
 	else if (m_PlayStatus == Play) {
 		//Pause playback
