@@ -3269,7 +3269,7 @@ int MIDITrailApp::_ChangePlayStatus(
 	int result = 0;
 
 	{
-		const char* names[] = { "NoData", "Stop", "Play", "Pause", "MonitorON", "MonitorOFF" };
+		const char* names[] = { "NoData", "Stop", "Play", "Pause", "MonitorOFF", "MonitorON" };
 		spdlog::info("PlayStatus: {} -> {}", names[m_PlayStatus], names[status]);
 	}
 
