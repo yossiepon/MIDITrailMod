@@ -71,7 +71,7 @@ int MTNoteLyrics11::Create(
 	result = m_Prim.CreateIndexBuffer(pDevice, indexNum);
 	if (result != 0) goto EXIT;
 
-	// Fill index buffer (static pattern: 0,1,2, 2,1,3 per quad)
+	// Fill index buffer (static pattern: 0,1,2, 0,2,3 per quad)
 	result = m_Prim.LockIndex(pContext, &pIndex);
 	if (result != 0) goto EXIT;
 	for (unsigned long q = 0; q < (unsigned long)NOTEEFFECT_MAX_SLOTS; q++) {
@@ -80,8 +80,8 @@ int MTNoteLyrics11::Create(
 		pIndex[idx + 0] = base + 0;
 		pIndex[idx + 1] = base + 1;
 		pIndex[idx + 2] = base + 2;
-		pIndex[idx + 3] = base + 2;
-		pIndex[idx + 4] = base + 1;
+		pIndex[idx + 3] = base + 0;
+		pIndex[idx + 4] = base + 2;
 		pIndex[idx + 5] = base + 3;
 	}
 	m_Prim.UnlockIndex(pContext);
