@@ -225,45 +225,67 @@ void RDKdmapiInfo::CollectIntervalPolling()
 
 		// Polling: Audio runtime info (BUG-26: all fields now from BASS API)
 		if (info->StructSize >= sizeof(ExtendedDebugInfo)) {
-			RDDiagManager::SetInt(RDMetricId::SynthAudioFrequency, info->AudioFrequency);
-			RDDiagManager::SetInt(RDMetricId::SynthAudioBufferSize, info->AudioBufferSize);
-			RDDiagManager::SetInt(RDMetricId::SynthAudioBitDepth, info->AudioBitDepth);
-
 			const char* engineNames[] = { "WAV", "BASS", "ASIO", "WASAPI", "XAudio" };
 			DWORD engine = info->CurrentEngine;
 			bool engineActive = (engine < 5);
-			RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine,
-				engineActive ? engineNames[engine] : "N/A");
 
-			BOOL sinc = info->SincInter;
-			RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
-				(sinc == TRUE) ? "ON" : (sinc == FALSE) ? "OFF" : "N/A");
+			if (engineActive) {
+				RDDiagManager::SetString(RDMetricId::KdmapiAudioEngine, engineNames[engine]);
+				RDDiagManager::SetInt(RDMetricId::SynthAudioFrequency, info->AudioFrequency);
+				RDDiagManager::SetInt(RDMetricId::SynthAudioBufferSize, info->AudioBufferSize);
+				RDDiagManager::SetInt(RDMetricId::SynthAudioBitDepth, info->AudioBitDepth);
 
-			if (sinc == TRUE) {
-				const char* sincQualityNames[] = { "Linear", "8pt", "16pt", "32pt", "64pt" };
-				DWORD sq = info->SincConv;
-				RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality,
-					(sq < 5) ? sincQualityNames[sq] : "N/A");
-			} else if (sinc == FALSE) {
-				RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality, "OFF");
+				BOOL sinc = info->SincInter;
+				if (sinc == TRUE) {
+					RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation, "ON");
+					const char* sincQualityNames[] = { "Linear", "8pt", "16pt", "32pt", "64pt" };
+					DWORD sq = info->SincConv;
+					if (sq < 5) {
+						RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality, sincQualityNames[sq]);
+					} else {
+						RDDiagManager::ClearMetric(RDMetricId::KdmapiSincConvQuality);
+					}
+				} else if (sinc == FALSE) {
+					RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation, "OFF");
+					RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality, "OFF");
+				} else {
+					RDDiagManager::ClearMetric(RDMetricId::KdmapiSincInterpolation);
+					RDDiagManager::ClearMetric(RDMetricId::KdmapiSincConvQuality);
+				}
+
+				if (info->ASIODeviceName[0] != '\0') {
+					RDDiagManager::SetString(RDMetricId::KdmapiASIODeviceName, info->ASIODeviceName);
+				} else {
+					RDDiagManager::ClearMetric(RDMetricId::KdmapiASIODeviceName);
+				}
+
+				RDDiagManager::SetInt(RDMetricId::SynthCurrentSFList, info->CurrentSFList);
+				RDDiagManager::SetInt(RDMetricId::SynthNumChannels, info->NumChannels);
+
+				const char* sampleTypeNames[] = { "unknown", "int", "float" };
+				DWORD fmt = info->AudioSampleFormat;
+				RDDiagManager::SetString(RDMetricId::SynthAudioSampleType,
+					(fmt < 3) ? sampleTypeNames[fmt] : "unknown");
+
+				DWORD vol = info->OutputVolume;
+				if (vol <= 10000) {
+					RDDiagManager::SetFloat(RDMetricId::SynthOutputVolume, vol / 100.0);
+				} else {
+					RDDiagManager::ClearMetric(RDMetricId::SynthOutputVolume);
+				}
 			} else {
-				RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality, "N/A");
+				RDDiagManager::ClearMetric(RDMetricId::KdmapiAudioEngine);
+				RDDiagManager::ClearMetric(RDMetricId::SynthAudioFrequency);
+				RDDiagManager::ClearMetric(RDMetricId::SynthAudioBufferSize);
+				RDDiagManager::ClearMetric(RDMetricId::SynthAudioBitDepth);
+				RDDiagManager::ClearMetric(RDMetricId::KdmapiSincInterpolation);
+				RDDiagManager::ClearMetric(RDMetricId::KdmapiSincConvQuality);
+				RDDiagManager::ClearMetric(RDMetricId::KdmapiASIODeviceName);
+				RDDiagManager::ClearMetric(RDMetricId::SynthCurrentSFList);
+				RDDiagManager::ClearMetric(RDMetricId::SynthNumChannels);
+				RDDiagManager::ClearMetric(RDMetricId::SynthAudioSampleType);
+				RDDiagManager::ClearMetric(RDMetricId::SynthOutputVolume);
 			}
-
-			RDDiagManager::SetString(RDMetricId::KdmapiASIODeviceName,
-				(info->ASIODeviceName[0] != '\0') ? info->ASIODeviceName : "N/A");
-
-			RDDiagManager::SetInt(RDMetricId::SynthCurrentSFList, info->CurrentSFList);
-			RDDiagManager::SetInt(RDMetricId::SynthNumChannels, info->NumChannels);
-
-			const char* sampleTypeNames[] = { "unknown", "int", "float" };
-			DWORD fmt = info->AudioSampleFormat;
-			const char* sampleType = (fmt < 3) ? sampleTypeNames[fmt] : "unknown";
-			RDDiagManager::SetString(RDMetricId::SynthAudioSampleType, sampleType);
-
-			DWORD vol = info->OutputVolume;
-			RDDiagManager::SetFloat(RDMetricId::SynthOutputVolume,
-				(vol <= 10000) ? (vol / 100.0) : -1.0);
 		}
 	}
 	else if (m_mode == SynthMode::Standard && m_pfnGetDriverDebugInfo != nullptr) {

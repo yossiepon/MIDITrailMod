@@ -469,8 +469,7 @@ int MIDITrailApp::Run()
 
 				// Deferred playback-start log: wait until synth audio data is valid
 				if (m_pendingPlaybackStartLog) {
-					int64_t freq = RDDiagManager::GetInt(RDMetricId::SynthAudioFrequency);
-					if (freq > 0) {
+					if (RDDiagManager::IsSet(RDMetricId::SynthAudioFrequency)) {
 						RDDiagManager::LogEvent(RDFormatProfile::PlaybackStart,
 							RDFormatProfile::PlaybackStartCount, "playback-start");
 						m_pendingPlaybackStartLog = false;
