@@ -414,15 +414,26 @@ int MTFont2Bmp::_CreateBmpBuf()
 	//Height
 	m_BmpHeight = m_TextMetric.tmHeight;
 
-	//Width
+	//Width: account for glyph overhang beyond cell advance
 	m_BmpWidth = 0;
 
 	if(!m_GlyphBmpList.empty()) {
+		unsigned long offset = 0;
+		unsigned long maxExtent = 0;
 
 		for (itr = m_GlyphBmpList.begin(); itr != m_GlyphBmpList.end(); itr++) {
-			m_BmpWidth += (itr->glyphMetric.gmCellIncX);
+			if (itr->pBmp != NULL) {
+				unsigned long glyphEnd = offset
+					+ (unsigned long)(itr->glyphMetric.gmptGlyphOrigin.x)
+					+ itr->glyphMetric.gmBlackBoxX;
+				if (glyphEnd > maxExtent) {
+					maxExtent = glyphEnd;
+				}
+			}
+			offset += (itr->glyphMetric.gmCellIncX);
 		}
 
+		m_BmpWidth = (maxExtent > offset) ? maxExtent : offset;
 	}
 
 	//Round the width up to a multiple of 4
@@ -481,7 +492,7 @@ int MTFont2Bmp::_WriteGlyphToBmpBuf()
 
 					//Skip if outside the destination area
 					destX = offsetX + (itr->glyphMetric.gmptGlyphOrigin.x) + x;
-					if (destX >= (m_BmpWidth-1)) continue;
+					if (destX >= m_BmpWidth) continue;
 
 					//Source pixel pointer: computed accounting for the bitmap's 4-multiple size constraint
 					pSrc = itr->pBmp + (itr->bmpWidth * y) + x;
