@@ -91,7 +91,7 @@ int MTScenePianoRoll3DLive11::_CreateModeComponents(
 	// Dashboard (Live monitor)
 	result = m_DashboardLive.Create(pDevice, pContext, GetName(), m_hWnd);
 	if (result != 0) goto EXIT;
-	m_NoteTrackerLive.AddListener(&m_DashboardLive, NoteEventType::Note);
+	m_NoteTrackerLive.AddListener(&m_DashboardLive, NoteEventType::Any);
 
 	// DiagOverlay
 	result = m_DiagOverlay.Create(pDevice, pContext, m_hWnd);

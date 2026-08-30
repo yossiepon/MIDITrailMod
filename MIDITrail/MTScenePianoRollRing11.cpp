@@ -121,7 +121,7 @@ int MTScenePianoRollRing11::_CreateModeComponents(
 	                         &m_NotePitchBend, &m_NoteDesignRing);
 	if (result != 0) goto EXIT;
 	m_NoteTracker.AddListener(&m_Lyrics, NoteEventType::Lyric);
-	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Note);
+	m_NoteTracker.AddListener(&m_Dashboard, NoteEventType::Any);
 
 EXIT:;
 	return result;

@@ -129,7 +129,7 @@ void MTNoteTrackerBase::DispatchActivate(
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
 	for (const auto& entry : m_Listeners) {
-		if (entry.filter == eventType) {
+		if (entry.filter == eventType || entry.filter == NoteEventType::Any) {
 			entry.pListener->OnNoteActivate(note, index);
 		}
 	}
@@ -164,7 +164,7 @@ void MTNoteTrackerBase::DispatchDeactivate(
 	NoteEventType eventType = (note.lyric[0] == L'\0') ? NoteEventType::Note : NoteEventType::Lyric;
 
 	for (const auto& entry : m_Listeners) {
-		if (entry.filter == eventType) {
+		if (entry.filter == eventType || entry.filter == NoteEventType::Any) {
 			entry.pListener->OnNoteDeactivate(note, index);
 		}
 	}
