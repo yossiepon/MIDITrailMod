@@ -493,11 +493,13 @@ int SMSequencer::_OpenMIDIOutDev()
 	//Check for mixed KDMAPI/WinMM port assignment
 	if (m_OutDevCtrl.HasMixedKDMAPIAndWinMM()) {
 		int choice = MessageBox(
-			NULL,
-			_T("KDMAPI (OmniMIDI Mod) ports and WinMM ports are assigned simultaneously.\n\n")
-			_T("This configuration may cause audio issues because KDMAPI and WinMM\n")
-			_T("share a single audio stream. Some ports may fail to produce sound.\n\n")
-			_T("Recommendation: Assign all ports to either KDMAPI or WinMM.\n\n")
+			GetForegroundWindow(),
+			_T("KDMAPI (OmniMIDI) ports and WinMM ports are assigned simultaneously.\n")
+			_T("\n")
+			_T("Ports may play out of sync or fail to produce sound.\n")
+			_T("\n")
+			_T("Recommendation: Assign all ports to either KDMAPI or WinMM.\n")
+			_T("\n")
 			_T("Continue with the current configuration?"),
 			_T("MIDITrail - MIDI OUT Port Warning"),
 			MB_OKCANCEL | MB_ICONWARNING
