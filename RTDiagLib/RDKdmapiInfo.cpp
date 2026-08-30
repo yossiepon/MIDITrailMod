@@ -42,12 +42,12 @@ struct ExtendedDebugInfo
 	DWORD  AudioBitDepth;
 	DWORD  AudioSampleFormat;
 	BOOL   SincInter;
+	DWORD  SincConv;
 	DWORD  OutputVolume;
 	FLOAT  RenderLoad;
 	DOUBLE AudioLatency;
 	DWORD  AudioBufferSize;
-	DOUBLE ASIOInputLatency;
-	DOUBLE ASIOOutputLatency;
+	char   ASIODeviceName[32];
 	DWORD  CurrentSFList;
 	DWORD  NumChannels;
 	DWORD  TotalActiveVoices;
@@ -207,6 +207,12 @@ void RDKdmapiInfo::CollectIntervalPolling()
 			snprintf(modVerStr, sizeof(modVerStr), "Mod %04u-%02u-%02u",
 				date / 10000, (date / 100) % 100, date % 100);
 			RDDiagManager::SetString(RDMetricId::KdmapiModVersion, modVerStr);
+
+			char omVerStr[32];
+			snprintf(omVerStr, sizeof(omVerStr), "%u.%u.%u",
+				info->ModVersionMajor, info->ModVersionMinor, info->ModVersionPatch);
+			RDDiagManager::SetString(RDMetricId::KdmapiOmniMidiVersion, omVerStr);
+
 			m_modInfoCollected = true;
 		}
 
@@ -232,6 +238,23 @@ void RDKdmapiInfo::CollectIntervalPolling()
 			BOOL sinc = info->SincInter;
 			RDDiagManager::SetString(RDMetricId::KdmapiSincInterpolation,
 				(sinc == TRUE) ? "ON" : (sinc == FALSE) ? "OFF" : "N/A");
+
+			if (sinc == TRUE) {
+				const char* sincQualityNames[] = { "Linear", "8pt", "16pt", "32pt", "64pt" };
+				DWORD sq = info->SincConv;
+				RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality,
+					(sq < 5) ? sincQualityNames[sq] : "N/A");
+			} else if (sinc == FALSE) {
+				RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality, "OFF");
+			} else {
+				RDDiagManager::SetString(RDMetricId::KdmapiSincConvQuality, "N/A");
+			}
+
+			RDDiagManager::SetString(RDMetricId::KdmapiASIODeviceName,
+				(info->ASIODeviceName[0] != '\0') ? info->ASIODeviceName : "N/A");
+
+			RDDiagManager::SetInt(RDMetricId::SynthCurrentSFList, info->CurrentSFList);
+			RDDiagManager::SetInt(RDMetricId::SynthNumChannels, info->NumChannels);
 
 			const char* sampleTypeNames[] = { "unknown", "int", "float" };
 			DWORD fmt = info->AudioSampleFormat;

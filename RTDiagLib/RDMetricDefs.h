@@ -139,6 +139,11 @@ enum class RDMetricId : uint16_t
 	KdmapiModVersion,
 	KdmapiAudioEngine,
 	KdmapiSincInterpolation,
+	KdmapiSincConvQuality,
+	KdmapiOmniMidiVersion,
+	KdmapiASIODeviceName,
+	SynthCurrentSFList,
+	SynthNumChannels,
 
 	// Diag: Startup timing
 	DiagStartupTotalUs,

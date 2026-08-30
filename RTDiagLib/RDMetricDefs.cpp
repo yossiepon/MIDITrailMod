@@ -115,6 +115,11 @@ static const RDMetricMeta s_MetricMetaTable[] =
 	{ RDMetricId::KdmapiModVersion,         "KdmapiModVersion",         RDMetricType::String },
 	{ RDMetricId::KdmapiAudioEngine,        "KdmapiAudioEngine",        RDMetricType::String },
 	{ RDMetricId::KdmapiSincInterpolation,  "KdmapiSincInterpolation",  RDMetricType::String },
+	{ RDMetricId::KdmapiSincConvQuality,   "KdmapiSincConvQuality",   RDMetricType::String },
+	{ RDMetricId::KdmapiOmniMidiVersion,   "KdmapiOmniMidiVersion",   RDMetricType::String },
+	{ RDMetricId::KdmapiASIODeviceName,    "KdmapiASIODeviceName",    RDMetricType::String },
+	{ RDMetricId::SynthCurrentSFList,      "SynthCurrentSFList",      RDMetricType::Int },
+	{ RDMetricId::SynthNumChannels,        "SynthNumChannels",        RDMetricType::Int },
 
 	{ RDMetricId::DiagStartupTotalUs,   "DiagStartupTotalUs",   RDMetricType::Int },
 	{ RDMetricId::DiagStartupOsInfoUs,  "DiagStartupOsInfoUs",  RDMetricType::Int },
