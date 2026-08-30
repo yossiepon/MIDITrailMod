@@ -68,6 +68,7 @@ int RDDiagManager::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pConte
 		m.intVal = 0;
 		m.floatVal = 0.0;
 		m.strVal.clear();
+		m.isSet = false;
 	}
 
 	_BuildKeyToIdMap();
@@ -355,6 +356,7 @@ void RDDiagManager::Terminate()
 		m.intVal = 0;
 		m.floatVal = 0.0;
 		m.strVal.clear();
+		m.isSet = false;
 	}
 	s_isInitialized = false;
 }
@@ -380,19 +382,41 @@ const char* RDDiagManager::GetString(RDMetricId id)
 void RDDiagManager::SetFloat(RDMetricId id, double value)
 {
 	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
-	s_metrics[static_cast<size_t>(id)].floatVal = value;
+	auto& m = s_metrics[static_cast<size_t>(id)];
+	m.floatVal = value;
+	m.isSet = true;
 }
 
 void RDDiagManager::SetInt(RDMetricId id, int64_t value)
 {
 	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
-	s_metrics[static_cast<size_t>(id)].intVal = value;
+	auto& m = s_metrics[static_cast<size_t>(id)];
+	m.intVal = value;
+	m.isSet = true;
 }
 
 void RDDiagManager::SetString(RDMetricId id, const char* value)
 {
 	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
-	s_metrics[static_cast<size_t>(id)].strVal = value ? value : "";
+	auto& m = s_metrics[static_cast<size_t>(id)];
+	m.strVal = value ? value : "";
+	m.isSet = true;
+}
+
+bool RDDiagManager::IsSet(RDMetricId id)
+{
+	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
+	return s_metrics[static_cast<size_t>(id)].isSet;
+}
+
+void RDDiagManager::ClearMetric(RDMetricId id)
+{
+	assert(static_cast<size_t>(id) < static_cast<size_t>(RDMetricId::COUNT));
+	auto& m = s_metrics[static_cast<size_t>(id)];
+	m.intVal = 0;
+	m.floatVal = 0.0;
+	m.strVal.clear();
+	m.isSet = false;
 }
 
 void RDDiagManager::RegisterStartupComponent(IRDStartupComponent* pComponent)

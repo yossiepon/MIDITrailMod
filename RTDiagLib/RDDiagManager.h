@@ -37,6 +37,9 @@ public:
 	static void SetInt(RDMetricId id, int64_t value);
 	static void SetString(RDMetricId id, const char* value);
 
+	static bool IsSet(RDMetricId id);
+	static void ClearMetric(RDMetricId id);
+
 	static std::vector<RDFormattedEntry> Format(
 		const RDFormatTemplateEntry* pProfile, size_t count);
 
@@ -61,6 +64,7 @@ private:
 		int64_t     intVal;
 		double      floatVal;
 		std::string strVal;
+		bool        isSet;
 	};
 
 	struct IntervalEntry
