@@ -15,7 +15,7 @@
 #pragma once
 
 #include <d3d11.h>
-#include <dxgi.h>
+#include <dxgi1_6.h>
 #include <directxtk/SimpleMath.h>
 #include "IMTScene11.h"
 
