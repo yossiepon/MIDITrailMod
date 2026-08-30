@@ -131,6 +131,7 @@ bool RDKdmapiInfo::_TryDetect()
 	if (m_pfnGetDriverDebugInfo != nullptr) {
 		m_mode = SynthMode::Standard;
 		RDDiagManager::SetString(RDMetricId::KdmapiStatus, "Std");
+		RDDiagManager::SetString(RDMetricId::KdmapiModVersion, "Std");
 		_ConnectDebugPipe();
 		if (logger) logger->info("RDKdmapiInfo: OmniMIDI standard detected (DebugInfo only, pipe={})",
 			m_hPipe != INVALID_HANDLE_VALUE ? "connected" : "unavailable");
