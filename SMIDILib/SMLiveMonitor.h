@@ -4,7 +4,7 @@
 //
 // ライブモニタクラス
 //
-// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -20,7 +20,7 @@
 #include "SMMsgQueue.h"
 #include "SMMsgTransmitter.h"
 #include "SMInDevCtrl.h"
-#include "SMOutDevCtrl.h"
+#include "SMOutDevCtrlEx.h"
 #include "SMEventWatcher.h"
 
 namespace SMIDILib {
@@ -47,6 +47,9 @@ public:
 	//コンストラクタ／デストラクタ
 	SMLiveMonitor(void);
 	virtual ~SMLiveMonitor(void);
+	
+	//Wavetableシンセサイザパラメータ設定
+	int SetWavetableSynthParam(const WCHAR* pWavetableFilePath, SM_WAVETABLE_SYNTH_PARAM synthParam);
 	
 	//初期化
 	int Initialize(SMMsgQueue* pMsgQueue);
@@ -78,7 +81,7 @@ private:
 	char m_OutPortDevName[MAXPNAMELEN];
 	bool m_isMIDITHRU;
 	SMInDevCtrl m_InDevCtrl;
-	SMOutDevCtrl m_OutDevCtrl;
+	SMOutDevCtrlEx m_OutDevCtrl;
 	
 	//ポート制御
 	void _ClearPortInfo();

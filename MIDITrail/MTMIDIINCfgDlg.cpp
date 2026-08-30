@@ -4,13 +4,14 @@
 //
 // MIDI IN 設定ダイアログ
 //
-// Copyright (C) 2012-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "resource.h"
 #include "MTParam.h"
+#include "MTDlgLib.h"
 #include "MTMIDIINCfgDlg.h"
 #include <string>
 
@@ -146,6 +147,9 @@ int MTMIDIINCfgDlg::_OnInitDlg(
 	m_hMIDITHRU = GetDlgItem(hDlg, IDC_CHECK_MIDITHRU);
 	result = _InitCheckBtnMIDITHRU();
 	if (result != 0) goto EXIT;
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;

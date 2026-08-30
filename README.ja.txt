@@ -1,8 +1,8 @@
 ******************************************************************************
 
-  MIDITrail ソースコード Ver.1.4.1 for Windows
+  MIDITrail ソースコード Ver.1.5.0 for Windows
 
-  Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+  Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 
   Web : https://www.yknk.org/miditrail/
   Mail: wada@yknk.org
@@ -42,6 +42,10 @@
     基本ライブラリ(YNBaseLib.dll)のプロジェクトです。
     エラー制御やユーティリティ関数を含んでいます。
 
+  /SoundLib/TinySoundFont
+    TinySoundFontライブラリです。
+    このライブラリは、SF2ファイルをロードして、波形をレンダリングします。
+
   /Resources
     アプリケーションが参照するリソースファイルです。
 
@@ -50,4 +54,16 @@
   修正BSDライセンスを適用して公開しています。 
   詳細は LICENSE.txt を参照してください。
 
+(5) 謝辞
+
+  MIDITrailは以下のライブラリとサウンドフォントバンクを使用しています。
+  それぞれのライセンスについては、同梱しているライセンスファイルをご確認ください。
+
+  TinySoundFont : Copyright (C) 2017-2023 Bernhard Schelling (Based on SFZero: Copyright (C) 2012 Steve Folta)
+    https://github.com/schellingb/TinySoundFont
+    ライセンス詳細 : Sources/SoundLib/TinySoundFont/LICENSE
+
+  GeneralUser GS : Copyright (C) 1997-2025 S. Christian Collins
+    https://www.schristiancollins.com/
+    ライセンス詳細 : Resources/wave/LICENSE.txt
 

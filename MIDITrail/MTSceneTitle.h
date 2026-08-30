@@ -4,7 +4,7 @@
 //
 // タイトルシーン描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,6 +17,7 @@
 #include "MTScene.h"
 #include "MTLogo.h"
 #include "SMIDILib.h"
+#include "MTStaticCaption.h"
 
 using namespace SMIDILib;
 
@@ -29,6 +30,13 @@ using namespace SMIDILib;
 
 //カメラZ座標変化量
 #define MTSCENETITLE_CAMERA_POSZ_DELTA  (0.05f)
+
+//メッセージ表示
+#define MTSCENETITLE_FONTNAME		L"MS Gothic"
+#define MTSCENETITLE_FONTSIZE		(40)
+#define MTSCENETITLE_MESSAGE		L"Drag and drop your MIDI file or folder into the window."
+#define MTSCENETITLE_FRAMESIZE		(5.0f)	//枠サイズ（ピクセル）
+#define MTSCENETITLE_MAGRATE		(0.4f)	//表示拡大率
 
 
 //******************************************************************************
@@ -74,6 +82,12 @@ private:
 
 	//ロゴ描画オブジェクト
 	MTLogo m_Logo;
+
+	//キャプション
+	MTStaticCaption m_Message;
+
+	//時間
+	unsigned long m_StartTime;
 
 };
 

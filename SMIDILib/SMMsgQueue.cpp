@@ -4,7 +4,7 @@
 //
 // メッセージキュークラス
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -31,6 +31,7 @@ SMMsgQueue::SMMsgQueue(void)
 //******************************************************************************
 SMMsgQueue::~SMMsgQueue(void)
 {
+	m_List.Clear();
 	DeleteCriticalSection(&m_CriticalSection);
 }
 
@@ -135,6 +136,20 @@ int SMMsgQueue::GetMessage(
 EXIT:;
 	LeaveCriticalSection(&m_CriticalSection);
 	return result;
+}
+
+//******************************************************************************
+// クリア
+//******************************************************************************
+void SMMsgQueue::Clear(void)
+{
+	EnterCriticalSection(&m_CriticalSection);
+	
+	m_NextPostIndex = 0;
+	m_NextReadIndex = 0;
+	
+	LeaveCriticalSection(&m_CriticalSection);
+	return;
 }
 
 } // end of namespace

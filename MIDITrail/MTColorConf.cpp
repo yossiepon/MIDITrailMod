@@ -4,7 +4,7 @@
 //
 // カラー設定クラス
 //
-// Copyright (C) 2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2022-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -328,6 +328,27 @@ int MTColorConf::Save()
 		result = _SaveColorPalette(paletteNo, m_pColorPalette[paletteNo]);
 		if (result != 0) goto EXIT;
 	}
+	
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// カラーパレット設定保存
+//******************************************************************************
+int MTColorConf::SaveColorPalette(unsigned long paletteNo)
+{
+	int result = 0;
+	
+	//デフォルト0のパレットは書き換え不可
+	if ((paletteNo == 0) || (paletteNo >= MT_COLOR_PALETTE_NUM_MAX)) {
+		result = YN_SET_ERR("Program error.", paletteNo, 0);
+		goto EXIT;
+	}
+	
+	//指定されたカラーパレットの設定を保存
+	result = _SaveColorPalette(paletteNo, m_pColorPalette[paletteNo]);
+	if (result != 0) goto EXIT;
 	
 EXIT:;
 	return result;

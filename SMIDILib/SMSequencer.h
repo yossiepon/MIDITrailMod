@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -23,7 +23,7 @@
 #include "SMSeqData.h"
 #include "SMMsgTransmitter.h"
 #include "SMMsgQueue.h"
-#include "SMOutDevCtrl.h"
+#include "SMOutDevCtrlEx.h"
 #include "SMCommon.h"
 #include "SMFPUCtrl.h"
 #include "SMEventWatcher.h"
@@ -57,6 +57,9 @@ public:
 	SMSequencer(void);
 	virtual ~SMSequencer(void);
 
+	//Wavetableシンセサイザパラメータ設定
+	int SetWavetableSynthParam(const WCHAR* pWavetableFilePath, SM_WAVETABLE_SYNTH_PARAM synthParam);
+
 	//初期化
 	int Initialize(SMMsgQueue* pMsgQueue);
 
@@ -88,6 +91,9 @@ public:
 	//演奏位置変更
 	int Skip(int relativeTimeInMsec);
 
+	//全ポートに対応するデバイスを閉じる（一時停止、停止の状態でのみ使用可）
+	int ClosePortDevAll();
+
 private:
 
 	//演奏状態
@@ -99,7 +105,7 @@ private:
 	SMEventWatcher m_EventWatcher;
 
 	//MIDIデバイス系
-	SMOutDevCtrl m_OutDevCtrl;
+	SMOutDevCtrlEx m_OutDevCtrl;
 	unsigned char m_PortNo;
 	char m_PortDevName[SM_MIDIOUT_PORT_NUM_MAX][MAXPNAMELEN];
 

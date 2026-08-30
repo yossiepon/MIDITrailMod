@@ -26,6 +26,12 @@
     <Filter Include="Sources\Utility">
       <UniqueIdentifier>{44ae91ee-cdce-4931-a706-c7f4890033a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SoundLib">
+      <UniqueIdentifier>{4c037c13-74b6-4091-81b6-6f058b3036c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SoundLib\TinySoundFont">
+      <UniqueIdentifier>{e48bbb78-57b3-4906-8aa6-01a258c8ed0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -102,6 +108,12 @@
     </ClCompile>
     <ClCompile Include="SMRcpConv.cpp">
       <Filter>Sources\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SMWavetableSynthCtrl.cpp">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClCompile>
+    <ClCompile Include="SMOutDevCtrlEx.cpp">
+      <Filter>Sources\DeviceIO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +194,15 @@
     </ClInclude>
     <ClInclude Include="SMRcpConv.h">
       <Filter>Sources\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="SMWavetableSynthCtrl.h">
+      <Filter>Sources\DeviceIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SoundLib\TinySoundFont\tsf.h">
+      <Filter>SoundLib\TinySoundFont</Filter>
+    </ClInclude>
+    <ClInclude Include="SMOutDevCtrlEx.h">
+      <Filter>Sources\DeviceIO</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

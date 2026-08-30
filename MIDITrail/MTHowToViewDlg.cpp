@@ -4,7 +4,7 @@
 //
 // 操作方法ダイアログ
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -335,28 +335,93 @@ int MTHowToViewDlg::_DrawHowToBmp()
 	HDC hdc = NULL;
 	HWND hWndPicture = NULL;
 	PAINTSTRUCT ps;
+	BOOL bresult = 0;
+	RECT rect;
+	unsigned long cw = 0;
+	unsigned long ch = 0;
+	float ratio_cwh = 0.0f;
+	float ratio_iwh = 0.0f;
+	float x1 = 0.0f;
+	float x2 = 0.0f;
+	float y1 = 0.0f;
+	float y2 = 0.0f;
 
 	if (m_pBmpPixcel == NULL) goto EXIT;
 
 	//描画対象ウィンドウハンドル取得
 	hWndPicture = GetDlgItem(m_hWnd, IDC_HOWTO_PICTURE);
 
+	//描画対象のクライアント領域サイズを取得
+	bresult = GetClientRect(hWndPicture, &rect);
+	if (!bresult) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+	cw = rect.right - rect.left;
+	ch = rect.bottom - rect.top;
+
+	ratio_cwh = (float)cw / (float)ch;
+	ratio_iwh = (float)m_BmpInfo.biWidth / (float)m_BmpInfo.biHeight;
+
+	// クライアント領域より画像の方が横長の場合
+	//     |----- cw -----|
+	//  ---0--------------+-- +x
+	//   | |              |
+	//   | +--------------+
+	//  ch |    image     |
+	//   | +--------------+
+	//   | |              |
+	//  ---+--------------+
+	//     |
+	//    +y
+	if (ratio_cwh < ratio_iwh) {
+		x1 = 0.0f;
+		x2 = (float)cw;
+		y1 = ((float)ch - ((float)cw / ratio_iwh)) / 2.0f;
+		y2 = (float)ch - y1;
+	}
+	// クライアント領域より画像の方が縦長の場合
+	//     |----- cw -----|
+	//  ---0--+--------+--+-- +x
+	//   | |  |        |  |
+	//   | |  |        |  |
+	//  ch |  | image  |  |
+	//   | |  |        |  |
+	//   | |  |        |  |
+	//  ---+--+--------+--+
+	//     |
+	//    +y
+	else {
+		x1 = ((float)cw - ((float)ch * ratio_iwh)) / 2.0f;
+		x2 = (float)cw - x1 - 1.0f;
+		y1 = 0.0f;
+		y2 = (float)ch - 1.0f;
+	}
+
 	//描画準備
 	hdc = BeginPaint(hWndPicture, &ps);
 
-	apiresult = SetDIBitsToDevice(
+	//ビットマップストレッチモード設定：ハーフトーン
+	apiresult= SetStretchBltMode(hdc , STRETCH_HALFTONE);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	apiresult = StretchDIBits(
 					hdc,					//デバイスコンテキストハンドル
-					0,						//転送先左上隅の座標：x
-					0,						//転送先左上隅の座標：y
+					(int)x1,				//転送先左上隅の座標：x
+					(int)y1,				//転送先左上隅の座標：y
+					(int)(x2-x1),			//転送先サイズ：幅
+					(int)(y2-y1),			//転送先サイズ：高さ
+					0,						//転送元左上隅の座標：x
+					0,						//転送元左上隅の座標：y
 					m_BmpInfo.biWidth,		//転送元サイズ：幅
 					m_BmpInfo.biHeight,		//転送元サイズ：高さ
-					0,						//転送元座標左下隅の座標：x
-					0,						//転送元座標左下隅の座標：y
-					0,						//走査開始行
-					m_BmpInfo.biHeight,		//走査行数
 					m_pBmpPixcel,			//ビットマップデータ開始のアドレス
 					(BITMAPINFO*)&m_BmpInfo,//BMP情報ヘッダ
-					DIB_RGB_COLORS			//色指定
+					DIB_RGB_COLORS,			//色指定（DIB_PAL_COLORまたはDIB_RGB_COLOR）
+					SRCCOPY					//ラスター演算コード：コピー元の四角形をコピー先の四角形に直接コピー
 				);
 	if (apiresult == 0) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);

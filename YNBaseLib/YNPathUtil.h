@@ -4,7 +4,7 @@
 //
 // パスユーティリティクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -30,11 +30,13 @@ public:
 	//  末尾に"\"を付与する
 	//  取得パスの例："C:\Program Files\AppName\"
 	static int GetModuleDirPath(TCHAR* pBuf, unsigned long bufSize);
+	static int GetModuleDirPathW(WCHAR* pBuf, unsigned long bufSize);
 
 	//アプリケーションデータディレクトリパス取得
 	//  末尾に"\"を付与する
 	//  取得パスの例：Widows7の場合 "C:\Users\UserName\AppData\Roaming\"
 	static int GetAppDataDirPath(TCHAR* pBuf, unsigned long bufSize);
+	static int GetAppDataDirPathW(WCHAR* pBuf, unsigned long bufSize);
 
 	//拡張子判定
 	//  ファイルの拡張子が指定されたものであるか判定する

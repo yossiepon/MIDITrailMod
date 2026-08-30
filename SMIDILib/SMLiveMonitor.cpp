@@ -4,7 +4,7 @@
 //
 // ライブモニタクラス
 //
-// Copyright (C) 2012-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2012-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -39,6 +39,23 @@ SMLiveMonitor::~SMLiveMonitor()
 	
 	//MIDIデバイスを閉じる
 	_CloseMIDIDev();
+}
+
+//******************************************************************************
+// Wavetableシンセサイザパラメータ設定
+//******************************************************************************
+int SMLiveMonitor::SetWavetableSynthParam(
+		const WCHAR* pWavetableFilePath,
+		SM_WAVETABLE_SYNTH_PARAM synthParam
+	)
+{
+	int result = 0;
+	
+	result = m_OutDevCtrl.SetWavetableSynthParam(pWavetableFilePath, synthParam);
+	if (result != 0) goto EXIT;
+	
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
@@ -330,16 +347,17 @@ int SMLiveMonitor::_InReadProcSendMIDIEvent(
 {
 	int result = 0;
 	unsigned long msg = 0;
+	unsigned long size = 0;
 	SMEventMIDI midiEvent;
 	
 	midiEvent.Attach(pEvent);
 	
 	//メッセージ取得
-	result = midiEvent.GetMIDIOutShortMsg(&msg);
+	result = midiEvent.GetMIDIOutShortMsg(&msg, &size);
 	if (result != 0) goto EXIT;
 	
 	//メッセージ出力
-	result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+	result = m_OutDevCtrl.SendShortMsg(portNo, msg, size);
 	if (result != 0) goto EXIT;
 	
 EXIT:;
@@ -392,7 +410,7 @@ int SMLiveMonitor::_InReadProcSendSysMsgEvent(
 	if (result != 0) goto EXIT;
 	
 	//メッセージ出力
-	result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+	result = m_OutDevCtrl.SendShortMsg(portNo, msg, size);
 	if (result != 0) goto EXIT;
 	
 EXIT:;

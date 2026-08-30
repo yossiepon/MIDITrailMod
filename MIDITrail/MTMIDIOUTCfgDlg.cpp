@@ -4,13 +4,14 @@
 //
 // MIDI OUT 設定ダイアログクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "resource.h"
 #include "MTParam.h"
+#include "MTDlgLib.h"
 #include "MTMIDIOUTCfgDlg.h"
 #include <string>
 
@@ -136,6 +137,7 @@ int MTMIDIOUTCfgDlg::_OnInitDlg(
 
 	//設定ファイル初期化
 	result = _InitConfFile();
+	if (result != 0) goto EXIT;
 
 	//MIDI出力デバイス制御初期化
 	result = m_MIDIOutDevCtrl.Initialize();
@@ -161,6 +163,9 @@ int MTMIDIOUTCfgDlg::_OnInitDlg(
 	if (result != 0) goto EXIT;
 	result = _InitComboDev(m_hComboDevF, _T("PortF"));
 	if (result != 0) goto EXIT;
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;
@@ -208,12 +213,12 @@ int MTMIDIOUTCfgDlg::_InitComboDev(
 	std::string selectedProductName;
 	std::string productName;
 
-	//ユーザ選択デバイス名取得
+	//ユーザ選択デバイス（プロダクト名）取得
 	result = m_ConfFile.GetStr(pPortName, devName, MAXPNAMELEN, _T(""));
 	if (result != 0) goto EXIT;
 	selectedProductName = devName;
 
-	//ユーザ選択デバイスがない場合は「選択なし」を選択状態にする
+	//ユーザ選択デバイス（プロダクト名）がない場合は「選択なし」を選択状態にする
 	if (selectedProductName == _T("")) {
 		selectedIndex = 0;
 	}
@@ -230,11 +235,11 @@ int MTMIDIOUTCfgDlg::_InitComboDev(
 	devNum = m_MIDIOutDevCtrl.GetDevNum();
 
 	for (index = 0; index < devNum; index++) {
-		//MIDI OUTデバイス名取得
+		//MIDI OUTデバイスプロダクト名取得
 		result = m_MIDIOutDevCtrl.GetDevProductName(index, productName);
 		if (result != 0) goto EXIT;
 
-		//デバイス名をコンボボックスに追加
+		//デバイスプロダクト名をコンボボックスに追加
 		lresult = SendMessage(hComboDev, CB_ADDSTRING, 0, (LPARAM)productName.c_str());
 		if ((lresult == CB_ERR) || (lresult == CB_ERRSPACE)) {
 			result = YN_SET_ERR("Windows API error.", GetLastError(), (DWORD64)hComboDev);

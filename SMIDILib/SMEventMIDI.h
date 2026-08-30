@@ -4,7 +4,7 @@
 //
 // MIDIイベントクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -54,7 +54,7 @@ public:
 	void Attach(SMEvent* pEvent);
 
 	//MIDI出力メッセージ取得
-	int GetMIDIOutShortMsg(unsigned long* pMsg);
+	int GetMIDIOutShortMsg(unsigned long* pMsg, unsigned long* pSize);
 
 	//チャンネルメッセージ
 	ChMsg GetChMsg();

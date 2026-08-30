@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -107,6 +107,7 @@ private:
 
 	//ライト
 	DXDirLight m_DirLight;
+	DXDirLight m_DirLight2;
 
 	//一人称カメラ
 	MTFirstPersonCam m_FirstPersonCam;
@@ -139,6 +140,7 @@ private:
 
 	void _Reset();
 	void _SetLightColor(DXDirLight* pLight);
+	void _SetLightColor2(DXDirLight* pLight);
 	int _LoadConf();
 	int _LoadConfViewpoint(MTConfFile* pConfFile, unsigned long viewpointNo, MTScene::MTViewParamMap* pParamMap);
 

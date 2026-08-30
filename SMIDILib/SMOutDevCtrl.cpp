@@ -4,7 +4,7 @@
 //
 // MIDI出力デバイス制御クラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -68,6 +68,7 @@ int SMOutDevCtrl::_InitDevList()
 	unsigned long devNum = 0;
 	MIDIOUTCAPS moc;
 	SMOutDevInfo devInfo;
+	char logbuf[256];
 
 	m_OutDevList.clear();
 
@@ -80,6 +81,7 @@ int SMOutDevCtrl::_InitDevList()
 		ZeroMemory(&moc, sizeof(MIDIOUTCAPS));
 		ZeroMemory(&devInfo, sizeof(SMOutDevInfo));
 
+		//デバイス情報取得
 		apiresult= midiOutGetDevCaps(devId, &moc, sizeof(MIDIOUTCAPS));
 		if (apiresult != MMSYSERR_NOERROR) {
 			result = YN_SET_ERR("MIDI OUT device access error.", apiresult, 0);
@@ -87,6 +89,14 @@ int SMOutDevCtrl::_InitDevList()
 		}
 		devInfo.devId = devId;
 		memcpy(devInfo.productName, moc.szPname, MAXPNAMELEN);
+		devInfo.manufacturerId = moc.wMid;
+		devInfo.productId = moc.wPid;
+
+		//ログ出力
+		sprintf_s(logbuf, 256, "MIDI OUT Device / Pname: %s\n", moc.szPname);
+		OutputDebugString(logbuf);
+		sprintf_s(logbuf, 256, "MIDI OUT Device / Mid: %04X Pid: %04X\n", moc.wMid, moc.wPid);
+		OutputDebugString(logbuf);
 
 		//取得した情報をリストに登録
 		m_OutDevList.push_back(devInfo);
@@ -163,35 +173,6 @@ int SMOutDevCtrl::SetPortDev(
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;
 	}
-
-EXIT:;
-	return result;
-}
-
-//******************************************************************************
-// ポートに対応するデバイスIDを取得
-//******************************************************************************
-int SMOutDevCtrl::GetPortDevId(
-		unsigned char portNo,
-		unsigned long* pDevId
-	)
-{
-	int result = 0;
-
-	if (portNo >= SM_MIDIOUT_PORT_NUM_MAX) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
-	}
-	if (pDevId == NULL) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
-	}
-
-	if (!m_PortInfo[portNo].isExist) {
-		result = YN_SET_ERR("Program error.", 0, 0);
-		goto EXIT;
-	}
-	*pDevId = m_PortInfo[portNo].devId;
 
 EXIT:;
 	return result;
@@ -316,7 +297,8 @@ EXIT:;
 //******************************************************************************
 int SMOutDevCtrl::SendShortMsg(
 		unsigned char portNo,
-		unsigned long msg
+		unsigned long msg,
+		unsigned long size
 	)
 {
 	int result = 0;

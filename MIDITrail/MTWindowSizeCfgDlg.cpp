@@ -4,12 +4,13 @@
 //
 // ウィンドウサイズ設定ダイアログクラス
 //
-// Copyright (C) 2010-2019 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "MTParam.h"
+#include "MTDlgLib.h"
 #include "MTWindowSizeCfgDlg.h"
 
 
@@ -168,6 +169,9 @@ int MTWindowSizeCfgDlg::_OnInitDlg(
 	//ウィンドウサイズエディットボックス初期化
 	result = _InitSizeEditbox();
 	if (result != 0) goto EXIT;
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;

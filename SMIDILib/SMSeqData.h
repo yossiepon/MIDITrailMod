@@ -4,7 +4,7 @@
 //
 // シーケンスデータクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -43,7 +43,7 @@ public:
 	//データ作成系
 	//----------------------------------------------------------------
 	//SMFフォーマット登録
-	void SetSMFFormat(unsigned long smfFormat);
+	void SetSMFFormat(unsigned short smfFormat);
 
 	//時間解像度登録
 	void SetTimeDivision(unsigned long timeDivision);
@@ -64,7 +64,7 @@ public:
 	//データ取得系
 	//----------------------------------------------------------------
 	//SMFフォーマット取得
-	unsigned long GetSMFFormat();
+	unsigned short GetSMFFormat();
 
 	//時間解像度取得
 	unsigned long GetTimeDivision();
@@ -127,7 +127,7 @@ private:
 
 private:
 
-	unsigned long m_SMFFormat;
+	unsigned short m_SMFFormat;
 	unsigned long m_TimeDivision;
 	unsigned long m_TotalTickTime;
 	unsigned long m_TotalPlayTime;

@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -16,10 +16,13 @@
 #include "SMIDILib.h"
 #include "DXRenderer.h"
 #include "MTScene.h"
+#include "MTOperationPanelCtrl.h"
+#include "MTViewModeDlg.h"
 #include "MTWindowSizeCfgDlg.h"
 #include "MTMIDIOUTCfgDlg.h"
 #include "MTMIDIINCfgDlg.h"
 #include "MTGraphicCfgDlg.h"
+#include "MTWavetableSynthCfgDlg.h"
 #include "MTColorCfgDlg.h"
 #include "MTHowToViewDlg.h"
 #include "MTAboutDlg.h"
@@ -46,8 +49,7 @@ using namespace SMIDILib;
 
 //メニュースタイル制御
 //TAG:シーン追加
-#define MT_MENU_NUM        (47)
-#define MT_PLAYSTATUS_NUM  (6)
+#define MT_MENU_NUM        (49)
 
 //デバイスロスト警告メッセージ
 #define MIDITRAIL_MSG_DEVICELOST  _T("Direct3D device is lost.")
@@ -98,27 +100,6 @@ private:
 	//----------------------------------------------------------------
 	//パラメータ定義
 	//----------------------------------------------------------------
-	//演奏状態
-	enum PlayStatus {
-		NoData,			//データなし
-		Stop,			//停止状態
-		Play,			//再生中
-		Pause,			//一時停止
-		MonitorOFF,		//モニタ停止
-		MonitorON		//モニタ中
-	};
-
-	//シーン種別
-	//TAG:シーン追加
-	enum SceneType {
-		Title,				//タイトル
-		PianoRoll3D,		//ピアノロール3D
-		PianoRoll2D,		//ピアノロール2D
-		PianoRollRain,		//ピアノロールレイン
-		PianoRollRain2D,	//ピアノロールレイン2D
-		PianoRollRing		//ピアノロールリング
-	};
-
 	//シーケンサメッセージ
 	typedef struct {
 		unsigned long param1;
@@ -152,6 +133,9 @@ private:
 	HANDLE m_hAppMutex;
 	HANDLE m_hMailSlot;
 	bool m_isExitApp;
+
+	//GDI+トークン
+	ULONG_PTR m_GDIPlusToken;
 
 	//コマンドラインパーサ
 	MTCmdLineParser m_CmdLineParser;
@@ -206,6 +190,12 @@ private:
 	SceneType m_SceneType;
 	SceneType m_SelectedSceneType;
 
+	//操作パネル
+	MTOperationPanelCtrl m_OperationPanelCtrl;
+	
+	//ビューモード選択ダイアログ
+	MTViewModeDlg m_ViewModeDlg;
+
 	//ウィンドウサイズ設定ダイアログ
 	MTWindowSizeCfgDlg m_WindowSizeCfgDlg;
 
@@ -214,6 +204,9 @@ private:
 
 	//MIDI IN設定ダイアログ
 	MTMIDIINCfgDlg m_MIDIINCfgDlg;
+	
+	//ウェーブテーブルシンセサイザ設定ダイアログ
+	MTWavetableSynthCfgDlg m_WavetableSynthCfgDlg;
 
 	//グラフィック設定ダイアログ
 	MTGraphicCfgDlg m_GraphicCfgDlg;
@@ -228,8 +221,11 @@ private:
 	MTAboutDlg m_AboutDlg;
 
 	//設定ファイル
+	YNConfFile m_PlayerConf;
 	YNConfFile m_MIDIConf;
 	YNConfFile m_ViewConf;
+	YNConfFile m_WindowConf;
+	YNConfFile m_SynthConf;
 	YNConfFile m_GraphicConf;
 
 	//プレーヤー制御
@@ -259,15 +255,23 @@ private:
 	//ゲームパッド用視点番号
 	int m_GamePadViewPointNo;
 
+	//ウェーブテーブルファイルパス
+	WCHAR m_WavetableFilePath[_MAX_PATH];
+
 	//MIDIデータファイルリスト
 	MTFileList m_MIDIFileList;
 
 	//----------------------------------------------------------------
 	//メソッド定義
 	//----------------------------------------------------------------
+	//GDI+
+	int _InitGDIPlus();
+	void _ReleaseGDIPlus();
+
 	//ウィンドウ制御
 	int _RegisterClass(HINSTANCE hInstance);
 	int _CreateWindow(HINSTANCE hInstance, int nCmdShow);
+	int _CreateOperationPanel();
 	int _SetWindowSize();
 	int _SetWindowSizeFullScreen();
 
@@ -300,14 +304,19 @@ private:
 	int _OnMenuSaveMyViewpoint(unsigned long viewpointNo);
 	int _OnMenuSaveViewpoint();
 	int _OnMenuEnableEffect(MTScene::EffectType type);
+	int _OnMenuViewMode();
+	int _OnMenuOperationPanel();
 	int _OnMenuWindowSize();
 	int _OnMenuFullScreen();
 	int _OnMenuMenuBar();
 	int _OnMenuOptionMIDIOUT();
 	int _OnMenuOptionMIDIIN();
+	int _OnMenuOptionSynthesizer();
 	int _OnMenuOptionGraphic();
 	int _OnMenuOptionColor();
+	int _OnMenuHowToView();
 	int _OnMenuManual();
+	int _OnMenuAbout();
 	int _OnMenuSelectSceneType(SceneType type);
 	int _OnFilePathPosted();
 
@@ -348,6 +357,7 @@ private:
 	int _UpdateMenuCheckmark();
 	void _CheckMenuItem(UINT uIDCheckItem, bool isEnable);
 	void _UpdateEffect();
+	void _UpdateOperationPanelCheckmark();
 	int _ParseCmdLine();
 	int _StartTimer();
 	int _StopTimer();
@@ -370,6 +380,10 @@ private:
 	int _GamePadProc();
 	int _ChangeViewPoint(int step);
 	int _MakeFileListWithFolder(const WCHAR* pFolderPath, MTFileList* pFileList);
+	WCHAR* _GetWavetableFilePath();
+	SM_WAVETABLE_SYNTH_PARAM _GetWavetableSynthParam();
+	void _BeforeDisplayDialog();
+	void _AfterDisplayDialog();
 
 };
 

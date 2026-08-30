@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="en">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.4.1 for Windows User Manual</title>
+<title>MIDITrail Ver.1.5.0 for Windows User Manual</title>
 </head>
 <body>
 
@@ -15,10 +15,10 @@
 English / <a href="MANUAL.ja.html">Japanese</a>
 </div>
 
-<h1>MIDITrail Ver.1.4.1 for Windows User Manual</h1>
+<h1>MIDITrail Ver.1.5.0 for Windows User Manual</h1>
 
 <p>
-Copyright (c) 2010-2025, WADA Masashi All rights reserved.<br>
+Copyright (c) 2010-2026, WADA Masashi All rights reserved.<br>
 Web: <a href="https://www.yknk.org/miditrail/">https://www.yknk.org/miditrail/</a><br>
 Mail: <img src="Files/mail.png" align="top"><br>
 </p>
@@ -30,14 +30,22 @@ Mail: <img src="Files/mail.png" align="top"><br>
 <p>
 <a href="#introduction">1. Introduction</a><br>
 <a href="#system">2. System requirement</a><br>
-<a href="#install">3. How to install and execute</a><br>
-<a href="#usage">4. Usage</a><br>
-<a href="#restriction">5. Restriction</a><br>
-<a href="#faq">6. FAQ</a><br>
-<a href="#customize">7. How to customize</a><br>
-<a href="#appendix">8. Appendix</a><br>
-<a href="#license">9. Copyright and license</a><br>
-<a href="#history">10. History</a><br>
+<a href="#getstarted">3. How to get started</a><br>
+<a href="#operationpanel">4. Operation Panel</a><br>
+<a href="#midifile">5. Opening MIDI files</a><br>
+<a href="#playback">6. Playback MIDI files</a><br>
+<a href="#viewmode">7. View Mode</a><br>
+<a href="#viewpoint">8. Moving the viewpoint</a><br>
+<a href="#monitor">9. MIDI IN monitor</a><br>
+<a href="#setting">10. Setting</a><br>
+<a href="#keyboard">11. Keyboard operations</a><br>
+<a href="#restriction">12. Restriction</a><br>
+<a href="#faq">13. FAQ</a><br>
+<a href="#customize">14. How to customize</a><br>
+<a href="#appendix">15. Appendix</a><br>
+<a href="#license">16. Copyright and license</a><br>
+<a href="#acknowledgements">17. Acknowledgements</a><br>
+<a href="#history">18. History</a><br>
 </p>
 
 <!-- ************************************************************* -->
@@ -76,9 +84,9 @@ Please use MIDITrail Ver.1.2.4 on Windows 2000 / XP / Vista.
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="install"></a>3. How to install and execute</h2>
+<h2><a name="getstarted"></a>3. How to get started</h2>
 
-<h3>(1) How to setup</h3>
+<h3>(1) How to install</h3>
 <p>
 Extract ZIP file, and open "MIDITrail.exe".<br>
 <br>
@@ -87,31 +95,16 @@ MIDITrail-Ver.X.X.X-Windows.zip   -- MIDITrail 32bit version<br>
 MIDITrail-Ver.X.X.X-Windows64.zip -- MIDITrail 64bit version<br>
 </p>
 
-<h3>(2) First setup</h3>
+<h3>(2) MIDI OUT port settings</h3>
 <p>
-At first, you must setup the MIDI OUT port.<br>
-Select "MIDI OUT..." from "Option" menu, then "MIDI OUT configuration" dialog will appear.
-</p>
-<p>
-<img src="Files/MIDIOUT.png"><br>
-</p>
-<p>
-<b>[Port A]</b><br>
-At least, you must select the MIDI OUT device of "port A".
-Ordinary MIDI datasets is sent to "Port A".
-</p>
-<p>
-<b>[Port B,C,D,E,F]</b><br>
-If you want to play the MIDI datasets which uses multiple ports, 
-you must select the MIDI OUT device of port B, C, and so on.<br>
-NOTICE: To play the MIDI datasets which uses multiple ports, 
-it is necessary to prepare MIDI interface and MIDI module which supports multiple ports.
+Click "MIDI OUT..." in the "Option" menu to display the MIDI OUT settings dialog.<br>
+You must configure the output destination for Port A.
 </p>
 
-<h3>(3) How to uninstall</h3>
+<h3>(3) Playback midi files</h3>
 <p>
-Delete "MIDITrail" folder which contains "MIDITrail.exe".
-MIDITrail doesn't use registry.
+Drag and drop a MIDI file (*.mid) into the MIDITrail window to open it.<br>
+Click the button on the operation panel to start playback.
 </p>
 
 <h3>(4) How to open Recomposer data files</h3>
@@ -126,328 +119,42 @@ RCPCV.DLL <a href="http://www.vector.co.jp/soft/win95/art/se114143.html">http://
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="usage"></a>4. Usage</h2>
+<h2><a name="operationpanel"></a>4. Operation Panel</h2>
 
-<h3>(1) How to open a MIDI file</h3>
+<h3>(1) Operation Panel</h3>
 <p>
-Select "Open File..." from "File" menu, the Open File dialog will appear. And choose a Standard MIDI File (*.mid).<br>
-Or you can drag and drop a MIDI file into the window of MIDITrail.
+You can use the operation panel to control functions such as selecting and playing MIDI files and changing the viewpoint.
 </p>
 <p>
-If you prepared RCPCV.DLL, MIDITrail can open the Recomposer data files (*.rcp *.r36 *.g36).
-Please refer to "3.(4) How to open Recomposer data files" for details.
+<img src="Files/OperationPanel.png"><br>
 </p>
-
-<h3>(2) How to play/pause/resume/stop</h3>
 <p>
-Push the following keys, or use "Playback" menu.
+You can toggle the display of the operation panel by selecting "Operation Panel" from the "Window" menu.<br>
+Some MIDITrail functions cannot be accessed via the operation panel; please use the menu instead.<br>
+(e.g., MIDI IN monitor, saving viewpoints, various settings, viewing the manual)<br>
 </p>
 
+
+<!-- ************************************************************* -->
+<h2><a name="midifile"></a>5. Opening MIDI files</h2>
+
+<h3>(1) Opening MIDI files</h3>
 <p>
-<img src="Files/HowToView1.png"><br>
+Clicking the "Open File" button on the operation panel will displays the file selection dialog, 
+where you can select a standard MIDI file (*.mid).<br>
+You can also open a file by dragging and dropping a standard MIDI file (*.mid) into the MIDITrail window.<br>
+You can also open a MIDI file upon launching MIDITrail by dropping the file onto the shortcut of MIDITrail.
 </p>
 
+<h3>(2) Opening folder</h3>
 <p>
-<table>
-  <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>SPACE</kbd></td><td>Play / Pause / Resume</td></tr>
-  <tr><td><kbd>ESC</kbd></td><td>Stop</td></tr>
-  <tr><td><kbd>1</kbd><kbd>2</kbd></td><td>Skip Back / Skip Forward</td></tr>
-  <tr><td><kbd>4</kbd><kbd>5</kbd></td><td>Playback Speed Down / Up</td></tr>
-  <tr><td><kbd>F2</kbd></td><td>Double speed playback</td></tr>
-</table>
+MIDITrail can play MIDI files stored in a folder in sequence.<br>
+Clicking the "Open Folder" button on the operation panel will display a folder selection dialog, 
+where you can select the folder containing the Standard MIDI files (*.mid).<br>
+You can also open a folder by dragging and dropping it into the MIDITrail window.<br>
 </p>
 
-<h3>(3) Folder Playback</h3>
-
-<p>
-MIDITrail can open MIDI data files stored in folder in sequence.
-MIDITrail opens the files in ascending order by filename.
-</p>
-
-<h4>1. Folder selection</h4>
-<p>
-When you select "Open Folder..." from "File" menu, the folder selection dialog will appear.<br>
-Here you have to select the folder that contains the Standard MIDI File (*.mid).<br>
-You can also drag and drop the forlder into the window of MIDITrail.
-</p>
-
-<h4>2. File switching</h4>
-<p>
-You can switch the MIDI data file by selecting "Previous File" and "Next File" from "File" menu.<br>
-You can also use the following keyboard shortcut.<br>
-</p>
-<p>
-<table>
-  <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
-          <kbd>CTRL</kbd> + <kbd>P</kbd></td>
-      <td>Open previous file.</td>
-  </tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td>
-      <td>Open next file.</td>
-  </tr>
-</table>
-</p>
-
-<h4>3. Folder Playback</h4>
-<p>
-When you select "Folder Playback" from "Playback" menu, 
-MIDITrail playback the next file after end of playback automatically.
-</p>
-
-<h3>(4) How to move viewpoint in 3D space</h3>
-<p>
-You can move freely in 3D space, and look at MIDI datasets from all directions 
-by operation of keyboard and mouse, like FPS (First Person Shooter) game.<br>
-Although there is sense of incongruity in the beginning,
-it will be very comfortable as experience is gained.
-</p>
-
-<p>
-<img src="Files/HowToView2.png"><br>
-<img src="Files/HowToView3.png"><br>
-</p>
-
-<h4>Mouse operation</h4>
-<p>
-When you click the window, it will become the view control mode by the mouse,
-and mouse cursor will disappear.<br>
-The eye direction synchronizes movement of your mouse.<br>
-If you click once again, view control mode will be canceled.<br>
-And you can rotate piano roll using mouse wheel.
-</p>
-
-<h4>Keyboard operation</h4>
-
-<p>
-Put your index finger on <kbd>D</kbd>, middle finger on <kbd>W</kbd>, third finger on <kbd>A</kbd>.
-</p>
-<p>
-<table>
-  <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>W</kbd><kbd>S</kbd></td><td>It moves forward and backward.</td></tr>
-  <tr><td><kbd>A</kbd><kbd>D</kbd></td><td>It moves left and right.</td></tr>
-  <tr><td><kbd>Q</kbd><kbd>E</kbd></td><td>It goes up and down.</td></tr>
-  <tr><td><kbd>Z</kbd><kbd>C</kbd></td><td>It moves along the direction of MIDI datasets.<br>
-(In PinoRollRain, it moves along the piano keyboard.)</td></tr>
-  <tr>
-    <td>
-      <kbd>SHIFT</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>A</kbd><kbd>D</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>Q</kbd><kbd>E</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>Z</kbd><kbd>C</kbd>]
-    </td>
-    <td>When you push move key with <kbd>SHIFT</kbd> key, you can move at high speed.</td>
-  </tr>
-  <tr>
-    <td>
-      <kbd>CTRL</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
-      <kbd>CTRL</kbd> + [<kbd>A</kbd><kbd>D</kbd>]
-    </td>
-    <td>You can control the eye direction.</td>
-  </tr>
-</table>
-</p>
-
-<h4>For a left-handed person</h4>
-
-<p>
-You can also use a cursor key.
-If you use a mouse with your left hand, this one may be convenience.
-</p>
-<p>
-<table>
-  <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>&uarr;</kbd><kbd>&darr;</kbd></td><td>It moves forward and backward.</td></tr>
-  <tr><td><kbd>&larr;</kbd><kbd>&rarr;</kbd></td><td>It moves left and right.</td></tr>
-  <tr><td><kbd>PgUp</kbd><kbd>PgDn</kbd></td><td>It goes up and down.</td></tr>
-  <tr><td><kbd>,</kbd><kbd>.</kbd></td><td>It moves along the direction of MIDI datasets.<br>
-(In PinoRollRain, it moves along the piano keyboard.)</td></tr>
-  <tr>
-    <td>
-      <kbd>SHIFT</kbd> + [<kbd>&uarr;</kbd><kbd>&darr;</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>&larr;</kbd><kbd>&rarr;</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>PgUp</kbd><kbd>PgDn</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>,</kbd><kbd>.</kbd>]
-    </td>
-    <td>When you push move key with <kbd>SHIFT</kbd> key, you can move at high speed.</td>
-  </tr>
-  <tr>
-    <td>
-      <kbd>CTRL</kbd> + [<kbd>&uarr;</kbd><kbd>&darr;</kbd>]<br>
-      <kbd>CTRL</kbd> + [<kbd>&larr;</kbd><kbd>&rarr;</kbd>]
-    </td>
-    <td>You can control the eye direction.</td>
-  </tr>
-</table>
-</p>
-
-<h3>(5) Selection of the viewpoint</h3>
-
-<p>
-When you select "Viewpoint 1 / 2 / 3" from "View" menu,
-or when you push following key, you can move to a standard viewpoint.
-</p>
-<p>
-<table>
-  <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>7</kbd></td><td>Move to standard viewpoint 1</td></tr>
-  <tr><td><kbd>8</kbd></td><td>Move to standard viewpoint 2</td></tr>
-  <tr><td><kbd>9</kbd></td><td>Move to standard viewpoint 3</td></tr>
-</table>
-</p>
-
-<p>
-When you select "My Viewpoint 1 / 2 / 3" from "View" menu,
-or when you push following key, you can move to a viewpoint saved by the user in advance.<br>
-If you want to save current viewpoint, select "Save My Viewpoint 1 / 2 / 3" from "View" menu
-or push following key.
-</p>
-<p>
-<table>
-  <tr><th>Key</th><th>Action</th></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>7</kbd></td><td>Move to my viewpoint 1</td></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>8</kbd></td><td>Move to my viewpoint 2</td></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>9</kbd></td><td>Move to my viewpoint 3</td></tr>
-  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>7</kbd></td><td>Save my viewpoint 1</td></tr>
-  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>8</kbd></td><td>Save my viewpoint 2</td></tr>
-  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>9</kbd></td><td>Save my viewpoint 3</td></tr>
-</table>
-</p>
-
-<h3>(6) Change of window size</h3>
-<p>
-When you select "Window size..." from "View" menu, the Window size configuration dialog will appear.<br>
-Select your favorite window size, and push the OK button.<br>
-You can not change window size while playing or pausing.
-</p>
-<p>
-<img src="Files/WindowSize.png"><br>
-</p>
-<p>
-The window size you can select is depends on your PC.<br>
-If you want to specify any window size, fill in "Width" "Height".<br>
-If you want to apply that size to  the view area, check "Apply to the view area".
-</p>
-
-<h3>(7) Full Screen</h3>
-<p>
-When you select "Full Screen" from "View" menu, you can switch between window mode and full screen mode.<br>
-By F11 key, you can switch the mode too.
-</p>
-
-<h3>(8) Display counters</h3>
-
-<p>
-<img src="Files/Counter.png"><br>
-</p>
-<p>
-<table>
-  <tr><th>Counter</th><th>Details</th></tr>
-  <tr><td>FPS</td><td>Frame Per Second.</td></tr>
-  <tr><td>TITLE</td><td>Title of music.</td></tr>
-  <tr><td>TIME</td><td>Elapsed time.</td></tr>
-  <tr><td>BPM</td><td>Tempo (Beats Per Minute).</td></tr>
-  <tr><td>BEAT</td><td>Time signature.</td></tr>
-  <tr><td>BAR</td><td>Number of bars.</td></tr>
-  <tr><td>NOTES</td><td>Number of notes.</td></tr>
-  <tr><td>SPEED</td><td>Playback speed.</td></tr>
-</table>
-</p>
-
-<h3>(9) View mode select</h3>
-<p>
-You can select the view mode from "View" menu.
-You can not change the view mode while playing or pausing.
-</p>
-<p>
-<img src="Files/ViewMenu-Mode.png"><br>
-</p>
-
-<h3>(10) Display/Effect switch</h3>
-<p>
-You can switch the display/effect at "View" menu.
-</p>
-<p>
-<img src="Files/ViewMenu-Effect.png"><br>
-</p>
-<p>
-The piano roll bar will move up/down or right/left with change of pitch bend.<br>
-Some MIDI animation works are using pitch bend to shift the piano roll bars without change keys.
-If the MIDI animation is not displayed correctly, please disable the pitch bend effect to fix the piano roll bars.
-</p>
-
-<h3>(11) MIDI IN Monitor</h3>
-<p>
-You can view data sets received from MIDI IN device in realtime.<br>
-Select "MIDI IN..." from "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
-</p>
-<p>
-<img src="Files/MIDIIN.png"><br>
-</p>
-<p>
-Select the MIDI IN device for monitoring.<br>
-If you check the MIDITHRU, MIDITrail will send data sets received from MIDI IN to MIDI OUT.<br>
-When you select "Start Monitoring" from "Playback" menu, MIDI IN monitoring will start.<br>
-NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
-</p>
-
-<h3>(12) Graphic configuration</h3>
-<p>
-Select "Graphic..." from "Option" menu, the graphic configuration dialog will appear.<br>
-You can not change graphic configuration while playing or pausing.
-</p>
-<p>
-<img src="Files/Graphic.png"><br>
-</p>
-<p>
-<b>[Anti-aliasing]</b><br>
-If anti-aliasing is enabled, a notch (jaggy) will decrease and a more beautiful picture will be displayed.<br>
-However, since processing of anti-aliasing is heavy, performance may be poor when you select a upper level.<br>
-If your PC does not support anti-aliasing, it is displayed as "Not supported".
-</p>
-<p>
-<b>[Background image file path]</b><br>
-If you want to display the background image, specify the file path of the image.<br>
-The extension of the image file must be ".jpg" or ".png".
-</p>
-<p>
-<b>[Quarter note length]</b><br>
-You can change a quarter note length of piano roll.<br>
-You can specify a value from 0% to 1000%. The default value is 100%.<br>
-</p>
-
-<h3>(13) Color Configuration</h3>
-<p>
-You can customize the colors displayed on the screen.<br>
-When you select "Color..." from "Option" menu, the color configuration dialog will appear.<br>
-You can select the color palette and change it to your favorite color scheme.<br>
-You can not change the color while playing or pausing.<br>
-</p>
-<p>
-<img src="Files/ColorCfgDlg.png"><br>
-</p>
-<p>
-When you click "Edit..." button, the color palette configuration dialog will appear.<br>
-You can cutomaize the color palette.<br>
-You can not edit the default color palette.<br>
-</p>
-<p>
-<img src="Files/ColorPaletteCfgDlg.png"><br>
-</p>
-<p>
-<b>Gradation Tool</b><br>
-[Set Gradation Colors] You can assign gradation colors for channels that you selected.<br>
-</p>
-<p>
-<b>Parameter Setup Tool</b><br>
-[Set Default Colors] Sets the default color for all items.<br>
-[Export Color Parameters...] You can edit the exported parameters with a text editor.<br>
-[Import Color Parameters...] You can import the parameters that you edited with a text editor. It is possible to enter part of the parameters.<br>
-</p>
-
-<h3>(14) MIDITrail command line interface</h3>
+<h3>(3) Command line interface</h3>
 <p>
 If you want to start MIDITrail by command line, you can use following arguments.
 </p>
@@ -462,11 +169,105 @@ MIDITrail.exe [-p] [-q] ["path\to\file"]
   <tr><td>path\to\file</td><td>MIDI file path.<br>When you specify a path including a space character, please surround with a double quotation mark.</td></tr>
 </table>
 </p>
+
+<!-- ************************************************************* -->
+<h2><a name="playback"></a>6. Playback MIDI files</h2>
+
+<h3>(1) Playback MIDI file</h3>
 <p>
-If you drop a MIDI file to the shortcut of MIDITrail, MIDITrail open the file on startup.
+You can use the operation panel to start, pause, stop, and skip MIDI file playback, as well as change the playback speed.<br>
+When the "Repeat" button on the operation panel is selected, MIDITrail repeats the playback of the MIDI file.<br>
+</p>
+<p>
+<img src="Files/OperationPanel-1.png"><br>
+</p>
+<p>
+You can also control playback using menus, <a href="#keyboard">a keyboard</a>, 
+or <a href="#gamecontroller">a game controller</a> instead of the operation panel.
 </p>
 
-<h3>(15) Game Controller</h3>
+<h3>(2) Folder playback</h3>
+<p>
+Opening the folder allows you to use the folder playback function.<br>
+Clicking the "Previous File" and "Next File" buttons on the operation panel allows you to open the files in the folder sequentially.<br>
+When the "Folder Playback" button is selected, MIDITrail automatically opens and begins playing the next file after the current MIDI file finishes playing.<br>
+When the "Repeat" button is selected, MIDITrail will start playing the first MIDI file after the last one finishes, thereby repeating the folder playback.<br>
+</p>
+<p>
+<img src="Files/OperationPanel-2.png"><br>
+</p>
+
+<h3>(3) Playback Counter</h3>
+<p>
+The contents of the playback counter displayed during MIDI file playback are as follows.
+</p>
+<p>
+<table>
+	<tr><th>Counter</th><th>Details</th></tr>
+	<tr><td>TIME</td><td>Elapsed time.</td></tr>
+	<tr><td>BPM</td><td>Tempo (Beats Per Minute).</td></tr>
+	<tr><td>BEAT</td><td>Time signature.</td></tr>
+	<tr><td>BAR</td><td>Number of bars.</td></tr>
+	<tr><td>NOTES</td><td>Number of notes.</td></tr>
+	<tr><td>SPEED</td><td>Playback speed.</td></tr>
+</table>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="viewmode"></a>7. View Mode</h2>
+
+<h3>(1) Selecting the View Mode</h3>
+<p>
+Clicking the "View Mode" button on the operation panel will displays the view mode selection dialog, where you can select the view mode.<br>
+You can also select the view mode from the "View" menu. You can not change the view mode while playing or pausing.<br>
+</p>
+<p>
+<img src="Files/ViewMenu-Mode.png"><br>
+</p>
+
+<h3>(2) Display/Effect switch</h3>
+<p>
+You can switch the display/effect at the "View" menu.
+</p>
+<p>
+<img src="Files/ViewMenu-Effect.png"><br>
+</p>
+<p>
+The piano roll bar will move up/down or right/left with change of pitch bend.<br>
+Some MIDI animation works are using pitch bend to shift the piano roll bars without change keys.<br>
+If the MIDI animation is not displayed correctly, please disable the pitch bend effect to fix the piano roll bars.
+</p>
+
+<h3>(3) Full screen display</h3>
+<p>
+When you select "Full Screen" from the "Window" menu, you can switch between window mode and full screen mode.<br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="viewpoint"></a>8. Moving the viewpoint</h2>
+
+<h3>(1) Moving the viewpoint using the keyboard and mouse</h3>
+<p>
+You can move freely in 3D space, and look at MIDI datasets from all directions 
+by operation of keyboard and mouse, like FPS (First Person Shooter) game.<br>
+Although there is sense of incongruity in the beginning,
+it will be very comfortable as experience is gained.
+</p>
+<p>
+<img src="Files/HowToView2.png"><br>
+</p>
+<p>
+When you click the window, it will become the view control mode by the mouse,
+and mouse cursor will disappear.<br>
+The eye direction synchronizes movement of your mouse.<br>
+If you click once again, view control mode will be canceled.<br>
+And you can rotate piano roll using mouse wheel.
+</p>
+<p>
+<img src="Files/HowToView3.png"><br>
+</p>
+
+<h3><a name="gamecontroller"></a>(2) Moving the viewpoint using a game controller</h3>
 <p>
 You can operate by XInput game controller.<br>
 </p>
@@ -489,8 +290,263 @@ You can operate by XInput game controller.<br>
 NOTE: MIDITrail does not support DirectInput game controller.
 </p>
 
+<h3>(3) Switching and Saving Viewpoints</h3>
+<p>
+When you click "Viewpoint 1 / 2 / 3" button on the operation panel, you can switch to a standard viewpoint.<br>
+When you click "My Viewpoint 1 / 2 / 3" button, you can switch to a viewpoint saved in advance.<br>
+</p>
+<p>
+<img src="Files/OperationPanel-3.png"><br>
+</p>
+<p>
+If you want to save the current viewpoint, select "Save My Viewpoint 1 / 2 / 3" from the "View" menu.<br>
+The viewpoint is saved for each view mode.<br>
+</p>
+<p>
+<img src="Files/Menu_View-MyViewpoint.png"><br>
+</p>
+<p>
+You can also use <a href="#keyboard">the keyboard</a> to switch and save viewpoints.
+</p>
+
 <!-- ************************************************************* -->
-<h2><a name="restriction"></a>5. Restriction</h2>
+<h2><a name="monitor"></a>9. MIDI IN monitor</h2>
+
+<p>
+You can view data sets received from MIDI IN device in realtime.<br>
+You need to select the device to be monitored in the MIDI IN settings beforehand.<br>
+When you select "Start Monitoring" from the "Playback" menu, MIDI IN monitoring will start.<br>
+NOTE: MIDITrail can not record data sets received from MIDI IN.<br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="setting"></a>10. Setting</h2>
+
+<h3>(1) Window size configuration</h3>
+<p>
+When you select "Window size..." from the "Window" menu, the window size configuration dialog will appear.<br>
+You can select your favorite window size.<br>
+You can not change window size while playing or pausing.
+</p>
+<p>
+<img src="Files/Dialog_WindowSize.png"><br>
+</p>
+<p>
+<b>[Width] [Height]</b><br>
+You can specify any window size.<br>
+</p>
+<p>
+<b>[Apply to the view area]</b><br>
+If you want to apply that size to  the view area, check this option.<br>
+</p>
+
+<h3>(2) MIDI OUT configuration</h3>
+<p>
+When you select "MIDI OUT..." from the "Option" menu, the MIDI OUT configuration dialog will appear.<br>
+</p>
+<p>
+<img src="Files/Dialog_MIDI-OUT.png"><br>
+</p>
+<p>
+<b>[Port A]</b><br>
+At least, you must select the MIDI OUT device of "Port A". Ordinary MIDI datasets is sent to "Port A".<br>
+</p>
+<p>
+<b>[Port B,C,D,E,F]</b><br>
+If you want to play the MIDI datasets which uses multiple ports,you must select the MIDI OUT device of port B, C, and so on.<br>
+To play the MIDI datasets which uses multiple ports, it is necessary to prepare MIDI interface and MIDI module which supports multiple ports.<br>
+</p>
+
+<h3>(2) MIDI IN configuration</h3>
+<p>
+Select "MIDI IN..." from the "Option" menu, then "MIDI IN configuration" dialog will appear.<br>
+</p>
+<p>
+<img src="Files/Dialog_MIDI-IN.png"><br>
+</p>
+<p>
+<b>[MIDI IN]</b><br>
+Select the MIDI IN device to monitor.<br>
+</p>
+<p>
+<b>[MIDITHRU]</b><br>
+If you check the MIDITHRU, MIDITrail will send data sets received from MIDI IN to MIDI OUT.<br>
+</p>
+
+<h3>(3) Internal Wavetable Synthesizer configuration</h3>
+<p>
+Select "Synthesizer..." from the "Option" menu, the Internal Wavetable Synthesizer configuration dialog will appear.<br>
+You can not change Synthesizer configuration while playing or pausing.
+</p>
+<p>
+<img src="Files/Dialog_Synthesizer.png"><br>
+</p>
+<p>
+<b>[Wavetable File]</b><br>
+The default value is the wavetable file (GeneralUser-GS.sf2) included with the app.<br>
+You can select your wavetable file.<br>
+The extension of the wavetable file must be ".sf2".<br>
+MIDITrail assigns channel No.10 for percussion.<br>
+</p>
+<p>
+<b>[Max Voices]</b><br>
+Select the maximum number of voices for waveform rendering. The default value is 512.<br>
+Selecting a smaller value can reduce the load on the waveform rendering process,
+but it may cause sound interruptions when playing MIDI data with a large number of notes.<br>
+</p>
+<p>
+<b>[Sustain (CC#64)]</b><br>
+This setting allows you to choose whether or not to reflect the sustain (control change #64)
+contained in the MIDI data in the waveform rendering process. The default value is enabled. <br>
+</p>
+<p>
+<b>[Acknowledgements]</b><br>
+This displays copyright notices of the library and sound bank.
+</p>
+
+<h3>(4) Graphic configuration</h3>
+<p>
+Select "Graphic..." from the "Option" menu, the graphic configuration dialog will appear.<br>
+You can not change graphic configuration while playing or pausing.
+</p>
+<p>
+<img src="Files/Dialog_Graphic.png"><br>
+</p>
+<p>
+<b>[Anti-aliasing]</b><br>
+If anti-aliasing is enabled, a notch (jaggy) will decrease and a more beautiful picture will be displayed.<br>
+However, since processing of anti-aliasing is heavy, performance may be poor when you select a upper level.<br>
+If your Mac does not support anti-aliasing, it is displayed as "Not supported".
+</p>
+<p>
+<b>[Background image file path]</b><br>
+If you want to display the background image, specify the file path of the image.<br>
+The extension of the image file must be ".jpg" or ".png".<br>
+</p>
+<p>
+<b>[Quarter note length]</b><br>
+You can change a quarter note length of piano roll.
+You can specify a value from 0% to 1000%. The default value is 100%.<br>
+</p>
+
+<h3>(5) Color configuration</h3>
+<p>
+You can customize the colors displayed on the screen.<br>
+When you select "Color..." from the "Option" menu, the color configuration dialog will appear.<br>
+You can select the color palette and change it to your favorite color scheme.<br>
+You can not change the color while playing or pausing.<br>
+</p>
+<p>
+<img src="Files/Dialog_Color.png"><br>
+</p>
+<p>
+When you click "Edit..." button, the color palette configuration dialog will appear.<br>
+You can customize the color palette.<br>
+You can not edit the default color palette.<br>
+</p>
+<p>
+<img src="Files/Dialog_ColorPalette.png"><br>
+</p>
+<p>
+<b>Gradation Tool</b><br>
+[Set Gradation Colors] You can assign gradation colors for channels that you selected.<br>
+</p>
+<p>
+<b>Parameter Setup Tool</b><br>
+[Set Default Colors] Sets the default color for all items.<br>
+[Export Color Parameters...] You can edit the exported parameters with a text editor.<br>
+[Import Color Parameters...] You can import the parameters that you edited with a text editor. It is possible to enter part of the parameters.<br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="keyboard"></a>11. Keyboard operations</h2>
+
+<h3>(1) Keyboard operations</h3>
+<p>
+You can perform operations quickly using the keyboard.
+The keyboard operations for playing MIDI files are shown in the following figure.
+</p>
+<p>
+<img src="Files/HowToView1.png"><br>
+</p>
+
+<h3>(2) List of keyboard operations</h3>
+<p>
+<table>
+	<tr><th>Kind</th><th>Key</th><th>Action</th></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="2">File</td>
+		<td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
+		<kbd>CTRL</kbd> + <kbd>P</kbd></td><td>Open previous file.</td>
+	</tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td><td>Open next file.</td></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="5">Playback</td><td><kbd>SPACE</kbd></td><td>Play / Pause</td></tr>
+	<tr><td><kbd>ESC</kbd></td><td>Stop</td></tr>
+	<tr><td><kbd>1</kbd><kbd>2</kbd></td><td>Skip Backward / Skip Forward</td></tr>
+	<tr><td><kbd>4</kbd><kbd>5</kbd></td><td>Playback Speed Down / Up</td></tr>
+	<tr><td><kbd>F2</kbd></td><td>Double speed playback</td></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="6">Moving Viewpoint<br>(left hand)</td><td><kbd>W</kbd><kbd>S</kbd></td><td>It moves forward and backward.</td></tr>
+	<tr><td><kbd>A</kbd><kbd>D</kbd></td><td>It moves left and right.</td></tr>
+	<tr><td><kbd>Q</kbd><kbd>E</kbd></td><td>It goes up and down.</td></tr>
+	<tr><td><kbd>Z</kbd><kbd>C</kbd></td><td>It moves along the direction of MIDI datasets.<br>
+(In PinoRollRain, it moves along the piano keyboard.)</td></tr>
+	<tr>
+		<td>
+			<kbd>SHIFT</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>A</kbd><kbd>D</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>Q</kbd><kbd>E</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>Z</kbd><kbd>C</kbd>]
+		</td>
+		<td>Move quickly.</td>
+	</tr>
+	<tr>
+		<td>
+			<kbd>CTRL</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
+			<kbd>CTRL</kbd> + [<kbd>A</kbd><kbd>D</kbd>]
+		</td>
+		<td>Control the direction of the gaze.</td>
+	</tr>
+	<!-- ******************** -->
+	<tr><td rowspan="6">Moving Viewpoint<br>(right hand)</td><td><kbd>↑</kbd><kbd>↓</kbd></td><td>It moves forward and backward.</td></tr>
+	<tr><td><kbd>←</kbd><kbd>→</kbd></td><td>It moves left and right.</td></tr>
+	<tr><td><kbd>PgUp</kbd><kbd>PgDn</kbd></td><td>It goes up and down.</td></tr>
+	<tr><td><kbd>,</kbd><kbd>.</kbd></td><td>It moves along the direction of MIDI datasets.<br>(In PinoRollRain, it moves along the piano keyboard.)</td></tr>
+	<tr>
+		<td>
+			<kbd>SHIFT</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>←</kbd><kbd>→</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>PgUp</kbd><kbd>PgDn</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>,</kbd><kbd>.</kbd>]
+		</td>
+		<td>Move quickly.</td>
+	</tr>
+	<tr>
+		<td>
+			<kbd>CTRL</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
+			<kbd>CTRL</kbd> + [<kbd>←</kbd><kbd>→</kbd>]
+		</td>
+		<td>Control the direction of the gaze.</td>
+	</tr>
+	<!-- ******************** -->
+	<tr><td rowspan="9">Switching viewpoints</td><td><kbd>7</kbd></td><td>Move to standard viewpoint 3</td></tr>
+	<tr><td><kbd>8</kbd></td><td>Move to standard viewpoint 2</td></tr>
+	<tr><td><kbd>9</kbd></td><td>Move to standard viewpoint 3</td></tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>7</kbd></td><td>Move to my viewpoint 1</td></tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>8</kbd></td><td>Move to my viewpoint 2</td></tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>9</kbd></td><td>Move to my viewpoint 3</td></tr>
+	<tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>7</kbd></td><td>Save my viewpoint 1</td></tr>
+	<tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>8</kbd></td><td>Save my viewpoint 2</td></tr>
+	<tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>9</kbd></td><td>Save my viewpoint 3</td></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="1">Screen</td><td><kbd>F11</kbd></td><td>Switching full screen</td></tr>
+
+</table>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="restriction"></a>12. Restriction</h2>
 
 <h3>(1) Synchronization of MIDI sound and display</h3>
 <p>
@@ -504,7 +560,7 @@ the MIDI sound and display may not synchronize.
 MIDITrail renders all notes of the MIDI file in real time.<br>
 Therefore if MIDI file has a large number of notes, the load of rendering becomes high.<br>
 In order to enjoy MIDI file which contains tens of thousands of notes comfortably, 
-you have to use PC which has high performance graphics.
+you have to use Mac which has high performance graphics.
 </p>
 
 <h3>(3) Multiple ports</h3>
@@ -522,9 +578,15 @@ MIDITrail can't open the MIDI file whose delta time represents actual time.
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="faq"></a>6. FAQ</h2>
+<h2><a name="faq"></a>13. FAQ</h2>
 
-<h3>(1) Q. I got "d3dx9_**.dll was not found" error. I can't start MIDITrail.</h3>
+<h3>(1) Q. Can I create playlists?</h3>
+<p>
+MIDITrail does not have a playlists function now, but you can use folder play function.<br>
+For details, please refer to "(2) Folder Playback" in "<a href="#playback">6. MIDI File Playback</a>".<br>
+</p>
+
+<h3>(2) Q. I got "d3dx9_**.dll was not found" error. I can't start MIDITrail.</h3>
 <p>
 The error occurs when the version of DirectX in your PC is old.
 Please install the latest version of "DirectX End-User Runtime".
@@ -534,37 +596,7 @@ Microsoft: DirectX End-User Runtimes (June 2010)<br>
 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=8109">https://www.microsoft.com/en-us/download/details.aspx?id=8109</a>
 </p>
 
-<h3>(2) Q. The animation is not smooth.</h3>
-<p>
-Please try to change window size to small, and turn off anti-aliasing. Then the load of rendering becomes low.<br>
-Check FPS value in window title.
-If the FPS value is under 60, the performance of graphics is insufficient.<br>
-When MIDI file has a large number of notes, the load of rendering becomes high.<br>
-To confirm the performance of your PC, please try to open MIDI file which contains few notes.
-If the animation does not improve, please use PC which has high performance graphics.
-</p>
-
-<h3>(3) Q. I want to customize the window size.</h3>
-<p>
-You can customize the window size.
-Please open following file by text editor, and edit "Width" and "Height".
-</p>
-<pre>
-Windows 7 / 8 / 10 / 11
-C:\Users\(user name)\AppData\Roaming\yknk\MIDITrail\View.ini
-</pre>
-<pre>
-[WindowSize]
-Width=800
-Height=600
-</pre>
-
-<h3>(4) Q. When I display the menu, the animation stops.</h3>
-<p>
-Sorry, it is a specification.
-</p>
-
-<h3>(5) Q. I got "DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A" error.</h3>
+<h3>(3) Q. I got "DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A" error.</h3>
 <p>
 If your PC does not support Direct3D, this error occurs.<br>
 Please execute "DirectX Diagnostic Tool"(dxdiag.exe), and select "Display" tab.
@@ -573,15 +605,23 @@ If you can't change "Direct3D Acceleration" to "Enabled", your PC does not suppo
 Please use the PC which supports DirectX 9.0c graphics.
 </p>
 
-<h3>(6) Q. I want to change the ripple more showily.</h3>
+<h3>(4) Q. The animation is not smooth.</h3>
 <p>
-You can change size of the ripple by editing configuration file.<br>
-Please Check "7. Customize - (2) Piano roll".<br>
-Change the value of "RippleHeight" and "RippleWidth" larger.
+Please try to change window size to small, and turn off anti-aliasing. Then the load of rendering becomes low.<br>
+Check FPS value in window title.
+If the FPS value is under 60, the performance of graphics is insufficient.<br>
+When MIDI file has a large number of notes, the load of rendering becomes high.<br>
+To confirm the performance of your Mac, please try to open MIDI file which contains few notes.
+If the animation does not improve, please use Mac which has high performance graphics.
+</p>
+
+<h3>(5) Q. When I display the menu, the animation stops.</h3>
+<p>
+Sorry, it is a specification.
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="customize"></a>7. How to customize</h2>
+<h2><a name="customize"></a>14. How to customize</h2>
 
 <p>
 You can customize MIDITrail as your like, by editing the files which is in "conf" folder.
@@ -842,7 +882,7 @@ Edit [Viewpoint-2],[Viewpoint-3] section. You can not edit viewpoint 1.<br>
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="appendix"></a>8. Appendix</h2>
+<h2><a name="appendix"></a>15. Appendix</h2>
 
 <h3>(1) Structure of 3D piano roll visualization </h3>
 <p>
@@ -870,7 +910,7 @@ However piano roll bars of all ports will be displayed.
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="license"></a>9. Copyright and license</h2>
+<h2><a name="license"></a>16. Copyright and license</h2>
 
 <p>
 WADA Masashi holds the copyright of MIDITrail.<br>
@@ -878,7 +918,7 @@ MIDITrail is released under the BSD license.
 </p>
 
 <pre>
-Copyright (c) 2010-2022, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+Copyright (c) 2010-2026, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -909,7 +949,28 @@ POSSIBILITY OF SUCH DAMAGE.
 </pre>
 
 <!-- ************************************************************* -->
-<h2><a name="history"></a>10. History</h2>
+<h2><a name="acknowledgements"></a>17. Acknowledgements</h2>
+
+<p>
+MIDITrail uses the following library and SoundFont bank.
+</p>
+
+<h3>TinySoundFont</h3>
+<p>
+Copyright (C) 2017-2023 Bernhard Schelling (Based on SFZero: Copyright (C) 2012 Steve Folta)<br>
+<a href="https://github.com/schellingb/TinySoundFont">https://github.com/schellingb/TinySoundFont</a><br>
+<a href="LICENSE_TinySoundFont.txt">License details</a><br>
+</p>
+
+<h3>GeneralUser GS</h3>
+<p>
+Copyright (C) 1997-2025 S. Christian Collins<br>
+<a href="https://www.schristiancollins.com/">https://www.schristiancollins.com/</a><br>
+<a href="LICENSE_GeneralUser_GS.txt">License details</a><br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="history"></a>18. History</h2>
 
 <p>
 osdn#&lt;id&gt; ... <a href="https://www.yknk.org/miditrail/osdn/ticket/index.html">OSDN Ticket Archive</a><br>
@@ -1083,6 +1144,20 @@ osdn#45931 fixed bug. (MIDITrail is not reading tempo data correctly)<br>
 ghwin#7 fixed bug. (Piano roll is black on AMD Radeon Graphics)<br>
 ghwin#8 Added function to send note off when paused or stopped and note on when resumed<br>
 ghwin#9 Changed documents due to the migration of the project website<br>
+  </td></tr>
+  <tr><td>2026/08/31</td><td>Ver.1.5.0</td><td>
+ghwin#10 Added TinySoundFont as the internal wavetable synthesizer<br>
+ghwin#11 Added GeneralUser GS as the default wavetable file<br>
+ghwin#12 Added Operation Panel<br>
+ghwin#13 Added message incicating that files can be dropped on the startup screen<br>
+ghwin#14 Added function to save the selection state of repeat and folder playback<br>
+ghwin#15 Added High-DPI support (primary monitor only)High-DPI support (primary monitor only)<br>
+ghwin#16 Changed the initial display page of the manual<br>
+ghwin#17 Changed the timing for saving color palette settings<br>
+ghwin#18 Changed the manual chapter structure<br>
+ghwin#19 Changed the dialog position to the center of the main window.<br>
+ghwin#20 Changed the note saturation in Piano Roll Rain<br>
+ghwin#21 Fixed bug (_SetWindowSize error occurs when launching an application on Windows 7)<br>
   </td></tr>
 </table>
 </p>

@@ -4,7 +4,7 @@
 //
 // シンプルMIDIライブラリヘッダ
 //
-// Copyright (C) 2010-2012 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -34,7 +34,9 @@
 #include "SMPortList.h"
 
 //デバイス制御系
+#include "SMWavetableSynthCtrl.h"
 #include "SMOutDevCtrl.h"
+#include "SMOutDevCtrlEx.h"
 #include "SMInDevCtrl.h"
 
 //シーケンス処理系

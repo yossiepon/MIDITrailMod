@@ -4,7 +4,7 @@
 //
 // カラー設定クラス
 //
-// Copyright (C) 2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2022-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -53,6 +53,9 @@ public:
 	
 	//設定保存
 	int Save();
+	
+	//カラーパレット設定保存
+	int SaveColorPalette(unsigned long paletteNo);
 	
 private:
 	

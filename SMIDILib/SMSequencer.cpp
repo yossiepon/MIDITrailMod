@@ -4,7 +4,7 @@
 //
 // シーケンサクラス
 //
-// Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -93,6 +93,23 @@ SMSequencer::~SMSequencer(void)
 
 	//タイマデバイス解放
 	_ReleaseTimerDev();
+}
+
+//******************************************************************************
+// Wavetableシンセサイザパラメータ設定
+//******************************************************************************
+int SMSequencer::SetWavetableSynthParam(
+		const WCHAR* pWavetableFilePath,
+		SM_WAVETABLE_SYNTH_PARAM synthParam
+	)
+{
+	int result = 0;
+	
+	result = m_OutDevCtrl.SetWavetableSynthParam(pWavetableFilePath, synthParam);
+	if (result != 0) goto EXIT;
+	
+EXIT:;
+	return result;
 }
 
 //******************************************************************************
@@ -382,6 +399,27 @@ int SMSequencer::Skip(
 	//実際の処理はタイマースレッドに委任する
 	m_UserRequest = RequestSkip;
 
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// 全ポートに対応するデバイスを閉じる（一時停止、停止の状態でのみ使用可）
+//******************************************************************************
+int SMSequencer::ClosePortDevAll()
+{
+	int result = 0;
+	
+	//演奏中の場合はプログラムエラー
+	if (m_Status == StatusPlay) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+	
+	//MIDIデバイスを閉じる
+	result = _CloseMIDIOutDev();
+	if (result != 0) goto EXIT;
+	
 EXIT:;
 	return result;
 }
@@ -698,12 +736,13 @@ int SMSequencer::_SendMIDIEvent(
 {
 	int result = 0;
 	unsigned long msg = 0;
+	unsigned long size = 0;
 	bool isFiltered = false;
 	unsigned int chNo = 0;
 	unsigned int noteNo = 0;
 
 	//メッセージ取得
-	result = pMIDIEvent->GetMIDIOutShortMsg(&msg);
+	result = pMIDIEvent->GetMIDIOutShortMsg(&msg, &size);
 	if (result != 0) goto EXIT;
 
 	//MIDIイベントフィルタ
@@ -713,7 +752,7 @@ int SMSequencer::_SendMIDIEvent(
 	//MIDIイベント送信
 	if (!isFiltered) {
 		//メッセージ出力：出力完了まで制御が戻らない
-		result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+		result = m_OutDevCtrl.SendShortMsg(portNo, msg, size);
 		if (result != 0) goto EXIT;
 
 		//MIDIイベントメッセージポスト
@@ -908,7 +947,7 @@ int SMSequencer::_SendNoteOffForActiveNotes()
 				velocity = m_NoteVelocity[portNo][chNo][noteNo];
 				if (velocity > 0) {
 					msg = (unsigned long)((0 << 16) | (noteNo << 8) | (0x80 | chNo));
-					result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+					result = m_OutDevCtrl.SendShortMsg(portNo, msg, 3);
 					if (result != 0) goto EXIT;
 				}
 			}
@@ -937,7 +976,7 @@ int SMSequencer::_SendNoteOnForActiveNotes()
 				velocity = m_NoteVelocity[portNo][chNo][noteNo];
 				if (velocity > 0) {
 					msg = (unsigned long)((velocity << 16) | (noteNo << 8) | (0x90 | chNo));
-					result = m_OutDevCtrl.SendShortMsg(portNo, msg);
+					result = m_OutDevCtrl.SendShortMsg(portNo, msg, 3);
 					if (result != 0) goto EXIT;
 				}
 			}
@@ -1075,7 +1114,7 @@ int SMSequencer::_FilterMIDIEvent(
 	//ピッチベンドは送信しない
 	if (pMIDIEvent->GetChMsg() == SMEventMIDI::PitchBend) {
 		*pIsFiltered = true;
-		result = pMIDIEvent->GetMIDIOutShortMsg(&shortMsg);
+		result = pMIDIEvent->GetMIDIOutShortMsg(&shortMsg, &size);
 		if (result != 0) goto EXIT;
 		
 		//ピッチベンドの値を記憶する：En dl dm 第2,3バイト目を参照

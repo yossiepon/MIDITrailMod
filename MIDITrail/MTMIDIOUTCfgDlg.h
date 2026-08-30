@@ -4,7 +4,7 @@
 //
 // MIDI OUT 設定ダイアログクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -43,7 +43,7 @@ private:
 	YNConfFile m_ConfFile;
 
 	//MIDI出力デバイス制御オブジェクト
-	SMOutDevCtrl m_MIDIOutDevCtrl;
+	SMOutDevCtrlEx m_MIDIOutDevCtrl;
 
 	//コンボボックスのウィンドウハンドル
 	HWND m_hComboDevA;

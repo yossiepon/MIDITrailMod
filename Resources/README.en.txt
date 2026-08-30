@@ -2,7 +2,7 @@
 
   MIDITrail for Windows
 
-  Copyright (C) 2010-2025 WADA Masashi. All Rights Reserved.
+  Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 
   Web : https://www.yknk.org/miditrail/
   Mail: wada@yknk.org
@@ -36,4 +36,22 @@
 
   DirectX End-User Runtimes (June 2010) 
   https://www.microsoft.com/en-us/download/details.aspx?id=8109
+
+(6) License
+
+  MIDITrail is released under the BSD license.
+  Please check "LICENSE.txt".
+
+(7) Acknowledgements
+
+  MIDITrail uses the following library and SoundFont bank.
+  Please refer to the included license file for details on each license.
+
+  TinySoundFont : Copyright (C) 2017-2023 Bernhard Schelling (Based on SFZero: Copyright (C) 2012 Steve Folta)
+	https://github.com/schellingb/TinySoundFont
+    License details : doc/LICENSE_TinySoundFont.txt
+
+  GeneralUser GS : Copyright (C) 1997-2025 S. Christian Collins
+    https://www.schristiancollins.com/
+    License details : doc/LICENSE_GeneralUser_GS.txt
 

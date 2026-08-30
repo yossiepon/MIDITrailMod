@@ -4,7 +4,7 @@
 //
 // シーケンスデータクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -41,7 +41,7 @@ SMSeqData::~SMSeqData(void)
 // SMFフォーマット登録
 //******************************************************************************
 void SMSeqData::SetSMFFormat(
-		unsigned long smfFormat
+		unsigned short smfFormat
 	)
 {
 	m_SMFFormat = smfFormat;
@@ -254,7 +254,7 @@ void SMSeqData::Clear()
 //******************************************************************************
 // SMFフォーマット取得
 //******************************************************************************
-unsigned long SMSeqData::GetSMFFormat()
+unsigned short SMSeqData::GetSMFFormat()
 {
 	return m_SMFFormat;
 }

@@ -22,6 +22,9 @@
 #define IDD_COLOR_PALETTE_CFG           135
 #define IDD_COLOR_PARAM_EXPORT          136
 #define IDD_COLOR_PARAM_IMPORT          137
+#define IDD_WAVETABLE_SYNTH_CFG         138
+#define IDD_OPERATION_PANEL             139
+#define IDD_VIEWMODE                    140
 #define IDC_COMBO_PORT_A                1000
 #define IDC_COMBO_PORT_B                1001
 #define IDC_COMBO_PORT_C                1002
@@ -243,6 +246,47 @@
 #define IDC_BTN_PASTE                   1222
 #define IDC_BTN_IMPORT                  1223
 #define IDC_EDIT_TEXT_IMPORT            1224
+#define IDC_COMBO_WAVETABLE_FILE        1225
+#define IDC_BTN_SELECT_FILE             1226
+#define IDC_BTN_CLEAR_FILE              1227
+#define IDC_COMBO_MAX_VOICES            1228
+#define IDC_COMBO_SUSTAIN               1229
+#define IDC_BTN_ACKNOWLEDGEMENTS        1230
+#define IDC_BTN_OPEN_FILE               1231
+#define IDC_BTN_OPEN_FOLDER             1232
+#define IDC_BTN_PREVIOUS_FILE           1233
+#define IDC_BTN_NEXT_FILE               1234
+#define IDC_BTN_FOLDER_PLAYBACK         1235
+#define IDC_BTN_REPEAT                  1236
+#define IDC_BTN_PLAY                    1237
+#define IDC_BTN_STOP                    1238
+#define IDC_BTN_SKIP_BACK               1239
+#define IDC_BTN_SKIP_FORWARD            1240
+#define IDC_BTN_PLAY_SPEED_DOWN         1241
+#define IDC_BTN_PLAY_SPEED_UP           1242
+#define IDC_BTN_VIEW_POINT_1            1243
+#define IDC_BTN_VIEW_POINT_2            1244
+#define IDC_BTN_VIEW_POINT_3            1245
+#define IDC_BTN_MY_VIEW_POINT_1         1246
+#define IDC_BTN_MY_VIEW_POINT_2         1247
+#define IDC_BTN_MY_VIEW_POINT_3         1248
+#define IDC_BTN_VIEW_MODE               1249
+#define IDC_BTN_MIDIOUT                 1250
+#define IDC_CHECK_PIANO_ROLL_3D         1251
+#define IDC_CHECK_PIANO_ROLL_2D         1252
+#define IDC_CHECK_PIANO_ROLL_RAIN       1253
+#define IDC_CHECK_PIANO_ROLL_RAIN_2D    1254
+#define IDC_CHECK_PIANO_ROLL_RING       1255
+#define IDC_BTN_PIANO_ROLL_3D           1256
+#define IDC_BTN_PIANO_ROLL_2D           1257
+#define IDC_BTN_PIANO_ROLL_RAIN         1258
+#define IDC_BTN_PIANO_ROLL_RAIN_2D      1259
+#define IDC_BTN_PIANO_ROLL_RING         1260
+#define IDC_BTN_IMG_PIANO_ROLL_3D       1261
+#define IDC_BTN_IMG_PIANO_ROLL_2D       1262
+#define IDC_BTN_IMG_PIANO_ROLL_RAIN     1263
+#define IDC_BTN_IMG_PIANO_ROLL_RAIN_2D  1264
+#define IDC_BTN_IMG_PIANO_ROLL_RING     1265
 #define IDM_OPEN_FILE                   32771
 #define IDM_PLAY                        32772
 #define IDM_STOP                        32773
@@ -290,6 +334,10 @@
 #define IDM_ENABLE_GRIDLINE             32868
 #define IDM_ENABLE_TIMEINDICATOR        32869
 #define IDM_OPTION_COLOR                32871
+#define IDM_OPERATIONPANEL              32872
+#define IDM_SYNTHESIZER                 32873
+#define IDM_OPTION_SYNTHESIZER          32874
+#define IDM_VIEWMODE                    32875
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -297,9 +345,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32872
-#define _APS_NEXT_CONTROL_VALUE         1225
+#define _APS_NEXT_RESOURCE_VALUE        141
+#define _APS_NEXT_COMMAND_VALUE         32876
+#define _APS_NEXT_CONTROL_VALUE         1266
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

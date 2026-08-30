@@ -4,7 +4,7 @@
 //
 // MIDITrail アプリケーションクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -30,6 +30,8 @@
 #include <ShObjIdl.h>
 #include <mbctype.h>
 #include <dwmapi.h>
+#include <windows.h>
+#include <gdiplus.h>
 
 using namespace YNBaseLib;
 
@@ -49,6 +51,9 @@ MIDITrailApp::MIDITrailApp(void)
 	m_hAppMutex = NULL;
 	m_hMailSlot = NULL;
 	m_isExitApp = false;
+
+	//GDI+トークン
+	m_GDIPlusToken = NULL;
 
 	//ウィンドウ系
 	m_hWnd = NULL;
@@ -117,6 +122,9 @@ MIDITrailApp::MIDITrailApp(void)
 
 	//ゲームパッド用視点番号
 	m_GamePadViewPointNo = 0;
+
+	//ウェーブテーブルファイルパス
+	m_WavetableFilePath[0] = L'\0';
 }
 
 //******************************************************************************
@@ -140,6 +148,10 @@ int MIDITrailApp::Initialize(
 	bool isExitApp = false;
 
 	m_hInstance = hInstance;
+
+	//GDI+初期化
+	result = _InitGDIPlus();
+	if (result != 0) goto EXIT;
 
 	//文字列初期化
 	LoadStringW(hInstance, IDS_APP_TITLE, m_Title, MAX_LOADSTRING);
@@ -181,6 +193,10 @@ int MIDITrailApp::Initialize(
 
 	//メインウィンドウ生成
 	result = _CreateWindow(hInstance, nCmdShow);
+	if (result != 0) goto EXIT;
+
+	//操作パネル生成
+	result = _CreateOperationPanel();
 	if (result != 0) goto EXIT;
 
 	//アクセラレータテーブル読み込み
@@ -277,6 +293,9 @@ int MIDITrailApp::Terminate()
 		m_hMailSlot = NULL;
 	}
 
+	//GDI+解放
+	_ReleaseGDIPlus();
+
 	return result;
 }
 
@@ -290,10 +309,12 @@ int MIDITrailApp::Run()
 	BOOL isExist = FALSE;
 	MSG msg;
 	WINDOWPLACEMENT wndpl;
+	HWND hPanel = NULL;
 
 	if (m_isExitApp) goto EXIT;
 
 	m_PrevTime = timeGetTime();
+	hPanel = m_OperationPanelCtrl.GetWindowHandle();
 
 	//メッセージループ
 	while (TRUE) {
@@ -305,7 +326,10 @@ int MIDITrailApp::Run()
 						PM_REMOVE	//メッセージ処理方法：キューから削除
 					);
 		if (isExist) {
-			if (msg.message == WM_QUIT) {
+			if ((hPanel != NULL) && (IsDialogMessage(hPanel, &msg))) {
+				//操作パネルに対するメッセージを処理したため何もしない
+			}
+			else if (msg.message == WM_QUIT) {
 				quitCode = (int)msg.wParam;
 				break;
 			}
@@ -360,6 +384,41 @@ EXIT:;
 	//wParamに格納されている終了コードを返す
 	//メッセージループに入る前に終了する場合は0を返す
 	return quitCode;
+}
+
+//******************************************************************************
+// GDI+初期化
+//******************************************************************************
+int MIDITrailApp::_InitGDIPlus()
+{
+	int result = 0;
+	Gdiplus::Status status;
+	Gdiplus::GdiplusStartupInput startupInput; //コンストラクタでデフォルト値が設定される
+
+	//GDI+初期化
+	status = Gdiplus::GdiplusStartup(
+					&m_GDIPlusToken,	//トークン受け取り
+					&startupInput,		//設定情報
+					NULL				//フック関数／アンフック関数情報受け取り
+				);
+	if (status != Gdiplus::Status::Ok) {
+		result = YN_SET_ERR("Windows API Error.", status, 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// GDI+解放
+//******************************************************************************
+void MIDITrailApp::_ReleaseGDIPlus()
+{
+	if (m_GDIPlusToken != NULL) {
+		Gdiplus::GdiplusShutdown(m_GDIPlusToken);
+	}
+	m_GDIPlusToken = NULL;
 }
 
 //******************************************************************************
@@ -451,6 +510,35 @@ EXIT:;
 }
 
 //******************************************************************************
+// 操作パネル生成
+//******************************************************************************
+int MIDITrailApp::_CreateOperationPanel()
+{
+	int result = 0;
+	int display = 0;
+	bool isDisplay = false;
+
+	//操作パネル表示フラグ取得
+	result = m_WindowConf.SetCurSection(_T("OperationPanel"));
+	if (result != 0) goto EXIT;
+	result = m_WindowConf.GetInt(_T("Display"), &display, 1);
+	if (result != 0) goto EXIT;
+	if (display == 1) {
+		isDisplay = true;
+	}
+
+	//操作パネル初期化
+	result = m_OperationPanelCtrl.Initialize(m_hWnd, isDisplay);
+	if (result != 0) goto EXIT;
+
+	//操作パネルがアクティブになるためメインウィンドウをアクティブする
+	SetForegroundWindow(m_hWnd);
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // ウィンドウサイズ変更
 //******************************************************************************
 int MIDITrailApp::_SetWindowSize()
@@ -467,6 +555,7 @@ int MIDITrailApp::_SetWindowSize()
 	int ww, wh, cw, ch, framew, frameh;
 	int applyToViewArea = 0;
 	LONG apiresult = 0;
+	BOOL isDwmEnabled = FALSE;
 
 	if (m_isFullScreen) {
 		result = _SetWindowSizeFullScreen();
@@ -506,17 +595,30 @@ int MIDITrailApp::_SetWindowSize()
 		height = 600;
 	}
 
-	//ウィンドウのサイズ（影を含まないサイズ）
-	hresult = DwmGetWindowAttribute(
-					m_hWnd,							//ウィンドウハンドル
-					DWMWA_EXTENDED_FRAME_BOUNDS,	//取得値を示すフラグ：拡張フレーム境界
-					&rect_excludeShadow, 			//値の格納先
-					sizeof(RECT)					//値のサイズ
-				);
+	//Windwos 7向け対応：Aeroが有効であるか確認
+	hresult = DwmIsCompositionEnabled(&isDwmEnabled);
 	if (hresult != S_OK) {
 		result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
 		goto EXIT;
 	}
+
+	//ウィンドウのサイズ（影を含まないサイズ）
+	if (isDwmEnabled) {
+		hresult = DwmGetWindowAttribute(
+						m_hWnd,							//ウィンドウハンドル
+						DWMWA_EXTENDED_FRAME_BOUNDS,	//取得値を示すフラグ：拡張フレーム境界
+						&rect_excludeShadow, 			//値の格納先
+						sizeof(RECT)					//値のサイズ
+					);
+		if (hresult != S_OK) {
+			result = YN_SET_ERR("Windows API error.", GetLastError(), hresult);
+			goto EXIT;
+		}
+	}
+	else {
+		GetWindowRect(m_hWnd, &rect_excludeShadow);
+	}
+	
 	ww = rect_excludeShadow.right  - rect_excludeShadow.left;
 	wh = rect_excludeShadow.bottom - rect_excludeShadow.top;
 
@@ -642,9 +744,7 @@ int MIDITrailApp::_InitConfFile()
 	int result = 0;
 	BOOL bresult = FALSE;
 	TCHAR userConfDirPath[_MAX_PATH] = {_T('\0')};
-	TCHAR viewConfPath[_MAX_PATH] = {_T('\0')};
-	TCHAR midiOutConfPath[_MAX_PATH] = {_T('\0')};
-	TCHAR graphicConfPath[_MAX_PATH] = {_T('\0')};
+	TCHAR confFilePath[_MAX_PATH] = {_T('\0')};
 
 	//ユーザ設定ファイル格納ディレクトリパス作成
 	result = YNPathUtil::GetAppDataDirPath(userConfDirPath, _MAX_PATH);
@@ -659,22 +759,40 @@ int MIDITrailApp::_InitConfFile()
 		goto EXIT;
 	}
 
+	//プレイヤー情報設定ファイル
+	_tcscpy_s(confFilePath, _MAX_PATH, userConfDirPath);
+	_tcscat_s(confFilePath, _MAX_PATH, MT_USER_CONFFILE_PLAYER);
+	result = m_PlayerConf.Initialize(confFilePath);
+	if (result != 0) goto EXIT;
+
 	//ビュー情報設定ファイル
-	_tcscat_s(viewConfPath, _MAX_PATH, userConfDirPath);
-	_tcscat_s(viewConfPath, _MAX_PATH, MT_USER_CONFFILE_VIEW);
-	result = m_ViewConf.Initialize(viewConfPath);
+	_tcscpy_s(confFilePath, _MAX_PATH, userConfDirPath);
+	_tcscat_s(confFilePath, _MAX_PATH, MT_USER_CONFFILE_VIEW);
+	result = m_ViewConf.Initialize(confFilePath);
+	if (result != 0) goto EXIT;
+
+	//ウィンドウ情報設定ファイル
+	_tcscpy_s(confFilePath, _MAX_PATH, userConfDirPath);
+	_tcscat_s(confFilePath, _MAX_PATH, MT_USER_CONFFILE_WINDOW);
+	result = m_WindowConf.Initialize(confFilePath);
 	if (result != 0) goto EXIT;
 
 	//MIDI情報設定ファイル
-	_tcscat_s(midiOutConfPath, _MAX_PATH, userConfDirPath);
-	_tcscat_s(midiOutConfPath, _MAX_PATH, MT_USER_CONFFILE_MIDI);
-	result = m_MIDIConf.Initialize(midiOutConfPath);
+	_tcscpy_s(confFilePath, _MAX_PATH, userConfDirPath);
+	_tcscat_s(confFilePath, _MAX_PATH, MT_USER_CONFFILE_MIDI);
+	result = m_MIDIConf.Initialize(confFilePath);
+	if (result != 0) goto EXIT;
+
+	//ウェーブテーブルシンセサイザ情報設定ファイル
+	_tcscpy_s(confFilePath, _MAX_PATH, userConfDirPath);
+	_tcscat_s(confFilePath, _MAX_PATH, MT_USER_CONFFILE_SYNTHESIZER);
+	result = m_SynthConf.Initialize(confFilePath);
 	if (result != 0) goto EXIT;
 
 	//グラフィック情報設定ファイル
-	_tcscat_s(graphicConfPath, _MAX_PATH, userConfDirPath);
-	_tcscat_s(graphicConfPath, _MAX_PATH, MT_USER_CONFFILE_GRAPHIC);
-	result = m_GraphicConf.Initialize(graphicConfPath);
+	_tcscpy_s(confFilePath, _MAX_PATH, userConfDirPath);
+	_tcscat_s(confFilePath, _MAX_PATH, MT_USER_CONFFILE_GRAPHIC);
+	result = m_GraphicConf.Initialize(confFilePath);
 	if (result != 0) goto EXIT;
 
 EXIT:;
@@ -783,6 +901,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				case IDM_STOP_MONITORING:
 					//モニタリング停止
 					result = _OnMenuStopMonitoring();
+					if (result != 0) goto EXIT;
+					break;
+				case IDM_VIEWMODE:
+					//ビューモード
+					result = _OnMenuViewMode();
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_VIEW_3DPIANOROLL:
@@ -907,6 +1030,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuSaveMyViewpoint(3);
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_OPERATIONPANEL:
+					//操作パネル
+					result = _OnMenuOperationPanel();
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_WINDOWSIZE:
 					//ウィンドウサイズ設定
 					result = _OnMenuWindowSize();
@@ -932,6 +1060,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					result = _OnMenuOptionMIDIIN();
 					if (result != 0) goto EXIT;
 					break;
+				case IDM_OPTION_SYNTHESIZER:
+					//MIDI入力デバイス設定
+					result = _OnMenuOptionSynthesizer();
+					if (result != 0) goto EXIT;
+					break;
 				case IDM_OPTION_GRAPHIC:
 					//グラフィック設定
 					result = _OnMenuOptionGraphic();
@@ -943,8 +1076,9 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_HOWTOVIEW:
-					//操作方法ダイアログ表示
-					m_HowToViewDlg.Show(m_hWnd);
+					//操作方法表示
+					result = _OnMenuHowToView();
+					if (result != 0) goto EXIT;
 					break;
 				case IDM_MANUAL:
 					//マニュアル表示
@@ -952,8 +1086,9 @@ LRESULT MIDITrailApp::_WndProcImpl(
 					if (result != 0) goto EXIT;
 					break;
 				case IDM_ABOUT:
-					//バージョン情報ダイアログ表示
-					m_AboutDlg.Show(m_hWnd);
+					//バージョン情報表示
+					result = _OnMenuAbout();
+					if (result != 0) goto EXIT;
 					break;
 				default:
 					lresult = DefWindowProc(hWnd, message, wParam, lParam);
@@ -1009,6 +1144,11 @@ LRESULT MIDITrailApp::_WndProcImpl(
 				if (result != 0) goto EXIT;
 			}
 			break;
+		case WM_MOVE:
+			//ウィンドウ移動
+			result = m_OperationPanelCtrl.UpdatePanelPosition();
+			if (result != 0) goto EXIT;
+			break;
 		case WM_SETTEXT:
 			//Unicode版SetWindowTextW呼び出しに対応
 			lresult = DefWindowProcW(hWnd, message, wParam, lParam);
@@ -1045,6 +1185,8 @@ int MIDITrailApp::_OnMenuOpenFile()
 
 	//演奏中でもファイルオープン可とする
 
+	_BeforeDisplayDialog();
+
 	//ファイル選択ダイアログ表示
 	result = _SelectMIDIFile(filePath, _MAX_PATH, &isSelected);
 	if (result != 0) goto EXIT;
@@ -1071,6 +1213,7 @@ int MIDITrailApp::_OnMenuOpenFile()
 	if (result != 0) goto EXIT;
 
 EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1084,6 +1227,8 @@ int MIDITrailApp::_OnMenuOpenFolder()
 	bool isSelected = false;
 
 	//演奏中でもフォルダオープン可とする
+
+	_BeforeDisplayDialog();
 
 	//フォルダ選択ダイアログ表示
 	result = _SelectFolder(folderPath, _MAX_PATH, &isSelected);
@@ -1108,6 +1253,7 @@ int MIDITrailApp::_OnMenuOpenFolder()
 	if (result != 0) goto EXIT;
 
 EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1173,6 +1319,10 @@ int MIDITrailApp::_OnMenuPlay()
 	int result = 0;
 
 	if (m_PlayStatus == Stop) {
+		//Wavetableシンセサイザパラメータ登録
+		result = m_Sequencer.SetWavetableSynthParam(_GetWavetableFilePath(), _GetWavetableSynthParam());
+		if (result != 0) goto EXIT;
+		
 		//シーケンサ初期化
 		result = m_Sequencer.Initialize(&m_MsgQueue);
 		if (result != 0) goto EXIT;
@@ -1257,14 +1407,17 @@ int MIDITrailApp::_OnMenuStop()
 int MIDITrailApp::_OnMenuRepeat()
 {
 	int result = 0;
+	int value = 0;
 
 	//リピート切り替え
-	if (m_isRepeat) {
-		m_isRepeat = false;
-	}
-	else {
-		m_isRepeat = true;
-	}
+	m_isRepeat = m_isRepeat ? false : true;
+
+	//操作パネル表示フラグ設定
+	result = m_PlayerConf.SetCurSection(_T("Playback"));
+	if (result != 0) goto EXIT;
+	value = m_isRepeat ? 1 : 0;
+	result = m_PlayerConf.SetInt(_T("Repeat"), value);
+	if (result != 0) goto EXIT;
 
 	//メニュー選択マーク更新
 	result = _UpdateMenuCheckmark();
@@ -1280,14 +1433,17 @@ EXIT:;
 int MIDITrailApp::_OnMenuFolderPlayback()
 {
 	int result = 0;
+	int value = 0;
 
 	//フォルダ演奏切り替え
-	if (m_isFolderPlayback) {
-		m_isFolderPlayback = false;
-	}
-	else {
-		m_isFolderPlayback = true;
-	}
+	m_isFolderPlayback = m_isFolderPlayback ? false : true;
+
+	//操作パネル表示フラグ設定
+	result = m_PlayerConf.SetCurSection(_T("Playback"));
+	if (result != 0) goto EXIT;
+	value = m_isFolderPlayback ? 1 : 0;
+	result = m_PlayerConf.SetInt(_T("FolderPlayback"), value);
+	if (result != 0) goto EXIT;
 
 	//メニュー選択マーク更新
 	result = _UpdateMenuCheckmark();
@@ -1411,6 +1567,9 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 	result = m_Sequencer.Initialize(&m_MsgQueue);
 	if (result != 0) goto EXIT;
 	
+	//メッセージキュークリア
+	m_MsgQueue.Clear();
+	
 	//ライブモニタ用シーン生成
 	if (m_PlayStatus != MonitorOFF) {
 		//視点保存
@@ -1426,6 +1585,10 @@ int MIDITrailApp::_OnMenuStartMonitoring()
 		result = _CreateScene(m_SceneType, NULL);
 		if (result != 0) goto EXIT;
 	}
+	
+	//Wavetableシンセサイザパラメータ設定
+	result = m_LiveMonitor.SetWavetableSynthParam(_GetWavetableFilePath(), _GetWavetableSynthParam());
+	if (result != 0) goto EXIT;
 	
 	//ライブモニタ初期化
 	result = m_LiveMonitor.Initialize(&m_MsgQueue);
@@ -1490,7 +1653,7 @@ EXIT:;
 // メニュー選択：シーン種別
 //******************************************************************************
 int MIDITrailApp::_OnMenuSelectSceneType(
-		MIDITrailApp::SceneType type
+		SceneType type
 	)
 {
 	int result = 0;
@@ -1713,11 +1876,69 @@ EXIT:;
 }
 
 //******************************************************************************
+// メニュー選択：ビューモード選択
+//******************************************************************************
+int MIDITrailApp::_OnMenuViewMode()
+{
+	int result = 0;
+
+	_BeforeDisplayDialog();
+
+	//設定ダイアログに現在のシーン種別登録
+	m_ViewModeDlg.SetSceneType(m_SelectedSceneType);
+
+	//設定ダイアログ表示
+	result = m_ViewModeDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+	//キャンセルでなければビューモード変更（シーン種別変更）
+	if (!(m_ViewModeDlg.IsCanceled())) {
+		//シーン種別変更
+		result = _OnMenuSelectSceneType(m_ViewModeDlg.GetSceneType());
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	_AfterDisplayDialog();
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：操作パネル表示
+//******************************************************************************
+int MIDITrailApp::_OnMenuOperationPanel()
+{
+	int result = 0;
+	int display = 0;
+	bool isDisplay = true;
+	
+	//操作パネル表示状態切り替え
+	isDisplay = m_OperationPanelCtrl.IsDisplay();
+	m_OperationPanelCtrl.SetDisplay(isDisplay ? false : true);
+	
+	//メニュー選択マーク更新
+	result = _UpdateMenuCheckmark();
+	if (result != 0) goto EXIT;
+	
+	//操作パネル表示フラグ設定
+	display = isDisplay ? 0 : 1;
+	result = m_WindowConf.SetCurSection(_T("OperationPanel"));
+	if (result != 0) goto EXIT;
+	result = m_WindowConf.SetInt(_T("Display"), display);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // メニュー選択：ウィンドウサイズ変更
 //******************************************************************************
 int MIDITrailApp::_OnMenuWindowSize()
 {
 	int result = 0;
+
+	_BeforeDisplayDialog();
 
 	//設定ダイアログ表示
 	result = m_WindowSizeCfgDlg.Show(m_hWnd);
@@ -1730,6 +1951,7 @@ int MIDITrailApp::_OnMenuWindowSize()
 	}
 
 EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1770,11 +1992,14 @@ int MIDITrailApp::_OnMenuOptionMIDIOUT()
 {
 	int result = 0;
 
+	_BeforeDisplayDialog();
+
 	//設定ダイアログ表示
 	result = m_MIDIOUTCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
 EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1786,11 +2011,32 @@ int MIDITrailApp::_OnMenuOptionMIDIIN()
 {
 	int result = 0;
 
+	_BeforeDisplayDialog();
+
 	//設定ダイアログ表示
 	result = m_MIDIINCfgDlg.Show(m_hWnd);
 	if (result != 0) goto EXIT;
 
 EXIT:;
+	_AfterDisplayDialog();
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：ウェーブテーブルシンセサイザ設定
+//******************************************************************************
+int MIDITrailApp::_OnMenuOptionSynthesizer()
+{
+	int result = 0;
+
+	_BeforeDisplayDialog();
+
+	//設定ダイアログ表示
+	result = m_WavetableSynthCfgDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1802,6 +2048,8 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	int result = 0;
 	unsigned long multiSampleType = 0;
 	bool isSupport = false;
+
+	_BeforeDisplayDialog();
 
 	//アンチエイリアスサポート情報をダイアログに設定
 	for (multiSampleType = DX_MULTI_SAMPLE_TYPE_MIN; multiSampleType <= DX_MULTI_SAMPLE_TYPE_MAX; multiSampleType++) {
@@ -1823,6 +2071,7 @@ int MIDITrailApp::_OnMenuOptionGraphic()
 	}
 
 EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1832,6 +2081,8 @@ EXIT:;
 int MIDITrailApp::_OnMenuOptionColor()
 {
 	int result = 0;
+
+	_BeforeDisplayDialog();
 
 	//設定ダイアログ表示
 	result = m_ColorCfgDlg.Show(m_hWnd);
@@ -1844,24 +2095,53 @@ int MIDITrailApp::_OnMenuOptionColor()
 	}
 
 EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
 //******************************************************************************
-// マニュアル表示
+// メニュー選択：操作方法表示
+//******************************************************************************
+int MIDITrailApp::_OnMenuHowToView()
+{
+	int result = 0;
+
+	_BeforeDisplayDialog();
+
+	//操作方法ダイアログ表示
+	result = m_HowToViewDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	_AfterDisplayDialog();
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：マニュアル表示
 //******************************************************************************
 int MIDITrailApp::_OnMenuManual()
 {
 	int result = 0;
 	HINSTANCE hresult = 0;
 	TCHAR manualPath[_MAX_PATH] = {_T('\0')};
+	LANGID langId = 0;
 
 	//プロセス実行ファイルディレクトリパス取得
 	result = YNPathUtil::GetModuleDirPath(manualPath, _MAX_PATH);
 	if (result != 0) goto EXIT;
 
 	//マニュアルファイルパス作成
-	_tcscat_s(manualPath, _MAX_PATH, MT_MANUALFILE);
+	//マニュアルファイルパス作成
+	langId = GetUserDefaultUILanguage();
+	if (langId == 0x0411) {
+		//日本語(ja-JP)の場合
+		_tcscat_s(manualPath, _MAX_PATH, MT_MANUAL_JA);
+	}
+	else {
+		//それ以外
+		_tcscat_s(manualPath, _MAX_PATH, MT_MANUAL_EN);
+	}
 
 	//マニュアルファイルを開く
 	hresult = ShellExecute(
@@ -1878,6 +2158,24 @@ int MIDITrailApp::_OnMenuManual()
 	}
 
 EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// メニュー選択：About表示
+//******************************************************************************
+int MIDITrailApp::_OnMenuAbout()
+{
+	int result = 0;
+
+	_BeforeDisplayDialog();
+
+	//バージョン情報ダイアログ表示
+	result = m_AboutDlg.Show(m_hWnd);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	_AfterDisplayDialog();
 	return result;
 }
 
@@ -1937,6 +2235,10 @@ int MIDITrailApp::_OnRecvSequencerMsg(
 		}
 		//停止（演奏終了）
 		if (parser.GetPlayStatus() == SMMsgParser::StatusStop) {
+			//MIDI出力デバイスを閉じる
+			//→Wavetableシンセサイザで残響音が停止してしまうためクローズしない
+			//m_Sequencer.ClosePortDevAll();
+
 			result = _ChangePlayStatus(Stop);
 			if (result != 0) goto EXIT;
 
@@ -2619,6 +2921,77 @@ void MIDITrailApp::_UpdateWindowTitle(const WCHAR* pFileName)
 }
 
 //******************************************************************************
+// Wavetableファイルパス取得
+//******************************************************************************
+WCHAR* MIDITrailApp::_GetWavetableFilePath()
+{
+	int result = 0;
+	int wavetableIndex = 0;
+	WCHAR defaultWaveTableFilePath[_MAX_PATH] = {_T('\0')};
+
+	//プロセス実行ファイルディレクトリパス取得
+	result = YNPathUtil::GetModuleDirPathW(defaultWaveTableFilePath, _MAX_PATH);
+	if (result != 0) goto EXIT;
+
+	//デフォルトウェーブテーブルファイルパス
+	wcscat_s(defaultWaveTableFilePath, _MAX_PATH, MT_WAVEFILE_DIR);
+	wcscat_s(defaultWaveTableFilePath, _MAX_PATH, MT_WAVETABLE_DEFAULT_FILE_NAME);
+
+	result = m_SynthConf.SetCurSection(_T("Wavetable"));
+	if (result != 0) goto EXIT;
+
+	//ウェーブテーブルファイルインデックス
+	result = m_SynthConf.GetInt(_T("WavetableIndex"), &wavetableIndex, 0);
+	if (result != 0) goto EXIT;
+
+	if (wavetableIndex == 0) {
+		//デフォルトウェーブテーブルファイル
+		wcscpy_s(m_WavetableFilePath, _MAX_PATH, defaultWaveTableFilePath);
+	}
+	else {
+		//ユーザ選択ウェーブテーブルファイルパス
+		result = m_SynthConf.GetWStr(_T("WavetableFilePath"), m_WavetableFilePath, _MAX_PATH, L"");
+		if (result != 0) goto EXIT;
+	}
+
+EXIT:;
+	if (result != 0) {
+		YN_SHOW_ERR(m_hWnd);
+		m_WavetableFilePath[0] = L'\0';
+	}
+	return m_WavetableFilePath;
+}
+
+//******************************************************************************
+// Wavetableシンセサイザパラメータ取得
+//******************************************************************************
+SM_WAVETABLE_SYNTH_PARAM MIDITrailApp::_GetWavetableSynthParam()
+{
+	int result = 0;
+	SM_WAVETABLE_SYNTH_PARAM defaultParam;
+	SM_WAVETABLE_SYNTH_PARAM synthParam;
+
+	result = m_SynthConf.SetCurSection(_T("Wavetable"));
+	if (result != 0) goto EXIT;
+
+	//パラメータデフォルト値
+	defaultParam = SMWavetableSynthCtrl::GetDefaultParam();
+
+	result = m_SynthConf.GetInt(_T("MaxVoices"), &(synthParam.maxVoices), defaultParam.maxVoices);
+	if (result != 0) goto EXIT;
+
+	result = m_SynthConf.GetInt(_T("Sustain"), &(synthParam.sustain), defaultParam.sustain);
+	if (result != 0) goto EXIT;
+
+EXIT:;
+	if (result != 0) {
+		YN_SHOW_ERR(m_hWnd);
+		synthParam = defaultParam;
+	}
+	return synthParam;
+}
+
+//******************************************************************************
 // FPS更新
 //******************************************************************************
 void MIDITrailApp::_UpdateFPS()
@@ -2665,7 +3038,6 @@ int MIDITrailApp::_SetPortDev(
 
 	//設定ファイルからユーザ選択デバイス名を取得してシーケンサに登録
 	for (portNo = 0; portNo < SM_MIDIOUT_PORT_NUM_MAX; portNo++) {
-
 		result = m_MIDIConf.GetStr(portName[portNo], devName, MAXPNAMELEN, _T(""));
 		if (result != 0) goto EXIT;
 
@@ -2805,6 +3177,10 @@ int MIDITrailApp::_ChangeWindowSize()
 		m_pScene->SetViewParam(&viewParamMap);
 	}
 
+	//操作パネル位置更新
+	result = m_OperationPanelCtrl.UpdatePanelPosition();
+	if (result != 0) goto EXIT;
+
 EXIT:;
 	return result;
 }
@@ -2849,6 +3225,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 	unsigned long menuIndex = 0;
 	unsigned long statusIndex = 0;
 	unsigned long style = 0;
+	bool isEnabled = false;
 
 	//メニューID一覧
 	//TAG:シーン追加
@@ -2890,11 +3267,13 @@ int MIDITrailApp::_ChangeMenuStyle()
 		IDM_SAVE_MYVIEWPOINT1,
 		IDM_SAVE_MYVIEWPOINT2,
 		IDM_SAVE_MYVIEWPOINT3,
+		IDM_OPERATIONPANEL,
 		IDM_WINDOWSIZE,
 		IDM_FULLSCREEN,
 		IDM_MENUBAR,
 		IDM_OPTION_MIDIOUT,
 		IDM_OPTION_MIDIIN,
+		IDM_OPTION_SYNTHESIZER,
 		IDM_OPTION_GRAPHIC,
 		IDM_OPTION_COLOR,
 		IDM_HOWTOVIEW,
@@ -2912,7 +3291,7 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_EXIT
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_PLAY
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_STOP
-		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_REPEAT
+		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_REPEAT
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED	},	//IDM_FOLDER_PLAYBACK
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED	},	//IDM_SKIP_BACK
 		{	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_GRAYED	},	//IDM_SKIP_FORWARD
@@ -2942,11 +3321,13 @@ int MIDITrailApp::_ChangeMenuStyle()
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT1
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT2
 		{	MF_GRAYED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_SAVE_MYVIEWPOINT3
+		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_OPERATIONPANEL
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_WINDOWSIZE
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_FULLSCREEN
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_MENUBAR
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIOUT
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_MIDIIN
+		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_SYNTHESIZER
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_GRAPHIC
 		{	MF_ENABLED,	MF_ENABLED,	MF_GRAYED,	MF_GRAYED,	MF_ENABLED,	MF_GRAYED	},	//IDM_OPTION_COLOR
 		{	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED,	MF_ENABLED	},	//IDM_HOWTOVIEW
@@ -2968,12 +3349,25 @@ int MIDITrailApp::_ChangeMenuStyle()
 		style = menuStyle[menuIndex][statusIndex];
 		EnableMenuItem(GetMenu(m_hWnd), menuID[menuIndex], style);
 	}
-
 	//ファイルリストが存在しない場合"Previous File","Next File"は選択不可
 	if (m_MIDIFileList.GetFileCount() == 0) {
 		EnableMenuItem(GetMenu(m_hWnd), IDM_PREVIOUS_FILE, MF_GRAYED);
 		EnableMenuItem(GetMenu(m_hWnd), IDM_NEXT_FILE, MF_GRAYED);
 		EnableMenuItem(GetMenu(m_hWnd), IDM_FOLDER_PLAYBACK, MF_GRAYED);
+	}
+
+	//操作パネルのボタン活性状態をメニューと合わせる
+	m_OperationPanelCtrl.SetPlayStatus(m_PlayStatus);
+	for (menuIndex = 0; menuIndex < MT_MENU_NUM; menuIndex++) {
+		style = menuStyle[menuIndex][statusIndex];
+		isEnabled = (style == MF_ENABLED) ? true : false;
+		m_OperationPanelCtrl.SetEnabledForMenu(menuID[menuIndex], isEnabled);
+	}
+	//ファイルリストが存在しない場合"Previous File","Next File"は選択不可
+	if (m_MIDIFileList.GetFileCount() == 0) {
+		m_OperationPanelCtrl.SetEnabledForMenu(IDM_PREVIOUS_FILE, false);
+		m_OperationPanelCtrl.SetEnabledForMenu(IDM_NEXT_FILE, false);
+		m_OperationPanelCtrl.SetEnabledForMenu(IDM_FOLDER_PLAYBACK, false);
 	}
 
 	return result;
@@ -3468,6 +3862,7 @@ int MIDITrailApp::_LoadPlayerConf()
 	int speedStepInPercent = 1;
 	int maxSpeedInPercent = 400;
 	int showFileName = 0;
+	int value = 0;
 
 	result = confFile.Initialize("Player");
 	if (result != 0) goto EXIT;
@@ -3532,6 +3927,19 @@ int MIDITrailApp::_LoadPlayerConf()
 	else if (m_DelayBetweenSongsInMsec > 10000) {
 		m_DelayBetweenSongsInMsec = 10000;
 	}
+
+	//----------------------------------
+	//リピート / フォルダー演奏
+	//----------------------------------
+	//カテゴリ／セクション設定
+	result = m_PlayerConf.SetCurSection(_T("Playback"));
+	if (result != 0) goto EXIT;
+	result = m_PlayerConf.GetInt(_T("Repeat"), &value, 0);
+	if (result != 0) goto EXIT;
+	m_isRepeat = (value > 0) ? true : false;
+	result = m_PlayerConf.GetInt(_T("FolderPlayback"), &value, 1);
+	if (result != 0) goto EXIT;
+	m_isFolderPlayback = (value > 0) ? true : false;
 
 EXIT:;
 	return result;
@@ -3775,11 +4183,17 @@ int MIDITrailApp::_UpdateMenuCheckmark()
 	//タイムインジケータ
 	_CheckMenuItem(IDM_ENABLE_TIMEINDICATOR, m_isEnableTimeIndicator);
 
+	//操作パネル
+	_CheckMenuItem(IDM_OPERATIONPANEL, m_OperationPanelCtrl.IsDisplay());
+
 	//フルスクリーン
 	_CheckMenuItem(IDM_FULLSCREEN, m_isFullScreen);
 
 	//メニューバー
 	_CheckMenuItem(IDM_MENUBAR, m_isEnableMenuBar);
+
+	//操作パネルマーク設定
+	_UpdateOperationPanelCheckmark();
 
 EXIT:;
 	return result;
@@ -3823,6 +4237,20 @@ void MIDITrailApp::_UpdateEffect()
 		m_pScene->SetEffect(MTScene::EffectTimeIndicator, m_isEnableTimeIndicator);
 		m_pScene->SetEffect(MTScene::EffectFileName, m_isEnableFileName);
 	}
+	return;
+}
+
+//******************************************************************************
+// 操作パネルマーク更新
+//******************************************************************************
+void MIDITrailApp::_UpdateOperationPanelCheckmark()
+{
+	//フォルダ演奏
+	m_OperationPanelCtrl.SetMenuMark(IDM_FOLDER_PLAYBACK, m_isFolderPlayback);
+
+	//リピート
+	m_OperationPanelCtrl.SetMenuMark(IDM_REPEAT, m_isRepeat);
+
 	return;
 }
 
@@ -4516,6 +4944,11 @@ int MIDITrailApp::_ToggleFullScreen()
 	
 	result = _ChangeWindowSize();
 	if (result != 0) goto EXIT;
+
+	//パネル表示位置更新
+	m_OperationPanelCtrl.SetFullScreenStatus(m_isFullScreen);
+	result = m_OperationPanelCtrl.UpdatePanelPosition();
+	if (result != 0) goto EXIT;
 	
 EXIT:;
 	return result;
@@ -4714,6 +5147,24 @@ int MIDITrailApp::_MakeFileListWithFolder(
 
 EXIT:;
 	return result;
+}
+
+//******************************************************************************
+// ダイアログ表示前処理
+//******************************************************************************
+void MIDITrailApp::_BeforeDisplayDialog()
+{
+	//操作パネルの操作無効化
+	EnableWindow(m_OperationPanelCtrl.GetWindowHandle(), FALSE);
+}
+
+//******************************************************************************
+// ダイアログ表示後処理
+//******************************************************************************
+void MIDITrailApp::_AfterDisplayDialog()
+{
+	//操作パネルの操作有効化
+	EnableWindow(m_OperationPanelCtrl.GetWindowHandle(), TRUE);
 }
 
 

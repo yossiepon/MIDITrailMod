@@ -4,7 +4,7 @@
 //
 // グラフィック設定ダイアログクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "Commdlg.h"
 #include "MTParam.h"
+#include "MTDlgLib.h"
 #include "MTGraphicCfgDlg.h"
 #include <mbctype.h>
 
@@ -198,6 +199,9 @@ int MTGraphicCfgDlg::_OnInitDlg(
 	m_hEditQuarterNoteLengthMag = GetDlgItem(hDlg, IDC_EDIT_QUARTER_NOTE_LENGTH_MAG);
 	result = _InitQuarterNote();
 	if (result != 0) goto EXIT;
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;

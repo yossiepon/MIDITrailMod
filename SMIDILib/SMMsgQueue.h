@@ -4,7 +4,7 @@
 //
 // メッセージキュークラスヘッダ
 //
-// Copyright (C) 2010-2013 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -40,6 +40,9 @@ public:
 	
 	//メッセージ取得
 	int GetMessage(bool* pIsExist, unsigned long* pParam1, unsigned long* pParam2);
+	
+	//クリア
+	void Clear();
 	
 private:
 	

@@ -4,13 +4,14 @@
 //
 // バージョン情報ダイアログクラス
 //
-// Copyright (C) 2010-2014 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "YNBaseLib.h"
 #include "MIDITrailVersion.h"
+#include "MTDlgLib.h"
 #include "MTAboutDlg.h"
 
 using namespace YNBaseLib;
@@ -148,6 +149,9 @@ int MTAboutDlg::_OnInitDlg(
 		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
 		goto EXIT;
 	}
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;

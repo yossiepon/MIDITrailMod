@@ -4,7 +4,7 @@
 //
 // カラーパレット設定ダイアログ
 //
-// Copyright (C) 2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2022-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "YNBaseLib.h"
 #include "DXColorUtil.h"
+#include "MTDlgLib.h"
 #include "MTColorPaletteCfgDlg.h"
 #include "MTColorParamExportDlg.h"
 #include "MTColorParamImportDlg.h"
@@ -309,6 +310,9 @@ int MTColorPaletteCfgDlg::_OnInitDlg(HWND hDlg)
 	if (result != 0) goto EXIT;
 	result = _InitCombobox(GetDlgItem(m_hWnd, IDC_COMBO_END), SM_MAX_CH_NUM - 1);
 	if (result != 0) goto EXIT;
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;

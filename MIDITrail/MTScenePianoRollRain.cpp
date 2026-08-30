@@ -4,7 +4,7 @@
 //
 // ピアノロールレインシーン描画クラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -96,11 +96,27 @@ int MTScenePianoRollRain::Create(
 	_SetLightColor(&m_DirLight);
 
 	//ライト方向
-	//m_DirLight.SetDirection(D3DXVECTOR3(1.0f, -1.0f, 2.0f));
-	m_DirLight.SetDirection(D3DXVECTOR3(1.0f, -2.0f, 0.5f));
+	m_DirLight.SetDirection(D3DXVECTOR3(1.0f, -2.0f, -1.0f));
 
 	//ライトのデバイス登録
-	result = m_DirLight.SetDevice(pD3DDevice, m_IsEnableLight);
+	result = m_DirLight.SetDevice(pD3DDevice, 0, m_IsEnableLight);
+	if (result != 0) goto EXIT;
+
+	//----------------------------------
+	// ライト2
+	//----------------------------------
+	//ライト初期化
+	result = m_DirLight2.Initialize();
+	if (result != 0) goto EXIT;
+
+	//ライト色
+	_SetLightColor2(&m_DirLight2);
+
+	//ライト方向
+	m_DirLight2.SetDirection(D3DXVECTOR3(-1.0f, 2.0f, 1.0f));
+
+	//ライトのデバイス登録
+	result = m_DirLight2.SetDevice(pD3DDevice, 1, m_IsEnableLight);
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
@@ -700,9 +716,9 @@ void MTScenePianoRollRain::_SetLightColor(
 	D3DXCOLOR ambient;
 
 	//拡散光
-	diffuse.r = 1.0f;
-	diffuse.g = 1.0f;
-	diffuse.b = 1.0f;
+	diffuse.r = 1.2f;
+	diffuse.g = 1.2f;
+	diffuse.b = 1.2f;
 	diffuse.a = 1.0f;
 	//鏡面反射光
 	specular.r = 0.0f;
@@ -710,10 +726,42 @@ void MTScenePianoRollRain::_SetLightColor(
 	specular.b = 0.0f;
 	specular.a = 0.0f;
 	//環境光
-	ambient.r = 0.5f;
-	ambient.g = 0.5f;
-	ambient.b = 0.5f;
+	ambient.r = 0.2f;
+	ambient.g = 0.2f;
+	ambient.b = 0.2f;
 	ambient.a = 1.0f;
+
+	pLight->SetColor(diffuse, specular, ambient);
+
+	return;
+}
+
+//******************************************************************************
+// ライト2色設定
+//******************************************************************************
+void MTScenePianoRollRain::_SetLightColor2(
+		DXDirLight* pLight
+	)
+{
+	D3DXCOLOR diffuse;
+	D3DXCOLOR specular;
+	D3DXCOLOR ambient;
+
+	//拡散光
+	diffuse.r = 1.2f;
+	diffuse.g = 1.2f;
+	diffuse.b = 1.2f;
+	diffuse.a = 1.0f;
+	//鏡面反射光
+	specular.r = 0.0f;
+	specular.g = 0.0f;
+	specular.b = 0.0f;
+	specular.a = 0.0f;
+	//環境光
+	ambient.r = 0.0f;
+	ambient.g = 0.0f;
+	ambient.b = 0.0f;
+	ambient.a = 0.0f;
 
 	pLight->SetColor(diffuse, specular, ambient);
 

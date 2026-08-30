@@ -4,12 +4,13 @@
 //
 // カラー設定ダイアログ
 //
-// Copyright (C) 2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2022-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
 #include "StdAfx.h"
 #include "resource.h"
+#include "MTDlgLib.h"
 #include "MTColorCfgDlg.h"
 
 
@@ -218,6 +219,9 @@ int MTColorCfgDlg::_OnInitDlg(
 	//カラーボタン初期化
 	result = _InitColorButtons();
 	if (result != 0) goto EXIT;
+
+	//親ウィンドウの中央に表示（スクリーン内側）
+	MTDlgLib::SetWindowPositionToCenter(hDlg, true);
 
 EXIT:;
 	return result;
@@ -484,6 +488,8 @@ int MTColorCfgDlg::_ShowColorPaletteCfgDlg(unsigned long colorPaletteNo)
 		//カラーパレット登録
 		result = m_ColorConf.SetColorPalette(colorPaletteNo, &colorPalette);
 		if (result != 0) goto EXIT;
+		//カラーパレット設定保存
+		result = m_ColorConf.SaveColorPalette(colorPaletteNo);
 		//カラーボタン更新
 		result = _UpdateColorButtons(colorPaletteNo);
 		if (result != 0) goto EXIT;

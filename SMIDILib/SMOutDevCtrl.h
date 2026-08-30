@@ -4,7 +4,7 @@
 //
 // MIDI出力デバイス制御クラス
 //
-// Copyright (C) 2010-2021 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -53,9 +53,6 @@ public:
 	//ポート対応デバイス登録
 	int SetPortDev(unsigned char portNo, const char* pProductName);
 
-	//ポート対応デバイスID取得
-	int GetPortDevId(unsigned char portNo, unsigned long* pDevId);
-
 	//全デバイスのオープン／クローズ
 	int OpenPortDevAll();
 	int ClosePortDevAll();
@@ -64,7 +61,7 @@ public:
 	int ClearPortInfo();
 
 	//MIDI出力メッセージ送信
-	int SendShortMsg(unsigned char portNo, unsigned long msg);
+	int SendShortMsg(unsigned char portNo, unsigned long msg, unsigned long size);
 	int SendLongMsg(unsigned char portNo, unsigned char* pMsg, unsigned long size);
 	int NoteOffAll();
 	int SoundOffAll();
@@ -81,6 +78,8 @@ private:
 
 	typedef struct {
 		unsigned long devId;
+		unsigned short manufacturerId;
+		unsigned short productId;
 		char productName[MAXPNAMELEN];
 	} SMOutDevInfo;
 

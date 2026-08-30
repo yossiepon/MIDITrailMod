@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Language" content="ja">
 <link rel="stylesheet" href="Files/doc.css" type="text/css">
-<title>MIDITrail Ver.1.4.1 for Windows ユーザーマニュアル</title>
+<title>MIDITrail Ver.1.5.0 for Windows ユーザーマニュアル</title>
 </head>
 <body>
 
@@ -14,10 +14,10 @@
 <a href="MANUAL.en.html">English</a> / Japanese
 </div>
 
-<h1>MIDITrail Ver.1.4.1 for Windows ユーザーマニュアル</h1>
+<h1>MIDITrail Ver.1.5.0 for Windows ユーザーマニュアル</h1>
 
 <p>
-Copyright (c) 2010-2025, WADA Masashi All rights reserved.<br>
+Copyright (c) 2010-2026, WADA Masashi All rights reserved.<br>
 Web: <a href="https://www.yknk.org/miditrail/">https://www.yknk.org/miditrail/</a><br>
 Mail: <img src="Files/mail.png" align="top"><br>
 </p>
@@ -29,14 +29,22 @@ Mail: <img src="Files/mail.png" align="top"><br>
 <p>
 <a href="#introduction">1. はじめに</a><br>
 <a href="#system">2. 動作環境</a><br>
-<a href="#install">3. 導入方法</a><br>
-<a href="#usage">4. 使用方法</a><br>
-<a href="#restriction">5. 制限事項</a><br>
-<a href="#faq">6. FAQ</a><br>
-<a href="#customize">7. カスタマイズ</a><br>
-<a href="#appendix">8. 補遺</a><br>
-<a href="#license">9. 著作権とライセンス</a><br>
-<a href="#history">10. 履歴</a><br>
+<a href="#getstarted">3. 導入方法</a><br>
+<a href="#operationpanel">4. 操作パネル</a><br>
+<a href="#midifile">5. MIDIファイルの読み込み</a><br>
+<a href="#playback">6. MIDIファイルの演奏</a><br>
+<a href="#viewmode">7. ビューモード</a><br>
+<a href="#viewpoint">8. 視点移動</a><br>
+<a href="#monitor">9. MIDI IN モニタ</a><br>
+<a href="#setting">10. 設定</a><br>
+<a href="#keyboard">11. キーボード操作</a><br>
+<a href="#restriction">12. 制限事項</a><br>
+<a href="#faq">13. FAQ</a><br>
+<a href="#customize">14. カスタマイズ</a><br>
+<a href="#appendix">15. 補遺</a><br>
+<a href="#license">16. 著作権とライセンス</a><br>
+<a href="#acknowledgements">17. 謝辞</a><br>
+<a href="#history">18. 履歴</a><br>
 </p>
 
 <!-- ************************************************************* -->
@@ -75,7 +83,7 @@ Windows 2000 / XP / Vistaでは、MIDITrail Ver.1.2.4を利用してください
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="install"></a>3. 導入方法</h2>
+<h2><a name="getstarted"></a>3. 導入方法</h2>
 
 <h3>(1) インストール</h3>
 <p>
@@ -86,30 +94,16 @@ MIDITrail-Ver.X.X.X-Windows.zip   -- MIDITrail 32bit版<br>
 MIDITrail-Ver.X.X.X-Windows64.zip -- MIDITrail 64bit版<br>
 </p>
 
-<h3>(2) 初回起動時の設定</h3>
+<h3>(2) MIDI出力ポート設定</h3>
 <p>
-MIDITrailを起動したら、最初にMIDI出力ポートの設定を行ってください。<br>
-「Option」メニューから「MIDI OUT...」を選択すると、MIDI OUT設定ダイアログが表示されます。<br>
-</p>
-<p>
-<img src="Files/MIDIOUT.png"><br>
-</p>
-<p>
-<b>[Port A] ポートA</b><br>
-ポートAの出力先は必ず設定してください。通常のMIDIデータはポートAを使って演奏されます。
-</p>
-<p>
-<b>[Port B,C,D,E,F] ポートB,C,D,E,F</b><br>
-複数ポートを利用するMIDIデータを再生する場合は、ポートB以降の出力先を設定してください。<br>
-複数ポートを利用するMIDIデータを再生しない場合は、ポートB以降の出力先を設定する必要はありません。<br>
-なお、複数ポートを利用するMIDIデータを再生するには、
-複数ポート対応のMIDIインターフェースと音源を用意する必要があります。
+「Option」メニューの「MIDI OUT...」を選択して、MIDI OUT設定ダイアログを表示します。<br>
+ポートAの出力先を必ず設定してください。
 </p>
 
-<h3>(3) アンインストール</h3>
+<h3>(3) MIDIファイルの演奏</h3>
 <p>
-MIDITrail.exeを展開したフォルダを削除してください。
-レジストリは使用していません。
+MIDITrailのウィンドウにMIDIファイル(*.mid)をドラッグ＆ドロップして開きます。
+操作パネルのボタンをクリックして演奏を開始します。
 </p>
 
 <h3>(4) レコンポーザのファイル読み込み対応</h3>
@@ -122,245 +116,111 @@ RCPCV.DLL <a href="http://www.vector.co.jp/soft/win95/art/se114143.html">http://
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="usage"></a>4. 使用方法</h2>
+<h2><a name="operationpanel"></a>4. 操作パネル</h2>
 
-<h3>(1) 標準MIDIファイルの読み込み</h3>
+<h3>(1) 操作パネル</h3>
 <p>
-「File」メニューから「Open File...」を選択すると、ファイル選択ダイアログが表示されます。
+操作パネルを用いて、MIDIファイルの選択や演奏、視点の変更などを制御することができます。
+</p>
+<p>
+<img src="Files/OperationPanel.png"><br>
+</p>
+<p>
+「Window」メニューの「Operation Panel」を選択することにより、操作パネルの表示と非表示を切り替えることができます。<br>
+MIDITrailの一部の機能は操作パネルから実行できないため、メニューから実行してください。（MIDI INモニタ、視点の保存、各種設定、マニュアル表示など）<br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="midifile"></a>5. MIDIファイルの読み込み</h2>
+
+<h3>(1) MIDIファイルを開く</h3>
+<p>
+操作パネルの「Open File」ボタンをクリックすると、ファイル選択ダイアログが表示されます。<br>
 ここで標準MIDIファイル(*.mid)を選択してください。<br>
-また、標準MIDIファイル(*.mid)をMIDITrailのウィンドウにドラッグ＆ドロップすることにより、
-ファイルを読み込むことができます。
-</p>
-<p>
-RCPCV.DLLを導入している場合は、レコンポーザのデータファイル(*.rcp *.r36 *.g36)を読み込むことができます。<br>
-詳しくは「3.(4) レコンポーザのファイル読み込み対応」を参照してください。
+標準MIDIファイル(*.mid)をMIDITrailのウィンドウにドラッグ＆ドロップすることにより、ファイルを開くこともできます。<br>
+また、MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
 </p>
 
-<h3>(2) 演奏の開始／一時停止／再開／停止</h3>
+<h3>(2) フォルダを開く</h3>
 <p>
-次のキーを押下するか、「Playback」メニューを利用してください。
-</p>
-
-<p>
-<img src="Files/HowToView1.png"><br>
-</p>
-
-<p>
-<table>
-  <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>SPACE</kbd></td><td>演奏の開始／一時停止／再開</td></tr>
-  <tr><td><kbd>ESC</kbd></td><td>演奏の停止</td></tr>
-  <tr><td><kbd>1</kbd><kbd>2</kbd></td><td>スキップ：後方／前方</td></tr>
-  <tr><td><kbd>4</kbd><kbd>5</kbd></td><td>再生スピード：ダウン／アップ</td></tr>
-  <tr><td><kbd>F2</kbd></td><td>2倍速再生</td></tr>
-</table>
-</p>
-
-<h3>(3) フォルダ演奏</h3>
-
-<p>
-MIDITrailは、フォルダに格納されているMIDIデータファイルを順番に開くことができます。<br>
-ファイルを開く順番は、ファイル名の昇順です。<br>
-</p>
-
-<h4>1.フォルダの選択</h4>
-<p>
-「File」メニューの「Open Folder...」を選択すると、フォルダ選択ダイアログが表示されます。<br>
+MIDITrailはフォルダに格納されているMIDIファイルを順番に演奏することができます。<br>
+操作パネルの「Open Folder」ボタンをクリックすると、フォルダ選択ダイアログが表示されます。<br>
 ここで標準MIDIファイル(*.mid)が格納されているフォルダを選択してください。<br>
-フォルダをMIDITrailのウィンドウにドラッグ＆ドロップすることもできます。<br>
+フォルダをMIDITrailのウィンドウにドラッグ＆ドロップすることにより、フォルダを開くこともできます。<br>
 </p>
 
-<h4>2. ファイルの切替</h4>
+<h3>(3) コマンドライン</h3>
 <p>
-「File」メニューから「Previous File」「Next File」を選択すると、ファイルを切り替えることができます。<br>
-次のショートカットキーも利用できます。<br>
+コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
 </p>
+<pre>
+MIDITrail.exe [-p] [-q] ["path\to\file"]
+</pre>
 <p>
 <table>
-  <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
-          <kbd>CTRL</kbd> + <kbd>P</kbd></td>
-      <td>前のファイルを開く</td>
-  </tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td>
-      <td>次のファイルを開く</td>
-  </tr>
+	<tr><th>引数</th><th>詳細</th></tr>
+	<tr><td>-p</td><td>MIDITrail起動直後に指定されたMIDIファイルの再生を開始します。<br>"path\to\file"が指定されていない場合は無視されます。</td></tr>
+	<tr><td>-q</td><td>MIDIファイルの再生終了後にMIDITrailを終了します。-pオプションが有効でない場合は無視されます。</td></tr>
+	<tr><td>path\to\file</td><td>MIDIファイルパスを指定します。<br>空白を含むパスを指定する場合はダブルクォーテーションで囲んでください。</td></tr>
 </table>
 </p>
 
-<h4>3.フォルダ演奏</h4>
+<!-- ************************************************************* -->
+<h2><a name="playback"></a>6. MIDIファイルの演奏</h2>
+
+<h3>(1) MIDIファイル演奏</h3>
 <p>
-「Playback」メニューの「Foler Playback」を選択すると、
-MIDITrailは演奏終了後、自動的に次のファイルを開いて演奏を開始します。
+操作パネルを用いて、MIDIファイルの演奏開始、一時停止、停止、スキップ、演奏スピード変更を指示することができます。<br>
+操作パネルの「Repeat」ボタンを選択状態にすると、MIDITrailはMIDIファイルの演奏を繰り返します。<br>
+</p>
+<p>
+<img src="Files/OperationPanel-1.png"><br>
+</p>
+<p>
+操作パネルの代わりに、メニュー、<a href="#keyboard">キーボード</a>、
+<a href="#gamecontroller">ゲームコントローラ</a>を用いて演奏を指示することもできます。<br>
 </p>
 
-
-<h3>(4) 三次元空間内の視点移動</h3>
+<h3>(2) フォルダ演奏</h3>
 <p>
-MIDIファイルを読み込んだ直後、および演奏中に、三次元空間内を移動して、
-あらゆる方向からMIDIデータを眺めることができます。<br>
-FPS（一人称シューティング）ゲームでおなじみの操作で、三次元空間内を移動します。<br>
-初めてこの操作を体験する方は違和感を持つかもしれませんが、
-一度慣れてしまうと非常に快適です。
+フォルダを開くと、フォルダ演奏機能を利用できます。<br>
+操作パネルの「Previous File」「Next File」ボタンをクリックすると、フォルダ内のファイルを順番に開くことができます。<br>
+「Foler Playback」ボタンを選択状態にすると、MIDITrailはMIDIファイルの演奏終了後、自動的に次のファイルを開いて演奏を開始します。<br>
+「Repeat」ボタンを選択状態にすると、MIDITrailは最後のMIDIファイルの演奏が終了した後に、先頭のMIDIファイルの演奏を開始して、フォルダ演奏を繰り返します。<br>
+</p>
+<p>
+<img src="Files/OperationPanel-2.png"><br>
 </p>
 
+<h3>(3) 演奏カウンタ</h3>
 <p>
-<img src="Files/HowToView2.png"><br>
-<img src="Files/HowToView3.png"><br>
-</p>
-
-<h4>マウス操作</h4>
-<p>
-画面をクリックすると、マウスによる視線移動モードになり、マウスカーソルが消えます。<br>
-マウスの移動によって、視線方向を制御できます。
-もう一度クリックすると、視線移動モードが解除されます。<br>
-またマウスホイールを操作することにより、ピアノロールを回転させることができます。
-</p>
-
-<h4>キーボード操作</h4>
-<p>
-左手の人差し指を<kbd>D</kbd>、中指を<kbd>W</kbd>、薬指を<kbd>A</kbd>、に載せて操作します。
+MIDIファイル演奏中に表示される演奏カウンタの内容は以下の通りです。
 </p>
 <p>
 <table>
-  <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>W</kbd><kbd>S</kbd></td><td>前後に移動します。</td></tr>
-  <tr><td><kbd>A</kbd><kbd>D</kbd></td><td>左右に移動します。</td></tr>
-  <tr><td><kbd>Q</kbd><kbd>E</kbd></td><td>上昇下降します。</td></tr>
-  <tr><td><kbd>Z</kbd><kbd>C</kbd></td><td>MIDIデータ進行方向に沿って移動します。<br>
-（ピアノロールレインの場合はキーボードに沿って移動します）</td></tr>
-  <tr>
-    <td>
-      <kbd>SHIFT</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>A</kbd><kbd>D</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>Q</kbd><kbd>E</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>Z</kbd><kbd>C</kbd>]
-    </td>
-    <td><kbd>SHIFT</kbd>キーを押しながら移動キーを押すと、より高速に移動することができます。</td>
-  </tr>
-  <tr>
-    <td>
-      <kbd>CTRL</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
-      <kbd>CTRL</kbd> + [<kbd>A</kbd><kbd>D</kbd>]
-    </td>
-  <td>視線方向を制御します。</td>
-  </tr>
+	<tr><th>項目</th><th>内容</th></tr>
+	<tr><td>TIME</td><td>演奏時間</td></tr>
+	<tr><td>BPM</td><td>テンポ (Beats Per Minute)</td></tr>
+	<tr><td>BEAT</td><td>拍子記号</td></tr>
+	<tr><td>BAR</td><td>小節番号</td></tr>
+	<tr><td>NOTES</td><td>ノート数（音符の数）</td></tr>
+	<tr><td>SPEED</td><td>再生スピード</td></tr>
 </table>
 </p>
 
-<h4>左利きの方へ</h4>
+<!-- ************************************************************* -->
+<h2><a name="viewmode"></a>7. ビューモード</h2>
 
+<h3>(1) ビューモード選択</h3>
 <p>
-カーソルキーでも移動可能です。
-マウスを左手で操作する方は、こちらの方が便利かもしれません。
-</p>
-<p>
-<table>
-  <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>↑</kbd><kbd>↓</kbd></td><td>前後に移動します。</td></tr>
-  <tr><td><kbd>←</kbd><kbd>→</kbd></td><td>左右に移動します。</td></tr>
-  <tr><td><kbd>PgUp</kbd><kbd>PgDn</kbd></td><td>上昇下降します。</td></tr>
-  <tr><td><kbd>,</kbd><kbd>.</kbd></td><td>MIDIデータ進行方向に沿って移動します。<br>
-（ピアノロールレインの場合はキーボードに沿って移動します）</td></tr>
-  <tr>
-    <td>
-      <kbd>SHIFT</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>←</kbd><kbd>→</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>PgUp</kbd><kbd>PgDn</kbd>]<br>
-      <kbd>SHIFT</kbd> + [<kbd>,</kbd><kbd>.</kbd>]
-    </td>
-    <td><kbd>SHIFT</kbd>キーを押しながら移動キーを押すと、より高速に移動することができます。</td>
-  </tr>
-  <tr>
-    <td>
-      <kbd>CTRL</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
-      <kbd>CTRL</kbd> + [<kbd>←</kbd><kbd>→</kbd>]
-    </td>
-    <td>視線方向を制御します。</td>
-  </tr>
-</table>
-</p>
-
-<h3>(5) 視点の選択</h3>
-<p>
-Viewメニューから「Viewpoint 1 / 2 / 3」を選択するか、次のキーを押すと、標準の視点に移動することができます。
-</p>
-<p>
-<table>
-  <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>7</kbd></td><td>標準視点1に移動する</td></tr>
-  <tr><td><kbd>8</kbd></td><td>標準視点2に移動する</td></tr>
-  <tr><td><kbd>9</kbd></td><td>標準視点3に移動する</td></tr>
-</table>
-</p>
-<p>
-Viewメニューから「My Viewpoint 1 / 2 / 3」を選択するか、次のキーを押すと、
-あらかじめユーザが保存しておいた視点に移動することができます。<br>
-現在の視点を保存するには、Viewメニューから「Save My Viewpoint 1 / 2 / 3」を選択するか、
-次のキーを押します。
-</p>
-<p>
-<table>
-  <tr><th>キー</th><th>動作</th></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>7</kbd></td><td>私の視点1に移動する</td></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>8</kbd></td><td>私の視点2に移動する</td></tr>
-  <tr><td><kbd>CTRL</kbd> + <kbd>9</kbd></td><td>私の視点3に移動する</td></tr>
-  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>7</kbd></td><td>私の視点1を保存する</td></tr>
-  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>8</kbd></td><td>私の視点2を保存する</td></tr>
-  <tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>9</kbd></td><td>私の視点3を保存する</td></tr>
-</table>
-</p>
-
-<h3>(6) ウィンドウサイズの変更</h3>
-<p>
-「View」メニューから「Window size...」を選択すると、ウィンドウサイズ設定ダイアログが表示されます。<br>
-お好みのウィンドウサイズを選択してOKボタンを押してください。<br>
-なお、演奏中／一時停止中にウィンドウサイズの変更はできません。
-</p>
-<p>
-<img src="Files/WindowSize.png"><br>
-</p>
-<p>
-お使いのPCによって、選択できるウィンドウサイズが変わります。<br>
-任意のウィンドウサイズを指定したい場合は、「Width」「Height」にサイズを記入してください。<br>
-「Aplly to the view area」を選択すると、設定値が画像領域のサイズに反映されます。<br>
-</p>
-
-<h3>(7) フルスクリーン表示</h3>
-<p>
-「View」メニューから「Full Screen」を選択すると、ウィンドウ表示とフルスクリーン表示を
-切り替えることができます。<br>
-F11キーを押すことで、表示を切り替えることも可能です。
-</p>
-
-<h3>(8) 表示カウンタの種類</h3>
-<p>
-<img src="Files/Counter.png"><br>
-</p>
-<p>
-<table>
-  <tr><th>項目</th><th>内容</th></tr>
-  <tr><td>FPS</td><td>1秒間あたりの画面描画回数(Frame Per Second)</td></tr>
-  <tr><td>TITLE</td><td>曲名</td></tr>
-  <tr><td>TIME</td><td>演奏時間</td></tr>
-  <tr><td>BPM</td><td>テンポ (Beats Per Minute)</td></tr>
-  <tr><td>BEAT</td><td>拍子記号</td></tr>
-  <tr><td>BAR</td><td>小節番号</td></tr>
-  <tr><td>NOTES</td><td>ノート数（音符の数）</td></tr>
-  <tr><td>SPEED</td><td>再生スピード</td></tr>
-</table>
-</p>
-
-<h3>(9) ビューモード選択</h3>
-<p>
-「View」メニューでビューモードを選択することができます。
-演奏中／一時停止中にビューモードの変更はできません。
+操作パネルのビューモード設定ボタンをクリックすることにより、ビューモード選択ダイアログを表示して、ビューモードを選択できます。<br>
+「View」メニューでビューモードを選択することもできます。演奏中／一時停止中にビューモードの変更はできません。<br>
 </p>
 <p>
 <img src="Files/ViewMenu-Mode.png"><br>
 </p>
 
-<h3>(10) 表示／エフェクト選択</h3>
+<h3>(2) 表示／エフェクト選択</h3>
 <p>
 「View」メニューで表示／エフェクトの有無を切り替えることができます。
 </p>
@@ -369,34 +229,180 @@ F11キーを押すことで、表示を切り替えることも可能です。
 </p>
 <p>
 発音中のピアノロールバーは、ピッチベンドの変化に合わせて上下または左右に移動します。<br>
-MIDIアニメ作品の中には、ピッチベンドを用いて、
-音の高さを変えずにバーの表示位置を意図的にずらしているものがあります。
-MIDIアニメ作品が正常に表示されない場合は、バーの表示位置を固定するために、
-ピッチベンドのエフェクトをOFFにしてください。
+MIDIアニメ作品の中には、ピッチベンドを用いて、音の高さを変えずにバーの表示位置を意図的にずらしているものがあります。<br>
+MIDIアニメ作品が正常に表示されない場合は、バーの表示位置を固定するために、ピッチベンドのエフェクトをOFFにしてください。<br>
 </p>
 
-<h3>(11) MIDI IN モニタ</h3>
+<h3>(3) フルスクリーン表示</h3>
+<p>
+「Window」メニューから「Full Screen」を選択すると、ウィンドウ表示とフルスクリーン表示を切り替えることができます。<br>
+F11キーを押すことで、表示を切り替えることも可能です。
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="viewpoint"></a>8. 視点移動</h2>
+
+<h3>(1) キーボードとマウスを用いた視点移動</h3>
+<p>
+MIDIファイルを読み込んだ直後、および演奏中に、三次元空間内を移動して、あらゆる方向からMIDIデータを眺めることができます。<br>
+FPS（一人称シューティング）ゲームでおなじみの操作で、三次元空間内を移動します。<br>
+初めてこの操作を体験する方は違和感を持つかもしれませんが、一度慣れてしまうと非常に快適です。<br>
+</p>
+
+<p>
+<img src="Files/HowToView2.png"><br>
+</p>
+<p>
+画面をクリックすると、マウスによる視線移動モードになり、マウスカーソルが消えます。<br>
+マウスの移動によって、視線方向を制御できます。
+もう一度クリックすると、視線移動モードが解除されます。<br>
+またマウスホイールを操作することにより、ピアノロールを回転させることができます。
+</p>
+<p>
+<img src="Files/HowToView3.png"><br>
+</p>
+
+<h3><a name="gamecontroller"></a>(2) ゲームコントローラーを用いた視点移動</h3>
+<p>
+XInput対応のゲームコントローラーを用いて操作することができます。<br>
+</p>
+<p>
+<table>
+	<tr><th>ボタン / スティック</th><th>操作</th></tr>
+	<tr><td>START ボタン</td><td>再生/一時停止</td></tr>
+	<tr><td>A ボタン</td><td>再生/一時停止</td></tr>
+	<tr><td>B ボタン</td><td>停止</td></tr>
+	<tr><td>X ボタン</td><td>視点移動：下降</td></tr>
+	<tr><td>Y ボタン</td><td>視点移動：上昇</td></tr>
+	<tr><td>LB/RB ショルダーボタン</td><td>視点切り替え</td></tr>
+	<tr><td>LT/RT トリガーボタン</td><td>再生スキップ</td></tr>
+	<tr><td>十字キー</td><td>視点移動：前後左右</td></tr>
+	<tr><td>左スティック</td><td>視点移動：前後左右</td></tr>
+	<tr><td>右スティック</td><td>視線方向</td></tr>
+</table>
+</p>
+<p>
+注意：MIDITrailはDirectInputのゲームコントローラーをサポートしていません。
+</p>
+
+<h3>(3) 視点の切り替えと保存</h3>
+<p>
+操作パネルの「Viewpoint 1 / 2 / 3」のボタンを押すと、標準の視点に切り替えることができます。<br>
+「My Viewpoint 1 / 2 / 3」のボタンを押すと、あらかじめ保存しておいた視点に切り替えることができます。<br>
+</p>
+<p>
+<img src="Files/OperationPanel-3.png"><br>
+</p>
+<p>
+現在の視点を保存するには、「View」メニューから「Save My Viewpoint 1 / 2 / 3」を選択してください。<br>
+視点はビューモードごとに保存されます。<br>
+</p>
+<p>
+<img src="Files/Menu_View-MyViewpoint.png"><br>
+</p>
+<p>
+<a href="#keyboard">キーボード</a>を利用して、視点の切り替えと保存を実施するこもできます。
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="monitor"></a>9. MIDI IN モニタ</h2>
 <p>
 MIDI INデバイスで受信したデータをリアルタイム表示することができます。<br>
-「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
-</p>
-<p>
-<img src="Files/MIDIIN.png"><br>
-</p>
-<p>
-モニタリングするMIDI INデバイスを選択してください。<br>
-MIDI INで受信したデータをそのままMIDI OUTに出力する場合は、MIDITHRUを選択してください。<br>
+あらかじめ、MIDI IN設定にて、モニタするデバイスを選択しておく必要があります。<br>
 モニタリングを開始するには、「Playback」メニューから「Start Monitoring」を選択してください。<br>
 なお、MIDITrailはMIDI INで受信したデータを保存することはできません。<br>
 </p>
 
-<h3>(12) グラフィック設定</h3>
+<!-- ************************************************************* -->
+<h2><a name="setting"></a>10. 設定</h2>
+
+<h3>(1) ウィンドウサイズ設定</h3>
+<p>
+「Window」メニューから「Window size...」を選択すると、ウィンドウサイズ設定ダイアログが表示されます。<br>
+お好みのウィンドウサイズを選択できます。<br>
+なお、演奏中／一時停止中にウィンドウサイズの変更はできません。
+</p>
+<p>
+<img src="Files/Dialog_WindowSize.png"><br>
+</p>
+<p>
+<b>[Width] [Height] 幅 高さ</b><br>
+任意のウィンドウサイズを指定できます。<br>
+</p>
+<p>
+<b>[Apply to the view area]</b><br>
+指定したサイズを画像領域に反映する場合は、このオプションをチェックしてください。
+</p>
+
+<h3>(2) MIDI OUT 設定</h3>
+<p>
+「Option」メニューから「MIDI OUT...」を選択すると、MIDI OUT設定ダイアログが表示されます。<br>
+</p>
+<p>
+<img src="Files/Dialog_MIDI-OUT.png"><br>
+</p>
+<p>
+<b>[Port A] ポートA</b><br>
+ポートAの出力先は必ず設定してください。通常のMIDIデータはポートAを使って演奏されます。<br>
+</p>
+<p>
+<b>[Port B,C,D,E,F] ポートB,C,D,E,F</b><br>
+複数ポートを利用するMIDIデータを再生する場合は、ポートB以降の出力先を設定してください。<br>
+複数ポートを利用するMIDIデータを再生しない場合は、ポートB以降の出力先を設定する必要はありません。<br>
+なお、複数ポートを利用するMIDIデータを再生するには、複数ポート対応のMIDIインターフェースと音源を用意する必要があります。<br>
+</p>
+
+<h3>(2) MIDI IN 設定</h3>
+<p>
+「Option」メニューから「MIDI IN...」を選択すると、MIDI IN設定ダイアログが表示されます。<br>
+</p>
+<p>
+<img src="Files/Dialog_MIDI-IN.png"><br>
+</p>
+<p>
+<b>[MIDI IN] MIDI入力デバイス</b><br>
+モニタリングするMIDI INデバイスを選択してください。<br>
+</p>
+<p>
+<b>[MIDITHRU] MIDIスルー</b><br>
+MIDI INで受信したデータをそのままMIDI OUTに出力する場合は、MIDITHRUを選択してください。<br>
+</p>
+
+<h3>(3) 内部ウェーブテーブルシンセサイザ設定</h3>
+<p>
+「Option」メニューから「Synthesizer...」を選択すると、内部ウェーブテーブルシンセサイザ設定ダイアログが表示されます。<br>
+</p>
+<p>
+<img src="Files/Dialog_Synthesizer.png"><br>
+</p>
+<p>
+<b>[Wavetable File] ウェーブテーブルファイル</b><br>
+デフォルト値は、アプリに同梱しているウェーブテーブルファイル(GeneralUser-GS.sf2)です。<br>
+ウェーブテーブルファイルを選択することもできます。<br>
+ウェーブテーブルファイルの拡張子は".sf2"としてください。<br>
+MIDITrailはチャンネル番号10をパーカッション用として割り当てます。<br>
+</p>
+<p>
+<b>[Max Voices] 最大同時発音数</b><br>
+波形レンダリング処理の最大同時発音数を選択します。デフォルト値は512です。<br>
+小さい値を選択することで、波形レンダリング処理の負荷を下げることができますが、ノート数が多いMIDIデータを再生するとき、音が途切れる可能性があります。<br>
+</p>
+<p>
+<b>[Sustain (CC#64)] サスティン (コントロールチェンジ#64)</b><br>
+MIDIデータに含まれるサスティン（コントロールチェンジ#64）を波形レンダリング処理に反映するか否かを選択します。デフォルト値は有効です。<br>
+</p>
+<p>
+<b>[Acknowledgements] 謝辞</b><br>
+ライブラリおよびサウンドバンクの著作権表示を表示します。
+</p>
+
+<h3>(4) グラフィック設定</h3>
 <p>
 「Option」メニューから「Graphic...」を選択すると、グラフィック設定ダイアログが表示されます。<br>
 演奏中／一時停止中にグラフィック設定の変更はできません。
 </p>
 <p>
-<img src="Files/Graphic.png"><br>
+<img src="Files/Dialog_Graphic.png"><br>
 </p>
 <p>
 <b>[Anti-aliasing] アンチエイリアシング</b><br>
@@ -411,11 +417,10 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 </p>
 <p>
 <b>[Quarter note length] 四分音符の長さ</b><br>
-ピアノロールの四分音符の長さを指定します。<br>
-0%から1000%を指定できます。デフォルトは100%です。 
+ピアノロールの四分音符の長さを指定します。0%から1000%を指定できます。デフォルトは100%です。
 </p>
 
-<h3>(13) カラー設定</h3>
+<h3>(5) カラー設定</h3>
 <p>
 画面に表示する色を設定することができます。<br>
 「Option」メニューから「Color...」を選択すると、カラー設定ダイアログが表示されます。<br>
@@ -423,7 +428,7 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 演奏中／一時停止中にカラー設定の変更はできません。<br>
 </p>
 <p>
-<img src="Files/ColorCfgDlg.png"><br>
+<img src="Files/Dialog_Color.png"><br>
 </p>
 <p>
 「Edit...」ボタンをクリックすると、カラーパレット編集ダイアログが表示されます。<br>
@@ -431,7 +436,7 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 デフォルトのカラーパレットを編集することはできません。<br>
 </p>
 <p>
-<img src="Files/ColorPaletteCfgDlg.png"><br>
+<img src="Files/Dialog_ColorPalette.png"><br>
 </p>
 <p>
 <b>グラデーションツール</b><br>
@@ -444,51 +449,94 @@ PCがアンチエイリアシングに対応していない場合は「Not suppo
 [Import Color Parameters...] カラーパラメータを入力します。テキストエディタで編集したパラメータを入力することができます。一部のパラメータだけを入力することも可能です。<br>
 </p>
 
-<h3>(14) MIDITrailコマンドラインインターフェース</h3>
+
+<!-- ************************************************************* -->
+<h2><a name="keyboard"></a>11. キーボード操作</h2>
+
+<h3></a>(1) キーボード操作について</h3>
 <p>
-コマンドラインからMIDITrailを起動する場合は、以下の引数を指定できます。
-</p>
-<pre>
-MIDITrail.exe [-p] [-q] ["path\to\file"]
-</pre>
-<p>
-<table>
-  <tr><th>引数</th><th>詳細</th></tr>
-  <tr><td>-p</td><td>MIDITrail起動直後に指定されたMIDIファイルの再生を開始します。<br>"path\to\file"が指定されていない場合は無視されます。</td></tr>
-  <tr><td>-q</td><td>MIDIファイルの再生終了後にMIDITrailを終了します。-pオプションが有効でない場合は無視されます。</td></tr>
-  <tr><td>path\to\file</td><td>MIDIファイルパスを指定します。<br>空白を含むパスを指定する場合はダブルクォーテーションで囲んでください。</td></tr>
-</table>
+キーボードを用いて素早く操作することができます。MIDIファイルの演奏に関するキーボード操作を次の図に示します。
 </p>
 <p>
-MIDITrailのショートカットにMIDIファイルをドロップすると、MIDITrail起動時にファイルを開くことができます。
+<img src="Files/HowToView1.png"><br>
 </p>
 
-
-<h3>(15) ゲームコントローラー</h3>
-<p>
-XInput対応のゲームコントローラーを用いて操作することができます。<br>
-</p>
+<h3>(2) キーボード操作一覧</h3>
 <p>
 <table>
-  <tr><th>ボタン / スティック</th><th>操作</th></tr>
-  <tr><td>START ボタン</td><td>再生/一時停止</td></tr>
-  <tr><td>A ボタン</td><td>再生/一時停止</td></tr>
-  <tr><td>B ボタン</td><td>停止</td></tr>
-  <tr><td>X ボタン</td><td>視点移動：下降</td></tr>
-  <tr><td>Y ボタン</td><td>視点移動：上昇</td></tr>
-  <tr><td>LB/RB ショルダーボタン</td><td>視点切り替え</td></tr>
-  <tr><td>LT/RT トリガーボタン</td><td>再生スキップ</td></tr>
-  <tr><td>十字キー</td><td>視点移動：前後左右</td></tr>
-  <tr><td>左スティック</td><td>視点移動：前後左右</td></tr>
-  <tr><td>右スティック</td><td>視線方向</td></tr>
+	<tr><th>種類</th><th>キー</th><th>動作</th></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="2">ファイル</td>
+		<td><kbd>CTRL</kbd> + <kbd>B</kbd><br>
+		<kbd>CTRL</kbd> + <kbd>P</kbd></td><td>前のファイルを開く</td>
+	</tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>N</kbd></td><td>次のファイルを開く</td></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="5">演奏</td><td><kbd>SPACE</kbd></td><td>演奏の開始／一時停止</td></tr>
+	<tr><td><kbd>ESC</kbd></td><td>演奏の停止</td></tr>
+	<tr><td><kbd>1</kbd><kbd>2</kbd></td><td>スキップ：後方／前方</td></tr>
+	<tr><td><kbd>4</kbd><kbd>5</kbd></td><td>再生スピード：ダウン／アップ</td></tr>
+	<tr><td><kbd>F2</kbd></td><td>2倍速再生</td></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="6">視点移動<br>（左手）</td><td><kbd>W</kbd><kbd>S</kbd></td><td>前後に移動</td></tr>
+	<tr><td><kbd>A</kbd><kbd>D</kbd></td><td>左右に移動</td></tr>
+	<tr><td><kbd>Q</kbd><kbd>E</kbd></td><td>上昇下降</td></tr>
+	<tr><td><kbd>Z</kbd><kbd>C</kbd></td><td>MIDIデータ進行方向に沿って移動<br>（ピアノロールレインの場合はキーボードに沿って移動）</td></tr>
+	<tr>
+		<td>
+			<kbd>SHIFT</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>A</kbd><kbd>D</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>Q</kbd><kbd>E</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>Z</kbd><kbd>C</kbd>]
+		</td>
+		<td>すばやく移動</td>
+	</tr>
+	<tr>
+		<td>
+			<kbd>CTRL</kbd> + [<kbd>W</kbd><kbd>S</kbd>]<br>
+			<kbd>CTRL</kbd> + [<kbd>A</kbd><kbd>D</kbd>]
+		</td>
+		<td>視線方向を制御</td>
+	</tr>
+	<!-- ******************** -->
+	<tr><td rowspan="6">視点移動<br>（右手）</td><td><kbd>↑</kbd><kbd>↓</kbd></td><td>前後に移動</td></tr>
+	<tr><td><kbd>←</kbd><kbd>→</kbd></td><td>左右に移動</td></tr>
+	<tr><td><kbd>PgUp</kbd><kbd>PgDn</kbd></td><td>上昇下降</td></tr>
+	<tr><td><kbd>,</kbd><kbd>.</kbd></td><td>MIDIデータ進行方向に沿って移動<br>（ピアノロールレインの場合はキーボードに沿って移動）</td></tr>
+	<tr>
+		<td>
+			<kbd>SHIFT</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>←</kbd><kbd>→</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>PgUp</kbd><kbd>PgDn</kbd>]<br>
+			<kbd>SHIFT</kbd> + [<kbd>,</kbd><kbd>.</kbd>]
+		</td>
+		<td>すばやく移動</td>
+	</tr>
+	<tr>
+		<td>
+			<kbd>CTRL</kbd> + [<kbd>↑</kbd><kbd>↓</kbd>]<br>
+			<kbd>CTRL</kbd> + [<kbd>←</kbd><kbd>→</kbd>]
+		</td>
+		<td>視線方向を制御</td>
+	</tr>
+	<!-- ******************** -->
+	<tr><td rowspan="9">視点切り替え</td><td><kbd>7</kbd></td><td>標準視点1に移動</td></tr>
+	<tr><td><kbd>8</kbd></td><td>標準視点2に移動</td></tr>
+	<tr><td><kbd>9</kbd></td><td>標準視点3に移動</td></tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>7</kbd></td><td>私の視点1に移動</td></tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>8</kbd></td><td>私の視点2に移動</td></tr>
+	<tr><td><kbd>CTRL</kbd> + <kbd>9</kbd></td><td>私の視点3に移動</td></tr>
+	<tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>7</kbd></td><td>私の視点1を保存</td></tr>
+	<tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>8</kbd></td><td>私の視点2を保存</td></tr>
+	<tr><td><kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + <kbd>9</kbd></td><td>私の視点3を保存</td></tr>
+	<!-- ******************** -->
+	<tr><td rowspan="1">画面</td><td><kbd>F11</kbd></td><td>フルスクリーン切り替え</td></tr>
+
 </table>
-</p>
-<p>
-注意：MIDITrailはDirectInputのゲームコントローラーをサポートしていません。
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="restriction"></a>5. 制限事項</h2>
+<h2><a name="restriction"></a>12. 制限事項</h2>
 
 <h3>(1) 演奏と画面表示の同期について</h3>
 <p>
@@ -496,13 +544,11 @@ XInput対応のゲームコントローラーを用いて操作することが�
 （ソフトウェア音源など）を利用する場合、演奏と画面表示がずれる可能性があります。
 </p>
 
-<h3>(2) グラフィックチップの性能について</h3>
+<h3>(2) グラフィック性能について</h3>
 <p>
 MIDITrailは、MIDIデータに含まれる全ノートをリアルタイムレンダリングします。
-このため、全ノート数が多いMIDIデータほど画面描画処理の負荷が高くなります。
-<br>
-クラシック音楽のように、演奏時間が長く、全ノート数が数万個に達するMIDIデータを
-快適に鑑賞するには、高性能なグラフィックチップを搭載したPCを使用してください。
+このため、全ノート数が多いMIDIデータほど画面描画処理の負荷が高くなります。<br>
+全ノート数が数万個に達するMIDIデータを快適に鑑賞するには、グラフィック性能が高いPCを使用してください。
 </p>
 
 <h3>(3) 複数ポート出力について</h3>
@@ -521,9 +567,15 @@ MIDIデータによってはうまく再生できない可能性があります�
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="faq"></a>6. FAQ</h2>
+<h2><a name="faq"></a>13. FAQ</h2>
 
-<h3>(1)「d3dx9_**.dllが見つからない」というエラーが出て起動できません</h3>
+<h3>(1) プレイリストは作成できますか？</h3>
+<p>
+現在、MIDITrailにはプレイリストの機能がありませんが、フォルダ演奏の機能を利用できます。<br>
+詳しくは、「<a href="#playback">6. MIDIファイルの演奏</a>」の「(2) フォルダ演奏」を参照してください。<br>
+</p>
+
+<h3>(2)「d3dx9_**.dllが見つからない」というエラーが出て起動できません</h3>
 <p>
 お使いのPCにインストールされているDirectXのバージョンが古いと、このエラーが発生します。<br>
 マイクロソフト社のWebページにアクセスして、
@@ -534,7 +586,16 @@ Microsoft: DirectX End-User Runtimes (June 2010)<br>
 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=8109">https://www.microsoft.com/en-us/download/details.aspx?id=8109</a>
 </p>
 
-<h3>(2) 画面がスムーズに描画されません</h3>
+<h3>(3) 「DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A」というエラーが出ます</h3>
+<p>
+お使いのPCがDirect3Dをサポートしていない場合にこのエラーが発生します。<br>
+DirectX診断ツール(dxdiag.exe)を起動して「ディスプレイ」タブを選択し、
+「Direct3Dアクセラレータ」が「使用可能」になっているか確認してください。<br>
+「使用可能」に変更できない場合は、そのPCがDirect3Dをサポートしていないため、MIDITrailは実行できません。<br>
+DirectX 9.0cをサポートしているPCを使用してください。
+</p>
+
+<h3>(4) 画面がスムーズに描画されません</h3>
 <p>
 ウィンドウサイズを小さくして、アンチエイリアシングをOFFにしてください。レンダリングの負荷が減少します。<br>
 ウィンドウタイトルに表示されているFPS（1秒間あたりの画面描画回数）の値が60付近を維持できていない場合、
@@ -544,46 +605,13 @@ PCの処理能力を確認するために、音符の数が少ないMIDIデー�
 それでも改善されない場合は、高速なグラフィックチップが搭載されたPCを使用してください。<br>
 </p>
 
-<h3>(3) ウィンドウサイズをカスタマイズしたいのですが</h3>
-<p>
-次のファイルをテキストエディタで編集することにより、ウィンドウサイズをカスタマイズできます。
-</p>
-<pre>
-Windows 7 / 8 / 10 / 11 の場合
-C:\Users\（ユーザー名）\AppData\Roaming\yknk\MIDITrail\View.ini
-</pre>
-<p>
-テキストエディタでView.iniを開き、WidthとHeightの値を書き換えてください。
-</p>
-<pre>
-[WindowSize]
-Width=800
-Height=600
-</pre>
-
-<h3>(4) メニューを表示すると画面の描画が止まります</h3>
+<h3>(5) メニューを表示すると画面の描画が止まります</h3>
 <p>
 すいません。仕様です。<br>
 </p>
 
-<h3>(5) 「DirectX API error. / FUNC: DXRenderer::Initialize / INFO: 8876086A」というエラーが出ます</h3>
-<p>
-お使いのPCがDirect3Dをサポートしていない場合にこのエラーが発生します。<br>
-DirectX診断ツール(dxdiag.exe)を起動して「ディスプレイ」タブを選択し、
-「Direct3Dアクセラレータ」が「使用可能」になっているか確認してください。<br>
-「使用可能」に変更できない場合は、そのPCがDirect3Dをサポートしていないため、MIDITrailは実行できません。<br>
-DirectX 9.0cをサポートしているPCを使用してください。
-</p>
-
-<h3>(6) 波紋を派手にしたい</h3>
-<p>
-設定ファイルを編集することにより、波紋の大きさを変更することができます。<br>
-詳しくは「7. カスタマイズ - (2) ピアノロール表示のカスタマイズ」を参照してください。<br>
-RippleHeight, RippleWidth の値を大きくします。
-</p>
-
 <!-- ************************************************************* -->
-<h2><a name="customize"></a>7. カスタマイズ</h2>
+<h2><a name="customize"></a>14. カスタマイズ</h2>
 
 <p>
 MIDITrailインストール先のconfフォルダにある設定ファイルをテキストエディタで編集することにより、
@@ -832,7 +860,7 @@ MIDITrailインストール先のdataフォルダに表示したいビットマ�
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="appendix"></a>8. 補遺</h2>
+<h2><a name="appendix"></a>15. 補遺</h2>
 
 <h3>(1) ピアノロール表示の構造</h3>
 <p>
@@ -859,7 +887,7 @@ MIDITrailインストール先のdataフォルダに表示したいビットマ�
 </p>
 
 <!-- ************************************************************* -->
-<h2><a name="license"></a>9. 著作権とライセンス</h2>
+<h2><a name="license"></a>16. 著作権とライセンス</h2>
 
 <p>
 MIDITrailの著作権は和田雅志が保有しています。
@@ -867,7 +895,7 @@ MIDITrailは修正BSDライセンスを適用して公開しています。
 </p>
 
 <pre>
-Copyright (c) 2010-2022, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
+Copyright (c) 2010-2026, WADA Masashi &lt;<img src="Files/mail.png" align="top">&gt;
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -898,7 +926,29 @@ POSSIBILITY OF SUCH DAMAGE.
 </pre>
 
 <!-- ************************************************************* -->
-<h2><a name="history"></a>10. 履歴</h2>
+<h2><a name="acknowledgements"></a>17. 謝辞</h2>
+
+<p>
+MIDITrailは以下のライブラリとサウンドフォントバンクを使用しています。
+</p>
+
+<h3>TinySoundFont</h3>
+<p>
+Copyright (C) 2017-2023 Bernhard Schelling (Based on SFZero: Copyright (C) 2012 Steve Folta)<br>
+<a href="https://github.com/schellingb/TinySoundFont">https://github.com/schellingb/TinySoundFont</a></br>
+<a href="LICENSE_TinySoundFont.txt">ライセンス詳細</a><br>
+</p>
+
+
+<h3>GeneralUser GS</h3>
+<p>
+Copyright (C) 1997-2025 S. Christian Collins<br>
+<a href="https://www.schristiancollins.com/">https://www.schristiancollins.com/</a><br>
+<a href="LICENSE_GeneralUser_GS.txt">ライセンス詳細</a><br>
+</p>
+
+<!-- ************************************************************* -->
+<h2><a name="history"></a>18. 履歴</h2>
 
 <p>
 osdn#&lt;id&gt; ... <a href="https://www.yknk.org/miditrail/osdn/ticket/index.html">OSDN Ticket Archive</a><br>
@@ -1072,6 +1122,20 @@ osdn#45931 バグ修正：MIDIファイルからテンポが正しく読み取�
 ghwin#7 バグ修正：AMD Radeon Graphicsでピアノロールが黒く描画される<br>
 ghwin#8 機能追加：一時停止時と停止時にノートオフを送信、再開時にノートオンを送信<br>
 ghwin#9 仕様変更：プロジェクトWebサイトの移行に伴うドキュメントの修正<br>
+  </td></tr>
+  <tr><td>2026/08/31</td><td>Ver.1.5.0</td><td>
+ghwin#10 機能追加：内部ウェーブテーブルシンセサイザとしてTinySoundFontを導入<br>
+ghwin#11 機能追加：デフォルトのウェーブテーブルファイルとしてGeneralUser GSを添付<br>
+ghwin#12 機能追加：操作パネルを追加<br>
+ghwin#13 機能追加：起動直後の画面にファイルドロップが可能であることをメッセージ表示<br>
+ghwin#14 機能追加：リピートとフォルダ演奏の選択状態を保存<br>
+ghwin#15 機能追加：高DPI対応（プライマリモニタのみ）<br>
+ghwin#16 仕様変更：カラーパレット設定の保存タイミングを変更<br>
+ghwin#17 仕様変更：マニュアル初期表示ページを変更<br>
+ghwin#18 仕様変更：マニュアル章構成変更<br>
+ghwin#19 仕様変更：ダイアログをメインウィンドウ中央に表示<br>
+ghwin#20 仕様変更：Piano Roll Rainのノートの彩度を変更<br>
+ghwin#21 バグ修正：Windows 7でアプリ起動時に_SetWindowSizeエラー発生<br>
   </td></tr>
 </table>
 </p>

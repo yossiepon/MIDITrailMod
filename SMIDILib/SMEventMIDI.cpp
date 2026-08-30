@@ -4,7 +4,7 @@
 //
 // MIDIイベントクラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -46,7 +46,8 @@ void SMEventMIDI::Attach(
 // MIDI出力メッセージ取得（ショート）
 //******************************************************************************
 int SMEventMIDI::GetMIDIOutShortMsg(
-		unsigned long* pMsg
+		unsigned long* pMsg,
+		unsigned long* pSize
 	)
 {
 	int result = 0;
@@ -66,10 +67,12 @@ int SMEventMIDI::GetMIDIOutShortMsg(
 	if (m_pEvent->GetDataSize() == 2) {
 		data1 = pData[0];
 		data2 = pData[1];
+		*pSize = 3;
 	}
 	else if (m_pEvent->GetDataSize() == 1) {
 		data1 = pData[0];
 		data2 = 0;
+		*pSize = 2;
 	}
 	else {
 		result = YN_SET_ERR("Program error.", m_pEvent->GetDataSize(), 0);

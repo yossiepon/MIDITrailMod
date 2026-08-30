@@ -4,7 +4,7 @@
 //
 // パスユーティリティクラス
 //
-// Copyright (C) 2010-2022 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -92,6 +92,65 @@ EXIT:;
 }
 
 //******************************************************************************
+// プロセス実行ファイルディレクトリパス取得（ワイド文字列用）
+//******************************************************************************
+int YNPathUtil::GetModuleDirPathW(
+		WCHAR* pBuf,
+		unsigned long bufSize
+	)
+{
+	int result = 0;
+	DWORD apiresult = 0;
+	errno_t eresult = 0;
+	WCHAR path[_MAX_PATH];
+	WCHAR drive[_MAX_DRIVE];
+	WCHAR dir[_MAX_DIR];
+	WCHAR fname[_MAX_FNAME];
+	WCHAR ext[_MAX_EXT];
+
+	//プロセス実行ファイルパス取得
+	apiresult = GetModuleFileNameW(GetModuleHandle(NULL), path, _MAX_PATH);
+	if (apiresult == 0) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	//パス要素の分割
+	eresult = _wsplitpath_s(
+					path,		//パス
+					drive,		//ドライブ文字列バッファ
+					_MAX_DRIVE,	//バッファサイズ
+					dir,		//ディレクトリ文字列バッファ
+					_MAX_DIR,	//バッファサイズ
+					fname,		//ファイル名文字列バッファ
+					_MAX_FNAME,	//バッファサイズ
+					ext,		//拡張子文字列バッファ
+					_MAX_EXT	//バッファサイズ
+				);
+	if (eresult != 0) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	//パス作成
+	eresult = _wmakepath_s(
+					pBuf,		//パス格納先バッファ
+					bufSize,	//バッファサイズ
+					drive,		//ドライブ文字列
+					dir,		//ディレクトリ文字列
+					NULL,		//ファイル名文字列
+					NULL		//拡張子文字列
+				);
+	if (eresult != 0) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
 // アプリケーションデータディレクトリパス取得
 //******************************************************************************
 int YNPathUtil::GetAppDataDirPath(
@@ -124,6 +183,48 @@ int YNPathUtil::GetAppDataDirPath(
 	}
 
 	eresult = _tcscat_s(pBuf, bufSize, _T("\\"));
+	if (eresult != 0) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+EXIT:;
+	return result;
+}
+
+//******************************************************************************
+// アプリケーションデータディレクトリパス取得（ワイド文字列用）
+//******************************************************************************
+int YNPathUtil::GetAppDataDirPathW(
+		WCHAR* pBuf,
+		unsigned long bufSize
+	)
+{
+	int result = 0;
+	HRESULT hresult = 0;
+	errno_t eresult = 0;
+	WCHAR path[MAX_PATH];
+
+	hresult = SHGetFolderPathW(
+					NULL,				//オーナーウィンドウ
+					CSIDL_APPDATA,		//フォルダ指定
+					NULL,				//アクセストークン
+					SHGFP_TYPE_CURRENT,	//フラグ：現在のフォルダパス
+										//  ユーザが変更している可能性がある
+					path				//パス格納先バッファ
+				);
+	if (hresult != S_OK) {
+		result = YN_SET_ERR("Windows API error.", GetLastError(), 0);
+		goto EXIT;
+	}
+
+	eresult = wcscpy_s(pBuf, bufSize, path);
+	if (eresult != 0) {
+		result = YN_SET_ERR("Program error.", 0, 0);
+		goto EXIT;
+	}
+
+	eresult = wcscat_s(pBuf, bufSize, L"\\");
 	if (eresult != 0) {
 		result = YN_SET_ERR("Program error.", 0, 0);
 		goto EXIT;

@@ -110,12 +110,15 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -133,12 +136,15 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -154,7 +160,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +168,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -180,7 +189,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxerr.lib;dxguid.lib;d3dx9.lib;d3d9.lib;dinput8.lib;winmm.lib;XInput.lib;SMIDILib.lib;YNBaseLib.lib;imagehlp.lib;shlwapi.lib;Dwmapi.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -188,6 +197,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>true</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="MIDITrail.ico" />
@@ -221,6 +233,7 @@
     <ClCompile Include="MTConfFile.cpp" />
     <ClCompile Include="MTDashboard.cpp" />
     <ClCompile Include="MTDashboardLive.cpp" />
+    <ClCompile Include="MTDlgLib.cpp" />
     <ClCompile Include="MTDynamicCaption.cpp" />
     <ClCompile Include="MTFileList.cpp" />
     <ClCompile Include="MTFirstPersonCam.cpp" />
@@ -249,6 +262,7 @@
     <ClCompile Include="MTNoteRipple.cpp" />
     <ClCompile Include="MTNoteRippleRing.cpp" />
     <ClCompile Include="MTNoteRippleRingLive.cpp" />
+    <ClCompile Include="MTOperationPanelCtrl.cpp" />
     <ClCompile Include="MTPianoKeyboard.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrl.cpp" />
     <ClCompile Include="MTPianoKeyboardCtrlLive.cpp" />
@@ -271,6 +285,8 @@
     <ClCompile Include="MTStaticCaption.cpp" />
     <ClCompile Include="MTTimeIndicator.cpp" />
     <ClCompile Include="MTTimeIndicatorRing.cpp" />
+    <ClCompile Include="MTViewModeDlg.cpp" />
+    <ClCompile Include="MTWavetableSynthCfgDlg.cpp" />
     <ClCompile Include="MTWindowSizeCfgDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -305,6 +321,7 @@
     <ClInclude Include="MTConfFile.h" />
     <ClInclude Include="MTDashboard.h" />
     <ClInclude Include="MTDashboardLive.h" />
+    <ClInclude Include="MTDlgLib.h" />
     <ClInclude Include="MTDynamicCaption.h" />
     <ClInclude Include="MTFileList.h" />
     <ClInclude Include="MTFirstPersonCam.h" />
@@ -333,6 +350,7 @@
     <ClInclude Include="MTNoteRipple.h" />
     <ClInclude Include="MTNoteRippleRing.h" />
     <ClInclude Include="MTNoteRippleRingLive.h" />
+    <ClInclude Include="MTOperationPanelCtrl.h" />
     <ClInclude Include="MTParam.h" />
     <ClInclude Include="MTPianoKeyboard.h" />
     <ClInclude Include="MTPianoKeyboardCtrl.h" />
@@ -356,6 +374,8 @@
     <ClInclude Include="MTStaticCaption.h" />
     <ClInclude Include="MTTimeIndicator.h" />
     <ClInclude Include="MTTimeIndicatorRing.h" />
+    <ClInclude Include="MTViewModeDlg.h" />
+    <ClInclude Include="MTWavetableSynthCfgDlg.h" />
     <ClInclude Include="MTWindowSizeCfgDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

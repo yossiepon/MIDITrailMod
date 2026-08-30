@@ -4,7 +4,7 @@
 //
 // タイトルシーン描画クラス
 //
-// Copyright (C) 2010 WADA Masashi. All Rights Reserved.
+// Copyright (C) 2010-2026 WADA Masashi. All Rights Reserved.
 //
 //******************************************************************************
 
@@ -22,6 +22,7 @@ using namespace YNBaseLib;
 MTSceneTitle::MTSceneTitle(void)
 {
 	m_CamPosZ = MTSCENETITLE_CAMERA_POSZ;
+	m_StartTime = 0;
 }
 
 //******************************************************************************
@@ -29,6 +30,7 @@ MTSceneTitle::MTSceneTitle(void)
 //******************************************************************************
 MTSceneTitle::~MTSceneTitle(void)
 {
+	m_Message.Release();
 }
 
 //******************************************************************************
@@ -101,6 +103,19 @@ int MTSceneTitle::Create(
 	if (result != 0) goto EXIT;
 
 	//----------------------------------
+	// メッセージ
+	//----------------------------------
+	result = m_Message.Create(
+					pD3DDevice,
+					MTSCENETITLE_FONTNAME,	//フォント名称
+					MTSCENETITLE_FONTSIZE,	//フォントサイズ
+					MTSCENETITLE_MESSAGE	//キャプション
+				);
+	if (result != 0) goto EXIT;
+
+	m_Message.SetColor(D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f));
+
+	//----------------------------------
 	// レンダリングステート
 	//----------------------------------
 	//画面描画モード
@@ -166,6 +181,8 @@ int MTSceneTitle::Draw(
 	)
 {
 	int result = 0;
+	unsigned int sceneTime = 0;
+	float brightness = 0.5f;
 
 	if (pD3DDevice == NULL) {
 		result = YN_SET_ERR("Program error.", 0, 0);
@@ -179,6 +196,25 @@ int MTSceneTitle::Draw(
 	//ロゴ描画
 	result = m_Logo.Draw(pD3DDevice);
 	if (result != 0) goto EXIT;
+
+	//シーン経過時間
+	if (m_StartTime == 0) {
+		m_StartTime = timeGetTime();
+	}
+	sceneTime = timeGetTime() - m_StartTime;
+	
+	//3秒後にメッセージ描画
+	if (sceneTime > (3 * 1000)) {
+		//4秒後まで徐々に文字を明るくする
+		if (sceneTime < (4 * 1000)) {
+			brightness = 0.5f * ((float)(sceneTime - (3 * 1000)) / 1000.0f);
+		}
+		//メッセージ色
+		m_Message.SetColor(D3DXCOLOR(brightness, brightness, brightness, 1.0f));
+		//メッセージ描画
+		result = m_Message.Draw(pD3DDevice, MTSCENETITLE_FRAMESIZE, MTSCENETITLE_FRAMESIZE, MTSCENETITLE_MAGRATE);
+		if (result != 0) goto EXIT;
+	}
 
 EXIT:;
 	return result;
